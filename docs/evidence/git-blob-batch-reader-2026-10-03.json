@@ -1,0 +1,815 @@
+{
+  "bead": "syzygy-svoj",
+  "date": "2026-10-03",
+  "subject": "Replace per-blob 'git cat-file blob' spawning with one 'git cat-file --batch' reader for the governance lifecycle scan and readSelfCorpus",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/git-blob-batch.ts": {
+      "sha256": "747d059a32eee5548ce91f60cb2f5132a86dae2e786e3dbf03e82f08bdbfad84"
+    },
+    "apps/three-surface-poc/src/git-blob-batch.test.ts": {
+      "sha256": "ef5517478840bb9114c8f54f282924e557a8c37ccca45506e8e086f39e2d13b6"
+    },
+    "apps/three-surface-poc/src/governance-inputs.ts": {
+      "sha256": "6b7b082c7131d48c9df360c5787137e27eb5136bb821e986ddb5377f2671b34d"
+    },
+    "apps/three-surface-poc/src/walkthrough-inputs.ts": {
+      "sha256": "a6f9e330bdff2cc565c5c5556eaa01e0804ac66f959b4c457ff3548302d4cf06"
+    },
+    "apps/three-surface-poc/src/polaris-generation/self-corpus.ts": {
+      "sha256": "6ffcfd51bc03a109cc88356d25a90ba1d4adf6911adcc1093469eb2e8a04caad"
+    }
+  },
+  "measuredAt": {
+    "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+    "note": "Commit at measurement and mutation; a rebase re-hashes it, so the file blobs are the stable anchor. The sha256 digests in subjectFiles are of the same bytes (verification rule 11); the measured commit was rebased onto origin/main without changing these files.",
+    "fileBlobs": {
+      "apps/three-surface-poc/src/git-blob-batch.ts": "619b621e9ea382e689e07f8c4251818283b7f58d",
+      "apps/three-surface-poc/src/git-blob-batch.test.ts": "170324b6d9ee8f0444a91d6812805f778cef7905",
+      "apps/three-surface-poc/src/governance-inputs.ts": "d14bfe6c45494938f641c4b163a18896cf7a188d",
+      "apps/three-surface-poc/src/walkthrough-inputs.ts": "13e325a4e8b1862ab54c37a136ea0f56e12af415",
+      "apps/three-surface-poc/src/polaris-generation/self-corpus.ts": "777e7e8e18e6270430105d5f44ddbc4f7b4e4360"
+    }
+  },
+  "design": {
+    "reader": "apps/three-surface-poc/src/git-blob-batch.ts: readGitBlobsBatch spawns one 'git --no-optional-locks -C <root> cat-file --batch' with exactly the requested object names on stdin; parseGitCatFileBatch reads one answer per request in order. A missing, ambiguous or non-blob answer is that object's Error. Output ending before a header, an unexpected header, a body not followed by its newline (short or oversized), a full object id answered by another object, or output past the last request fails the whole batch. Names must be one non-empty line; an empty request spawns nothing.",
+    "governanceSeam": "gitTreeReaders gains prefetch(paths): it batches only paths in the tree listing that are not yet cached, by '<commit>:<path>'. lifecycleFor calls it with exactly the names its loop reads (markdown, not the act's own record), before the loop. Successful bytes enter the existing cache; a per-object error is not cached, so the loop's read repeats it as the old single read and fails exactly as before. A batch that fails throws. Wired into loadBodyReadAuthorityInputs and loadWalkthroughJudgmentInputs; only when the tree reader is in use (an injected readFile disables it).",
+    "injection": "LoadGovernanceInputsOptions.readGitBlobs is injectable. It defaults to the batch reader only when readGitBlob is also the default, so the existing hermetic tests (which inject single readers) never mix a fake single reader with real batched reads.",
+    "selfCorpusSeam": "readSelfCorpus(repoRoot, revision, readBlobs = readGitBlobsBatch) requests the selected records' blob ids (non-blob entries are never requested and still throw self-corpus-nonblob), then each record takes its bytes from the batch; a missing or errored answer throws. The existing gitBlobObjectId integrity check is unchanged."
+  },
+  "readPopulation": {
+    "successPath": "[Observed] Identical. The oracle test records every object the governance load reads with single reads only and with the batch, and requires the same set; the self-corpus oracle requires the requested ids to equal the selected sources' ids. Only Syzygy's own governance tree at the governance revision and the pinned self-corpus commit are read; no Butlers repository is touched.",
+    "abortPath": "[Observed] in the code: When the lifecycle scan would abort part-way (a listed record that fails to decode as UTF-8), the batch has already fetched the remaining listed records of the same decisions directory at the same commit; the old loop stopped at the failing record. Likewise readSelfCorpus fetches all selected blobs before the first record that fails decoding or the object-id check. The fetched set never leaves the population the scan would read on success, nothing extra is returned, and the load still throws. This is disclosed rather than changed; no new path, repository or content class is read.",
+    "authority": "No change to what the body-read gate evaluates: the oracle test requires loadBodyReadAuthorityInputs and evaluateBodyReadAuthority to be deep-equal with single and batched reads over the real tree."
+  },
+  "processCounts": {
+    "method": "strace -f -e trace=execve over one pass of a timing test (5 governance loads at HEAD plus 5 readSelfCorpus reads at the pinned commit), counting successful execs of git by subcommand.",
+    "before": {
+      "cat-file blob": 1169,
+      "cat-file --batch": 0,
+      "rev-parse": 21,
+      "ls-tree": 10,
+      "cat-file -t": 5
+    },
+    "after": {
+      "cat-file blob": 35,
+      "cat-file --batch": 10,
+      "rev-parse": 21,
+      "ls-tree": 10,
+      "cat-file -t": 5
+    },
+    "note": "After, each governance load makes 7 single reads (artifacts, act records and recording-tag records outside the lifecycle scan) and one batch; each self-corpus read makes one batch."
+  },
+  "timing": {
+    "method": "Before = the three changed source files at origin/main ee65c28; after = this branch. Each sample is one call timed in-process; five per run. 'Loaded' runs had one concurrent full app-project run. Host load from other sessions was high and variable (38-89), so the interleaved series is the fairer comparison.",
+    "interleaved": {
+      "beforeAlone": {
+        "samples": 15,
+        "governanceLoadMs": {
+          "median": 2519,
+          "max": 6351
+        },
+        "selfCorpusReadMs": {
+          "median": 2534,
+          "max": 4619
+        },
+        "load1m": [
+          54.25,
+          50.75,
+          59.56
+        ]
+      },
+      "afterAlone": {
+        "samples": 15,
+        "governanceLoadMs": {
+          "median": 462,
+          "max": 879
+        },
+        "selfCorpusReadMs": {
+          "median": 312,
+          "max": 605
+        },
+        "load1m": [
+          52.23,
+          57.11,
+          60.5
+        ]
+      },
+      "beforeLoaded": {
+        "samples": 10,
+        "governanceLoadMs": {
+          "median": 2876.0,
+          "max": 6856
+        },
+        "selfCorpusReadMs": {
+          "median": 3071.0,
+          "max": 6302
+        },
+        "load1m": [
+          64.01,
+          38.61
+        ]
+      },
+      "afterLoaded": {
+        "samples": 10,
+        "governanceLoadMs": {
+          "median": 235.0,
+          "max": 266
+        },
+        "selfCorpusReadMs": {
+          "median": 136.0,
+          "max": 178
+        },
+        "load1m": [
+          53.21,
+          38.13
+        ]
+      }
+    },
+    "rawRuns": [
+      {
+        "label": "before-alone",
+        "load1m": 53.78,
+        "governanceLoadMs": [
+          2916,
+          3248,
+          2464,
+          3735,
+          5101
+        ],
+        "selfCorpusReadMs": [
+          2693,
+          2186,
+          2564,
+          3768,
+          3654
+        ]
+      },
+      {
+        "label": "before-loaded",
+        "load1m": 89.47,
+        "governanceLoadMs": [
+          8740,
+          13138,
+          9734,
+          10196,
+          9444
+        ],
+        "selfCorpusReadMs": [
+          7541,
+          7806,
+          8972,
+          9504,
+          8232
+        ]
+      },
+      {
+        "label": "after-alone",
+        "load1m": 85.07,
+        "governanceLoadMs": [
+          567,
+          592,
+          601,
+          368,
+          586
+        ],
+        "selfCorpusReadMs": [
+          294,
+          271,
+          233,
+          295,
+          255
+        ]
+      },
+      {
+        "label": "after-loaded",
+        "load1m": 76.71,
+        "governanceLoadMs": [
+          1037,
+          1019,
+          755,
+          1173,
+          851
+        ],
+        "selfCorpusReadMs": [
+          598,
+          391,
+          334,
+          727,
+          331
+        ]
+      },
+      {
+        "label": "before-alone-r1",
+        "load1m": 54.25,
+        "governanceLoadMs": [
+          2641,
+          2519,
+          2454,
+          2392,
+          2775
+        ],
+        "selfCorpusReadMs": [
+          2393,
+          2262,
+          1904,
+          2874,
+          2534
+        ]
+      },
+      {
+        "label": "after-alone-r1",
+        "load1m": 52.23,
+        "governanceLoadMs": [
+          275,
+          192,
+          187,
+          194,
+          329
+        ],
+        "selfCorpusReadMs": [
+          164,
+          134,
+          113,
+          178,
+          154
+        ]
+      },
+      {
+        "label": "before-alone-r2",
+        "load1m": 50.75,
+        "governanceLoadMs": [
+          1652,
+          1669,
+          1730,
+          1351,
+          2140
+        ],
+        "selfCorpusReadMs": [
+          1756,
+          1502,
+          1672,
+          1032,
+          3036
+        ]
+      },
+      {
+        "label": "after-alone-r2",
+        "load1m": 57.11,
+        "governanceLoadMs": [
+          537,
+          668,
+          624,
+          879,
+          636
+        ],
+        "selfCorpusReadMs": [
+          505,
+          312,
+          457,
+          605,
+          340
+        ]
+      },
+      {
+        "label": "before-alone-r3",
+        "load1m": 59.56,
+        "governanceLoadMs": [
+          3975,
+          4605,
+          3781,
+          4648,
+          6351
+        ],
+        "selfCorpusReadMs": [
+          3804,
+          3589,
+          3438,
+          4619,
+          4313
+        ]
+      },
+      {
+        "label": "after-alone-r3",
+        "load1m": 60.5,
+        "governanceLoadMs": [
+          434,
+          578,
+          496,
+          462,
+          412
+        ],
+        "selfCorpusReadMs": [
+          340,
+          400,
+          319,
+          278,
+          308
+        ]
+      },
+      {
+        "label": "before-loaded-r1",
+        "load1m": 64.01,
+        "governanceLoadMs": [
+          5462,
+          6856,
+          6226,
+          6851,
+          3674
+        ],
+        "selfCorpusReadMs": [
+          6302,
+          6157,
+          5578,
+          4248,
+          4190
+        ]
+      },
+      {
+        "label": "after-loaded-r1",
+        "load1m": 53.21,
+        "governanceLoadMs": [
+          257,
+          244,
+          226,
+          249,
+          206
+        ],
+        "selfCorpusReadMs": [
+          139,
+          144,
+          126,
+          112,
+          124
+        ]
+      },
+      {
+        "label": "before-loaded-r2",
+        "load1m": 38.61,
+        "governanceLoadMs": [
+          1704,
+          2078,
+          1757,
+          1769,
+          2059
+        ],
+        "selfCorpusReadMs": [
+          1952,
+          1089,
+          1581,
+          1638,
+          1302
+        ]
+      },
+      {
+        "label": "after-loaded-r2",
+        "load1m": 38.13,
+        "governanceLoadMs": [
+          206,
+          205,
+          191,
+          266,
+          261
+        ],
+        "selfCorpusReadMs": [
+          127,
+          178,
+          133,
+          160,
+          165
+        ]
+      }
+    ]
+  },
+  "rule6": {
+    "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+    "mutants": [
+      {
+        "id": "P1",
+        "predicate": "missing object is a per-object error",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (header === `${object} missing` || header === `${object} ambiguous`) {",
+            "new": "if (header === `${object} ambiguous`) {"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > answers a missing, ambiguous or non-blob object with that object\u2019s own error 30ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P2",
+        "predicate": "ambiguous object is a per-object error",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (header === `${object} missing` || header === `${object} ambiguous`) {",
+            "new": "if (header === `${object} missing`) {"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > answers a missing, ambiguous or non-blob object with that object\u2019s own error 26ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P3",
+        "predicate": "non-blob object is a per-object error",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "results.set(object, type === 'blob' ? body : new Error",
+            "new": "results.set(object, type !== 'nothing' ? body : new Error"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > answers a missing, ambiguous or non-blob object with that object\u2019s own error 32ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P4",
+        "predicate": "a body must be followed by its newline (short read)",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (output[offset + size] !== NEWLINE) throw new Error(`git blob batch: short read for ${object}`);",
+            "new": "if (output[offset + size] === undefined) throw new Error(`git blob batch: short read for ${object}`);"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > fails the whole batch when a body is not followed by its newline 91ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P5",
+        "predicate": "output ending before a header fails the batch",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (newline < 0) throw new Error(`git blob batch: output ends before the header for ${object}`);",
+            "new": "if (newline < 0) break;"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > fails the whole batch when the output ends before a header 29ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P6",
+        "predicate": "an unexpected header fails the batch",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (found === null) throw new Error(`git blob batch: unexpected header for ${object}`);",
+            "new": "if (found === null) { results.set(object, new Error('unexpected')); continue; }"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > fails the whole batch on an unexpected header 15ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P7",
+        "predicate": "a full object id answered by another object fails the batch",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (FULL_OBJECT_ID.test(object) && objectId !== object) throw",
+            "new": "if (false && objectId !== object) throw"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > fails the whole batch when a full object id is answered by another object 21ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P8",
+        "predicate": "output past the last object fails the batch",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (offset !== output.length) throw",
+            "new": "if (offset > output.length) throw"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 parseGitCatFileBatch > fails the whole batch on output past the last requested object 9ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P9",
+        "predicate": "object names must be one non-empty line",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (object === '' || /[\\n\\r\\0]/.test(object)) throw",
+            "new": "if (object === '') throw"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 readGitBlobsBatch > refuses an object name that is not one line, before spawning git 109ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "P10",
+        "predicate": "no objects spawns nothing",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (unique.length === 0) return new Map();",
+            "new": "if (unique.length < 0) return new Map();"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 readGitBlobsBatch > reads nothing for no objects 89ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G1",
+        "predicate": "prefetch requests only listed paths",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": ".filter((path) => paths.has(path) && !blobs.has(path));",
+            "new": ".filter((path) => !blobs.has(path));"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > requests only listed, uncached paths, by commit and path 13ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G2",
+        "predicate": "prefetch skips cached paths",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": ".filter((path) => paths.has(path) && !blobs.has(path));",
+            "new": ".filter((path) => paths.has(path));"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > requests only listed, uncached paths, by commit and path 23ms",
+          "\u00d7 batched reads over the real tree (oracle: one git cat-file blob per object) > reads the same objects and returns the same inputs and evaluation for the govern"
+        ],
+        "summary": [
+          "Tests  2 failed | 19 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G3",
+        "predicate": "a per-object batch error is left uncached so the single read repeats it",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (bytes instanceof Uint8Array) blobs.set(path, bytes.slice());",
+            "new": "if (bytes !== undefined) blobs.set(path, bytes as Uint8Array);"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > serves prefetched bytes without a single read and repeats a failed object as a single read 25ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G4",
+        "predicate": "lifecycle prefetch lists markdown only",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": ".filter((name) => name.endsWith('.md') && `${PWB_GOVERNANCE_ROOT}/decisions/${name}` !== ownRecordPath)",
+            "new": ".filter((name) => `${PWB_GOVERNANCE_ROOT}/decisions/${name}` !== ownRecordPath)"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > prefetches exactly the records the lifecycle scan reads: markdown, without the act\u2019s own record 12ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G5",
+        "predicate": "lifecycle prefetch excludes the act\u2019s own record",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": ".filter((name) => name.endsWith('.md') && `${PWB_GOVERNANCE_ROOT}/decisions/${name}` !== ownRecordPath)",
+            "new": ".filter((name) => name.endsWith('.md'))"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > prefetches exactly the records the lifecycle scan reads: markdown, without the act\u2019s own record 14ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G6",
+        "predicate": "an injected single reader disables the real batch reader",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "return options.readGitBlobs ?? (options.readGitBlob === undefined ? readGitBlobsBatch : undefined);",
+            "new": "return options.readGitBlobs ?? readGitBlobsBatch;"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > never mixes an injected single reader with the real batch reader 28ms",
+          "\u00d7 batched reads over the real tree (oracle: one git cat-file blob per object) > reads the same objects and returns the same inputs and evaluation for the govern"
+        ],
+        "summary": [
+          "Tests  2 failed | 19 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "G7",
+        "predicate": "an injected file reader disables prefetch",
+        "file": "apps/three-surface-poc/src/governance-inputs.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "  const prefetch = options.readFile === undefined ? tree?.prefetch : undefined;\n  const expectations",
+            "new": "  const prefetch = tree?.prefetch;\n  const expectations"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 governance tree prefetch > batches nothing when the caller supplies its own file reader 23ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1",
+        "predicate": "self-corpus never requests a non-blob entry",
+        "file": "apps/three-surface-poc/src/polaris-generation/self-corpus.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "selected.filter(record => record.type === 'blob').map(record => record.objectId)",
+            "new": "selected.map(record => record.objectId)"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 batched reads over the real tree (oracle: one git cat-file blob per object) > never requests a non-blob entry and refuses it as before 536ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S2",
+        "predicate": "self-corpus fails a record whose blob was not returned",
+        "file": "apps/three-surface-poc/src/polaris-generation/self-corpus.ts",
+        "commit": "ab60285ca93aa48fe715e07413e5b4415d324334",
+        "edits": [
+          {
+            "old": "if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('self-corpus-blob-unread');",
+            "new": "if (bytes instanceof Error) throw bytes;"
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/git-blob-batch.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "failedTests": [
+          "\u00d7 batched reads over the real tree (oracle: one git cat-file blob per object) > fails the self-corpus read on a missing, unread or altered blob 5755ms"
+        ],
+        "summary": [
+          "Tests  1 failed | 20 passed (21)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      }
+    ]
+  },
+  "gates": {
+    "appSuite": "610 passed, 1 skipped",
+    "build": "pass",
+    "typecheck": "pass",
+    "checkGovernance": "31 OK, 21 WARN, 0 FAIL",
+    "docsPartition": "unmatched=0"
+  }
+}
