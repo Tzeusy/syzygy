@@ -7,6 +7,7 @@ import { DOSSIER_REQUESTED_ASSETS, quotableGenerationSources, runGenerationPipel
 
 import { createDurableScriptedLifecycle } from './durable-lifecycle.js';
 import { main } from './dossier-main.js';
+import { fixturePolicyActPort, fixtureRouteRoot } from './dossier-fixtures.testkit.js';
 import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
   type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
 
@@ -105,7 +106,7 @@ describe('with every record satisfied', () => {
   const finished = (request: PipelineRequest): PipelineResult => ({ status: 'awaiting-rendered-review', draft: draftFor(request), inventory: null, review: null, receipts: [], artifacts: [] });
   const stoppedResult: PipelineResult = { status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [] };
   const render: NonNullable<TriggerPorts['render']> = ({ result, sources }) => ({ files: new Map([['index.html', `<p>${result.status} ${sources.length}</p>`], ['pages/core.html', '<p>core</p>']]) });
-  const base = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: ls, records: all, materialize: async () => repo, ...extra });
+  const base = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: ls, records: all, materialize: async () => repo, policyAct: fixturePolicyActPort(), ...extra });
 
 
   it('reads the pinned commit, discovers, clarifies and writes the site and a run record outside git', async () => {
@@ -363,7 +364,9 @@ describe('command', () => {
     const p = { id: 'intro', text: 'Claim.', sourceIds: [first!.sourceId], children: [] };
     return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, receipts: [], artifacts: [] };
   };
-  const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, ...extra });
+  const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, policyAct: fixturePolicyActPort(), ...extra });
+  const routeRoot = fixtureRouteRoot('agent-sdk');
+  const cmd = (args: string[], ports?: TriggerPorts) => main([...args, '--route', 'agent-sdk'], ports, { root: routeRoot });
 
   it('renders a page from a pipeline that exhausts its usage budget mid-run: completed stages show, every other requested asset is Unknown deferred-by-budget, exit 7', async () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
@@ -377,7 +380,7 @@ describe('command', () => {
           scriptedGenerate: async input => { sent.push(input.stage);
             const body = input.stage === 'inventory' ? { stage: 'inventory', entries: [] } : { stage: 'plan', sections: [{ id: 'core-ideas', title: 'Core ideas' }] };
             return { body: JSON.stringify(body), model: 'scripted-v1', usageUnits: 1 }; } }), new AbortController().signal);
-      expect(await main(['https://github.com/a/b', '--out', dest, '--json'], wired({ runPipeline }))).toBe(7);
+      expect(await cmd(['https://github.com/a/b', '--out', dest, '--json'], wired({ runPipeline }))).toBe(7);
       expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped-partial', runDir: dest, detail: expect.stringContaining('budget-exhausted') });
       expect(sent).toEqual(['inventory', 'plan']);
       expect(readdirSync(dest)).toContain('run-record.json');
@@ -392,7 +395,7 @@ describe('command', () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
     try {
       const dest = join(scratch(), 'site');
-      await expect(main(['https://github.com/a/b', '--out', dest], wired({ runPipeline: async () => ({ status: 'awaiting-rendered-review', draft: {}, inventory: null, review: null, receipts: [], artifacts: [] }) }))).rejects.toThrow();
+      await expect(cmd(['https://github.com/a/b', '--out', dest], wired({ runPipeline: async () => ({ status: 'awaiting-rendered-review', draft: {}, inventory: null, review: null, receipts: [], artifacts: [] }) }))).rejects.toThrow();
       expect(existsSync(dest)).toBe(false);
     } finally { out.mockRestore(); }
   });
@@ -402,19 +405,20 @@ describe('command', () => {
     try {
       const dest = join(scratch(), 'site');
       const render: NonNullable<TriggerPorts['render']> = () => ({ files: new Map([['index.html', '<p>x</p>']]) });
-      expect(await main(['https://github.com/a/b', '--out', dest], wired({ render, runPipeline: async request => finishedFor(request) }))).toBe(0);
+      expect(await cmd(['https://github.com/a/b', '--out', dest], wired({ render, runPipeline: async request => finishedFor(request) }))).toBe(0);
       expect(readdirSync(dest).sort()).toEqual(['index.html', 'run-record.json']);
       expect(String(out.mock.calls.at(-1)![0])).toContain(`Run directory: ${dest}`);
       const dest5 = join(scratch(), 'site');
-      expect(await main(['https://github.com/a/b', '--out', dest5], wired())).toBe(5);
-      expect(readdirSync(dest5)).toEqual(['run-record.json']);
+      // No pipeline injected: the provider-backed session opens, finds no credential and refuses before anything is fetched or written.
+      expect(await cmd(['https://github.com/a/b', '--out', dest5], wired())).toBe(5);
+      expect(existsSync(dest5)).toBe(false);
       const dest6 = join(scratch(), 'site');
-      expect(await main(['https://github.com/a/b', '--out', dest6, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }),
+      expect(await cmd(['https://github.com/a/b', '--out', dest6, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }),
         render: () => { throw Object.assign(new Error('refused'), { name: 'DossierRenderError' }); } }))).toBe(6);
       expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped', detail: 'cancelled', runDir: dest6 });
 
       const dest7 = join(scratch(), 'site');
-      expect(await main(['https://github.com/a/b', '--out', dest7, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [{ stage: 'inventory', value: {} }] }),
+      expect(await cmd(['https://github.com/a/b', '--out', dest7, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [{ stage: 'inventory', value: {} }] }),
         render: () => ({ files: new Map([['index.html', '<p>x</p>']]) }) }))).toBe(7);
       expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped-partial', runDir: dest7 });
     } finally { out.mockRestore(); }
@@ -426,12 +430,14 @@ describe('command', () => {
       expect(await main([])).toBe(2);
       expect(await main(['https://github.com/a/b', 'extra'])).toBe(2);
       expect(await main(['https://github.com/a/b', '--out'])).toBe(2);
-      expect(await main(['https://nope.example/a/b'])).toBe(2);
-      expect(await main(['https://github.com/a/b'], { lsRemote: () => LS })).toBe(3);
+      expect(await main(['https://github.com/a/b', '--route'])).toBe(2);
+      expect(await main(['https://github.com/a/b', '--bogus'])).toBe(2);
+      expect(await cmd(['https://nope.example/a/b'])).toBe(2);
+      expect(await cmd(['https://github.com/a/b'], { lsRemote: () => LS })).toBe(3);
       expect(String(out.mock.calls.at(-1)![0])).toContain('MISSING  observation-consent');
-      expect(await main(['https://github.com/a/b', '--json'], { lsRemote: () => LS })).toBe(3);
+      expect(await cmd(['https://github.com/a/b', '--json'], { lsRemote: () => LS })).toBe(3);
       expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'admission-missing', missing: 3 });
-      expect(await main(['https://github.com/a/b'], { lsRemote: () => { throw new Error('x'); } })).toBe(4);
+      expect(await cmd(['https://github.com/a/b'], { lsRemote: () => { throw new Error('x'); } })).toBe(4);
     } finally { out.mockRestore(); err.mockRestore(); }
   });
 });

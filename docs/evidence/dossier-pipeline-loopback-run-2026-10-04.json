@@ -1,0 +1,264 @@
+{
+ "subject": "poc:dossier wiring (dossier-main.ts through dossier-generation.ts) run against a loopback stub provider on route messages-api",
+ "testFile": {
+  "path": "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts",
+  "sha256": "c4ab5622b5406d73765231d585ff39f7368ecef264f91e6249d82645ea053685"
+ },
+ "providerCallPerformed": false,
+ "note": "every request went to a 127.0.0.1 stub through the egress gate; the repository is a two-file synthetic fixture; the records are the real recorders' acts over the real egress version 2 bytes in a scratch root",
+ "exitCode": 0,
+ "outcome": {
+  "state": "complete",
+  "target": {
+   "owner": "redis",
+   "repo": "redis",
+   "url": "https://github.com/redis/redis",
+   "repositoryId": "redis-redis"
+  },
+  "revision": "d9e1405194963bf5082b3454226e4a386ea6c997",
+  "runDir": "/tmp/syzygy-pipeline-out-rYrBEi/run",
+  "detail": "10 files"
+ },
+ "stagesRequested": [
+  "discovery-map",
+  "discovery-reduce",
+  "inventory",
+  "plan",
+  "author",
+  "edit",
+  "fidelity"
+ ],
+ "generation": {
+  "accountingPolicy": "dossier-units-v1",
+  "route": "messages-api",
+  "routeName": "anthropic-messages-api",
+  "model": "claude-opus-5-5",
+  "effort": "high",
+  "thinking": "off",
+  "budget": {
+   "runTotalUnits": 4000,
+   "discoveryUnits": 1000,
+   "discoveryCallUnits": 40,
+   "wallClockMs": 7200000,
+   "narrativeUnits": 3000
+  },
+  "spend": {
+   "discoveryCountedUnits": 4,
+   "narrativeCountedUnits": 10
+  },
+  "calls": [
+   {
+    "phase": "discovery",
+    "stage": "discovery-map",
+    "ceilingUnits": 40,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "discovery",
+    "stage": "discovery-reduce",
+    "ceilingUnits": 40,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "narrative",
+    "stage": "inventory",
+    "ceilingUnits": 600,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "narrative",
+    "stage": "plan",
+    "ceilingUnits": 300,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "narrative",
+    "stage": "author",
+    "ceilingUnits": 600,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "narrative",
+    "stage": "edit",
+    "ceilingUnits": 600,
+    "countedUnits": 2,
+    "usageUnknown": false
+   },
+   {
+    "phase": "narrative",
+    "stage": "fidelity",
+    "ceilingUnits": 300,
+    "countedUnits": 2,
+    "usageUnknown": false
+   }
+  ],
+  "attempts": [
+   {
+    "attemptId": "discovery-0-80cfbcb274f36981",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "discovery-1-ed2214db8f12d5af",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "attempt-cf35a6553161c9a06debc2faaf3299b6aee581bead1a613032cae3565ac77da5",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "attempt-0e175632444fb4a64365bd50f278595cd1838d39dba3b8f0f5795f7534140452",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "attempt-9901786fb583679001a643581600413d5d7057da4c3d3dc4e5e23dc2a2679589",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "attempt-b11230fbb638769d7453a837f5781e548045c6003c98c98e42e2e2d3d7d37e6a",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   },
+   {
+    "attemptId": "attempt-c11d6b8e92a95befa04f4eb2923c241d9865589d0ebd2e5663ed483d2cfb547e",
+    "try": 1,
+    "outcome": "completed",
+    "httpStatus": null,
+    "usageUnits": 2,
+    "backoffMs": 0
+   }
+  ],
+  "gateDecisions": [
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   },
+   {
+    "method": "POST",
+    "url": "/v1/messages",
+    "decision": "forwarded",
+    "reasons": [],
+    "upstreamStatus": 200
+   }
+  ],
+  "stateDir": "/tmp/syzygy-pipeline-out-rYrBEi/run.state"
+ },
+ "files": [
+  {
+   "path": "contents.html",
+   "sha256": "90f76ca6c13fb3903f4c83ca48499d0545d2160ae02f28d9918f9d1b3e20255a",
+   "bytes": 13572
+  },
+  {
+   "path": "deep-dives/mechanism-deep-dive.html",
+   "sha256": "d536c50cf5a253d1388df4f038e0f0ac78ffcce0721b40fdfc0a5121fc957dd8",
+   "bytes": 13644
+  },
+  {
+   "path": "dossier.json",
+   "sha256": "44017bb0e36103953e0ef9a13a0b529635114e3dae8e98b1779d0503e3021086",
+   "bytes": 612
+  },
+  {
+   "path": "glossary.html",
+   "sha256": "e6a4d7956d6172be511931793b502d3f0dff25f1a366b58df9ad7480eb142dbf",
+   "bytes": 13036
+  },
+  {
+   "path": "index.html",
+   "sha256": "8e18b4e9d8ada134e590750cf743b5acbdaa9317ec970218414293277d333a67",
+   "bytes": 19987
+  },
+  {
+   "path": "size-report.html",
+   "sha256": "ac1c8730b39249e650a9dc587bb7c1d4b124411df2c18d3b3680078a21d8a4bf",
+   "bytes": 14566
+  },
+  {
+   "path": "size-report.json",
+   "sha256": "ce4e4520adb4ca8d854d5afcb4fc25e1c00fad40b3700622f9fbb3b6e36d0b88",
+   "bytes": 2793
+  },
+  {
+   "path": "sources/73729b171b2378f2d0fe4b08.html",
+   "sha256": "802cdfcfa740d4edbe32a072f16afa30c6ad11b781271f50493f0564df42b85f",
+   "bytes": 13451
+  },
+  {
+   "path": "sources/b70ef00f0de4fdec80ff5369.html",
+   "sha256": "2edb140a2d5c76de8788b3555539da936ab9dfaa420ec98d48e9e18d48749ea4",
+   "bytes": 13446
+  },
+  {
+   "path": "sources/index.html",
+   "sha256": "715903ccd9177e43898f7f03887260ce8fad78f70cde012f11a8b24ee04acd56",
+   "bytes": 13269
+  }
+ ],
+ "ranAtCommit": "0e43015d752ed2c238a1e1babf3d53e99190780f"
+}
