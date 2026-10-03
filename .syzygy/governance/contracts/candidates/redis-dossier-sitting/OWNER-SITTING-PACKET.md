@@ -19,7 +19,7 @@ owner direction. Status is as of 2026-10-03 and none of it is an act.
 
 | # | You give | Record and where | Form | Depends on | Status |
 |---|---|---|---|---|---|
-| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row | nothing; blocks every read | CONFIRM WITH EXCEPTIONS at round 4 (895f1622, manifest 1cbf45a0), notes only; the exclusion-reason constant must exist before the act |
+| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row, plus the packet's Q2 continuation direction (see "Row 1 and the Butlers pin") | nothing; blocks every read | CONFIRM WITH EXCEPTIONS at round 4 (895f1622, manifest 1cbf45a0), notes only; the exclusion-reason constant must exist before the act |
 | 2 | Provider execution route: one of two entries, see "Row 2 is one choice" below | route A in `public-admission-registry-entries` (PR #255); route B in the Messages API entry (PR #273) | option at the manifest row | gap 21 check for route A | PR #255 confirmed at d08f4400 (CONFIRM WITH EXCEPTIONS, round 4, notes only); PR #273 round 1 REVISE (5 findings), repair by lane-d2, round 2 pending |
 | 3 | Git-hosting source-acquisition adapter | `public-admission-registry-entries` (PR #255); P-89 O1 shared or per-target, O2 the proposed limits | option at the manifest row | row 1 | confirmed at d08f4400, as row 2 |
 | 4 | Observation consent, psf/requests `v2.34.2` | `public-repo-admission` (PR #215) | option at the manifest row | rows 1, 3 | confirmed at 7704b4a5 (round 7) |
@@ -36,6 +36,33 @@ top-level object to the same secret-classification policy and bump its version:
 whichever is performed second must regenerate its package with `--write` first,
 and row 1 uses its own version label so neither is renamed by the other. Row 1
 does not depend on PR #120.
+
+## Row 1 and the Butlers pin
+
+Row 1's act replaces the policy file, and the Butlers read gate pins that file
+by digest and version (`governance-inputs.ts`), so it refuses the new policy
+until a re-pin changes the pin, its tests, two CI steps and the status battery.
+Who depends on it:
+
+- **Redis and any public target.** [Observed] On main, and on the
+  dossier-consent branch that carries the admission-record reader, no module of
+  the generation path (the polaris-generation app files and packages) imports
+  the pin modules, and nothing reads `publicSourceScope`. The run does not read
+  that pin today. [Unknown] Whether the screening code for public targets, not
+  yet written, will load the policy file and how; if it does, it should load
+  it by the approved act and not through the Butlers pin.
+- **Butlers and the Three-Surface POC.** [Observed in the package's
+  simulation] The act alone makes the existing Butlers read path refuse the
+  policy on its digest, so the POC's Butlers pages would stop reading until the
+  re-pin lands.
+
+The re-pin is therefore not a separate sitting row. It is an install step under
+a plain direction the owner gives inside row 1: the packet's Q2 asks to widen
+the continuation from the gate alone to the list the simulation produces, as
+the 2026-10-02 re-pin did for its set. The recorder performs no re-pin and says
+so; the change that records the act makes it by hand, in the same commit. If
+the owner declines Q2, the act should not be recorded until a re-pin is
+otherwise ruled, because recording it alone breaks the Butlers path.
 
 ## Row 2 is one choice
 
