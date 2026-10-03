@@ -153,6 +153,25 @@ The `--json` flag prints the same outcome as JSON.
   ideas, end-to-end workflows, mechanisms, maintainer-stated advantages and
   trade-offs. The run is zero-interaction: clarification questions (at most 3)
   are recorded in `run-record.json` and not asked.
+- [Inferred, proposed by the wiring work, from code caps; unmeasured] The run
+  budget below is a proposal, owner-adjustable, and needs no phrase or act: you
+  can change any value, or leave it, and nothing is signed over it. It replaces
+  the figures above once the wiring lands (syzygy-bc0g is where these values
+  will live in code).
+  - Unit `dossier-units-v1`: 1 unit is 1,000 tokens (input, cache and output),
+    rounded up per call. A call whose usage is unknown counts at its full
+    ceiling.
+  - Run total 4,000 units, about 4M tokens: a worst-case ceiling; typical spend
+    is not measured.
+  - Shares: 1,000 units for discovery (at most 40 units per call) and 3,000
+    for narrative.
+  - Per-stage cap: 600 units on stages that read all sources, 300 on the
+    others.
+  - Per attempt: at most 64k output tokens. Wall clock: 2 hours.
+  - When the budget runs out, the run renders what is complete and marks the
+    rest as deferred-by-budget.
+  - Cost is given as tokens only. No price has been measured, so none is
+    stated.
 - [Unknown] Wall-clock time and provider cost for Redis. Nothing has been run
   against a real model, so no measurement exists; the one-hour budget is a
   ceiling, not an estimate. The first run is also the first measurement
