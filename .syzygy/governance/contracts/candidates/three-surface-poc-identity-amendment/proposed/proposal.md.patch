@@ -1,0 +1,37 @@
+diff --git a/openspec/changes/three-surface-poc-experience/proposal.md b/openspec/changes/three-surface-poc-experience/proposal.md
+index 91677c7..ec7c620 100644
+--- a/openspec/changes/three-surface-poc-experience/proposal.md
++++ b/openspec/changes/three-surface-poc-experience/proposal.md
+@@ -77,6 +77,32 @@ configured Butlers repository also remains Unknown. This specification does
+ not turn missing
+ evidence into an empty or successful state.
+ 
++## Amendment — one identity, one vocabulary, one epistemic shape
++
++The owner's ruling of 2026-09-21 (P-75) directed one amendment against this
++specification alone.
++
++- **POC-REQ-054** gives every subject one identity on every surface and in the
++  machine answer, and governs the per-claim view of the desired, execution and
++  observed states.
++- **POC-REQ-055** requires every relationship to carry a name from
++  RFC1-25's closed table, in a role pair the table assigns it, or a flag
++  saying it is outside that table.
++- **POC-REQ-060** is amended in place to carry one epistemic record shape and
++  the Inferred label.
++
++Inferred enters as a typed landing zone with no production constructor
++(ruling P-75 Q4). This amendment does not make the arm constructible in
++production; that needs its own owner act. Until then no Inferred record,
++including an inferred edge, is produced, so the non-goal above against
++inferred mappings, edges or intent stands unchanged. In
++`CONTRACT-COVERAGE.md` the one signed row the ruling names is preserved
++unedited beside the amendment rows that supersede it, and four Part B2 beliefs
++move to Part A because a requirement now covers one of their consequences.
++The form of the subject identity is not settled here; the implementation
++slice that lands it proposes the form under POC-REQ-054, and RFC6-1's bar on
++a file path as a selection identity still applies.
++
+ ## Acceptance inputs
+ 
+ - `CONTRACT-COVERAGE.md` carries the clause-consequence review input and its
