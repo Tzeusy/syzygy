@@ -1,16 +1,16 @@
 {
  "subject": {
-  "commit": "032dc96963a5e05458392e5e7536adcc895bf464",
+  "commit": "5ffc8e45a80a462a0e5c1813ced87f177602f449",
   "branch": "agent/dossier-provider",
   "fileSha256": {
-   "packages/polaris-generation-provider/src/agent-sdk-provider.ts": "2c5edc63295889f6b9a8c42b63b9924c4fecbeca71b7ce8c43d6e4d0d58e83e7",
-   "packages/polaris-generation-provider/src/egress-gate.ts": "63deb7f8947be3e1dcb39cf20b7cbfe1e6a0b011a9d08a4571cc19d96d726479",
+   "packages/polaris-generation-provider/src/agent-sdk-provider.ts": "b8dbe9bd18467c3f40f2660d8adaca8e938c60a7f5154ed7cfedcea4995aabd3",
+   "packages/polaris-generation-provider/src/egress-gate.ts": "a064e086147ea2c0b053fd4773b22857f383ea92e1660c9235b8576f3620f8ec",
    "packages/polaris-generation-provider/src/request-acceptance.ts": "2bb689f12aed7597d163d1ef3b99f8c445e9b363b8751a6837f63e058cca0db4"
   }
  },
  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
  "project": "@syzygy/polaris-generation-provider",
- "ranAt": "2026-10-03T10:10:43+00:00",
+ "ranAt": "2026-10-03T11:23:48+00:00",
  "mutants": [
   {
    "id": "G1-consent-not-required",
@@ -22,7 +22,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 12
+   "totalTests": 13
   },
   {
    "id": "G2-consent-truthy-accepted",
@@ -34,7 +34,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 12
+   "totalTests": 13
   },
   {
    "id": "G3-predicate-skipped",
@@ -46,7 +46,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 12
+   "totalTests": 13
   },
   {
    "id": "G4-upstream-check-removed",
@@ -58,7 +58,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 12
+   "totalTests": 13
   },
   {
    "id": "G5-strip-ignored",
@@ -71,7 +71,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "G6-unbilled-evidence-ignored",
@@ -84,7 +84,7 @@
    ],
    "outcome": "survived",
    "failedTests": 0,
-   "totalTests": 43,
+   "totalTests": 45,
    "note": "equivalent: the response end handler always assigns unbilled, so the reset is redundant unless the body stream is aborted before end"
   },
   {
@@ -96,8 +96,8 @@
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 2,
-   "totalTests": 31
+   "failedTests": 1,
+   "totalTests": 32
   },
   {
    "id": "A2-retry-after-ignored",
@@ -109,7 +109,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 31
+   "totalTests": 32
   },
   {
    "id": "A3-try-deadline-removed",
@@ -121,7 +121,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 31
+   "totalTests": 32
   },
   {
    "id": "A4-thinking-ignored",
@@ -132,8 +132,8 @@
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 2,
-   "totalTests": 31
+   "failedTests": 1,
+   "totalTests": 32
   },
   {
    "id": "A5-api-key-unchecked",
@@ -145,7 +145,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 31
+   "totalTests": 32
   },
   {
    "id": "A6-session-id-unchecked",
@@ -156,8 +156,8 @@
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 2,
-   "totalTests": 31
+   "failedTests": 1,
+   "totalTests": 32
   },
   {
    "id": "A7-version-mismatch-ignored",
@@ -169,7 +169,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 31
+   "totalTests": 32
   },
   {
    "id": "A8-rejected-unbilled-assumed",
@@ -181,7 +181,7 @@
    ],
    "outcome": "killed",
    "failedTests": 3,
-   "totalTests": 31
+   "totalTests": 32
   },
   {
    "id": "G7-bind-all-interfaces",
@@ -194,14 +194,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43,
-   "firstRun": "survived at 032dc96963a5 (test checked only the URL); fixed by exposing boundAddress",
-   "rerunAt": "5ebc1b829c16840a30dafc18cd3d4c817e0f8d95",
-   "rerunFileSha256": {
-    "packages/polaris-generation-provider/src/agent-sdk-provider.ts": "2c5edc63295889f6b9a8c42b63b9924c4fecbeca71b7ce8c43d6e4d0d58e83e7",
-    "packages/polaris-generation-provider/src/egress-gate.ts": "7efc83aab66630fa1fca1ff3e694cbe0bb60ec9e20cfa07c1b98bfbb0706f5cc",
-    "packages/polaris-generation-provider/src/request-acceptance.ts": "2bb689f12aed7597d163d1ef3b99f8c445e9b363b8751a6837f63e058cca0db4"
-   }
+   "totalTests": 45
   },
   {
    "id": "G8-host-header-forwarded",
@@ -214,7 +207,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "G9-probe-not-answered-locally",
@@ -227,7 +220,7 @@
    ],
    "outcome": "killed",
    "failedTests": 16,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "G10-spent-check-removed",
@@ -239,8 +232,8 @@
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 3,
-   "totalTests": 43
+   "failedTests": 2,
+   "totalTests": 45
   },
   {
    "id": "G11-spent-never-set",
@@ -252,8 +245,8 @@
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 3,
-   "totalTests": 43
+   "failedTests": 2,
+   "totalTests": 45
   },
   {
    "id": "G12-redirect-followed-through",
@@ -266,20 +259,20 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "G13-upstream-not-validated",
    "file": "packages/polaris-generation-provider/src/egress-gate.ts",
-   "old": "if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url);",
+   "old": "if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url, options.upstream.loopbackForTests);",
    "new": "void 0;",
    "tests": [
     "egress-gate",
     "agent-sdk-provider"
    ],
    "outcome": "killed",
-   "failedTests": 1,
-   "totalTests": 43
+   "failedTests": 2,
+   "totalTests": 45
   },
   {
    "id": "G14-plain-http-remote-allowed",
@@ -292,20 +285,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
-  },
-  {
-   "id": "G15-loopback-any-host",
-   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
-   "old": "parsed.hostname === '127.0.0.1' ||",
-   "new": "true ||",
-   "tests": [
-    "egress-gate",
-    "agent-sdk-provider"
-   ],
-   "outcome": "killed",
-   "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "G16-credentials-in-upstream-allowed",
@@ -318,7 +298,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "V1-timeout-value-unpinned",
@@ -331,7 +311,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "V2-connection-value-unpinned",
@@ -344,7 +324,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 43
+   "totalTests": 45
   },
   {
    "id": "A9-noop-control",
@@ -356,9 +336,48 @@
    ],
    "outcome": "survived",
    "failedTests": 0,
-   "totalTests": 31,
+   "totalTests": 32,
    "note": "equivalent control"
+  },
+  {
+   "id": "G15-loopback-needs-no-token",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "if (!(loopback && loopbackToken === LOOPBACK_FOR_TESTS) && !provider)",
+   "new": "if (!loopback && !provider)",
+   "tests": [
+    "egress-gate",
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 45
+  },
+  {
+   "id": "G17-token-ignored-by-gate",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "options.upstream.url, options.upstream.loopbackForTests)",
+   "new": "options.upstream.url, LOOPBACK_FOR_TESTS)",
+   "tests": [
+    "egress-gate",
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 45
+  },
+  {
+   "id": "G18-token-widens-to-any-host",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "if (!(loopback && loopbackToken === LOOPBACK_FOR_TESTS) && !provider)",
+   "new": "if (loopbackToken !== LOOPBACK_FOR_TESTS && !provider)",
+   "tests": [
+    "egress-gate",
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 45
   }
  ],
- "summary": "27 mutants. Run at 032dc96963a5: all killed except G6 and A9 (equivalent controls) and G7 (survived: bind test checked only the URL). G7 re-run at 5ebc1b829c16 after the boundAddress fix: killed. Other mutants were not re-run after that one-line change."
+ "summary": "29 mutants run in one pass at one commit. All killed except G6 (equivalent: the response-end handler always assigns the flag) and A9 (no-op control)."
 }
