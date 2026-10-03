@@ -131,8 +131,48 @@ the wall clock.
 
 - To capture a new identified evaluation, POST to `/polaris/reobserve` from
   the same-origin human surface (or its tailnet-mounted path).
-- Concurrent requests single-flight.
+- Or start the daemon with `--watch`: each Enter pressed on its console
+  re-observes once, and nothing else does. Closing the console's input
+  (Ctrl-D) leaves watch mode; the daemon keeps serving.
+- Concurrent requests single-flight, whether from the browser or the console.
 - A failed re-observation leaves the prior complete model served.
+
+**Named re-evaluation result** (`syzygy-u05.2`). Each re-observation returns a
+result that names:
+
+- its own evaluation identity: the snapshot plus the observation instant, so
+  an unchanged repository re-observed still yields a new identity;
+- the identity it supersedes, which is never rewritten;
+- three clock readings, each marked moved, unchanged or movement Unknown:
+  the observed repository's Git HEAD, its working-tree digest, and the Beads
+  Dolt revision the evaluation's own work-item observation already read
+  (nothing is queried for it; a run without work items shows Unknown);
+- two staleness limbs, kept apart: the observed-project limb (sources changed
+  and added between the superseded and the new revision, from revision
+  metadata only) and the observatory limb (Syzygy commits since the revision
+  this daemon was started from). An unreadable count is Unknown, never zero.
+
+The result page and the `--watch` console print all of them. Every human page
+carries one more line below the evaluation and breach line, naming the
+observed-project limb, the observatory limb and the Dolt clock separately for
+the latest re-evaluation. These are presentation lines and have no machine
+counterpart: the re-observe action's parity family declares an empty machine
+denominator. Superseded evaluations are named but not retained; retention
+waits for `syzygy-dov.28`.
+
+**Post-commit hook: not lawful today.** A Butlers post-commit hook that calls
+the loopback re-observe route would re-observe without an owner's request in
+the moment. It needs two things that are not in force:
+
+- installing it is a write into the Butlers repository, which needs its own
+  owner act;
+- a hook as a trigger needs doctrine amendment D7 (a candidate packet, owner
+  question P-101, binding nothing) plus a companion amendment to RFC2-19
+  ("The loop is human-triggered … never autonomously on merge events"). P-69
+  allows human-triggered re-observation only.
+
+No hook script ships with Syzygy, and none is to be installed until those
+acts exist.
 
 ## First-slice walkthrough
 

@@ -2,6 +2,8 @@ export interface PocCliConfig {
   readonly repoRoot: string;
   readonly stateDir?: string | undefined;
   readonly port: number;
+  /** Re-observe on the owner's Enter, and only then (syzygy-u05.2). */
+  readonly watch: boolean;
 }
 
 export type PocCliParse =
@@ -17,8 +19,14 @@ export function parsePocCli(argv: readonly string[]): PocCliParse {
   }
 
   const values = new Map<string, string>();
+  let watch = false;
   for (let index = 0; index < argv.length; index++) {
     const flag = argv[index];
+    if (flag === '--watch') {
+      if (watch) return { kind: 'invalid', detail: '--watch may be supplied exactly once' };
+      watch = true;
+      continue;
+    }
     if (flag !== '--repo' && flag !== '--state-dir' && flag !== '--port') {
       return { kind: 'invalid', detail: `unknown argument: ${flag ?? ''}` };
     }
@@ -55,6 +63,7 @@ export function parsePocCli(argv: readonly string[]): PocCliParse {
       repoRoot,
       stateDir: values.get('--state-dir'),
       port,
+      watch,
     },
   };
 }

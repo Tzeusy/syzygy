@@ -1,5 +1,5 @@
 import { escapeHtml, type Route, type RouteResponse } from '@syzygy/cap1-daemon';
-import { PWB_RESOURCE_LIMITS, buildResponseIdentity, withServedResourceBreaches, type PocEntity, type PocModel, type PocSurface, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
+import { PWB_RESOURCE_LIMITS, buildResponseIdentity, withServedResourceBreaches, type PocEntity, type PocModel, type PocSurface, type PwbResourceLimits, type Reevaluation } from '@syzygy/three-surface-poc-core';
 
 import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.js';
 import { epistemicText, exactTablesSection } from './exact-tables.js';
@@ -196,7 +196,7 @@ export function withServedReadiness(model: PocModel, recorder: ServedResponseRec
  * disclosed as outside the consented class. */
 export type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
 
-export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor, recorder = new ServedResponseRecorder(), credentialProvision?: () => 'minted' | 'reused' | undefined): readonly Route[] {
+export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor, recorder = new ServedResponseRecorder(), credentialProvision?: () => 'minted' | 'reused' | undefined, reevaluation?: () => Reevaluation | null): readonly Route[] {
   const linksFor = (request: Parameters<Route['handle']>[0]['request']): NonNullable<PocModel['links']> => {
     const mount = mountPrefixForRequest(request.headers);
     const selfPath = mount !== '' && !request.path.startsWith(mount) ? `${mount}${request.path}` : request.path;
@@ -215,6 +215,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       inputBreaches: model.projectShape.kind === 'observed' ? model.projectShape.limitBreaches.length : null,
       servedBreaches: snapshot.count,
       latestBreach: snapshot.latest === null ? null : { limit: snapshot.latest.limit, sequence: snapshot.latest.sequence, declared: snapshot.latest.declared, observed: snapshot.latest.observed },
+      reevaluation: reevaluation?.() ?? null,
     };
   };
   const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body, recorder);

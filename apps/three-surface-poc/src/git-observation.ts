@@ -105,10 +105,17 @@ export function observeGitHorizon(
   const runGit = options.runGit ?? readGit;
   const currentRevision = runGit(root, ['rev-parse', 'HEAD']).trim();
   const currentCommitterInstant = runGit(root, ['show', '-s', '--format=%cI', currentRevision]).trim();
-  if (currentRevision === pinnedRevision) {
-    return { pinnedRevision, currentRevision, currentCommitterInstant, changedSources: 0, addedSources: 0 };
-  }
-  const diff = runGit(root, ['diff', '--name-status', '--no-renames', '-z', `${pinnedRevision}..${currentRevision}`]);
+  return { pinnedRevision, currentRevision, currentCommitterInstant, ...countRevisionChange(runGit, root, pinnedRevision, currentRevision) };
+}
+
+function countRevisionChange(
+  runGit: (root: string, args: readonly string[]) => string,
+  root: string,
+  fromRevision: string,
+  toRevision: string,
+): { readonly changedSources: number; readonly addedSources: number } {
+  if (fromRevision === toRevision) return { changedSources: 0, addedSources: 0 };
+  const diff = runGit(root, ['diff', '--name-status', '--no-renames', '-z', `${fromRevision}..${toRevision}`]);
   const entries = diff.split('\0').filter((entry) => entry !== '');
   let changedSources = 0;
   let addedSources = 0;
@@ -121,7 +128,46 @@ export function observeGitHorizon(
     if (status.startsWith('A')) addedSources += 1;
     else changedSources += 1;
   }
-  return { pinnedRevision, currentRevision, currentCommitterInstant, changedSources, addedSources };
+  return { changedSources, addedSources };
+}
+
+/** The observed-project limb between two evaluated revisions (syzygy-u05.2):
+ * revision metadata only, no source body opened. Null when either revision
+ * or the comparison cannot be read — Unknown, never zero. */
+export function observeRevisionChange(
+  root: string,
+  fromRevision: string,
+  toRevision: string,
+  options: ObserveGitHorizonOptions = {},
+): { readonly changedSources: number; readonly addedSources: number } | null {
+  try {
+    return countRevisionChange(options.runGit ?? readGit, root, fromRevision, toRevision);
+  } catch {
+    return null;
+  }
+}
+
+/** The observatory limb (syzygy-u05.2): Syzygy commits on the observer
+ * checkout since the revision the running daemon was started from. Read on
+ * the owner's request only; null counts are Unknown, never zero. */
+export function observeObservatoryDrift(
+  root: string,
+  buildRevision: string,
+  options: ObserveGitHorizonOptions = {},
+): { readonly buildRevision: string; readonly currentRevision: string | null; readonly commitsSinceBuild: number | null } {
+  const runGit = options.runGit ?? readGit;
+  let currentRevision: string | null;
+  try {
+    currentRevision = runGit(root, ['rev-parse', 'HEAD']).trim();
+  } catch {
+    return { buildRevision, currentRevision: null, commitsSinceBuild: null };
+  }
+  try {
+    const count = Number(runGit(root, ['rev-list', '--count', `${buildRevision}..${currentRevision}`]).trim());
+    return { buildRevision, currentRevision, commitsSinceBuild: Number.isInteger(count) && count >= 0 ? count : null };
+  } catch {
+    return { buildRevision, currentRevision, commitsSinceBuild: null };
+  }
 }
 
 export function pocObserverInputsAreClean(

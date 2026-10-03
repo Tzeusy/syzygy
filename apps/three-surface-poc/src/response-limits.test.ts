@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createDaemon, type RouteContext, type RouteResponse } from '@syzygy/cap1-daemon';
-import { PWB_RESOURCE_LIMITS, type PocModel, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
+import { PWB_RESOURCE_LIMITS, describeReevaluation, type PocModel, type PwbResourceLimits, type Reevaluation } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
@@ -184,6 +184,27 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
     const statusLine = /<p class="operability-status"[^>]*>[^<]*<\/p>/.exec(served.body)?.[0];
     expect(statusLine).toContain('breaches input Unknown (no shape), served 1; human #1 6/5 B');
     expect(bytes(statusLine as string)).toBeLessThan(400);
+  });
+
+  it('names the observed-project limb, the observatory limb and the Dolt clock separately, Unknown when not supplied (syzygy-u05.2)', () => {
+    const limbsOf = (body: string): string | undefined => /<p class="operability-limbs"[^>]*>([^<]*)<\/p>/.exec(body)?.[1];
+    const page = (reevaluation?: () => Reevaluation | null): string => {
+      const home = pocRoutes(() => model, PWB_RESOURCE_LIMITS, undefined, new ServedResponseRecorder(), undefined, reevaluation).find(candidate => candidate.path === POC_HUMAN_PATH);
+      if (home === undefined) throw new Error('home route missing');
+      const served = home.handle(context(POC_HUMAN_PATH));
+      if (served instanceof Promise) throw new Error('home route unexpectedly async');
+      return served.body;
+    };
+    expect(limbsOf(page())).toBe('Observed-project limb: Unknown (not supplied); observatory limb: Unknown (not supplied); Dolt clock: Unknown (not supplied)');
+    const reevaluation = describeReevaluation({
+      prior: { evaluation: 'evaluation:first', clocks: { butlersHead: 'head-a', workingTreeDigest: 'tree-a', doltRevision: '0123456789abcdef0123' } },
+      next: { evaluation: 'evaluation:second', clocks: { butlersHead: 'head-b', workingTreeDigest: 'tree-a', doltRevision: 'fedcba9876543210fedc' } },
+      projectChange: { changedSources: 5, addedSources: 0 },
+      observatory: { buildRevision: 'abcdef0123456789abcdef', currentRevision: 'later', commitsSinceBuild: 1 },
+    });
+    expect(limbsOf(page(() => reevaluation))).toBe('Observed-project limb: 5 changed, 0 added since the superseded evaluation; observatory limb: 1 Syzygy commit since build abcdef012345…; Dolt clock: fedcba987654… (moved)');
+    const first = describeReevaluation({ prior: null, next: { evaluation: 'evaluation:first', clocks: { butlersHead: 'head-a', workingTreeDigest: 'tree-a', doltRevision: null } }, projectChange: null, observatory: { buildRevision: 'abc', currentRevision: null, commitsSinceBuild: null } });
+    expect(limbsOf(page(() => first))).toBe('Observed-project limb: no prior evaluation this run; observatory limb: Unknown (commits since build abc unreadable); Dolt clock: Unknown (work items not observed)');
   });
 
   it.each(pages)('%s: limit − 1 fails closed, limit and limit + 1 serve the page', (path) => {

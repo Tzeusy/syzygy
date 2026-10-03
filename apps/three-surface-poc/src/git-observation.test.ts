@@ -16,6 +16,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   observeGitRepository,
   observeGitHorizon,
+  observeObservatoryDrift,
+  observeRevisionChange,
   PWB_APPROVED_REPOSITORY_LOCATOR,
   pocObserverInputsAreClean,
   resolvePwbRepositoryBinding,
@@ -160,5 +162,33 @@ describe('read-only Git observation', () => {
     expect(horizon.currentCommitterInstant).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     expect(horizon.changedSources).toBe(1);
     expect(horizon.addedSources).toBe(1);
+  });
+
+  it('reads the observed-project limb between two evaluated revisions, and Unknown when the comparison fails (syzygy-u05.2)', () => {
+    const root = repositoryWithFile('src/example.ts');
+    const first = git(root, ['rev-parse', 'HEAD']);
+    writeFileSync(join(root, 'src', 'example.ts'), 'export const value = 3;\n', 'utf8');
+    writeFileSync(join(root, 'src', 'one.ts'), 'export const one = 1;\n', 'utf8');
+    writeFileSync(join(root, 'src', 'two.ts'), 'export const two = 2;\n', 'utf8');
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-qm', 'advance']);
+    const second = git(root, ['rev-parse', 'HEAD']);
+    expect(observeRevisionChange(root, first, second)).toEqual({ changedSources: 1, addedSources: 2 });
+    expect(observeRevisionChange(root, second, second)).toEqual({ changedSources: 0, addedSources: 0 });
+    expect(observeRevisionChange(root, 'f'.repeat(40), second)).toBeNull();
+  });
+
+  it('counts Syzygy commits since the build revision for the observatory limb, Unknown when unreadable (syzygy-u05.2)', () => {
+    const root = repositoryWithFile('src/example.ts');
+    const build = git(root, ['rev-parse', 'HEAD']);
+    expect(observeObservatoryDrift(root, build)).toEqual({ buildRevision: build, currentRevision: build, commitsSinceBuild: 0 });
+    for (const value of ['2', '3']) {
+      writeFileSync(join(root, 'src', 'example.ts'), `export const value = ${value};\n`, 'utf8');
+      git(root, ['commit', '-qam', `advance ${value}`]);
+    }
+    const head = git(root, ['rev-parse', 'HEAD']);
+    expect(observeObservatoryDrift(root, build)).toEqual({ buildRevision: build, currentRevision: head, commitsSinceBuild: 2 });
+    expect(observeObservatoryDrift(root, 'f'.repeat(40))).toEqual({ buildRevision: 'f'.repeat(40), currentRevision: head, commitsSinceBuild: null });
+    expect(observeObservatoryDrift(root, build, { runGit: () => { throw new Error('unreadable'); } })).toEqual({ buildRevision: build, currentRevision: null, commitsSinceBuild: null });
   });
 });
