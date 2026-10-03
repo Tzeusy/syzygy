@@ -91,10 +91,11 @@ def v1_fields(v1=None):
 
 
 def template_delta(root=None, v1=None):
-    """(hunks, removed lines, added lines) of this package's template against
-    the first version's. ``v2.json`` pins these counts, so an edit to the
-    template that the record's description does not cover is reported by
-    ``--check`` and not left to a review to notice."""
+    """(hunks, removed lines, added lines, SHA-256 of the unified diff) of this
+    package's template against the first version's. ``v2.json`` pins all four,
+    so an edit to the template that the record's description does not cover is
+    reported by ``--check`` even when it keeps the line counts (a sentence
+    reversed in place), and is not left to a review to notice."""
     import difflib
     root = PKG if root is None else root
     v1 = V1 if v1 is None else v1
@@ -107,7 +108,8 @@ def template_delta(root=None, v1=None):
             hunks += 1
             removed += i2 - i1
             added += j2 - j1
-    return hunks, removed, added
+    diff = "\n".join(difflib.unified_diff(a, b, "v1", "v2", lineterm="", n=0))
+    return hunks, removed, added, hashlib.sha256(diff.encode()).hexdigest()
 
 
 def settings(root=None):
@@ -190,7 +192,8 @@ def stale(root=None, v1=None, table_fn=None):
             bad.append(extra)
     pinned = settings(root).get("templateDelta")
     tpl = root / "templates" / TEMPLATE
-    if pinned is None or [pinned["hunks"], pinned["removedLines"], pinned["addedLines"]] != list(template_delta(root, v1)):
+    if pinned is None or [pinned["hunks"], pinned["removedLines"], pinned["addedLines"],
+                          pinned["diffSha256"]] != list(template_delta(root, v1)):
         bad.append(tpl)
     man = root / MANIFEST_NAME
     if not man.exists() or man.read_text() != manifest_text(root, v1, table_fn):
@@ -225,10 +228,10 @@ def selftest():
         (v1 / "templates").mkdir(exist_ok=True)
         (v1 / "templates/EGRESS-CONSENT-TEMPLATE.md").write_text(base_tpl)
         (root / "templates" / TEMPLATE).write_text(base_tpl + "extra line\n")
-        assert template_delta(root, v1) == (1, 0, 1)
+        assert template_delta(root, v1)[:3] == (1, 0, 1)
 
         def setup(cfg):
-            cfg = {**cfg, "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}
+            cfg = {**cfg, "templateDelta": _pin(root, v1)}
             (root / "v2.json").write_text(json.dumps(cfg))
             (root / RECORD).write_text(record_text(root, v1, lambda: table))
             (root / MANIFEST_NAME).write_text(manifest_text(root, v1, lambda: table))
@@ -309,7 +312,12 @@ def selftest():
         (root / "v2.json").write_text(json.dumps({k: v for k, v in pinned_cfg.items() if k != "templateDelta"}))
         assert (root / "templates" / TEMPLATE) in stale(root, v1, lambda: table), "unpinned template delta not caught"
         (root / "v2.json").write_text(json.dumps(pinned_cfg))
-        caught += 2
+        # a same-line-count edit (a sentence reversed in place) moves the diff digest
+        (root / "templates" / TEMPLATE).write_text(saved_tpl.replace("extra line", "extra no-line"))
+        assert template_delta(root, v1)[:3] == (1, 0, 1)
+        assert (root / "templates" / TEMPLATE) in stale(root, v1, lambda: table), "same-count template edit not caught"
+        (root / "templates" / TEMPLATE).write_text(saved_tpl)
+        caught += 3
         # the derivation refuses a reader-question leaf it has no class for
         mutant = REPO / "scripts" / "_derive_mutant_v2.mjs"
         try:
@@ -329,7 +337,7 @@ def selftest():
         real_table = derive_table
         globals()["derive_table"] = lambda: table
         try:
-            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": [], "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}))
+            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": [], "templateDelta": _pin(root, v1)}))
             (root / RECORD).write_text(record_text(root, v1, lambda: table))
             (root / MANIFEST_NAME).write_text(manifest_text(root, v1, lambda: table))
             for mode in ("--digests", "--manifest-digest"):
@@ -338,7 +346,7 @@ def selftest():
                     rc = main(["x", mode])
                 assert rc == 1 and out.getvalue() == "", f"{mode} did not refuse while not ready"
                 caught += 1
-            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": ["map"], "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}))
+            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": ["map"], "templateDelta": _pin(root, v1)}))
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 assert main(["x", "--manifest-digest"]) == 0 and re.fullmatch(r"[0-9a-f]{64}\n", out.getvalue())
@@ -349,6 +357,11 @@ def selftest():
             PKG, V1 = saved_pkg, saved_v1
             globals()["derive_table"] = real_table
     print(f"selftest: {caught} checks held")
+
+
+def _pin(root, v1):
+    h, r, a, d = template_delta(root, v1)
+    return {"hunks": h, "removedLines": r, "addedLines": a, "diffSha256": d}
 
 
 def _with(root, cfg):
