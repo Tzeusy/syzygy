@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
@@ -190,32 +192,36 @@ describe('act instant', () => {
 
 describe('public-source policy act', () => {
   const policyText = (scope = true): string => JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', ...(scope ? { publicSourceScope: { rules: [] } } : {}) }, null, 1) + '\n';
-  const policyAct = (over: { type?: string; digest?: string; instant?: string | null; project?: string; identity?: string; date?: string } = {}, text = policyText()): string => `# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope)
-
-Date: ${over.date ?? '2026-10-04'}
-${over.instant === null || over.instant === undefined ? '' : `\nRecorded at (UTC): ${over.instant}\n`}
-Owner: Tzeusy
-
-Act identity: \`${over.identity ?? `pwb-${over.type ?? 'approve-policy'}-public-source-scope-signed-${over.date ?? '2026-10-04'}`}\`
-
-Act type: \`${over.type ?? 'approve-policy'}\`
-
-Project identity: \`${over.project ?? 'project:syzygy'}\`
-
-Artifact identity: \`${POLICY_PATH}\`
-
-Exact digest (SHA-256): \`${over.digest ?? sha(text)}\`
-
-Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1)
-`;
+  // The act text is what the recorder itself renders (scripts/record_public_source_screening_scope_act.py), so the reader's expected
+  // forms cannot drift from the writer's. Only the fields a case varies are replaced afterwards.
+  const rendered = new Map<string, string>();
+  const render = (date: string): string => {
+    const hit = rendered.get(date);
+    if (hit !== undefined) return hit;
+    const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
+sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${date}T09:30:00Z', '1'*64, '1.2.0-public-source-candidate.1'))`;
+    const run = spawnSync('python3', ['-c', py], { cwd: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..'), encoding: 'utf8' });
+    if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+    rendered.set(date, run.stdout);
+    return run.stdout;
+  };
+  const policyAct = (over: { type?: string; digest?: string; instant?: string | null; project?: string; identity?: string; date?: string } = {}, text = policyText()): string => {
+    const date = over.date ?? '2026-10-04';
+    let act = render(date).replace('0'.repeat(64), over.digest ?? sha(text));
+    act = over.instant === null || over.instant === undefined ? act.replace(/Recorded at \(UTC\): \S+\n\n/, '') : act.replace(/(Recorded at \(UTC\): )\S+/, `$1${over.instant}`);
+    if (over.type !== undefined) act = act.replace(/^Act type: `[^`]+`/m, `Act type: \`${over.type}\``);
+    if (over.identity !== undefined) act = act.replace(/^Act identity: `[^`]+`/m, `Act identity: \`${over.identity}\``);
+    if (over.project !== undefined) act = act.replace(/^Project identity: `[^`]+`/m, `Project identity: \`${over.project}\``);
+    return act;
+  };
   const POLICY_ACT = `${DECISIONS_DIR}/${POLICY_ACT_FILE}`;
   const policyWorld = (policy = policyText(), act = policyAct({}, policy), extra: Record<string, string> = {}): Record<string, string> => ({ ...world(), [POLICY_PATH]: policy, [POLICY_ACT]: act, ...extra });
   const policyReader = (files: Record<string, string>) => createPackagePolicyReader({ root: '/r', fs: memoryFs(files) });
   const check = (files: Record<string, string>, now: number) => createPackageAdmissionRecordsPort({ root: '/r', now: () => now, fs: memoryFs(files) }).check(requirement('public-source-policy'));
 
   it('recognises the recorder\'s record by its exact path and format, in force from a date-only next day', async () => {
-    expect(await policyReader(policyWorld()).read()).toEqual([{ actIdentity: 'pwb-approve-policy-public-source-scope-signed-2026-10-04', digest: sha(policyText()), inForceAt: DAY }]);
-    expect(await check(policyWorld(), DAY)).toEqual({ satisfied: true, record: 'pwb-approve-policy-public-source-scope-signed-2026-10-04' });
+    expect(await policyReader(policyWorld()).read()).toEqual([{ actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04', digest: sha(policyText()), inForceAt: DAY }]);
+    expect(await check(policyWorld(), DAY)).toEqual({ satisfied: true, record: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' });
     expect(await check(policyWorld(), DAY - 1)).toMatchObject({ satisfied: false });
   });
   it('uses the act instant when present', async () => {
@@ -254,12 +260,28 @@ Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1)
     };
     for (const [name, text] of Object.entries(forms)) await expect(policyReader(policyWorld(policyText(), policyAct(), { [`${DECISIONS_DIR}/SOME-OTHER-RECORD.md`]: text })).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
     // a block-quoted mention is not a line that names the artifact, and the three historical acts are skipped by name
-    const quiet = { [`${DECISIONS_DIR}/NOTES.md`]: `> ${line}\n`, [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`]: policyAct({ digest: sha('old') }), [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`]: policyAct({ type: 'amend-policy' }), [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`]: policyAct({ digest: sha('older') }) };
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+    const historical = ['PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md'];
+    const realBytes = Object.fromEntries(historical.map(name => [`${DECISIONS_DIR}/${name}`, readFileSync(path.join(repoRoot, DECISIONS_DIR, name), 'utf8')]));
+    const quiet = { [`${DECISIONS_DIR}/NOTES.md`]: `> ${line}\n`, ...realBytes };
     const files = policyWorld(policyText(false), policyAct({}, policyText(false)), quiet); delete files[POLICY_ACT];
     expect(await policyReader(files).read()).toEqual([]);
+    // the same file names, edited: a forged withdrawal in a historical act refuses the read, whichever file it is placed in
+    for (const name of Object.keys(realBytes)) await expect(policyReader({ ...files, [name]: `${realBytes[name]}\nWithdrawn: this act is withdrawn.\n` }).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('does not count a Recorded-at line inside a code fence (both readers)', async () => {
+    const fenced = (act: string): string => act.replace(/Recorded at \(UTC\): \S+\n\n/, '').replace('Owner: Tzeusy', 'Owner: Tzeusy\n\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```');
+    const act = fenced(policyAct({ instant: '2026-10-04T09:30:00Z' }));
+    await expect(policyReader(policyWorld(policyText(), act)).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    // a real line beside a fenced one is the instant
+    const both = policyAct({ instant: '2026-10-04T09:30:00Z' }).replace('Owner: Tzeusy', 'Owner: Tzeusy\n\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```');
+    expect((await policyReader(policyWorld(policyText(), both)).read())[0]!.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
+    const obsFenced = world(); const key = Object.keys(obsFenced).find(k => k.endsWith('-ACT.md') && k.includes('OBSERVATION'))!;
+    obsFenced[key] = obsFenced[key]!.replace(/Recorded at \(UTC\): \S+\n\n?/, '') + '\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```\n';
+    await expect(reader(obsFenced).read()).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses the recorder\'s file when its act type, identity, title or provenance is not the recorder\'s form', async () => {
-    for (const bad of [policyAct({ type: 'amend-policy' }), policyAct({ type: 'amend-policy', identity: 'pwb-approve-policy-public-source-scope-signed-2026-10-04' }), policyAct({ identity: 'something-else' }), policyAct().replace('(public-source screening scope)', ''), policyAct().replace('owner-adopted (bootstrap, uncorrelated)', 'owner-adopted'), policyAct({ date: '2026-10-05' }).replace('2026-10-05', '2026-10-04')])
+    for (const bad of [policyAct({ type: 'amend-policy' }), policyAct({ type: 'amend-policy', identity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' }), policyAct({ identity: 'something-else' }), policyAct().replace('(public-source screening scope)', ''), policyAct().replace('owner-adopted (bootstrap, uncorrelated)', 'owner-adopted'), policyAct({ date: '2026-10-05' }).replace('2026-10-05', '2026-10-04')])
       await expect(policyReader(policyWorld(policyText(), bad)).read(), bad).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses a malformed recorded-at line in the policy act', async () => {

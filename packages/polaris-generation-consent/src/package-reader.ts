@@ -51,14 +51,28 @@ function parseAct(text: string): Act {
 /** The act's effective instant: the `Recorded at (UTC)` line when the record has exactly one (whole seconds, same
  * calendar day as `Date:`), else the start of the next UTC day (a date alone is not an instant: fail-closed). */
 function actInstant(text: string, date: string, startOfDay: number): number {
-  const loose = [...text.matchAll(/^\s*recorded at\b/gim)];
-  if (loose.length === 0) return startOfDay + DAY_MS;
-  const lines = [...text.matchAll(/^Recorded at \(UTC\): (\S+)$/gm)];
+  const prose = outsideFences(text);
+  const loose = [...prose.matchAll(/^\s*recorded at\b/gim)];
+  // A date-only record may carry no such line at all; one that carries it only inside a fence is not date-only, it is unreadable.
+  if (loose.length === 0) return /^\s*recorded at\b/im.test(text) ? refuse() : startOfDay + DAY_MS;
+  const lines = [...prose.matchAll(/^Recorded at \(UTC\): (\S+)$/gm)];
   if (loose.length !== 1 || lines.length !== 1) return refuse();   // any other spelling, indentation or repeat is not an instant
   const m = /^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}Z$/.exec(lines[0]![1]!);
   const at = m === null ? NaN : Date.parse(lines[0]![1]!);
   if (m === null || m[1] !== date || !Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 19) + 'Z' !== lines[0]![1]) return refuse();
   return at;
+}
+
+/** The text with every fenced code block blanked (a fence opens and closes on a line of three or more backticks or tildes, up to
+ * three spaces in; an unclosed fence runs to the end). Line count is kept. */
+function outsideFences(text: string): string {
+  let open: string | null = null;
+  return text.split('\n').map(line => {
+    const m = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (open === null) { if (m !== null) { open = m[1]![0]!; return ''; } return line; }
+    if (m !== null && m[1]![0] === open) open = null;
+    return '';
+  }).join('\n');
 }
 
 function bullets(text: string, heading: RegExp): string[] {
@@ -131,13 +145,23 @@ export const POLICY_PATH = '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-C
 export interface PolicyActRecord { readonly actIdentity: string; readonly digest: string; readonly inForceAt: number }
 export interface PolicyActReader { readonly read: () => Promise<readonly PolicyActRecord[]> }
 
-/** The only record file the #266 recorder writes (`scripts/record_public_source_screening_scope_act.py`). */
-export const POLICY_ACT_FILE = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md';
-/** Earlier acts that name the same policy file for its Butlers-only content. They bind other bytes and count for nothing here. */
-const HISTORICAL_POLICY_ACTS: ReadonlySet<string> = new Set([
-  'PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
+/** A recorder's act form for the screening-scope policy: the one file it writes, the title and the identity it renders
+ * (`scripts/record_public_source_screening_scope_act.py`). The list is closed; a later recorder (scope v2) is registered here by
+ * a reviewed change, never discovered. */
+export interface PolicyActForm { readonly file: string; readonly title: string; readonly identity: (date: string) => string }
+export const POLICY_ACT_FORMS: readonly PolicyActForm[] = Object.freeze([Object.freeze({
+  file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md',
+  title: '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope)',
+  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-${date}`,
+})]);
+export const POLICY_ACT_FILE = POLICY_ACT_FORMS[0]!.file;
+/** Earlier acts that name the same policy file for its Butlers-only content, pinned by name and digest: they bind other bytes
+ * and count for nothing here, and an edited copy (a forged withdrawal, say) refuses the read. */
+const HISTORICAL_POLICY_ACTS: ReadonlyMap<string, string> = new Map([
+  ['PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', 'e02c0e6fbe408c4aac7d60f86e116bc8d4b79672a0c3a4dd4d6cf1a9f6bf59bb'],
+  ['PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md', 'e766803dafcfbf0c5d40fdc499af7a83239864afd2a09696a7d7a21f81618a0a'],
+  ['PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md', '178fcd57c4afde5ff457e6928a73089a2567f02ff8ef95d7efe05234f88e9988'],
 ]);
-const POLICY_ACT_TITLE = '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope)';
 
 export function createPackagePolicyReader(options: { readonly root: string; readonly fs?: PackageReaderFs }): PolicyActReader {
   const fs = options.fs ?? nodeFs;
@@ -155,16 +179,19 @@ export function createPackagePolicyReader(options: { readonly root: string; read
         let text: string;
         try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, name)); } catch { return refuse(); }
         const names_it = text.split('\n').some(line => line === naming);
-        if (name !== POLICY_ACT_FILE) {
-          // Another record that names the policy as its artifact is either a known historical act or an unknown form: refuse the unknown.
-          if (names_it && !HISTORICAL_POLICY_ACTS.has(name)) refuse();
+        const form = POLICY_ACT_FORMS.find(f => f.file === name);
+        if (form === undefined) {
+          // Another record that names the policy as its artifact is a known historical act (by digest) or an unknown form: refuse the unknown.
+          const pinned = HISTORICAL_POLICY_ACTS.get(name);
+          if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }
+          if (names_it) refuse();
           continue;
         }
-        if (!text.startsWith(`${POLICY_ACT_TITLE}\n`) || !names_it) refuse();
+        if (!text.startsWith(`${form.title}\n`) || !names_it) refuse();
         const act = { type: one(text, /^Act type: `([a-z-]+)`$/gm), identity: one(text, /^Act identity: `([^`\n]+)`$/gm), digest: one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm), date: one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm) };
         one(text, /^Project identity: `(project:syzygy)`$/gm);
         one(text, /^Provenance state: `(owner-adopted \(bootstrap, uncorrelated\))`/gm);
-        if (act.type !== 'approve-policy' || act.identity !== `pwb-approve-policy-public-source-scope-signed-${act.date}`) refuse();
+        if (act.type !== 'approve-policy' || act.identity !== form.identity(act.date)) refuse();
         const at = Date.parse(`${act.date}T00:00:00Z`);
         if (!Number.isSafeInteger(at)) refuse();
         const inForceAt = actInstant(text, act.date, at);
