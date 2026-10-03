@@ -140,10 +140,10 @@ PACKAGE = engine.Package(
     },
     declined_siblings=frozenset(),
     #: Both unsigned. The identity amendment touches the reader notes and
-    #: POC-REQ-052…060; the governing-intent amendment (P-100) touches
-    #: POC-REQ-014. Neither touches 001 or 010, so each spec patch composes
-    #: with this one in either order (composition_findings proves it on every
-    #: --check). The dependency declaration's Source line is rewritten by all
+    #: POC-REQ-052…060; the governing-intent amendment (P-100) touches the
+    #: reader notes and POC-REQ-014. Neither touches 001 or 010, so each spec
+    #: patch composes with this one in every order (proved on every --check);
+    #: with each other they do not (exclusive_pending below). The dependency declaration's Source line is rewritten by all
     #: three, so whichever is signed later is regenerated with --write over
     #: the earlier one's applied bytes. The governing-intent package carries
     #: no builder or manifest, so this classification has no reverse entry.
@@ -151,6 +151,17 @@ PACKAGE = engine.Package(
         "three-surface-poc-identity-amendment",
         "three-surface-poc-governing-intent-amendment",
     }),
+    #: The identity and governing-intent amendments both rewrite the reader
+    #: notes' requirement-family lines, so as drafted no order applies both
+    #: (review of PR 322). Coordinator decision 2026-10-04, a process ruling
+    #: and not an owner act: declare exactly this pair. Whichever of the two
+    #: is signed second is regenerated with --write over the first's applied
+    #: bytes. --check warns about the pair on every run; each of the two still
+    #: has to compose with this package in every order.
+    exclusive_pending=frozenset({frozenset({
+        "three-surface-poc-identity-amendment",
+        "three-surface-poc-governing-intent-amendment",
+    })}),
 )
 
 
