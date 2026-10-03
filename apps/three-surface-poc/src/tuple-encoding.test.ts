@@ -50,6 +50,13 @@ const TREATMENTS: Readonly<Record<string, readonly [string, string, '--ink' | '-
   superseded: ['tt-superseded', '»', '--muted'],
   unchallenged: ['tt-unchallenged', '◌', '--ink'],
 };
+/** Where each family's mark renders on a served tuple: its attribute and
+ * pseudo-element (the tuple's ::before is the M3.1 label symbol). */
+const SLOTS = {
+  tier: ['data-epistemic-tier', '::after'],
+  freshness: ['data-epistemic-freshness', ' + i::before'],
+  challenge: ['data-challenge-state', ' + i::after'],
+} as const;
 /** The two tokens' computed colours (--ink #dfe9e7, --muted #8ca3a4). */
 const RGB = { '--ink': 'rgb(223, 233, 231)', '--muted': 'rgb(140, 163, 164)' } as const;
 
@@ -100,10 +107,18 @@ interface Census {
   readonly absences: number;
 }
 
-/** Server-body census: every claim tuple, the marks that follow it, and the
- * absence disclosure where its freshness slot is empty. `omit` drops one
- * family to prove the denominator check is not vacuous. */
+/** The served rule that renders one family value's mark on a tuple. */
+function markRule(family: keyof typeof SLOTS, value: string): string {
+  const [symbolText, token] = [TREATMENTS[value]?.[1], TREATMENTS[value]?.[2]];
+  return `.claim-tuple[${SLOTS[family][0]}="${value}"]${SLOTS[family][1]} { content: "${symbolText} " / ""; color: var(${token}); }`;
+}
+
+/** Server-body census: every claim tuple, the one empty mark element after
+ * it, the served rule for each of its values, and the absence disclosure
+ * where its freshness slot is empty. `omit` drops one family to prove the
+ * denominator check is not vacuous. */
 function serverCensus(html: string, omit?: 'tier' | 'freshness' | 'challenge'): Census {
+  const css = (/<style>([\s\S]*?)<\/style>/.exec(html)?.[1] ?? '').replace(/\/\*[\s\S]*?\*\//g, '');
   const body = html.replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
   const histogram: Record<string, Record<string, number>> = { label: {}, tier: {}, freshness: {}, challenge: {} };
   let tuples = 0;
@@ -112,24 +127,20 @@ function serverCensus(html: string, omit?: 'tier' | 'freshness' | 'challenge'): 
     const counts = histogram[family] as Record<string, number>;
     counts[value] = (counts[value] ?? 0) + 1;
   };
-  for (const match of body.matchAll(/<span class="claim-tuple"[^>]*>[^<]*<\/span>((?:<span class="tt-[a-z-]+"><\/span>)*)(<span class="freshness-absence"[^>]*>)?/g)) {
+  for (const match of body.matchAll(/<span class="claim-tuple"[^>]*>[^<]*<\/span>(<i><\/i>)?(<span class="freshness-absence"[^>]*>)?/g)) {
     tuples += 1;
     const tag = match[0];
     const label = attribute(tag, 'data-epistemic-label') as string;
     const tier = attribute(tag, 'data-epistemic-tier') as string;
     const freshness = attribute(tag, 'data-epistemic-freshness');
     const challenge = attribute(tag, 'data-challenge-state') as string;
-    const marks = [...(match[1] as string).matchAll(/class="(tt-[a-z-]+)"/g)].map((mark) => mark[1] as string);
-    const expected = [
-      ...(omit === 'tier' ? [] : [TREATMENTS[tier]?.[0]]),
-      ...(omit === 'freshness' || freshness === undefined ? [] : [TREATMENTS[freshness]?.[0]]),
-      ...(omit === 'challenge' ? [] : [TREATMENTS[challenge]?.[0]]),
-    ];
-    if (marks.join(' ') !== expected.join(' ')) throw new Error(`marks ${marks.join(' ')} do not resolve the tuple ${tier}/${freshness ?? '-'}/${challenge}`);
+    if (match[1] === undefined) throw new Error(`no mark element after the tuple ${tier}/${freshness ?? '-'}/${challenge}`);
+    const fields = [['tier', tier], ...(freshness === undefined ? [] : [['freshness', freshness]]), ['challenge', challenge]] as [keyof typeof SLOTS, string][];
+    for (const [family, value] of fields) {
+      if (TREATMENTS[value] === undefined || !css.includes(markRule(family, value))) throw new Error(`no served ${family} mark rule resolves ${value}`);
+    }
     bump('label', label);
-    bump('tier', tier);
-    if (freshness !== undefined) bump('freshness', freshness);
-    bump('challenge', challenge);
+    for (const [family, value] of fields) if (family !== omit) bump(family, value);
     if (freshness === undefined) {
       if (label !== 'Unknown') throw new Error('a positive claim has no freshness');
       if (match[2] === undefined) throw new Error('missing freshness is not disclosed beside the tuple');
@@ -168,7 +179,7 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
     for (const entry of [...TIER_ENCODING, TIER_ABSENCE_ENCODING, ...CHALLENGE_ENCODING]) expect(entry.unreachable).toBeUndefined();
   });
 
-  it('generates one treatment rule pair per declared value and no other tuple-field rule', () => {
+  it('generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field rule', () => {
     const html = renderPolarisPage(variants()[2]?.model as PocModel);
     const css = (/<style>([\s\S]*?)<\/style>/.exec(html)?.[1] ?? '').replace(/\/\*[\s\S]*?\*\//g, '');
     for (const [value, [className, symbol, token]] of Object.entries(TREATMENTS)) {
@@ -178,6 +189,10 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
     const selectors = [...css.matchAll(/(\.tt-[a-z-]+)(?:::before)?\s*\{/g)].map((match) => match[1] as string);
     expect(new Set(selectors)).toEqual(new Set(Object.values(TREATMENTS).map(([className]) => `.${className}`)));
     expect(selectors.length).toBe(Object.keys(TREATMENTS).length * 2);
+    const families: Record<string, keyof typeof SLOTS> = Object.fromEntries([...[...TIERS, 'unstated'].map((value) => [value, 'tier']), ...FRESHNESS.map((value) => [value, 'freshness']), ...CHALLENGE.map((value) => [value, 'challenge'])]);
+    for (const value of Object.keys(TREATMENTS)) expect(css.split(markRule(families[value] as keyof typeof SLOTS, value)).length - 1, value).toBe(1);
+    const markRules = [...css.matchAll(/\.claim-tuple\[(?:data-epistemic-tier|data-epistemic-freshness|data-challenge-state)=[^\]]*\][^{]*\{[^}]*\}/g)].map((match) => match[0]);
+    expect(markRules.length).toBe(Object.keys(TREATMENTS).length);
   });
 
   it('generates the glossary rows from the declaration: every value once, in its class, with freshness reachability stated both ways', () => {
@@ -226,11 +241,15 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
     for (const family of ['tier', 'freshness', 'challenge'] as const) expect(() => serverCensus(html, family)).toThrow();
     const fifth = html.replace(/data-epistemic-freshness="fresh"/, 'data-epistemic-freshness="unrecorded"');
     expect(() => serverCensus(fifth)).toThrow();
-    const positive = html.replace(/(<span class="claim-tuple"[^>]*data-epistemic-label=")Unknown("[^>]*>[^<]*<\/span>(?:<span class="tt-[a-z-]+"><\/span>)*<span class="freshness-absence")/, '$1Observed$2');
+    const positive = html.replace(/(<span class="claim-tuple"[^>]*data-epistemic-label=")Unknown("[^>]*>[^<]*<\/span><i><\/i><span class="freshness-absence")/, '$1Observed$2');
     expect(positive).not.toBe(html);
     expect(() => serverCensus(positive)).toThrow('a positive claim has no freshness');
-    const swapped = html.replace('<span class="tt-report-fact"></span>', '<span class="tt-declared-only"></span>');
-    expect(() => serverCensus(swapped)).toThrow();
+    const swapped = html.replace('[data-epistemic-tier="report-fact"]::after { content: "◇ "', '[data-epistemic-tier="report-fact"]::after { content: "○ "');
+    expect(swapped).not.toBe(html);
+    expect(() => serverCensus(swapped)).toThrow('no served tier mark rule');
+    const unmarked = html.replace(/(<span class="claim-tuple"[^>]*>[^<]*<\/span>)<i><\/i>/, '$1');
+    expect(unmarked).not.toBe(html);
+    expect(() => serverCensus(unmarked)).toThrow('no mark element');
   });
 
   it.skipIf(browserExecutable === undefined)('sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row renders its declared symbol and token', async () => {
@@ -281,8 +300,9 @@ interface BrowserTupleCensus {
 }
 
 /** Two methods over the runtime DOM: a selector count and a TreeWalker that
- * reads each tuple's values, its marks' computed symbol and colour, and the
- * glossary rows' treatment, against the hand-typed table. */
+ * reads each tuple's values, the computed symbol and colour of the
+ * pseudo-element that carries each one, and the glossary rows' treatment,
+ * against the hand-typed table. */
 async function browserTupleCensus(page: BrowserPage): Promise<BrowserTupleCensus> {
   return page.evaluate<BrowserTupleCensus>(`(() => {
     const TREATMENTS = ${JSON.stringify(TREATMENTS)};
@@ -290,14 +310,15 @@ async function browserTupleCensus(page: BrowserPage): Promise<BrowserTupleCensus
     const failures = [];
     const histogram = { label: {}, tier: {}, freshness: {}, challenge: {} };
     const bump = (family, value) => { histogram[family][value] = (histogram[family][value] || 0) + 1; };
-    const check = (element, value, where) => {
+    const check = (element, pseudo, value, where) => {
       const expected = TREATMENTS[value];
       if (!expected) { failures.push(where + ': undeclared ' + value); return; }
-      if (!element.classList.contains(expected[0])) failures.push(where + ': class ' + element.className + ' for ' + value);
-      const symbol = getComputedStyle(element, '::before').content;
+      const symbol = getComputedStyle(element, pseudo).content;
       if (!symbol.includes(expected[1])) failures.push(where + ': symbol ' + symbol + ' for ' + value);
-      if (getComputedStyle(element).color !== RGB[expected[2]]) failures.push(where + ': colour ' + getComputedStyle(element).color + ' for ' + value);
+      const colour = getComputedStyle(element, pseudo).color;
+      if (colour !== RGB[expected[2]]) failures.push(where + ': colour ' + colour + ' for ' + value);
     };
+    const PSEUDO = { tier: '::after', freshness: '::before', challenge: '::after' };
     const queried = document.querySelectorAll('.claim-tuple').length;
     let walked = 0;
     const nodes = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
@@ -308,18 +329,25 @@ async function browserTupleCensus(page: BrowserPage): Promise<BrowserTupleCensus
       const id = tuple.getAttribute('data-claim-id');
       const fields = [['tier', tuple.getAttribute('data-epistemic-tier')], ['freshness', tuple.getAttribute('data-epistemic-freshness')], ['challenge', tuple.getAttribute('data-challenge-state')]].filter((field) => field[1] !== null);
       bump('label', tuple.getAttribute('data-epistemic-label'));
-      let mark = tuple.nextElementSibling;
+      const mark = tuple.nextElementSibling;
+      if (!mark || mark.tagName !== 'I' || mark.textContent !== '' || mark.attributes.length !== 0) { failures.push(id + ': no empty mark element'); continue; }
       for (const [family, value] of fields) {
         bump(family, value);
-        if (!mark) { failures.push(id + ': no ' + family + ' mark'); break; }
-        check(mark, value, id + ' ' + family);
-        if (mark.textContent !== '') failures.push(id + ': mark carries text');
-        mark = mark.nextElementSibling;
+        check(family === 'tier' ? tuple : mark, PSEUDO[family], value, id + ' ' + family);
       }
-      if (tuple.getAttribute('data-epistemic-freshness') === null && !(mark && mark.classList.contains('freshness-absence'))) failures.push(id + ': absence not disclosed');
+      if (tuple.getAttribute('data-epistemic-freshness') === null) {
+        const empty = getComputedStyle(mark, '::before').content;
+        if (empty !== 'none' && empty !== 'normal') failures.push(id + ': freshness mark without a value ' + empty);
+        if (!(mark.nextElementSibling && mark.nextElementSibling.classList.contains('freshness-absence'))) failures.push(id + ': absence not disclosed');
+      }
     }
     const rows = [...document.querySelectorAll('#polaris-claim-states li[class^="tt-"]')];
-    for (const row of rows) check(row, row.textContent.split(' — ')[0], 'glossary');
+    for (const row of rows) {
+      const value = row.textContent.split(' — ')[0];
+      if (!TREATMENTS[value] || !row.classList.contains(TREATMENTS[value][0])) failures.push('glossary: class ' + row.className + ' for ' + value);
+      check(row, '::before', value, 'glossary');
+      if (getComputedStyle(row).color !== RGB[TREATMENTS[value] ? TREATMENTS[value][2] : '']) failures.push('glossary: row colour for ' + value);
+    }
     return { queried, walked, glossaryRows: rows.length, histogram, failures };
   })()`);
 }

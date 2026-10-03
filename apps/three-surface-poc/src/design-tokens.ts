@@ -111,11 +111,28 @@ export function tupleFieldEncoding(field: TupleField, value: string): TupleField
   return encoding;
 }
 
-/** One rule pair per declared value, shared by the tuple's field mark and
- * the glossary row that defines it. The symbol carries an empty alternative
- * text: the value's word is already in the tuple and the row. */
+/** One rule pair per declared value, for the glossary row that defines it.
+ * The symbol carries an empty alternative text: the value's word is already
+ * in the row (and, for a served tuple, in the tuple's text). */
 export const TUPLE_FIELD_TREATMENTS_CSS = TUPLE_FIELD_TREATMENTS
   .map((entry) => `.${entry.className} { color: var(${entry.token}); }\n  .${entry.className}::before { content: "${entry.symbol} " / ""; }`)
+  .join('\n  ');
+
+/** Where each field's mark renders on a served tuple, keyed on the
+ * attribute the tuple already carries. The tuple's own ::before is the
+ * epistemic label's symbol (M3.1), so the tier takes its ::after and the
+ * other two fields the two pseudo-elements of one empty <i> after it: no
+ * per-field markup, and each value keeps its own declared token. */
+const TUPLE_MARK_SLOTS: Readonly<Record<TupleField, { readonly attribute: string; readonly slot: string }>> = {
+  tier: { attribute: 'data-epistemic-tier', slot: '::after' },
+  freshness: { attribute: 'data-epistemic-freshness', slot: ' + i::before' },
+  challenge: { attribute: 'data-challenge-state', slot: ' + i::after' },
+};
+
+/** The tuple marks, one rule per declared value, generated from the same
+ * tables as the glossary rows. */
+export const TUPLE_MARKS_CSS = TUPLE_FIELD_TREATMENTS
+  .map((entry) => `.claim-tuple[${TUPLE_MARK_SLOTS[entry.field].attribute}="${entry.value}"]${TUPLE_MARK_SLOTS[entry.field].slot} { content: "${entry.symbol} " / ""; color: var(${entry.token}); }`)
   .join('\n  ');
 
 export function epistemicClassName(label: PocEpistemicLabel): string {

@@ -52,8 +52,8 @@ import {
   TIER_ABSENCE_ENCODING,
   TIER_ENCODING,
   TUPLE_FIELD_TREATMENTS_CSS,
+  TUPLE_MARKS_CSS,
   tupleFieldEncoding,
-  type TupleField,
   type TupleFieldEncoding,
 } from './design-tokens.js';
 import { copyAttr, copyText, hasCopyRow, roleAttr, type PolarisCopyId } from './polaris-copy.js';
@@ -339,13 +339,17 @@ function claimTuple(claim: ProjectShapeClaim): string {
 }
 
 /** The declared treatment of each tuple field (syzygy-dov.3.2; P-70 M3
- * slice 5): one empty span per field, after the tuple, whose class renders
- * the value's symbol in its token. The tuple itself stays one text node, so
- * the words remain the carrier (RFC7-34) and the PWB-REQ-020 sweep still
- * reads it as a leaf; an undeclared value refuses to render. */
+ * slice 5): the tuple's attributes select each value's symbol and token in
+ * generated CSS (TUPLE_MARKS_CSS), so the only markup is one empty <i>
+ * whose two pseudo-elements carry freshness and challenge. The tuple stays
+ * one text node, so the words remain the carrier (RFC7-34) and the
+ * PWB-REQ-020 sweep still reads it as a leaf; an undeclared value refuses
+ * to render. */
 function tupleMarks(tier: string, freshness: string | undefined, challenge: string): string {
-  const fields: [TupleField, string][] = [['tier', tier], ...(freshness === undefined ? [] : [['freshness', freshness] as [TupleField, string]]), ['challenge', challenge]];
-  return fields.map(([field, value]) => `<span class="${tupleFieldEncoding(field, value).className}"></span>`).join('');
+  tupleFieldEncoding('tier', tier);
+  if (freshness !== undefined) tupleFieldEncoding('freshness', freshness);
+  tupleFieldEncoding('challenge', challenge);
+  return '<i></i>';
 }
 
 /** PWB-REQ-007: an aggregate discloses its members' primary and secondary
@@ -1465,8 +1469,9 @@ const POLARIS_STYLE = `
   .scope-instruction { margin: 0 auto 1rem; }
   .citation { color: var(--muted); font-family: var(--font-mono); font-size: .82rem; }
   .citation a { color: inherit; }
-  .claim-tuple { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .04em; }
+  .claim-tuple, .claim-tuple + i { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .04em; font-style: normal; }
   ${TUPLE_FIELD_TREATMENTS_CSS}
+  ${TUPLE_MARKS_CSS}
   .tuple-line { margin-top: -.4rem; }
   .reason-counts { font-size: .95rem; }
   .reason-counts ul { padding-left: 1.2rem; }
@@ -1529,7 +1534,7 @@ const POLARIS_STYLE = `
   main > .group:first-of-type { margin-top: 1rem; }
   .reading-citations .citation { font-size: .72rem; overflow-wrap: anywhere; }
   .tuple-line { margin-top: .7rem; }
-  .claim-tuple { letter-spacing: 0; font-size: .72rem; }
+  .claim-tuple, .claim-tuple + i { letter-spacing: 0; font-size: .72rem; }
   .full-account { border-left: 1px solid var(--line); padding: .6rem 0 .6rem 1.2rem; margin: 1.5rem 0; }
   .full-account > summary { cursor: pointer; color: var(--cyan); }
   .full-account[open] > summary { margin-bottom: 1.3rem; }
