@@ -13,9 +13,9 @@ const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8
 const mapRequest = (): DiscoveryMapRequest => ({
   subsystem: 'src', readerQuestions: ['What are the core ideas?', 'What trade-offs does the design accept?'],
   items: [
-    { blobId: 'blob-readme', path: 'README.md', excerpt: 'Tidemark is an in-memory cache for session data.' },
-    { blobId: 'blob-server', path: 'src/server.c', excerpt: 'handleSet parses the SET command.' },
-    { blobId: 'blob-evict', path: 'src/evict.c', excerpt: 'maybeEvict samples 5 keys.' },
+    { blobId: 'blob-readme', path: 'README.md', excerpt: 'Brindle builds documentation sites from Markdown.' },
+    { blobId: 'blob-build', path: 'src/build.ts', excerpt: 'buildSite reads the content directory.' },
+    { blobId: 'blob-cache', path: 'src/cache.ts', excerpt: 'renderPage skips unchanged pages.' },
   ],
 });
 const reduceRequest = (): DiscoveryReduceRequest => ({
@@ -23,8 +23,8 @@ const reduceRequest = (): DiscoveryReduceRequest => ({
   subsystems: [
     { subsystem: '.', blobs: 4, claims: [{ blobId: 'blob-readme', path: 'README.md', claim: 'States the purpose.', relevance: 9 }] },
     { subsystem: 'src', blobs: 7, claims: [
-      { blobId: 'blob-server', path: 'src/server.c', claim: 'Shows the SET entry point.', relevance: 8 },
-      { blobId: 'blob-evict', path: 'src/evict.c', claim: 'Shows sampled eviction.', relevance: 7 },
+      { blobId: 'blob-build', path: 'src/build.ts', claim: 'Shows the build entry point.', relevance: 8 },
+      { blobId: 'blob-cache', path: 'src/cache.ts', claim: 'Shows the render cache.', relevance: 7 },
     ] },
   ],
 });
@@ -37,8 +37,8 @@ const REDUCE_SYSTEM = promptForStage('discovery-reduce').system;
 describe('discovery instruction text comes from promptForStage and stageSchema', () => {
   // Recipe replay: an intentional edit needs a version decision and a new digest.
   it.each([
-    ['discovery-map', 'polaris-discovery-map-v2', '27c19c2a7d5e97d06912f27dde813183619252f217de55e8426730d64f433762'],
-    ['discovery-reduce', 'polaris-discovery-reduce-v1', '300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3'],
+    ['discovery-map', 'polaris-discovery-map-v2', '1485dd779fff5fd45ed34bde2725e17481cae823c9b6366349a3f311a62b59e6'],
+    ['discovery-reduce', 'polaris-discovery-reduce-v2', '487a8d380c3e023ecda98f15fa99fd4620f0dd95588f8336af2868412b6b5e23'],
   ] as const)('pins the %s prompt bytes', (stage, version, digest) => {
     const prompt = promptForStage(stage);
     expect(prompt.version).toBe(version);
@@ -121,7 +121,7 @@ describe('discovery envelopes', () => {
     const request = { ...reduceRequest(), extra: 'never sent', subsystems: reduceRequest().subsystems.map(entry => ({
       ...entry, owner: 'entry extra', claims: entry.claims.map(claim => ({ ...claim, mode: '100644' })) })) };
     const { envelope, input } = discoveryReduceEnvelope(request);
-    expect(envelope.promptVersion).toBe('polaris-discovery-reduce-v1');
+    expect(envelope.promptVersion).toBe('polaris-discovery-reduce-v2');
     expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-reduce-v1');
     expect(envelope.system).toBe(REDUCE_SYSTEM);
     expect(envelope.inputs).toEqual(reduceRequest());
@@ -133,8 +133,8 @@ describe('discovery envelopes', () => {
 
   // The whole user message, schema included, for the fixtures above.
   it.each([
-    ['map', () => discoveryMapEnvelope(mapRequest()).input, 'fad668bc2abb8932ec7799e80a79d8e553963b4b76afdd17780ad323ea4d707b'],
-    ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'ef6a83e716a32bdd5957d7f0bf2bceba5802b513efb76b60f471394e1dabab5f'],
+    ['map', () => discoveryMapEnvelope(mapRequest()).input, '191c12071085dd577f3b96af7d7b8cf91b43e3116122778df1aade1b940a28ea'],
+    ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'f938ed16e4e893636b85fcde7242fe37d454263b86a56b0a551d7ce1b8426493'],
   ])('pins the %s envelope encoding', (_step, encode, digest) => {
     expect(sha256(encode())).toBe(digest);
   });
@@ -195,7 +195,7 @@ describe('discovery envelopes', () => {
 
   it('reads each reduce request field once and binds the reply to what it validated', () => {
     const { request, reads } = counting(reduceRequest(), 'maxSelected', [1, 3]);
-    expect(() => parseDiscoveryReduceReply(request, json({ ranked: ['blob-readme', 'blob-server'] }))).toThrow('invalid-reduce-reply');
+    expect(() => parseDiscoveryReduceReply(request, json({ ranked: ['blob-readme', 'blob-build'] }))).toThrow('invalid-reduce-reply');
     expect(reads()).toBe(1);
     const relevance = counting(reduceRequest().subsystems[0]!.claims[0]!, 'relevance', [9, 99]);
     const subsystems = [{ ...reduceRequest().subsystems[0]!, claims: [relevance.request] }];
@@ -206,7 +206,7 @@ describe('discovery envelopes', () => {
 
 describe('discovery reply parsers', () => {
   it('accepts a map reply naming only the request\'s blob ids, including no claims at all', () => {
-    expect(parseDiscoveryMapReply(mapRequest(), json({ claims: [claim('blob-evict', 0), claim('blob-readme', 10)] })).claims.map(c => c.blobId)).toEqual(['blob-evict', 'blob-readme']);
+    expect(parseDiscoveryMapReply(mapRequest(), json({ claims: [claim('blob-cache', 0), claim('blob-readme', 10)] })).claims.map(c => c.blobId)).toEqual(['blob-cache', 'blob-readme']);
     expect(parseDiscoveryMapReply(mapRequest(), json({ claims: [] }))).toEqual({ claims: [] });
   });
 
@@ -219,7 +219,7 @@ describe('discovery reply parsers', () => {
   it.each([
     ['a blob id outside the request', json({ claims: [claim('blob-other')] })],
     ['a repeated blob id', json({ claims: [claim('blob-readme'), claim('blob-readme', 6)] })],
-    ['more claims than items', json({ claims: [claim('blob-readme'), claim('blob-server'), claim('blob-evict'), claim('blob-readme')] })],
+    ['more claims than items', json({ claims: [claim('blob-readme'), claim('blob-build'), claim('blob-cache'), claim('blob-readme')] })],
     ['relevance above 10', json({ claims: [claim('blob-readme', 10.5)] })],
     ['relevance below 0', json({ claims: [claim('blob-readme', -1)] })],
     ['a string relevance', json({ claims: [{ blobId: 'blob-readme', claim: 'x', relevance: '5' }] })],
@@ -236,14 +236,14 @@ describe('discovery reply parsers', () => {
   });
 
   it('accepts a reduce reply ranking claimed blob ids, up to maxSelected', () => {
-    expect(parseDiscoveryReduceReply(reduceRequest(), json({ ranked: ['blob-evict', 'blob-readme'] }))).toEqual({ ranked: ['blob-evict', 'blob-readme'] });
+    expect(parseDiscoveryReduceReply(reduceRequest(), json({ ranked: ['blob-cache', 'blob-readme'] }))).toEqual({ ranked: ['blob-cache', 'blob-readme'] });
     expect(parseDiscoveryReduceReply(reduceRequest(), json({ ranked: [] }))).toEqual({ ranked: [] });
   });
 
   it.each([
     ['an id no claim names', json({ ranked: ['blob-unclaimed'] })],
     ['a repeated id', json({ ranked: ['blob-readme', 'blob-readme'] })],
-    ['more than maxSelected', json({ ranked: ['blob-readme', 'blob-server', 'blob-evict'] }), 2],
+    ['more than maxSelected', json({ ranked: ['blob-readme', 'blob-build', 'blob-cache'] }), 2],
     ['a non-string id', json({ ranked: [7] })],
     ['an extra field', json({ ranked: [], reason: 'x' })],
     ['ranked that is not an array', json({ ranked: 'blob-readme' })],
