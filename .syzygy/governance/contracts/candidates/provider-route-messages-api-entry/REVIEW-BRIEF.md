@@ -71,7 +71,13 @@ Each is a yes/no question with the evidence that settles it.
    mappings honest and in the RFC2-23 and RFC2-24 vocabularies?** Does any
    field state an implementation or capability no evidence supports?
 10. **Is the impact ledger honest?** Re-run Sweeps 1 and 2 and confirm counts.
-11. **Does the package claim authority it lacks?** No file may label anything
+11. **Is the provenance one consistent pair, and does the header table equal
+    the cited source by value?** The entry pins one commit of PR #264 and a
+    blob for each cited file. Re-derive each blob with `git rev-parse
+    <commit>:<path>` and re-read the header literals, shapes, optional
+    headers and the ambient-environment guard in the adapter at that commit;
+    the builder compares values, not names.
+12. **Does the package claim authority it lacks?** No file may label anything
     accepted, adopted, approved or signed off; no Markdown file may carry a
     64-hex digest; `--check` and `--selftest` must pass, and any claim the
     selftest covers with no mutant must be named.

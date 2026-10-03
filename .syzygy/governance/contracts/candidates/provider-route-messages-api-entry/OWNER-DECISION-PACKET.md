@@ -47,11 +47,16 @@ itself; and it says "nothing else". If any is read restrictively a text-only
 egress record version is needed, adding no class and no destination, and the
 same holds for PR #255's entry on the last two. *Recommended:* read them as
 descriptive and the pinned fields as the entry's listed bytes; the owner's
-reading decides.
+reading decides. A related choice: the gate can strip the three machine-
+identifying headers (OS, architecture, Node version) before forwarding; the
+entry lists them as sent and assumes no answer on stripping. *Recommended:*
+the owner says whether the egress record should require stripping.
 
 **O3. Credential.** API key only, from one environment variable, never logged.
-The name `ANTHROPIC_API_KEY` is a proposal [Inferred]. *Recommended:* accept;
-any other name is a different byte in the entry.
+The name `SYZYGY_POLARIS_PROVIDER_API_KEY` is a proposal [Inferred]; it cannot
+begin with `ANTHROPIC_` because the adapter refuses to start when any such
+variable is set [Observed in its source]. *Recommended:* accept; any other
+name is a different byte in the entry.
 
 **O4. Profile pins.** Model `claude-opus-5-5`, effort `high`, no tools,
 thinking off or adaptive only (no `budget_tokens`), max_tokens ceiling 64000.

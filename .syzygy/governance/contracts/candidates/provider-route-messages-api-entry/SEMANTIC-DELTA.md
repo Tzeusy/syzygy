@@ -41,7 +41,9 @@ authority as PR #255's entry: project `project:syzygy`, provider
   off or adaptive only, a max_tokens ceiling of 64000). The route has no
   runtime process, so no system prefix, metadata, environment message or probe.
 - **Credential.** An API key only, read from one environment variable
-  (`ANTHROPIC_API_KEY`, an [Inferred] proposal) and never written to a log.
+  (`SYZYGY_POLARIS_PROVIDER_API_KEY`, an [Inferred] proposal) and never written
+  to a log. The name cannot start with `ANTHROPIC_`: [Observed] the adapter
+  refuses to start when any such variable is set in the process.
   No owner sign-in credential class exists on this route.
 - **Runtime egress gate.** A loopback forwarder passes a request only when the
   acceptance predicate holds, `permitted()` is true and an explicit upstream
