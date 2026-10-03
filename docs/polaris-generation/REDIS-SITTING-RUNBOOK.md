@@ -14,7 +14,7 @@ this repository into a scratch directory (`git clone --shared`), merges the
 open heads, performs every recorder against a **synthetic** owner argument
 (the manifest row digest, so a "performed" record proves only that the
 recorder accepts the bytes), runs `scripts/install_redis_sitting.py` (twice,
-then `--check`), and then requires the end state to be green: `check_governance.py`
+then `--check`), checks the Butlers read gate around it, and then requires the end state to be green: `check_governance.py`
 at 0 FAIL, the review-campaign partition passing and the full Vitest suite with
 no failure beyond the start-of-run baseline. `--route a` takes the Agent SDK
 provider route instead of the Messages API route (the default, `--route b`).
@@ -26,9 +26,10 @@ report is valid only for the commits it names).
 [Observed] The last full run (`--route b --vitest`) ended green: baseline
 31 OK / 0 FAIL, after the recorders 29 OK / 2 FAIL (CG-7e 12, CG-1b 1), after
 the install 31 OK / 0 FAIL; partition 343 of 343 assigned, 0 unmatched; Vitest
-2211 passed, 3 skipped, 0 failing at the start and at the end (exit 0 on the
-latest run; an earlier run exited 1 on an unhandled worker RPC timeout that
-main also shows). Heads simulated (PR, branch tip): main `cf57e77c`, 278 (`597928be`), 273
+had no failure that persisted on a one-file rerun (28 cases failed in the
+full suite at the start on a machine with load average above 60, all passed
+alone; F16); before the install the gate's loader test refused the new policy
+(5 failing, the real-tree case among them) and after it passed. Heads simulated (PR, branch tip): main `cf57e77c`, 278 (`597928be`), 273
 (`3656a103`), 260 (`05e59fcf`); PR 120 (`0a8ef671`) as the ordering case.
 Already in main: 215, 255, 256, 257, 266, 284, 288, 290.
 
@@ -72,6 +73,10 @@ same arguments re-verifies a record afterwards.
    (finding F7; no `ARGUMENT`, the adoption binds no digest). Between this
    step and the next, CG-1b reports one dangling path: the record cites the
    specification at its installed location.
+   Before the install, `npx vitest run apps/three-surface-poc/src/governance-inputs.test.ts`
+   is expected to fail on the real-tree case: the gate still pins the old
+   policy digest and version and refuses the new bytes (packet Q2). After the
+   install it passes. The simulator asserts both.
 9. **Install, one commit with every record.**
    `python3 scripts/install_redis_sitting.py`. It refuses (exit 2, tree
    restored) unless every required record exists, is idempotent, and
@@ -116,6 +121,7 @@ request or the installer answers it; the finding is kept so a reader can see why
 | F13 | PR 278 with main | The merge is textually clean, but main's repo-corpus.ts types an excluded row's reason as a string while PR 278 closes the type, so `npm run build:poc` fails (TS2322) and two Vitest files fail with it | Open, PR 278's: type the helper parameter `GenerationExclusionReason`. The simulator applies the same one-line change in the scratch |
 | F14 | PR 273 builder | `manifest_text` writes the root it is handed into the manifest rows, so a recorder passing an absolute root sees every manifest as stale | Worked around in the route-B recorder, which runs the builder from the root with relative paths; the builder is unchanged |
 | F15 | tuple-encoding.test.ts | One case times out at 5000 ms on main by itself | Open, bead syzygy-8wux; the simulator reports it without counting it |
+| F16 | Vitest under load | Cases that run near the 5000 ms timeout (polaris-narrative, parity sweep, proposal disclosure, tuple-encoding) fail in the full suite on a loaded machine (load average above 60 observed) and pass alone | The simulator reruns each failing file alone and counts only failures that persist; a pass on rerun is reported, not hidden |
 
 ## Known limits of the rehearsal
 
