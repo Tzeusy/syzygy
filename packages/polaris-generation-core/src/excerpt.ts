@@ -93,7 +93,6 @@ function skipLicence(lines: readonly Line[]): { readonly next: number; readonly 
 function mergeRanges(ranges: ExcerptRange[]): ExcerptRange[] {
   const out: [number, number][] = [];
   for (const [start, end] of ranges) {
-    if (end <= start) continue;
     const last = out.at(-1);
     if (last !== undefined && start - last[1] <= 1) last[1] = end; else out.push([start, end]);
   }
