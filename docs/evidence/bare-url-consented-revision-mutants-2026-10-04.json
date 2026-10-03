@@ -1,19 +1,19 @@
 {
   "subject": {
-    "commit": "49bc3b0140da68eb6e48731df263d19c634f4f4c",
+    "commit": "6a643d414354ab41bba966a2d211a38c43c5cd4c",
     "branch": "agent/dossier-bare-url",
     "fileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "56b38159b383d7ee1b6fedf2d76f93e644b3f72c82c96be2851f25bea2543775"
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "6bb3d72914d11a60ef586ed42dfad747a7ee81147dab2e736763952e3981e685"
     },
     "testFileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": "3a11ed075b69e91313453bb9bb4e12acb66c9816384273cc3f9ee3fc6a19f6b4"
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": "29e5372a52369c4c50fe6ad7bbdeb6a840b32c84d01c9232588bc06288220de8"
     }
   },
   "runnerPath": "scripts/rule6_mutation_runner.py",
   "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T23:23:37+00:00",
+  "ranAt": "2026-10-03T23:45:43+00:00",
   "mutants": [
     {
       "id": "asks-consent-even-with-url-ref",
@@ -25,7 +25,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "never-asks-consent",
@@ -37,7 +37,7 @@
       ],
       "outcome": "killed",
       "failedTests": 8,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "several-not-refused",
@@ -49,7 +49,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "several-threshold",
@@ -61,7 +61,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "one-threshold",
@@ -73,7 +73,7 @@
       ],
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "moved-tag-accepted",
@@ -85,7 +85,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "moved-tag-compares-wrong",
@@ -97,7 +97,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "consent-source-recorded-as-url",
@@ -109,7 +109,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "pins-head-not-label",
@@ -121,7 +121,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "malformed-accepted",
@@ -133,7 +133,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "commit-id-unchecked",
@@ -145,7 +145,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "label-type-unchecked",
@@ -157,7 +157,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "label-pattern-dropped",
@@ -169,7 +169,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "label-dotdot-allowed",
@@ -181,7 +181,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "consent-asked-by-url",
@@ -193,7 +193,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "consent-throw-as-none",
@@ -205,7 +205,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "array-check-dropped",
@@ -217,7 +217,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "refused-record-without-source",
@@ -229,7 +229,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "run-record-without-source",
@@ -241,7 +241,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "url-ref-not-recorded",
@@ -253,7 +253,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "list-omits-hint",
@@ -265,7 +265,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "unresolved-prefix-dropped",
@@ -277,7 +277,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 37
+      "totalTests": 38
     },
     {
       "id": "unmet-satisfied",
@@ -289,7 +289,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 37
+      "totalTests": 38
     }
   ]
 }
