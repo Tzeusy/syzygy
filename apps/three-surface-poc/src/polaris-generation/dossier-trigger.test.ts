@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { quotableGenerationSources, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
 import { main } from './dossier-main.js';
-import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger, writeRunFiles,
+import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
   type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
 
 const SHA_A = 'a'.repeat(40), SHA_B = 'b'.repeat(40), SHA_C = 'c'.repeat(40);
@@ -155,21 +155,13 @@ describe('with every record satisfied', () => {
     let checks = 0;
     const flipping: AdmissionRecordsPort = { source: 'flipping store', check: async r => (r.kind === 'egress-consent' && ++checks > 1 ? { satisfied: false, why: 'withdrawn' } : { satisfied: true, record: `fixture/${r.kind}` }) };
     const out = join(scratch(), 'run');
-    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, records: flipping, discovery: { map } }));
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, records: flipping, discoveryReceipt: async () => undefined, discovery: { map } }));
     expect(map).not.toHaveBeenCalled();
     expect(JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8')).discovery.refusedCalls).toBeGreaterThan(0);
     const allowed = vi.fn(map);
-    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map: allowed } }));
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discoveryReceipt: async () => undefined, discovery: { map: allowed } }));
     expect(allowed).toHaveBeenCalled();
     expect(allowed.mock.calls[0]![0].readerQuestions).toEqual(expect.arrayContaining([expect.stringContaining('core ideas')]));
-  });
-
-  it('writes nothing outside the run directory and rejects unsafe output paths', () => {
-    const target = join(scratch(), 'run');
-    for (const bad of ['../x', '/abs', 'a//b', './a', 'a/../b', '', 'a\\b']) expect(() => writeRunFiles(join(scratch(), 'r'), new Map([[bad, 'x']])), bad).toThrow('invalid-output-path');
-    writeRunFiles(target, new Map([['a/b.txt', 'x']]));
-    expect(() => writeRunFiles(target, new Map([['c.txt', 'x']]))).toThrow();
-    expect(readFileSync(join(target, 'a/b.txt'), 'utf8')).toBe('x');
   });
 
   it('removes its scratch checkout and an unused default run directory, even when the run fails', async () => {
@@ -178,6 +170,24 @@ describe('with every record satisfied', () => {
     await expect(runDossierTrigger('https://github.com/fixture/repo', base({ materialize: async () => { throw new Error('fetch failed'); } }))).rejects.toThrow('fetch failed');
     await runDossierTrigger('https://github.com/fixture/repo', { lsRemote: ls, records: all });
     expect(before().filter(name => !baseline.has(name))).toEqual([]);
+  });
+
+  it('refuses a nonexistent output path under a git work tree and creates nothing', async () => {
+    for (const rel of ['no/such/run', 'run']) {
+      const target = join(repo, rel);
+      await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: target }))).rejects.toThrow();
+      expect(existsSync(join(repo, rel.split('/')[0]!))).toBe(false);
+    }
+  });
+
+  it('wants a receipt sink whenever model discovery is wired, and lets no discovery port override the permission check', async () => {
+    const map = async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) });
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map } }))).rejects.toThrow('model-ports-need-a-receipt-port');
+    const called = vi.fn(map);
+    const withheld: AdmissionRecordsPort = { source: 's', check: (() => { let n = 0; return async (r: { kind: string }) => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: false as const, why: 'withdrawn' } : { satisfied: true as const, record: `r/${r.kind}` }); })() };
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: withheld, discoveryReceipt: async () => undefined,
+      discovery: { map: called, permitted: async () => true } as never }));
+    expect(called).not.toHaveBeenCalled();
   });
 
   it('refuses to write the run into a git work tree', async () => {
@@ -196,6 +206,22 @@ describe('with every record satisfied', () => {
   });
 
   describe('a poisoned caller environment', () => {
+    it('reads the pinned fixture through the whole trigger while GIT_DIR and object variables point at another repository', async () => {
+      const other = mkdtempSync(join(tmpdir(), 'syzygy-trigger-other-')); cleanups.push(other);
+      execFileSync('git', ['-C', other, 'init', '-q']); writeFileSync(join(other, 'OTHER.md'), 'OTHER REPO\n');
+      execFileSync('git', ['-C', other, 'add', '-A']); execFileSync('git', ['-C', other, '-c', 'user.email=o@example.invalid', '-c', 'user.name=O', 'commit', '-qm', 'o']);
+      const saved = { ...process.env };
+      Object.assign(process.env, { GIT_DIR: join(other, '.git'), GIT_OBJECT_DIRECTORY: join(other, 'nowhere'), GIT_ALTERNATE_OBJECT_DIRECTORIES: join(other, '.git', 'objects') });
+      try {
+        const out = join(scratch(), 'run');
+        const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out }));
+        expect(outcome.state).toBe('generation-unavailable');
+        const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
+        expect(record.corpusCount).toMatchObject({ selected: 3 });
+        expect(JSON.stringify(record)).not.toContain('OTHER');
+      } finally { for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key]; Object.assign(process.env, saved); }
+    });
+
     const saved = { ...process.env };
     afterEach(() => { for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key]; Object.assign(process.env, saved); });
     const poison = (): string => {
@@ -238,6 +264,15 @@ describe('command', () => {
     return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, receipts: [], artifacts: [] };
   };
   const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, ...extra });
+
+  it('renders with the polaris-dossier-v1 renderer by default: a malformed finished result is refused by it, not written', async () => {
+    const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    try {
+      const dest = join(scratch(), 'site');
+      await expect(main(['https://github.com/a/b', '--out', dest], wired({ runPipeline: async () => ({ status: 'awaiting-rendered-review', draft: {}, inventory: null, review: null, receipts: [], artifacts: [] }) }))).rejects.toThrow();
+      expect(existsSync(dest)).toBe(false);
+    } finally { out.mockRestore(); }
+  });
 
   it('exits 0 and writes to --out on a complete run, 5 when generation is unavailable, 6 when the pipeline stops', async () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);

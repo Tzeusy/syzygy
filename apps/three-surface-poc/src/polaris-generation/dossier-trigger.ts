@@ -1,13 +1,14 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { clarify, DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
   type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
-import { ISOLATED_GIT_FLAGS, isolatedGit, minimalGitEnv } from './isolated-git.js';
+import { writeDossierRun } from './dossier-render-main.js';
+import { ISOLATED_GIT_FLAGS, minimalGitEnv } from './isolated-git.js';
 
 export interface GithubTarget { readonly owner: string; readonly repo: string; readonly ref?: string; readonly url: string; readonly repositoryId: string }
 
@@ -93,28 +94,6 @@ export type TriggerOutcome =
 
 const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
 
-/** A relative, normalised path with no empty, `.` or `..` segment. */
-const safeRelative = (path: string): boolean => path.length > 0 && !path.startsWith('/') && !path.includes('\\') && path.split('/').every(part => part !== '' && part !== '.' && part !== '..');
-
-function insideGitWorkTree(directory: string): boolean {
-  try { return isolatedGit(directory, ['rev-parse', '--is-inside-work-tree']).toString().trim() === 'true'; } catch { return false; }
-}
-
-/** Writes the run into a new directory outside every Git work tree; nothing is overwritten. */
-export function writeRunFiles(destination: string, files: ReadonlyMap<string, string>): void {
-  const target = resolve(destination);
-  const parent = dirname(target);
-  if (existsSync(parent) && insideGitWorkTree(parent)) throw new Error('run-directory-inside-git-work-tree');
-  for (const path of files.keys()) if (!safeRelative(path)) throw new Error('invalid-output-path');
-  mkdirSync(parent, { recursive: true });
-  mkdirSync(target);
-  for (const [path, content] of files) {
-    const file = join(target, path);
-    mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, content, { flag: 'wx' });
-  }
-}
-
 /** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
 export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
   let target: GithubTarget;
@@ -143,29 +122,30 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const egress = requirements.find(requirement => requirement.kind === 'egress-consent')!;
     const permitted = async (): Promise<boolean> => (await records.check(egress)).satisfied === true;
     const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DEFAULT_DISCOVERY_BUDGET,
-      { permitted, receipt: ports.discoveryReceipt ?? (async () => undefined), ...ports.discovery });
+      { permitted, ...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),
+        ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
     const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
     const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
       discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
     const recordFile = ['run-record.json', `${JSON.stringify(record, null, 2)}\n`] as const;
     if (ports.runPipeline === undefined) {
-      writeRunFiles(runDir, new Map([recordFile]));
-      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
+      const written = await writeDossierRun(runDir, new Map([recordFile]));
+      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir: written, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
     }
     const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)());
     const result = await ports.runPipeline(request);
     if (result.status === 'stopped') {
-      writeRunFiles(runDir, new Map([recordFile]));
-      return { state: 'generation-stopped', target, revision: pinned.revision, runDir, detail: result.reason };
+      const written = await writeDossierRun(runDir, new Map([recordFile]));
+      return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: result.reason };
     }
     if (ports.render === undefined) {
-      writeRunFiles(runDir, new Map([recordFile, ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));
-      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'the pipeline finished but no renderer is wired; the result is recorded unrendered' };
+      const written = await writeDossierRun(runDir, new Map([recordFile, ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));
+      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir: written, detail: 'the pipeline finished but no renderer is wired; the result is recorded unrendered' };
     }
     const rendered = ports.render({ result, sources: discovery.sources });
     if (rendered.files.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');
-    writeRunFiles(runDir, new Map([...rendered.files, recordFile]));
-    return { state: 'complete', target, revision: pinned.revision, runDir, detail: `${rendered.files.size} files` };
+    const written = await writeDossierRun(runDir, new Map([...rendered.files, recordFile]));
+    return { state: 'complete', target, revision: pinned.revision, runDir: written, detail: `${rendered.files.size} files` };
   } finally {
     rmSync(dirname(checkoutDir), { recursive: true, force: true });
     if (defaultOut !== undefined && !existsSync(runDir)) rmSync(defaultOut, { recursive: true, force: true });
