@@ -1,0 +1,116 @@
+{
+  "subject": "scripts/build_pwb_tree_framing_amendment.py",
+  "subjectSha256": "b58bd2846d022cf21b0ce998c17690b08786485db95035e8ecf06ea30c0a56b4",
+  "commit": "3969efb147156bfe17600d7ca7c3832363fffec5",
+  "bead": "syzygy-6bv9",
+  "rule": "AGENTS.md verification rule 6",
+  "run": "python3 scripts/build_pwb_tree_framing_amendment.py --check, in a detached worktree at the commit",
+  "note": "The commit is provenance only; a rebase-merge leaves it reachable from no ref, so subjectSha256 is the anchor.",
+  "mutants": [
+    {
+      "id": "I0-pristine",
+      "kind": "input",
+      "mutates": "unmodified applied tree",
+      "file": null,
+      "old": null,
+      "new": null,
+      "expectedExit": 0,
+      "exit": 0,
+      "last": "PWB tree-framing amendment applied: all 11 signed subjects carry their manifest rows",
+      "outcome": "ok"
+    },
+    {
+      "id": "I1-subject-drift",
+      "kind": "input",
+      "mutates": "one signed subject changes by one character",
+      "file": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "old": "### Requirement: PWB-REQ-014",
+      "new": "### Requirement: PWB-REQ-014x",
+      "expectedExit": 1,
+      "exit": 1,
+      "last": "error: openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md: patch does not apply",
+      "outcome": "ok"
+    },
+    {
+      "id": "I2-row-drift",
+      "kind": "input",
+      "mutates": "one manifest row's digest changes",
+      "file": ".syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt",
+      "old": "d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "new": "0000000000000000000000000000000000000000000000000000000000000000  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "expectedExit": 1,
+      "exit": 1,
+      "last": "error: openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md: patch does not apply",
+      "outcome": "ok"
+    },
+    {
+      "id": "I3-row-missing",
+      "kind": "input",
+      "mutates": "one manifest row is removed",
+      "file": ".syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt",
+      "old": "d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md\n",
+      "new": "",
+      "expectedExit": 1,
+      "exit": 1,
+      "last": "error: openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md: patch does not apply",
+      "outcome": "ok"
+    },
+    {
+      "id": "P1-or",
+      "kind": "predicate",
+      "mutates": "the row comparison is OR-ed with row presence",
+      "file": "scripts/build_pwb_tree_framing_amendment.py",
+      "old": "    return bool(rows) and rows == {",
+      "new": "    return bool(rows) or rows == {",
+      "killedBy": [
+        "I1-subject-drift",
+        "I2-row-drift",
+        "I3-row-missing"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "P2-always",
+      "kind": "predicate",
+      "mutates": "check reports applied unconditionally",
+      "file": "scripts/build_pwb_tree_framing_amendment.py",
+      "old": "    if applied():\n",
+      "new": "    if True:\n",
+      "killedBy": [
+        "I1-subject-drift",
+        "I2-row-drift",
+        "I3-row-missing"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "P3-never",
+      "kind": "predicate",
+      "mutates": "the applied branch never fires",
+      "file": "scripts/build_pwb_tree_framing_amendment.py",
+      "old": "    if applied():\n",
+      "new": "    if False:\n",
+      "killedBy": [
+        "I0-pristine"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "P4-negated",
+      "kind": "predicate",
+      "mutates": "the row comparison is negated",
+      "file": "scripts/build_pwb_tree_framing_amendment.py",
+      "old": "    return bool(rows) and rows == {",
+      "new": "    return bool(rows) and rows != {",
+      "killedBy": [
+        "I0-pristine",
+        "I1-subject-drift",
+        "I2-row-drift",
+        "I3-row-missing"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "predicateKilled": 4,
+  "predicateTotal": 4
+}
