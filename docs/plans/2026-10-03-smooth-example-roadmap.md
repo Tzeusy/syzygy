@@ -217,6 +217,11 @@ None of these is drafted here as an act. Each names what would be asked.
 | D7 | Later sitting: sign the drafts from steps 21 and 22; optional `syzygy-dov.24` and `syzygy-dov.25` acts; `syzygy-dov.23` scenario; `syzygy-hfp7`; `syzygy-8de`; release the owner-gated `syzygy-1z3.28` | M9 slices 4–8; release labels | as named |
 | D8 | Where an owner's note may be stored (the retention direction §7 excludes it today) | M12 slice 3 | `syzygy-dov.12.2` |
 
+D7's step-21 draft is
+`.syzygy/governance/contracts/candidates/three-surface-poc-identity-amendment/`
+(register row P-84). Its fourth review is `REVISE`, so it reaches the sitting
+with findings open and a drafter's recommendation to answer Revise.
+
 D1 and D4 matter most for the example. D3's default — never demonstrated —
 costs the example nothing once step 5 renders the write as foreclosed.
 
