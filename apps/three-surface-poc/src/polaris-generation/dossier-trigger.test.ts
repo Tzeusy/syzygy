@@ -14,7 +14,9 @@ const LS = `${SHA_A}\tHEAD\n${SHA_A}\trefs/heads/unstable\n${SHA_B}\trefs/tags/8
 const cleanups: string[] = [];
 afterEach(() => { for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true }); });
 const scratch = (): string => { const dir = mkdtempSync(join(tmpdir(), 'syzygy-trigger-')); cleanups.push(dir); return dir; };
-const all: AdmissionRecordsPort = { source: 'fixture store', check: async r => ({ satisfied: true, record: `fixture/${r.kind}` }) };
+/** The id the observation record carries; deliberately not the spelling the trigger derives from the URL. */
+const ids = async (): Promise<readonly string[]> => ['fixture-record-id'];
+const all: AdmissionRecordsPort = { source: 'fixture store', repositoryIdsFor: ids, check: async r => ({ satisfied: true, record: `fixture/${r.kind}` }) };
 
 describe('github url and revision pinning', () => {
   it('accepts public github urls and rejects everything else', () => {
@@ -59,7 +61,7 @@ describe('trigger stops at the first unmet gate', () => {
 
   it('asks each requirement about the pinned revision, and one unmet record still stops', async () => {
     const asked: string[] = [];
-    const records: AdmissionRecordsPort = { source: 'partial store', check: async r => { asked.push(`${r.kind}@${r.revision}`); return r.kind === 'egress-consent' ? { satisfied: false, why: 'no egress record' } : { satisfied: true, record: `r/${r.kind}` }; } };
+    const records: AdmissionRecordsPort = { source: 'partial store', repositoryIdsFor: ids, check: async r => { asked.push(`${r.kind}@${r.revision}`); return r.kind === 'egress-consent' ? { satisfied: false, why: 'no egress record' } : { satisfied: true, record: `r/${r.kind}` }; } };
     const materialize = vi.fn();
     const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records, materialize });
     expect(asked.sort()).toEqual([`egress-consent@${SHA_A}`, `observation-consent@${SHA_A}`, `public-source-policy@${SHA_A}`]);
@@ -71,7 +73,7 @@ describe('trigger stops at the first unmet gate', () => {
   });
 
   it('refuses a bad url or an unresolvable revision before consulting any record', async () => {
-    const records = { source: 's', check: vi.fn() };
+    const records = { source: 's', repositoryIdsFor: ids, check: vi.fn() };
     expect(await runDossierTrigger('https://example.com/a/b', { records })).toMatchObject({ state: 'invalid-input' });
     expect(await runDossierTrigger('https://github.com/a/b', { records, lsRemote: () => { throw new Error('network down'); } })).toMatchObject({ state: 'unresolved-revision', reason: 'network down' });
     expect(await runDossierTrigger('https://github.com/a/b/tree/zz', { records, lsRemote: () => LS })).toMatchObject({ state: 'unresolved-revision', reason: 'revision-not-found' });
@@ -112,7 +114,7 @@ describe('with every record satisfied', () => {
     expect(outcome).toMatchObject({ state: 'complete', revision: commit, detail: '2 files' });
     expect(readdirSync(out).sort()).toEqual(['index.html', 'pages', 'run-record.json']);
     expect(readFileSync(join(out, 'pages/core.html'), 'utf8')).toBe('<p>core</p>');
-    expect(seen).toMatchObject({ projectId: 'github:fixture:repo', readerQuestions: expect.arrayContaining([expect.objectContaining({ id: 'core-ideas', topics: ['core-ideas'] })]) });
+    expect(seen).toMatchObject({ projectId: 'fixture-record-id', readerQuestions: expect.arrayContaining([expect.objectContaining({ id: 'core-ideas', topics: ['core-ideas'] })]) });
     const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
     expect(record).toMatchObject({ profile: 'dossier-v1', revision: commit, permissionIdentity: 'fixture/observation-consent+fixture/public-source-policy+fixture/egress-consent',
       corpusCount: { selected: 3 }, clarification: { mode: 'zero-interaction', unaccountedQuestions: 0 } });
@@ -156,7 +158,7 @@ describe('with every record satisfied', () => {
   it('permits a discovery call only while the egress record still holds, and drops the calls otherwise', async () => {
     const map = vi.fn(async (input: { readonly readerQuestions: readonly string[]; readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
     let checks = 0;
-    const flipping: AdmissionRecordsPort = { source: 'flipping store', check: async r => (r.kind === 'egress-consent' && ++checks > 1 ? { satisfied: false, why: 'withdrawn' } : { satisfied: true, record: `fixture/${r.kind}` }) };
+    const flipping: AdmissionRecordsPort = { source: 'flipping store', repositoryIdsFor: ids, check: async r => (r.kind === 'egress-consent' && ++checks > 1 ? { satisfied: false, why: 'withdrawn' } : { satisfied: true, record: `fixture/${r.kind}` }) };
     const out = join(scratch(), 'run');
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, records: flipping, discoveryReceipt: async () => undefined, discovery: { map } }));
     expect(map).not.toHaveBeenCalled();
@@ -168,11 +170,14 @@ describe('with every record satisfied', () => {
   });
 
   it('removes its scratch checkout and an unused default run directory, even when the run fails', async () => {
-    const before = () => readdirSync(tmpdir()).filter(name => name.startsWith('syzygy-dossier-'));
-    const baseline = new Set(before());
-    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ materialize: async () => { throw new Error('fetch failed'); } }))).rejects.toThrow('fetch failed');
-    await runDossierTrigger('https://github.com/fixture/repo', { lsRemote: ls, records: all });
-    expect(before().filter(name => !baseline.has(name))).toEqual([]);
+    // A private TMPDIR: a shared prefix scan would also see other test files' directories.
+    const priv = scratch(), saved = process.env.TMPDIR;
+    process.env.TMPDIR = priv;
+    try {
+      await expect(runDossierTrigger('https://github.com/fixture/repo', base({ materialize: async () => { throw new Error('fetch failed'); } }))).rejects.toThrow('fetch failed');
+      await runDossierTrigger('https://github.com/fixture/repo', { lsRemote: ls, records: all });
+      expect(readdirSync(priv)).toEqual([]);
+    } finally { if (saved === undefined) delete process.env.TMPDIR; else process.env.TMPDIR = saved; }
   });
 
   it('refuses a nonexistent output path under a git work tree and creates nothing', async () => {
@@ -191,24 +196,48 @@ describe('with every record satisfied', () => {
     expect(readdirSync(refusedDir)).toEqual(['run-record.json']);
     expect(JSON.parse(readFileSync(join(refusedDir, 'run-record.json'), 'utf8'))).toMatchObject({ discoveryRefusal: 'model-ports-need-a-receipt-port', corpusCount: expect.anything() });
     const called = vi.fn(map);
-    const withheld: AdmissionRecordsPort = { source: 's', check: (() => { let n = 0; return async (r: { kind: string }) => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: false as const, why: 'withdrawn' } : { satisfied: true as const, record: `r/${r.kind}` }); })() };
+    const withheld: AdmissionRecordsPort = { source: 's', repositoryIdsFor: ids, check: (() => { let n = 0; return async (r: { kind: string }) => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: false as const, why: 'withdrawn' } : { satisfied: true as const, record: `r/${r.kind}` }); })() };
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: withheld, discoveryReceipt: async () => undefined,
       discovery: { map: called, permitted: async () => true } as never }));
     expect(called).not.toHaveBeenCalled();
   });
 
+  it('admits under the id the one matching observation record carries, never under one derived from the URL', async () => {
+    const asked: string[] = [];
+    const store = (found: readonly string[]): AdmissionRecordsPort => ({ source: 's', repositoryIdsFor: async url => { asked.push(url); return found; },
+      check: async r => { asked.push(`${r.kind}:${r.repositoryId}`); return { satisfied: true, record: `r/${r.kind}` }; } });
+    const out = join(scratch(), 'run');
+    let seen: PipelineRequest | undefined;
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo.git', base({ outDir: out, records: store(['redis-redis', 'redis-redis']), runPipeline: async request => { seen = request; return stoppedResult; } }));
+    expect(outcome).toMatchObject({ state: 'generation-stopped', target: { repositoryId: 'redis-redis' } });
+    const first = asked.splice(0);
+    expect(first[0]).toBe('https://github.com/fixture/repo');
+    expect(first.slice(1).sort()).toEqual(expect.arrayContaining(['egress-consent:redis-redis', 'observation-consent:redis-redis', 'public-source-policy:redis-redis']));
+    expect(first.slice(1).every(entry => entry.endsWith(':redis-redis'))).toBe(true);
+    expect(seen!.projectId).toBe('redis-redis');
+    expect(JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8')).target.repositoryId).toBe('redis-redis');
+    for (const found of [[], ['a-b', 'c-d'], ['bad id!']]) {
+      const materialize = vi.fn(async () => repo);
+      const refused = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: store(found) }));
+      expect(refused, JSON.stringify(found)).toMatchObject({ state: 'admission-missing', missing: 3 });
+      expect(formatOutcome(refused)).toContain(found.length === 2 ? 'ambiguous' : 'no observation record names https://github.com/fixture/repo');
+      expect(materialize).not.toHaveBeenCalled();
+    }
+    expect(asked.some(entry => entry.endsWith(':github:fixture:repo'))).toBe(false);
+  });
+
   it('treats only satisfied === true with a record as satisfied, at the gate and at every later permission check', async () => {
-    const odd: unknown[] = [{ satisfied: 'false', why: 'x' }, { satisfied: 1, record: 'r' }, { satisfied: 'true', record: 'r' }, {}, null, 'yes', { satisfied: true }, { satisfied: true, record: '' }, { satisfied: true, record: 7 }];
+    const odd: unknown[] = [{ satisfied: 'false', why: 'x' }, { satisfied: 1, record: 'r' }, { satisfied: 'true', record: 'r' }, {}, null, 'yes', { satisfied: true }, { satisfied: true, record: '' }, { satisfied: true, record: ' \t\n' }, { satisfied: true, record: 7 }];
     for (const answer of odd) {
       const materialize = vi.fn(async () => repo);
-      const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: { source: 's', check: async () => answer as never } }));
+      const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: { source: 's', repositoryIdsFor: ids, check: async () => answer as never } }));
       expect(outcome, JSON.stringify(answer)).toMatchObject({ state: 'admission-missing', missing: 3 });
       expect(materialize).not.toHaveBeenCalled();
       expect(formatOutcome(outcome)).not.toContain('undefined');
     }
     const map = vi.fn(async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
     let n = 0;
-    const flaky: AdmissionRecordsPort = { source: 's', check: async r => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: 1, record: 'r/egress-consent' } as never : { satisfied: true, record: `r/${r.kind}` }) };
+    const flaky: AdmissionRecordsPort = { source: 's', repositoryIdsFor: ids, check: async r => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: 1, record: 'r/egress-consent' } as never : { satisfied: true, record: `r/${r.kind}` }) };
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: flaky, discoveryReceipt: async () => undefined, discovery: { map } }));
     expect(map).not.toHaveBeenCalled();
   });
