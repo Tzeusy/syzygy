@@ -1,0 +1,759 @@
+{
+ "bead": "syzygy-c46a",
+ "date": "2026-10-03",
+ "subject": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts > 'keeps a separate desktop section rail and an in-flow mobile drawer': the first browser test in the file paying a fresh Chrome's first-render cost inside its 5 s budget",
+ "subjectFile": {
+  "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+  "beforeCommit": "4feed8f0 (and origin/main at rebase time)",
+  "beforeSha256": "ba71c70a6feb9105de6c6f81817fe23d0123693f3b1546f025f776a869198709",
+  "fixCommits": {
+   "measured": "2351aedb",
+   "rebased": "19a7186f"
+  },
+  "fixSha256": "9080589214e7d30e77417e47411faa69500d088ccc268ddf189a15a03042ac32",
+  "note": "The fix blob is identical at 2351aedb and the rebased commit; the before blob is identical at 4feed8f0 and origin/main at rebase time."
+ },
+ "diagnosis": {
+  "cause": "Over 203 CI attempts the first browser test ran at about twice its siblings' p50 and carried the only tail past 2 s: a systematic cold first-render cost (first renderer, layout and font work in a fresh Chrome, plus the first model render), not load noise. One attempt timed out at 5011 ms.",
+  "fix": "beforeAll (60 s budget) renders variant 0 once and navigates a throwaway page to it; pageUrl caches renders per variant so the first test reuses that file. No assertion, timeout, retry or skip changed.",
+  "probe": "An uncommitted probe file (cold vs warm navigation of the same page in one Chrome, 5 runs each beside one companion full app run) measured cold p50 709 ms against warm 412 ms; the probe was never committed.",
+  "probeRuns": {
+   "n": 5,
+   "p50Ms": 709,
+   "p99Ms": 897,
+   "maxMs": 900,
+   "atLeast2000Ms": 0,
+   "warmP50Ms": 412
+  }
+ },
+ "ci": {
+  "population": "node-ci job logs of the GitHub Actions workflow, one per run attempt; 203 attempt logs, 200 distinct run ids, created 2026-09-27T20:42:31Z to 2026-10-02T22:35:16Z",
+  "method": "Each log was filtered to the vitest verbose lines of the browser describe block; durations are the per-test figures vitest printed. Sibling names changed across commits, so each sibling has its own denominator.",
+  "firstTest": {
+   "title": "keeps a separate desktop section rail and an in-flow mobile drawer",
+   "n": 203,
+   "p50Ms": 1003,
+   "p99Ms": 3264,
+   "maxMs": 5011,
+   "atLeast2000Ms": 10,
+   "failedAttempts": [
+    "36899663207-1"
+   ]
+  },
+  "siblings": {
+   "keeps diagram labels legible and flow order unambiguous across widths": {
+    "n": 202,
+    "p50Ms": 622,
+    "p99Ms": 814,
+    "maxMs": 836,
+    "atLeast2000Ms": 0
+   },
+   "opens a linked component guide and can reveal the complete declaration": {
+    "n": 196,
+    "p50Ms": 467,
+    "p99Ms": 862,
+    "maxMs": 975,
+    "atLeast2000Ms": 0
+   },
+   "keeps complete source columns visible while citation targets remain keyboard-reachable": {
+    "n": 152,
+    "p50Ms": 525,
+    "p99Ms": 1022,
+    "maxMs": 1149,
+    "atLeast2000Ms": 0
+   },
+   "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count": {
+    "n": 152,
+    "p50Ms": 505,
+    "p99Ms": 876,
+    "maxMs": 912,
+    "atLeast2000Ms": 0
+   },
+   "keeps source records compact while citation targets remain keyboard-reachable": {
+    "n": 51,
+    "p50Ms": 524,
+    "p99Ms": 628,
+    "maxMs": 632,
+    "atLeast2000Ms": 0
+   }
+  }
+ },
+ "protocol": "Loaded runs: per run, one full app-project vitest run (companion) concurrently with one run of the measured file, alongside the other overnight lanes' load; load1m sampled at each run end. The before and after phases ran at the same time on the same host (4 vitest processes), so each before/after pair shares its load. The accept phase ran the fix alone later, without a paired before. Ratio = first-test duration over the median of its four sibling page tests in the same run, which normalizes host load.",
+ "before": {
+  "runs": 10,
+  "firstTest": {
+   "n": 10,
+   "p50Ms": 2548,
+   "p99Ms": 5164,
+   "maxMs": 5259,
+   "atLeast2000Ms": 7,
+   "failed": 1
+  },
+  "siblingMedian": {
+   "n": 10,
+   "p50Ms": 2199,
+   "p99Ms": 4780,
+   "maxMs": 5013,
+   "atLeast2000Ms": 6
+  },
+  "ratioFirstOverSiblingMedian": {
+   "median": 1.16,
+   "min": 0.78,
+   "max": 2.15
+  },
+  "runsWithAnyBrowserTestFailed": 1,
+  "testExecutionsFailed": 4,
+  "testExecutions": 150,
+  "perRun": [
+   {
+    "run": 1,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 37.2,
+    "firstTestMs": 1741,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1359,
+    "ratio": 1.28,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 2,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 65.76,
+    "firstTestMs": 2354,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2300,
+    "ratio": 1.02,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 3,
+    "measuredExit": 1,
+    "companionExit": 1,
+    "load1mAtEnd": 56.26,
+    "firstTestMs": 5259,
+    "firstTestStatus": "failed",
+    "siblingMedianMs": 5013,
+    "ratio": 1.05,
+    "browserTestsFailed": [
+     "keeps a separate desktop section rail and an in-flow mobile drawer",
+     "keeps complete source columns visible while citation targets remain keyboard-reachable",
+     "keeps diagram labels legible and flow order unambiguous across widths",
+     "opens a linked component guide and can reveal the complete declaration"
+    ]
+   },
+   {
+    "run": 4,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 55.25,
+    "firstTestMs": 3861,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2302,
+    "ratio": 1.68,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 5,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 58.84,
+    "firstTestMs": 4209,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1955,
+    "ratio": 2.15,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 6,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 47.08,
+    "firstTestMs": 1901,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2422,
+    "ratio": 0.78,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 7,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 37.27,
+    "firstTestMs": 1627,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1496,
+    "ratio": 1.09,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 8,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 43.74,
+    "firstTestMs": 3221,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1924,
+    "ratio": 1.67,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 9,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 50.47,
+    "firstTestMs": 2730,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2287,
+    "ratio": 1.19,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 10,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 58.94,
+    "firstTestMs": 2367,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2111,
+    "ratio": 1.12,
+    "browserTestsFailed": []
+   }
+  ]
+ },
+ "after": {
+  "runs": 10,
+  "firstTest": {
+   "n": 10,
+   "p50Ms": 1838,
+   "p99Ms": 3885,
+   "maxMs": 3976,
+   "atLeast2000Ms": 4,
+   "failed": 0
+  },
+  "siblingMedian": {
+   "n": 10,
+   "p50Ms": 1830,
+   "p99Ms": 4717,
+   "maxMs": 4909,
+   "atLeast2000Ms": 5
+  },
+  "ratioFirstOverSiblingMedian": {
+   "median": 0.9,
+   "min": 0.55,
+   "max": 1.24
+  },
+  "runsWithAnyBrowserTestFailed": 1,
+  "testExecutionsFailed": 2,
+  "testExecutions": 150,
+  "perRun": [
+   {
+    "run": 1,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 37.2,
+    "firstTestMs": 1146,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1549,
+    "ratio": 0.74,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 2,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 63.48,
+    "firstTestMs": 906,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1658,
+    "ratio": 0.55,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 3,
+    "measuredExit": 1,
+    "companionExit": 1,
+    "load1mAtEnd": 56.26,
+    "firstTestMs": 3976,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 4909,
+    "ratio": 0.81,
+    "browserTestsFailed": [
+     "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+     "keeps diagram labels legible and flow order unambiguous across widths"
+    ]
+   },
+   {
+    "run": 4,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 56.65,
+    "firstTestMs": 1964,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2527,
+    "ratio": 0.78,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 5,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 58.84,
+    "firstTestMs": 1501,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1414,
+    "ratio": 1.06,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 6,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 47.08,
+    "firstTestMs": 2002,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2030,
+    "ratio": 0.99,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 7,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 37.27,
+    "firstTestMs": 1157,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1451,
+    "ratio": 0.8,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 8,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 43.74,
+    "firstTestMs": 1713,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1387,
+    "ratio": 1.24,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 9,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 50.47,
+    "firstTestMs": 2963,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2776,
+    "ratio": 1.07,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 10,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 59.81,
+    "firstTestMs": 2463,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 2001,
+    "ratio": 1.23,
+    "browserTestsFailed": []
+   }
+  ]
+ },
+ "accept": {
+  "runs": 10,
+  "firstTest": {
+   "n": 10,
+   "p50Ms": 1270,
+   "p99Ms": 2555,
+   "maxMs": 2612,
+   "atLeast2000Ms": 1,
+   "failed": 0
+  },
+  "siblingMedian": {
+   "n": 10,
+   "p50Ms": 1441,
+   "p99Ms": 1751,
+   "maxMs": 1756,
+   "atLeast2000Ms": 0
+  },
+  "ratioFirstOverSiblingMedian": {
+   "median": 1.11,
+   "min": 0.54,
+   "max": 1.72
+  },
+  "runsWithAnyBrowserTestFailed": 0,
+  "testExecutionsFailed": 0,
+  "testExecutions": 150,
+  "perRun": [
+   {
+    "run": 1,
+    "measuredExit": 0,
+    "companionExit": 0,
+    "load1mAtEnd": 17.15,
+    "firstTestMs": 690,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 606,
+    "ratio": 1.14,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 2,
+    "measuredExit": 0,
+    "companionExit": 0,
+    "load1mAtEnd": 27.81,
+    "firstTestMs": 1009,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 795,
+    "ratio": 1.27,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 3,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 49.23,
+    "firstTestMs": 1128,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1622,
+    "ratio": 0.7,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 4,
+    "measuredExit": 0,
+    "companionExit": 0,
+    "load1mAtEnd": 41.11,
+    "firstTestMs": 803,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1490,
+    "ratio": 0.54,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 5,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 40.44,
+    "firstTestMs": 1974,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1149,
+    "ratio": 1.72,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 6,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 43.4,
+    "firstTestMs": 1523,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1392,
+    "ratio": 1.09,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 7,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 43.05,
+    "firstTestMs": 888,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1053,
+    "ratio": 0.84,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 8,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 54.15,
+    "firstTestMs": 1413,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1699,
+    "ratio": 0.83,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 9,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 53.9,
+    "firstTestMs": 2612,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1756,
+    "ratio": 1.49,
+    "browserTestsFailed": []
+   },
+   {
+    "run": 10,
+    "measuredExit": 0,
+    "companionExit": 1,
+    "load1mAtEnd": 56.51,
+    "firstTestMs": 1982,
+    "firstTestStatus": "passed",
+    "siblingMedianMs": 1561,
+    "ratio": 1.27,
+    "browserTestsFailed": []
+   }
+  ]
+ },
+ "companionFailures": "Companion full runs failed in most loaded runs (build-output.test.ts at 65-220 s and several 5 s timeouts in other files); these are host-load timeouts outside this file, already tracked by other beads, and are recorded here only as the load the measurement ran under.",
+ "rule6": {
+  "commit": "19a7186f",
+  "method": "Each mutant was applied in place to the worktree file, the measured file run alone (no companion) five times, interleaved fix/M1/M2 per round, and the file restored with git checkout. The predicate is timing, not an assertion: a surviving fix would show no difference between fix and M1.",
+  "mutants": {
+   "fix": {
+    "subjectSha256": "9080589214e7d30e77417e47411faa69500d088ccc268ddf189a15a03042ac32",
+    "runs": 5,
+    "firstTest": {
+     "n": 5,
+     "p50Ms": 1295,
+     "p99Ms": 1883,
+     "maxMs": 1906,
+     "atLeast2000Ms": 0,
+     "failed": 0
+    },
+    "siblingMedian": {
+     "n": 5,
+     "p50Ms": 988,
+     "p99Ms": 2277,
+     "maxMs": 2314,
+     "atLeast2000Ms": 1
+    },
+    "ratioFirstOverSiblingMedian": {
+     "median": 0.97,
+     "min": 0.74,
+     "max": 1.31
+    },
+    "runsWithAnyBrowserTestFailed": 0,
+    "testExecutionsFailed": 0,
+    "testExecutions": 75,
+    "perRun": [
+     {
+      "run": 1,
+      "firstTestMs": 1295,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 988,
+      "ratio": 1.31,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 39.33
+     },
+     {
+      "run": 2,
+      "firstTestMs": 1906,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 2314,
+      "ratio": 0.82,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 63.62
+     },
+     {
+      "run": 3,
+      "firstTestMs": 1335,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1380,
+      "ratio": 0.97,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 78.36
+     },
+     {
+      "run": 4,
+      "firstTestMs": 562,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 763,
+      "ratio": 0.74,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 66.18
+     },
+     {
+      "run": 5,
+      "firstTestMs": 705,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 649,
+      "ratio": 1.09,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 88.02
+     }
+    ]
+   },
+   "M1-no-warm-up": {
+    "description": "Delete the beforeAll warm-up navigation; keep the per-variant render cache.",
+    "old": "    const warm = await browser.newPage();\n    try { await warm.navigate(pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant).url); }\n    finally { await warm.close(); }\n",
+    "new": "",
+    "subjectSha256": "76452526f12a6a6a903e66eb16501bf2811ccc6c50661684d1118c612b24c5b8",
+    "runs": 5,
+    "firstTest": {
+     "n": 5,
+     "p50Ms": 1473,
+     "p99Ms": 2644,
+     "maxMs": 2662,
+     "atLeast2000Ms": 2,
+     "failed": 0
+    },
+    "siblingMedian": {
+     "n": 5,
+     "p50Ms": 1058,
+     "p99Ms": 1598,
+     "maxMs": 1610,
+     "atLeast2000Ms": 0
+    },
+    "ratioFirstOverSiblingMedian": {
+     "median": 1.58,
+     "min": 1.12,
+     "max": 2.08
+    },
+    "runsWithAnyBrowserTestFailed": 0,
+    "testExecutionsFailed": 0,
+    "testExecutions": 75,
+    "perRun": [
+     {
+      "run": 1,
+      "firstTestMs": 2202,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1058,
+      "ratio": 2.08,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 56.41
+     },
+     {
+      "run": 2,
+      "firstTestMs": 1284,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 901,
+      "ratio": 1.43,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 79.29
+     },
+     {
+      "run": 3,
+      "firstTestMs": 1473,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1312,
+      "ratio": 1.12,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 89.51
+     },
+     {
+      "run": 4,
+      "firstTestMs": 999,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 632,
+      "ratio": 1.58,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 74.64
+     },
+     {
+      "run": 5,
+      "firstTestMs": 2662,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1610,
+      "ratio": 1.65,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 64.68
+     }
+    ]
+   },
+   "M2-no-render-cache": {
+    "description": "Delete the cache lookup in pageUrl; the warm-up still navigates, but the first test re-renders variant 0 and writes the file again.",
+    "old": "    if (cached !== undefined) return cached;\n",
+    "new": "",
+    "subjectSha256": "00945e056f67838a680bdf6215ace47e1e1bf6fc39c314a39df0e949f4f1b0ec",
+    "runs": 5,
+    "firstTest": {
+     "n": 5,
+     "p50Ms": 2471,
+     "p99Ms": 2680,
+     "maxMs": 2687,
+     "atLeast2000Ms": 3,
+     "failed": 0
+    },
+    "siblingMedian": {
+     "n": 5,
+     "p50Ms": 1912,
+     "p99Ms": 2215,
+     "maxMs": 2215,
+     "atLeast2000Ms": 2
+    },
+    "ratioFirstOverSiblingMedian": {
+     "median": 1.16,
+     "min": 1.11,
+     "max": 1.29
+    },
+    "runsWithAnyBrowserTestFailed": 0,
+    "testExecutionsFailed": 0,
+    "testExecutions": 75,
+    "perRun": [
+     {
+      "run": 1,
+      "firstTestMs": 2687,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 2215,
+      "ratio": 1.21,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 94.77
+     },
+     {
+      "run": 2,
+      "firstTestMs": 1064,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 919,
+      "ratio": 1.16,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 67.79
+     },
+     {
+      "run": 3,
+      "firstTestMs": 2471,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1912,
+      "ratio": 1.29,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 74.2
+     },
+     {
+      "run": 4,
+      "firstTestMs": 2519,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 2213,
+      "ratio": 1.14,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 58.07
+     },
+     {
+      "run": 5,
+      "firstTestMs": 1868,
+      "firstTestStatus": "passed",
+      "siblingMedianMs": 1685,
+      "ratio": 1.11,
+      "browserTestsFailed": [],
+      "vitestExit": 0,
+      "load1mAtEnd": 89.18
+     }
+    ]
+   }
+  },
+  "reading": {
+   "M1-no-warm-up": "Detected on the ratio median: 1.58 (range 1.12-2.08) against the fix at 0.97 (0.74-1.31) over 5 interleaved runs each; the ranges overlap at the edges, so the separation holds for the population, not for every single run. For scale, the CI ratio of the first-test p50 to the sibling p50 values is about 1.6-2.1 (1003 ms over 467-623 ms).",
+   "M2-no-render-cache": "Weakly detected: ratio median 1.16 (1.11-1.29) against 0.97 (0.74-1.31). Part of the fix's gain in the first test is that it no longer renders the model itself; the sibling tests still call renderVariant directly and keep that cost, so the ratio compares unequal work by design. The warm Chrome (M1) is the larger share."
+  },
+  "unloadedNote": "The rule-6 runs had no companion, but the host carried other lanes' load (load1m 39-95 at run ends), so absolute durations are loaded figures; the in-run ratio is the comparable measure."
+ }
+}
