@@ -192,8 +192,10 @@ Authorized implementation work (generator implementation authorization,
         completed stage outputs (`artifacts` on the stopped result) alongside
         `run-record.json` and exits 7; when the renderer cannot render it
         (`DossierRenderError`), only the record is written and the exit is 6
-        (syzygy-k4t2, trigger half; the renderer accepting a stopped result
-        is lane-p's).
+        (syzygy-k4t2). `dossier-main` passes `requestedAssets`, which the
+        renderer requires for a stopped result; a page-level test runs a
+        scripted pipeline out of usage budget after two stages and checks the
+        banner and every requested asset as Unknown `deferred-by-budget`.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
