@@ -11,9 +11,9 @@
 // served digest, the focusable population and how much of it Tab reached,
 // the fragment activations, and the violations by kind. `--file` sweeps a
 // retained capture instead of a live daemon. The record names the bead it is
-// evidence for (`--task`, required) and the Butlers revision and evaluation
-// identity every swept page renders (syzygy-buzg); it refuses pages that
-// name none, or disagree.
+// evidence for (`--task`, required) and the Butlers revision, evaluation
+// identity and walkthrough evaluation identity every swept page renders
+// (syzygy-buzg, syzygy-7dch); it refuses pages that name none, or disagree.
 //
 // It reads no Butlers repository itself; the daemon (`main.ts`) never
 // imports it. Exits 0 only when every swept page has zero violations.
@@ -28,7 +28,7 @@ import { pathToFileURL } from 'node:url';
 import { TAILNET_HOST } from './browser-origin.js';
 import { findBrowserExecutable, launchBrowser } from './cdp-browser.js';
 import { defaultRunGit } from './governance-inputs.js';
-import { KEYBOARD_SWEEP_USAGE, keyboardSweepEvidence, parseKeyboardSweepArguments, sweptEvaluation, violationsByKind, type KeyboardSweep } from './keyboard-sweep-record.js';
+import { KEYBOARD_SWEEP_USAGE, keyboardSweepEvidence, keyboardSweepOutput, parseKeyboardSweepArguments, sweptEvaluation, violationsByKind, type KeyboardSweep } from './keyboard-sweep-record.js';
 import { checkPolarisAccessibility } from './polaris-accessibility.js';
 import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { pwbSurfaceVersion } from './walkthrough-inputs.js';
@@ -59,8 +59,7 @@ async function main(): Promise<number> {
     process.stderr.write('No Chrome/Chromium found on PATH and SYZYGY_POC_BROWSER is unset; nothing measured.\n');
     return 2;
   }
-  const date = parsed.date ?? new Date().toISOString().slice(0, 10);
-  const output = parsed.out ?? join('docs', 'evidence', `polaris-keyboard-sweep-${date}.json`);
+  const output = keyboardSweepOutput(parsed, new Date().toISOString().slice(0, 10));
   const repoRoot = resolve('.');
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
@@ -114,9 +113,9 @@ async function main(): Promise<number> {
       sweeps,
     });
     const violations = (evidence.totals as { readonly violations: number }).violations;
-    mkdirSync(join('docs', 'evidence'), { recursive: true });
-    writeFileSync(output, `${JSON.stringify(evidence, null, 2)}\n`);
-    process.stdout.write(`wrote ${output}: ${violations} violations across ${sweeps.length} mounts\n`);
+    mkdirSync(output.directory, { recursive: true });
+    writeFileSync(output.file, `${JSON.stringify(evidence, null, 2)}\n`);
+    process.stdout.write(`wrote ${output.file}: ${violations} violations across ${sweeps.length} mounts\n`);
     return violations === 0 ? 0 : 1;
   } finally {
     rmSync(pages, { recursive: true, force: true });
