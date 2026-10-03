@@ -105,3 +105,16 @@ finding is a note, dispositioned in a sibling `ROUND-<n>-DISPOSITIONS.md`.
     the reader fails closed on an absent, unexported, computed, empty or
     repeating set (selftest), and that packet Q7 now asks only to confirm the
     set.
+
+12. **Does each round-3 repair hold, and did one introduce a defect?** The raw
+    is `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-3-RAW.md` (REVISE: findings 1
+    and 2 revise; 3 to 7 notes) and the repairs are in
+    `ROUND-3-DISPOSITIONS.md`. Specifically: the reader sets comments and
+    strings aside before matching (F1; the selftest fixtures and mutants in
+    `exclusion_reasons`' battery); `reasonRule` no longer says the set cannot
+    differ from what the generator emits (F2, patch); Q7 names reasons that
+    originate outside generation-source.ts (F3); the redundant pre-check now
+    has its own messages and fixtures (F4); the ledger's record figure carries
+    its predicate and own-package count (F5); the delta's rule count (F6); the
+    opaque `sourceId` sentence in the rule (F7). Re-derive the record count
+    and the manifest digest yourself.

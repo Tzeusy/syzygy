@@ -74,9 +74,14 @@ carries a source's reason only as a member of the closed set that the exported
 constant `GENERATION_EXCLUSION_REASONS` in `generation-source.ts` holds, read
 from code at the commit a run names, and the generator's validator refuses any
 reason outside it. The engine emits more than the policy's two classes
-(`oversize-source-excluded` on the base; `deferred-by-budget`, `empty-file`
-and others on other open branches), so a hand-written list would refuse real
-runs and go stale. [Inferred] The constant and the validator are not in code at
+(`oversize-source-excluded` in generation-source.ts;
+`body-not-retained-for-generation` in the app's source adapter, which also
+passes the PWB classifier's `unknownReason` through as a free string;
+`deferred-by-budget`, `empty-file` and others on other open branches), so a
+hand-written list would refuse real runs and go stale. The constant therefore
+has to cover reasons that originate outside generation-source.ts, and the code
+must map the pass-through onto listed values; otherwise the validator would
+refuse real runs. [Inferred] The constant and the validator are not in code at
 this package's base; they are requested of the generator's lane, and the
 builder fails closed (the package is not ready for an act) until the constant
 exists. *Ask:* confirm that the reason set is whatever that constant holds,
