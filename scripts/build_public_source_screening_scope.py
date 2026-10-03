@@ -91,12 +91,12 @@ def public_scope() -> dict:
             "neverClassified": ["work-history"],
             "rules": [
                 {"class": "code-structure", "rule": "normalized repository-relative paths, object ids and sizes of admitted snapshot entries, taken from Git tree metadata, with no body"},
-                {"class": "code-content", "rule": "the body of an admitted blob whose final path segment ends with one of sourceExtensions, after every screening step", "sourceExtensions": SOURCE_EXTENSIONS},
+                {"class": "code-content", "rule": "the body of an admitted blob whose final path segment ends with one of sourceExtensions, compared case-sensitively as ASCII, after every screening step. Configuration written in a listed extension (for example a .config.js file, setup.py or a .sh file) is therefore code-content. No extractor runs: the class is by extension and the body is admitted as whole-blob spans", "sourceExtensions": SOURCE_EXTENSIONS},
                 {"class": "derived-composites", "rule": "computed from the classes of what a composite embeds (RFC5-14); a composite embedding any unclassified or excluded content is refused"},
             ],
             "governanceTextPaths": [],
             "evidenceContentPaths": [],
-            "indeterminate": "every other admitted blob, including README, guides, tutorials, LICENSE files, configuration and data, is indeterminate: refused egress and shown as such. A later policy version maps prose once RFC5-14 defines a class for it",
+            "indeterminate": "every other admitted blob, including README files, guides, tutorials, specification and design documents, committed reports, LICENSE files, and configuration or data in an extension outside sourceExtensions, is indeterminate and is treated as unclassifiable under unclassifiableExclusion: excluded from reading and from egress (fail closed), recorded hash-not-body, and never stored or rendered. Its path, object id and size remain code-structure. A later policy version maps prose once RFC5-14 defines a class for it",
         },
         "instructionTextRule": {
             "class": "code-content",
@@ -106,15 +106,15 @@ def public_scope() -> dict:
         },
         "detectors": "every detector in this policy applies unchanged to every body under this scope, including inert code contexts; public visibility exempts nothing, and a match excludes the whole artifact with hash-not-body provenance (matchAction, RFC5-17)",
         "activeContent": {
-            "markdownAndProse": "the base activeContentClassification applies unchanged to Markdown and any other prose that would be rendered as markup",
-            "otherAdmittedFiles": "every other admitted file is untrusted text that is never interpreted as markup: it is scanned by every detector and context-encoded at every sink, as the base inertContextRule already requires of inert bytes; markup-like bytes in it are not an active-content match",
+            "rule": "the base activeContentClassification, inertContextRule and the active-content condition of classificationSuccess apply unchanged to every admitted body, Markdown or not: a body with an active-content form outside a valid inert code context is excluded whole as active content. This scope adds no loosening",
+            "consequence": "[Inferred] a source file that embeds markup-like bytes outside a valid inert code context, for example an HTML string in a script, is withheld. The first run measures how many; a loosening would be a later policy version and an explicit owner question",
         },
         "accessBoundary": {
             "postgresql": False, "credentialApi": False, "processEnvironment": False,
             "workingTree": False, "untrackedFiles": False, "observedCodeExecution": False,
             "networkEgress": False,
             "networkEgressRoutes": ["the shallow by-commit fetch from the target's upstream that the observation consent describes", "the registered provider route through the single egress check"],
-            "routeRule": "networkEgress is false except for these two routes; the base accessBoundary is otherwise unchanged",
+            "routeRule": "the networkEgress boolean stays false as the base reads it; the only permitted network use is these two routes, carried beside it, and a consumer that reads the boolean alone fails closed. The base accessBoundary is otherwise unchanged",
         },
         "rawBodyHandling": {
             "storage": "run-directory-only",
@@ -124,7 +124,7 @@ def public_scope() -> dict:
             "externalEgress": "classified-content-under-an-effective-egress-consent",
             "rule": "storage is permitted only inside a run directory under project:syzygy's state directory, outside git; rendering only in a generated editorial draft; external egress only for content this scope classifies and only under a separate egress consent for the pair",
         },
-        "inheritedRules": "every other rule in this policy applies to this scope unchanged: detectors, matchAction, unclassifiableExclusion, redactionClasses and the strict-UTF-8 and NUL rules. The base classificationOrder and classificationSuccess name the signed PWB grammar; under this scope they read: membership in the admitted snapshot replaces membership in a PWB phase, and the content-classification rules above replace the PWB closed extraction class. No approved requirement names this reading, so it is this policy's own and binds only through the act that approves it",
+        "inheritedRules": "every other rule in this policy applies to this scope unchanged: detectors, matchAction, unclassifiableExclusion, redactionClasses, activeContentClassification and the strict-UTF-8 and NUL rules. 'Every other rule' means the policy's rules outside any named scope object; the rules inside the base scope object, and inside any sibling scope object another act adds, do not govern this scope. The base classificationOrder and classificationSuccess name the signed PWB grammar; under this scope they read: membership in the admitted snapshot replaces membership in a PWB phase, and the content-classification rules above replace the PWB closed extraction class, so a blob with no class under those rules has an unknown extraction class and is excluded whole (step 6), while a code-content body needs no extractor and is admitted as whole-blob spans. No approved requirement names this reading, so it is this policy's own and binds only through the act that approves it",
         "selfReferenceRule": "a target repository's policy, configuration or documentation text is never an input to this policy's evaluation (RFC3-30); authority for a pair is evaluated only for that pair and is never inherited from another pair, including through expectations keyed only by the observing project",
     }
 
@@ -133,7 +133,8 @@ def bump_minor(version: str) -> str:
     m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(-.+)", version)
     if not m:
         raise ValueError(f"unparseable policyVersion {version}")
-    return f"{m.group(1)}.{int(m.group(2)) + 1}.0{m.group(4)}"
+    # A label distinct from PR #120's 1.2.0-candidate.1, which names different bytes.
+    return f"{m.group(1)}.{int(m.group(2)) + 1}.0-public-source-candidate.1"
 
 
 def dump(doc: dict) -> str:
@@ -226,6 +227,12 @@ def semantic_findings(base_text: str, proposed_text: str) -> list[str]:
         bad.append("authorizationModes is not exactly owner-trusted-bootstrap")
     if "machine-json" in scope["ingestBoundaries"] or "log" in scope["ingestBoundaries"]:
         bad.append("an ingest boundary the scope forbids is present")
+    if "otherAdmittedFiles" in scope["activeContent"] or "no loosening" not in scope["activeContent"].get("rule", ""):
+        bad.append("active content is loosened or no longer states that it adds no loosening")
+    if "excluded from reading and from egress" not in scope["contentClassification"]["indeterminate"]:
+        bad.append("indeterminate does not state the one fail-closed reading")
+    if "sibling scope object" not in scope["inheritedRules"]:
+        bad.append("inheritedRules does not separate sibling scopes")
     if scope["contentClassification"]["governanceTextPaths"] or scope["contentClassification"]["evidenceContentPaths"]:
         bad.append("governance-text or evidence-content path rules are non-empty in this version")
     return bad
@@ -327,6 +334,9 @@ def selftest() -> int:
         sem("machine-json boundary added is caught", lambda x: x[SCOPE_KEY]["ingestBoundaries"].append("machine-json"), "ingest boundary")
         sem("a base key altered is caught", lambda x: x["rawBodyHandling"].update(logging="run"), "differs from the base")
         sem("version not bumped is caught", lambda x: x.update(policyVersion=json.loads(base_text)["policyVersion"]), "next minor")
+        sem("active content loosened is caught", lambda x: x[SCOPE_KEY]["activeContent"].update(otherAdmittedFiles="never markup"), "loosened")
+        sem("indeterminate reading dropped is caught", lambda x: x[SCOPE_KEY]["contentClassification"].update(indeterminate="refused egress"), "indeterminate")
+        sem("sibling scope separation dropped is caught", lambda x: x[SCOPE_KEY].update(inheritedRules="every other rule"), "sibling")
         sem("governance-text path rule added is caught", lambda x: x[SCOPE_KEY]["contentClassification"].update(governanceTextPaths=["docs/**"]), "non-empty")
     failed = [n for n, ok in results if not ok]
     for n, ok in results:

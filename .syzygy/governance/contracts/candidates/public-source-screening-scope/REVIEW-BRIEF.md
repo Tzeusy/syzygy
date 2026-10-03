@@ -1,6 +1,7 @@
-# Review brief — public-source screening scope
+# Review brief — public-source screening scope (round 2)
 
-> **Candidate — binds nothing.** Not a review; carries no verdict.
+> **Candidate — binds nothing.** Not a review; carries no verdict. Round 1
+> returned REVISE; this is the round-2 brief.
 
 ## What the reviewer is given
 
@@ -48,6 +49,14 @@ rule it relies on; and the owner answers of 2026-10-03 (Q2, Q3, Q6, Q7).
 8. **Authority.** No file may label anything accepted or approved; no 64-hex
    digest may appear in any Markdown file of the package.
 
+9. **Does each round-1 repair hold, and did one introduce a defect?** The raw
+   is `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-1-RAW.md` (REVISE: findings 1,
+   3 to 6 revise; 2, 7 to 9 notes). Re-derive each count, line and quote from
+   the bytes. Specifically: the pin table of the ledger against a fresh sweep
+   (is it complete?); the version label distinct from PR #120's; the
+   asymmetric ordering; one reading of indeterminate; active content
+   unchanged; the Q2/Q7 narrowing disclosed.
+
 ## Out of scope
 
 Whether to perform the act; the extension list's membership beyond its
@@ -55,8 +64,8 @@ labelling; PR #120's contents.
 
 ## Recording
 
-Store the raw verbatim in
-the docs/reviews directory as `R-PUBLIC-SOURCE-SCREENING-SCOPE-RAW.md` (a re-issue is a second
+Store the raw verbatim in this package's `reviews/` directory as
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-2-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate the recorder enforces:** the first
 four non-blank lines are the title and exactly
 
