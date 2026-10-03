@@ -101,6 +101,16 @@ function withoutFreshness(model: PocModel): PocModel {
   return { ...model, projectShape: { ...shape, items: shape.items.map((candidate) => candidate === item ? absent : candidate) } };
 }
 
+/** The observed fixture with one item's tier replaced by `tier`. */
+function withTier(model: PocModel, tier: string): PocModel {
+  const shape = model.projectShape;
+  if (shape.kind !== 'observed') throw new Error('fixture shape unavailable');
+  const item = shape.items[0];
+  if (item === undefined) throw new Error('fixture item missing');
+  const changed = { ...item, claim: { ...item.claim, epistemic: { ...item.claim.epistemic, tier } } } as typeof item;
+  return { ...model, projectShape: { ...shape, items: shape.items.map((candidate) => candidate === item ? changed : candidate) } };
+}
+
 interface Census {
   readonly tuples: number;
   readonly histogram: Record<string, Record<string, number>>;
@@ -234,7 +244,7 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
     expect(absences).toBe(1);
   });
 
-  it('rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a mark that does not resolve', () => {
+  it('rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a mark that does not resolve, and refuses to render an undeclared tier', () => {
     const { model } = variants()[5] as { model: PocModel };
     const html = renderPolarisPage(model);
     expect(serverCensus(html).tuples).toBeGreaterThan(40);
@@ -250,6 +260,9 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
     const unmarked = html.replace(/(<span class="claim-tuple"[^>]*>[^<]*<\/span>)<i><\/i>/, '$1');
     expect(unmarked).not.toBe(html);
     expect(() => serverCensus(unmarked)).toThrow('no mark element');
+    const observed = variants()[2]?.model as PocModel;
+    expect(renderPolarisPage(withTier(observed, 'reduced-fidelity'))).toContain('data-epistemic-tier="reduced-fidelity"');
+    expect(() => renderPolarisPage(withTier(observed, 'derived-fact'))).toThrow('no declared tier encoding for value: derived-fact');
   });
 
   it.skipIf(browserExecutable === undefined)('sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row renders its declared symbol and token', async () => {
