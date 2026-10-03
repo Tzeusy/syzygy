@@ -60,6 +60,9 @@ describe('Messages API route', () => {
       ['version', { ...good, headers: { ...good.headers, 'anthropic-version': '2024-01-01' } }, 'anthropic-version'],
       ['content-length', { ...good, headers: { ...good.headers, 'content-length': '1' } }, 'content-length'],
       ['missing header', { ...good, headers: Object.fromEntries(Object.entries(good.headers).filter(([k]) => k !== 'anthropic-version')) }, 'anthropic-version missing'],
+      ['timeout value drift', { ...good, headers: { ...good.headers, 'x-stainless-timeout': '601' } }, 'header x-stainless-timeout'],
+      ['connection value drift', { ...good, headers: { ...good.headers, connection: 'close' } }, 'header connection'],
+      ['missing timeout', { ...good, headers: Object.fromEntries(Object.entries(good.headers).filter(([k]) => k !== 'x-stainless-timeout')) }, 'x-stainless-timeout missing'],
       ['wrong endpoint', { ...good, url: '/v1/messages?beta=true' }, 'unexpected endpoint'],
     ];
     for (const [name, mutant, expected] of mutants) {
@@ -181,9 +184,9 @@ describe('thinking profile', () => {
 });
 
 describe('ambient environment and pins', () => {
-  const canaries = ['ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_CUSTOM_HEADERS', 'ANTHROPIC_API_KEY', 'ANTHROPIC_PROFILE'];
+  const canaries = ['ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_CUSTOM_HEADERS', 'ANTHROPIC_API_KEY', 'ANTHROPIC_PROFILE', 'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
   afterEach(() => { for (const name of canaries) delete process.env[name]; });
-  it('refuses construction while any ANTHROPIC_* variable is set, and refuses a later start the same way', async () => {
+  it('refuses construction while any ANTHROPIC_* variable or Node TLS/proxy variable is set, and refuses a later start the same way', async () => {
     for (const name of canaries) {
       process.env[name] = 'canary';
       expect(() => createMessagesApiGenerate(config()), name).toThrow(MessagesApiProviderError);

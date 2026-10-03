@@ -81,10 +81,16 @@ export function messagesApiBody(config: BodyConfig, system: string, input: strin
 }
 
 /** The client reads ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_CUSTOM_HEADERS and
- * profile variables from the process environment. None may be set: ambient state must not
+ * profile variables from the process environment. None may be set, nor the Node TLS and proxy variables
+ * (syzygy-yqtg): ambient state must not
  * redirect, re-authenticate or add headers to this route. */
+/** Node TLS, certificate-store and proxy variables change where the bytes go or who can read them. */
+export const AMBIENT_NODE_NETWORK_ENV: readonly string[] = [
+  'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY',
+  'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy',
+];
 function refuseAmbientEnvironment(): void {
-  if (Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_'))) throw new MessagesApiProviderError('ambient-environment', 0);
+  if (Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_') || AMBIENT_NODE_NETWORK_ENV.includes(name))) throw new MessagesApiProviderError('ambient-environment', 0);
 }
 
 /** Messages API route (`@anthropic-ai/sdk`): no subprocess, no tools, no
@@ -213,8 +219,9 @@ const LITERALS: Readonly<Record<string, string>> = {
   accept: 'application/json', 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'user-agent': `Anthropic/JS ${PINNED_MESSAGES_SDK_VERSION}`,
   'x-stainless-lang': 'js', 'x-stainless-package-version': PINNED_MESSAGES_SDK_VERSION, 'x-stainless-retry-count': '0', 'x-stainless-runtime': 'node',
   'x-stainless-helper-method': 'stream', 'accept-language': '*', 'sec-fetch-mode': 'cors',
+  'x-stainless-timeout': '600', connection: 'keep-alive',
 };
-const OPTIONAL_SHAPES: ReadonlySet<string> = new Set(['connection', 'x-stainless-timeout']);
+const OPTIONAL_SHAPES: ReadonlySet<string> = new Set<string>();
 
 /** Accepts a captured request only if its body is exactly the generator's bytes
  * plus profile-set limits and every header name and value is listed. */

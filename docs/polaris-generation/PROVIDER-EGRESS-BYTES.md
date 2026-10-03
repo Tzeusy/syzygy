@@ -175,3 +175,7 @@ names no socket address but the gate and the capture endpoint.
 
 A try's deadline is the remaining run budget, and process start-up of the Agent
 SDK route counts against it: give the budget real headroom.
+
+### Messages route: ambient Node network environment (syzygy-yqtg)
+
+Besides any `ANTHROPIC_*` variable, construction and every later start refuse while `NODE_TLS_REJECT_UNAUTHORIZED`, `NODE_EXTRA_CA_CERTS`, `NODE_USE_ENV_PROXY`, `HTTPS_PROXY`, `HTTP_PROXY`, `ALL_PROXY` or their lower-case forms are set. The Messages route accepts `x-stainless-timeout` only as `600` and `connection` only as `keep-alive` (required, not optional). The Agent SDK route builds a closed child environment and is not affected by the ambient variables; its `diagnosticEnv` proxy variables are an explicit measurement option.
