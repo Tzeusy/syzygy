@@ -1,0 +1,999 @@
+{
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-04",
+  "ranAt": "b1f6930f67b12e1f574eeceb95a4dfb1e893f7cd",
+  "sweepFinished": "2026-10-03T21:22:04+00:00",
+  "runner": {
+    "method": "Before every mutant: rewrite every subject from HEAD, check its sha256, and run the mutant's test files unmutated, which must pass. Then apply the mutant (every edit's `old` must occur exactly once, a pair through `also`), run `npx vitest run --project @syzygy/polaris-generation-provider <tests>`, and restore and re-check every subject. Killed = at least one failed test."
+  },
+  "subjects": [
+    {
+      "path": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "sha256": "237ddf84e6ada5a699f1112840ce72d36e3caab344a80bc14b027edcbbe7c6a8"
+    },
+    {
+      "path": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "sha256": "ebc9e99025ef2f9777f46ad8275c60a1ec634d606a38bb3d030398b4636cc04c"
+    },
+    {
+      "path": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "sha256": "2bb689f12aed7597d163d1ef3b99f8c445e9b363b8751a6837f63e058cca0db4"
+    }
+  ],
+  "tests": [
+    {
+      "path": "packages/polaris-generation-provider/src/agent-sdk-provider.test.ts",
+      "sha256": "1bbc0cb9a123f20c5a7ec7bf548e37bdba29b20f4abe7cd0c0d68b9a66e920e1"
+    },
+    {
+      "path": "packages/polaris-generation-provider/src/egress-gate.test.ts",
+      "sha256": "ab1b1f61b6288c91c0c0435a0d27f9fdc2859f556c92c5b4c8c1506323ff514f"
+    }
+  ],
+  "supersedes": {
+    "path": "docs/evidence/polaris-egress-gate-mutants-2026-10-03.json",
+    "reason": "The #258 re-review (blockers 1 and 2): diagnosticEnv removed, NO_PROXY=* set, Node CA/TLS flags refused, G6 given a unique fragment, H3/H4 recorded as a mutually covering pair with the pair mutant H34, and every mutant re-run at one commit."
+  },
+  "summary": {
+    "mutants": 55,
+    "killed": 51,
+    "survived": 4,
+    "survivedIds": [
+      "A9-noop-control",
+      "H3-upstream-drop-hangs",
+      "H4-upstream-error-ignored",
+      "P1-parent-proxy-passed-to-cli"
+    ],
+    "expectedToSurviveButKilled": [
+      "P3-no-proxy-dropped"
+    ]
+  },
+  "mutants": [
+    {
+      "id": "G1-consent-not-required",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "allowed = (await options.permitted()) === true;",
+      "new": "allowed = true;",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > does not forward when the caller disconnects, or the try is disarmed or re-armed, while consent is being asked",
+        "egress gate > refuses when consent is anything but true, throws, or no upstream is configured"
+      ]
+    },
+    {
+      "id": "G2-consent-truthy-accepted",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "(await options.permitted()) === true",
+      "new": "!!(await options.permitted())",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses when consent is anything but true, throws, or no upstream is configured"
+      ]
+    },
+    {
+      "id": "G3-predicate-skipped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (!verdict.accepted) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > answers HEAD /api/hello itself, only while armed, and only with the probe shape",
+        "egress gate > forwards only an armed, accepted, permitted request to the configured upstream"
+      ]
+    },
+    {
+      "id": "G4-upstream-check-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.upstream === undefined) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses when consent is anything but true, throws, or no upstream is configured"
+      ]
+    },
+    {
+      "id": "G5-strip-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.stripFingerprint === true) for",
+      "new": "if (false) for",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "accounting and budget > strips the OS, architecture and runtime-version headers only when the profile says so",
+        "egress gate > forwards the SDK platform fingerprint headers unless stripFingerprint is set, and no others are touched"
+      ]
+    },
+    {
+      "id": "G6-unbilled-evidence-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "retryAfter = parseRetryAfterMs(upstreamRes.headers['retry-after'], Date.now()); unbilled = false; }",
+      "new": "retryAfter = parseRetryAfterMs(upstreamRes.headers['retry-after'], Date.now()); }",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not carry an earlier rejected try's unbilled evidence into a later 429 whose body is cut off"
+      ]
+    },
+    {
+      "id": "A2-retry-after-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "gate.takeRetryAfterMs() ?? 0)",
+      "new": "0)",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "accounting and budget > honours retry-after over the computed backoff, and stops when it cannot fit the budget"
+      ]
+    },
+    {
+      "id": "A3-try-deadline-removed",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "setTimeout(() => { timedOut = true; controller.abort(); }, remaining)",
+      "new": "setTimeout(() => undefined, remaining)",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "accounting and budget > bounds each try by the remaining budget"
+      ]
+    },
+    {
+      "id": "A4-thinking-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "thinking === 'adaptive' ? { type: 'adaptive' } : { type: 'disabled' }",
+      "new": "{ type: 'disabled' }",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "thinking profile > off sends no thinking field; adaptive adds exactly thinking, context_management and one beta entry"
+      ]
+    },
+    {
+      "id": "A5-api-key-unchecked",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "expected.apiKey !== undefined && key !== expected.apiKey",
+      "new": "false",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "header values > rule 6: the acceptance predicate rejects an altered header value"
+      ]
+    },
+    {
+      "id": "A6-session-id-unchecked",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "(sessionId !== undefined && header !== sessionId)",
+      "new": "false",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "header values > rule 6: the acceptance predicate rejects an altered header value"
+      ]
+    },
+    {
+      "id": "A7-version-mismatch-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "!== pin.cli) { versionMismatch = true;",
+      "new": "!== pin.cli) { versionMismatch = false;",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "version pin > refuses an unpinned SDK at construction and fails a call whose CLI reports another version"
+      ]
+    },
+    {
+      "id": "A8-rejected-unbilled-assumed",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "(gate.takeRejectedUnbilled() ? 0 : null)",
+      "new": "0",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 35,
+      "killedBy": [
+        "accounting and budget > carries the tokens spent on the final error",
+        "accounting and budget > counts a rejected try as unbilled only on the provider's documented error body",
+        "accounting and budget > reports null usage when a try reports none, and when a failed try before it reported none"
+      ]
+    },
+    {
+      "id": "G7-bind-all-interfaces",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "server.listen(0, '127.0.0.1', resolve)",
+      "new": "server.listen(0, resolve)",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > listens on 127.0.0.1 only"
+      ]
+    },
+    {
+      "id": "G8-host-header-forwarded",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "delete headers.host; delete headers.connection;",
+      "new": "delete headers.connection;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not forward the gate's own Host header"
+      ]
+    },
+    {
+      "id": "G9-probe-not-answered-locally",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (isConnectivityProbe(captured)) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 56,
+      "killedBy": [
+        "accounting and budget > counts a rejected try as unbilled only on the provider's documented error body",
+        "accounting and budget > honours retry-after over the computed backoff, and stops when it cannot fit the budget",
+        "accounting and budget > strips the OS, architecture and runtime-version headers only when the profile says so",
+        "captured request (schema-tool mode) > adds exactly the SDK StructuredOutput tool carrying the stage schema, and nothing else",
+        "captured request (text mode) > caps max_tokens at the smaller of the permit output and usage allowances",
+        "captured request (text mode) > is exactly the generator bytes plus the closed set of SDK-fixed fields, with no tools, no context and nothing outside the run directory"
+      ]
+    },
+    {
+      "id": "G10-spent-check-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (spent) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > forwards exactly one request per armed try, and a later try forwards again",
+        "egress gate > two simultaneous requests in one try forward at most one"
+      ]
+    },
+    {
+      "id": "G11-spent-never-set",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "spent = true;   // one forward",
+      "new": "void 0;   // one forward",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > forwards exactly one request per armed try, and a later try forwards again",
+        "egress gate > two simultaneous requests in one try forward at most one"
+      ]
+    },
+    {
+      "id": "G12-redirect-followed-through",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (status >= 300 && status < 400) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > turns any upstream redirect into a 502 and never follows it"
+      ]
+    },
+    {
+      "id": "G13-upstream-not-validated",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url, options.upstream.loopbackForTests);",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token"
+      ]
+    },
+    {
+      "id": "G14-plain-http-remote-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "parsed.origin === PROVIDER_ORIGIN &&",
+      "new": "parsed.hostname === 'api.anthropic.com' &&",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token",
+        "runtime gate in the adapter > refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)"
+      ]
+    },
+    {
+      "id": "G16-credentials-in-upstream-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "parsed.username === '' && parsed.password === ''",
+      "new": "true",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token"
+      ]
+    },
+    {
+      "id": "V1-timeout-value-unpinned",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "literal('x-stainless-timeout', '600');",
+      "new": "one('x-stainless-timeout');",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "captured request (text mode) > rule 6: the acceptance predicate rejects each injected or altered field"
+      ]
+    },
+    {
+      "id": "V2-connection-value-unpinned",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "literal('connection', 'keep-alive');",
+      "new": "one('connection');",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "captured request (text mode) > rule 6: the acceptance predicate rejects each injected or altered field"
+      ]
+    },
+    {
+      "id": "A9-noop-control",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "retry.baseDelayMs * 2 ** (n - 1)",
+      "new": "retry.baseDelayMs * 2 ** (n - 1) * 1",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 35,
+      "killedBy": [],
+      "expected": "survived",
+      "note": "equivalent control"
+    },
+    {
+      "id": "G15-loopback-needs-no-token",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (!(loopback && loopbackToken === LOOPBACK_FOR_TESTS) && !provider)",
+      "new": "if (!loopback && !provider)",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token",
+        "runtime gate in the adapter > refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)"
+      ]
+    },
+    {
+      "id": "G17-token-ignored-by-gate",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "options.upstream.url, options.upstream.loopbackForTests)",
+      "new": "options.upstream.url, LOOPBACK_FOR_TESTS)",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token"
+      ]
+    },
+    {
+      "id": "G18-token-widens-to-any-host",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (!(loopback && loopbackToken === LOOPBACK_FOR_TESTS) && !provider)",
+      "new": "if (loopbackToken !== LOOPBACK_FOR_TESTS && !provider)",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > accepts only the provider origin as upstream; loopback only with the test-only token"
+      ]
+    },
+    {
+      "id": "B1-arm-generation-unchecked",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (armGeneration !== mine || clientGone) {",
+      "new": "if (clientGone) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not forward when the caller disconnects, or the try is disarmed or re-armed, while consent is being asked"
+      ]
+    },
+    {
+      "id": "B3-client-gone-unchecked",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (armGeneration !== mine || clientGone) {",
+      "new": "if (armGeneration !== mine) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not forward when the caller disconnects, or the try is disarmed or re-armed, while consent is being asked"
+      ]
+    },
+    {
+      "id": "B4-close-handler-not-attached",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "req.socket.once('close', () => { clientGone = true; });",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not forward when the caller disconnects, or the try is disarmed or re-armed, while consent is being asked"
+      ]
+    },
+    {
+      "id": "E1-start-guard-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "  if (ambientNetwork()) throw new Error('egress gate: ambient Node network environment is set');\n",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv",
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "E2-forward-guard-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "        if (ambientNetwork()) { refuse(res, { ...base, reasons: ['ambient Node network environment is set'] }); return; }\n",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv",
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set",
+        "no proxy reaches the CLI > a proxy set in the parent after the gate started sees nothing; the gate refuses and logs the decision"
+      ]
+    },
+    {
+      "id": "E3-node-options-dropped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "'NODE_USE_SYSTEM_CA', 'NODE_OPTIONS',",
+      "new": "'NODE_USE_SYSTEM_CA',",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "E4-ssl-cert-file-dropped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "'SSL_CERT_FILE', ",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "E5-ssl-cert-dir-dropped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "'SSL_CERT_DIR', ",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "E6-system-ca-dropped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "'NODE_USE_SYSTEM_CA', ",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "E7-extra-ca-dropped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "'NODE_EXTRA_CA_CERTS', ",
+      "new": "",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while any ambient Node network variable is set"
+      ]
+    },
+    {
+      "id": "H1-certificate-not-verified",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "rejectUnauthorized: true,",
+      "new": "rejectUnauthorized: false,",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > verifies the upstream certificate: a self-signed https upstream is not reached"
+      ]
+    },
+    {
+      "id": "H2-pinned-agent-not-used",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "...(target.protocol === 'https:' ? { agent: upstreamAgent } : {})",
+      "new": "...{}",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > verifies the upstream certificate: a self-signed https upstream is not reached"
+      ]
+    },
+    {
+      "id": "H3-upstream-drop-hangs",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "upstreamRes.on('close', () => { if (!upstreamRes.complete) res.destroy(); });",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 56,
+      "killedBy": [],
+      "expected": "survived",
+      "note": "H3 and H4 cover each other: on a mid-body drop the upstream response emits error and then close, and either handler destroys the caller response. Each alone survives; the pair H34 is the kill."
+    },
+    {
+      "id": "H4-upstream-error-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "upstreamRes.on('error', () => res.destroy());",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 56,
+      "killedBy": [],
+      "expected": "survived",
+      "note": "H3 and H4 cover each other: on a mid-body drop the upstream response emits error and then close, and either handler destroys the caller response. Each alone survives; the pair H34 is the kill."
+    },
+    {
+      "id": "C1-agent-upstream-not-validated-at-construction",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new AgentSdkProviderError('invalid-config', 0); } }",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "runtime gate in the adapter > refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)"
+      ]
+    },
+    {
+      "id": "C2-token-mentioned-outside-gate",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "import { assertAllowedUpstream, startEgressGate,",
+      "new": "import { LOOPBACK_FOR_TESTS as leaked, assertAllowedUpstream, startEgressGate,",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > is imported by name outside tests and testkits nowhere: LOOPBACK_FOR_TESTS appears only in the gate module, tests and testkits"
+      ]
+    },
+    {
+      "id": "H34-upstream-drop-and-error-both-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "upstreamRes.on('error', () => res.destroy());",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "also": [
+        {
+          "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+          "old": "upstreamRes.on('close', () => { if (!upstreamRes.complete) res.destroy(); });",
+          "new": "void 0;"
+        }
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 56,
+      "killedBy": [
+        "egress gate > does not carry an earlier rejected try's unbilled evidence into a later 429 whose body is cut off",
+        "egress gate > ends the caller's response with an error when the upstream drops mid-body"
+      ]
+    },
+    {
+      "id": "P1-parent-proxy-passed-to-cli",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "    NO_PROXY: '*', no_proxy: '*',\n",
+      "new": "    ...Object.fromEntries(['HTTPS_PROXY', 'HTTP_PROXY', 'https_proxy', 'http_proxy'].filter(n => process.env[n] !== undefined).map(n => [n, process.env[n]!])),\n    NO_PROXY: '*', no_proxy: '*',\n",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 35,
+      "killedBy": [],
+      "expected": "survived",
+      "note": "Belt check: the parent proxy reaches the CLI, but NO_PROXY=* keeps it direct, so the proxy sees nothing. P2 removes the belt too and is killed."
+    },
+    {
+      "id": "P2-parent-proxy-passed-and-no-proxy-dropped",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "    NO_PROXY: '*', no_proxy: '*',\n",
+      "new": "    ...Object.fromEntries(['HTTPS_PROXY', 'HTTP_PROXY', 'https_proxy', 'http_proxy'].filter(n => process.env[n] !== undefined).map(n => [n, process.env[n]!])),\n",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 35,
+      "killedBy": [
+        "environment > is a closed list that inherits nothing from process.env and points every state path into the run directory",
+        "no proxy reaches the CLI > a proxy set in the parent after the gate started sees nothing; the gate refuses and logs the decision"
+      ]
+    },
+    {
+      "id": "P3-no-proxy-dropped",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "    NO_PROXY: '*', no_proxy: '*',\n",
+      "new": "",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "environment > is a closed list that inherits nothing from process.env and points every state path into the run directory"
+      ],
+      "expected": "survived",
+      "note": "Spec note before the run, kept: \"Equivalent alone: no proxy variable reaches the child to bypass. P2 is the kill.\" The run killed it anyway: environment > is a closed list that inherits nothing from process.env and points every state path into the run directory asserts the child environment carries NO_PROXY=*."
+    },
+    {
+      "id": "P4-parent-env-merged",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "  const base: Record<string, string> = {\n",
+      "new": "  const base: Record<string, string> = {\n    ...(process.env as Record<string, string>),\n",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 23,
+      "totalTests": 35,
+      "killedBy": [
+        "abort > rejects promptly mid-response and closes the connection",
+        "accounting and budget > bounds each try by the remaining budget",
+        "accounting and budget > counts a rejected try as unbilled only on the provider's documented error body",
+        "accounting and budget > honours retry-after over the computed backoff, and stops when it cannot fit the budget",
+        "accounting and budget > strips the OS, architecture and runtime-version headers only when the profile says so",
+        "captured request (schema-tool mode) > adds exactly the SDK StructuredOutput tool carrying the stage schema, and nothing else"
+      ]
+    },
+    {
+      "id": "P5-diagnostic-env-option-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "  if (Object.hasOwn(config, 'diagnosticEnv')) throw new AgentSdkProviderError('invalid-config', 0);\n",
+      "new": "",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 35,
+      "killedBy": [
+        "no proxy reaches the CLI > refuses the removed diagnosticEnv option, whatever it carries"
+      ]
+    },
+    {
+      "id": "X1-flag-guard-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "const ambientNetwork = (): boolean => ambientNetworkEnvironment().length > 0 || ambientNetworkFlags().length > 0;",
+      "new": "const ambientNetwork = (): boolean => ambientNetworkEnvironment().length > 0;",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv"
+      ]
+    },
+    {
+      "id": "X2-tls-flags-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "\n    || flag.startsWith('--use-openssl-ca=') || flag.startsWith('--tls-'));",
+      "new": "\n    || flag.startsWith('--use-openssl-ca='));",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv"
+      ]
+    },
+    {
+      "id": "X3-system-ca-flag-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "execArgv.filter(flag => flag === '--use-system-ca' || ",
+      "new": "execArgv.filter(flag => ",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv"
+      ]
+    },
+    {
+      "id": "X4-openssl-ca-flag-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "|| flag === '--use-openssl-ca' ",
+      "new": "",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv"
+      ]
+    },
+    {
+      "id": "X5-lookalike-flag-refused",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "flag.startsWith('--tls-')",
+      "new": "flag.includes('tls')",
+      "tests": [
+        "egress-gate"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21,
+      "killedBy": [
+        "egress gate > refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv"
+      ]
+    }
+  ]
+}
