@@ -248,6 +248,15 @@ jobs:
       - name: build_directive_register --selftest
         run: python3 scripts/build_directive_register.py --selftest
 
+      # A quotation written beside a path:line locator must have been said by
+      # that file in some committed revision (RD-6 F-2's class, syzygy-0wf).
+      # It reads history, which is why the checkout above is full depth.
+      - name: check_quotations
+        run: python3 scripts/check_quotations.py
+
+      - name: check_quotations --selftest
+        run: python3 scripts/check_quotations.py --selftest
+
       # The checkers' own fixtures. A hosted run that exercises the checks
       # but never the checks' checks reports a denominator it does not have.
       # Every one is stdlib-only, which is why they can run here at all —

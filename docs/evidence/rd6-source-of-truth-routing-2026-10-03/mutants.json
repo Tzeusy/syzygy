@@ -1,0 +1,245 @@
+{
+  "subject": "scripts/check_quotations.py",
+  "subjectSha256": "c717081f8f5f6c95965fea9f9e69f1287ef3b1e8f65322cbc0bdfed76bcfb808",
+  "commit": "c8f97ea1a61edbc87f8d9510b183809c9efbbc89",
+  "rule": "AGENTS.md verification rule 6",
+  "bead": "syzygy-0wf",
+  "baselineExit": 0,
+  "mutants": [
+    {
+      "id": "M1-match-always",
+      "kind": "predicate",
+      "mutates": "find_in_order returns a hit for any input",
+      "file": "scripts/check_quotations.py",
+      "old": "    return start if frags else -1\n",
+      "new": "    return 0\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  loc-paren-quote passes: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  a quotation wrapped across the citing lines is one quotation: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  loc-colon-quote passes across a wrap and emphasis: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  a table-cell separator is a colon form: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  quote-paren-loc passes with an ellipsis gap: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  a bracketed insertion is a gap: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  nested quote characters fold: examined/findings/amended/drift (1, 0, 0, 1), expected (1, 0, 0, 0)",
+        "FAIL  the wrong line is drift, not a finding: examined/findings/amended/drift (1, 0, 0, 0), expected (1, 0, 0, 1)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M2-no-gap-split",
+      "kind": "predicate",
+      "mutates": "an ellipsis is no longer a gap",
+      "file": "scripts/check_quotations.py",
+      "old": "GAP.split(fold(quote))",
+      "new": "[fold(quote)]",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  quote-paren-loc passes with an ellipsis gap: examined/findings/amended/drift (1, 1, 0, 0), expected (1, 0, 0, 0)",
+        "FAIL  a bracketed insertion is a gap: examined/findings/amended/drift (1, 1, 0, 0), expected (1, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M3-no-quote-fold",
+      "kind": "predicate",
+      "mutates": "quote characters are no longer folded",
+      "file": "scripts/check_quotations.py",
+      "old": "    text = QUOTE_CHARS.sub('\"', text)\n",
+      "new": "",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  nested quote characters fold: examined/findings/amended/drift (1, 1, 0, 0), expected (1, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M4-no-follow",
+      "kind": "predicate",
+      "mutates": "history lookup stops at renames",
+      "file": "scripts/check_quotations.py",
+      "old": "\"log\", \"--follow\", \"--format=%h\",",
+      "new": "\"log\", \"--format=%h\",",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  git history across a rename: one amended, one finding: findings/amended (2, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M5-no-history",
+      "kind": "predicate",
+      "mutates": "an amended source becomes a finding",
+      "file": "scripts/check_quotations.py",
+      "old": "            if past:\n",
+      "new": "            if False:\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a sentence an earlier revision carried is amended, not a finding: examined/findings/amended/drift (1, 1, 0, 0), expected (1, 0, 1, 0)",
+        "FAIL  git history across a rename: one amended, one finding: findings/amended (2, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M6-no-table-separator",
+      "kind": "predicate",
+      "mutates": "a table-cell separator no longer pairs",
+      "file": "scripts/check_quotations.py",
+      "old": "(?::|—|–|,|\\|)?",
+      "new": "(?::|—|–|,)?",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a table-cell separator is a colon form: examined/findings/amended/drift (0, 0, 0, 0), expected (1, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M7-no-exclusion",
+      "kind": "predicate",
+      "mutates": "verbatim records join the failing population",
+      "file": "scripts/check_quotations.py",
+      "old": "    if _is_raw_review(rel) or rel.endswith(\"-RAW.md\"):\n        return \"raw review\"\n",
+      "new": "",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  verbatim records are counted, never failed: {'round directory': 1}"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M8-no-drift",
+      "kind": "predicate",
+      "mutates": "drift is never reported",
+      "file": "scripts/check_quotations.py",
+      "old": "                if not q.first - DRIFT_SLACK <= n <= q.last + DRIFT_SLACK:\n",
+      "new": "                if False:\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  the wrong line is drift, not a finding: examined/findings/amended/drift (1, 0, 0, 0), expected (1, 0, 0, 1)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M9-no-suffix-resolution",
+      "kind": "predicate",
+      "mutates": "a basename locator no longer resolves",
+      "file": "scripts/check_quotations.py",
+      "old": "    return [rel for rel in tracked if rel.endswith(\"/\" + path) and rel in corpus]\n",
+      "new": "    return []\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  loc-colon-quote passes across a wrap and emphasis: examined/findings/amended/drift (0, 0, 0, 0), expected (1, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M10-no-stale-recorded",
+      "kind": "predicate",
+      "mutates": "a stale RECORDED entry no longer fails",
+      "file": "scripts/check_quotations.py",
+      "old": "    for citer, prefix, _ in unmatched:\n",
+      "new": "    for citer, prefix, _ in []:\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a recorded entry with no finding fails: findings 0"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M11-no-fence",
+      "kind": "predicate",
+      "mutates": "fenced code is scanned as prose",
+      "file": "scripts/check_quotations.py",
+      "old": "        if FENCE.match(line):\n",
+      "new": "        if False:\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a fenced example is not a quotation: examined/findings/amended/drift (1, 1, 0, 0), expected (0, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "M12-no-paragraph-join",
+      "kind": "predicate",
+      "mutates": "each line is its own paragraph",
+      "file": "scripts/check_quotations.py",
+      "old": "        buf.append(line.strip())\n",
+      "new": "        buf.append(line.strip())\n        yield start, \" \".join(buf)\n        buf = []\n",
+      "occurrences": 1,
+      "run": "check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a quotation wrapped across the citing lines is one quotation: examined/findings/amended/drift (0, 0, 0, 0), expected (1, 0, 0, 0)"
+      ],
+      "stderrTail": ""
+    },
+    {
+      "id": "I1-citer-word",
+      "kind": "input",
+      "mutates": "a live quotation's own words changed",
+      "file": ".syzygy/governance/decisions/DOCUMENTATION-ESTATE-DECISION-PACKET.md",
+      "old": "*\"Two rules everything else follows from:\"*",
+      "new": "*\"Two rules everything else derives from:\"*",
+      "occurrences": 1,
+      "run": "check_quotations.py --verbose (fresh clone of the commit, file mutated in the working tree)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        ".syzygy/governance/decisions/DOCUMENTATION-ESTATE-DECISION-PACKET.md:205 — quotes README.md:60 (\"Two rules everything else derives from:\"), in no revision of .syzygy/governance/decisions/README.md, README.md"
+      ]
+    },
+    {
+      "id": "I2-source-word",
+      "kind": "input",
+      "mutates": "the quoted source changed in the working tree: expected in the amended note, not a finding",
+      "file": "apps/three-surface-poc/src/polaris-copy.ts",
+      "old": "No route declared",
+      "new": "No route deralced",
+      "occurrences": 1,
+      "run": "check_quotations.py --verbose (fresh clone of the commit, file mutated in the working tree)",
+      "exit": 0,
+      "outcome": "detected",
+      "killedBy": [
+        "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md:111 — \"No route declared\" left apps/three-surface-poc/src/polaris-copy.ts after dcd6abcf"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "killed": 14
+  }
+}

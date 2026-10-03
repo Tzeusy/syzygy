@@ -402,13 +402,15 @@ python3 scripts/check_spec_reconciliation.py --selftest
 python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
 python3 scripts/build_directive_register.py --selftest
+python3 scripts/check_quotations.py     # a quotation beside a path:line locator was said by that file (RD-6, syzygy-0wf)
+python3 scripts/check_quotations.py --selftest
 DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
 python3 scripts/validate_launch_administration.py $DR
 python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The sixty-seven checks above are the same sixty-seven the hosted workflow runs
+The sixty-nine checks above are the same sixty-nine the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
