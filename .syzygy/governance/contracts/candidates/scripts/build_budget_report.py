@@ -33,7 +33,6 @@ import argparse
 import hashlib
 import os
 import re
-import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -56,6 +55,12 @@ TOKENS_PER_WORD = 1.35
 #: rule in force.
 PROPOSED_TRIGGER_TOKENS = 20000
 PROPOSED_BAND = (5000, 15000)
+#: The compaction charter's per-module ceiling, which its sources state as
+#: **~7,000** — approximate. The comparison needs a number, so it uses 7,000,
+#: but the report never prints the figure as exact (review RD-6 A-3 and F-3
+#: row 5: "approximation lost in derivation").
+MODULE_CEILING_WORDS = 7000
+CEILING_LABEL = "~7,000"
 
 ANCHOR_MEASURED = re.compile(
     r"(Measured:\s*\*\*)([\d,]+)(\s*words\s*≈\s*)([\d,]+)(\s*estimated tokens)")
@@ -271,19 +276,7 @@ def module_words():
     return sorted(rows)
 
 
-def head_commit():
-    try:
-        out = subprocess.run(["git", "-C", ROOT, "rev-parse", "HEAD"],
-                             capture_output=True, text=True, check=True)
-        dirty = subprocess.run(["git", "-C", ROOT, "status", "--porcelain"],
-                               capture_output=True, text=True, check=True)
-        return out.stdout.strip(), bool(dirty.stdout.strip())
-    except Exception:
-        return "unknown", True
-
-
 def render_report(measures):
-    sha, dirty = head_commit()
     mods = module_words()
     total = sum(w for _, w in mods)
     lines = []
@@ -305,14 +298,17 @@ def render_report(measures):
     a("> object from a waiver against one that does (review RC-12 §5), and")
     a("> every row below says `candidate budget exception`, never `waiver`.")
     a("")
-    a(f"**As-of commit:** `{sha}`"
-      + ("  *(plus uncommitted working-tree edits at generation time)*"
-         if dirty else ""))
+    a("**No as-of line.** The report names no commit and no working-tree")
+    a("state: those described the machine that generated it, not the bytes it")
+    a("measures, and `--check` could not verify them (review RD-6 B3). The")
+    a("report is current exactly when `build_budget_report.py --check` passes")
+    a("over the tree it sits in.")
     a("")
     a("This file is regenerated in the *same change* that moves any measured")
-    a("file. Two independent currency tests exist and neither is this line:")
-    a("`build_budget_report.py --check` recomputes the fixture anchors, and")
-    a("`check_governance.py` CG-18 recomputes them again from separate code.")
+    a("file. Two independent currency tests exist:")
+    a("`build_budget_report.py --check` recomputes the fixture anchors and")
+    a("this report byte for byte, and `check_governance.py` CG-18 recomputes")
+    a("the anchors again from separate code.")
     a("")
     a("## 1. Context fixtures — hand-authored selections, mechanically measured")
     a("")
@@ -385,15 +381,17 @@ def render_report(measures):
         a("")
     a("## 3. Contract modules — the corpus this budget is spent on")
     a("")
-    a(f"**{len(mods)} modules, {total:,} words.** The 7,000-word per-module")
+    a(f"**{len(mods)} modules, {total:,} words.** The {CEILING_LABEL}-word per-module")
     a("ceiling and the 35–50k corpus target band are the compaction charter's,")
     a("recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are")
     a("candidate figures under the same non-installed policy as §1's trigger.")
+    a(f"The ceiling is approximate in its sources; the column below marks a")
+    a(f"module over it when it counts more than {MODULE_CEILING_WORDS:,} words.")
     a("")
-    a("| Module | Words | Over the 7,000 ceiling |")
+    a(f"| Module | Words | Over the {CEILING_LABEL} ceiling |")
     a("|---|---:|---|")
     for rel, w in mods:
-        a(f"| `{rel}` | {w:,} | {'**yes**' if w > 7000 else '—'} |")
+        a(f"| `{rel}` | {w:,} | {'**yes**' if w > MODULE_CEILING_WORDS else '—'} |")
     a("")
     a("## 4. What this report deliberately does not contain")
     a("")
@@ -437,20 +435,6 @@ def render_report(measures):
     return "\n".join(lines) + "\n"
 
 
-def _without_asof(text):
-    """Drop the as-of line before comparing.
-
-    The commit identity moves on every commit, and a clone has no git at all,
-    so comparing it would report drift on a file that is byte-correct for its
-    content. The content is what --check is for; currency is CG-18's and the
-    commit discipline's.
-    """
-    if text is None:
-        return None
-    return "\n".join(l for l in text.splitlines()
-                      if not l.startswith("**As-of commit:**"))
-
-
 def exit_code(drift):
     """`--check`'s exit decision, as one testable function.
 
@@ -458,9 +442,9 @@ def exit_code(drift):
     filesystem baseline: the defect review RD-17 finding 2 found was one
     comprehension here — `[d for d in drift if "CONTEXT-BUDGET-REPORT" not in
     d]` — which removed every finding about the generated report itself from
-    the exit code. **Any drift is drift.** `_without_asof()` already removes
-    the one legitimately volatile line before the comparison, so there is
-    nothing left for an exemption to be for.
+    the exit code. **Any drift is drift.** The report carries no volatile
+    line at all since review RD-6 B3 dropped the as-of commit, so `--check`
+    compares it byte for byte and there is nothing for an exemption to be for.
     """
     return 1 if drift else 0
 
@@ -487,7 +471,7 @@ def run(check=False):
     report = render_report(measures)
     existing = (open(REPORT, encoding="utf-8").read()
                 if os.path.exists(REPORT) else None)
-    if _without_asof(existing) != _without_asof(report):
+    if existing != report:
         drift.append("CONTEXT-BUDGET-REPORT.md — differs from regeneration")
         if not check:
             os.makedirs(os.path.dirname(REPORT), exist_ok=True)
@@ -495,8 +479,8 @@ def run(check=False):
     if check:
         # **No exemption.** This block used to filter every finding about the
         # report itself out of the exit code, on the stated ground that the
-        # as-of commit line moves whenever HEAD does — but `_without_asof()`
-        # already strips that line before the comparison, so the exemption
+        # as-of commit line moved whenever HEAD did — but that line was
+        # already stripped before the comparison, so the exemption
         # suppressed nothing except real content drift. Review RD-17 finding
         # 2 hand-edited the report's §3 headline from `39 modules, 110,081
         # words` to `32 modules, 99,067 words` and one module row from 8,556
@@ -554,6 +538,20 @@ def selftest():
     cases.append(("the generated report states its measured fixture count",
                   f"{len(fixture_paths())} fixture(s) measured above"
                   in rendered))
+    # Review RD-6 B3: the as-of line embedded the generating machine's HEAD
+    # and dirty flag, which `--check` never verified.
+    cases.append(("the generated report carries no machine-local commit or "
+                  "working-tree state",
+                  "As-of commit" not in rendered
+                  and "uncommitted working-tree edits" not in rendered
+                  and not re.search(r"`[0-9a-f]{40}`", rendered)))
+    # Review RD-6 A-3 / F-3 row 5: the sources say ~7,000; the report must
+    # not print the ceiling as an exact figure.
+    cases.append(("the report states the module ceiling as approximate",
+                  "~7,000-word per-module" in rendered
+                  and "Over the ~7,000 ceiling" in rendered
+                  and not re.search(r"(?<!~)(?<!than )7,000[- ](?:word|ceiling)",
+                                    rendered)))
 
     for label, pattern, repl in (
         ("measured word count", ANCHOR_MEASURED,

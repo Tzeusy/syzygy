@@ -225,7 +225,10 @@ def _quiet_write(root: pathlib.Path) -> None:
 
 def _fixture_root(scratch: pathlib.Path) -> pathlib.Path:
     root = scratch / "repo"
-    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures"):
+    # The frozen rev9 corpus too: the verifier asserts REV9_ENDS against it
+    # and fails when it is absent (syzygy-3rhe).
+    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures",
+                CANDIDATES / "history" / "rev9-rfcs"):
         shutil.copytree(ROOT / rel, root / rel)
     for rel in (shared.BOOTSTRAP_MANIFEST,
                 *(CANDIDATES / e for e in shared.SCRATCH_EXTRAS)):

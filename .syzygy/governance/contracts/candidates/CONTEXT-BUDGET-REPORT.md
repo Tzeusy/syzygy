@@ -15,12 +15,17 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `b49c9f4ed5c5ac338b0b02d83523e243d335c474`  *(plus uncommitted working-tree edits at generation time)*
+**No as-of line.** The report names no commit and no working-tree
+state: those described the machine that generated it, not the bytes it
+measures, and `--check` could not verify them (review RD-6 B3). The
+report is current exactly when `build_budget_report.py --check` passes
+over the tree it sits in.
 
 This file is regenerated in the *same change* that moves any measured
-file. Two independent currency tests exist and neither is this line:
-`build_budget_report.py --check` recomputes the fixture anchors, and
-`check_governance.py` CG-18 recomputes them again from separate code.
+file. Two independent currency tests exist:
+`build_budget_report.py --check` recomputes the fixture anchors and
+this report byte for byte, and `check_governance.py` CG-18 recomputes
+the anchors again from separate code.
 
 ## 1. Context fixtures — hand-authored selections, mechanically measured
 
@@ -143,12 +148,14 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 130,155 words.** The 7,000-word per-module
+**39 modules, 130,155 words.** The ~7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
+The ceiling is approximate in its sources; the column below marks a
+module over it when it counts more than 7,000 words.
 
-| Module | Words | Over the 7,000 ceiling |
+| Module | Words | Over the ~7,000 ceiling |
 |---|---:|---|
 | `rfcs/RFC-0001-project-graph-identity-state-planes.md` | 9,544 | **yes** |
 | `rfcs/RFC-0002/README.md` | 2,415 | — |
