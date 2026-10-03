@@ -1,7 +1,7 @@
 {
   "bead": "syzygy-5oi3",
   "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
-  "commit": "825d26cb999c36fe04e750b544ddc106fc91ce5c",
+  "commit": "326ef5b40bc805fa6542c01db6ad62eeb3455acd",
   "subjects": [
     {
       "path": "apps/three-surface-poc/src/reobserve-session.ts",
@@ -27,7 +27,7 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -41,7 +41,7 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -55,7 +55,7 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -69,7 +69,7 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -83,7 +83,7 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -97,7 +97,35 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  1 failed | 3 passed (4)",
+        "      Tests  1 failed | 5 passed (6)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R1-single-flight-never-released",
+      "predicate": "session: the first re-observation is cached forever (reviewer-319 R1)",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "    return { kind: 'reobserved', reevaluation: latest };\n  })().finally(() => { reobserving = undefined; }));",
+      "new": "    return { kind: 'reobserved', reevaluation: latest };\n  })());",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 5 passed (6)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R5-swap-before-naming",
+      "predicate": "session: the rebuild is swapped in before it is named (reviewer-319 R5)",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "    const next = reevaluate(latest, model, capture);\n    state.replace(capture, model);\n",
+      "new": "    state.replace(capture, model);\n    const next = reevaluate(latest, model, capture);\n",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 5 passed (6)",
         "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
@@ -111,8 +139,8 @@
       "exit": 1,
       "outcome": "killed",
       "evidence": [
-        "      Tests  2 failed | 8 passed (10)",
-        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+        "      Tests  1 failed | 9 passed (10)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
       ]
     },
     {
@@ -131,8 +159,8 @@
     }
   ],
   "summary": {
-    "mutants": 8,
-    "killed": 8
+    "mutants": 10,
+    "killed": 10
   },
   "uncovered": "main.ts now only constructs the session and passes parsed.config.watch to session.startConsole; a mutant of those call arguments in main.ts is not unit-tested (main.ts is an entrypoint with top-level await). The live run below exercises it.",
   "liveRun": {
@@ -145,5 +173,6 @@
     },
     "reobservePost": "200; result names the superseded evaluation",
     "materialize": "not exercised live: a materialize writes a Beads item into Butlers, which this bead excludes; covered by reobserve-session.test.ts"
-  }
+  },
+  "history": "First issued at 825d26cb with 8 mutants. reviewer-319 (PR #319) found R1 (single-flight never released) and R5 (swap before naming) surviving; both tests were added at 326ef5b4 and all ten mutants re-run there."
 }
