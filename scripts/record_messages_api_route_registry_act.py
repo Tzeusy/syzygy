@@ -73,15 +73,22 @@ CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-3-R
 DISPOSITION_REL = PKG / "reviews/ROUND-3-DISPOSITIONS.md"
 DELTA_REL = PKG / "SEMANTIC-DELTA.md"
 LEDGER_REL = PKG / "IMPACT-LEDGER.md"
-#: The commit the confirming review read. None until a round returns CONFIRM
-#: or notes-only CONFIRM WITH EXCEPTIONS; then set to that commit and the
-#: round's two paths above, never hand-edited again. While None, every
-#: `--record` is refused: an unreviewed package cannot be recorded.
-FROZEN_SUBJECT: str | None = None
-#: SHA-256 of each file the confirming review read, taken from that commit by
-#: script. The commit is provenance only; validation never reads it. Empty
-#: while FROZEN_SUBJECT is None.
-FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}
+#: The commit the confirming review read (round 3, notes-only CONFIRM WITH
+#: EXCEPTIONS, 2026-10-03), set by script from the raw's head. The table below
+#: is the digest of each file as the notes repair left it. While this is None,
+#: every `--record` is refused: an unreviewed package cannot be recorded.
+FROZEN_SUBJECT: str | None = "3656a1032dc7e2dc189d828f092619644e58f422"
+#: SHA-256 of each file the act binds or the review read, taken by script from
+#: the package as the round-3 notes repair left it. The commit is provenance
+#: only; validation never reads it.
+FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt"): "effc41e935e928d9d2109316672ff6ec75318d32d27728fc57950b7e9a86b466",
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/OWNER-DECISION-PACKET.md"): "59447da587c2a821243329a10c311e9b36d4266fba2305d0190b90081d13225f",
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/REVIEW-BRIEF.md"): "7724f5e891f9c03d3dd64a6f5dc57b9994ebe83b4f91812a1b4d3dd7e83ac2cc",
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/SEMANTIC-DELTA.md"): "f8a9f46759f37c48562cab56d471ac767c57a910b01b78b3e63c0423458403dd",
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/IMPACT-LEDGER.md"): "9b6d3ce2d552cf986f5bca9cf6cc7ca2aa90a25255874401e2a54ded3e8f8d14",
+    pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json"): "b70b16eba27f49d4d3e91f757358eb94e9f6ad56c50b08e52ee07debfca79c11",
+}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 #: The moment of recording, UTC, whole seconds. A record that carried only a
