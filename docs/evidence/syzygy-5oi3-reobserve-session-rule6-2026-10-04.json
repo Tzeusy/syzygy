@@ -1,0 +1,149 @@
+{
+  "bead": "syzygy-5oi3",
+  "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
+  "commit": "825d26cb999c36fe04e750b544ddc106fc91ce5c",
+  "subjects": [
+    {
+      "path": "apps/three-surface-poc/src/reobserve-session.ts",
+      "sha256": "6b6721bf2e2e845029be2dc96e0274adf57f7853fee1a2907fc5143542209150"
+    },
+    {
+      "path": "apps/three-surface-poc/src/main.ts",
+      "sha256": "470ff646cec7a94d3f9bcb0029e082549a7c5769577e4a549d225f6de09e6da2"
+    },
+    {
+      "path": "apps/three-surface-poc/src/git-observation.ts",
+      "sha256": "e3c70efbeaa16c37159529670ed40d0bbcfb5ef5063d89b1d2078c774d599bc0"
+    }
+  ],
+  "mutants": [
+    {
+      "id": "S1-single-flight-dropped",
+      "predicate": "session: concurrent requests each run their own re-evaluation",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "reobserving ?? (reobserving = (async",
+      "new": "(reobserving = (async",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S2-console-always-attached",
+      "predicate": "session: the Enter console attaches without --watch",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "(enabled ? attachWatchMode({ ...io, reobserve }) : undefined)",
+      "new": "attachWatchMode({ ...io, reobserve })",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S3-console-never-attached",
+      "predicate": "session: --watch attaches nothing",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "(enabled ? attachWatchMode({ ...io, reobserve }) : undefined)",
+      "new": "(enabled ? undefined : undefined)",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S4-materialize-keeps-latest",
+      "predicate": "session: after materialize the latest re-evaluation is the pre-materialize one",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "    state.replace(capture, model);\n    latest = next;\n",
+      "new": "    state.replace(capture, model);\n    void next;\n",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S5-materialize-keeps-instant",
+      "predicate": "session: the rebuild reuses the prior observation instant",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "        observationInstant: at,\n",
+      "new": "        observationInstant: prior.evidence.observationInstant,\n",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S6-materialize-model-not-swapped",
+      "predicate": "session: the rebuild is named but not served",
+      "file": "apps/three-surface-poc/src/reobserve-session.ts",
+      "old": "    state.replace(capture, model);\n    latest = next;\n",
+      "new": "    latest = next;\n",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-session.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "M4-non-integer-as-zero",
+      "predicate": "git: a non-count reply maps to 0 (reviewer-313 M4)",
+      "file": "apps/three-surface-poc/src/git-observation.ts",
+      "old": "commitsSinceBuild: /^[0-9]+$/.test(reply) ? Number(reply) : null };",
+      "new": "commitsSinceBuild: /^[0-9]+$/.test(reply) ? Number(reply) : 0 };",
+      "check": "npx vitest run apps/three-surface-poc/src/git-observation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 8 passed (10)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "M4b-empty-reply-as-zero",
+      "predicate": "git: the prior predicate, under which an empty reply counts 0",
+      "file": "apps/three-surface-poc/src/git-observation.ts",
+      "old": "commitsSinceBuild: /^[0-9]+$/.test(reply) ? Number(reply) : null };",
+      "new": "commitsSinceBuild: Number.isInteger(Number(reply)) && Number(reply) >= 0 ? Number(reply) : null };",
+      "check": "npx vitest run apps/three-surface-poc/src/git-observation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 9 passed (10)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    }
+  ],
+  "summary": {
+    "mutants": 8,
+    "killed": 8
+  },
+  "uncovered": "main.ts now only constructs the session and passes parsed.config.watch to session.startConsole; a mutant of those call arguments in main.ts is not unit-tested (main.ts is an entrypoint with top-level await). The live run below exercises it.",
+  "liveRun": {
+    "commit": "825d26cb999c36fe04e750b544ddc106fc91ce5c",
+    "measuredOn": "private daemon (--port 0, scratch --state-dir) from a clean clone of this commit, Butlers 32f38feb51d86e33bfec00b78777cce5ec280198",
+    "polarisBytes": {
+      "direct": 1487549,
+      "tailnetMounted": 1493669,
+      "note": "byte-identical to the syzygy-u05.3 measurement: this change does not alter the render"
+    },
+    "reobservePost": "200; result names the superseded evaluation",
+    "materialize": "not exercised live: a materialize writes a Beads item into Butlers, which this bead excludes; covered by reobserve-session.test.ts"
+  }
+}
