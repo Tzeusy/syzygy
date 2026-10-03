@@ -490,6 +490,8 @@ def all_orders_findings(
                 "order-independence is unverified"]
     for failure in sorted(failures):
         findings.append(f"pending spec patches do not apply in every order: {failure}")
+    if not results:
+        findings.append("pending spec patches have no application order that applies")
     if len(results) > 1:
         findings.append(
             f"pending spec patches give {len(results)} different results across the "
@@ -569,16 +571,55 @@ ORDER_FIXTURE_PATCHES = (
     ("fixture-insert", "@@ -2,3 +2,4 @@\n k\n m\n+Z\n w\n"),
 )
 
+#: Two copies of one block. The relocating hunk edits the first copy, or the
+#: second once the first is changed; with both copies changed it applies
+#: nowhere. Every pair applies in both orders; two orders of the three fail.
+ORDER_FIXTURE_TRIPLE_BASE = b"h\nx1\nx2\ny\nz1\nz2\ns\nx1\nx2\ny\nz1\nz2\nt\n"
+ORDER_FIXTURE_TRIPLE = (
+    ("triple-first-copy", "@@ -1,3 +1,3 @@\n h\n-x1\n+X1\n x2\n"),
+    ("triple-second-copy", "@@ -7,3 +7,3 @@\n s\n-x1\n+X1\n x2\n"),
+    ("triple-relocating", "@@ -2,5 +2,5 @@\n x1\n x2\n-y\n+Y\n z1\n z2\n"),
+)
+#: The failing state is memoized once, so it is named by the first prefix the
+#: sorted search reaches; the other failing order shares its bytes.
+ORDER_FIXTURE_TRIPLE_FINDINGS = [
+    "pending spec patches do not apply in every order: "
+    "triple-relocating after [triple-first-copy, triple-second-copy]",
+    "pending spec patches give 2 different results across the 3! application orders",
+]
 
-def order_selftest(temp: pathlib.Path) -> int:
-    """Divergent orders fail the all-orders check while pairwise passes."""
-    rel = pathlib.Path("fixture.txt")
+
+def _fixture_patches(temp: pathlib.Path, rel: pathlib.Path, hunks) -> list[tuple[str, pathlib.Path]]:
     patches = []
-    for name, hunk in ORDER_FIXTURE_PATCHES:
+    for name, hunk in hunks:
         path = temp / f"{name}.patch"
         path.write_text(f"--- a/{rel}\n+++ b/{rel}\n{hunk}", encoding="utf-8")
         patches.append((name, path))
+    return patches
+
+
+def order_selftest(temp: pathlib.Path) -> int:
+    """Divergent and failing orders fail the all-orders check while every pair
+    of the same patches still applies in both orders."""
+    rel = pathlib.Path("fixture.txt")
+    patches = _fixture_patches(temp, rel, ORDER_FIXTURE_PATCHES)
+    triple = _fixture_patches(temp, rel, ORDER_FIXTURE_TRIPLE)
     failed = 0
+    for base, group in ((ORDER_FIXTURE_BASE, patches), (ORDER_FIXTURE_TRIPLE_BASE, triple)):
+        for i, first in enumerate(group):
+            for second in group[i + 1:]:
+                pair = all_orders_findings(base, [first, second], rel)
+                if any("do not apply" in finding or "no application order" in finding for finding in pair):
+                    print(f"SELFTEST FAILED: fixture pair {first[0]}, {second[0]} does not apply both ways: {pair}")
+                    failed += 1
+    triple_found = all_orders_findings(ORDER_FIXTURE_TRIPLE_BASE, triple, rel)
+    if triple_found != ORDER_FIXTURE_TRIPLE_FINDINGS:
+        print(f"SELFTEST FAILED: failing orders gave {triple_found}")
+        failed += 1
+    nowhere = all_orders_findings(b"unrelated\n", patches[:1], rel)
+    if "pending spec patches have no application order that applies" not in nowhere:
+        print(f"SELFTEST FAILED: a patch that applies nowhere gave {nowhere}")
+        failed += 1
     commuting = all_orders_findings(ORDER_FIXTURE_BASE, patches[:1], rel)
     if commuting:
         print(f"SELFTEST FAILED: a single patch gave order findings {commuting}")
@@ -686,7 +727,8 @@ def selftest(amendment: Amendment) -> int:
     total = len(common) + len(amendment.mutants)
     print(
         f"selftest: {total} structure mutants, declaration tampering, patch drift, "
-        "drifted composition, divergent application orders, the order-search cap, "
+        "drifted composition, divergent and failing application orders, a patch "
+        "that applies nowhere, the order-search cap, "
         "--check's use of the all-orders predicate and "
         "an unclassified sibling all fail closed on their "
         "own predicates"
