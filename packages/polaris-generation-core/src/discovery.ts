@@ -123,6 +123,13 @@ function candidateBlobs(sources: readonly GenerationSource[]): Blob[] {
   return [...byId].map(([blobId, pieces]) => ({ blobId, path: pieces[0]!.path, pieces, heuristic: heuristicScore(pieces[0]!.path, pieces) }));
 }
 
+/** A directory segment that marks vendored or generated code. A file under one ranks below every file that is not: the tier is strict, so
+ * nothing in it (a README included) can outrank first-party code. It is still a candidate, and is counted deferred when not selected. */
+const VENDORED_SEGMENT = /^(vendor|third_party|deps|node_modules|dist|build)$/iu;
+export const VENDORED_TIER = -1000;
+/** Size bonus ceiling, in doublings of 1 KiB of quotable text (256 KiB and above earn the same). */
+export const SIZE_BONUS_MAX = 8;
+
 /** Path-and-size prior used as the fallback ranking and as the tie-break. */
 export function heuristicScore(path: string, pieces: readonly GenerationSource[]): number {
   const parts = path.split('/'), name = (parts.at(-1) ?? '').toLowerCase();
@@ -131,8 +138,11 @@ export function heuristicScore(path: string, pieces: readonly GenerationSource[]
   if (parts.slice(0, -1).some(part => /^(docs?|documentation|design|architecture)$/iu.test(part))) score += 30;
   if (/\.(md|rst|txt|adoc)$/u.test(name)) score += 10;
   if (parts.slice(0, -1).some(part => /^(tests?|__tests__|spec|fixtures?|examples?)$/iu.test(part)) || /\.(test|spec)\./u.test(name)) score -= 20;
-  if (parts.slice(0, -1).some(part => /^(vendor|third_party|deps|node_modules|dist|build)$/iu.test(part))) score -= 40;
-  return score - 2 * (parts.length - 1) - pieces.length;
+  // Among files the path rules do not separate, more quotable text means more substance; without this a tie fell to path order.
+  const chars = pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + span.text.length, 0), 0);
+  score += Math.min(SIZE_BONUS_MAX, Math.floor(Math.log2(Math.max(1, chars / 1024))));
+  const vendored = parts.slice(0, -1).some(part => VENDORED_SEGMENT.test(part));
+  return (vendored ? VENDORED_TIER : 0) + score - 2 * (parts.length - 1) - pieces.length;
 }
 
 /** Subsystems by leading path segments, refined until each holds at most
