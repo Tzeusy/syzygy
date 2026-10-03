@@ -1,11 +1,11 @@
 {
  "subject": "Polaris dossier evaluation harness (TRACKER G5, gap #10): evaluateDossier and poc:dossier-evaluation, after the #261 review repairs (blob-absolute quotes, subject digests, label honesty, reader factory, non-file refusal)",
  "date": "2026-10-03",
- "commit": "c4dab877cb3009d094ca938acdf11d7b0b19d165",
+ "commit": "24ddb949a91bc57eafa28b9894c077c735c8f3f6",
  "subjectFiles": [
   {
    "path": "packages/polaris-generation-core/src/dossier-evaluation.ts",
-   "sha256": "9c8b53aebd7b342d8553eb4525354749b426433106c9d12d83b1df15aa6224fe"
+   "sha256": "bbdbf77b0a0e723e3cb887fe9458a9411ad6c7feca976854116e505c33fa4f85"
   },
   {
    "path": "packages/polaris-generation-core/src/dossier-evaluation.test.ts",
@@ -30,7 +30,8 @@
  "history": [
   "At 2b5500ff a mutant deleting the head-text guard (`if (inHead()) return;`) survived: <title>, the only text-bearing head element, was already skipped as raw text. The guard was removed as redundant in the next commit, and the mutant replaced by title-counted, which removes title from the raw-text set.",
   "At fefad720 the first record held 17 mutants, all killed. The #261 review (CHANGES at d1591dcb) renamed the coverage status, the claims pass word and the reader input; the five affected fragments were re-pointed to the renamed code, and twelve mutants were added for the repairs.",
-  "At cdd24994 body-not-digested (the sources digest ignoring body bytes) survived: the only changed-bytes case also changed the object id. c4dab877 adds a body swapped under the same identity; this run is at that commit."
+  "At cdd24994 body-not-digested (the sources digest ignoring body bytes) survived: the only changed-bytes case also changed the object id. c4dab877 adds a body swapped under the same identity; this run is at that commit.",
+  "At c4dab877, 29 of 29 were killed. #261 then merged with a two-letter content-coding literal in the void-element set, and governance-docs C3 failed on main. #274 builds the same set from one string, and this run is at those bytes."
  ],
  "mutants": [
   {
@@ -459,5 +460,6 @@
    "suiteErrors": [],
    "outcome": "killed"
   }
- ]
+ ],
+ "subjectNote": "The commit is the pre-merge branch head; #274 merged the same bytes to main by rebase. Every subject file hashes identically on main, which is what anchors this record."
 }
