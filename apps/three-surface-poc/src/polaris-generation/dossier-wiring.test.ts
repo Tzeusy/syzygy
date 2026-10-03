@@ -4,13 +4,15 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, type PackageReaderFs } from '@syzygy/polaris-generation-consent';
+import { renderRecorderAct } from '@syzygy/polaris-generation-consent/testing';
 import { createMessagesApiGenerate } from '@syzygy/polaris-generation-provider';
 import { LOOPBACK_FOR_TESTS, startCaptureEndpoint, type CaptureEndpoint } from '@syzygy/polaris-generation-provider/testing';
 
 import { GenerationUnavailable, openGeneration, type ProviderFactory } from './dossier-generation.js';
 import { DOSSIER_RUN_PROFILE, stageCeilingUnits } from './dossier-run-profile.js';
 import { EGRESS_STAGE_AUTHORITY, EGRESS_V1_DIGEST, EGRESS_V2_DIGEST, NARRATIVE_STAGES, stageAuthorisedBy, stagesAuthorisedBy } from './dossier-stage-authority.js';
-import type { WiredRecordsPort } from './dossier-records.js';
+import { createWiredRecordsPort, type WiredRecordsPort } from './dossier-records.js';
 import type { GenerationOpenContext, GenerationSession } from './dossier-trigger.js';
 
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
@@ -142,5 +144,65 @@ describe('openGeneration against a loopback provider', () => {
     expect(JSON.stringify(session.record())).not.toContain(SECRET);
     const walk = (dir: string): string[] => readdirSync(dir).flatMap(e => { const f = path.join(dir, e); return statSync(f).isDirectory() ? walk(f) : [f]; });
     for (const file of walk(`${runDir}.state`)) expect(readFileSync(file, 'utf8')).not.toContain(SECRET);
+  });
+});
+
+describe('stage authority through the real reader and the recorders\' acts', () => {
+  const V1_INSTANCE = `${INSTANCES_DIR}/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md`;
+  const bytes = (rel: string): string => readFileSync(path.join(REPO_ROOT, rel), 'utf8');
+  const hex = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
+  const memoryFs = (files: Record<string, string>): PackageReaderFs => ({
+    readdir: async dir => { if (dir !== `/r/${DECISIONS_DIR}`) throw new Error('enoent'); return Object.keys(files).filter(f => f.startsWith(`${DECISIONS_DIR}/`)).map(f => f.slice(DECISIONS_DIR.length + 1)); },
+    readFile: async file => { const key = file.slice(3); if (!(key in files)) throw new Error('enoent'); return files[key]!; },
+  });
+  const v1Act = (): string => renderRecorderAct('egress-anthropic', hex(bytes(V1_INSTANCE)), '2026-09-01', '2026-09-01T09:30:00Z');
+  const v2Act = (record: string): string => renderRecorderAct('egress-anthropic-v2', hex(record), '2026-09-01', '2026-09-01T09:30:00Z');
+  const world = (opts: { v1?: boolean; v2?: string | null }): Record<string, string> => ({
+    ...(opts.v1 === false ? {} : { [V1_INSTANCE]: bytes(V1_INSTANCE), [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: v1Act() }),
+    ...(opts.v2 === null || opts.v2 === undefined ? {} : { [EGRESS_V2_INSTANCE]: opts.v2, [`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`]: v2Act(opts.v2) }),
+  });
+
+  /** What the gate would be told for each stage under the given decisions. */
+  async function verdicts(files: Record<string, string>): Promise<Record<string, boolean>> {
+    const dirs: string[] = [];
+    let asked: ProviderBuildPermitted | undefined;
+    const factory: ProviderFactory = build => { asked = build.permitted; return { generate: async () => { throw new Error('unused'); }, attempts: () => [], gateDecisions: () => [], close: async () => undefined }; };
+    const parent = mkdtempSync(path.join(tmpdir(), 'wiring-')); dirs.push(parent);
+    const records = createWiredRecordsPort({ root: '/r', now: Date.now, fs: memoryFs(files) });
+    const context: GenerationOpenContext = { target: { owner: 'redis', repo: 'redis' } as never, revision: 'a'.repeat(40), runDir: path.join(parent, 'run'), egress: requirement, records };
+    const session = await openGeneration({ route: 'messages-api', apiKey: SECRET, root: REPO_ROOT, providerFactory: factory })(context);
+    try {
+      const permit = { attemptId: 'a', maxUsageUnits: 1, maxOutputBytes: 1 };
+      const out: Record<string, boolean> = {};
+      for (const stage of [...NARRATIVE_STAGES, 'discovery-map', 'discovery-reduce'] as const) out[stage] = await asked!(permit, stage);
+      return out;
+    } finally { await session.close(); for (const d of dirs) rmSync(d, { recursive: true, force: true }) }
+  }
+  type ProviderBuildPermitted = Parameters<ProviderFactory>[0]['permitted'];
+  const all = (value: boolean): Record<string, boolean> => Object.fromEntries([...NARRATIVE_STAGES, 'discovery-map', 'discovery-reduce'].map(s => [s, value]));
+  const narrativeOnly = (): Record<string, boolean> => ({ ...all(false), ...Object.fromEntries(NARRATIVE_STAGES.map(s => [s, true])) });
+
+  it('a version 2 record in force admits the narrative and discovery stages', async () => {
+    expect(await verdicts(world({ v2: bytes(EGRESS_V2_INSTANCE) }))).toEqual(all(true));
+  });
+  it('version 1 alone admits the narrative stages only', async () => {
+    expect(await verdicts(world({}))).toEqual(narrativeOnly());
+  });
+  it('no egress act admits nothing', async () => {
+    expect(await verdicts(world({ v1: false }))).toEqual(all(false));
+  });
+  it('a version 2 record whose digest is not in the stage map admits nothing, though its act is in force', async () => {
+    const other = `${bytes(EGRESS_V2_INSTANCE)}\n`;   // the act binds these bytes; the map does not know their digest
+    expect(hex(other)).not.toBe(EGRESS_V2_DIGEST);
+    expect(await verdicts(world({ v2: other }))).toEqual(all(false));
+  });
+  it('a version 2 record edited after its act is not in force: version 1 stands, narrative only', async () => {
+    const files = world({ v2: bytes(EGRESS_V2_INSTANCE) });
+    files[EGRESS_V2_INSTANCE] = `${files[EGRESS_V2_INSTANCE]}\nedited\n`;
+    expect(await verdicts(files)).toEqual(narrativeOnly());
+  });
+  it('the recorded version 2 digest is the one the stage map knows', () => {
+    expect(hex(bytes(EGRESS_V2_INSTANCE))).toBe(EGRESS_V2_DIGEST);
+    expect(hex(bytes(V1_INSTANCE))).toBe(EGRESS_V1_DIGEST);
   });
 });
