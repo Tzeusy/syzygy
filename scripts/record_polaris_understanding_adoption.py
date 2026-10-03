@@ -322,8 +322,11 @@ class Evidence:
     def successor_rows(self):
         """{path: (predecessor, successor)} over every performed readability successor.
 
-        Only a package that checks as performed-exact contributes; a package
-        that fails to load or check contributes nothing and blocks no other.
+        Only a package that checks as performed-exact contributes. A package
+        that fails to load, or whose act records do not verify, contributes
+        nothing and blocks no other. A package whose act records verify but
+        whose check fails contests every path it names: composing the other
+        packages around it would accept a tree the tool refuses.
         Paths are normalized. The pairs every package records for one path,
         whatever their order or spelling, compose into one pair (`chain`):
         a later successor whose predecessor is an earlier one's row extends
@@ -333,22 +336,29 @@ class Evidence:
         """
         if getattr(self, '_successors', None) is not None:
             return self._successors
-        claims = {}
+        claims, contested = {}, set()
         if (self.root / SUCCESSOR_TOOL).is_file():
             module = successor_tool(self.root)
             for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):
                 try:
                     package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())
-                    if package.check() != 'performed-exact':
+                    keys = {posixpath.normpath(path) for path in package.subjects}
+                    if package.performed_rows() is None:
                         continue
+                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing
+                    continue
+                try:
+                    require(package.check() == 'performed-exact', 'not performed-exact')
                     installed = package.manifest_rows()
                     pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]
-                except Exception:  # noqa: BLE001 - any failing package grants nothing
+                except Exception:  # noqa: BLE001 - a performed act whose check fails contests its paths
+                    contested |= keys
                     continue
                 for path, predecessor, successor in pairs:
                     # Keyed by normalized path, so './x' and 'x' are one path.
                     claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))
         rows = {key: chain(pairs) for key, pairs in claims.items()}
+        rows.update(dict.fromkeys(contested, CONTESTED))
         self._successors = rows
         return rows
 
@@ -479,7 +489,8 @@ def baseline_proof(evidence):
             # A performed readability successor may replace adopted bytes, but
             # only one whose recorded predecessor is exactly these bytes.
             row = evidence.successor_rows().get(path)
-            require(row != CONTESTED, 'two performed successors claim ' + path)
+            require(row != CONTESTED, 'two performed successors claim ' + path
+                    + ' (contested: their pairs form no single chain, or a performed successor fails its check)')
             require(row == (digest(adopted), digest(current)), 'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
@@ -1098,6 +1109,44 @@ def successor_rows_selftest():
     import shutil
     import tempfile
     module = successor_tool(ROOT)
+    # Each history ends in a tree the tool refuses for one performed package:
+    # that package contests its paths, so the others cannot compose around it.
+    t = ['2026-09-29T00:00:0' + str(n) + 'Z' for n in range(3)]
+    a_bytes, b_bytes, c_bytes = b'# Why\n\nlong prose\n', b'# Why\n\nShort prose.\n', b'# Why\n\nThird.\n'
+    for label, history in (
+            # History review 15 N1: A->B, B->C, C->B, then a no-act edit back to C.
+            ('step back then edited', [('bc', c_bytes, t[1]), ('cb', b_bytes, t[2])]),
+            # History review 15 N3: two distinct packages recorded at one instant.
+            ('two packages at one instant', [('tie', c_bytes, t[0])])):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'scripts').mkdir()
+            shutil.copy(ROOT / 'scripts/readability_successor.py', root / 'scripts')
+            package = module.synthetic(root)
+            phrase = module.pin(package)
+            config_path = root / package.dir / 'SUCCESSOR.json'
+            config = json.loads(config_path.read_text())
+            config['pins'] = package.pins
+            config_path.write_text(json.dumps(config))
+            module.Package(root, package.dir).record(phrase, t[0])
+            proposal = 'openspec/changes/example/proposal.md'
+            require(read(root, proposal) == b_bytes and digest(a_bytes) == package.predecessor[proposal],
+                    'fixture first step: ' + label)
+            for name, data, instant in history:
+                module.later(package, 'example-' + name, proposal, data, instant=instant)
+            (root / proposal).write_bytes(c_bytes)
+            states = []
+            for each in module.packages(root):
+                try:
+                    states.append(each.check())
+                except ValueError:
+                    states.append('refused')
+            require(states.count('refused') == 1, 'fixture: the tool refuses exactly one package: '
+                    + label + ' ' + repr(states))
+            rows = Evidence(root).successor_rows()
+            require(rows.get(proposal) == CONTESTED,
+                    'a performed successor the tool refuses was composed around: ' + label + ' '
+                    + repr(rows.get(proposal)))
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         require(Evidence(root).successor_rows() == {}, 'successor rows without the successor tool')
@@ -1205,7 +1254,9 @@ def successor_rows_selftest():
                 == (package.predecessor[proposal], digest(read(root, third.dir + '/proposed/' + proposal + module.SUFFIX))),
                 'removing the fork did not restore the chain')
         (root / proposal).write_bytes(b'drifted\n')
-        require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
+        drifted = Evidence(root).successor_rows()
+        require(drifted == dict.fromkeys(set(package.subjects) | {other}, CONTESTED),
+                'drifted successor granted rows: ' + repr(drifted))
     a, b, c, d, e = ('a' * 64, 'b' * 64, 'c' * 64, 'd' * 64, 'e' * 64)
     for pairs, expected, label in (
             ([(a, b)], (a, b), 'one step'),
@@ -1224,7 +1275,7 @@ def successor_rows_selftest():
             ([(a, b), (b, c), (c, b), (d, e), (e, d)], CONTESTED, 'a step back beside a cycle'),
             ([(a, b), (c, d), (d, c)], CONTESTED, 'a chain beside a cycle')):
         require(chain(pairs) == expected, 'chain composition: ' + label)
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; 15 composition cases')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; a refused performed package contests its paths after a step back and at an instant tie; 15 composition cases')
 
 
 def main():

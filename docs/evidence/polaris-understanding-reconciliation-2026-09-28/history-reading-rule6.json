@@ -905,6 +905,122 @@
       "new": "while nodes[-1] in following:",
       "old": "while nodes[-1] in following and nodes[-1] not in walked:",
       "refusal": "timeout after 120 s (the selftest never finishes)"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        claims = {}\n        if (self.root / SUCCESSOR_TOOL).is_file():\n            module = successor_tool(self.root)\n            for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):\n                try:\n                    package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())\n                    if package.check() != 'performed-exact':\n                        continue\n                    installed = package.manifest_rows()\n                    pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]\n                except Exception:  # noqa: BLE001 - any failing package grants nothing\n                    continue\n                for path, predecessor, successor in pairs:\n                    # Keyed by normalized path, so './x' and 'x' are one path.\n                    claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))\n        rows = {key: chain(pairs) for key, pairs in claims.items()}\n",
+      "old": "        claims, contested = {}, set()\n        if (self.root / SUCCESSOR_TOOL).is_file():\n            module = successor_tool(self.root)\n            for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):\n                try:\n                    package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())\n                    keys = {posixpath.normpath(path) for path in package.subjects}\n                    if package.performed_rows() is None:\n                        continue\n                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing\n                    continue\n                try:\n                    require(package.check() == 'performed-exact', 'not performed-exact')\n                    installed = package.manifest_rows()\n                    pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]\n                except Exception:  # noqa: BLE001 - a performed act whose check fails contests its paths\n                    contested |= keys\n                    continue\n                for path, predecessor, successor in pairs:\n                    # Keyed by normalized path, so './x' and 'x' are one path.\n                    claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))\n        rows = {key: chain(pairs) for key, pairs in claims.items()}\n        rows.update(dict.fromkeys(contested, CONTESTED))\n",
+      "predicate": "pre-fix composition (4c5c22a1 successor_rows body) under the new fixtures",
+      "refusal": "FAIL exact digest reconciliation unresolved: a performed successor the tool refuses was composed around: step back then edited ('e05fb1d26a126a910c50e3491c49243153fb2e04a21443613c6fb7361c84b154', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "further_edits": [
+        {
+          "file": "scripts/record_polaris_understanding_adoption.py",
+          "new": "",
+          "old": "            ('step back then edited', [('bc', c_bytes, t[1]), ('cb', b_bytes, t[2])]),\n"
+        },
+        {
+          "file": "scripts/record_polaris_understanding_adoption.py",
+          "new": "            ('two packages at one instant', [('tie', c_bytes, t[0])]),):\n",
+          "old": "            ('two packages at one instant', [('tie', c_bytes, t[0])])):\n"
+        }
+      ],
+      "killed": true,
+      "new": "        claims = {}\n        if (self.root / SUCCESSOR_TOOL).is_file():\n            module = successor_tool(self.root)\n            for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):\n                try:\n                    package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())\n                    if package.check() != 'performed-exact':\n                        continue\n                    installed = package.manifest_rows()\n                    pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]\n                except Exception:  # noqa: BLE001 - any failing package grants nothing\n                    continue\n                for path, predecessor, successor in pairs:\n                    # Keyed by normalized path, so './x' and 'x' are one path.\n                    claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))\n        rows = {key: chain(pairs) for key, pairs in claims.items()}\n",
+      "old": "        claims, contested = {}, set()\n        if (self.root / SUCCESSOR_TOOL).is_file():\n            module = successor_tool(self.root)\n            for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):\n                try:\n                    package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())\n                    keys = {posixpath.normpath(path) for path in package.subjects}\n                    if package.performed_rows() is None:\n                        continue\n                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing\n                    continue\n                try:\n                    require(package.check() == 'performed-exact', 'not performed-exact')\n                    installed = package.manifest_rows()\n                    pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]\n                except Exception:  # noqa: BLE001 - a performed act whose check fails contests its paths\n                    contested |= keys\n                    continue\n                for path, predecessor, successor in pairs:\n                    # Keyed by normalized path, so './x' and 'x' are one path.\n                    claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))\n        rows = {key: chain(pairs) for key, pairs in claims.items()}\n        rows.update(dict.fromkeys(contested, CONTESTED))\n",
+      "predicate": "pre-fix composition with the N1 fixture removed, so the tie fixture runs alone",
+      "refusal": "FAIL exact digest reconciliation unresolved: a performed successor the tool refuses was composed around: two packages at one instant ('8de181a0eac26ec8b0e2bae845c6edf4b21ae135ec85e2d496d7757ca1d66ee1', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "                    pass\n",
+      "old": "                    contested |= keys\n",
+      "predicate": "a refused performed package contests nothing",
+      "refusal": "FAIL exact digest reconciliation unresolved: a performed successor the tool refuses was composed around: step back then edited ('e05fb1d26a126a910c50e3491c49243153fb2e04a21443613c6fb7361c84b154', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "",
+      "old": "        rows.update(dict.fromkeys(contested, CONTESTED))\n",
+      "predicate": "contested paths not applied to the rows",
+      "refusal": "FAIL exact digest reconciliation unresolved: a performed successor the tool refuses was composed around: step back then edited ('e05fb1d26a126a910c50e3491c49243153fb2e04a21443613c6fb7361c84b154', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        rows.update({key: CONTESTED for key in contested if key not in rows})\n",
+      "old": "        rows.update(dict.fromkeys(contested, CONTESTED))\n",
+      "predicate": "contest only paths no other package claims",
+      "refusal": "FAIL exact digest reconciliation unresolved: a performed successor the tool refuses was composed around: step back then edited ('e05fb1d26a126a910c50e3491c49243153fb2e04a21443613c6fb7361c84b154', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "                    if package.performed_rows() is None:\n                        pass\n",
+      "old": "                    if package.performed_rows() is None:\n                        continue\n",
+      "predicate": "an unperformed package contests its paths",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "further_edits": [
+        {
+          "file": "scripts/record_polaris_understanding_adoption.py",
+          "new": "                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing\n                    contested |= keys\n                    continue\n",
+          "old": "                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing\n                    continue\n"
+        }
+      ],
+      "killed": true,
+      "new": "                keys = set()\n                try:\n                    package = module.Package(",
+      "old": "                try:\n                    package = module.Package(",
+      "predicate": "a package whose act records do not verify contests its paths",
+      "refusal": "FAIL exact digest reconciliation unresolved: sibling with listed pins changed the rows"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest (SUCCESSOR_TOOL_SHA re-pinned to the mutated tool)",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/readability_successor.py",
+      "further_edits": [
+        {
+          "file": "scripts/record_polaris_understanding_adoption.py",
+          "new": "SUCCESSOR_TOOL_SHA = \"ea9496ae7eacb694b56fe183ceeaf53f6f142d647f5e74bdf84f9fcc11c644a1\"",
+          "old": "SUCCESSOR_TOOL_SHA = \"f9e24b6563eca5bfc274dc19170ed7488e5f4ab4caa33558fe86cfa480e57df7\""
+        }
+      ],
+      "killed": true,
+      "new": "if predecessor == reached and at >= after and",
+      "old": "if predecessor == reached and at > after and",
+      "predicate": "tool later-instant test made non-strict (at >= after), recorder pin moved to the mutant",
+      "refusal": "FAIL exact digest reconciliation unresolved: fixture: the tool refuses exactly one package: two packages at one instant ['performed-exact', 'performed-exact']"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "bec7a87c3bfa14a322c413e01f059e2dfe8e1aec",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "                    keys = set(package.subjects)\n",
+      "old": "                    keys = {posixpath.normpath(path) for path in package.subjects}\n",
+      "predicate": "contested paths not normalized",
+      "refusal": "FAIL exact digest reconciliation unresolved: drifted successor granted rows: {'openspec/changes/example/./proposal.md': ('contested', 'contested'), 'openspec/changes/example/proposal.md': ('contested', 'contested'), 'openspec/changes/example/spec.md': ('contested', 'contested'), 'openspec/changes/example/design.md': ('contested', 'contested')}"
     }
   ],
   "version": 1
