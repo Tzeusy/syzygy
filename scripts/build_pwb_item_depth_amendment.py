@@ -9,17 +9,20 @@ only in a scratch tree and hash those proposed bytes. ``--apply
 sign-off and refuses unless the whole package verifies. A candidate commit,
 review, manifest or merge performs no owner act.
 
-**After sign-off, ``--check`` and ``--selftest`` fail by design**
-(syzygy-6bv9, 2026-10-03). The owner signed this package off as v1.0 on
-2026-10-02 (``decisions/PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md``), and the
-recorder applied its patches. Each patch is the delta *to* the signed bytes,
-so it cannot apply a second time, and this builder has no mode that
-recognises the applied state. Both modes therefore stop at "patch does not
-apply" from the sign-off commit onward. That is not a defect. The readability
-successor and tree-framing v1.0 sign-offs then rewrote five of the eleven
-subjects. This manifest now matches 6 of 11 and describes superseded bytes.
-To check the bytes in force, run the builder of the latest sign-off in the
-chain (``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
+**After sign-off, ``--check`` fails by design** (syzygy-6bv9, 2026-10-03). The
+owner signed this package off as v1.0 on 2026-10-02
+(``decisions/PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md``), and the recorder
+applied its patches. Each patch is the delta *to* the signed bytes, so it
+cannot apply a second time, and this builder has no mode that recognises the
+applied state. ``--check`` therefore stops at "patch does not apply" from the
+sign-off commit onward. That is not a defect. ``--selftest`` does not stop
+there: since syzygy-tmkb it re-runs itself against the pre-adoption tree
+through ``scripts/pwb_signed_selftest.py`` (``rerun_before_signoff``) and
+passes. The readability successor and tree-framing v1.0 sign-offs then rewrote
+five of the eleven subjects. This manifest now matches 6 of 11 and describes
+superseded bytes. To check the bytes in force, run the builder of the latest
+sign-off in the chain (``build_pwb_tree_framing_amendment.py --check`` as of
+2026-10-03).
 """
 
 from __future__ import annotations
