@@ -3,9 +3,9 @@
   "bead": "syzygy-dov.4.1",
   "authority": "P-71 ruling A (.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md) under PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md; M4 slices 1, 2 and 7 (arm b). Slice 6 not run.",
   "subject": {
-    "commit": "05c1989e7c33c9c5a1aa928e023a040ede6bbaea",
+    "commit": "0ef90c61d1564f84212295ff6d02222f98abecf2",
     "base": "3311f0a3",
-    "note": "sha256 of each changed file at the commit; the stable anchor if a rebase-merge makes the commit unreachable",
+    "note": "sha256 of each changed file at the commit; the stable anchor if a rebase-merge makes the commit unreachable; refreshed after the syzygy-aeax review repair (the drafter purity test changed)",
     "files": {
       "apps/three-surface-poc/src/exact-tables.ts": "bb6c5044a447bf892b42e60e70fe3d15752726f73f49539f03b01eec3fa104ff",
       "apps/three-surface-poc/src/materialize-action.ts": "baab89bd86f2b5fe05931659995124bfa34ddc4cac2f15d2892b076f5c2ca47e",
@@ -27,7 +27,7 @@
       "packages/three-surface-poc-core/src/index.ts": "086e3313f9a40bc67b990e35387da004424ba99458d890e81cca8d6b54716521",
       "packages/three-surface-poc-core/src/model.test.ts": "ede7c22c90a7e141c51240e68e6a4b049b9edced3563711e0158f1385923bc9c",
       "packages/three-surface-poc-core/src/model.ts": "af483428b85ddf9e7feea9414eb4a3c369b145d76ba02593466d20838c88f161",
-      "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": "6eae7d46ac425331a00fc7d52017d0f6fd7b236a77d83d9f75108aef13897afd",
+      "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": "1670e2e485510531100d76bd283319c9b2f249dd77e0ef4868f42019c7badbab",
       "packages/three-surface-poc-core/src/owner-act-drafter.ts": "1dfea09c97b4b342df776a0978ec494d834cfae7d7533e4a6419e5b92cc162e3",
       "packages/three-surface-poc-core/src/project-shape-model.test.ts": "d87145f4f0f7efb09284df0d1e05b65ced7364bc0fa709e88bc258cbf47c746f",
       "packages/three-surface-poc-core/src/project-shape-model.ts": "0f8ddad804af0ef25513c522b6df507a23cacaad95c9bdfcef7ca0a3a0cdf206",
@@ -338,5 +338,91 @@
       }
     },
     "note": "the Orrery unmapped block is built by script and is not in server HTML; the browser census in surface-routes.test.ts checks it"
+  },
+  "reviewMutants": {
+    "review": "syzygy-aeax on PR #306 (head 7dc4aad1): R-M3 and R-M5 survived the first purity census",
+    "commit": "0ef90c61d1564f84212295ff6d02222f98abecf2",
+    "denominator": 6,
+    "killed": 6,
+    "records": [
+      {
+        "id": "R-M3",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nimport 'fs';\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "R-M4",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nexport { writeFileSync } from 'fs';\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "R-M5",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nimport { readFileSync } from \"fs\";\nexport const peek = (p: string): string => readFileSync(p, \"utf8\");\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "R-M6",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nexport * from \"node:net\";\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "R-M7",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nexport const load = async (): Promise<unknown> => import(\"os\");\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "R-M8",
+        "predicate": "drafter purity: a module specifier outside node:crypto and @syzygy/cap1-core",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nimport \"./model.js\";\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      }
+    ]
   }
 }
