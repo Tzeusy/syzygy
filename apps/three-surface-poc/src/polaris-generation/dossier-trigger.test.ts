@@ -161,6 +161,7 @@ describe('with every record satisfied', () => {
     const allowed = vi.fn(map);
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map: allowed } }));
     expect(allowed).toHaveBeenCalled();
+    expect((allowed.mock.calls[0]![0] as { readerQuestions: string[] }).readerQuestions).toEqual(expect.arrayContaining([expect.stringContaining('core ideas')]));
   });
 
   it('writes nothing outside the run directory and rejects unsafe output paths', () => {
