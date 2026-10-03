@@ -266,6 +266,21 @@ def rfc5_precondition(root: pathlib.Path) -> None:
                       "(runbook finding F12: re-run the recorder from a build that writes it)")
 
 
+def rfc5_act_argument(root: pathlib.Path) -> str:
+    """The digest the row-7 act bound; the installed RFC-0005 bytes must be exactly this."""
+    m = re.findall(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`", (root / RFC5_ACT).read_text(), re.M)
+    if len(m) != 1:
+        raise Refusal(f"the RFC5-14 act record carries {len(m)} 'Exact digest (SHA-256)' lines, expected one")
+    return m[0]
+
+
+def rfc5_installed_matches(root: pathlib.Path, act_arg: str) -> None:
+    for mirror in ("rfcs", "candidates/rfcs"):
+        module = root / ".syzygy/governance/contracts" / mirror / "RFC-0005/consent-egress-secrets.md"
+        if not module.is_file() or sha(module.read_bytes()) != act_arg:
+            raise Refusal(f"installed {module} does not hash to the row-7 act's argument")
+
+
 # ---- steps -----------------------------------------------------------------
 
 def step_registrations(root: pathlib.Path, write: bool) -> bool:
@@ -296,6 +311,10 @@ def step_rfc5(root: pathlib.Path, write: bool) -> bool:
     if [p for _d, p in rows] != [RFC5_MODULE]:
         raise Refusal(f"rfc5 manifest rows are {[p for _d, p in rows]}, expected exactly [{RFC5_MODULE}]")
     row = rows[0][0]
+    act_arg = rfc5_act_argument(root)
+    if row != act_arg:
+        raise Refusal("the rfc5 manifest row is not the digest the row-7 act bound; refusing to install "
+                      "text the act did not bind")
     patch = root / RFC5_PKG / "proposed/RFC-0005/consent-egress-secrets.md.patch"
     for mirror in ("rfcs", "candidates/rfcs"):
         module = root / ".syzygy/governance/contracts" / mirror / "RFC-0005/consent-egress-secrets.md"
@@ -307,6 +326,8 @@ def step_rfc5(root: pathlib.Path, write: bool) -> bool:
             r = subprocess.run(["patch", "-s", "-p0", str(module), "-i", str(patch)], capture_output=True, text=True)
             if r.returncode or sha(module.read_bytes()) != row:
                 raise Refusal(f"patch did not produce the manifest row for {module}: {r.stdout}{r.stderr}")
+    if write or not changed:
+        rfc5_installed_matches(root, act_arg)
     active = root / CAND / "ACTIVE-CONTRACT-MANIFEST.txt"
     lines = active.read_text().split("\n")
     idx = [i for i, l in enumerate(lines) if l.endswith(f"  {RFC5_MODULE}")]
@@ -1008,6 +1029,40 @@ def selftest() -> int:
             except Refusal:
                 passed = False
             ok.append((f"act instant precondition: {name}", passed == (name == "single instant")))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        good = b"rfc five text\n"
+        arg = sha(good)
+        (root / RFC5_ACT).parent.mkdir(parents=True)
+        (root / RFC5_ACT).write_text(f"# x\nExact digest (SHA-256): `{arg}`\n")
+        ok.append(("the row-7 act argument is read from its record", rfc5_act_argument(root) == arg))
+        (root / RFC5_ACT).write_text(f"# x\nExact digest (SHA-256): `{arg}`\nExact digest (SHA-256): `{arg}`\n")
+        try:
+            rfc5_act_argument(root)
+            ok.append(("two argument lines in the row-7 record are refused", False))
+        except Refusal:
+            ok.append(("two argument lines in the row-7 record are refused", True))
+        mods = [root / ".syzygy/governance/contracts" / m / "RFC-0005/consent-egress-secrets.md"
+                for m in ("rfcs", "candidates/rfcs")]
+        for m in mods:
+            m.parent.mkdir(parents=True)
+            m.write_bytes(good)
+        rfc5_installed_matches(root, arg)
+        ok.append(("installed RFC-0005 bytes equal to the act argument pass", True))
+        for which in (0, 1):
+            mods[which].write_bytes(good + b"x")
+            try:
+                rfc5_installed_matches(root, arg)
+                ok.append((f"a mirror {which} not hashing to the act argument is refused", False))
+            except Refusal:
+                ok.append((f"a mirror {which} not hashing to the act argument is refused", True))
+            mods[which].write_bytes(good)
+        mods[1].unlink()
+        try:
+            rfc5_installed_matches(root, arg)
+            ok.append(("a missing mirror is refused", False))
+        except Refusal:
+            ok.append(("a missing mirror is refused", True))
     failed = [n for n, g in ok if not g]
     for n, g in ok:
         print(("ok   " if g else "FAIL ") + n)
