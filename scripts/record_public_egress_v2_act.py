@@ -70,6 +70,7 @@ MANIFEST_REL = PKG / build.MANIFEST_NAME
 PACKET_REL = PKG / "OWNER-DECISION-PACKET.md"
 BRIEF_REL = PKG / "REVIEW-BRIEF.md"
 SETTINGS_REL = PKG / "v2.json"
+TEMPLATE_REL = PKG / "templates" / build.TEMPLATE
 RECORD_REL = PKG / build.RECORD
 #: Row 7's performed record. Until it exists the `project-documentation` class
 #: is outside RFC5-14's closed vocabulary, so this act is refused.
@@ -87,7 +88,7 @@ FROZEN_SUBJECT: str | None = None
 #: a rebase-merge leaves it unreachable from main, so validation compares the
 #: presented bytes with these digests and never reads the commit (AGENTS.md:
 #: bind by digest, not by commit). Keys: the manifest, packet, brief,
-#: `v2.json` and the record.
+#: `v2.json`, the template and the record.
 FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -191,7 +192,7 @@ def live_inputs(root: pathlib.Path) -> Inputs:
     finally:
         os.chdir(cwd)
     files = {rel: (root / rel).read_bytes() for rel in
-             [MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, RECORD_REL]
+             [MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, TEMPLATE_REL, RECORD_REL]
              if (root / rel).is_file()}
     review_path = root / CONFIRMATION_REVIEW_REL
     return Inputs(
@@ -254,7 +255,7 @@ def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str]:
                          "project-documentation class is outside RFC5-14's closed vocabulary")
     if digest(inp.subject) != argument:
         raise ValueError(f"{act.key} record hashes to {digest(inp.subject)}, not the owner argument")
-    missing = [r.as_posix() for r in (MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, RECORD_REL)
+    missing = [r.as_posix() for r in (MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, TEMPLATE_REL, RECORD_REL)
                if r not in inp.frozen_files]
     if missing:
         raise ValueError("frozen-file set lacks " + ", ".join(missing))
@@ -501,7 +502,7 @@ def selftest() -> int:
     review = (f"# R1\nReviewed commit: {'a' * 40}\nManifest SHA-256: {msha}\n"
               "Verdict: CONFIRM\n\n## Findings\n\nnone\n")
     blobs = {MANIFEST_REL: manifest, PACKET_REL: pkt, BRIEF_REL: b"brief",
-             SETTINGS_REL: b'{"version": "x"}', RECORD_REL: record}
+             SETTINGS_REL: b'{"version": "x"}', TEMPLATE_REL: b'tpl', RECORD_REL: record}
 
     def make(**over) -> Inputs:
         base = dict(manifest=manifest, subject=record, packet=pkt, review=review,
@@ -543,10 +544,10 @@ def selftest() -> int:
                 ok = ok and digest(cur) == want
             results.append(("frozen files verify from a copy with no git object",
                             ok and not (bare / ".git").exists()))
-    results.append(("the shipped recorder is unfrozen or has exactly the five frozen files",
+    results.append(("the shipped recorder is unfrozen or has exactly the six frozen files",
                     FROZEN_SUBJECT is None and not FROZEN_FILE_DIGESTS
                     or set(FROZEN_FILE_DIGESTS) == {MANIFEST_REL, PACKET_REL, BRIEF_REL,
-                                                    SETTINGS_REL, RECORD_REL}))
+                                                    SETTINGS_REL, TEMPLATE_REL, RECORD_REL}))
     results.append(("unset FROZEN_SUBJECT refused",
                     refused("FROZEN_SUBJECT is unset", arg, make(frozen=None))))
     results.append(("non-hex argument refused", refused("not a 64-hex", "xyz", make())))
@@ -683,7 +684,7 @@ def _end_to_end() -> bool:
                        "Verdict: CONFIRM\n\n## Findings\n\nnone\n")
         FROZEN_SUBJECT = "f" * 40
         FROZEN_FILE_DIGESTS = {r: digest((root / r).read_bytes())
-                               for r in (MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, RECORD_REL)}
+                               for r in (MANIFEST_REL, PACKET_REL, BRIEF_REL, SETTINGS_REL, TEMPLATE_REL, RECORD_REL)}
         sel = Selection("Perform the egress version 2 act?", "Perform it now", "Perform the act at the manifest row.")
         out = io.StringIO()
         try:
