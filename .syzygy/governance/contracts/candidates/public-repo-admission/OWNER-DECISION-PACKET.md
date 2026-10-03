@@ -88,8 +88,9 @@ Several acts may be given in one sitting.
 at `v2.34.2`) and T2 (redis/redis at `8.10.2` plus the licence-history trio
 `7.2.4`, `7.4.0`, `8.0.0`; the pins are in
 `docs/polaris-generation/TARGETS.md`), and `instances/egress-anthropic/`
-fills item 3 once, listing both repositories as the next version of the single
-`(project:syzygy, provider:anthropic)` record. All three use the owner's
+fills item 3 once, listing both repositories as the next candidate draft of the single
+`(project:syzygy, provider:anthropic)` record (no earlier version was ever
+performed). All three use the owner's
 2026-10-03 answers. The egress version lists the five content classes in
 force, so it does not yet carry Q7's `project-documentation` class; adding it
 is a further version after that amendment is in force. Only bytes that pass a confirming review are
@@ -214,7 +215,9 @@ discipline. Rounds 1, 2 and 3 (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`,
 each returned REVISE; the dispositions follow. Stopping rule, set before
 round 3: after a third REVISE the drafter repairs, dispatches no further
 round, and asks the owner. The round-3 repair below is therefore unreviewed;
-a confirming round precedes any offering.
+a confirming round precedes any offering. [Superseded 2026-10-03: round 4
+reviewed the round-3 repair and round 5 the round-4 repair; both are recorded
+below.]
 
 | R1 finding | Disposition |
 |---|---|
@@ -261,7 +264,8 @@ a confirming round precedes any offering.
 Round 4 (`reviews/R-PUBLIC-ADMISSION-4-RAW.md`), run over the owner's
 answers at the owner's choice, returned REVISE with one blocking finding.
 Repaired below; per the owner's choice the drafter reports rather than
-dispatching a fifth round unasked.
+dispatching a fifth round unasked. [Superseded 2026-10-03: round 5 was
+dispatched by the lead session of that day.]
 
 | R4 finding | Disposition |
 |---|---|
@@ -269,10 +273,46 @@ dispatching a fifth round unasked.
 | 2 Garbled Q3 sentence | Repaired |
 | 3 Prompt text has no class | Named as `code-content` of `project:syzygy`, with its source path |
 | 4 Runtime may add its own context or telemetry | The record requires the runtime's own instruction, memory, settings, MCP and environment context off, an empty working directory, telemetry and error reporting off, and an adapter acceptance check on the captured request |
-| 5 Which provider terms | The record names the owner's signed-in Claude account and its terms |
+| 5 Which provider terms | [Corrected after round 5, finding 2] The record named the owner's account but no account type, terms document or training-use setting; it now says retention follows the terms and settings of the account or key used, which the owner discloses at the offering |
 | 6 Direction says the packet "remains the question" | No change; the packet edits only point to the answers |
 
-Round 5 is to run over the whole package after the Redis instances and the
-egress version above are added (`REVIEW-BRIEF.md` in this directory names the
-artifacts, the references and the acceptance criteria). The round-4 repair and
-these additions are unreviewed until it returns.
+Round 5 (`reviews/R-PUBLIC-ADMISSION-5-RAW.md`), over commit a445e253 of
+the branch, returned REVISE with one blocking finding and five notes. The
+blocking finding was the third round on the same item (R3 finding 5, R4
+finding 3), so this repair changes the model, not the sentence.
+
+| R5 finding | Disposition |
+|---|---|
+| 1 Instruction text: record names only `prompts.ts`, omits the schemas, and nothing classifies it (blocking) | The egress record now has a "What a request carries" section derived from the code (`scripts/derive_generator_sent_text.mjs` drives the real pipeline with a recording `generate` port): the five envelope fields, the per-stage `inputs` fields, and the two Syzygy-authored symbols, `promptForStage` and `stageSchema`. The consent no longer classifies that text; the screening scope's outline item 5 carries a closed instruction-text rule naming exactly those two symbols, and the consent's first condition refuses a request whose instruction text the rule does not name |
+| 2 Terms still unnamed | See the corrected R4 row 5; the terms and the training-use setting are an offering-time disclosure, listed under "Open before an offering" |
+| 3 Builder claims uncovered | `stale()` now reports records under every `instances/*/`, including a directory with no `params.json`; mutants added for that, for both digest refusals while stale and for the unknown mode; the banner check is counted as a positive check, so the selftest reports one positive check and ten mutants |
+| 4 Redis ids as commits | `docs/polaris-generation/TARGETS.md` records the metadata-only `git ls-remote` output: one line per tag, no peeled line, so [Inferred] lightweight tags and commit ids |
+| 5 Q6 had no carrier | Carried by the egress record's own condition and by outline item 4's rendering line: local daemon draft view or run-directory file only, never published |
+| 6 Stale review sentences | Marked and dated at the sentences; "next version" now reads "next candidate draft" |
+
+## Open before an offering
+
+These are not decided by this package and none is written into a signed record
+as pending:
+
+- **Route.** Route A, the Claude Agent SDK (the Q1 answer), carries
+  runtime-fixed bytes on every request that the generator does not author
+  (a fixed system prefix, request metadata with a per-run device id, an
+  empty system message with an effort setting, and on some failures a
+  body-less probe to the API host). They are to be listed as fixed bytes in the
+  provider execution route's registry entry, and the egress record refuses any
+  other byte. Route B, the Messages API with an API key, sends exactly the
+  generator's envelope and would revise Q1; choosing it regenerates the egress
+  record. Source: lane-v's capture test, whose byte list is not yet landed.
+- **Account and billing.** Whether the owner's personal runs may use a
+  subscription login is [Unknown] (the docs say third-party products may not
+  offer claude.ai login); an API key is supported. The terms document and
+  training-use setting that govern the chosen account are disclosed by the
+  owner at the offering.
+- **Telemetry-off** is [Observed] on a local capture (no other host), but
+  error paths beyond 429 and 529, long runs and subscription login remain
+  [Unknown].
+
+Round 6 is to run over the whole package after this repair
+(`REVIEW-BRIEF.md` in this directory names the artifacts, references and
+criteria). Everything above is unreviewed until it returns.

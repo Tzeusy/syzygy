@@ -47,7 +47,9 @@
      state directory, outside git (provider requests, replies and run
      records quote source; packet Q3);
    - rendering — permitted as quoted, context-encoded spans in a generated
-     editorial draft and its source routes;
+     editorial draft and its source routes, shown only on the local daemon's
+     draft view or as a static file in the run directory, never published
+     (packet Q6);
    - logging and machine response — `never`, unchanged.
 
    Every other scope stays as it is. These are the substantive changes the
@@ -61,6 +63,14 @@
    - committed test reports and benchmark outputs → `evidence-content`;
    - all other prose (README, guides, tutorials, LICENSE files) →
      indeterminate, refused egress, until the packet's Q7 is resolved;
+   - **the generator's instruction text** → `code-content` of
+     `project:syzygy`, by one closed rule that names exactly `promptForStage`
+     (`packages/polaris-generation-core/src/prompts.ts`) and `stageSchema`
+     (`packages/polaris-generation-core/src/provider-draft.ts`) at the versions
+     a request names. This is not target content and is not read from a
+     target; it is the only Syzygy-authored text a request carries. The
+     secret detectors still apply to it, and no other file or symbol of
+     Syzygy's repository is classified by this rule;
    - anything else the rules do not determine → indeterminate, refused
      egress visibly.
 
