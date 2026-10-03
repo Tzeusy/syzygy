@@ -75,3 +75,9 @@ findings). Findings as `**Finding N — title** (blocking|revise|note)`.
     its own beyond the listed bytes, telemetry off, run-directory retention)
     weaker here than there? Name each change and say whether it is a
     restatement or a loosening.
+11. **Per-route bytes.** For each route, does the record's summary agree with
+    that entry's `requestBytes` (Agent SDK entry in
+    `public-admission-registry-entries/proposed/`, Messages API entry in
+    `provider-route-messages-api-entry/proposed/`)? Quote the entry field and
+    the record line side by side. Does the record permit a route's bytes only
+    while its entry is in force, and does it leave stripping to the owner?
