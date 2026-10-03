@@ -87,19 +87,21 @@ Nothing, until sign-off. After it [Observed: counted over the proposed bytes
 in a scratch copy, by heading and by table row]:
 
 - the specification reads 25 requirements and 26 scenarios;
-- `GOVERNING-DEPENDENCIES.md` reads 87 distinct authorities and 76 contract
+- `GOVERNING-DEPENDENCIES.md` reads 88 distinct authorities and 77 contract
   clauses;
-- the matrix reads 76 mapped clauses, 27 applicable-uncovered and 221
-  believed not applicable, totalling 324; Part A reads 112 consequence rows,
-  96 covered and 16 Unknown;
-- RFC8-22 and RFC8-23 move from Part B2 to Part A, and their B2 rows are
-  removed; RFC4-15 gains one amendment row.
+- the matrix reads 77 mapped clauses, 27 applicable-uncovered and 220
+  believed not applicable, totalling 324; Part A reads 118 consequence rows,
+  97 covered and 21 Unknown (second method: `grep -c -F` for `| covered` and
+  `| **Unknown**` over the Part A section, 97 and 21);
+- RFC8-22, RFC8-23 and RFC8-24 move from Part B2 to Part A, and their B2 rows
+  are removed; RFC4-15 gains one amendment row. RFC8-21 stays in Part B2,
+  unedited.
 
 ## Not done in this version
 
-- **No manifest and no builder.** P-100 Question 1 may change what the
-  requirement says about admitted inputs, and P-84's order decides which
-  bytes this package is regenerated on. A manifest hashed now would be stale
+- **No manifest and no builder.** P-84's order decides which bytes this
+  package is regenerated on, and P-100's answer may add an edge amendment
+  beside it. A manifest hashed now would be stale
   on either answer. The version offered for sign-off gets a manifest and a
   `--check` builder in the shape of
   `scripts/build_three_surface_poc_identity_amendment.py`.

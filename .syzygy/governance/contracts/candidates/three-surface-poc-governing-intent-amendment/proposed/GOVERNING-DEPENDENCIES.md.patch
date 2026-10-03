@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md b/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
-index 7741941c..09a0ad2b 100644
+index 7741941c..6e80bc03 100644
 --- a/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 +++ b/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 @@ -8,7 +8,7 @@
@@ -7,7 +7,7 @@ index 7741941c..09a0ad2b 100644
  > nothing here quotes or paraphrases any clause.
  >
 -> Source: `spec.md` sha256 `bb9112a55a1cf2afdd6911815e80fa645f517f8a4e8b1b262ecf7381be515410` — 24 requirement(s), 85 distinct authorities.
-+> Source: `spec.md` sha256 `9c984ede686ea5ef2bbe3814d5a1618de98f94eac754a68fa765533671cc6735` — 25 requirement(s), 87 distinct authorities.
++> Source: `spec.md` sha256 `1065217cbcd011d9b302dbb43ebf83b10bf65e9b4980547cfa82af09238efb66` — 25 requirement(s), 88 distinct authorities.
  
  ## doctrine (9)
  
@@ -25,7 +25,7 @@ index 7741941c..09a0ad2b 100644
  | `VIS-7` | POC-REQ-001, POC-REQ-004, POC-REQ-010, POC-REQ-011, POC-REQ-012, POC-REQ-020, POC-REQ-031, POC-REQ-041, POC-REQ-050 |
  
 -## contracts (74)
-+## contracts (76)
++## contracts (77)
  
  | Authority | Cited by |
  |---|---|
@@ -47,12 +47,13 @@ index 7741941c..09a0ad2b 100644
  | `RFC4-26` | POC-REQ-050, POC-REQ-052 |
  | `RFC4-27` | POC-REQ-051 |
  | `RFC5-16` | POC-REQ-002 |
-@@ -83,6 +83,8 @@
+@@ -83,6 +83,9 @@
  | `RFC8-2` | POC-REQ-043 |
  | `RFC8-12` | POC-REQ-040 |
  | `RFC8-15` | POC-REQ-043 |
 +| `RFC8-22` | POC-REQ-014 |
 +| `RFC8-23` | POC-REQ-014 |
++| `RFC8-24` | POC-REQ-014 |
  | `RFC8-30` | POC-REQ-043 |
  | `RFC8-31` | POC-REQ-060, POC-REQ-061 |
  | `RFC9-1` | POC-REQ-020 |

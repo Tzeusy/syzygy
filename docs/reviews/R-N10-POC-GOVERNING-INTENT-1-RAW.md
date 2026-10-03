@@ -1,0 +1,60 @@
+# Review - Three-Surface POC governing-intent amendment (POC-REQ-014, P-100)
+Reviewed commit: 5fca4450b3a481ec5b9784ba71ed392befddd563
+Package digest: 88012d58f3780ddd10e8418977792acb89b4ddfd058c46df0f95d3ff2ffea6d2
+Verdict: REVISE
+
+Digest method: `sha256sum $(git ls-files <package dir> | LC_ALL=C sort) | sha256sum`, run at the repo root of a clone at the reviewed commit, over the 8 tracked package files [Observed].
+
+## Mechanics checked (all [Observed], by script, in scratch copies)
+
+- All four patches apply alone to the signed bytes. Applied in sequence after the identity-amendment (P-84) patches, all four of this package's patches fail (`patch does not apply`), so the overlap claim is true.
+- Applying the four patches and running `scripts/build_three_surface_poc_spec_dependencies.py` regenerates `GOVERNING-DEPENDENCIES.md` byte-identical (`cmp`) to the proposed patch result; `--check` passes: 25 requirements, 87 authorities.
+- Requirement and scenario counts over the patched spec.md by heading regex: 25 and 26. Matrix: Part A 112 rows over 76 distinct clauses, 96 covered, 16 Unknown; family table rows sum to 76 / 27 / 221 = 324 and the B2 column sums to 221. RFC8 row 7/0/25 = 32. Part A, B1 and B2 clause sets are disjoint.
+- Only RFC8-22 and RFC8-23 leave Part B2; only the four named files change (`git diff --name-only`).
+- Sweep figures re-derived at `c371339d` over `git ls-tree -r` (2,006 paths; 4 PNGs fail UTF-8 decode): POC-REQ-014 0/0; continuation form 0/0; `governedBy` 3 files / 14; `P-100` 0/0; `010–013` 3/3; spec path 39/73; CONTRACT-COVERAGE path 23/60. All match the ledger.
+- Code claims at `c371339d`: nine projection expressions at `work-items.ts:86-88`; `MaterializationRecord` has no governing-intent field while `MaterializationPacket` does; no `.syzygy/work/` path in the tree.
+- `python3 scripts/check_governance.py` in a clone at the commit: 31 OK, 21 WARN, 0 FAIL; no line names this package or P-100.
+- [Unknown] The Butlers figures (7,958 rows / 168 blocked) cannot be checked under the reviewer's constraint; the package labels them with a revision and treats the unread columns as Unknown, which is honest.
+
+## Findings
+
+**Finding 1 - The Scope's reason is not enforced by the oracle or falsifier** (revise)
+Scope says "While no admitted input carries a warrant, every served item is Unknown with the reason `source-uncaptured-or-unreachable`." The Oracle accepts "an Unknown with one reason from RFC2-24's twelve", and the Falsifier fails only on "a reason outside the twelve". An implementation serving `missing-declaration` for all N items satisfies the Oracle and every Falsifier arm, and violates only Scenario 1 and the Scope sentence. CC-SPEC-4 requires the oracle to decide the requirement, so the obligation the delta spends most words justifying is not decided by the oracle. Also, nothing says the served route must equal the RFC2-24 row's route (the Falsifier has only "no route").
+
+**Finding 2 - The edge arm is unreachable and undefined** (revise)
+The requirement allows "an edge ... joined by a recorded identity", and the Falsifier lists "an edge with no recorded join identity" and "an edge whose only basis is work-item text". "Recorded identity" names no record, field or identity form. By the delta's own account no admitted input carries a warrant, so no case in the requirement (neither scenario, nor the planted fixture) produces an edge. CC-SPEC-4 rejects an "unreachable initiating condition"; these arms cannot fire today and the checker is given no means to produce one. Add a scenario with a fixture item whose materialization record carries a warrant (or state that the edge arm is outside the oracle and list it as Unknown in the matrix), and name the join identity.
+
+**Finding 3 - The recommended option's consequences are understated in the owner packet** (revise)
+POC-REQ-014 Scope says it "admits no work-item column and no other input: the projection stays as POC-REQ-010 to POC-REQ-013 bound it". Packet Q1 option "None" says the link "comes only from Syzygy's own creation record, which a later change extends" and lists "What else it needs" as "No consent or policy act. A separate implementation change ... under its own authorization". Feeding the projection from `MaterializationRecord` is a new input, which this Scope sentence excludes, so the recommended path also needs a specification amendment before implementation. The packet's table lists a specification amendment only for the other two options. The owner would choose the "cheapest" option on an incomplete cost.
+
+**Finding 4 - New covered rows overclaim, and newly mapped clauses have unlisted limbs** (revise)
+Criterion 3 requires covered rows to claim only what the oracle observes and every uncovered limb to be Unknown.
+- RFC8-23 row: "counted, filterable, never green, never pooled into warranted work and never an ingest rejection". The oracle observes counts, marker, narrowed view and non-green rendering. It observes no ingest path (the clause says "never an ingest rejection (RFC4-10)") and "never pooled into warranted work" is trivially true while zero edges exist. Neither limb has an Unknown row.
+- RFC8-23 first bullet ("A substrate-side warrant-field edit is an annotation, not a competing warrant (RFC8-11) ...") has no row and no Unknown listing. RFC8-23's route clause, "resolvable by supplying a warrant", is also unobserved.
+- RFC8-22 first bullet continues "everything downstream renders with provenance degraded accordingly"; the row omits it and no Unknown row lists it.
+- RFC4-15 row: "no work-item text is read as a work item's governing intent". The planted counterexample covers the title only, and the Scope admits no other text. Say "title" or list other text as Unknown.
+Only the orphaned-work limb of RFC8-23 received an Unknown row.
+
+**Finding 5 - B2 rationales for RFC8-21 and RFC8-24 contradict the delta** (revise)
+`SEMANTIC-DELTA.md` says "RFC8-24 lists this reason among those Trajectory renders", and the RFC8-24 text lists `source-uncaptured-or-unreachable` "(adapter export unavailable; facts lost past the retention horizon before capture, rendered citing the retention event ...)". POC-REQ-014 now serves that very reason on every work item, yet RFC8-24 stays in B2 with the rationale "same chain POC doesn't build", and RFC8-21 stays in B2 as "POC deliberately leaves this relationship Unknown, building no chain" while the new RFC8-22 row says "the POC walks only this one link of the chain". CC-SPEC-8 judges each clause once and these two rationales are now false or at least arguable. Either map RFC8-24 (with an Unknown row for the retention-event limb, which the POC's reason use does not satisfy) or amend the B2 rationales; the delta should say which.
+
+**Finding 6 - The ROUND-1-DISPOSITIONS.md the packet and P-100 point to does not exist** (revise)
+`OWNER-DECISION-PACKET.md` ("recorded in `ROUND-1-DISPOSITIONS.md` beside this file, which also says whether this version is ready to offer") and register row P-100 ("Round 1's verdict and dispositions are in `ROUND-1-DISPOSITIONS.md`") cite a file absent at the reviewed commit (the package directory holds IMPACT-LEDGER, OWNER-DECISION-PACKET, REVIEW-BRIEF, SEMANTIC-DELTA, proposed/). [Observed: `ls`.] An owner reading the packet at this commit is routed to nothing. Land the disposition file with the repaired version or reword the sentence.
+
+**Finding 7 - The owner packet is not yet plain enough for Question 2** (revise)
+Question 1 is readable. Question 2 uses "Scope A", "Extend Scope A to this package", "Phrase and digest", "A recorder is written", "PWB", "registry entry", "secret policy" and "PWB-REQ-005" without saying what each is, and the sentence "A Three-Surface POC amendment is not in that list" assumes the reader has the 2026-10-02 direction in mind. Criterion 7 (VIS-3) asks that a fresh reader restate the three questions and consequences; Q2's route choice cannot be restated from the packet alone. Q3's "Drop it" consequence is also one line and does not say what the owner loses (the intent-change blast radius).
+
+**Finding 8 - Reason choice is acceptable but its weighing is incomplete; route mismatch undisclosed** (note)
+Quoted RFC2-24 #10: "A deterministic input capable of affecting the claim was not captured in the snapshot (RFC2-2), including observer failure and unreachable sources"; route "Repair the observer/source; new snapshot". I judge #10 a better fit than the two rejected reasons: #1 asserts absence ("No governing declaration ... exists") and #6 concerns consent for a repository or provider. The delta does not weigh #2 (`missing-evidence`), #5 (`mapping-coverage-absent`, "absence claims need a coverage record") or #7 (`excluded-content`, "excluded the content or it was unclassifiable (fails closed, SEC-5)"), the last of which is the reason the Butlers whole-shape claim currently carries per AGENTS.md. It should say why these do not fit. It should also disclose that #10's route ("Repair the observer/source") differs from RFC8-23's route for such an item ("resolvable by supplying a warrant"; the item "may be legitimate untraceable work - a pre-Syzygy backlog item"), because the requirement mandates "that reason's resolution route". RFC2-24 allows a condition outside the twelve to be disclosed "as a fact of the render ... routed to its resolving action"; the delta should state that it chose a reason and how the RFC8-23 route is also shown.
+
+**Finding 9 - Blanket "SHALL NOT be labelled orphaned work" can collide with RFC8-23** (note)
+RFC8-23: "Where an item is both [Unknown-provenance and orphaned], the orphaned-work Contradiction governs and is never filtered away behind the provenance badge." The requirement forbids any orphaned label on an Unknown item. The POC detects no orphaned work, so there is no present conflict, but a future orphaned-work requirement would contradict POC-REQ-014 as written. "Unknown-provenance SHALL NOT absorb or replace an orphaned-work Contradiction" matches the clause.
+
+**Finding 10 - Form and means of the check** (note)
+The requirement declares `Form: invariant` but also carries "SHALL NOT derive an edge" and "SHALL NOT be rendered as warranted", which are prohibition-shaped; CC-SPEC-4 asks for one named form. The Case says the checker "plants one fixture item" without naming the means (fixture database, injected `runQuery`); sibling POC-REQ-012 names its mutation. Trajectory "narrow the board" introduces a filter control that no other requirement in the spec defines; the Observable does not say what a human surface check looks at. The oracle's denominator is the machine answer's own served set (as POC-REQ-011 does), which is acceptable but means a dropped item is invisible to the checker.
+
+**Finding 11 - "Reads nine columns" omits the materializer's external_ref predicate** (note)
+`materialization.ts` (`findByExternalRef`) runs `SELECT id FROM issues WHERE ... AND external_ref = '...'`. It returns only `id`, so no content is read, and the delta's claim that no new column is read for the projection holds. The packet's "Syzygy reads nine fields today" and the Q1 text about reading `external_ref` should say that the write path already filters on it, so the owner does not think the column is untouched.
+
+**Finding 12 - Items confirmed without exception** (note)
+Criterion 1 (no new column, no content class, item (c) deferred and listed in Q3): met. Criterion 4 (no signed byte outside the four patches; only RFC8-22 and RFC8-23 move): met. Criterion 5 (mechanics, totals, sweep figures): met as listed above. Criterion 6: no adoption claimed, no implementation scheduled, unread columns labelled [Unknown]; residuals the sign-off change must carry are named in the ledger (`check_spec_reconciliation.py` `EXPECTED_TOTALS`, census.json, P-84 order); the ledger does not name the P-100 row or `docs/README.md` partition, which are not affected. Quotes of RFC4-15, RFC4-17, RFC8-22, RFC8-23 and RFC2-24 in the delta match the clause text I read.

@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-index 092711e2..e9c436dd 100644
+index 092711e2..0e366d5c 100644
 --- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 +++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 @@ -27,7 +27,7 @@ Reader notes, binding on how this file is read:
@@ -11,75 +11,77 @@ index 092711e2..e9c436dd 100644
    rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
    (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).
    Identifiers are stable and literal: minted once, amended in place,
-@@ -380,6 +380,77 @@ warrants:
+@@ -380,6 +380,79 @@ warrants:
    parent_requirements: []
  ```
  
-+### Requirement: POC-REQ-014 — Every work item's governing intent is a recorded edge or a counted Unknown
++### Requirement: POC-REQ-014 — Every work item's governing intent renders as a counted Unknown
 +
 +Group: Work-item observation. Form: **invariant**.
 +
 +**Required behavior.** Every served work item SHALL carry a governing-intent
-+field (`governedBy`). The field SHALL hold either an edge to the warrant the
-+item was materialized under, joined by a recorded identity, or `Unknown` with
-+exactly one primary reason from RFC2-24's closed list and that reason's
-+resolution route. The POC SHALL NOT derive an edge from a work item's title,
-+or from any other work-item text, by matching, similarity or inference. Both
-+channels SHALL serve, over the served item set, how many items carry an edge
-+and how many are Unknown. Trajectory SHALL mark each Unknown item, show the
-+count, and let a reader narrow the board to the Unknown items. An Unknown item
-+SHALL NOT be rendered as warranted, green or complete, and SHALL NOT be
-+labelled orphaned work.
++field (`governedBy`) whose value is `Unknown` with the primary reason
++`source-uncaptured-or-unreachable` and that reason's RFC2-24 resolution
++route. Both channels SHALL serve how many served items carry that Unknown,
++over the served item set. Trajectory SHALL mark each such item, show the
++count, state beside it that an item is resolved by supplying its warrant, and
++let a reader narrow the board to those items. No served item's `governedBy`
++SHALL name an identifier taken from its title. Every such item SHALL render
++with its Unknown marker, never as warranted, green or complete, and no
++Unknown marker SHALL replace or hide an orphaned-work Contradiction where one
++is rendered.
 +
 +- **Scope.** every served work item in the machine answer and on Trajectory.
 +  This requirement admits no work-item column and no other input: the
-+  projection stays as POC-REQ-010 to POC-REQ-013 bound it. While no admitted
-+  input carries a warrant, every served item is Unknown with the reason
-+  `source-uncaptured-or-unreachable`.
++  projection stays as POC-REQ-010 to POC-REQ-013 bound it. It defines no
++  edge. An edge to a warrant, and the input that would carry one, need a
++  further amendment.
 +
 +- **Case (sweep + counterexample schema)**: a checker enumerates every served
 +  work item from the machine answer — the denominator is the complete served
-+  item set (POC-REQ-011) — and reads each item's `governedBy`. Separately, the
-+  checker plants one fixture item whose title names a requirement identifier,
-+  for example "Implement POC-REQ-010", and observes it.
-+- **Observable**: each item's `governedBy` value; the served edge and Unknown
-+  counts on both channels; Trajectory's Unknown markers, its count and its
-+  narrowed view.
-+- **Oracle**: every enumerated item carries exactly one of an edge with its
-+  recorded join identity or an Unknown with one reason from RFC2-24's twelve;
-+  the edge count plus the Unknown count equals the enumerated item count; the
-+  two channels serve the same two counts; Trajectory's narrowed view lists
-+  exactly the items the machine answer serves as Unknown; and the planted
-+  item's `governedBy` is Unknown, never an edge to the identifier its title
-+  names. Equality and set membership decide.
++  item set (POC-REQ-011) — and reads each item's `governedBy`. Separately,
++  the checker supplies a fixture work-item database (or an injected work-item
++  read) holding one item whose title names a requirement identifier, for
++  example "Implement POC-REQ-010", and observes that item.
++- **Observable**: each item's `governedBy` value, reason and route; the served
++  Unknown count and item count on both channels; on Trajectory, each item's
++  Unknown marker, the count, the resolution sentence beside it, and the list
++  of items the board shows once narrowed.
++- **Oracle**: every enumerated item's `governedBy` is `Unknown` with the
++  reason `source-uncaptured-or-unreachable` and the route RFC2-24 gives that
++  reason; the served Unknown count equals the enumerated item count, and the
++  two channels serve the same count; Trajectory's narrowed board lists exactly
++  the enumerated items; and the fixture item's `governedBy` is that same
++  Unknown, naming no identifier. Equality and set membership decide.
 +- **Oracle independence**: the denominator is the checker's own enumeration
-+  of served items, not the served counts; the reason list is read from
-+  RFC2-24; the planted title is the checker's own.
-+- **Falsifier**: a served item with no `governedBy`; an edge with no recorded
-+  join identity; an edge whose only basis is work-item text; counts that do
-+  not reconcile with the enumeration or differ between the channels; an
-+  Unknown with no reason, a reason outside the twelve, or no route; or an
-+  Unknown item rendered as warranted, green, complete or orphaned.
++  of served items, not the served count; the reason and its route are read
++  from RFC2-24; the fixture title is the checker's own.
++- **Falsifier**: a served item with no `governedBy`; a `governedBy` holding
++  anything other than that Unknown, including an identifier from its title;
++  any other reason, or a route that is not RFC2-24's route for this reason;
++  a count that does not equal the enumeration or differs between the
++  channels; no resolution sentence; a narrowed board that drops or adds an
++  item; or an item rendered as warranted, green or complete.
 +
-+#### Scenario: No admitted input carries a warrant
++#### Scenario: Every item's governing intent is Unknown
 +
-+- **WHEN** the machine answer serves N work items and no admitted input
-+  carries a warrant
-+- **THEN** both channels serve 0 items with an edge and N Unknown with the
++- **WHEN** the machine answer serves N work items
++- **THEN** both channels serve N of N with `governedBy` Unknown for the
 +  reason `source-uncaptured-or-unreachable` and its route, and Trajectory
-+  marks all N and lets a reader narrow the board to them
++  marks all N, says each is resolved by supplying its warrant, and lets a
++  reader narrow the board to them
 +
 +#### Scenario: A title names a requirement
 +
 +- **WHEN** a served item's title reads "Implement POC-REQ-010"
-+- **THEN** that item's `governedBy` is Unknown, and no edge to
-+  POC-REQ-010 is served for it
++- **THEN** that item's `governedBy` is the same Unknown, and nothing served
++  for it names POC-REQ-010 as its governing intent
 +
 +```yaml
 +warrants:
 +  primary: VIS-2
 +  doctrine: [VIS-1, VIS-2, VIS-6]
-+  contracts: [RFC2-24, RFC4-15, RFC8-22, RFC8-23]
++  contracts: [RFC2-24, RFC4-15, RFC8-22, RFC8-23, RFC8-24]
 +  policies: []
 +  decisions: []
 +  topology: []
