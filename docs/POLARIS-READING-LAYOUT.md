@@ -112,3 +112,26 @@ after the challenge list. That row counts the proposals served on the page
 and states its reachability note exactly when there are none. The section
 rule names `.claim-section` as well: the reading layout's later
 `.claim-section { border: 0 }` otherwise removed the proposal border.
+
+## Source legend and catalog reconciliation
+
+One `POLARIS_COPY` sentence (`legend.sources`) sits directly before the
+sources table, and the table region names it with `aria-describedby`. It
+decodes the identity (repository, revision, path, Git object id) and the
+Rule, Anchor, Outcome and Digest fields, and says a digest is neither
+permission to read the bytes nor a verification of them. It is outside any
+`<details>` and adds no link. `polaris-reconciliation.test.ts` holds it to
+the five source rules, the anchor union and the four rendered outcomes.
+
+One reconciliation line opens the catalog group. Counts read off the
+machine answer (sources, items, the nine class counts) are Observed. The
+two class sums and the item-marker count are Inferred. The marker count is
+every `data-polaris-item` attribute occurrence in the final HTML, so the
+line is a single placeholder substituted after the page is built; a
+missing, repeated or truncated placeholder aborts the render. Markers minus
+items is Unknown (`mapping-coverage-absent`), routed to matching each
+marker's claim identity to one machine item. Every figure carries its state
+as visible words and as `data-figure-state`, not as color. An unobserved
+shape renders the line as Unknown with the shape's reason and route and no
+number. The PWB-REQ-020 sweep compares every figure as a
+`catalog-reconciliation` family.

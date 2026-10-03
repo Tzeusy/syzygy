@@ -534,6 +534,27 @@ function sweep(model: PocModel): SweepResult {
   const judgmentSections = containers(html, 'data-judgment-state').map((section) => section.value);
   reports.push(compareMultisets('judgment-state', judgmentSections, [judgment.kind === 'not-evaluated' ? 'not-evaluated' : judgment.evaluation.outcome.kind]));
 
+  // 7. The catalog reconciliation (M14 slice 4): each figure as
+  // name|state|value. Counts come from the machine answer, sums are summed
+  // here, and the marker count is this sweep's own occurrence count over
+  // the served HTML; an unobserved shape carries one Unknown and no number.
+  const figuresHuman = leafMarkers(html, 'data-figure').map((marker) => `${marker.attrs.get('data-figure')}|${marker.attrs.get('data-figure-state')}|${marker.text}`);
+  const markerOccurrences = [...html.matchAll(/\sdata-polaris-item="/g)].length;
+  const classCounts = observed === undefined ? [] : CLASSES.map((cls) => [cls, observed.items.filter((item) => item.class === cls).length] as const);
+  const signed = (value: number): string => (value < 0 ? `\u2212${-value}` : String(value));
+  const figuresMachine = observed === undefined
+    ? ['reconciliation|Unknown|Unknown']
+    : [
+        `sources|Observed|${observed.sources.length}`,
+        `items|Observed|${observed.items.length}`,
+        ...classCounts.map(([cls, count]) => `class:${cls}|Observed|${count}`),
+        `sum:nine-classes|Inferred|${classCounts.reduce((sum, [, count]) => sum + count, 0)}`,
+        `sum:eight-classes|Inferred|${classCounts.filter(([cls]) => cls !== 'project-account-section').reduce((sum, [, count]) => sum + count, 0)}`,
+        `markers|Inferred|${markerOccurrences}`,
+        `remainder|Unknown|${signed(markerOccurrences - observed.items.length)}`,
+      ];
+  reports.push(compareMultisets('catalog-reconciliation', figuresHuman, figuresMachine));
+
   const machineOnlyReports = [
     { family: 'response-identity:contentKey', human: 0, machine: machine.responseIdentity.contentKey === '' ? 0 : 1 },
     { family: 'response-identity:excludes', human: 0, machine: machine.responseIdentity.excludes.length },
@@ -564,7 +585,7 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     const model = modelFor('observed-degraded', 'lawful-state-2');
     const { reports, parityFields } = sweep(model);
     const nonEmpty = new Set(reports.filter((report) => report.human > 0).map((report) => report.family));
-    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'unknown-relationships', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:authority-disclosure', 'parity-field:shape-pillar-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path']) {
+    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'unknown-relationships', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:authority-disclosure', 'parity-field:shape-pillar-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path', 'catalog-reconciliation']) {
       expect(nonEmpty.has(family), family).toBe(true);
     }
     expect(parityFields).toContain('judgment-independently-verified');
