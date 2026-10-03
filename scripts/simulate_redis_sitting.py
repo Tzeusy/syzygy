@@ -17,14 +17,18 @@ Steps, in the order of the sitting packet (PR 260):
              two recorders that live outside the merged branches) is copied
              from this checkout into the scratch
   2 baseline check_governance, the review-campaign partition
-  3 acts     every recorder runs on a synthetic argument computed from the
+  3 acts     (row 6, egress version 1, is not run: version 2 replaces it) every recorder runs on a synthetic argument computed from the
              current manifest row: the screening-scope policy (PR 266), the
              provider route (`--route b`: PR 273 recorder, a synthetic freeze;
              `--route a`: PR 255 recorder) and the Git source adapter, the three
-             admission consents (PR 215), the RFC5-14 amendment (PR 257) and the
-             narrative-profile adoption (PR 256)
+             admission consents (PR 215), the RFC5-14 amendment (PR 257), the
+             egress version 2 consent (row 8) and the narrative-profile adoption (PR 256)
   4 install  `scripts/install_redis_sitting.py`, then again (idempotent) and
-             with `--check`
+             with `--check`; then row 8's end: egress version 1 stays
+             unperformed, and (when the dossier wiring is in the tree) a
+             temporary test in the scratch has the consent reader read the one
+             in-force egress record and the stage map authorise the narrative
+             plus the two discovery stages
   5 end      check_governance, the partition and (with `--vitest`) the full
              test suite must all be green; the report says so in `green`
 
@@ -64,11 +68,12 @@ CAND = ".syzygy/governance/contracts/candidates"
 DECISIONS = ".syzygy/governance/decisions"
 
 #: (pull request, branch) in the order the scratch merges them. Merged pull
-#: requests (215, 255, 256, 257, 266, 284, 288, 290) are already in the base.
+#: requests (215, 255, 256, 257, 266, 273, 278, 284, 288, 290, 299, 326, 340)
+#: are already in the base. 337 is the screen that reads the v2 policy, 334 the
+#: dossier wiring (consent readers, the per-digest stage map), 260 the packet.
 BRANCHES = (
-    (278, "agent/dossier-engine-7"),
-    (273, "governance/provider-route-messages-api-entry"),
-    (326, "governance/screening-scope-v2"),
+    (337, "agent/screening-v2"),
+    (334, "agent/dossier-wiring"),
     (260, "governance/admission-sitting-packet"),
 )
 ORDERING_CASE = (120, "agent/tier4-dov25")
@@ -89,6 +94,11 @@ PKG_SCOPE_V2 = f"{CAND}/public-source-screening-scope-v2"
 V2_RECORDER = "scripts/record_public_source_screening_scope_v2_act.py"
 V2_VARIANTS = ("none", "manifesto", "architecture", "both")
 PKG_RFC5 = f"{CAND}/rfc5-project-documentation-class"
+PKG_EGRESS_V2 = f"{CAND}/public-egress-v2"
+EGRESS_V2_RECORDER = "record_public_egress_v2_act.py"
+EGRESS_V2_ROW = "instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"
+EGRESS_V1_RECORD = f"{DECISIONS}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md"
+EGRESS_V2_RECORD = f"{DECISIONS}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md"
 PKG_PROFILE_SPEC = "openspec/changes/polaris-non-governed-narrative-profile"
 POLICY = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
 
@@ -101,6 +111,7 @@ REMEDIES = {
     "merge-semantic-278": "PR 278 closes GenerationSource exclusion reasons to GENERATION_EXCLUSION_REASONS, but main's repo-corpus.ts (PR 252) builds an excluded row from `reason: string`; the merge is textually clean and `npm run build:poc` then fails (TS2322 at repo-corpus.ts:167), which fails build-output.test.ts and pipeline-demo.test.ts. Fix on PR 278 (type the helper parameter GenerationExclusionReason); the simulation applies the same one-line change in the scratch so the rest of the run is meaningful.",
     "gate-not-refusing": "The Butlers read gate should refuse the new policy bytes (digest and version) between the row-1 act and the install, and admit them after it; the named expectation did not hold.",
     "installer-refused": "scripts/install_redis_sitting.py refused: read its message; it names the record or anchor it needs and restores the tree.",
+    "egress-v2": "Row 8 (egress version 2) did not rehearse: version 1 must stay unperformed, version 2's record must exist and be the act argument, and the gate must read it with the stage map giving the narrative plus the two discovery stages. The detail is in the finding.",
     "not-green": "The simulated end state is not green: the named check still fails after the install. The failing lines are in the report.",
 }
 
@@ -463,8 +474,12 @@ class Sim:
         if p.returncode or "FROZEN_FILE_DIGESTS" not in p.stdout:
             self.step("freeze-v2", exit=p.returncode, tail=(p.stderr + p.stdout)[-200:])
             return False
-        text = text.replace("FROZEN_SUBJECT: str | None = None", f'FROZEN_SUBJECT: str | None = "{"f" * 40}"')
-        text = text.replace("FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}", p.stdout.strip())
+        # anchored to whole lines: the recorder's own selftest quotes both strings inside a snippet
+        text, n1 = re.subn(r"^FROZEN_SUBJECT: str \| None = None$", lambda _m: f'FROZEN_SUBJECT: str | None = "{"f" * 40}"', text, count=1, flags=re.M)
+        text, n2 = re.subn(r"^FROZEN_FILE_DIGESTS: dict\[pathlib\.Path, str\] = \{\}$", lambda _m: p.stdout.strip(), text, count=1, flags=re.M)
+        if (n1, n2) != (1, 1):
+            self.step("freeze-v2", note=f"the recorder's freeze lines were not found once each: {(n1, n2)}")
+            return False
         rec.write_text(text)
         self.step("freeze-v2", note="synthetic confirming raw and synthetic freeze, scratch only")
         return True
@@ -490,11 +505,18 @@ class Sim:
                         row_digest(reg, "AGENT-SDK-CANDIDATE.json"), "row2-route-A", sel)
         self.record("record_public_admission_registry_entries_acts.py", "git-source-acquisition",
                     row_digest(reg, "GIT-SOURCE-ACQUISITION-CANDIDATE.json"), "row3", sel)
+        # Row 6 (egress version 1) is not offered at this sitting: version 2 replaces it (packet rows 6 and 8).
         for key, suffix, label in (("requests-observation", "requests/OBSERVATION-CONSENT.md", "row4"),
-                                   ("redis-observation", "redis/OBSERVATION-CONSENT.md", "row5"),
-                                   ("egress-anthropic", "EGRESS-CONSENT-ANTHROPIC.md", "row6")):
+                                   ("redis-observation", "redis/OBSERVATION-CONSENT.md", "row5")):
             self.record("record_public_repo_admission_acts.py", key, row_digest(adm, suffix), label, sel)
         self.record("record_rfc5_project_documentation_act.py", None, row_digest(rfc, "consent-egress-secrets.md"), "row7", sel)
+        egress = (self.scratch / PKG_EGRESS_V2 / "PUBLIC-EGRESS-V2-MANIFEST.txt")
+        if egress.is_file():
+            self.v2_argument = row_digest(egress.read_text(), EGRESS_V2_ROW)
+            self.record(EGRESS_V2_RECORDER, "egress-anthropic-v2", self.v2_argument, "row8-egress-v2", sel)
+        else:
+            self.v2_argument = None
+            self.step("row8-egress-v2", note="not run: the egress version 2 package is absent")
         if (self.scratch / V2_RECORDER).is_file() and self.v2_variant and self.freeze_v2_recorder():
             arg = self.v2_row(self.v2_variant)
             if arg is None:
@@ -522,6 +544,61 @@ class Sim:
         if not ok:
             self.finding(name, "gate-not-refusing", f"expect_refusal={expect_refusal}; failing={failing[:3]}")
         return ok
+
+    EGRESS_TEST = "apps/three-surface-poc/src/polaris-generation/sim-egress-v2.test.ts"
+    EGRESS_TEST_BODY = """import { describe, expect, it } from 'vitest';
+
+import { createPackageAdmissionReader, inForceRecords } from '@syzygy/polaris-generation-consent';
+
+import { DISCOVERY_STAGES, EGRESS_V1_DIGEST, EGRESS_V2_DIGEST, NARRATIVE_STAGES, stagesAuthorisedBy } from './dossier-stage-authority.js';
+
+// Written by scripts/simulate_redis_sitting.py into the scratch clone only, and removed after the run.
+describe('simulated sitting: the gate reads egress version 2', () => {
+  it('reads one in-force egress record, equal to the act argument, authorising discovery plus narrative', async () => {
+    const root = process.env.SIM_ROOT!, argument = process.env.SIM_V2_ARGUMENT!, now = Date.parse(process.env.SIM_NOW!);
+    const live = inForceRecords(await createPackageAdmissionReader({ root }).read(), now);
+    const egress = live.filter(r => r.class === 'egress' && r.project === 'project:syzygy' && r.providerId === 'anthropic');
+    expect(egress.length).toBe(1);
+    expect(egress[0]!.digest).toBe(argument);
+    expect(egress[0]!.digest).toBe(EGRESS_V2_DIGEST);
+    const observed = new Set(live.filter(r => r.class === 'observation').map(r => r.repositoryId));
+    expect(egress[0]!.admittedRepositories.length).toBeGreaterThan(0);
+    expect(egress[0]!.admittedRepositories.some(id => observed.has(id))).toBe(true);
+    expect([...stagesAuthorisedBy(egress[0]!.digest)]).toEqual([...NARRATIVE_STAGES, ...DISCOVERY_STAGES]);
+    expect(live.some(r => r.digest === EGRESS_V1_DIGEST)).toBe(false);
+    expect([...stagesAuthorisedBy(EGRESS_V1_DIGEST)]).toEqual([...NARRATIVE_STAGES]);
+  });
+});
+"""
+
+    def egress_v2(self, name):
+        """Row 8 end to end: version 1 stays unperformed, the performed version 2 record is the act
+        argument, and (when the wiring is in the tree) the gate reads it and the stage map gives
+        the narrative plus the two discovery stages."""
+        v1 = (self.scratch / EGRESS_V1_RECORD).is_file()
+        v2 = (self.scratch / EGRESS_V2_RECORD).is_file()
+        self.step(name + ":records", v1_performed=v1, v2_performed=v2)
+        if v1 or not v2 or getattr(self, "v2_argument", None) is None:
+            self.finding(name, "egress-v2", f"v1 performed={v1}, v2 performed={v2}")
+            return False
+        if not (self.scratch / "packages/polaris-generation-consent").is_dir() \
+                or not (self.scratch / "apps/three-surface-poc/src/polaris-generation/dossier-stage-authority.ts").is_file():
+            self.step(name + ":gate", note="not run: the dossier wiring (PR 334) is not in this scratch tree [Unknown]")
+            return True
+        self.npm_ci()
+        test = self.scratch / self.EGRESS_TEST
+        test.write_text(self.EGRESS_TEST_BODY)
+        try:
+            env = dict(os.environ, SIM_ROOT=str(self.scratch), SIM_V2_ARGUMENT=self.v2_argument, SIM_NOW=f"{DATE}T23:59:59Z")
+            p = subprocess.run(["npx", "vitest", "run", self.EGRESS_TEST], cwd=self.scratch, env=env,
+                               capture_output=True, text=True, timeout=900)
+        finally:
+            test.unlink(missing_ok=True)
+        failing = failing_tests(p.stdout + p.stderr)
+        self.step(name + ":gate", exit=p.returncode, failing=failing)
+        if p.returncode:
+            self.finding(name, "egress-v2", f"gate or stage map: {failing[:2]} {(p.stdout + p.stderr)[-300:]}")
+        return p.returncode == 0
 
     # -- step 4
     def install(self):
@@ -620,7 +697,8 @@ def build_scratch(repo, scratch, base):
         raise SystemExit(f"refusing: {scratch} already exists")
     subprocess.run(["git", "clone", "-q", "--shared", str(repo), str(scratch)], check=True)
     run = lambda *a: subprocess.run(["git", *a], cwd=scratch, check=True, capture_output=True, text=True)
-    run("fetch", "-q", str(repo), "+refs/remotes/origin/*:refs/sim/*", f"+{base}:refs/sim/main")
+    run("fetch", "-q", str(repo), "+refs/remotes/origin/*:refs/sim/*")
+    run("fetch", "-q", str(repo), f"+{base}:refs/sim/main")   # separate: a base other than origin/main would collide with the first mapping
     run("checkout", "-q", "-B", "sim", "refs/sim/main")
     return scratch
 
@@ -657,6 +735,7 @@ def main(argv):
         sim.acts(a.route)
         refused = sim.gate("gate-before-install", True)
         installed = sim.install() and sim.gate("gate-after-install", False) and refused
+        installed = sim.egress_v2("egress-v2") and installed
         sim.end(installed)
         sim.ordering_case()
     finally:
@@ -717,6 +796,14 @@ def selftest():
     expect("vitest failures are distinct", failing_tests(vt) == ["a/b.test.ts > suite > one", "c.test.ts > two"])
     expect("no vitest failures", failing_tests("all passed") == [])
     expect("every finding code has a remedy", all(REMEDIES[k] for k in REMEDIES))
+    expect("merged pull requests are not merged again",
+           not {278, 273, 326} & {pr for pr, _b in BRANCHES})
+    expect("the gate test reads one in-force egress record equal to the act argument and checks the stage map",
+           all(part in Sim.EGRESS_TEST_BODY for part in (
+               "expect(egress.length).toBe(1)", "toBe(argument)", "toBe(EGRESS_V2_DIGEST)",
+               "[...NARRATIVE_STAGES, ...DISCOVERY_STAGES]", "EGRESS_V1_DIGEST")))
+    expect("row 8 is a recorded act and row 6 is not", EGRESS_V2_RECORDER.startswith("record_public_egress_v2")
+           and EGRESS_V1_RECORD != EGRESS_V2_RECORD)
 
     # The scratch builder refuses a directory inside the real tree and the real
     # tree comparison notices a change, on a throwaway repository.
