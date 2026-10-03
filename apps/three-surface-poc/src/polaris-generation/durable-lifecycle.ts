@@ -4,19 +4,31 @@ import { join } from 'node:path';
 
 import type { AdmissionDecision, AttemptInput, AttemptOutcome, DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 
-/** A private, synthetic-only durable lifecycle adapter. Files are outside a
- * governed tree; no network client or provider is installed by this module. */
-export interface ScriptedLifecycleOptions {
+/** A private durable lifecycle adapter. Files are outside a governed tree; this
+ * module installs no network client or provider: the caller injects `generate`,
+ * and the claim, reservation, reuse and uncertainty rules around it are the
+ * same whether that port is scripted or live. */
+export interface DurableLifecycleOptions {
   readonly stateDir: string;
   readonly permissionIdentity: () => Promise<string>;
   readonly verifySources: PipelinePorts['verifySources'];
-  readonly permitted: () => Promise<boolean>;
+  /** Rechecked immediately before dispatch, per attempt. */
+  readonly permitted: PipelinePorts['permitted'];
   readonly responseSchema: PipelinePorts['responseSchema'];
   readonly validate: PipelinePorts['validate'];
   readonly fidelity: PipelinePorts['fidelity'];
-  readonly scriptedGenerate: (input: Parameters<PipelinePorts['generate']>[0]) => Promise<ProviderReply>;
+  readonly generate: PipelinePorts['generate'];
+  /** Reserved per attempt, capped by the request budget; default 5. */
+  readonly maxAttemptUsageUnits?: number;
+  /** Reserved per attempt, capped by the request budget; default 10,000. */
   readonly maxAttemptOutputBytes?: number;
   readonly now?: () => number;
+}
+
+/** The synthetic-only configuration of the lifecycle: a scripted generate port. */
+export interface ScriptedLifecycleOptions extends Omit<DurableLifecycleOptions, 'generate' | 'permitted'> {
+  readonly permitted: () => Promise<boolean>;
+  readonly scriptedGenerate: (input: Parameters<PipelinePorts['generate']>[0]) => Promise<ProviderReply>;
 }
 
 interface JournalEntry {
@@ -47,7 +59,10 @@ function replaceAtomic(path: string, value: unknown): void {
 
 /** The persistent file is the dispatch claim. A crash after claim leaves a
  * reserved record, which refuses replay even if a lease or receipt is lost. */
-export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions): PipelinePorts {
+export function createDurableLifecycle(options: DurableLifecycleOptions): PipelinePorts {
+  for (const [name, value] of [['maxAttemptUsageUnits', options.maxAttemptUsageUnits], ['maxAttemptOutputBytes', options.maxAttemptOutputBytes]] as const) {
+    if (value !== undefined && (!Number.isSafeInteger(value) || value < 1)) throw new Error(`invalid-lifecycle-option: ${name}`);
+  }
   mkdirSync(options.stateDir, { recursive: true, mode: 0o700 });
   const fileFor = (permit: DispatchPermit): string => join(options.stateDir, `${permit.attemptId}.json`);
   const read = (path: string): JournalEntry => JSON.parse(readFileSync(path, 'utf8')) as JournalEntry;
@@ -67,7 +82,7 @@ export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions
       try { fd = openSync(lock, 'wx', 0o600); }
       catch { return { kind: 'refused', reason: 'uncertain' }; }
       try {
-        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(5, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes ?? 10_000, input.budget.maxOutputBytes) };
+        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(options.maxAttemptUsageUnits ?? 5, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes ?? 10_000, input.budget.maxOutputBytes) };
         const path = fileFor(permit);
         if (existsSync(path)) {
           let prior: JournalEntry;
@@ -98,10 +113,10 @@ export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions
         unlinkSync(lock);
       }
     },
-    permitted: async () => options.permitted(),
+    permitted: async (input, permit) => (await options.permitted(input, permit)) === true,
     releaseUnsent: async permit => update(permit, entry => ({ ...entry, state: 'released' })),
     responseSchema: options.responseSchema,
-    generate: options.scriptedGenerate,
+    generate: options.generate,
     validate: options.validate,
     fidelity: options.fidelity,
     record: async (permit, outcome) => update(permit, entry => ({ ...entry,
@@ -115,4 +130,10 @@ export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions
       replaceAtomic(path, { ...entry, late: receipt });
     },
   };
+}
+
+/** The synthetic wrapper: the generic lifecycle with a scripted generate port. */
+export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions): PipelinePorts {
+  const { scriptedGenerate, permitted, ...rest } = options;
+  return createDurableLifecycle({ ...rest, generate: scriptedGenerate, permitted: async () => permitted() });
 }
