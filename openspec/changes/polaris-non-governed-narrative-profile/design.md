@@ -11,11 +11,11 @@ accepted contracts and the adopted requirements remain controlling.
 
 ## The problem in three places
 
-| Governed obligation | Quoted from | Why it has no object for an observed repository |
+| Governed obligation | Quoted from | What the profile replaces, and why |
 |---|---|---|
-| Catalog membership "SHALL come from declared capabilities" | REQ-polaris-generation-004 | No capability declarations exist. |
-| Deep dives keep argument, contract and reality bands; empty bands "retain an honest absence line" | REQ-polaris-generation-004; RFC7-17, RFC7-19 | The contract band names accepted contracts and topology, and the reality band is computed by the kernel's evidence drawer (RFC7-18). Neither exists. |
-| Every narrative descends to a verbatim specification leaf, rendered "verbatim from `openspec/**`" | RFC7-13, RFC7-14 | The repository has no `openspec/**` and no specification. |
+| Catalog membership "SHALL come from declared capabilities" | REQ-polaris-generation-004 | The adopted text defines a thin, predominantly Unknown catalog as correct output (RFC7-15), so the outcome is defined; the profile replaces it with a fuller one in which a maintainer statement in a frozen form declares. |
+| Deep dives keep argument, contract and reality bands; empty bands "retain an honest absence line" | REQ-polaris-generation-004; RFC7-17, RFC7-19 | The contract band names accepted contracts and topology, and the reality band is computed by the kernel's evidence drawer (RFC7-18); a non-governed subject has neither. The profile fills the contract-class band from maintainer reference spans and renders no reality band. |
+| Every narrative descends to a verbatim specification leaf, rendered "verbatim from `openspec/**`" | RFC7-13, RFC7-14 | A non-governed subject has no `openspec/**` and no specification, so the verbatim leaf has no text to quote. The profile replaces the leaf altitude with one honest line. |
 
 ## Decisions in this change
 
@@ -54,9 +54,35 @@ accepted contracts and the adopted requirements remain controlling.
    leaf altitude as one honest line (RFC7-19, reason `missing-declaration`)
    and makes the byte-exact admitted span the anchor of RFC7-2 (a), reachable
    in one step and never called a leaf or specification [Inferred]. This needs
-   no contract amendment. Whether the owner would rather read RFC7-13/14 so
+   no contract amendment, provided the anchor has RFC7-10's form: a target
+   class, a target identifier, a fragment and a target state, with no path or
+   label inside it. The profile takes the source's content-addressed object
+   identifier as the identifier, the byte range as the fragment and the
+   admission revision as the state. [Observed] The generator's
+   `generationAnchorId` joins repository id, revision, path, object id and
+   range into one string, so it is not that anchor; an implementation projects
+   the three fields and shows repository and path as labels. Whether a source
+   object of an observed repository is an "evidence artifact" in RFC7-10's
+   sense is packet O7. Whether the owner would rather read RFC7-13/14 so
    that the span is the leaf itself is put as packet O1; that reading would
    need those clauses amended first.
+
+## Known residuals
+
+- **Laundering through an unmarked generated file.** Path class and marker are
+  necessary conditions for "maintainer-written and not generated", not
+  sufficient ones. A reference generated from code and committed without any
+  marker the frozen profile lists, under an authored-documentation path,
+  passes the observable while (a) forbids it. On prepared snapshots the
+  oracle decides it, because the snapshot's authorship is known; in
+  production only the frozen profile's marker list stands between the two, so
+  the profile is as good as that list. The spec states no stronger guarantee.
+- **Record homes are Unknown.** The frozen profile is a new run-control
+  record, and the selection predicate needs the project input to state
+  whether an evidence drawer exists. [Unknown] whether the interchange
+  records of REQ-polaris-generation-019 can carry either without a schema
+  change; if not, the change is an implementation path that no act authorizes
+  here, as for the glossary (packet O5). It is listed in `tasks.md`.
 
 ## What stays unchanged
 
