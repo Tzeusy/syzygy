@@ -124,6 +124,10 @@ Authorized implementation work (generator implementation authorization,
   - [ ] **G3 Consent-backed ports.** `permissionIdentity` / `admit` /
         `permitted` read the admission records instead of returning `true`
         (blocked on Phase 0 sign-off for the first real call, not for the code).
+  - [x] **G0 Oversize sources (gap #2).** A blob over 100,000 characters is
+        split into contiguous `-pN` pieces (`segment` on `GenerationSource`,
+        blob-absolute anchors, contiguity checked per population) or excluded
+        as `oversize-source-excluded`; it no longer fails the population.
   - [ ] **G4 Discovery under budget (REQ-030).** The pipeline refuses more than
         200 quotable sources, and requests has more; needs ranked selection
         with `deferred-by-budget` exclusions.

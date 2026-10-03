@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
+import { generationSourcesForBody, segmentBody, generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
 const body = 'A supported purpose.\n';
 const base = { repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'intent/purpose.md', objectId: gitBlobObjectId(body) };
@@ -53,5 +53,65 @@ describe('evaluation-bound generation sources', () => {
     expect(validateGenerationSources([next])).toHaveLength(1);
     expect(generationSourceIdentity(changedBase)).not.toBe(generationSourceIdentity(base));
     expect(next.spans[0]?.anchorId).not.toBe(first.spans[0]?.anchorId);
+  });
+});
+
+describe('oversize bodies', () => {
+  const big = `${'line of ordinary text \u00e9\u4e2d!\n'.repeat(9000)}tail`;
+  const ident = (text: string) => ({ repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'src/big.c', objectId: gitBlobObjectId(text),
+    sourceId: 'big', evaluationId: 'evaluation:fixture', body: text });
+
+  it('fits a body at the limit whole and splits one character over', () => {
+    const at = 'x'.repeat(100_000), over = `${at}y`;
+    expect(generationSourcesForBody(ident(at))).toHaveLength(1);
+    const pieces = generationSourcesForBody(ident(over));
+    expect(pieces.length).toBe(2);
+    expect(validateGenerationSources(pieces)).toHaveLength(2);
+  });
+
+  it('splits into contiguous, line-aligned, code-point-safe pieces that rejoin to the blob', () => {
+    expect([...big].length).toBeGreaterThan(100_000);
+    const pieces = segmentBody(big);
+    expect(pieces.map(p => p.text).join('')).toBe(big);
+    expect(pieces.every(p => [...p.text].length <= 100_000)).toBe(true);
+    expect(pieces.slice(0, -1).every(p => p.text.endsWith('\n'))).toBe(true);
+    let at = 0;
+    for (const p of pieces) { expect(p.start).toBe(at); at = p.end; expect(Buffer.byteLength(p.text)).toBe(p.end - p.start); }
+    expect(at).toBe(Buffer.byteLength(big));
+  });
+
+  it('produces valid quotable pieces with blob-absolute anchors and unique ids', () => {
+    const sources = generationSourcesForBody(ident(big));
+    expect(validateGenerationSources(sources)).toHaveLength(sources.length);
+    expect(quotableGenerationSources(sources).map(q => q.sourceId)).toEqual(sources.map((_, i) => `big-p${i + 1}`));
+    const second = sources[1]!;
+    expect(second.spans[0]!.anchorId.endsWith(`:${second.segment!.start}-${second.segment!.end}`)).toBe(true);
+    expect(second.spans[0]!.start).toBe(0);
+  });
+
+  it('excludes with a recorded reason when asked, keeping the row counted', () => {
+    const [row] = generationSourcesForBody({ ...ident(big), oversize: 'exclude' });
+    expect(row).toMatchObject({ exclusion: { excluded: true, reason: 'oversize-source-excluded' }, spans: [] });
+    expect(row!.body).toBeUndefined();
+    expect(validateGenerationSources([row!])).toHaveLength(1);
+    expect(quotableGenerationSources([row!])).toEqual([]);
+  });
+
+  it('still rejects a whole body over the limit and any non-contiguous piece set', () => {
+    const whole = { ...generationSourcesForBody(ident(`${'x'.repeat(100_000)}y`))[0]! };
+    const { segment: _segment, ...unsegmented } = whole;
+    const sources = generationSourcesForBody(ident(big));
+    expect(() => validateGenerationSources([{ ...unsegmented, body: big, spans: [{ anchorId: 'x', start: 0, end: 1, text: 'x' }] }])).toThrow();
+    expect(() => validateGenerationSources(sources.slice(1))).toThrow('invalid-segments');
+    expect(() => validateGenerationSources([sources[0]!, ...sources.slice(2)])).toThrow('invalid-segments');
+    expect(() => validateGenerationSources([{ ...sources[0]!, segment: { ...sources[0]!.segment!, count: 99 } }, ...sources.slice(1)])).toThrow('invalid-segments');
+    const shifted = sources[1]!, gap = shifted.segment!.start + 1, gapEnd = shifted.segment!.end + 1;
+    const gapped: GenerationSource = { ...shifted, segment: { ...shifted.segment!, start: gap, end: gapEnd },
+      spans: [{ ...shifted.spans[0]!, anchorId: generationAnchorId({ ...shifted, objectId: shifted.objectId! }, gap, gapEnd) }] };
+    expect(() => validateGenerationSources([sources[0]!, gapped, ...sources.slice(2)])).toThrow('invalid-segments');
+    const whole2 = generationSourcesForBody(ident('small\n'))[0]!;
+    expect(() => validateGenerationSources([{ ...sources[0]!, objectId: whole2.objectId, path: whole2.path }, whole2])).toThrow();
+    expect(() => validateGenerationSources([{ ...sources[0]!, body: 'short' }, ...sources.slice(1)])).toThrow('body-mismatch');
+    expect(() => validateGenerationSources([{ ...sources[0]!, exclusion: { excluded: true, reason: 'r' }, body: undefined, spans: [] } as GenerationSource, ...sources.slice(1)])).toThrow('invalid-source');
   });
 });
