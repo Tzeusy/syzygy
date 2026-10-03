@@ -20,8 +20,9 @@ version 1: this builder derives that base bytes from the version-1 package
 row), or takes the policy on disk when it already is those bytes. Both give the
 same base, so the patch and the manifest row do not depend on whether the
 version-1 act has been performed. The proposed bytes live only as a unified
-diff under `proposed/`; the one-row manifest hashes the bytes the diff produces
-and that row is the argument a superseding `approve-policy` act would take.
+diff under `proposed/`; the four-row manifest (one row per variant) hashes the
+bytes each diff produces; the row the owner picks is the argument of the one
+superseding `approve-policy` act.
 
   --write                regenerate the patch and the manifest
   --check                verify the package against the policy on disk
@@ -98,9 +99,19 @@ PREFIX_SEPARATOR = "-"
 DOCUMENT_SUFFIXES = ["", ".md", ".rst", ".txt"]
 DOC_TREE_ROOTS = ["docs", "doc"]
 DOC_TREE_EXTENSIONS = [".md", ".rst", ".txt"]
-#: Directory segments (not the file name) that take a docs-tree path out of the class.
-DOC_EXCLUDED_SEGMENTS = ["adr", "adrs", "decisions", "rfc", "rfcs", "spec", "specs", "specification",
-                         "design", "governance", "policy", "policies", "security"]
+#: Words that take a docs-tree path out of the class. A directory name after the first
+#: segment, and the file name without its extension, are each split into words on the ASCII
+#: characters in DOC_TOKEN_SEPARATORS (letters A-Z folded to a-z first); a path with any of
+#: these as a whole word is withheld. Groups exist so every kind can be mutated on its own.
+DOC_TOKEN_GROUPS = {
+    "adr": ["adr", "adrs"], "decision": ["decision", "decisions"], "rfc": ["rfc", "rfcs"],
+    "spec": ["spec", "specs", "specification", "specifications"], "design": ["design", "designs"],
+    "governance": ["governance"], "policy": ["policy", "policies"], "security": ["security"],
+    "conduct": ["conduct"]}
+DOC_EXCLUDED_TOKENS = [t for g in DOC_TOKEN_GROUPS.values() for t in g]
+DOC_TOKEN_SEPARATORS = "-_. "
+#: Root names withheld on purpose (policy or governance text by ordinary content).
+WITHHELD_ROOT_NAMES = ["design", "governance", "security", "code_of_conduct", "code-of-conduct"]
 #: A .txt file under the docs tree is not prose when its name is on this closed list.
 DOC_TXT_EXCLUDED_NAMES = ["cmakelists.txt", "robots.txt"]
 DOC_TXT_EXCLUDED_PREFIXES = ["requirements"]
@@ -120,6 +131,17 @@ def has_numeric_prefix(name: str, r: dict) -> bool:
     p = r["rootStemNumericPrefix"]
     n = p["digitCount"]
     return len(name) > n and all(c in p["digits"] for c in name[:n]) and name[n] == p["separator"]
+
+
+def tokens(segment: str, separators: str) -> list[str]:
+    out, cur = [], ""
+    for c in segment:
+        if c in separators:
+            out.append(cur)
+            cur = ""
+        else:
+            cur += c
+    return out + [cur]
 
 
 def classify_documentation(path: str, rule: dict | None = None) -> bool:
@@ -146,7 +168,9 @@ def classify_documentation(path: str, rule: dict | None = None) -> bool:
                     return True
         return False
     if parts[0] in r["docTreeRoots"] and any(name.endswith(e) and len(name) > len(e) for e in r["docTreeExtensions"]):
-        if any(s in r["docExcludedSegments"] for s in parts[1:-1]):
+        ext = next(e for e in r["docTreeExtensions"] if name.endswith(e) and len(name) > len(e))
+        if any(t in r["docExcludedTokens"] for seg in parts[1:-1] + [name[:len(name) - len(ext)]]
+               for t in tokens(seg, r["docTokenSeparators"])):
             return False
         if name.endswith(".txt") and (name in r["docTxtExcludedNames"]
                                       or any(name.startswith(x) for x in r["docTxtExcludedPrefixes"])):
@@ -176,7 +200,14 @@ FIXTURES = [
     ("docs/adr/0001-decision.md", False), ("docs/specs/protocol.md", False), ("docs/governance/policy.md", False),
     ("docs/security/policy.md", False), ("doc/rfc/rfc-1.txt", False), ("docs/a/Design/x.md", False),
     ("docs/policies/p.md", False), ("docs/specification/x.rst", False), ("docs/decisions/d.md", False),
-    ("docs/design.md", True), ("docs/spec.md", True),
+    ("docs/spec.md", False), ("docs/design.md", False), ("docs/SECURITY.md", False), ("docs/GOVERNANCE.md", False),
+    ("docs/CODE_OF_CONDUCT.md", False), ("docs/policy.md", False), ("docs/adr.md", False), ("doc/security.txt", False),
+    ("docs/specifications/x.md", False), ("docs/decision/x.md", False), ("docs/adr-records/x.md", False),
+    ("docs/architecture-decisions/x.md", False), ("docs/rfc-0001/x.md", False), ("docs/x-spec.md", False),
+    ("docs/x_spec.md", False), ("docs/x.spec.md", False), ("docs/x spec.md", False), ("docs/Code of Conduct.md", False),
+    ("docs/a/b/DESIGN-notes.rst", False), ("docs/the-design-of-x.md", False), ("docs/conduct/x.md", False),
+    ("docs/specimen.md", True), ("docs/aspect/x.md", True), ("docs/designer.md", True), ("docs/adrift.md", True),
+    ("docs/guide-to-specs.md", False), ("docs/policyholder.md", True),
     # build and tooling .txt files under docs
     ("docs/CMakeLists.txt", False), ("docs/requirements.txt", False), ("docs/requirements-dev.txt", False),
     ("docs/robots.txt", False), ("doc/a/CMakeLists.txt", False), ("docs/CMakeLists.md", True),
@@ -197,6 +228,8 @@ FIXTURES = [
 
 #: Opt-in root names: mapped only in the variants that enable them.
 OPT_IN_FIXTURES = [("ARCHITECTURE.md", "architecture"), ("Architecture", "architecture"),
+                   ("docs/ARCHITECTURE.md", "architecture"), ("docs/architecture/overview.md", "architecture"),
+                   ("docs/MANIFESTO.md", "manifesto"), ("doc/manifesto/why.txt", "manifesto"),
                    ("MANIFESTO", "manifesto"), ("MANIFESTO.rst", "manifesto"), ("00-MANIFESTO.txt", "manifesto")]
 
 
@@ -218,8 +251,10 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
                      "rootStems"},
             {"id": "docs-tree",
              "rule": "a path of two or more segments whose first segment is one of docTreeRoots, whose "
-                     "name ends with one of docTreeExtensions and is longer than it, none of whose "
-                     "directory segments after the first is in docExcludedSegments, and which is not a "
+                     "name ends with one of docTreeExtensions and is longer than it, in which no "
+                     "directory name after the first, and no file name without its extension, has a word in "
+                     "docExcludedTokens (a name is split into words at each character of "
+                     "docTokenSeparators, after the ASCII fold), and which is not a "
                      "name ending in .txt that equals one of docTxtExcludedNames or starts with one of "
                      "docTxtExcludedPrefixes"},
             {"id": "licenses-tree",
@@ -234,25 +269,28 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
         "documentSuffixes": DOCUMENT_SUFFIXES,
         "docTreeRoots": DOC_TREE_ROOTS,
         "docTreeExtensions": DOC_TREE_EXTENSIONS,
-        "docExcludedSegments": DOC_EXCLUDED_SEGMENTS,
+        "docExcludedTokens": DOC_EXCLUDED_TOKENS + [n for n in OPT_IN_STEMS.values() if n not in VARIANTS[variant]],
+        "docTokenSeparators": DOC_TOKEN_SEPARATORS,
         "docTxtExcludedNames": DOC_TXT_EXCLUDED_NAMES,
         "docTxtExcludedPrefixes": DOC_TXT_EXCLUDED_PREFIXES,
         "licenseTreeRoots": LICENSE_TREE_ROOTS,
         "licenseTreeSuffixes": LICENSE_TREE_SUFFIXES,
         "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-        "notMapped": ("nested and vendored documentation (a README below the root outside docs-tree), "
-                      "specification, design, decision and policy text, which this policy leaves unmapped "
-                      "by its own choice (root files named design, governance, security or code of conduct, "
-                      "and docs-tree paths under a directory in docExcludedSegments), build and tooling "
-                      ".txt files named in docTxtExcludedNames or docTxtExcludedPrefixes, committed "
-                      "reports, and any other prose: they stay indeterminate"),
+        "notMapped": ("nested and vendored documentation (a README below the root outside docs-tree); "
+                      "root files named design, governance, security or code of conduct; docs-tree paths "
+                      "whose directory or file name has a word in docExcludedTokens (decision, specification, "
+                      "design, governance, policy, security and conduct records, and the opt-in words unless "
+                      "the variant adds them); build and tooling .txt files named in docTxtExcludedNames "
+                      "or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided "
+                      "by these names alone: a governance document under docs whose path carries none of those "
+                      "words is mapped"),
     }
 
 
 INDETERMINATE = (
     "every other admitted blob, including documentation outside the project-documentation rule's paths "
-    "(for example a README below the root), specification, design, decision and policy documents (this "
-    "policy leaves them unmapped), committed reports, "
+    "(for example a README below the root), documents whose path carries a word of the rule's docExcludedTokens (decision, specification, "
+    "design, governance, policy, security and conduct records), committed reports, "
     "and configuration or data in an extension outside sourceExtensions, is indeterminate and is treated "
     "as unclassifiable under unclassifiableExclusion: excluded from reading and from egress (fail "
     "closed), recorded hash-not-body, and never stored or rendered. Its path, object id and size remain "
@@ -283,8 +321,9 @@ def v2_scope(scope1: dict, variant: str = DEFAULT_VARIANT) -> dict:
     return s
 
 
-def bump_minor(version: str) -> str:
-    return v1.bump_minor(version)
+def bump_minor(version: str, variant: str = DEFAULT_VARIANT) -> str:
+    """Next minor, with the variant named in the suffix so the version says which row is in force."""
+    return f"{v1.bump_minor(version)}.{variant}"
 
 
 def reverse_patch(patch_text: str, new_text: str) -> str:
@@ -345,10 +384,10 @@ def propose(base1_text: str, variant: str = DEFAULT_VARIANT) -> str:
     if base1_text.count(version) != 1:
         raise ValueError("policyVersion line not found exactly once")
     out = base1_text.replace(old, block(v2_scope(base[SCOPE_KEY], variant)), 1)
-    out = out.replace(version, f'  "policyVersion": "{bump_minor(base["policyVersion"])}",\n', 1)
+    out = out.replace(version, f'  "policyVersion": "{bump_minor(base["policyVersion"], variant)}",\n', 1)
     got = json.loads(out)
     expected = dict(base)
-    expected["policyVersion"] = bump_minor(base["policyVersion"])
+    expected["policyVersion"] = bump_minor(base["policyVersion"], variant)
     expected[SCOPE_KEY] = v2_scope(base[SCOPE_KEY], variant)
     if got != expected or list(got) != list(base):
         raise ValueError("text replacement changed something other than the scope block and policyVersion")
@@ -386,7 +425,7 @@ def semantic_findings(base1_text: str, proposed_text: str, variant: str = DEFAUL
     """Structural claims the packet makes; each is mutated in --selftest."""
     base, new = json.loads(base1_text), json.loads(proposed_text)
     bad: list[str] = []
-    if new.get("policyVersion") != bump_minor(base["policyVersion"]):
+    if new.get("policyVersion") != bump_minor(base["policyVersion"], variant):
         bad.append("policyVersion is not the next minor")
     if {k: v for k, v in new.items() if k not in (SCOPE_KEY, "policyVersion")} != {
             k: v for k, v in base.items() if k not in (SCOPE_KEY, "policyVersion")}:
@@ -459,12 +498,13 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
     present = sorted(p.name for p in (root / PKG / "proposed").glob("*")) if (root / PKG / "proposed").is_dir() else []
     if present != sorted(patch_path(v).name for v in VARIANTS):
         findings.append(f"proposed/ holds {present}, not exactly the four declared patches")
-    if (root / PACKET).is_file():
-        spliced = splice_packet((root / PACKET).read_text())
-        if spliced is None:
-            findings.append("packet lacks its single generated-lists block")
-        elif spliced != (root / PACKET).read_text():
-            findings.append("packet's generated lists differ from the rule's constants")
+    for gen in GENERATED_FILES:
+        if (root / gen).is_file():
+            spliced = splice_packet((root / gen).read_text())
+            if spliced is None:
+                findings.append(f"{gen.name} lacks its single generated-lists block")
+            elif spliced != (root / gen).read_text():
+                findings.append(f"{gen.name}'s generated lists differ from the rule's constants")
     for md in sorted((root / PKG).glob("*.md")):
         if re.search(r"(?<![0-9a-fA-F])[0-9a-f]{64}(?![0-9a-fA-F])", md.read_text()):
             findings.append(f"{md.name}: carries a 64-hex token; the argument comes only from the manifest rows")
@@ -472,6 +512,8 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
 
 
 PACKET = PKG / "OWNER-DECISION-PACKET.md"
+DELTA = PKG / "SEMANTIC-DELTA.md"
+GENERATED_FILES = (PACKET, DELTA)
 BEGIN, END = "<!-- BEGIN GENERATED: lists -->", "<!-- END GENERATED: lists -->"
 
 
@@ -479,32 +521,41 @@ NONE_FIXTURES = FIXTURES + [(n, False) for n, _k in OPT_IN_FIXTURES]
 
 
 def packet_block() -> str:
-    """The sendable and withheld lists, generated from the rule's constants so the packet cannot
-    drift from the policy bytes."""
+    """The sendable and withheld lists, generated from the rule's constants so neither the packet
+    nor the delta can drift from the policy bytes. Every line is derived; none states a claim the
+    constants do not carry."""
     r = documentation_rule()
     up = lambda xs: ", ".join(x.upper() for x in xs)
-    names = ", ".join(x.upper() for x in r["rootStems"])
+    words = lambda xs: ", ".join(xs)
+    base_tokens = DOC_EXCLUDED_TOKENS
+    opt = list(OPT_IN_STEMS.values())
+    sep = " ".join(repr(c) for c in r["docTokenSeparators"])
     return "\n".join([
         "**Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):",
         "",
-        f"- Root-level files named {names} (any letter case; an optional prefix of two ASCII digits and a "
-        f"hyphen, so 00-RELEASENOTES counts; no extension or one of {', '.join(r['documentSuffixes'][1:])}).",
-        f"- Files ending {', '.join(r['docTreeExtensions'])} under a top-level {' or '.join(r['docTreeRoots'])} folder, at any "
-        f"depth, except under a directory named {', '.join(r['docExcludedSegments'])}, and except .txt files named "
-        f"{', '.join(r['docTxtExcludedNames'])} or starting {', '.join(r['docTxtExcludedPrefixes'])}.",
-        f"- Files ending {', '.join(r['licenseTreeSuffixes'])} directly inside a top-level {' or '.join(r['licenseTreeRoots'])} folder.",
-        "- Plus, only in the variant you pick: " + "; ".join(
-            f"variant {v} adds {up(VARIANTS[v]) or 'nothing'}" for v in VARIANTS) + ".",
+        f"- Root-level files named {up(ROOT_STEMS)} (any letter case; an optional prefix of two ASCII digits and a "
+        f"hyphen, so 00-RELEASENOTES counts; no extension or one of {words(r['documentSuffixes'][1:])}).",
+        f"- Files ending {words(r['docTreeExtensions'])} under a top-level {' or '.join(r['docTreeRoots'])} folder, at any "
+        f"depth, unless the path is withheld below.",
+        f"- Files ending {words(r['licenseTreeSuffixes'])} directly inside a top-level {' or '.join(r['licenseTreeRoots'])} folder.",
+        "- Only in the variant you pick: " + "; ".join(
+            f"variant {v} adds the root name{'s' if len(VARIANTS[v]) > 1 else ''} {up(VARIANTS[v])}, and lifts the same "
+            f"word{'s' if len(VARIANTS[v]) > 1 else ''} from the docs withholding" if VARIANTS[v]
+            else f"variant {v} adds nothing" for v in VARIANTS) + ".",
         "",
         "**Stays withheld** (excluded from reading and from egress, hash-not-body):",
         "",
-        "- Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT or CODE-OF-CONDUCT, "
-        "and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.",
-        f"- Anything under a docs or doc directory named {', '.join(r['docExcludedSegments'])}.",
-        f"- {', '.join(r['docTxtExcludedNames'])} and requirements*.txt files under docs or doc.",
+        f"- Root files named {up(WITHHELD_ROOT_NAMES)}, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.",
+        f"- Under a docs or doc folder, any path where a directory name (after the first) or the file name "
+        f"(without its extension) contains one of these as a whole word: {words(base_tokens)}; and, unless the "
+        f"variant adds them, {words(opt)}. Names are split into words at each of {sep} and compared after "
+        f"folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document "
+        f"whose path carries none of these words is NOT withheld (the rule decides by name alone).",
+        f"- Under a docs or doc folder, .txt files named {words(r['docTxtExcludedNames'])} or starting "
+        f"{words(r['docTxtExcludedPrefixes'])}.",
         "- READMEs and the other root names when they sit below the root outside docs or doc "
-        "(vendored libraries carry their own), and a design directory.",
-        "- Specification, decision, policy and report text, and any other prose.",
+        "(vendored libraries carry their own).",
+        "- Any other path: it is not named by the rule, so it is indeterminate and withheld.",
         "- Any file that fails a secret detector or the active-content rule: those screens are unchanged "
         "and apply to this prose in full.",
         "- Everything, while the RFC-0005 amendment of PR #257 is not in force.",
@@ -537,11 +588,12 @@ def write(root: pathlib.Path = ROOT) -> None:
     for v, proposed in proposeds.items():
         (root / patch_path(v)).write_text(unified(base1, proposed))
     (root / MANIFEST).write_text(manifest_text(proposeds))
-    if (root / PACKET).is_file():
-        spliced = splice_packet((root / PACKET).read_text())
-        if spliced is None:
-            raise ValueError("packet lacks its single generated-lists block")
-        (root / PACKET).write_text(spliced)
+    for gen in GENERATED_FILES:
+        if (root / gen).is_file():
+            spliced = splice_packet((root / gen).read_text())
+            if spliced is None:
+                raise ValueError(f"{gen.name} lacks its single generated-lists block")
+            (root / gen).write_text(spliced)
 
 
 def selftest() -> int:
@@ -552,7 +604,8 @@ def selftest() -> int:
             (scratch / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / rel, scratch / rel)
         (scratch / PACKET).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(ROOT / PACKET, scratch / PACKET)
+        for gen in GENERATED_FILES:
+            shutil.copy(ROOT / gen, scratch / gen)
         write(scratch)
         results.append(("pristine package checks clean", check(scratch) == []))
 
@@ -672,8 +725,13 @@ def selftest() -> int:
                 ("a security root name added is caught", broken(rootStems=enabled_stems() + ["security"])),
                 ("a manifesto opt-in turned on is caught", broken(rootStems=enabled_stems() + ["manifesto"])),
                 ("an architecture opt-in turned on is caught", broken(rootStems=enabled_stems() + ["architecture"])),
-                ("an emptied excluded-segment list is caught", broken(docExcludedSegments=[])),
-                ("a dropped governance exclusion is caught", broken(docExcludedSegments=[x for x in DOC_EXCLUDED_SEGMENTS if x != "governance"])),
+                ("an emptied token denylist is caught", broken(docExcludedTokens=[])),
+                ("a dropped separator '-' is caught", broken(docTokenSeparators=DOC_TOKEN_SEPARATORS.replace("-", ""))),
+                ("a dropped separator '_' is caught", broken(docTokenSeparators=DOC_TOKEN_SEPARATORS.replace("_", ""))),
+                ("a dropped separator '.' is caught", broken(docTokenSeparators=DOC_TOKEN_SEPARATORS.replace(".", ""))),
+                ("a dropped separator ' ' is caught", broken(docTokenSeparators=DOC_TOKEN_SEPARATORS.replace(" ", ""))),
+                ("the opt-in words dropped from the none denylist is caught",
+                 broken(docExcludedTokens=list(DOC_EXCLUDED_TOKENS))),
                 ("an emptied txt name denylist is caught", broken(docTxtExcludedNames=[])),
                 ("an emptied txt prefix denylist is caught", broken(docTxtExcludedPrefixes=[]))):
             if bad_rule is None and label.startswith("a rule without"):
@@ -687,6 +745,16 @@ def selftest() -> int:
                 caught = any(classify_documentation(p, bad_rule) != w for p, w in NONE_FIXTURES)
             results.append((label, caught))
 
+        for group, words_ in DOC_TOKEN_GROUPS.items():
+            kept = rule["docExcludedTokens"]
+            dropped = [t for t in kept if t not in words_]
+            results.append((f"dropping the {group} words from the denylist is caught",
+                            any(classify_documentation(p, dict(rule, docExcludedTokens=dropped)) != w for p, w in NONE_FIXTURES)))
+            for t in words_:
+                results.append((f"dropping the word {t} alone is caught",
+                                any(classify_documentation(p, dict(rule, docExcludedTokens=[x for x in kept if x != t])) != w
+                                    for p, w in [(f"docs/{t}/x.md", False), (f"docs/x-{t}.md", False)])))
+
         def swapped(name, fn):
             orig = globals()[name]
             try:
@@ -694,6 +762,8 @@ def selftest() -> int:
                 return any(classify_documentation(p, rule) != w for p, w in NONE_FIXTURES)
             finally:
                 globals()[name] = orig
+        results.append(("a substring match in place of whole words is caught", swapped(
+            "tokens", lambda seg, seps: [seg[i:j] for i in range(len(seg)) for j in range(i + 1, len(seg) + 1)])))
         results.append(("str.lower in place of the ASCII fold is caught (Kelvin sign)", swapped("ascii_fold", str.lower)))
         results.append(("str.casefold in place of the ASCII fold is caught (long s)", swapped("ascii_fold", str.casefold)))
         results.append(("a Unicode-aware digit test in the prefix is caught", swapped(
@@ -744,7 +814,7 @@ def selftest() -> int:
         # the policy after this package's own act: the base is recovered by reversing the patch
         with tempfile.TemporaryDirectory() as d4:
             r4 = pathlib.Path(d4)
-            for rel in (V1_MANIFEST, MANIFEST, PACKET, *[patch_path(v) for v in VARIANTS]):
+            for rel in (V1_MANIFEST, MANIFEST, *GENERATED_FILES, *[patch_path(v) for v in VARIANTS]):
                 (r4 / rel).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(ROOT / rel if rel == V1_MANIFEST else scratch / rel, r4 / rel)
             (r4 / POLICY).parent.mkdir(parents=True, exist_ok=True)
@@ -770,7 +840,7 @@ def main(argv: list[str]) -> int:
         return selftest()
     if mode == "--write":
         write()
-        print("wrote", PATCH.as_posix(), "and", MANIFEST.as_posix())
+        print("wrote", len(VARIANTS), "patches under", (PKG / "proposed").as_posix(), "and", MANIFEST.as_posix())
         return 0
     if mode == "--manifest-digest":
         if check():

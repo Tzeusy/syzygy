@@ -1,8 +1,9 @@
-# Review brief — public-source screening scope, version 2 (round 2)
+# Review brief — public-source screening scope, version 2 (round 3)
 
-> **Candidate — binds nothing.** Not a review; carries no verdict. Round 1
-> returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`); the
-> repairs are in `ROUND-1-DISPOSITIONS.md`.
+> **Candidate — binds nothing.** Not a review; carries no verdict. Rounds 1
+> and 2 returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`,
+> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md`); the repairs are in
+> `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md`.
 
 ## What the reviewer is given
 
@@ -46,7 +47,7 @@ own `activeContentClassification`, `rawBodyHandling` and
    data, `--ready` checks the installed RFC-0005 text and the version-1 act, and
    a consent without the class still permits no egress.
 6. **Is governance-shaped text kept out?** Check the root names, the docs-tree
-   excluded segments and the variants against the RFC5-14 class text; the packet's
+   denylist words and the variants against the RFC5-14 class text; the packet's
    lists are generated from the constants, check that they hold.
 7. **Are the claims in the owner packet true?** For each sendable and withheld
    example, run the reference reader in the builder (the fixtures).
@@ -60,6 +61,16 @@ own `activeContentClassification`, `rawBodyHandling` and
    the real installed path and its selftest covers met and unmet (F4); the
    supersession state is specified and `--check` survives the act (F7).
 
+10. **Do the round-2 repairs hold?** Finding 1 blocking, 2 to 4 notes. The
+    docs-tree rule is one token rule (whole words, split at the listed
+    separators, ASCII-folded) with a denylist that includes the opt-in words
+    unless the variant adds them. Run every path the round-2 raw lists through
+    the reference reader in all four variants; check that every withheld and
+    sendable line in the packet and the delta is the generated block and that
+    `indeterminate` and `notMapped` agree with it (F1); the stale references and
+    the variant-named `policyVersion` (F2, F3); the literal-rule note for a
+    TypeScript consumer (F4).
+
 ## Out of scope
 
 Whether to perform the act; the read-gate re-pin (see the packet's order section); the
@@ -68,7 +79,7 @@ RFC-0005 amendment itself.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-3-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce:** the first
 four non-blank lines are the title and exactly
 
