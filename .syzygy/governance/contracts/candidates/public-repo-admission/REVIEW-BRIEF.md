@@ -1,11 +1,10 @@
-# Review brief — public-repository admission, round 5
+# Review brief — public-repository admission, round 6
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries no
-> verdict. Rounds 1-4 returned REVISE (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`
-> to `-4-RAW.md`); round 5 is the first over the whole package after the
-> owner's answers, the round-4 repair, the Redis instances, the egress
-> version listing both repositories and the manifest.
+> verdict. Rounds 1-5 returned REVISE (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`
+> to `-5-RAW.md`); round 6 is over the round-5 repair, which changed the
+> egress record's model of what a request carries.
 
 ## What the reviewer is given, and nothing else
 
@@ -77,6 +76,20 @@ Each is a yes/no question with the evidence that settles it.
    Markdown file of the package may carry a 64-hex digest.
 9. **Is the packet accurate about itself?** Its file locations, round
    counts, dispositions and the statement of what is unreviewed.
+10. **Is the sent-content model closed and consistent?** Run
+    `npx tsc -b packages/polaris-generation-core` then
+    `node scripts/derive_generator_sent_text.mjs`. Do the envelope fields,
+    per-stage `inputs` fields and the two instruction-text symbols in the
+    egress record's "What a request carries" section equal the script's
+    output? Is every byte a request can carry either a target span under
+    an observation consent, a composite computed from one, an instruction-text
+    symbol the screening scope's rule names, or a runtime-fixed byte the route
+    entry will list? Under RFC5-15 part 2 and RFC5-14 ("never an attribute the
+    composing step asserts about its own output"), is the instruction-text
+    class determined by a policy rule rather than by the consent? Name any byte
+    not covered.
+11. **Do the R5 dispositions hold?** For each of R5 findings 1 to 6, quote
+    the bytes that repair it and say whether they do.
 
 ## Out of scope
 
@@ -87,8 +100,8 @@ Each is a yes/no question with the evidence that settles it.
 
 ## Recording
 
-Store the raw output verbatim under `docs/reviews/` as
-`R-PUBLIC-ADMISSION-5-RAW.md` (a re-issue is a second `-RAW.md`, never an
+Store the raw output verbatim under the package's `reviews/` as
+`R-PUBLIC-ADMISSION-6-RAW.md` (a re-issue is a second `-RAW.md`, never an
 overwrite). **The raw's head is a predicate the recorder enforces.** The first
 four non-blank lines must be the title and exactly:
 

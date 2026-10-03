@@ -49,7 +49,8 @@ def render(template_text, fields, template_name):
     return out
 
 
-def instances(root=PKG):
+def instances(root=None):
+    root = PKG if root is None else root
     for params in sorted((root / "instances").glob("*/params.json")):
         spec = json.loads(params.read_text())
         common = spec.pop("common", {})
@@ -59,7 +60,8 @@ def instances(root=PKG):
             yield params.parent / out_name, render(tpl.read_text(), fields, entry["template"])
 
 
-def manifest_text(root=PKG):
+def manifest_text(root=None):
+    root = PKG if root is None else root
     rows = sorted((path.as_posix(), hashlib.sha256(text.encode()).hexdigest())
                   for path, text in instances(root))
     return ("# PUBLIC REPOSITORY ADMISSION MANIFEST\n"
@@ -118,23 +120,52 @@ def selftest():
         assert stale(root) == [orphan], "orphan record not caught"
         caught += 1
         orphan.unlink()
+        lone = root / "instances" / "nop"
+        lone.mkdir()
+        (lone / "REC.md").write_text("x")
+        assert stale(root) == [lone / "REC.md"], "record in a directory with no params.json not caught"
+        caught += 1
+        (lone / "REC.md").unlink()
+        lone.rmdir()
         (root / MANIFEST_NAME).write_text(manifest_text(root).replace("1", "2", 1))
         assert stale(root) == [root / MANIFEST_NAME], "stale manifest not caught"
         caught += 1
         (root / MANIFEST_NAME).write_text(manifest_text(root))
         assert stale(root) == []
-    print(f"selftest: {caught} of 7 mutants caught (banner kept, unfilled "
-          "field, placeholder in value, missing banner, stale instance, "
-          "orphan record, stale manifest)")
+    # refusals while stale: both digest modes exit 1 and print nothing
+    global PKG
+    saved = PKG
+    with tempfile.TemporaryDirectory() as d:
+        PKG = pathlib.Path(d)
+        (PKG / "templates").mkdir()
+        (PKG / "instances" / "x").mkdir(parents=True)
+        (PKG / "templates" / "T.md").write_text(tpl)
+        (PKG / "instances" / "x" / "params.json").write_text(json.dumps(
+            {"R.md": {"template": "T.md", "fields": {"A": "1", "B": "2"}}}))
+        try:
+            for mode in ("--digests", "--manifest-digest"):
+                assert main(["x", mode]) == 1, f"{mode} did not refuse while stale"
+                caught += 1
+            assert main(["x", "--bogus"]) == 2, "unknown mode not refused"
+            caught += 1
+        finally:
+            PKG = saved
+    print(f"selftest: {caught} of 11 checks held: one positive render check "
+          "(banner replaced) and ten mutants: unfilled field, placeholder in value, "
+          "missing banner, stale instance, orphan record, record in a "
+          "directory with no params.json, stale manifest, refusals of "
+          "--digests and --manifest-digest while stale, unknown mode")
 
 
-def stale(root=PKG):
+def stale(root=None):
     """Records that differ from their regeneration, plus orphan records: a
     ``.md`` file in an instance directory that no ``params.json`` produces."""
+    root = PKG if root is None else root
     produced = dict(instances(root))
     bad = [p for p, text in produced.items()
            if not p.exists() or p.read_text() != text]
-    for d in {p.parent for p in produced}:
+    for d in sorted({p.parent for p in produced}
+                    | {d for d in (root / "instances").glob("*") if d.is_dir()}):
         bad += sorted(p for p in d.glob("*.md") if p not in produced)
     manifest = root / MANIFEST_NAME
     if not manifest.exists() or manifest.read_text() != manifest_text(root):

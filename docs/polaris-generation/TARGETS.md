@@ -101,3 +101,19 @@ Each target needs, before any body read or provider call (REQ-025):
 Each is a separate, separately revocable record. A reusable public-repository
 admission template that makes these one owner sitting per target is drafted as
 a candidate package; the tracker links it.
+
+## Evidence that the Redis revisions are commit objects
+
+[Observed] 2026-10-03, metadata only (no repository body read):
+`git ls-remote https://github.com/redis/redis refs/tags/<tag> refs/tags/<tag>^{}`
+for `8.10.2`, `7.2.4`, `7.4.0` and `8.0.0`. Each tag returned exactly one
+line, the ref itself, and no peeled `^{}` line. A peeled line appears only for
+an annotated tag, so these are [Inferred] lightweight tags and each id above is
+the commit object id. Raw output:
+
+```text
+498ecd0d6d007db11ddb3aea9428552598a78622	refs/tags/8.10.2
+d2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7	refs/tags/7.2.4
+c9d29f6a918c335bc1778d9f68e521c1bbb36a0f	refs/tags/7.4.0
+e91a340e241cf0abe3c6a0c254214fbe4aa1d95f	refs/tags/8.0.0
+```
