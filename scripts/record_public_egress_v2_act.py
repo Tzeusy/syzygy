@@ -76,8 +76,8 @@ RECORD_REL = PKG / build.RECORD
 #: is outside RFC5-14's closed vocabulary, so this act is refused.
 CLASS_ACT_REL = DECISIONS / "RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
 #: Provisional until a round returns: the confirming raw and its notes record.
-CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-EGRESS-V2-1-RAW.md"
-DISPOSITION_REL = PKG / "ROUND-1-DISPOSITIONS.md"
+CONFIRMATION_REVIEW_REL = PKG / "reviews/R-EGRESS-V2-2-RAW.md"
+DISPOSITION_REL = PKG / "ROUND-2-DISPOSITIONS.md"
 #: The commit the confirming review read. None until a round returns CONFIRM
 #: or notes-only CONFIRM WITH EXCEPTIONS; then set to that commit and the
 #: round's two paths above, never hand-edited again. While None, every
