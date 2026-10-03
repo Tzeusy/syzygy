@@ -626,6 +626,19 @@ def selftest() -> int:
                 cur = cur if rel != PACKET_REL else PERFORMED_HEAD_RE.sub(rb"\1", cur, count=1)
                 ok = ok and digest(cur) == want
             results.append(("frozen files verify from a copy with no git object", ok and not (bare / ".git").exists()))
+    snippet = ('CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md"\n'
+               'DISPOSITION_REL = PKG / "ROUND-6-DISPOSITIONS.md"\nFROZEN_SUBJECT: str | None = None\n'
+               + FROZEN_TABLE_UNSET + "\n")
+    frozen = freeze_text(snippet, 7, "a" * 40, "TABLE")
+    results.append(("--freeze repoints both paths to the round, sets the subject and the table",
+                    "V2-7-RAW.md" in frozen and "ROUND-7-DISPOSITIONS.md" in frozen
+                    and f'FROZEN_SUBJECT: str | None = "{"a" * 40}"' in frozen and "TABLE" in frozen
+                    and "V2-6" not in frozen))
+    results.append(("--freeze refuses a recorder that is already frozen",
+                    _raises(lambda: freeze_text(frozen, 7, "b" * 40, "T2"))))
+    results.append(("--freeze refuses a short commit", _raises(lambda: freeze_text(snippet, 7, "abc", "T"))))
+    results.append(("--freeze refuses a recorder with a missing path constant",
+                    _raises(lambda: freeze_text(snippet.replace("DISPOSITION_REL", "OTHER_REL"), 7, "a" * 40, "T"))))
     results.append(("unset FROZEN_SUBJECT refused", refused("FROZEN_SUBJECT is unset", arg, make(frozen=None))))
     results.append(("non-hex argument refused", refused("not a 64-hex", "xyz", make())))
     results.append(("an argument that is no row refused", refused("not a row", "0" * 64, make())))
@@ -791,12 +804,62 @@ def selftest() -> int:
     return 1 if failed else 0
 
 
+FROZEN_TABLE_UNSET = "FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = " + "{}"   # not contiguous: the source holds one match
+
+
+def freeze_text(text: str, round_n: int, commit: str, table: str) -> str:
+    """The recorder source after freezing on a confirming round: the review and dispositions
+    paths point at that round, FROZEN_SUBJECT is the commit the review read, and the table is
+    the one `--freeze-table` printed. Refuses a recorder that is already frozen."""
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise ValueError("the frozen subject must be a full 40-hex commit")
+    if round_n < 1:
+        raise ValueError("round must be a positive integer")
+    for needle in ("FROZEN_SUBJECT: str | None = None\n", FROZEN_TABLE_UNSET):
+        if text.count(needle) != 1:
+            raise ValueError("the recorder is already frozen or not in its unfrozen form")
+    text = text.replace("FROZEN_SUBJECT: str | None = None\n", f'FROZEN_SUBJECT: str | None = "{commit}"\n')
+    text = text.replace(FROZEN_TABLE_UNSET, table)
+    text, n1 = re.subn(r'(CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-)\d+(-RAW\.md")',
+                       rf"\g<1>{round_n}\g<2>", text)
+    text, n2 = re.subn(r'(DISPOSITION_REL = PKG / "ROUND-)\d+(-DISPOSITIONS\.md")', rf"\g<1>{round_n}\g<2>", text)
+    if (n1, n2) != (1, 1):
+        raise ValueError("the review or dispositions path constant was not found exactly once")
+    return text
+
+
+def do_freeze(round_n: int, commit: str) -> int:
+    """`--freeze ROUND COMMIT`: one command at the sitting, run on the confirmed bytes."""
+    import subprocess
+    full = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--verify", f"{commit}^{{commit}}"],
+                          capture_output=True, text=True)
+    if full.returncode:
+        print(f"FAILED: {commit} is not a commit here", file=sys.stderr)
+        return 1
+    review = ROOT / PKG / f"reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-{round_n}-RAW.md"
+    if not review.is_file():
+        print(f"FAILED: missing the round-{round_n} raw {review.relative_to(ROOT)}", file=sys.stderr)
+        return 1
+    me = pathlib.Path(__file__).resolve()
+    try:
+        new = freeze_text(me.read_text(), round_n, full.stdout.strip(), frozen_table())
+    except ValueError as exc:
+        print(f"FAILED: {exc}", file=sys.stderr)
+        return 1
+    me.write_text(new)
+    print(f"froze on round {round_n} at {full.stdout.strip()}; run --selftest and --freeze-table "
+          "(it must now print the same table), then commit")
+    return 0
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--record", metavar="ARGUMENT")
     mode.add_argument("--check", metavar="ARGUMENT")
     mode.add_argument("--freeze-table", action="store_true")
+    mode.add_argument("--freeze", nargs=2, metavar=("ROUND", "COMMIT"),
+                      help="freeze this recorder on a confirming round's bytes (single command)")
     mode.add_argument("--selftest", action="store_true")
     ap.add_argument("--date")
     ap.add_argument("--instant", help="UTC instant YYYY-MM-DDTHH:MM:SSZ; --record defaults to now, --check reads it from the record")
@@ -809,6 +872,8 @@ def main(argv: list[str]) -> int:
     if args.freeze_table:
         print(frozen_table())
         return 0
+    if args.freeze:
+        return do_freeze(int(args.freeze[0]), args.freeze[1])
     argument = args.record or args.check
     if not (args.date and args.question_opening and args.selection_label and args.selection_description):
         print("--date, --question-opening, --selection-label and "
