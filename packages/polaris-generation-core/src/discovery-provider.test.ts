@@ -37,7 +37,7 @@ const REDUCE_SYSTEM = promptForStage('discovery-reduce').system;
 describe('discovery instruction text comes from promptForStage and stageSchema', () => {
   // Recipe replay: an intentional edit needs a version decision and a new digest.
   it.each([
-    ['discovery-map', 'polaris-discovery-map-v1', 'b522e91ae2c99e659d1f9e39114698f5b0c2ae98e2fdffd473cb78638620dcef'],
+    ['discovery-map', 'polaris-discovery-map-v2', '27c19c2a7d5e97d06912f27dde813183619252f217de55e8426730d64f433762'],
     ['discovery-reduce', 'polaris-discovery-reduce-v1', '300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3'],
   ] as const)('pins the %s prompt bytes', (stage, version, digest) => {
     const prompt = promptForStage(stage);
@@ -93,6 +93,11 @@ describe('discovery instruction text comes from promptForStage and stageSchema',
     expect(parseDiscoveryReduceReply(reduceRequest(), reduceTail)).toEqual(DISCOVERY_STAGE_ILLUSTRATIONS['discovery-reduce']);
   });
 
+  // JSON cannot carry these, but validateDiscoveryReply is exported and takes a value.
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])('refuses a relevance of %s in validateDiscoveryReply', (relevance) => {
+    expect(() => validateDiscoveryReply('discovery-map', { claims: [{ blobId: 'blob-readme', claim: 'x', relevance }] }, { candidateIds: ['blob-readme'] })).toThrow('invalid-number');
+  });
+
   it('refuses a generation-stage name in validateDiscoveryReply', () => {
     expect(() => validateDiscoveryReply('author' as 'discovery-map', { claims: [] }, { candidateIds: [] })).toThrow('invalid-stage');
   });
@@ -103,7 +108,7 @@ describe('discovery envelopes', () => {
     const request = { ...mapRequest(), extra: 'never sent', items: mapRequest().items.map(item => ({ ...item, mode: '100644' })) };
     const { envelope, input } = discoveryMapEnvelope(request);
     expect(Object.keys(envelope).sort()).toEqual(['inputs', 'promptVersion', 'responseSchema', 'responseSchemaVersion', 'system']);
-    expect(envelope.promptVersion).toBe('polaris-discovery-map-v1');
+    expect(envelope.promptVersion).toBe('polaris-discovery-map-v2');
     expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-map-v1');
     expect(envelope.system).toBe(MAP_SYSTEM);
     expect(envelope.inputs).toEqual(mapRequest());
@@ -125,7 +130,7 @@ describe('discovery envelopes', () => {
 
   // The whole user message, schema included, for the fixtures above.
   it.each([
-    ['map', () => discoveryMapEnvelope(mapRequest()).input, 'e97e79b4f81d66140637b4fba58c35cf2b189c672f2b295b4225caf1eeba2b5f'],
+    ['map', () => discoveryMapEnvelope(mapRequest()).input, 'fad668bc2abb8932ec7799e80a79d8e553963b4b76afdd17780ad323ea4d707b'],
     ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'ef6a83e716a32bdd5957d7f0bf2bceba5802b513efb76b60f471394e1dabab5f'],
   ])('pins the %s envelope encoding', (_step, encode, digest) => {
     expect(sha256(encode())).toBe(digest);
@@ -147,8 +152,52 @@ describe('discovery envelopes', () => {
     ['no claims', { ...reduceRequest(), subsystems: [{ subsystem: 'src', blobs: 3, claims: [] }] }],
     ['a blob claimed twice', { ...reduceRequest(), subsystems: [...reduceRequest().subsystems, reduceRequest().subsystems[0]!] }],
     ['a non-finite relevance', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'c', relevance: Number.NaN }] }] }],
+    ['an infinite relevance', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'c', relevance: Number.POSITIVE_INFINITY }] }] }],
+    ['a string relevance', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'c', relevance: '5' }] }] }],
+    ['a relevance below 0', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'c', relevance: -0.5 }] }] }],
+    ['a relevance above 10', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'c', relevance: 10.5 }] }] }],
+    ['an empty claim', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: '', relevance: 5 }] }] }],
+    ['a claim of 401 code points', { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 1, claims: [{ blobId: 'b', path: 'p', claim: 'a'.repeat(401), relevance: 5 }] }] }],
   ])('refuses a reduce request with %s', (_name, request) => {
     expect(() => discoveryReduceEnvelope(request as DiscoveryReduceRequest)).toThrow('invalid-reduce-request');
+    expect(() => parseDiscoveryReduceReply(request as DiscoveryReduceRequest, json({ ranked: [] }))).toThrow('invalid-reduce-request');
+  });
+
+  it('accepts reduce claims at the map reply bounds, counted in code points', () => {
+    const request = { ...reduceRequest(), subsystems: [{ subsystem: 'x', blobs: 2, claims: [
+      { blobId: 'b0', path: 'p0', claim: '\u{1F600}'.repeat(400), relevance: 0 },
+      { blobId: 'b10', path: 'p10', claim: 'c', relevance: 10 },
+    ] }] };
+    expect(discoveryReduceEnvelope(request).envelope.inputs).toEqual({ readerQuestions: request.readerQuestions, maxSelected: 3, subsystems: request.subsystems });
+  });
+
+  // A request field is read once: a getter cannot pass validation with one
+  // value and be encoded or bound to the reply with another.
+  const counting = <T extends object>(base: T, key: keyof T, values: unknown[]): { request: T; reads: () => number } => {
+    let reads = 0;
+    const request = { ...base };
+    Object.defineProperty(request, key, { enumerable: true, get: () => values[Math.min(reads++, values.length - 1)] });
+    return { request, reads: () => reads };
+  };
+
+  it('reads each map request field once and encodes what it validated', () => {
+    const good = mapRequest().items;
+    const { request, reads } = counting(mapRequest(), 'items', [good, [{ blobId: 'blob-other', path: 'x', excerpt: 'swapped' }]]);
+    expect(discoveryMapEnvelope(request).envelope.inputs.items).toEqual(good);
+    expect(reads()).toBe(1);
+    const item = counting(good[0]!, 'excerpt', ['first', 'second']);
+    expect(discoveryMapEnvelope({ ...mapRequest(), items: [item.request] }).envelope.inputs.items).toEqual([{ ...good[0], excerpt: 'first' }]);
+    expect(item.reads()).toBe(1);
+  });
+
+  it('reads each reduce request field once and binds the reply to what it validated', () => {
+    const { request, reads } = counting(reduceRequest(), 'maxSelected', [1, 3]);
+    expect(() => parseDiscoveryReduceReply(request, json({ ranked: ['blob-readme', 'blob-server'] }))).toThrow('invalid-reduce-reply');
+    expect(reads()).toBe(1);
+    const relevance = counting(reduceRequest().subsystems[0]!.claims[0]!, 'relevance', [9, 99]);
+    const subsystems = [{ ...reduceRequest().subsystems[0]!, claims: [relevance.request] }];
+    expect(discoveryReduceEnvelope({ ...reduceRequest(), subsystems }).envelope.inputs.subsystems).toEqual([{ ...subsystems[0], claims: [{ ...reduceRequest().subsystems[0]!.claims[0]!, relevance: 9 }] }]);
+    expect(relevance.reads()).toBe(1);
   });
 });
 

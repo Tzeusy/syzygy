@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
+import { DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
@@ -8,12 +8,12 @@ const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8
 // Recipe replay, as in prompts.test.ts: an intentional edit needs a version
 // decision and a new reviewed digest. These pin bytes; they are not LLM evals.
 const recipes: [GenerationStage, string, string][] = [
-  ['inventory', 'polaris-inventory-dossier-v1', 'c6a6be9c532812261542a65102c80a5da6d17cbaacbd492fa50d84f25e79c184'],
-  ['plan', 'polaris-plan-dossier-v1', '244f333d0d185572000a208479de416d851152b05c5ebb54e1d43cbae774f055'],
-  ['author', 'polaris-author-dossier-v1', '5234763e7ac7f8a957f632391b59d4baeb11c04dc315d10673f3f8bdd8e09ad4'],
-  ['edit', 'polaris-edit-dossier-v1', '241cecfd0a88db18eeb0da68a63ca78d0b3b5ba3a006c6bddbf99853f3cba57b'],
-  ['fidelity', 'polaris-fidelity-dossier-v1', '3b2d01b54e1d22256ca4a49e2ed932cc4878be8eb9c406a908c4660ade2e2ec9'],
-  ['repair', 'polaris-repair-dossier-v1', '53d35431424e19925d4be9d93624753f53545d83ec3de63369ad3458e6e3a67c'],
+  ['inventory', 'polaris-inventory-dossier-v2', 'dcbc0a0f0ae5360ff655ef49d842f007736e03e6b93114036f7446a06ba873f4'],
+  ['plan', 'polaris-plan-dossier-v2', '9bb9b0a2094c522b8b5db7b3ec899f689044e54a5a126a64f6320066d6095a4e'],
+  ['author', 'polaris-author-dossier-v2', 'fc8b1ee986179d64ce28360dba04791ff24bcab5aae0538eabc476a643ade541'],
+  ['edit', 'polaris-edit-dossier-v2', '3d19a2ff5d18eb72e750d54e63a629981ad0aeec5b8d18b1300c0d1f4fc632c1'],
+  ['fidelity', 'polaris-fidelity-dossier-v2', '845084c1f3f4ddc8dec55fa2f6f9a0b72abe01e307e2350feb6c623293f8515f'],
+  ['repair', 'polaris-repair-dossier-v2', 'f98de431b567930570c353fc7acc6c4259327b96ad8a47888be1e133c07765c5'],
 ];
 
 // The dossier profile's requested assets (dossier-profile.ts on the profile
@@ -56,11 +56,12 @@ describe('dossier stage prompts', () => {
     expect(JSON.parse(lines.at(-1)!)).toEqual(illustration(stage));
   });
 
-  it.each(recipes)('states the five dossier rules in the %s prompt', (stage) => {
+  it.each(recipes)('states the seven dossier rules in the %s prompt', (stage) => {
     const prompt = promptForStage(stage, 'dossier').system;
-    for (const rule of ['1. Claim ledger.', '2. Workflow traces.', '3. Mechanisms.', '4. Attribution.', '5. Thin evidence stays Unknown.']) {
+    for (const rule of ['1. Claim ledger.', '2. Workflow traces.', '3. Mechanisms.', '4. Maintainer statements.', '5. Comparisons.', '6. Marked inference.', '7. Thin evidence stays Unknown.']) {
       expect(prompt).toContain(`\n${rule} `);
     }
+    expect(prompt).toContain(' Where these dossier rules and the manifesto instructions above differ, the dossier rules govern. ');
   });
 
   it('gives every stage its own dossier guidance', () => {
@@ -99,6 +100,39 @@ describe('dossier stage illustrations pass the stage validators', () => {
   });
 });
 
+describe('the embedded illustrations are fixed at module load', () => {
+  const before = recipes.map(([stage]) => promptForStage(stage, 'dossier').system);
+  const discoveryBefore = (['discovery-map', 'discovery-reduce'] as const).map(stage => promptForStage(stage).system);
+
+  it('deep-freezes every exported illustration and source', () => {
+    const frozen = (value: unknown): boolean => value === null || typeof value !== 'object'
+      || (Object.isFrozen(value) && Object.values(value).every(frozen));
+    expect(frozen(DOSSIER_STAGE_ILLUSTRATIONS)).toBe(true);
+    expect(frozen(DOSSIER_ILLUSTRATION_SOURCES)).toBe(true);
+    expect(frozen(DISCOVERY_STAGE_ILLUSTRATIONS)).toBe(true);
+  });
+
+  it('refuses every mutation an importer could attempt, and the prompts stay byte-identical', () => {
+    const attempts: (() => void)[] = [
+      () => { (DOSSIER_STAGE_ILLUSTRATIONS as Record<string, unknown>).author = {}; },
+      () => { ((DOSSIER_STAGE_ILLUSTRATIONS.author as ProviderDraft).introduction as { text: string }).text = 'changed'; },
+      () => { ((DOSSIER_STAGE_ILLUSTRATIONS.inventory as ProviderInventory).entries as unknown[]).push({}); },
+      () => { (DOSSIER_ILLUSTRATION_SOURCES[0] as { text: string }).text = 'changed'; },
+      () => { (DISCOVERY_STAGE_ILLUSTRATIONS as Record<string, unknown>)['discovery-map'] = {}; },
+      () => { ((DISCOVERY_STAGE_ILLUSTRATIONS['discovery-map'] as { claims: { claim: string }[] }).claims[0]!).claim = 'changed'; },
+    ];
+    for (const attempt of attempts) expect(attempt).toThrow(TypeError);
+    expect(recipes.map(([stage]) => promptForStage(stage, 'dossier').system)).toEqual(before);
+    expect((['discovery-map', 'discovery-reduce'] as const).map(stage => promptForStage(stage).system)).toEqual(discoveryBefore);
+  });
+
+  it('keeps the illustrations out of the package entry point', async () => {
+    const entry = await import('./index.js') as Record<string, unknown>;
+    for (const name of ['DOSSIER_STAGE_ILLUSTRATIONS', 'DOSSIER_ILLUSTRATION_SOURCES', 'DISCOVERY_STAGE_ILLUSTRATIONS']) expect(entry[name], name).toBeUndefined();
+    expect(entry.promptForStage).toBe(promptForStage);
+  });
+});
+
 describe('dossier illustrations obey their own rules', () => {
   const draft = illustration('author') as ProviderDraft;
   const blocks = [draft.introduction, ...[...draft.sections, ...draft.deepDives].flatMap(owner => owner.paragraphs.flatMap(block => [block, ...block.children]))];
@@ -111,11 +145,29 @@ describe('dossier illustrations obey their own rules', () => {
     for (const { name, sourceIds } of identifiers) expect(sourceIds.some(id => sourceText(id).includes(name)), name).toBe(true);
   });
 
-  it('attributes every advantage and trade-off to the maintainers', () => {
+  // Rule 4: "The maintainers state:" then their sentence in double quotes, copied from a cited source.
+  const quoted = (claim: { text: string; sourceIds: readonly string[] }): void => {
+    const match = /^The maintainers state: "([^"]+)"/u.exec(claim.text);
+    expect(match, claim.text).not.toBeNull();
+    expect(claim.sourceIds.some(id => sourceText(id).includes(match![1]!)), claim.text).toBe(true);
+  };
+
+  it('quotes every advantage and trade-off verbatim from a cited source', () => {
     for (const id of ['maintainer-stated-advantages', 'trade-offs']) {
       const section = draft.sections.find(candidate => candidate.id === id)!;
-      for (const block of section.paragraphs) expect(block.text.startsWith('The maintainers state that ')).toBe(true);
+      expect(section.paragraphs.length).toBeGreaterThan(0);
+      for (const block of section.paragraphs) quoted(block);
     }
+    const inventory = illustration('inventory') as ProviderInventory;
+    const stated = inventory.entries.filter(entry => ['other', 'qualification'].includes(entry.kind));
+    expect(stated.length).toBe(2);
+    for (const entry of stated) quoted({ text: entry.statement, sourceIds: entry.sourceIds });
+  });
+
+  it('marks the one inferential block Inferred: and no other', () => {
+    const inferred = blocks.filter(block => block.text.startsWith('Inferred: '));
+    expect(inferred.map(block => block.id)).toEqual(['b-dive']);
+    expect(blocks.filter(block => block.text.includes('Inferred'))).toEqual(inferred);
   });
 
   it('states which half of a trade-off no source states', () => {
