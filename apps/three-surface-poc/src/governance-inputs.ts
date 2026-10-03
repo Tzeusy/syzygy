@@ -16,6 +16,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import { readGitBlobsBatch, type ReadGitBlobs } from './git-blob-batch.js';
+
 import {
   A1_CORRELATION_UNAVAILABLE,
   AUTHORITY_KINDS,
@@ -172,6 +174,10 @@ export interface LoadGovernanceInputsOptions {
   // Injectable for hermetic tests; defaults shell `git -C <repoRoot>`.
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
   readonly readGitBlob?: (repoRoot: string, object: string) => Uint8Array;
+  // Many blobs in one `git cat-file --batch` (syzygy-svoj). Defaults to the
+  // batch reader only when `readGitBlob` is also the default, so a test that
+  // injects single reads is never mixed with real batched ones.
+  readonly readGitBlobs?: ReadGitBlobs;
   readonly readFile?: (absolutePath: string) => Uint8Array;
   readonly listDirectory?: (absolutePath: string) => readonly string[];
 }
@@ -224,14 +230,20 @@ function sameBytes(left: Uint8Array, right: Uint8Array): boolean {
   return left.every((byte, index) => byte === right[index]);
 }
 
+function batchReaderFor(options: Pick<LoadGovernanceInputsOptions, 'readGitBlob' | 'readGitBlobs'>): ReadGitBlobs | undefined {
+  return options.readGitBlobs ?? (options.readGitBlob === undefined ? readGitBlobsBatch : undefined);
+}
+
 function gitTreeReaders(
   runGit: LoadGovernanceInputsOptions['runGit'] & {},
   readGitBlob: LoadGovernanceInputsOptions['readGitBlob'] & {},
   repoRoot: string,
   requestedRevision: string,
+  readGitBlobs?: ReadGitBlobs,
 ): {
   readonly read: (absolutePath: string) => Uint8Array;
   readonly list: (absolutePath: string) => readonly string[];
+  readonly prefetch: (absolutePaths: readonly string[]) => void;
 } {
   const commit = runGit(repoRoot, ['rev-parse', '--verify', `${requestedRevision}^{commit}`]).trim();
   if (!/^[0-9a-f]{40}$|^[0-9a-f]{64}$/.test(commit)) throw new Error('governance revision did not resolve to an exact commit');
@@ -258,6 +270,20 @@ function gitTreeReaders(
       return [...paths]
         .filter((path) => path.startsWith(directory) && !path.slice(directory.length).includes('/'))
         .map((path) => path.slice(directory.length));
+    },
+    // Fetches, in one batch, blobs the caller is about to `read` in order.
+    // Only paths `read` would fetch are requested. A per-object failure is
+    // left uncached, so the following `read` repeats it as a single read and
+    // fails exactly as before; a malformed or short batch throws.
+    prefetch: (absolutePaths) => {
+      if (readGitBlobs === undefined) return;
+      const wanted = absolutePaths.map(relative).filter((path) => paths.has(path) && !blobs.has(path));
+      if (wanted.length === 0) return;
+      const fetched = readGitBlobs(repoRoot, wanted.map((path) => `${commit}:${path}`));
+      for (const path of wanted) {
+        const bytes = fetched.get(`${commit}:${path}`);
+        if (bytes instanceof Uint8Array) blobs.set(path, bytes.slice());
+      }
     },
   };
 }
@@ -320,6 +346,7 @@ function lifecycleFor(
   repoRoot: string,
   ownRecordPath: string,
   actIdentity: string | undefined,
+  prefetch?: (absolutePaths: readonly string[]) => void,
 ): LifecycleInput {
   if (actIdentity === undefined) return {};
   const decisionsDir = join(repoRoot, PWB_GOVERNANCE_ROOT, 'decisions');
@@ -329,6 +356,10 @@ function lifecycleFor(
   } catch (error) {
     throw new Error(`governance lifecycle enumeration failed: ${error instanceof Error ? error.message : String(error)}`);
   }
+  // Exactly the records the loop below reads, in its order.
+  prefetch?.(names
+    .filter((name) => name.endsWith('.md') && `${PWB_GOVERNANCE_ROOT}/decisions/${name}` !== ownRecordPath)
+    .map((name) => join(decisionsDir, name)));
   let supersededBy: string | undefined;
   let revokedBy: string | undefined;
   for (const name of names) {
@@ -357,9 +388,10 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
   const repoRoot = resolve(options.repoRoot);
   const tree = options.governanceRevision === undefined
     ? undefined
-    : gitTreeReaders(runGit, readGitBlob, repoRoot, options.governanceRevision);
+    : gitTreeReaders(runGit, readGitBlob, repoRoot, options.governanceRevision, batchReaderFor(options));
   const read = options.readFile ?? tree?.read ?? ((path: string) => new Uint8Array(readFileSync(path)));
   const list = options.listDirectory ?? tree?.list ?? ((path: string) => readdirSync(path));
+  const prefetch = options.readFile === undefined ? tree?.prefetch : undefined;
   const expectations = pwbAuthorityExpectationsForProject(options.observingProject ?? PWB_OBSERVING_PROJECT, options.evaluationInstant);
 
   const load = (kind: AuthorityKind): AuthorityInput => {
@@ -376,7 +408,7 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
     return {
       artifact,
       actRecord,
-      lifecycle: lifecycleFor(read, list, repoRoot, recordPath, recordText === undefined ? undefined : actIdentityOf(recordText)),
+      lifecycle: lifecycleFor(read, list, repoRoot, recordPath, recordText === undefined ? undefined : actIdentityOf(recordText), prefetch),
       recordingTag: resolveRecordingTag(runGit, readGitBlob, repoRoot, tag, recordPath, record?.bytes),
     };
   };
@@ -395,4 +427,4 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
 // Shared with the walkthrough-judgment loader (task 4.6): the same
 // artifact/act-record/tag/lifecycle classification, so a judgment act is
 // read under exactly the rules the three body-read authorities are.
-export { classifyMissingRecord, lifecycleFor, actIdentityOf, defaultReadGitBlob, defaultRunGit, gitTreeReaders, readArtifact, readOptionalText, readText, resolveRecordingTag };
+export { batchReaderFor, classifyMissingRecord, lifecycleFor, actIdentityOf, defaultReadGitBlob, defaultRunGit, gitTreeReaders, readArtifact, readOptionalText, readText, resolveRecordingTag };

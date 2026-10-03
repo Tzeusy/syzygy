@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { generationAnchorId, gitBlobObjectId, runGenerationPipeline, stageSchema, validateGenerationSources,
   validateStage, reviewVerdict, type GenerationSource, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
+import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
 import { createDurableScriptedLifecycle } from './durable-lifecycle.js';
 import { renderDraftPreview } from './draft-preview.js';
 
@@ -36,7 +37,7 @@ export interface SelfCorpus {
 
 /** Only the named blobs at the pinned commit are read: never the working
  * tree, untracked files, another project, or a provider. */
-export function readSelfCorpus(repoRoot: string, revision: string): SelfCorpus {
+export function readSelfCorpus(repoRoot: string, revision: string, readBlobs: ReadGitBlobs = readGitBlobsBatch): SelfCorpus {
   if (!/^[0-9a-f]{40}$/u.test(revision) || git(repoRoot, ['cat-file', '-t', revision]).toString('utf8').trim() !== 'commit') throw new Error('invalid-pinned-commit');
   const listing = git(repoRoot, ['ls-tree', '-r', '-z', '--full-tree', revision, '--', ...roots]);
   const records = listing.toString('utf8').split('\0').filter(Boolean).map(row => {
@@ -48,9 +49,13 @@ export function readSelfCorpus(repoRoot: string, revision: string): SelfCorpus {
   const selected = markdown.filter(record => inProfile(record.path)).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   const excludedPaths = markdown.filter(record => !inProfile(record.path)).map(record => record.path).sort();
   let rawBytes = 0, characters = 0, largestCharacters = 0, over100000Characters = 0;
+  // One batched read of exactly the selected blobs (syzygy-svoj); a missing
+  // or non-blob answer fails the read of that record, as a single read did.
+  const blobs = readBlobs(repoRoot, selected.filter(record => record.type === 'blob').map(record => record.objectId));
   const sources = selected.map(record => {
     if (record.type !== 'blob') throw new Error('self-corpus-nonblob');
-    const bytes = git(repoRoot, ['cat-file', 'blob', record.objectId]);
+    const bytes = blobs.get(record.objectId);
+    if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('self-corpus-blob-unread');
     const body = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
     if (gitBlobObjectId(body) !== record.objectId) throw new Error('self-corpus-object-mismatch');
     rawBytes += bytes.length;
