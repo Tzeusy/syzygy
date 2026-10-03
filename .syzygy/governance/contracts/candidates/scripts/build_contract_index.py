@@ -334,22 +334,35 @@ def selftest(root):
     cases = []
     base = emit(root)
 
-    def mutated(rel, fn, label):
+    def copied(rel, fn):
         d = Path(tempfile.mkdtemp(prefix="index-selftest-"))
         try:
             shutil.copytree(root / "rfcs", d / "rfcs")
             p = d / rel
             p.write_text(fn(p.read_text(encoding="utf-8")), encoding="utf-8")
-            after = emit(d)
-            cases.append((label, after != base))
-            return after
+            return emit(d)
         finally:
             shutil.rmtree(d, ignore_errors=True)
+
+    def mutated(rel, fn, label):
+        # Compared with an unmutated copy made the same way, never with
+        # `base`: a copy holds only `rfcs/`, so its governance_sources block
+        # is empty and every copy differed from `base` — a no-op mutation
+        # "changed the projection" and these cases could not fail.
+        after = copied(rel, fn)
+        cases.append((label, changed(rel, after)))
+        return after
+
+    def changed(rel, after):
+        return after != copied(rel, lambda t: t)
 
     first_pkg = sorted(p for p in (root / "rfcs").glob("RFC-00*")
                        if p.is_dir())[0]
     readme = f"rfcs/{first_pkg.name}/README.md"
 
+    # 0. Control: a no-op edit must not register as a change.
+    cases.append(("a no-op edit does not register as a change",
+                  not changed(readme, copied(readme, lambda t: t))))
     # 1. A dropped front-matter id removes a whole module from the index.
     mutated(readme, lambda t: t.replace("\nid: ", "\nid_was: ", 1),
             "dropped front-matter id changes the projection")
