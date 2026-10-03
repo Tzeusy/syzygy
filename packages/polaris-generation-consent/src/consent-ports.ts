@@ -95,6 +95,11 @@ function effective(records: readonly AdmissionRecord[], now: number): { readonly
   return { live: live.filter(r => !replaced.has(ref(r))), dead };
 }
 
+/** The records that are plainly in force at `now` (same polarity as the ports). */
+export function inForceRecords(records: readonly AdmissionRecord[], now: number): readonly AdmissionRecord[] {
+  return effective(records, now).live;
+}
+
 function evaluate(records: readonly AdmissionRecord[], now: number, o: ConsentPortsOptions, providerId: string | null): Evaluation {
   if (providerId === null) return { ok: false, reasons: ['provider-unmapped'], relied: [] };
   const scoped = records.filter(r => r.project === o.consentingProject);

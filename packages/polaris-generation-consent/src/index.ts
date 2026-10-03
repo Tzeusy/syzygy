@@ -1,2 +1,3 @@
 export { AdmissionRecordError, COMMIT_OBJECT_ID, parseAdmissionRecords, type AdmissionClass, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
-export { UNCONSENTED, createConsentPorts, withConsent, type WithConsentOptions, type ConsentAudit, type ConsentPorts, type ConsentPortsOptions, type ConsentReason, type ReliedRecord } from './consent-ports.js';
+export { UNCONSENTED, createConsentPorts, inForceRecords, withConsent, type WithConsentOptions, type ConsentAudit, type ConsentPorts, type ConsentPortsOptions, type ConsentReason, type ReliedRecord } from './consent-ports.js';
+export { DECISIONS_DIR, INSTANCES_DIR, createAdmissionRecordsPort, createPackageAdmissionReader, type AdmissionAnswerLike, type AdmissionRecordsPortLike, type AdmissionRequirementLike, type PackageReaderFs } from './package-reader.js';

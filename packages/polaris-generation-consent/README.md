@@ -37,3 +37,11 @@ interface and fixtures.
 Not here: the reader over real records (their in-force index is undefined), the
 content-class mapping, and the single egress check for any route other than
 `permitted`.
+
+## Reading the real admission records
+
+`createPackageAdmissionReader({ root })` implements `AdmissionRecordReader` over the public-repo-admission package. A candidate instance under `instances/**` binds nothing and is never returned: a record exists only when an owner act record (`.syzygy/governance/decisions/PUBLIC-REPO-ADMISSION-*-ACT.md`) names the instance by path and digest. If the instance bytes no longer hash to the act's digest the record is returned with `inForceAt: null`. The act record carries a date, not an instant, so a record is in force from the start of the next UTC day (fail-closed; the owner may want an instant in the act form). Any other `PUBLIC-REPO-ADMISSION-*` file in `decisions/`, a successor form, a branch name as a revision or an artifact path outside `instances/` refuses the whole read.
+
+`createAdmissionRecordsPort({ reader, now })` answers the dossier trigger's `AdmissionRecordsPort` (`check(requirement)`) from the reader, with the consent ports' in-force polarity (`inForceRecords`), freshly on every call. The public-source policy requirement is never satisfied: that record has no act form in the package yet. Wiring in `poc:dossier` is `records: createAdmissionRecordsPort({ reader: createPackageAdmissionReader({ root }), now: Date.now })`.
+
+Limits: no withdrawal or successor act form exists yet, so a file of an unknown form refuses everything rather than being interpreted. Verified against the real instance bytes on main with synthetic act records only; no performed act exists today, so the reader returns no record from the live tree.
