@@ -324,9 +324,27 @@ describe('accounting and budget', () => {
     const h = make(config({ query: fakeQuery([[rateLimited(undefined)], [resultMessage()]]) }));
     expect((await call(h, envelope())).usageUnits).toBeNull();
   });
+  it('counts a rejected try as unbilled only on the provider\'s documented error body', async () => {
+    endpoint.script({ kind: 'status', status: 429, body: '{"oops":1}' }, { kind: 'text', text: '{}' });
+    const h = make(config());
+    expect((await call(h, envelope())).usageUnits).toBeNull();
+    expect(h.attempts()[0]!.usageUnits).toBeNull();
+    endpoint.script({ kind: 'status', status: 429 }, { kind: 'text', text: '{}' });
+    expect((await call(make(config()), envelope())).usageUnits).toBe(18);
+  });
+  it('strips the OS, architecture and runtime-version headers only when the profile says so', async () => {
+    await call(make(config({ stripFingerprint: true })), envelope());
+    await call(make(config()), envelope());
+    const [stripped, kept] = endpoint.messages();
+    for (const name of ['x-stainless-os', 'x-stainless-arch', 'x-stainless-runtime-version']) {
+      expect(stripped!.headers[name]).toBeUndefined();
+      expect(kept!.headers[name]).toBeDefined();
+    }
+    expect(stripped!.headers['user-agent']).toBe(kept!.headers['user-agent']);
+  });
   it('carries the tokens spent on the final error', async () => {
     const limited = resultMessage({ is_error: true, api_error_status: 429, usage: { input_tokens: 3, output_tokens: 2 } });
-    await expect(call(make(config({ query: fakeQuery([[limited]]) })), envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 3, spentUnits: 15 });
+    await expect(call(make(config({ query: fakeQuery([[limited]]) })), envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 3, spentUnits: null });   // the CLI's own usage is not evidence a rejected request was unbilled
   });
   it('honours retry-after over the computed backoff, and stops when it cannot fit the budget', async () => {
     const slept: number[] = [];
