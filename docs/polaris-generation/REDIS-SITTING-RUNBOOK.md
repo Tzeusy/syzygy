@@ -92,14 +92,22 @@ rulings and directions with no bytes.
 | F6 | Row 7 install | Applying the RFC-0005 patch to both mirrors fails CG-7a (active-manifest row) and CG-7h (general trusted-bootstrap contract row) | Refresh the active-manifest row from the installed bytes; add a successor-chain contract link as the contract restyle act did; register the row-7 phrase in this same commit (registering it earlier fails CG-7e) |
 | F7 | Rows 1 and 2 (route B) and 9 | No recorder: the policy install, route B and the profile adoption are hand-written | Per the sitting packet: byte copy and an acceptance-record entry at the sitting |
 | F8 | Row 9 install | `count_polaris_effective_scenarios.py` stops with "expected exactly one base spec.md ... found 2" once a third polaris-generation spec sits under specs/ | Generalize the tool in the install change, as the package's task list says |
+| F10 | Row 1 install, Vitest | Eight tests fail after the policy bytes change: the content-classification and git-object-reader byte-equality tests and the governance-inputs loader tests. They are 2 of 2174 in the merged baseline before any act (a tuple-encoding test and the pipeline-demo README command; whether those two also fail on main alone is [Unknown], not separated) | Move the code constants and fixtures that pin the policy in the same commit as the policy install; PR 266's impact ledger is the list to check |
+| F11 | Row 9 install | Moving the spec leaves four package files naming the old proposed/ path (CG-1b: the profile REVIEW-BRIEF, SEMANTIC-DELTA, GOVERNING-DEPENDENCIES and design) | Update the references in the install commit; whether those files are manifest rows is [Unknown], check the package manifest before editing |
 | F9 | PR 120 | Based on a stale main; conflicts in docs/README.md, the partition checker and check_governance.py | Rebase onto main before the sitting; not resolved by hand |
 
 ## Known limits of the rehearsal
 
 - [Unknown] Whether the real recorders accept the owner's actual selection:
   the rehearsal feeds a synthetic one.
-- [Unknown] The Vitest result after the profile install if the recount
-  generalization (F8) is not written: the dry run does not write it.
+- [Observed] Check totals by step in the final run: merged baseline 31 OK, 0
+  FAIL (partition 340 of 340); after row 1, CG-7e
+  6 findings; after rows 2 to 7, CG-7e 12; after the registration and
+  exemption edits, 6 (all F4); after the RFC-0005 patch, CG-7a 1 and CG-7h 2
+  added; after the profile move, CG-1b 4 added. Vitest: 2 failing at the
+  start, 8 after the acts, 8 at the end.
+- [Unknown] Whether the install change clears F4, F6, F10 and F11 together:
+  the dry run does not write those edits, so the end state is not green.
 - [Observed] The dry run does not exercise rows 8, 10 and 11, route B's
   install, or any provider call; it reads no external repository.
 - [Inferred] F6's chain-link edit is modelled on the contract restyle act and
