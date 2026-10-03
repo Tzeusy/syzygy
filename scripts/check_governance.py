@@ -46,8 +46,10 @@ Checks
          stated module count matches its manifest (CG-7f);
          `wave-manifests/` holds exactly six (CG-7g)
   CG-8   default-load size and context budgets reported, never enforced
-         (charter §7.3 figures every run; §11.4 decomposition triggers)
-  CG-9   duplicate authority homes absent
+         (the default-load set and AGENTS.md band are this file's own
+         operating figures; charter §11.4 decomposition triggers)
+  CG-9   authority-home files sit under their one home (a path test, not
+         a duplicate-content test)
   CG-10  pending-decision register as-of line reported
   CG-11  `.syzygy/cache/` and `.syzygy/local/` are git-ignored
   CG-12  no active artifact cites a `_bootstrap/` path as a required source
@@ -63,8 +65,10 @@ Checks
          no written owner yet; see CHECK_OWNERS)
   CG-21  contract prose states no measurement (advisory — same)
   CG-22  no unqualified `status` in the active lane — the term registry's
-         five-dimension rule, made executable (charter §9.4)
-  CG-23  advanced vocabulary on the default public path, reported (§9.3)
+         five-dimension rule (§1, candidate), made executable; CG-22c checks
+         the qualifier list still covers the registry's five dimensions
+  CG-23  advanced vocabulary on the default public path, reported (the
+         term registry's two-tier bound, candidate)
   CG-24  which check families have a `--selftest` fixture, computed
   CG-25  every check family names the authoritative rule it enforces
          (`CHECK_OWNERS`); a check whose rule lives only in this file is
@@ -150,11 +154,19 @@ CHECK_OWNERS = {
              "§1-§2 — an act binds exactly the bytes its digest argument "
              "names. RFC3-16 is cited *by* that record and is itself "
              "candidate, so the record is the anchor, not the clause"),
-    "CG-8": ("report-only — charter §7.3/§11.4 figures; never fails"),
+    "CG-8": ("report-only; never fails. The decomposition triggers are "
+             "`round-2026-08/OWNER-ROUND-CHARTER.md` §11.4, transcribed by "
+             "the candidate CC-BUDGET-1 (owner item P-12). The default-load "
+             "set, the AGENTS.md 900–1,200 authored-word band and "
+             "TOKENS_PER_WORD are **this file's own operating figures**: no "
+             "governing artifact states them. They were cited to charter "
+             "§7.1/§7.3, which no tracked charter has (review RD-6 F-1)"),
     "CG-9": ("mechanical — two copies of an authority artifact make \"which "
              "one binds\" undecidable. **No clause states the one-home rule**; "
              "the nearest written statement is AGENTS.md's routing table, "
-             "which says of itself that it is never citable as authority"),
+             "which says of itself that it is never citable as authority. "
+             "The check tests paths only: duplicated *content* in another "
+             "home is invisible to it (RD-6 F-4)"),
     "CG-10": ("VIS-2 (`doctrine/vision.md`) — \"No evidence means Unknown, "
               "not success.\" A register with no as-of line makes its own "
               "currency Unknown, and Unknown is not current"),
@@ -181,7 +193,10 @@ CHECK_OWNERS = {
     "CG-19": ("record: `GOVERNANCE-SUBSTRATE-LOCK.yaml` §verification — the "
               "lock's own rule that a pin is complete, public, and not "
               "machine-local. The lock's header calls itself \"record, never "
-              "authority\"; no doctrine clause covers substrate pinning"),
+              "authority\"; no doctrine clause covers substrate pinning. "
+              "The lock declares no vocabulary of its own: `LOCK_META_KEYS`, "
+              "`LOCK_NONPIN_SECTIONS`, `LOCK_FORGE_ALLOW` and "
+              "`LOCK_DISPOSITIONS` are this file's (RD-6 F-3 row 7)"),
     "CG-20": ("**Python-only — downgraded to WARN.** The rule *the context-"
               "load map states no measurement of the corpus it routes* is "
               "stated in this file's docstring and nowhere else; the nearest "
@@ -191,9 +206,18 @@ CHECK_OWNERS = {
               "docstring and nowhere else (review RD-17 finding 11)"),
     "CG-22": ("candidate: `policy-candidates/TERM-REGISTRY.md` §1 — whose "
               "own third line reads 'Status: CANDIDATE. This file binds "
-              "nothing.' The FAIL is real; the owner is not"),
+              "nothing.' The FAIL is real; the owner is not. "
+              "`STATUS_QUALIFIERS` stays a list here rather than being "
+              "derived, because the registry names its dimensions in prose "
+              "forms (\"Claim epistemic label\") a reader never writes, and "
+              "three entries are not §1 dimension-row names (the registry "
+              "states each elsewhere: T-16's alias, the chain-state alias "
+              "and the §1 rule); "
+              "CG-22c checks the list against the registry's table instead "
+              "(RD-6 F-3 row 1)"),
     "CG-23": ("report-only — the term registry's own two-tier bound, "
-              "candidate; never fails"),
+              "candidate; never fails. Earlier cited to charter §9.3, which "
+              "no tracked charter has (RD-6 F-1)"),
     "CG-24": ("mechanical — which check families have a fixture, computed"),
     "CG-25": ("mechanical — this table's own completeness over the "
               "FAIL-capable checks reported this run"),
@@ -334,11 +358,18 @@ def corpus_paths(scope):
     """Repo-relative paths a clone would (or will) contain.
 
     `tracked` is `git ls-files`. The default `clone` scope adds untracked
-    files that are not git-ignored — the candidate governance package is
-    exactly that today, and a tracked-only corpus would give checks CG-4,
-    CG-7, CG-8, CG-9 and CG-12 a **zero denominator**, i.e. a vacuous pass
-    over the material those checks exist for. Both counts are printed so the
-    scope is never implicit.
+    files that are not git-ignored, so a file being authored is checked
+    before its first commit rather than after it. That is the reason now.
+    The reason first written here — that the candidate governance package
+    was untracked and a tracked-only corpus would give CG-4, CG-7, CG-8,
+    CG-9 and CG-12 a zero denominator — expired when the package was
+    committed (review RD-6 D-2, recorded 2026-10-03).
+
+    The cost is that every denominator in a local run includes whatever
+    untracked file is lying in the working tree, which a clone does not
+    have. Both counts are printed in the scope line so the difference is
+    never implicit, and the run of record — a clone, or the hosted job —
+    has no untracked files, so there the two scopes agree.
 
     Returns (paths, tracked_set, source). `source` is "git" normally and
     "walk" when git is unavailable — an exported or archived copy of the
@@ -4539,9 +4570,12 @@ BUDGETS = (
 MODULE_TRIGGER = 4000
 MODULE_DECOMPOSE = 5000
 
-#: Charter §7.3 requires the *default agent load* to be reported in words and
-#: estimated tokens — not asserted in prose. These four are what a fresh agent
-#: session loads before it has chosen a task. Reported every run so the figures
+#: The *default agent load* is reported in words and estimated tokens — not
+#: asserted in prose. These four are what a fresh agent session loads before
+#: it has chosen a task. **This set, `TOKENS_PER_WORD` and the AGENTS.md band
+#: below are this file's own operating figures.** They were once attributed
+#: to "charter §7.3" and "§7.1", sections no tracked charter has (review RD-6
+#: F-1); where such figures should bind is owner item P-12. Reported every run so the figures
 #: cannot go stale in a document that quotes them.
 DEFAULT_LOAD = (
     "README.md",
@@ -4554,7 +4588,7 @@ TOKENS_PER_WORD = 1.35
 #: `AGENTS.md` carries a tool-managed block that `bd` writes and rewrites. It
 #: is default context and counts toward the load, but it is not the router's
 #: authored text and cannot be edited to hit a target. Both figures are
-#: reported so the §7.1 900–1,200-word target is read against the region it
+#: reported so the 900–1,200-word target is read against the region it
 #: governs, and the whole-file total is never quietly replaced by the smaller
 #: number.
 TOOL_BLOCK_START = "<!-- BEGIN BEADS INTEGRATION"
@@ -4573,10 +4607,10 @@ def cg8_budgets(paths, res, measure=None):
     read_text = measure if measure is not None else read
     lines, n = [], 0
 
-    # §7.3 — the default load, always reported, never only on breach.
+    # The default load, always reported, never only on breach.
     for rel in DEFAULT_LOAD:
         if rel not in present:
-            lines.append(f"{rel} — absent; charter §7.3 names it as default "
+            lines.append(f"{rel} — absent; DEFAULT_LOAD names it as default "
                          f"load and it cannot be measured")
             n += 1
             continue
@@ -4596,14 +4630,17 @@ def cg8_budgets(paths, res, measure=None):
             lines.append(f"{rel} — {authored + tool} words, over the {limit}-word "
                          f"{label} (§11.4 trigger; review, not failure)")
 
-    # §7.1's tighter target applies to the authored router, not the block bd
+    # The tighter target applies to the authored router, not the block bd
     # owns. Reported as its own line so neither figure can stand in for the
     # other.
     if "AGENTS.md" in present:
         authored, tool = _authored_words("AGENTS.md", read_text("AGENTS.md"))
         if not (900 <= authored <= 1200):
             lines.append(f"AGENTS.md — {authored} authored words, outside the "
-                         f"§7.1 900–1,200 target band")
+                         f"900–1,200 target band (this checker's own "
+                         f"figure, stated in no governing artifact; the "
+                         f"nearest written one is the historical round "
+                         f"charter §8.2's 'roughly 800–1,500 words')")
 
     modules = sorted(p for p in paths
                      if p.startswith(f"{CANDIDATES}/rfcs/") and p.endswith(".md"))
@@ -4618,8 +4655,9 @@ def cg8_budgets(paths, res, measure=None):
                          f"active-module trigger (§11.4)")
     res.add("WARN" if n else "WARN",
             "CG-8   context budgets reported", n, len(lines), "artifact",
-            note=("report-only — §7.3 default-load figures are printed every "
-                  "run; §11.4 triggers are decomposition prompts, not failures"
+            note=("report-only — default-load figures (this checker's own "
+                  "set) are printed every run; §11.4 triggers are "
+                  "decomposition prompts, not failures"
                   if n else "nothing examined"),
             details=lines)
 
@@ -4628,7 +4666,12 @@ def cg8_budgets(paths, res, measure=None):
 
 #: Each authority type has exactly one home. A second copy in the candidate
 #: package is a duplicate authority home — the reader cannot tell which one
-#: binds.
+#: binds. **What this tests is narrower than that sentence:** a file whose
+#: path carries a home's marker must sit under that home. A copy of doctrine
+#: prose under any other path, or a craft rule restated in a contract, is
+#: invisible to it. Review RD-6 F-4 found the old label, "duplicate authority
+#: homes absent", claimed the wider test; the label now says the narrower one
+#: and the identifier is unchanged.
 AUTHORITY_HOMES = (
     ("doctrine", DOCTRINE, ("/doctrine/",)),
     ("craft-and-care", CRAFT, ("/craft-and-care/",)),
@@ -4647,7 +4690,7 @@ def cg9_duplicate_homes(paths, res):
                     findings.append(f"{rel} — {label} material outside its one "
                                     f"home {home}/")
     status = "FAIL" if findings else ("OK" if n else "WARN")
-    res.add(status, "CG-9   duplicate authority homes absent", n,
+    res.add(status, "CG-9   authority-home files sit under their one home", n,
             len(findings), "file",
             note=None if n else "no authority-home files found — nothing examined",
             details=findings)
@@ -5310,31 +5353,53 @@ def _declared_subclauses(bodies, declared):
     return out
 
 
+#: A contract the matrix routes has its own section: `## RFC-0006 — …`.
+MATRIX_SECTION = re.compile(r"^## RFC-(\d{4}) — ", re.M)
+
+
 def cg17_routing_completeness(res, matrix=None, modules=None):
-    """Every clause of RFC 0006-0011 is routed exactly once.
+    """Every clause of every contract the matrix routes is routed once.
 
     The six phase rules are only as good as the enumeration behind them.
     The rev10 matrix classified 150 of 322 clauses, routed RFC-0006 not at
     all, and was cited as though it covered everything — a coverage claim
     resting on an enumeration that did not exist.
+
+    **Which contracts are in the population is read from the matrix's own
+    per-contract sections**, never listed here. It was `RFC(?:6|7|…|11)`,
+    so a twelfth contract would have left the denominator silently (review
+    RD-6 F-3 row 11). Contracts with modules and no section — today RFC
+    0001–0005, which the matrix says it stages at surface specification —
+    are printed every run, so a new one cannot go unseen.
     """
     body = matrix if matrix is not None else read(ROUTING_MATRIX)
     if not body:
         res.add("WARN", "CG-17  surface clauses routed exactly once", 0, 0,
                 "clause", note=f"{ROUTING_MATRIX} unreadable")
         return
+    sections = {int(n) for n in MATRIX_SECTION.findall(body)}
+    if not sections:
+        res.add("FAIL", "CG-17  surface clauses routed exactly once", 0, 1,
+                "clause", details=[f"{ROUTING_MATRIX} — no `## RFC-NNNN — ` "
+                                   f"section parsed, so the population of "
+                                   f"routed contracts is unknown"])
+        return
+    row = re.compile(r"\|\s*`?(RFC(?:%s)-\d+(?:\([a-z]\))?)`?\s*\|"
+                     % "|".join(str(n) for n in sorted(sections)))
     routed = {}
     for line in body.splitlines():
-        m = re.match(r"\|\s*`?(RFC(?:6|7|8|9|10|11)-\d+(?:\([a-z]\))?)`?\s*\|",
-                     line)
+        m = row.match(line)
         if m:
             routed[m.group(1)] = routed.get(m.group(1), 0) + 1
-    declared = set()
+    declared, unsectioned = set(), set()
     for rel in (modules if modules is not None else _rfc_modules()):
-        m = re.search(r"RFC-00(0[6-9]|1[01])", rel)
+        m = re.search(r"RFC-(\d{4})", rel)
         if not m:
             continue
-        n = int(m.group(0)[4:])
+        n = int(m.group(1))
+        if n not in sections:
+            unsectioned.add(n)
+            continue
         for c in re.finditer(r"^\*\*(RFC%d-\d+(?:\([a-z]\))?)" % n,
                              read(rel), re.M):
             declared.add(c.group(1))
@@ -5361,10 +5426,13 @@ def cg17_routing_completeness(res, matrix=None, modules=None):
         if n > 1:
             findings.append(f"{c} — routed {n} times; each clause takes one route")
     examined = len(declared | set(routed))
+    outside = (f"contracts with modules and no matrix section, outside this "
+               f"population: {', '.join(f'RFC-{n:04d}' for n in sorted(unsectioned))}"
+               if unsectioned else None)
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-17  surface clauses routed exactly once", examined,
             len(findings), "clause",
-            note=None if examined else "no clause identities found",
+            note=(outside if examined else "no clause identities found"),
             details=findings)
 
 
@@ -6628,7 +6696,7 @@ def selftest():
                   c.rows[0][0] == "FAIL"
                   and "git-excluded" in (c.rows[0][4] or [""])[0]))
 
-    # CG-8 measures the §7.3 default load. Its failure modes are not "a file
+    # CG-8 measures the default load. Its failure modes are not "a file
     # is too long" — that is reported, never enforced — but the three ways the
     # figures can quietly stop meaning anything: an artifact vanishing from
     # the load, the authored region drifting out of its target band, and the
@@ -6765,17 +6833,45 @@ def selftest():
                       {"RFC8-2"})))
 
     c = Cap()
-    cg17_routing_completeness(c, matrix="| `RFC6-1` | OS |\n| `RFC6-1` | OS |",
-                              modules=[])
+    cg17_routing_completeness(
+        c, matrix="## RFC-0006 — x\n| `RFC6-1` | OS |\n| `RFC6-1` | OS |",
+        modules=[])
     cases.append(("CG-17 double-routed clause detected",
                   c.rows[0][0] == "FAIL"))
 
     # A fabricated row must not pass as coverage. Checking only
     # declared-minus-routed let one inflate the denominator unnoticed.
     c = Cap()
-    cg17_routing_completeness(c, matrix="| `RFC6-999` | OS |", modules=[])
+    cg17_routing_completeness(c, matrix="## RFC-0006 — x\n| `RFC6-999` | OS |",
+                              modules=[])
     cases.append(("CG-17 routed-but-undeclared clause detected",
                   c.rows[0][0] == "FAIL"))
+
+    # The population is the matrix's own sections. A new section brings its
+    # rows in; a matrix with none fails rather than routing nothing; and a
+    # contract with modules and no section is printed, not dropped.
+    c = Cap()
+    cg17_routing_completeness(
+        c, matrix="## RFC-0012 — new\n| `RFC12-1` | OS |\n| `RFC12-1` | OS |",
+        modules=[])
+    cases.append(("CG-17 a twelfth contract's section joins the population",
+                  c.rows[0][0] == "FAIL" and "RFC12-1" in c.rows[0][4][0]))
+    c = Cap()
+    cg17_routing_completeness(c, matrix="| `RFC6-1` | OS |", modules=[])
+    cases.append(("CG-17 matrix with no contract section fails",
+                  c.rows[0][0] == "FAIL"))
+    notes = []
+    class NoteCap(Cap):
+        def add(self, status, name, examined, n, unit, note=None,
+                details=None):
+            notes.append(note or "")
+            super().add(status, name, examined, n, unit, note, details)
+    c = NoteCap()
+    cg17_routing_completeness(
+        c, matrix="## RFC-0006 — x\n| `RFC6-1` | OS |",
+        modules=[f"{RFCS_DIR}/RFC-0001-project-graph-identity-state-planes.md"])
+    cases.append(("CG-17 contract with modules and no section is printed",
+                  "RFC-0001" in notes[-1]))
 
     # A fixture the parser cannot read is unverified, not passing.
     c = Cap()
@@ -7022,6 +7118,28 @@ def selftest():
         ("f.md", "something was renamed here\n" + ("filler\n" * 6)
                  + "the `status` field")])
     cases.append(("CG-22 retirement marker outside the window does not exempt",
+                  c.rows[0][0] == "FAIL"))
+
+    # CG-22c holds the qualifier list to the registry's own §1 table. Each
+    # failure mode is one of the three ways the copy can drift: the registry
+    # names a dimension the list no longer covers, the table stops parsing,
+    # and a covered dimension written in the registry's longer prose form.
+    DIMS = ("## 1. The five dimensions\n\n| Dimension | Q |\n|---|---|\n"
+            "| **State plane** | x |\n| **Claim epistemic label** | x |\n"
+            "{extra}\n## 2. Next\n")
+    c = Cap()
+    cg22c_qualifier_coverage(c, registry=DIMS.format(extra=""))
+    cases.append(("CG-22c dimension in its long prose form is still covered",
+                  c.rows[0][0] == "OK" and c.rows[0][2] == 2))
+    c = Cap()
+    cg22c_qualifier_coverage(
+        c, registry=DIMS.format(extra="| **Consent standing** | x |"))
+    cases.append(("CG-22c registry dimension the list misses detected",
+                  c.rows[0][0] == "FAIL"
+                  and "consent standing" in c.rows[0][4][0]))
+    c = Cap()
+    cg22c_qualifier_coverage(c, registry="## 1. Renamed\n\nprose only\n## 2.\n")
+    cases.append(("CG-22c unparseable dimension table fails, never passes",
                   c.rows[0][0] == "FAIL"))
 
     # CG-23 reads the tier split out of the registry rather than restating it.
@@ -10214,6 +10332,15 @@ STATUS_SHAPES = (
 #: Naming any one of the five dimensions in the same whitespace-normalized
 #: window disambiguates the use. Window, not line: a qualifier and the word it
 #: qualifies routinely land on opposite sides of a wrap.
+#:
+#: A second copy of the registry's §1 dimension set (review RD-6 F-3 row 1),
+#: kept rather than derived because the registry's table names dimensions in
+#: forms a writer does not use ("Claim epistemic label") and the last three
+#: entries are not §1 dimension-row names (the registry states them as an
+#: alias or in its §1 rule instead). CG-22c holds the copy to the
+#: registry: every dimension the table names must end in one of these.
+#: CG-22c's and CG-17's rule-6 mutants, with old/new fragments:
+#: `docs/evidence/syzygy-eexf-check-owners-rule6-2026-10-03.json`.
 STATUS_QUALIFIERS = (
     "state plane", "epistemic label", "evidence tier", "rendering tier",
     "work lifecycle", "governance lifecycle", "chain state", "lifecycle state",
@@ -10266,10 +10393,40 @@ VENDORED_EXTERNAL = (
 )
 
 
+#: The registry §1 table's dimension cells: `| **State plane** | …`.
+DIMENSION_SECTION = re.compile(r"^## 1\. [^\n]*\n([\s\S]*?)(?=^## )", re.M)
+DIMENSION_ROW = re.compile(r"^\|\s*\*\*([^*|]+?)\*\*\s*\|", re.M)
+
+
+def cg22c_qualifier_coverage(res, registry=None):
+    """`STATUS_QUALIFIERS` still names every dimension the registry does."""
+    label = "CG-22c status qualifiers cover the term registry's dimensions"
+    reg = registry if registry is not None else read(TERM_REGISTRY)
+    sec = DIMENSION_SECTION.search(reg or "")
+    dims = [d.strip().lower() for d in DIMENSION_ROW.findall(sec.group(1))] \
+        if sec else []
+    if not dims:
+        res.add("FAIL", label, 0, 1, "dimension",
+                details=[f"{TERM_REGISTRY} §1 — no dimension table parsed; "
+                         f"the qualifier list cannot be checked against it"])
+        return
+    findings = [f"{TERM_REGISTRY} §1 names `{d}`; no entry of "
+                f"STATUS_QUALIFIERS ends it, so a use qualified that way "
+                f"still fails CG-22" for d in dims
+                if not any(d.endswith(q) for q in STATUS_QUALIFIERS)]
+    own = [q for q in STATUS_QUALIFIERS
+           if not any(d.endswith(q) for d in dims)]
+    res.add("FAIL" if findings else "OK", label, len(dims), len(findings),
+            "dimension",
+            note=(f"qualifiers that are not §1 dimension-row names: "
+                  f"{', '.join(own)}" if own else None),
+            details=findings)
+
+
 def cg22_ambiguous_status(paths, res, corpus=None):
     """No unqualified `status` where the dimension is ambiguous.
 
-    Charter §9.4 and the working term registry §1. Active lane only: frozen
+    The working term registry §1 (candidate). Active lane only: frozen
     history and verbatim reviewer output are evidence, never instructions,
     and are never edited to satisfy a checker.
     """
@@ -10699,6 +10856,7 @@ def main():
     cg20_load_map_figures(res)
     cg21_package_readme_counts(res)
     cg22_ambiguous_status(existing, res)
+    cg22c_qualifier_coverage(res)
     cg23_default_path_vocabulary(res)
     cg26_battery_parity(res)
     cg27_default_path_currency(res)
