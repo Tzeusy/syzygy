@@ -21,31 +21,53 @@ reviews and records, which cite it and bind nothing here.
 Predicate: files under `apps/` and `packages/` matching
 `policyVersion|accessBoundary|sourceAdmission|rawBodyHandling`: 15 files.
 [Observed] `body-read-authority.ts` and `governance-inputs.ts` check a policy
-field at run time (`policyOwningProject`, `policyVersion`), and so does a
-hard-coded copy of the version in `git-object-reader.ts`, which feeds
+field at run time (`policyOwningProject`, `policyVersion`), and a
+hard-coded copy of the version in `git-object-reader.ts` carries it too, which feeds
 `PWB_SECRET_POLICY` in `content-classification.ts`, whose version every
 exclusion record names. The rest read the keys in tests or fixtures; round 1
 found the earlier sentence that only two files check a field to be false. [Inferred] No code rejects an additional
 top-level key, because both read named fields; this is not proven by a
 mutation of the file.
 
-## Pins that carry the policy version or digest
+## What the act breaks, by simulation
 
-Re-derived at the drafting base with the version literal and the act-record
-path. Every one needs re-pointing in the same change as the act:
+Derived mechanically, not by reading: `python3
+scripts/simulate_public_source_screening_scope_act.py --tests` clones the
+committed tree to a scratch directory, replaces the policy with the proposed
+bytes, commits them, runs the checks below and sweeps the clone for the
+literals the old policy and the performed act carry (the policy's SHA-256, its
+version, the act identity and recording tag, the two act-record pointers). It
+edits nothing in this checkout. Output of the run for this round:
+
+| Check run in the clone | Result |
+|---|---|
+| `build_pwb_behavior_contract_repin.py --check` | fails: the tree with the patch reversed no longer hashes to the re-pin argument |
+| `record_pwb_behavior_contract_repin_acts.py --check policy` | fails: the policy hashes to another value than the owner argument |
+| `check_governance.py` | fails CG-7e with 6 findings (the re-pin manifest and the act record no longer carry the policy's current argument; the screening package's own manifest row is a recognized argument of a superseded act) |
+| Vitest `governance-inputs.test.ts` | 3 tests fail: the policy digest the act binds, the superseded-record check and the later-amendment check |
+| Vitest `content-classification.test.ts` | fails: `PWB_SECRET_POLICY.policyVersion` is the old version |
+| Vitest `git-object-reader.test.ts` | fails: the policy-bound constants differ from the act-bound artifact |
+| Vitest `project-shape-model.test.ts` | passes: its version literals are fixtures, not pins |
+
+Literal sweep of the clone, files under `apps/`, `packages/`, `scripts/`,
+`.github/` and `PROJECT-STATUS.md` (the sweep also finds 59 governance records
+that cite the old bytes; they bind and are not edited):
 
 | Pin | Where | Kind |
 |---|---|---|
-| Expected `policyVersion` and the act-record path | `governance-inputs.ts` (policy expectations near :81, act record path near :58) | run time |
-| The act's `scopeAnchors` (policy id, version, project) | `governance-inputs.ts` near :102 | run time |
-| `PWB_POLICY_IDENTITY.policyVersion` | `git-object-reader.ts:43` | run time |
-| `PWB_SECRET_POLICY.policyVersion`, taken from that identity | `content-classification.ts:69` | run time, follows the line above |
-| Literal and equality assertions | `git-object-reader.test.ts:547`, `content-classification.test.ts` (255, 286, 406, 474, 488, 550), `governance-inputs.test.ts:311`, `project-shape-model.test.ts` (435, 592) | tests |
+| Expected `policyVersion` and `scopeAnchors` | `governance-inputs.ts` (2 hits) | run time |
+| Act identity, recording tag, act-record pointer and the superseded-record pointer of the policy act | `governance-inputs.ts` (policy entry of the act table and `PWB_SUPERSEDED_ACT_RECORDS`) | run time |
+| `PWB_POLICY_IDENTITY.policyVersion` | `git-object-reader.ts` (1 hit); `content-classification.ts` takes its version from it | run time |
+| The same identity, tag and version, asserted | `governance-inputs.test.ts`, `content-classification.test.ts` (5), `git-object-reader.test.ts` | tests |
+| The re-pin act's `--check policy` line with the policy digest | `PROJECT-STATUS.md` battery (1 hit) | status page |
+| The same two CI steps (`build_pwb_behavior_contract_repin.py --check`, `record_pwb_behavior_contract_repin_acts.py --check policy`) | `.github/workflows/governance-docs.yml` (digest, 1 hit) | workflow |
+| Act-subject chain and `ACT_DIGEST_COPY_FILES` rows for the policy act | `check_governance.py` (the CG-7e findings above) | governance tooling |
+| Version literal restated as performed history | `record_pwb_behavior_contract_repin_acts.py`, `record_pwb_effect_amendment_acts.py` | not pins: superseded recorders fail `--check` by design |
+| `CURRENT_VERSION` | `build_pwb_registry_currency_briefing_amendment.py` | not a pin: it is the registry entry's version, not the policy's |
 
-Predicate: the literal `1.1.0-candidate.1` over `git ls-files` under `apps/`,
-`packages/` and `scripts/` (8 files). Three recorders and one builder in
-`scripts/` also carry it; they restate performed history and are not pins to
-re-point.
+Version-literal predicate: the literal `1.1.0-candidate.1` over `git ls-files`
+under `apps/`, `packages/` and `scripts/`: 8 files (5 under `apps/` and
+`packages/`, 3 under `scripts/`: two recorders and one builder).
 
 The digest in the act record is the first refusal (`exact-digest-wrong`,
 `body-read-authority.ts:444`); the version pins fail next.
@@ -53,8 +75,9 @@ The digest in the act record is the first refusal (`exact-digest-wrong`,
 ## Consequences
 
 1. The read gate: any byte change is refused (`exact-digest-wrong`) before the
-   version is compared. Re-pointing means every pin in the table above plus the
-   act record, in one change with its tests.
+   version is compared. Re-pointing means every pin in the tables above plus the
+   act record, the status battery lines, the workflow steps and the
+   act-subject chain, in one change with its tests.
 2. Butlers behaviour is unchanged: no base key and no Butlers `scope` value
    moves (builder predicate "a base key altered").
 3. No code consumes `publicSourceScope` yet; the any-repo reader and the

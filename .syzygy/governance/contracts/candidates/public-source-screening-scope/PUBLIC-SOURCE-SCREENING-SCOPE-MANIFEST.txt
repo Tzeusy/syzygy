@@ -3,4 +3,4 @@
 # 1 artifact; the row hashes the PROPOSED bytes (the policy with
 # proposed/<name>.patch applied) and is the argument of one superseding
 # approve-policy act over that subject.
-a51b77a625a416c8549998729482609071ddd4945b55b7c6a992da17ce394aad  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
+67c115daa495b49ae690efbff003b2656e736be91263af78850cd9c7290d8d7f  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
