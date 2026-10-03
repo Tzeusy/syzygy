@@ -1,7 +1,9 @@
-# Review brief — Messages API provider route registry entry (round 1)
+# Review brief — Messages API provider route registry entry (round 2)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
-> is given and what they decide. It is not a review and carries no verdict.
+> is given and what they decide. It is not a review and carries no verdict. Round 1 (REVISE) is retained in
+> `reviews/` with `reviews/ROUND-1-DISPOSITIONS.md`; this brief is for round 2
+> over the repaired bytes.
 
 ## What the reviewer is given, and nothing else
 
@@ -71,13 +73,22 @@ Each is a yes/no question with the evidence that settles it.
    mappings honest and in the RFC2-23 and RFC2-24 vocabularies?** Does any
    field state an implementation or capability no evidence supports?
 10. **Is the impact ledger honest?** Re-run Sweeps 1 and 2 and confirm counts.
-11. **Is the provenance one consistent pair, and does the header table equal
+11. **Do the round-1 repairs hold, and did any introduce a defect?** Population:
+    round-1 findings 1 to 5 and notes 1 to 8. Re-derive from the SDK 0.131.0
+    tarball and PR #264's adapter at the pinned commit: that
+    `x-stainless-timeout` is always sent with the value 600; that each
+    `ANTHROPIC_` variable the entry lists has the stated effect and no other
+    SDK environment input is missed; that the adapter at the pinned commit
+    refuses any such variable (the round-1 commit did not); that the gate
+    accepts any upstream; and that RFC4-9 is quoted whole and its role-versus-
+    implementation form is followed.
+12. **Is the provenance one consistent pair, and does the header table equal
     the cited source by value?** The entry pins one commit of PR #264 and a
     blob for each cited file. Re-derive each blob with `git rev-parse
     <commit>:<path>` and re-read the header literals, shapes, optional
     headers and the ambient-environment guard in the adapter at that commit;
     the builder compares values, not names.
-12. **Does the package claim authority it lacks?** No file may label anything
+13. **Does the package claim authority it lacks?** No file may label anything
     accepted, adopted, approved or signed off; no Markdown file may carry a
     64-hex digest; `--check` and `--selftest` must pass, and any claim the
     selftest covers with no mutant must be named.
@@ -91,8 +102,8 @@ Each is a yes/no question with the evidence that settles it.
 ## Recording
 
 Store the raw output verbatim in this package's `reviews/` directory as
-`R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-1-RAW.md` (a re-issue is a further
-`-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
+`R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-2-RAW.md` (round 1 is the `-1-RAW.md`
+beside it and is never overwritten; a re-issue is a further `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
 first four non-blank lines must be the title and exactly:
 
 ```text

@@ -33,7 +33,14 @@ BUTLERS = pathlib.Path(".syzygy/governance/declarations/adapter-registry/"
 INSTALLED = pathlib.Path(".syzygy/governance/declarations/adapter-registry")
 #: The sibling Agent SDK entry (PR #255) this one substitutes; checked
 #: against its proposed file only while that file exists in the tree.
+#: RFC4-9: the role identity persists, a new implementation identity is registered.
 SIBLING_ID = "polaris-provider-route-anthropic-agent-sdk"
+SIBLING_IMPL = "polaris-generation/provider-agent-sdk"
+UPSTREAM = "https://api.anthropic.com"
+#: The SDK 0.131.0 environment inputs the entry must declare, each with a fail-closed posture.
+ENV_INPUTS = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_CUSTOM_HEADERS",
+              "ANTHROPIC_LOG", "ANTHROPIC_BASE_URL")
+NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}
 SIBLING_FILE = pathlib.Path(".syzygy/governance/contracts/candidates/"
                             "public-admission-registry-entries/proposed/"
                             "POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json")
@@ -78,12 +85,13 @@ EXPECTED_LITERALS = {
     "anthropic-version": "2023-06-01", "user-agent": "Anthropic/JS 0.131.0",
     "accept-language": "*", "sec-fetch-mode": "cors", "x-stainless-lang": "js",
     "x-stainless-package-version": "0.131.0", "x-stainless-retry-count": "0",
-    "x-stainless-runtime": "node", "x-stainless-helper-method": "stream"}
+    "x-stainless-runtime": "node", "x-stainless-helper-method": "stream",
+    "x-stainless-timeout": "600"}
 EXPECTED_SHAPES = {
     "x-stainless-os": "^[A-Za-z]{1,16}$", "x-stainless-arch": "^[a-z0-9_]{1,16}$",
     "x-stainless-runtime-version": "^v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
     "accept-encoding": "^[a-z, ]{1,40}$"}
-EXPECTED_RULES = {"x-api-key", "content-length", "host", "connection", "x-stainless-timeout"}
+EXPECTED_RULES = {"x-api-key", "content-length", "host", "connection"}
 EXPECTED_CLOSED = sorted(set(EXPECTED_LITERALS) | set(EXPECTED_SHAPES) | EXPECTED_RULES)
 HEADERS_ABSENT = ("anthropic-beta", "authorization", "cookie", "claude-cli", "agent-sdk",
                   "x-app", "anthropic-dangerous-direct-browser-access", "x-claude-code-session-id")
@@ -285,24 +293,54 @@ def findings_for(name, doc, butlers_contract, sibling=None):
     if "[Unknown]" not in " ".join(e.get("unknowns", [])):
         out.append(f"{name}: unknowns lists no Unknown")
     sub = e.get("routeSubstitution", {})
-    if sub.get("substitutes") != SIBLING_ID:
-        out.append(f"{name}: routeSubstitution does not name the Agent SDK entry it substitutes")
+    if sub.get("substitutes") != SIBLING_IMPL:
+        out.append(f"{name}: routeSubstitution does not name the Agent SDK implementation it substitutes")
+    if e.get("observerId") != SIBLING_ID or sub.get("sharedRoleIdentity") != SIBLING_ID:
+        out.append(f"{name}: the role identity is not the sibling's (RFC4-9: the role persists)")
+    if e.get("implementationId") == SIBLING_IMPL or not e.get("implementationId"):
+        out.append(f"{name}: no new implementation identity is registered (RFC4-9)")
     if sub.get("authorityKey") != AUTHORITY_KEY:
         out.append(f"{name}: routeSubstitution.authorityKey differs from the shared authority")
-    if "RFC4-1" not in sub.get("rule", "") or "never an addition" not in sub.get("rule", ""):
-        out.append(f"{name}: routeSubstitution does not say it is a substitute, never an addition")
-    if not sub.get("onlyOneAdoptable"):
-        out.append(f"{name}: routeSubstitution lacks onlyOneAdoptable")
-    if e.get("observerId") == SIBLING_ID:
-        out.append(f"{name}: observerId equals the sibling's")
+    if "RFC4-1" not in sub.get("rule", "") or "never an addition" not in sub.get("rule", "") or "RFC4-9" not in sub.get("rule", ""):
+        out.append(f"{name}: routeSubstitution does not say it is an RFC4-9 substitute, never an addition")
+    if "the role identity persists, a new implementation identity is registered" not in sub.get("rfc4-9", ""):
+        out.append(f"{name}: routeSubstitution does not quote RFC4-9")
+    if not sub.get("onlyOneAdoptable") or not sub.get("ifTheOtherWasAdoptedFirst"):
+        out.append(f"{name}: routeSubstitution lacks onlyOneAdoptable or what retires the other")
+    env = ta.get("sdkEnvironmentInputs", {})
+    listed = {v.get("name"): v for v in env.get("variables", []) if isinstance(v, dict)}
+    for var in ENV_INPUTS:
+        if var not in listed:
+            out.append(f"{name}: sdkEnvironmentInputs omits {var}")
+        elif "unset" not in listed[var].get("posture", "") and "refuse" not in listed[var].get("posture", ""):
+            out.append(f"{name}: sdkEnvironmentInputs gives {var} no fail-closed posture")
+    if "ambient-environment" not in env.get("enforcement", "") or "[Inferred]" not in env.get("enforcement", ""):
+        out.append(f"{name}: sdkEnvironmentInputs does not label its enforcement point")
+    if "sdk-environment-variables" not in inputs or "sdk-environment-variables" not in e.get("snapshotInputMapping", {}):
+        out.append(f"{name}: the SDK environment is not a declared, mapped input class")
+    net = ta.get("networkAccess", [])
+    if len(net) == 1 and not net[0].startswith(UPSTREAM + "/v1/messages, POST only"):
+        out.append(f"{name}: networkAccess does not name the exact https destination")
+    if f"upstream must equal {UPSTREAM}" not in rules:
+        out.append(f"{name}: runtimeEgressGate does not bind the upstream to {UPSTREAM}")
+    words = NUMBER_WORDS.get(len(fit.get("needsReading", [])))
+    if words is None or f"{words} wordings" not in fit.get("conclusion", ""):
+        out.append(f"{name}: egressRecordFit conclusion does not count the wordings in needsReading")
+    rf = " ".join(rb.get("runtimeFixed", []))
+    if "fetch" not in rf or "not pinned" not in rf:
+        out.append(f"{name}: runtimeFixed does not disclose the Node fetch headers and the unpinned Node")
     if sibling is not None:
         se = sibling["entries"][0]
         if se.get("subject") != e.get("subject"):
             out.append(f"{name}: subject differs from the sibling entry's")
         if se.get("typedAuthority", {}).get("authorityType") != ta.get("authorityType"):
             out.append(f"{name}: authorityType differs from the sibling entry's")
-        if se.get("observerId") != SIBLING_ID:
-            out.append(f"{name}: the sibling entry is no longer {SIBLING_ID}")
+        if se.get("observerId") != e.get("observerId"):
+            out.append(f"{name}: the role identity differs from the sibling entry's")
+        if se.get("implementationId") == e.get("implementationId"):
+            out.append(f"{name}: implementationId equals the sibling's")
+        if se.get("contractVersion") != e.get("contractVersion"):
+            out.append(f"{name}: contractVersion differs from the sibling entry's")
     return out
 
 
@@ -345,8 +383,14 @@ def selftest():
     import tempfile
     contract = json.loads(BUTLERS.read_text())["entries"][0]["contractVersion"]
     prov = json.loads((PKG / "proposed" / ENTRY).read_text())
-    sib = {"entries": [{"observerId": SIBLING_ID, "subject": prov["entries"][0]["subject"],
-                        "typedAuthority": {"authorityType": "model-provider"}}]}
+    pe = prov["entries"][0]
+
+    def sibdoc(**over):
+        base = {"observerId": SIBLING_ID, "implementationId": SIBLING_IMPL, "subject": pe["subject"],
+                "contractVersion": pe["contractVersion"], "typedAuthority": {"authorityType": "model-provider"}}
+        base.update(over)
+        return {"entries": [base]}
+    sib = sibdoc()
     assert not findings_for("p", prov, contract, sib)
     muts = []
 
@@ -447,16 +491,40 @@ def selftest():
         mut("provenance blob of the next commit", lambda e, d: e["requestBytes"]["provenance"]["files"][1].update(blob=e["requestBytes"]["provenance"]["files"][0]["blob"]), "not the file at the commit")
     mut("probe admitted", lambda e, d: e["requestBytes"].update(probe="after some failures a HEAD probe"), "no probe")
     mut("substitution unnamed", lambda e, d: e["routeSubstitution"].update(substitutes="something-else"), "substitutes")
+    mut("role identity forked", lambda e, d: e.update(observerId="a-second-role"), "role identity is not the sibling's")
+    mut("shared role identity unsaid", lambda e, d: e["routeSubstitution"].pop("sharedRoleIdentity"), "role identity is not the sibling's")
+    mut("implementation identity reused", lambda e, d: e.update(implementationId=SIBLING_IMPL), "no new implementation identity")
+    mut("RFC4-9 not quoted", lambda e, d: e["routeSubstitution"].pop("rfc4-9"), "quote RFC4-9")
+    mut("RFC4-9 not cited", lambda e, d: e["routeSubstitution"].update(rule=e["routeSubstitution"]["rule"].replace("RFC4-9", "the rule")), "RFC4-9 substitute")
+    mut("retirement unsaid", lambda e, d: e["routeSubstitution"].pop("ifTheOtherWasAdoptedFirst"), "what retires")
     mut("authority key drifts", lambda e, d: e["routeSubstitution"]["authorityKey"].update(provider="provider:other"), "authorityKey")
     mut("substitute said to be an addition", lambda e, d: e["routeSubstitution"].update(rule="a second adapter beside the first"), "substitute, never an addition")
     mut("only-one-adoptable dropped", lambda e, d: e["routeSubstitution"].pop("onlyOneAdoptable"), "onlyOneAdoptable")
-    mut("observer id equals the sibling's", lambda e, d: e.update(observerId=SIBLING_ID), "equals the sibling")
-    mut("subject differs from the sibling's", lambda e, d: None, "differs from the sibling",
-        sibling={"entries": [{"observerId": SIBLING_ID, "subject": {"x": 1}, "typedAuthority": {"authorityType": "model-provider"}}]})
-    mut("authority type differs from the sibling's", lambda e, d: None, "authorityType differs",
-        sibling={"entries": [{"observerId": SIBLING_ID, "subject": prov["entries"][0]["subject"], "typedAuthority": {"authorityType": "vcs"}}]})
-    mut("sibling renamed", lambda e, d: None, "no longer",
-        sibling={"entries": [{"observerId": "renamed", "subject": prov["entries"][0]["subject"], "typedAuthority": {"authorityType": "model-provider"}}]})
+    mut("subject differs from the sibling's", lambda e, d: None, "differs from the sibling", sibling=sibdoc(subject={"x": 1}))
+    mut("authority type differs from the sibling's", lambda e, d: None, "authorityType differs", sibling=sibdoc(typedAuthority={"authorityType": "vcs"}))
+    mut("sibling role renamed", lambda e, d: None, "role identity differs", sibling=sibdoc(observerId="renamed"))
+    mut("sibling implementation id equals ours", lambda e, d: None, "implementationId equals", sibling=sibdoc(implementationId=pe["implementationId"]))
+    mut("contract version differs from the sibling's", lambda e, d: None, "contractVersion differs from the sibling", sibling=sibdoc(contractVersion="sha256:0"))
+    for var in ENV_INPUTS:
+        mut(f"SDK environment input {var} dropped", lambda e, d, var=var: e["typedAuthority"]["sdkEnvironmentInputs"].update(variables=[v for v in e["typedAuthority"]["sdkEnvironmentInputs"]["variables"] if v["name"] != var]), "omits")
+        mut(f"SDK environment input {var} left open", lambda e, d, var=var: [v.update(posture="allowed") for v in e["typedAuthority"]["sdkEnvironmentInputs"]["variables"] if v["name"] == var], "fail-closed posture")
+    mut("SDK environment enforcement unlabelled", lambda e, d: e["typedAuthority"]["sdkEnvironmentInputs"].update(enforcement="enforced"), "enforcement point")
+    mut("SDK environment class dropped", lambda e, d: e["inputClasses"].remove(next(c for c in e["inputClasses"] if c["class"] == "sdk-environment-variables")), "declared, mapped input class")
+    mut("SDK environment mapping dropped", lambda e, d: e["snapshotInputMapping"].pop("sdk-environment-variables"), "declared, mapped input class")
+    mut("destination without scheme", lambda e, d: e["typedAuthority"].update(networkAccess=["the Anthropic API host, POST /v1/messages only"]), "exact https destination")
+    mut("destination over http", lambda e, d: e["typedAuthority"].update(networkAccess=[e["typedAuthority"]["networkAccess"][0].replace("https://", "http://")]), "exact https destination")
+    mut("destination another host", lambda e, d: e["typedAuthority"].update(networkAccess=[e["typedAuthority"]["networkAccess"][0].replace("api.anthropic.com", "example.org")]), "exact https destination")
+    mut("upstream rule dropped", lambda e, d: e["typedAuthority"]["runtimeEgressGate"].update(rules=[r for r in e["typedAuthority"]["runtimeEgressGate"]["rules"] if "upstream must equal" not in r]), "bind the upstream")
+    mut("upstream rule names another host", lambda e, d: e["typedAuthority"]["runtimeEgressGate"].update(rules=[r.replace("upstream must equal https://api.anthropic.com", "upstream must equal http://x") for r in e["typedAuthority"]["runtimeEgressGate"]["rules"]]), "bind the upstream")
+    mut("fit conclusion counts two", lambda e, d: e["routeConditions"]["egressRecordFit"].update(conclusion=e["routeConditions"]["egressRecordFit"]["conclusion"].replace("three wordings", "two wordings")), "count the wordings")
+    mut("fit needsReading gains an item", lambda e, d: e["routeConditions"]["egressRecordFit"]["needsReading"].append("Agent SDK extra"), "count the wordings")
+    mut("fit needsReading loses an item", lambda e, d: e["routeConditions"]["egressRecordFit"]["needsReading"].pop(), "count the wordings")
+    mut("Node fetch headers undisclosed", lambda e, d: e["requestBytes"].update(runtimeFixed=["none"]), "Node fetch")
+    mut("Node pinned by claim", lambda e, d: e["requestBytes"].update(runtimeFixed=["Node's built-in fetch sets accept-language"]), "Node fetch")
+    for hname in EXPECTED_LITERALS:
+        mut(f"literal {hname} drifts", lambda e, d, hname=hname: e["requestBytes"]["headers"]["pinnedLiterals"].update({hname: "x"}), "pinnedLiterals differ")
+        mut(f"literal {hname} dropped", lambda e, d, hname=hname: e["requestBytes"]["headers"]["pinnedLiterals"].pop(hname), "pinnedLiterals differ")
+    mut("timeout back to optional", lambda e, d: e["requestBytes"]["headers"]["valueRules"].update({"x-stainless-timeout": "optional"}), "valueRules")
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t) / "pkg"
         (root / "proposed").mkdir(parents=True)

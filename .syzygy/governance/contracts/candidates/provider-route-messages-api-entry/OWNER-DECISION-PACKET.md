@@ -23,13 +23,22 @@ registers its declared boundary and enables nothing.
 The form proposed is the same as PR #255's: an option selection naming the
 entry "at the manifest row" of `MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt`,
 stated as provenance state (1), `owner-adopted (bootstrap, uncorrelated)`, A1
-audit-record identity absent. A recorder would bind the act to that row. The
+audit-record identity absent. A recorder would bind the act to that row.
+The act phrase registered for this candidate in `scripts/check_governance.py`
+is ADOPT POLARIS MESSAGES API PROVIDER EXECUTION ROUTE REGISTRY ENTRY; it
+matters only if the owner prefers the typed-phrase form, whose argument is the
+same manifest row. The recorder and the act state which form binds; the packet
+recommends the option selection. The
 version-tagged Scope A sign-off is not used [Inferred], for the reason PR #255
 gives.
 
 ## Questions for the owner
 
 None is decided by this packet.
+
+This entry is an RFC4-9 substitution: it keeps PR #255's role identity and
+registers a new implementation identity, so adopting it after PR #255's entry
+replaces that implementation and the act names it.
 
 **O1. Messages API route or Agent SDK route?** *Recommended:* this route, if
 the owner accepts a direct API key. It sends strictly less than the Agent SDK
