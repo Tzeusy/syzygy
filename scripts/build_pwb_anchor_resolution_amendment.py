@@ -15,10 +15,12 @@ it exists for the sign-off change and refuses unless the whole package
 verifies. A candidate commit, review, manifest or merge performs no owner act.
 
     --check      verify patches, structure, regeneration, coverage, siblings,
-                 composition with each pending sibling and the manifest
+                 composition with each pending sibling, one result across
+                 every order of all pending patches, and the manifest
     --selftest   rule-6 mutants, one per structure predicate (a sample of the
                  required phrases, not each one), plus patch drift, an
-                 unclassified sibling and a non-composing sibling
+                 unclassified sibling, a non-composing sibling, and divergent
+                 and failing application orders
     --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
                  manifest over the proposed bytes
     --diff       print the proposed patches
@@ -52,6 +54,7 @@ from typing import Callable
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+import pwb_requirement_amendment as orders  # noqa: E402
 
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
 DECISIONS = pathlib.Path(".syzygy/governance/decisions")
@@ -336,6 +339,25 @@ def composition_findings(
     return findings
 
 
+def pending_order_findings(
+    pkg: Package, spec_bytes: bytes | None = None, siblings: dict[str, pathlib.Path] | None = None,
+    mine: pathlib.Path | None = None,
+) -> list[str]:
+    """This spec patch and every pending sibling's give one spec in every order.
+
+    The pairwise check above cannot see three patches that apply pairwise but
+    fail, or diverge, only together; the shared engine's all-orders search can.
+    A pending sibling with no spec patch is named by ``sibling_findings``.
+    """
+    mine = mine or ROOT / pkg.proposed_dir / "spec.md.patch"
+    spec_bytes = (ROOT / pkg.spec).read_bytes() if spec_bytes is None else spec_bytes
+    siblings = sibling_patches(pkg) if siblings is None else siblings
+    patches = [(pkg.candidate.name, mine)] + [
+        (name, siblings[name]) for name in sorted(pkg.pending_siblings) if name in siblings
+    ]
+    return orders.all_orders_findings(spec_bytes, patches, pkg.spec)
+
+
 # --- manifest and check --------------------------------------------------------
 
 def render_manifest(pkg: Package, proposed: dict[pathlib.Path, bytes]) -> str:
@@ -373,6 +395,7 @@ def check(pkg: Package, patches: list[pathlib.Path] | None = None) -> tuple[list
         findings.extend(pkg.coverage(proposed))
     findings.extend(sibling_findings(pkg))
     findings.extend(composition_findings(pkg))
+    findings.extend(pending_order_findings(pkg))
     if not (ROOT / pkg.manifest).is_file():
         findings.append(f"missing manifest: {pkg.manifest}")
     elif (ROOT / pkg.manifest).read_text(encoding="utf-8") != render_manifest(pkg, proposed):
@@ -462,14 +485,59 @@ def run_selftest(
         if not any(f.startswith(f"composition with pending sibling {name}") for f in found):
             print(f"SELFTEST FAILED: a clashing sibling composed: {found}")
             failed += 1
+        failed += order_selftest(pkg, pathlib.Path(temp) / "orders")
     if failed:
         return 1
     print(
         f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
-        "sibling, a vanished pending sibling and a clashing sibling all fail closed "
-        "on their own predicates"
+        "sibling, a vanished pending sibling, a clashing sibling, and divergent "
+        "and failing application orders all fail closed on their own predicates"
     )
     return 0
+
+
+#: The shared engine's order fixtures, run through this builder's own patch
+#: population: the first patch stands in for this package, the rest for its
+#: pending siblings. Every pair applies in both orders, so the pairwise
+#: composition check passes each; only the all-orders search fails them.
+ORDER_FIXTURES = (
+    ("divergent", orders.ORDER_FIXTURE_BASE, orders.ORDER_FIXTURE_PATCHES, [
+        "pending spec patches give 2 different results across the 2! application orders",
+    ]),
+    ("failing", orders.ORDER_FIXTURE_TRIPLE_BASE, orders.ORDER_FIXTURE_TRIPLE, [
+        "pending spec patches do not apply in every order: "
+        "triple-relocating after [triple-first-copy, triple-second-copy]",
+        "pending spec patches give 2 different results across the 3! application orders",
+    ]),
+)
+
+
+def order_selftest(pkg: Package, temp: pathlib.Path) -> int:
+    """Divergent and failing orders fail this builder's order check, and
+    ``check`` reports what that check finds."""
+    failed = 0
+    rel = pathlib.Path("fixture.txt")
+    temp.mkdir(parents=True, exist_ok=True)
+    for label, base, hunks, expected in ORDER_FIXTURES:
+        (first, mine), *rest = orders._fixture_patches(temp, rel, hunks)
+        fixture = dataclasses.replace(
+            pkg, candidate=pathlib.Path(first), spec=rel,
+            pending_siblings=frozenset(name for name, _ in rest),
+        )
+        found = pending_order_findings(fixture, spec_bytes=base, siblings=dict(rest), mine=mine)
+        if found != expected:
+            print(f"SELFTEST FAILED: {label} application orders gave {found}")
+            failed += 1
+    original = globals()["pending_order_findings"]
+    globals()["pending_order_findings"] = lambda *_args, **_kwargs: ["order-check sentinel"]
+    try:
+        findings, _ = check(pkg)
+    finally:
+        globals()["pending_order_findings"] = original
+    if "order-check sentinel" not in findings:
+        print(f"SELFTEST FAILED: check does not report the order check: {findings}")
+        failed += 1
+    return failed
 
 
 # --- modes -------------------------------------------------------------------
@@ -535,7 +603,7 @@ def main(pkg: Package, selftest: Callable[[], int], argv: list[str]) -> int:
     print(
         f"{pkg.label} candidate matches {len(pkg.subjects)} proposed subjects "
         f"({len(pkg.patched)} patched); {len(blocks)} requirements, {scenarios} scenarios; "
-        "structure, regeneration, siblings, composition and the manifest verify"
+        "structure, regeneration, siblings, composition in every order and the manifest verify"
     )
     return 0
 
