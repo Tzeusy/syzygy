@@ -1,0 +1,160 @@
+{
+  "record": "Rule-6 mutants for the contract-index YAML validity and header-citation repair (syzygy-ejm3; PR 294 review syzygy-qb2s). Not authority.",
+  "measuredOn": {
+    "commit": "a8fcc6e897d2fc2480e69c919e3705a09135302f",
+    "subjects": [
+      {
+        "path": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+        "sha256": "10ece2a0f36ebe8c53f81101760587843becad4b42fa8aa91bb60e036a26ff29"
+      },
+      {
+        "path": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+        "sha256": "f77765859ce9a3b68f950b2fc9c4e3293adcf70711a0769af832fcae146c9f0b"
+      }
+    ]
+  },
+  "method": "Each mutant replaces every occurrence of `old` with `new` in one file of a fresh `git archive <commit> .syzygy` extraction, then runs `command` from that extraction's root. A mutant is killed only when it replaced at least one occurrence, the command exits nonzero, and its output contains `expected`. M1 and M7 are the unquoted-emit mutants the acceptance criteria name.",
+  "finding": "On the first run M1 (scalar() returning the bare value) exited 1 but was scored not killed: it was expected to fail 'the generated index parses with yaml.safe_load', and that case passed. PyYAML reads the unquoted rows of the real corpus as *different* YAML (a comma inside a flow mapping becomes a new implicit-null key) rather than rejecting them. The round-trip case, which compares each loaded value with the projected string, is what kills it, so M1's expectation names that case. A parse-only check would have certified wrong data as valid.",
+  "result": {
+    "killed": 8,
+    "total": 8
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "    return json.dumps(value, ensure_ascii=False)",
+      "new": "    return value",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: every title, status_source, module range and module list reads back as projected",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST FAIL: hostile titles load back as the same strings",
+        "SELFTEST FAIL: hostile list items load back as the same strings",
+        "SELFTEST FAIL: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M2",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "            and not YAML_RESERVED.match(value)):",
+      "new": "            ):",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: hostile titles load back as the same strings",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST FAIL: hostile titles load back as the same strings",
+        "SELFTEST FAIL: hostile list items load back as the same strings",
+        "SELFTEST OK: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M3",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "            and not PLAIN_FORBIDDEN.search(value)",
+      "new": "",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: hostile titles load back as the same strings",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST FAIL: hostile titles load back as the same strings",
+        "SELFTEST FAIL: hostile list items load back as the same strings",
+        "SELFTEST OK: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M4",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "{scalar(status_projection(e['status']))}",
+      "new": "{status_projection(e['status'])}",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: an [Unknown] status_source row still parses, as a string",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: hostile titles load back as the same strings",
+        "SELFTEST OK: hostile list items load back as the same strings",
+        "SELFTEST FAIL: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M5",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "return \"[\" + \", \".join(scalar(v) for v in values) + \"]\"",
+      "new": "return \"[\" + \", \".join(values) + \"]\"",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: hostile list items load back as the same strings",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: hostile titles load back as the same strings",
+        "SELFTEST FAIL: hostile list items load back as the same strings",
+        "SELFTEST OK: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M6",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "\"# never a second truth store (RFC11-7); a contract's effective status lies\",",
+      "new": "\"# never a second truth store; a contract's effective status lies\",",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: the header cites RFC11-7 for the projection and RFC3-16",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: hostile titles load back as the same strings",
+        "SELFTEST OK: hostile list items load back as the same strings",
+        "SELFTEST OK: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "M7",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "lines.append(f\"    title: {scalar(fm['title'])}\")",
+      "new": "lines.append(f\"    title: {fm['title']}\")",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: hostile titles load back as the same strings",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST FAIL: hostile titles load back as the same strings",
+        "SELFTEST OK: hostile list items load back as the same strings",
+        "SELFTEST OK: an [Unknown] status_source row still parses, as a string"
+      ]
+    },
+    {
+      "id": "I1",
+      "kind": "input",
+      "file": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+      "old": "clauses: \"RFC9-1..RFC9-23",
+      "new": "clauses: RFC9-1..RFC9-23",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check",
+      "expected": "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+        "population: 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 11 phase-rule clause(s) over 11 shared rule(s), status_source projected for 11 of 11"
+      ]
+    }
+  ],
+  "runner": "\"\"\"Rule-6 mutants for syzygy-ejm3: each is applied to a fresh copy of .syzygy/\nat the given commit; the expected check must fail on its own predicate.\"\"\"\nimport json, pathlib, shutil, subprocess, sys, tempfile\n\nREPO = pathlib.Path(sys.argv[1])\nCOMMIT = subprocess.run([\"git\", \"rev-parse\", \"HEAD\"], cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()\nC = \".syzygy/governance/contracts/candidates\"\nGEN = f\"{C}/scripts/build_contract_index.py\"\nVER = f\"{C}/scripts/verify_final_prespec.py\"\nREADME = f\"{C}/rfcs/RFC-0002/README.md\"\nINDEX = f\"{C}/05-CONTRACT-INDEX.yaml\"\n\nMUTANTS = [\n    # (id, kind, file, old, new, command, expected substring in output)\n    (\"M1\", \"generator\", GEN,\n     \"    return json.dumps(value, ensure_ascii=False)\",\n     \"    return value\",\n     \"--selftest\", \"SELFTEST FAIL: every title, status_source, module range and module list reads back as projected\"),\n    (\"M2\", \"generator\", GEN,\n     \"            and not YAML_RESERVED.match(value)):\",\n     \"            ):\",\n     \"--selftest\", \"SELFTEST FAIL: hostile titles load back as the same strings\"),\n    (\"M3\", \"generator\", GEN,\n     \"            and not PLAIN_FORBIDDEN.search(value)\",\n     \"\",\n     \"--selftest\", \"SELFTEST FAIL: hostile titles load back as the same strings\"),\n    (\"M4\", \"generator\", GEN,\n     \"{scalar(status_projection(e['status']))}\",\n     \"{status_projection(e['status'])}\",\n     \"--selftest\", \"SELFTEST FAIL: an [Unknown] status_source row still parses, as a string\"),\n    (\"M5\", \"generator\", GEN,\n     'return \"[\" + \", \".join(scalar(v) for v in values) + \"]\"',\n     'return \"[\" + \", \".join(values) + \"]\"',\n     \"--selftest\", \"SELFTEST FAIL: hostile list items load back as the same strings\"),\n    (\"M6\", \"generator\", GEN,\n     '\"# never a second truth store (RFC11-7); a contract\\'s effective status lies\",',\n     '\"# never a second truth store; a contract\\'s effective status lies\",',\n     \"--selftest\", \"SELFTEST FAIL: the header cites RFC11-7 for the projection and RFC3-16\"),\n    (\"M7\", \"generator\", GEN,\n     'lines.append(f\"    title: {scalar(fm[\\'title\\'])}\")',\n     'lines.append(f\"    title: {fm[\\'title\\']}\")',\n     \"--selftest\", \"SELFTEST FAIL: hostile titles load back as the same strings\"),\n    (\"I1\", \"input\", INDEX,\n     'clauses: \"RFC9-1..RFC9-23',\n     'clauses: RFC9-1..RFC9-23',\n     \"--check\", \"DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration\"),\n]\n\nresults = []\nfor mid, kind, rel, old, new, flag, expect in MUTANTS:\n    tmp = pathlib.Path(tempfile.mkdtemp(prefix=f\"ejm3-{mid}-\"))\n    try:\n        archive = subprocess.run([\"git\", \"archive\", COMMIT, \".syzygy\"], cwd=REPO, capture_output=True, check=True).stdout\n        subprocess.run([\"tar\", \"-x\", \"-C\", str(tmp)], input=archive, check=True)\n        target = tmp / rel\n        text = target.read_text(encoding=\"utf-8\")\n        occurrences = text.count(old)\n        target.write_text(text.replace(old, new), encoding=\"utf-8\")\n        run = subprocess.run([sys.executable, str(tmp / GEN), flag], cwd=tmp, capture_output=True, text=True)\n        out = run.stdout + run.stderr\n        killed = occurrences >= 1 and run.returncode != 0 and expect in out\n        results.append({\"id\": mid, \"kind\": kind, \"file\": rel, \"old\": old, \"new\": new,\n                        \"occurrencesReplaced\": occurrences, \"command\": f\"python3 {GEN} {flag}\",\n                        \"expected\": expect, \"exitCode\": run.returncode, \"killed\": killed,\n                        \"outputTail\": out.strip().splitlines()[-3:]})\n    finally:\n        shutil.rmtree(tmp, ignore_errors=True)\n\nprint(json.dumps({\"commit\": COMMIT, \"mutants\": results,\n                  \"killed\": sum(r[\"killed\"] for r in results), \"total\": len(results)}, indent=2, ensure_ascii=False))\n"
+}
