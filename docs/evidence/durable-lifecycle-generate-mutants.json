@@ -1,0 +1,183 @@
+{
+  "subject": {
+    "commit": "7706c9925baee5482652e4e0b6f074793333ad11",
+    "branch": "agent/durable-lifecycle",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts": "962d669501fda93b7a1dc9c1a453c96aab02c16aeff492a0cfb61b36672b452a"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T15:23:47+00:00",
+  "mutants": [
+    {
+      "id": "permitted-strict",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "(await options.permitted(input, permit)) === true",
+      "new": "(await options.permitted(input, permit)) !== false",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "permitted-args",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "options.permitted(input, permit)",
+      "new": "options.permitted(input, undefined as never)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "generate-injected",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "generate: options.generate,",
+      "new": "generate: async () => ({ body: '{}', model: 'x', usageUnits: 0 }),",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 9,
+      "totalTests": 12
+    },
+    {
+      "id": "claim-replay",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "return { kind: 'refused', reason: prior.state === 'reserved' ? 'in-flight' : 'uncertain' };",
+      "new": "return { kind: 'reserved', permit: prior.permit };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 12
+    },
+    {
+      "id": "record-uncertain",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "state: outcome.kind === 'validated' ? 'completed' : 'uncertain',",
+      "new": "state: 'completed',",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 12
+    },
+    {
+      "id": "release-unsent",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "update(permit, entry => ({ ...entry, state: 'released' }))",
+      "new": "update(permit, entry => entry)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "wrapper-generate",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "generate: scriptedGenerate,",
+      "new": "generate: async () => ({ body: '{}', model: 'x', usageUnits: 0 }),",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 12
+    },
+    {
+      "id": "usage-option",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "Math.min(options.maxAttemptUsageUnits,",
+      "new": "Math.min(5,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "output-option",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "Math.min(options.maxAttemptOutputBytes,",
+      "new": "Math.min(10_000,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "option-validate",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "if (!Number.isSafeInteger(value) || value < 1)",
+      "new": "if (false)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 12
+    },
+    {
+      "id": "option-minimum",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "|| value < 1) throw",
+      "new": "|| value < 0) throw",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "option-integer",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "!Number.isSafeInteger(value) || value < 1",
+      "new": "value < 1",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 12
+    },
+    {
+      "id": "wrapper-defaults",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "old": "maxAttemptUsageUnits: 5, maxAttemptOutputBytes: 10_000, ...rest,",
+      "new": "...rest,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 12
+    }
+  ]
+}
