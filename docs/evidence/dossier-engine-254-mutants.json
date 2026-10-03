@@ -1,0 +1,579 @@
+{
+  "subject": {
+    "commit": "894205ddc63bd437578f37098444069505198344",
+    "branch": "agent/dossier-engine-3",
+    "fileSha256": {
+      "packages/polaris-generation-core/src/discovery.ts": "6843c5d676854935d40451dee373689a3c9f3ee6f560ec40fc76853ce5ba3665"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-03T10:10:19+00:00",
+  "mutants": [
+    {
+      "id": "cap",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (used + blob.pieces.length > budget.maxSelected) { noFit.add(blob.blobId); continue; }",
+      "new": "if (false) { noFit.add(blob.blobId); continue; }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 25
+    },
+    {
+      "id": "billing-per-piece",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "used += blob.pieces.length;",
+      "new": "used += 1;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "permit-strict",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "await raced(ports.permitted(call)) === true",
+      "new": "await raced(ports.permitted(call)) !== false",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "unknown-id",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (!byId.has(id) || seen.has(id))",
+      "new": "if (seen.has(id))",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "dup-id",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (!byId.has(id) || seen.has(id))",
+      "new": "if (!byId.has(id))",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "map-budget",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "|| mapCalls >= budget.maxMapCalls",
+      "new": "|| false",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "rank-order",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "const order = [...rankedIds.map(id => byId.get(id)!), ...rest];",
+      "new": "const order = [...rest, ...rankedIds.map(id => byId.get(id)!)];",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "deferred-reason",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "reason: DEFERRED_BY_BUDGET }",
+      "new": "reason: 'excluded' }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "piece-grouping",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "source.sourceId.replace(/-p[0-9]+$/u, '')",
+      "new": "source.sourceId",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "excerpt-bound",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": ".slice(0, budget.maxExcerptChars)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "cap-200",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "budget.maxSelected > PIPELINE_QUOTABLE_CAP",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-range",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": " || claim.relevance > 10",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-foreign",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "!known.has(claim.blobId) || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-empty",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": " || claim.claim.length === 0",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-trunc",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": ".slice(0, budget.maxClaimChars)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "passthrough",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (source.exclusion.excluded || source.spans.length === 0) { out.push(source); continue; }",
+      "new": "if (false) { out.push(source); continue; }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "reduce-bound",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.min(budget.claimsPerGroup, Math.floor(budget.maxReduceClaims / Math.max(1, groups.length)))",
+      "new": "budget.claimsPerGroup",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "map-array",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "!Array.isArray(raw.claims)",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "reduce-array",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "!Array.isArray(raw.ranked) || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25,
+      "note": "first recorded equivalent; now killed by the invalid-reduce-reply detail assertion"
+    },
+    {
+      "id": "reduce-strings",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": " || raw.ranked.some(id => typeof id !== 'string')",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "no-dispatching-receipt",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "await emit({ ...shared, outcome: 'dispatching', usageUnits: null, dropped: 0 });",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "detail-truncation",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": ".slice(0, 200);\n      if (error instanceof DiscoveryRefusal && error.reason",
+      "new": ";\n      if (error instanceof DiscoveryRefusal && error.reason",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "receipt-fail-closed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "catch { throw new DiscoveryRefusal('receipt-write-failed'); }",
+      "new": "catch { /* ignored */ }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "signal-race",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Promise.race([job, aborted])",
+      "new": "job",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "pre-call-abort",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (signal.aborted) throw new DiscoveryRefusal('cancelled');\n    const call",
+      "new": "const call",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "reduce-failure-count",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (outcome === undefined) reduceFailures++;",
+      "new": "if (outcome === undefined) { /* uncounted */ }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "refused-count",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "refusedCalls++; await emit({ ...shared, outcome: 'refused'",
+      "new": "await emit({ ...shared, outcome: 'refused'",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "basis-reduce",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (rankedIds.length > 0) basis = 'model-reduce';",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "dropped-from-map",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    dropped += outcome.dropped;\n    for (const claim",
+      "new": "    for (const claim",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "nofit-wording",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected",
+      "new": "true",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "receipt-port-required",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "&& ports.receipt === undefined) throw",
+      "new": "&& false) throw",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "boundary",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "deferred.length === 0 ? 'every candidate blob was selected'",
+      "new": "true ? 'every candidate blob was selected'",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "receipt.reply as { claims: DiscoveryClaim[] }).claims, usageUnits: receipt.usageUnits, dropped: receipt.dropped }",
+      "new": "receipt.reply as { claims: DiscoveryClaim[] }).claims, usageUnits: receipt.usageUnits, dropped: 0 }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-map-always",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "...(hasKind('map') ? {",
+      "new": "...(true ? {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-reduce-always",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "...(hasKind('reduce') ? {",
+      "new": "...(true ? {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-digest",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "receipt.requestDigest !== call.requestDigest ||",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-itemcount",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "|| receipt.itemCount !== call.itemCount",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-missing",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (receipt === undefined) throw new DiscoveryRefusal('receipt-missing-for-call');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-flag-map",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "let discarded = replay && typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;\n      // A reply",
+      "new": "let discarded = typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;\n      // A reply",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-flag-reduce",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "seen = new Set<string>();\n      let discarded = replay &&",
+      "new": "seen = new Set<string>();\n      let discarded = true &&",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "usage-nonnegative",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Number.isSafeInteger(value) && value >= 0",
+      "new": "Number.isSafeInteger(value)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "usage-integer",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "typeof value === 'number' && Number.isSafeInteger(value) && value >= 0",
+      "new": "typeof value === 'number' && value >= 0",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-cap",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "offered.slice(0, cap)",
+      "new": "offered",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "claim-cap-size",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "input.items.length * MAP_CLAIMS_PER_ITEM",
+      "new": "input.items.length * 1000",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "rank-cap",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "offered.slice(0, byId.size)",
+      "new": "offered",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "signal-pass",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "invoke(input, signal)",
+      "new": "invoke(input, new AbortController().signal)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "replay-dropped-reduce",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "receipt.reply as { ranked: string[] }).ranked, usageUnits: receipt.usageUnits, dropped: receipt.dropped }",
+      "new": "receipt.reply as { ranked: string[] }).ranked, usageUnits: receipt.usageUnits, dropped: 0 }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    }
+  ]
+}
