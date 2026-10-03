@@ -27,6 +27,12 @@ base), and requires exactly one base and exactly one overlay -- refusing to
 guess an order if a second overlay ever appears (verification rule 9: an
 absence/uniqueness claim needs an enumerated sweep, not an assumption).
 
+A further file with only `## ADDED Requirements` (a change adopted after the
+overlay that adds requirements and modifies none) is an addition, applied
+after the overlay. The base is then derived, not named: it is the one
+ADDED-only file that carries every requirement the overlay MODIFIES, REMOVES
+or RENAMES. If none or more than one does, the script refuses.
+
 ## Overlay semantics
 
 Applied in the order the real OpenSpec tool uses at archive time (confirmed
@@ -333,6 +339,19 @@ def _assert_composed_agree(
 # Discovery and top-level composition build.
 # --------------------------------------------------------------------------
 
+def _added_names(path: Path) -> set[str]:
+    text = path.read_text(encoding="utf-8")
+    return {normalize_name(r.name) for r in parse_regex(text, str(path)).added}
+
+
+def _referenced_names(path: Path) -> set[str]:
+    """Names an overlay needs to exist already: MODIFIED, REMOVED, RENAMED FROM."""
+    d = parse_regex(path.read_text(encoding="utf-8"), str(path))
+    return ({normalize_name(r.name) for r in d.modified}
+            | {normalize_name(n) for n in d.removed}
+            | {normalize_name(old) for old, _new in d.renamed})
+
+
 def discover_composition_files(root: Path) -> list[Path]:
     pattern = f"openspec/changes/*/specs/{SPEC_CAPABILITY}/spec.md"
     candidates = sorted(root.glob(pattern))
@@ -351,6 +370,18 @@ def discover_composition_files(root: Path) -> list[Path]:
             bases.append(p)
         else:
             raise ScenarioCountError(f"{p}: unrecognized section shape {sorted(kinds)}")
+    additions: list[Path] = []
+    if len(bases) > 1 and len(overlays) == 1:
+        # A change that only ADDS requirements, adopted after the base, is an
+        # addition and not a second base. The base is derived, never named: it
+        # is the one ADDED-only file that carries every requirement the
+        # overlay MODIFIES, REMOVES or RENAMES. Exactly one must; more or fewer
+        # is ambiguity, and the script refuses to guess.
+        needed = _referenced_names(overlays[0])
+        holders = [b for b in bases if needed and needed <= _added_names(b)]
+        if len(holders) == 1:
+            additions = sorted(b for b in bases if b != holders[0])
+            bases = holders
     if len(bases) != 1:
         raise ScenarioCountError(
             f"expected exactly one base spec.md under {pattern}, found {len(bases)}: "
@@ -362,7 +393,7 @@ def discover_composition_files(root: Path) -> list[Path]:
             f"a composition order for more than one overlay), found {len(overlays)}: "
             f"{[str(o) for o in overlays]}"
         )
-    return [bases[0], overlays[0]]
+    return [bases[0], overlays[0], *additions]
 
 
 @dataclass
@@ -575,6 +606,20 @@ Delta body.
 - **THEN** two
 """
 
+GOOD_THIRD_SPEC = """# Third change
+
+## ADDED Requirements
+
+### Requirement: Epsilon
+
+Epsilon body.
+
+#### Scenario: E1
+
+- **WHEN** one
+- **THEN** two
+"""
+
 # Composed: Alpha(1, replaced) + Gamma Prime(1, renamed) + Delta(2, added) = 4
 # scenarios over 3 requirements. Beta(1) is removed.
 GOOD_TOTAL_SCENARIOS = 4
@@ -722,7 +767,51 @@ def selftest() -> None:
         second_overlay.write_text(GOOD_OVERLAY_SPEC)
         _expect_fail("two overlays found (no derivable order)", lambda: build_composition(f6))
 
-    print("selftest: all 7 checks failed closed (or passed, for the one good fixture) as expected.")
+        # Fixture 7: a third file that only ADDS requirements is an addition,
+        # applied after the overlay; the total moves by exactly its scenarios.
+        f7 = base / "f7"
+        _write_good_fixture(f7)
+        third = f7 / "openspec/changes/fixture-third-change/specs/polaris-generation/spec.md"
+        third.parent.mkdir(parents=True, exist_ok=True)
+        third.write_text(GOOD_THIRD_SPEC)
+        (f7 / STATUS_PAGE_REL).write_text(GOOD_STATUS_PAGE.replace(
+            f"{GOOD_TOTAL_REQUIREMENTS} requirements and {GOOD_TOTAL_SCENARIOS} scenarios",
+            "4 requirements and 5 scenarios"))
+        r7, _, _ = _run_check(f7)
+        if (len(r7.per_requirement), r7.total) != (4, 5) or r7.files[-1].split("/")[2] != "fixture-third-change":
+            raise ScenarioCountError(f"added-only third file did not compose as an addition: {r7.files}, {r7.total}")
+        print("  [ok] third ADDED-only file composes as an addition (4 requirements, 5 scenarios)")
+
+        # Fixture 8: the third file collides with a composed requirement name.
+        f8 = base / "f8"
+        _write_good_fixture(f8)
+        collide = f8 / "openspec/changes/fixture-third-change/specs/polaris-generation/spec.md"
+        collide.parent.mkdir(parents=True, exist_ok=True)
+        collide.write_text(GOOD_THIRD_SPEC.replace("Epsilon", "Delta"))
+        (f8 / STATUS_PAGE_REL).write_text(GOOD_STATUS_PAGE)
+        _expect_fail("added-only third file collides with a composed requirement", lambda: _run_check(f8))
+
+        # Fixture 9: with two ADDED-only files and an overlay whose MODIFIED
+        # target both carry, the base is ambiguous and the script refuses.
+        f9 = base / "f9"
+        _write_good_fixture(f9)
+        twin = f9 / "openspec/changes/fixture-twin-base/specs/polaris-generation/spec.md"
+        twin.parent.mkdir(parents=True, exist_ok=True)
+        twin.write_text(GOOD_BASE_SPEC)
+        _expect_fail("two ADDED-only files both hold the overlay's predecessor", lambda: build_composition(f9))
+
+        # Fixture 10: two ADDED-only files and an overlay that references
+        # nothing in either: no base is derivable.
+        f10 = base / "f10"
+        _write_good_fixture(f10)
+        third10 = f10 / "openspec/changes/fixture-third-change/specs/polaris-generation/spec.md"
+        third10.parent.mkdir(parents=True, exist_ok=True)
+        third10.write_text(GOOD_THIRD_SPEC)
+        ov10 = f10 / "openspec/changes/fixture-overlay-change/specs/polaris-generation/spec.md"
+        ov10.write_text(ov10.read_text().replace("### Requirement: Alpha", "### Requirement: Unrelated"))
+        _expect_fail("overlay references no ADDED-only file's requirement", lambda: build_composition(f10))
+
+    print("selftest: all 11 checks failed closed (or passed, for the good fixtures) as expected.")
 
 
 # --------------------------------------------------------------------------
