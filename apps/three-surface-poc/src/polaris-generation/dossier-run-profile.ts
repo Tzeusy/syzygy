@@ -32,7 +32,6 @@ export interface DossierRunProfile {
   readonly maxOutputTokens: number;
   /** Largest reply one attempt may return, in bytes; must cover `maxOutputTokens` of ordinary text. */
   readonly maxAttemptOutputBytes: number;
-  readonly maxNarrativeCalls: number;
   readonly maxRepairCycles: number;
   readonly maxNarrativeInputBytes: number;
   readonly model: string;
@@ -43,12 +42,12 @@ export interface DossierRunProfile {
 export const DOSSIER_RUN_PROFILE: DossierRunProfile = Object.freeze({
   accountingPolicy: DOSSIER_UNITS_POLICY,
   owner: Object.freeze({ runTotalUnits: 4000, discoveryUnits: 1000, discoveryCallUnits: 40, wallClockMs: 7_200_000 }),
-  // Seven calls: inventory, plan, author, edit, fidelity, repair, fidelity. 3 x 600 + 4 x 300 = 3,000.
+  // The five base calls (inventory, plan, author, edit, fidelity) at their ceilings are 2,400 of the 3,000 narrative units; each repair cycle
+  // (repair, then fidelity again) is up to 600 more at its ceilings, so the unit budget, not the cycle count, ends a run whose repairs cost the most.
   stageCeilingUnits: Object.freeze({ inventory: 600, plan: 300, author: 600, edit: 600, fidelity: 300, repair: 300 }),
   maxOutputTokens: MAX_OUTPUT_TOKENS,
   maxAttemptOutputBytes: 400_000,
-  maxNarrativeCalls: 7,
-  maxRepairCycles: 1,
+  maxRepairCycles: 3,
   maxNarrativeInputBytes: 8_000_000,
   model: 'claude-opus-5-5',
   effort: 'high',
@@ -66,12 +65,12 @@ export function assertRunProfile(profile: DossierRunProfile): void {
     && discoveryUnits < runTotalUnits && discoveryUnits >= 2 * discoveryCallUnits
     && Object.keys(profile.stageCeilingUnits).length === 6 && stages.every(units => whole(units, 1))
     && whole(profile.maxOutputTokens, 1) && profile.maxOutputTokens <= MAX_OUTPUT_TOKENS && whole(profile.maxAttemptOutputBytes, 1)
-    && whole(profile.maxNarrativeCalls, 1) && whole(profile.maxRepairCycles, 0) && whole(profile.maxNarrativeInputBytes, 1);
+    && whole(profile.maxRepairCycles, 0) && whole(profile.maxNarrativeInputBytes, 1);
   if (!ok) throw new Error('invalid-run-profile');
-  // The narrative share must hold the most expensive run the pipeline can make: one attempt per call, each at its stage ceiling.
-  const order: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit', 'fidelity', ...Array.from({ length: profile.maxRepairCycles }, () => ['repair', 'fidelity'] as const).flat()];
+  // The narrative share must hold the base run: one attempt per call, each at its stage ceiling. Repair cycles beyond what is left are ended by the unit budget.
+  const order: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit', 'fidelity'];
   const worst = order.reduce((sum, stage) => sum + profile.stageCeilingUnits[stage], 0);
-  if (worst > narrativeUnits(profile)) throw new Error('invalid-run-profile: the narrative share cannot hold every stage at its ceiling');
+  if (worst > narrativeUnits(profile)) throw new Error('invalid-run-profile: the narrative share cannot hold the base stages at their ceilings');
 }
 
 export const narrativeUnits = (profile: DossierRunProfile): number => profile.owner.runTotalUnits - profile.owner.discoveryUnits;
@@ -110,9 +109,12 @@ export function discoveryBudgetFor(profile: DossierRunProfile = DOSSIER_RUN_PROF
 }
 
 /** The narrative's request budget; `elapsedMs` is what discovery already used of the run's wall clock. */
+/** Inventory, plan, author, edit, fidelity; each repair cycle adds a repair and another fidelity review. */
+export const NARRATIVE_BASE_CALLS = 5;
+
 export function narrativeBudgetFor(profile: DossierRunProfile = DOSSIER_RUN_PROFILE, elapsedMs = 0): GenerationBudget {
   assertRunProfile(profile);
-  return { maxCalls: profile.maxNarrativeCalls, maxInputBytes: profile.maxNarrativeInputBytes, maxOutputBytes: 2_000_000, maxUsageUnits: narrativeUnits(profile),
+  return { maxCalls: NARRATIVE_BASE_CALLS + 2 * profile.maxRepairCycles, maxInputBytes: profile.maxNarrativeInputBytes, maxOutputBytes: 2_000_000, maxUsageUnits: narrativeUnits(profile),
     maxElapsedMs: Math.max(0, profile.owner.wallClockMs - Math.max(0, elapsedMs)), maxRepairCycles: profile.maxRepairCycles, accountingPolicy: profile.accountingPolicy };
 }
 

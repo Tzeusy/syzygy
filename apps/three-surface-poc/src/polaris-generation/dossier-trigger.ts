@@ -8,6 +8,7 @@ import { clarify, DEFAULT_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect,
   type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, CorpusRefusal, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
+import { DOSSIER_RUN_PROFILE, narrativeBudgetFor } from './dossier-run-profile.js';
 import { readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
 import { checkDossierRunDestination, writeDossierRun } from './dossier-render-main.js';
 import { ISOLATED_GIT_FLAGS, minimalGitEnv } from './isolated-git.js';
@@ -139,7 +140,8 @@ export type TriggerOutcome =
       readonly requirements: readonly (AdmissionRequirement & { readonly answer: AdmissionAnswer })[]; readonly missing: number }
   | { readonly state: 'generation-unavailable' | 'generation-stopped' | 'generation-stopped-partial' | 'complete'; readonly target: GithubTarget; readonly revision: string; readonly runDir: string; readonly detail: string };
 
-const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
+/** The narrative budget when no provider session supplies one: the agreed profile (2 h wall clock, units, calls derived from the repair cycles). */
+const BUDGET: GenerationBudget = narrativeBudgetFor(DOSSIER_RUN_PROFILE);
 
 /** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
 export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {

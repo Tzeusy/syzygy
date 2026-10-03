@@ -59,7 +59,7 @@ const loopback = (url: string): ProviderFactory => build => createMessagesApiGen
 type Json = Record<string, any>;   // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** A well-formed reply for each stage, computed from the request's own inputs: every source cited, every requested asset produced. */
-function replyFor(system: string, input: string): string {
+function replyFor(system: string, input: string, blocking = false): string {
   const stage = (['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const).find(s => promptForStage(s).system === system) as PromptStage;
   const inputs: Json = (JSON.parse(input) as Json).inputs;
   if (stage === 'discovery-map') return JSON.stringify({ claims: inputs.items.map((item: Json) => ({ blobId: item.blobId, claim: 'Relevant to the reader questions.', relevance: 5 })) });
@@ -80,7 +80,8 @@ function replyFor(system: string, input: string): string {
       ...draft.diagrams.flatMap((d: Json) => [...d.nodes, ...d.edges]), ...draft.deepDives.flatMap((d: Json) => d.paragraphs.flatMap((b: Json) => [b, ...b.children]))];
     return JSON.stringify({
       inventoryCoverage: inputs.inventory.entries.map((e: Json) => ({ entryId: e.id, disposition: 'represented', blockIds: ['intro'], reason: 'The introduction states it.' })),
-      blockSupport: blocks.map(b => ({ blockId: b.id, verdict: 'supported', sourceIds: b.sourceIds, reason: 'The cited span states it.' })), findings: [],
+      blockSupport: blocks.map(b => ({ blockId: b.id, verdict: 'supported', sourceIds: b.sourceIds, reason: 'The cited span states it.' })),
+      findings: blocking ? [{ severity: 'blocking', message: 'The introduction overstates the source.', target: 'intro' }] : [],
     });
   }
   return JSON.stringify({
@@ -99,8 +100,8 @@ const walk = (dir: string): string[] => readdirSync(dir).flatMap(e => { const f 
 const stageOf = (system: string): string => (['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const).find(s => promptForStage(s).system === system) ?? 'unknown';
 
 describe('a whole run through the wiring against the loopback stub', () => {
-  const run = async (respond: (system: string, input: string, n: number) => string, env: Record<string, string | undefined> = { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }) => {
-    const stub = await startStubProvider((request, n) => ({ text: respond(request.system, request.input, n) }));
+  const run = async (respond: (system: string, input: string) => string, env: Record<string, string | undefined> = { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }) => {
+    const stub = await startStubProvider(request => ({ text: respond(request.system, request.input) }));
     const out: string[] = [];
     const dir = mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-'));
     const runDir = path.join(dir, 'run');
@@ -157,7 +158,7 @@ describe('a whole run through the wiring against the loopback stub', () => {
   }, 60_000);
 
   it('a reply that fails validation stops the run and the stages after it are never requested', async () => {
-    const r = await run((system, input, n) => (stageOf(system) === 'plan' ? '{}' : replyFor(system, input)));
+    const r = await run((system, input) => (stageOf(system) === 'plan' ? '{}' : replyFor(system, input)));
     expect(r.code).toBe(7);   // the inventory finished before the plan failed: a partial render, not nothing
     expect(r.requests.map(q => stageOf(q.system)).filter(s => s === 'author' || s === 'edit' || s === 'fidelity')).toEqual([]);
   }, 60_000);
@@ -206,5 +207,30 @@ describe('a whole run through the wiring against the loopback stub', () => {
     await stub.close();
     expect(stub.requests.map(q => stageOf(q.system))).toEqual(['discovery-map', 'discovery-reduce', 'inventory']);
     expect(code).toBe(7);
+  }, 60_000);
+
+  const UNITS: Record<string, number> = { 'discovery-map': 40, 'discovery-reduce': 40, inventory: 600, plan: 300, author: 600, edit: 600, fidelity: 300, repair: 300 };
+  const stub = (cost: (stage: string) => number) => startStubProvider(request => ({ text: replyFor(request.system, request.input, true), inputTokens: 1000, outputTokens: (cost(stageOf(request.system)) - 1) * 1000 }));
+  const runWith = async (provider: Awaited<ReturnType<typeof startStubProvider>>) => {
+    const runDir = path.join(mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-')), 'run');
+    const code = await main(['https://github.com/redis/redis', '--route', 'messages-api', '--out', runDir, '--json'], { lsRemote: () => `${commit}\tHEAD\n`, materialize: async () => repo, policyAct: fixturePolicyActPort() },
+      { root: admissionRoot('messages-api'), env: { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }, providerFactory: loopback(provider.url), stdout: () => undefined, stderr: () => undefined });
+    await provider.close();
+    const generation = (JSON.parse(readFileSync(path.join(runDir, 'run-record.json'), 'utf8')) as { generation: { spend: { narrativeCountedUnits: number } } }).generation;
+    return { code, stages: provider.requests.map(q => stageOf(q.system)), narrative: generation.spend.narrativeCountedUnits };
+  };
+
+  it('repairs consume the narrative units and the cap ends the run: at full cost one repair cycle fits, the next call is never made', async () => {
+    const r = await runWith(await stub(stage => UNITS[stage]!));
+    expect(r.stages.slice(2)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair', 'fidelity']);
+    expect(r.narrative).toBe(3000);   // 2400 for the base five, 600 for the repair cycle: the whole narrative share
+    expect(r.code).toBe(7);
+  }, 60_000);
+
+  it('at a small cost the cycle count ends the run: three repair cycles and no fourth', async () => {
+    const r = await runWith(await stub(() => 1));
+    expect(r.stages.slice(2)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity', ...Array(3).fill(['repair', 'fidelity']).flat()]);
+    expect(r.narrative).toBe(5 + 6);
+    expect(r.code).toBe(7);
   }, 60_000);
 });
