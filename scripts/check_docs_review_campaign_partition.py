@@ -253,6 +253,11 @@ CAMPAIGNS = (
         "PWB release-label gate",
         r"R-PWB-RELEASE-LABEL-.*\.md",
     ),
+    campaign(
+        "pwb-class-granular",
+        "PWB class-granular extraction gate",
+        r"R-PWB-CLASS-GRANULAR-EXTRACTION-.*\.md",
+    ),
 )
 
 
