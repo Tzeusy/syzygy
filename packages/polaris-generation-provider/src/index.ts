@@ -21,7 +21,7 @@ export {
   type ExpectedRequest,
   type RequestAcceptance,
 } from './request-acceptance.js';
-export { parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
+export { PROVIDER_ORIGIN, parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
 export {
   PINNED_MESSAGES_SDK_VERSION,
   MessagesApiProviderError,

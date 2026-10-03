@@ -141,7 +141,7 @@ describe('durable lifecycle with an injected generate port', () => {
   it('refuses a malformed per-stage ceiling for any stage before creating state', () => {
     for (const bad of [0, 1.5, Number.NaN, '5']) {
       const dir = join(scratch(), 'state');
-      expect(() => lifecycle(dir, { calls: [] }, async stage => ok(stage), { maxAttemptUsageUnits: (stage => (stage === 'repair' ? bad : 5)) as never })).toThrow('invalid-lifecycle-option: maxAttemptUsageUnits');
+      expect(() => lifecycle(dir, { calls: [] }, async stage => ok(stage), { maxAttemptUsageUnits: ((stage: string) => (stage === 'repair' ? bad : 5)) as never })).toThrow('invalid-lifecycle-option: maxAttemptUsageUnits');
       expect(existsSync(dir)).toBe(false);
     }
   });

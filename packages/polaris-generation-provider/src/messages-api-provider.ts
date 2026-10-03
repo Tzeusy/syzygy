@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { VERSION as INSTALLED_MESSAGES_SDK_VERSION } from '@anthropic-ai/sdk/version';
-import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
+import type { DispatchPermit, PipelinePorts, PromptStage, ProviderReply } from '@syzygy/polaris-generation-core';
 import { ambientNetworkEnvironment, assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
 import { MAX_OUTPUT_TOKENS, countedUnits, outputTokenCap, tokenUnits } from './usage-units.js';
 import type { CapturedRequest, RequestAcceptance } from './request-acceptance.js';
@@ -35,8 +35,8 @@ export interface MessagesApiProviderConfig {
   readonly apiKey: string;
   /** The gate forwards here and nowhere else. Absent: every request is refused. */
   readonly upstream?: EgressGateOptions['upstream'];
-  /** Consent switch, asked by the gate for every request. Only `true` permits. */
-  readonly permitted: (permit: DispatchPermit, stage: GenerateInput['stage']) => Promise<boolean>;
+  /** Consent switch, asked by the gate for every request (a discovery call names its discovery stage). Only `true` permits. */
+  readonly permitted: (permit: DispatchPermit, stage: PromptStage) => Promise<boolean>;
   /** Gate option: drop the OS, architecture and runtime-version headers before forwarding (default false). */
   readonly stripFingerprint?: boolean;
   /** Test seam for the version check. */
@@ -104,7 +104,7 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
   const now = config.now ?? Date.now;
   const attempts: MessagesApiAttemptRecord[] = [];
   const record = (entry: MessagesApiAttemptRecord): void => { attempts.push(entry); config.onAttempt?.(entry); };
-  const slot: { current: { permit: DispatchPermit; stage: GenerateInput['stage'] } | null } = { current: null };
+  const slot: { current: { permit: DispatchPermit; stage: PromptStage } | null } = { current: null };
   let gateRef: EgressGate | undefined;
   let started: Promise<{ gate: EgressGate; client: Anthropic }> | undefined;
   const start = (): NonNullable<typeof started> => started ??= (async () => {

@@ -17,6 +17,12 @@
     },
     {
       "path": "../../packages/polaris-generation-core"
+    },
+    {
+      "path": "../../packages/polaris-generation-provider"
+    },
+    {
+      "path": "../../packages/polaris-generation-consent"
     }
   ]
 }

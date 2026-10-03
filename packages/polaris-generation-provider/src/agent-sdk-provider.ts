@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
-import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
+import type { DispatchPermit, PipelinePorts, PromptStage, ProviderReply } from '@syzygy/polaris-generation-core';
 import { assertAllowedUpstream, startEgressGate, type EgressGate, type EgressGateOptions } from './egress-gate.js';
 import { MAX_OUTPUT_TOKENS, countedUnits, outputTokenCap, tokenUnits } from './usage-units.js';
 import { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION, acceptCapturedRequest, type ExpectedRequest } from './request-acceptance.js';
@@ -58,8 +58,8 @@ export interface AgentSdkProviderConfig {
   readonly auth: { readonly apiKey: string };
   /** The egress gate forwards here and nowhere else. Absent: every request is refused (tests that only probe the gate). */
   readonly upstream?: EgressGateOptions['upstream'];
-  /** Consent switch, asked by the gate for every request. Only `true` permits. */
-  readonly permitted: (permit: DispatchPermit, stage: GenerateInput['stage']) => Promise<boolean>;
+  /** Consent switch, asked by the gate for every request (a discovery call names its discovery stage). Only `true` permits. */
+  readonly permitted: (permit: DispatchPermit, stage: PromptStage) => Promise<boolean>;
   /** Gate option: drop the OS, architecture and runtime-version headers before forwarding (default false). */
   readonly stripFingerprint?: boolean;
   /** 'text' sends no tool; 'schema-tool' lets the SDK add its StructuredOutput tool. */
@@ -150,9 +150,9 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   const attempts: AgentSdkAttemptRecord[] = [];
   const record = (entry: AgentSdkAttemptRecord): void => { attempts.push(entry); config.onAttempt?.(entry); };
   let gateRef: EgressGate | undefined;
-  let gatePromise: Promise<{ gate: EgressGate; permit: { current: { permit: DispatchPermit; stage: GenerateInput['stage'] } | null } }> | undefined;
+  let gatePromise: Promise<{ gate: EgressGate; permit: { current: { permit: DispatchPermit; stage: PromptStage } | null } }> | undefined;
   const gateFor = (): NonNullable<typeof gatePromise> => gatePromise ??= (async () => {
-    const permit: { current: { permit: DispatchPermit; stage: GenerateInput['stage'] } | null } = { current: null };
+    const permit: { current: { permit: DispatchPermit; stage: PromptStage } | null } = { current: null };
     const gate = await startEgressGate({
       ...(config.upstream === undefined ? {} : { upstream: config.upstream }),
       permitted: async () => (permit.current === null ? false : config.permitted(permit.current.permit, permit.current.stage)),
