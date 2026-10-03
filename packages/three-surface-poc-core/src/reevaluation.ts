@@ -23,7 +23,12 @@ export interface EvaluationClocks {
  * instant makes each re-evaluation its own identity, and the prior one stays
  * nameable beside it. */
 export function evaluationIdentity(model: PocModel): string {
-  return `${model.evaluation.snapshot}|observed:${model.evaluation.asOf}`;
+  return evaluationIdentityOf(model.evaluation);
+}
+
+/** The same identity from a retained record's evaluation fields. */
+export function evaluationIdentityOf(evaluation: { readonly snapshot: string; readonly asOf: string }): string {
+  return `${evaluation.snapshot}|observed:${evaluation.asOf}`;
 }
 
 /** The clocks one evaluation read. The Dolt revision is the one the
