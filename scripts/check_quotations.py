@@ -65,7 +65,13 @@ comment — F-2's own site. Measured 2026-10-03 over every tracked `.py`,
 `.ts` and `.mjs` file, the forms below reach one span there, and it is code,
 not a quotation. A locator naming the wrong file
 that happens to contain the same words passes. A revision lookup follows
-renames of the resolved path only.
+renames of the resolved path only. In a shallow clone the history is
+partial, so an amended quotation reads as a finding — red, never falsely
+green; the run says when the clone is shallow.
+
+The routing of RD-6's fourteen open findings, and this check's rule-6
+mutation record, live in
+`docs/evidence/rd6-source-of-truth-routing-2026-10-03/`.
 
 Usage:
   check_quotations.py              check the tracked corpus; exit 1 on findings
@@ -556,6 +562,12 @@ def main():
     if args.selftest:
         return selftest()
     corpus, tracked = tracked_corpus(args.root)
+    shallow = subprocess.run(
+        ["git", "-C", args.root, "rev-parse", "--is-shallow-repository"],
+        capture_output=True, text=True).stdout.strip()
+    if shallow == "true":
+        print("note  QC-1  shallow clone: revision history is partial, so an "
+              "amended quotation reads as a finding")
     return report(check(corpus, tracked, git_history(args.root)),
                   verbose=args.verbose)
 
