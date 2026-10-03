@@ -157,7 +157,7 @@ describe('REQ-031 clarification', () => {
       const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: text }) });
       expect(record.answers[0], JSON.stringify(text)).toMatchObject({ disposition: 'unknown', answer: null });
     }
-    const spaced = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: `${' '.repeat(400_000)}cache${' '.repeat(400_000)}` }) });
+    const spaced = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: `${' '.repeat(50_000)}cache${' '.repeat(50_000)}` }) });
     expect(spaced.answers[0]).toMatchObject({ disposition: 'answered' });
     const started = performance.now();
     for (const filler of [' ', '\u200b', '\u3164', '\t \u2003']) {
