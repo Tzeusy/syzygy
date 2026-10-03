@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { VERSION as INSTALLED_MESSAGES_SDK_VERSION } from '@anthropic-ai/sdk/version';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 import { parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
 import type { CapturedRequest, RequestAcceptance } from './request-acceptance.js';
@@ -8,7 +9,7 @@ type GenerateInput = Parameters<PipelinePorts['generate']>[0];
 /** Version the capture test ran against; a bump re-runs it and re-derives the header literals below. */
 export const PINNED_MESSAGES_SDK_VERSION = '0.131.0';
 
-export type MessagesApiFailure = 'invalid-config' | 'concurrent-call' | 'aborted' | 'deadline' | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output';
+export type MessagesApiFailure = 'unpinned-version' | 'ambient-environment' | 'incomplete' | 'invalid-config' | 'concurrent-call' | 'aborted' | 'deadline' | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output';
 export class MessagesApiProviderError extends Error {
   /** Tokens billed across the tries made so far; null when any try reported none. */
   spentUnits: number | null = 0;
@@ -35,6 +36,10 @@ export interface MessagesApiProviderConfig {
   readonly upstream?: EgressGateOptions['upstream'];
   /** Consent switch, asked by the gate for every request. Only `true` permits. */
   readonly permitted: (permit: DispatchPermit, stage: GenerateInput['stage']) => Promise<boolean>;
+  /** Gate option: drop the OS, architecture and runtime-version headers before forwarding (default false). */
+  readonly stripFingerprint?: boolean;
+  /** Test seam for the version check. */
+  readonly pinnedVersion?: string;
   /** Profile-set Opus effort level, sent as output_config.effort. */
   readonly effort: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
   readonly thinking?: MessagesThinking;
@@ -75,9 +80,18 @@ export function messagesApiBody(config: BodyConfig, system: string, input: strin
   };
 }
 
+/** The client reads ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_CUSTOM_HEADERS and
+ * profile variables from the process environment. None may be set: ambient state must not
+ * redirect, re-authenticate or add headers to this route. */
+function refuseAmbientEnvironment(): void {
+  if (Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_'))) throw new MessagesApiProviderError('ambient-environment', 0);
+}
+
 /** Messages API route (`@anthropic-ai/sdk`): no subprocess, no tools, no
  * ambient context. The client points at the loopback egress gate, never a provider. */
 export function createMessagesApiGenerate(config: MessagesApiProviderConfig): MessagesApiProviderHandle {
+  if (INSTALLED_MESSAGES_SDK_VERSION !== (config.pinnedVersion ?? PINNED_MESSAGES_SDK_VERSION)) throw new MessagesApiProviderError('unpinned-version', 0);
+  refuseAmbientEnvironment();
   const retry = config.retry ?? DEFAULT_RETRY;
   const budgetTokens = typeof config.thinking === 'object' ? config.thinking.budgetTokens : undefined;
   if (config.model.length === 0 || config.apiKey.length === 0 || !Number.isSafeInteger(config.maxOutputTokens) || config.maxOutputTokens <= 0
@@ -91,16 +105,18 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
   let gateRef: EgressGate | undefined;
   let started: Promise<{ gate: EgressGate; client: Anthropic }> | undefined;
   const start = (): NonNullable<typeof started> => started ??= (async () => {
+    refuseAmbientEnvironment();
     const gate = await startEgressGate({
       ...(config.upstream === undefined ? {} : { upstream: config.upstream }),
       permitted: async () => (slot.current === null ? false : config.permitted(slot.current.permit, slot.current.stage)),
+      ...(config.stripFingerprint === undefined ? {} : { stripFingerprint: config.stripFingerprint }),
     });
     gateRef = gate;
-    return { gate, client: new Anthropic({ apiKey: config.apiKey, baseURL: gate.url, maxRetries: 0 }) };
+    return { gate, client: new Anthropic({ apiKey: config.apiKey, authToken: null, baseURL: gate.url, defaultHeaders: {}, maxRetries: 0 }) };
   })();
 
   const generate: PipelinePorts['generate'] = async input => {
-    const { gate, client } = await start();
+    const { gate, client } = await start().catch(error => { started = undefined; throw error; });
     const maxTokens = Math.max(1, Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens));
     const expected = { model: config.model, system: input.system, input: input.input, effort: config.effort, maxTokens, apiKey: config.apiKey, ...(config.thinking === undefined ? {} : { thinking: config.thinking }) };
     const begun = now();
@@ -130,6 +146,10 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
         const parts = [u.input_tokens, u.output_tokens, u.cache_creation_input_tokens ?? 0, u.cache_read_input_tokens ?? 0];
         units = parts.every(p => Number.isSafeInteger(p) && p >= 0) ? parts.reduce((a, b) => a + b, 0) : null;
         total = total === null || units === null ? null : total + units;
+        if (message.stop_reason !== 'end_turn') {
+          record({ attemptId: id, try: n, outcome: 'failed', httpStatus: null, usageUnits: units, backoffMs: 0 });
+          throw fail('incomplete', n);
+        }
         const text = message.content.flatMap(block => (block.type === 'text' ? [block.text] : [])).join('');
         // Thinking blocks are the profile's own doing; any other block (a tool call) is not output.
         if (message.content.some(block => block.type !== 'text' && block.type !== 'thinking' && block.type !== 'redacted_thinking') || text.length === 0) {
@@ -147,12 +167,14 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
         if (refused) { record({ attemptId: id, try: n, outcome: 'refused', httpStatus: 403, usageUnits: null, backoffMs: 0 }); throw fail('egress-refused', n, 403); }
         const status = error instanceof Anthropic.APIError && typeof error.status === 'number' ? error.status : null;
         if (status === 429 || status === 529) {
-          total = prior(attempts, id, n);   // a rejected request billed nothing
+          // Unbilled only on the provider's documented error body, read by the gate; a bare status is not evidence.
+          const unbilledTry = gate.takeRejectedUnbilled();
+          total = unbilledTry ? prior(attempts, id, n) : null;
           const header = error instanceof Anthropic.APIError ? error.headers?.get('retry-after') : undefined;
           const hinted = Math.max(parseRetryAfterMs(header, Date.now()) ?? 0, gate.takeRetryAfterMs() ?? 0);
           const delay = Math.max(Math.min(retry.maxDelayMs, retry.baseDelayMs * 2 ** (n - 1)), hinted);
           const more = n < retry.maxAttempts && now() - begun + delay <= retry.budgetMs;
-          record({ attemptId: id, try: n, outcome: status === 429 ? 'rate-limited' : 'overloaded', httpStatus: status, usageUnits: 0, backoffMs: more ? delay : 0 });
+          record({ attemptId: id, try: n, outcome: status === 429 ? 'rate-limited' : 'overloaded', httpStatus: status, usageUnits: unbilledTry ? 0 : null, backoffMs: more ? delay : 0 });
           if (!more) throw fail('rate-limited', n, status);
           await sleep(delay, input.signal);
           continue;
@@ -167,7 +189,7 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
   return {
     generate, attempts: () => attempts, gateUrl: () => gateRef?.url,
     gateDecisions: () => (gateRef === undefined ? [] : [...gateRef.decisions]),
-    close: async () => { if (started !== undefined) await (await started).gate.close(); },
+    close: async () => { if (gateRef !== undefined) await gateRef.close(); },
   };
 }
 
