@@ -554,6 +554,8 @@ describe('strict act reads', () => {
       expect(await chain(p1, { [POLICY_V1]: `${v1()}\n${hidden}\n` }), hidden).toMatchObject({ state: 'refused' });
     // a comment that merely mentions a field on one line is not a field
     expect(await chain(p1, { [POLICY_V1]: `${v1()}\n<!-- Exact digest (SHA-256): \`${'a'.repeat(64)}\` -->\n` })).toMatchObject({ state: 'ok' });
+    // a field that exists only inside a multi-line comment is absent from the prose
+    expect(await chain(p1, { [POLICY_V1]: v1().replace(/^(Act type: `[^`]+`)$/m, '<!--\n$1\n-->') })).toMatchObject({ state: 'refused' });
     // a comment around the real line removes it: the field is then absent
     expect(await chain(p1, { [POLICY_V1]: v1().replace(/^(Act type: `[^`]+`)$/m, '<!-- $1 -->') })).toMatchObject({ state: 'refused' });
   });
