@@ -1,0 +1,255 @@
+{
+  "subject": "syzygy-k66p: 5 s default per-test timeouts under full-suite load (tuple-encoding, polaris-narrative, polaris-first-reading)",
+  "date": "2026-10-03",
+  "tree": "acd372c7 (pre-rebase) plus an uncommitted timing line in sharedFixtureModels.prepare that appended each build duration to a scratch log; reverted before commit",
+  "loadProtocol": "8 node busy-loop CPU burners on a shared 12-core host (other lanes running); full @syzygy/three-surface-poc-app project per run, default workers; main at the time lacked #303 (w90k), so RPC errors and other files' load timeouts are expected and out of scope",
+  "acceptance": "tuple-encoding passes in 5 consecutive loaded full-suite runs: True",
+  "unloadedPerTestBefore": "1.2-3.5 s for the failing tests (load average ~46, no burners); after: 12-261 ms",
+  "sharedBuildMsUnderLoad": {
+    "polaris-first-reading": [
+      5602,
+      5998,
+      7063,
+      7668,
+      8198
+    ],
+    "tuple-encoding": [
+      4201,
+      4825,
+      5178,
+      5416,
+      6146
+    ],
+    "polaris-narrative": [
+      4137,
+      5420,
+      5484,
+      7609,
+      10896
+    ]
+  },
+  "runs": [
+    {
+      "run": 1,
+      "exitCode": 1,
+      "seconds": 395,
+      "loadAverage1m": 69.08,
+      "testsLine": "Tests  12 failed | 704 passed | 1 skipped (717)",
+      "rpcTimeouts": 4,
+      "targetFiles": {
+        "tuple-encoding": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 14058
+        },
+        "polaris-narrative": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 20792
+        },
+        "polaris-first-reading": {
+          "tests": 14,
+          "failed": 0,
+          "fileMs": 12661
+        }
+      },
+      "otherFailedTests": [
+        "build-output.test.ts",
+        "polaris-epistemic-tuples.test.ts",
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-proposed-work.test.ts",
+        "polaris-reachability.test.ts",
+        "polaris-walkthrough-readiness.test.ts",
+        "proposal-disclosure.test.ts"
+      ]
+    },
+    {
+      "run": 2,
+      "exitCode": 1,
+      "seconds": 258,
+      "loadAverage1m": 64.6,
+      "testsLine": "Tests  4 failed | 712 passed | 1 skipped (717)",
+      "rpcTimeouts": 3,
+      "targetFiles": {
+        "tuple-encoding": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 15217
+        },
+        "polaris-narrative": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 8438
+        },
+        "polaris-first-reading": {
+          "tests": 14,
+          "failed": 0,
+          "fileMs": 15318
+        }
+      },
+      "otherFailedTests": [
+        "git-observation.test.ts",
+        "governance-inputs.test.ts",
+        "polaris-presentation-route.test.ts",
+        "response-identity-independent.test.ts"
+      ]
+    },
+    {
+      "run": 3,
+      "exitCode": 1,
+      "seconds": 267,
+      "loadAverage1m": 69.82,
+      "testsLine": "Tests  8 failed | 708 passed | 1 skipped (717)",
+      "rpcTimeouts": 3,
+      "targetFiles": {
+        "tuple-encoding": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 13540
+        },
+        "polaris-narrative": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 22929
+        },
+        "polaris-first-reading": {
+          "tests": 14,
+          "failed": 0,
+          "fileMs": 9553
+        }
+      },
+      "otherFailedTests": [
+        "polaris-capability-detail.test.ts",
+        "polaris-epistemic-tuples.test.ts",
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-proposed-work.test.ts",
+        "polaris-reachability.test.ts",
+        "proposal-disclosure.test.ts"
+      ]
+    },
+    {
+      "run": 4,
+      "exitCode": 1,
+      "seconds": 264,
+      "loadAverage1m": 64.39,
+      "testsLine": "Tests  4 failed | 712 passed | 1 skipped (717)",
+      "rpcTimeouts": 4,
+      "targetFiles": {
+        "tuple-encoding": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 14818
+        },
+        "polaris-narrative": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 14244
+        },
+        "polaris-first-reading": {
+          "tests": 14,
+          "failed": 0,
+          "fileMs": 10325
+        }
+      },
+      "otherFailedTests": [
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-parity-sweep.test.ts",
+        "polaris-reachability.test.ts"
+      ]
+    },
+    {
+      "run": 5,
+      "exitCode": 1,
+      "seconds": 238,
+      "loadAverage1m": 51.02,
+      "testsLine": "Tests  9 failed | 707 passed | 1 skipped (717)",
+      "rpcTimeouts": 4,
+      "targetFiles": {
+        "tuple-encoding": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 16346
+        },
+        "polaris-narrative": {
+          "tests": 6,
+          "failed": 0,
+          "fileMs": 12504
+        },
+        "polaris-first-reading": {
+          "tests": 14,
+          "failed": 0,
+          "fileMs": 11271
+        }
+      },
+      "otherFailedTests": [
+        "polaris-accessibility.browser.test.ts",
+        "polaris-epistemic-tuples.test.ts",
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-parity-sweep.test.ts",
+        "polaris-reachability.test.ts",
+        "proposal-disclosure.test.ts"
+      ]
+    }
+  ],
+  "mutants": {
+    "subject": "apps/three-surface-poc/src/test-model-fixture.ts",
+    "test": "apps/three-surface-poc/src/test-model-fixture.test.ts",
+    "commit": "c739199f (post-rebase)",
+    "records": [
+      {
+        "id": "M1-no-freeze",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "  return Object.freeze(value);",
+        "new": "  return value;",
+        "exitCode": 1,
+        "testsLine": "Tests  2 failed (2)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M2-shallow-freeze",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "  for (const key of Reflect.ownKeys(value)) frozenFixture((value as Record<PropertyKey, unknown>)[key]);\n",
+        "new": "",
+        "exitCode": 1,
+        "testsLine": "Tests  2 failed (2)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M3-build-every-prepare",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "    prepare: () => { models ??= frozenFixture(build(cleanups)); },",
+        "new": "    prepare: () => { models = frozenFixture(build(cleanups)); },",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 1 passed (2)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M4-shared-not-frozen",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "    prepare: () => { models ??= frozenFixture(build(cleanups)); },",
+        "new": "    prepare: () => { models ??= build(cleanups); },",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 1 passed (2)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M5-remove-keeps-repositories",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "      for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });\n",
+        "new": "",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 1 passed (2)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M6-get-before-prepare-allowed",
+        "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+        "old": "      if (models === undefined) throw new Error('shared fixture models used before prepare');\n      return models[name];",
+        "new": "      return (models ?? ({} as Readonly<Record<K, PocModel>>))[name];",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 1 passed (2)",
+        "outcome": "killed"
+      }
+    ]
+  }
+}
