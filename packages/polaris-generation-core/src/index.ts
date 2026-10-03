@@ -28,3 +28,5 @@ export { renderedDesignVerdict, renderedDesignSubjectDigest } from './rendered-d
 export type { RenderedDesignReview, RenderedDesignRelationship, RenderedDesignFinding, RenderedDesignRule, RenderedDesignVerdict, RelationshipJudgment, RelationshipSupport } from './rendered-design.js';
 export { discoverAndSelect, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
 export type { DiscoveryBudget, DiscoveryClaim, DiscoveryPorts, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
+export { DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, clarify, openQuestions } from './dossier-profile.js';
+export type { ClarificationInput, ClarificationQuestion, ClarificationRecord, OwnerAnswer } from './dossier-profile.js';

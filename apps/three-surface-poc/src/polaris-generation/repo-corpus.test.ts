@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { quotableGenerationSources, validateGenerationSources } from '@syzygy/polaris-generation-core';
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, quotableGenerationSources, validateGenerationSources } from '@syzygy/polaris-generation-core';
 
 import { main } from './repo-corpus-main.js';
 import { buildPipelineRequest, CorpusRefusal, globToRegExp, parseReaderConfig, readRepoCorpus, refusingAdmission, type CorpusAdmissionPort } from './repo-corpus.js';
@@ -112,6 +112,16 @@ describe('globs and config', () => {
     expect(() => parseReaderConfig(configText({ oversize: 'truncate' }))).toThrow('config-invalid: oversize');
     expect(() => parseReaderConfig(configText({ requestedAssets: [{ id: 'x' }] }))).toThrow();
     expect(() => parseReaderConfig(configText({ revision: 'main' }))).toThrow('invalid-pinned-commit');
+  });
+
+  it('takes the dossier questions and assets from the profile unless the config overrides them', () => {
+    const { readerQuestions: _q, requestedAssets: _a, ...bare } = JSON.parse(configText());
+    const dossier = parseReaderConfig(JSON.stringify({ ...bare, profile: 'dossier' }));
+    expect(dossier.readerQuestions).toEqual(DOSSIER_READER_QUESTIONS);
+    expect(dossier.requestedAssets).toEqual(DOSSIER_REQUESTED_ASSETS);
+    expect(parseReaderConfig(JSON.stringify({ ...bare, profile: 'dossier', readerQuestions: ['Own question?'] })).readerQuestions).toEqual(['Own question?']);
+    expect(() => parseReaderConfig(JSON.stringify(bare))).toThrow('config-invalid');
+    expect(() => parseReaderConfig(JSON.stringify({ ...bare, profile: 'other' }))).toThrow('config-invalid: profile');
   });
 
   it('builds a pipeline request carrying the config questions, assets and budget', async () => {
