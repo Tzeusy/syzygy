@@ -204,7 +204,7 @@ def run():
   txt=re.sub(r'\x1b\[[0-9;]*m','',r.stdout+r.stderr)
   m=re.search(r'Tests\s+(.*?)\((\d+)\)',txt)
   failed=int(re.search(r'(\d+) failed',m.group(1)).group(1)) if m and 'failed' in m.group(1) else 0
-  return r.returncode,failed,int(m.group(2)) if m else 0,sorted(set(re.findall(r'FAIL .*?> (.*)',txt)))
+  return r.returncode,failed,int(m.group(2)) if m else 0,sorted(set(re.findall(r'FAIL .*?> (.*)',txt)))  # every failed test, untruncated
 out=[]
 try:
   for f,mid,old,new in M:
@@ -223,7 +223,7 @@ try:
     killed=rc!=0 and failed>0
     rec={'file':f,'id':mid,'old':old,'new':new}
     if mid in PAIR: rec['alsoApplied']={'id':PAIR[mid],'file':byid[PAIR[mid]][0],'old':byid[PAIR[mid]][2],'new':byid[PAIR[mid]][3]}
-    rec.update({'outcome':'killed' if killed else 'survived','baselineGreen':True,'failedTests':failed,'totalTests':total,'killedBy':names[:6]})
+    rec.update({'outcome':'killed' if killed else 'survived','baselineGreen':True,'failedTests':failed,'totalTests':total,'killedBy':names})
     out.append(rec); restore()
     print(mid,'killed' if killed else 'SURVIVED',failed,names[:2],flush=True)
 finally:
