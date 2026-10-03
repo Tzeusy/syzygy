@@ -148,5 +148,29 @@ specification. It binds nothing until reviewed and acted on.
 
 ## Review
 
-Fresh-context review before any offering, per `REVIEW-BRIEF.md`. None has
-been run.
+Fresh-context review before any offering, per `REVIEW-BRIEF.md`. Three
+rounds have run: round 1 REVISE, round 2 REVISE, round 3 CONFIRM WITH
+EXCEPTIONS with seven notes (each raw's own `Verdict:` line is the verdict of
+record). Under the 2026-09-26 ruling the round-3 notes clear the specification
+bytes; they are dispositioned in `reviews/ROUND-3-DISPOSITIONS.md`.
+
+### Known limitations in the specification bytes
+
+Two round-3 notes live in the specification itself, which is the reviewed
+subject and is not edited after its clearance. You can sign as it stands, or
+ask for one more round that makes these two changes. Proposed wording is given
+for each.
+
+1. **Silent project input.** The scenario "Partly governed subject" says "the
+   project input records no evidence drawer", which a silent input also
+   satisfies, while the requirement's own text refuses or limits the run for a
+   silent input. Proposed wording: "the project input states that no evidence
+   drawer exists". Until then, an oracle writer reads the scenario as the case
+   where the input states the absence.
+2. **Hash algorithm in the anchor.** The requirement asks for the object
+   identifier "with its hash algorithm named", but the generator's source
+   record carries no algorithm field; the algorithm is recoverable only from
+   the identifier's length (40 or 64 hex characters). Proposed wording: "with
+   its hash algorithm named, derived from the identifier's length or carried
+   in the source record", with the record-home Unknown in `design.md` deciding
+   which.
