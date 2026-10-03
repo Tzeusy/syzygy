@@ -112,7 +112,13 @@ export function stopReasonLabel(reason: string): string {
 }
 
 interface Stop { readonly reason: string; readonly shown: string; readonly lastStage: string | null }
-interface View { readonly draft: ProviderDraft; readonly drafted: boolean; readonly review: unknown; readonly inventory: unknown; readonly stop: Stop | null; readonly notGenerated: readonly { id: string; kind: string }[] }
+interface View {
+  readonly draft: ProviderDraft; readonly drafted: boolean; readonly review: unknown; readonly inventory: unknown; readonly stop: Stop | null;
+  /** Sections a stopped run planned or requested but never drafted; each renders in place as a notice. */
+  readonly deferredSections: ReadonlySet<string>;
+  /** Requested assets the page carries nowhere else; listed under "Not generated". */
+  readonly notGenerated: readonly { id: string; kind: string }[];
+}
 
 const DRAFT_STAGES: readonly string[] = ['author', 'edit', 'repair'];
 const lastIndex = <T>(items: readonly T[], test: (item: T) => boolean): number => {
@@ -124,7 +130,7 @@ const lastIndex = <T>(items: readonly T[], test: (item: T) => boolean): number =
 function viewOf(input: DossierRenderInput): View {
   const result = input.result;
   if (result.status === 'awaiting-rendered-review') {
-    return { draft: validateDraftRecord(result.draft), drafted: true, review: result.review, inventory: result.inventory, stop: null, notGenerated: [] };
+    return { draft: validateDraftRecord(result.draft), drafted: true, review: result.review, inventory: result.inventory, stop: null, deferredSections: new Set(), notGenerated: [] };
   }
   if (result.status !== 'stopped' || !Array.isArray(result.artifacts)) throw new DossierRenderError('not-renderable');
   if (input.requestedAssets === undefined) throw new DossierRenderError('missing-requested-assets');
@@ -147,12 +153,10 @@ function viewOf(input: DossierRenderInput): View {
     draft = { title: 'Dossier draft (incomplete)', introduction: { id: 'introduction', text: '', sourceIds: [] },
       sections: sections.map(section => ({ ...section, paragraphs: [], disposition: { kind: 'unresolved', reason: '', references: [] } })), diagrams: [], deepDives: [], unresolved: [] };
   }
-  const present = new Set(draftAt >= 0 ? [...draft.sections, ...draft.diagrams, ...draft.deepDives].map(item => item.id) : []);
-  const notGenerated = [
-    ...(draftAt >= 0 ? [] : draft.sections.map(section => ({ id: section.id, kind: 'section' }))),
-    ...requested.filter(asset => !present.has(asset.id) && !(draftAt < 0 && asset.kind === 'section' && draft.sections.some(section => section.id === asset.id))).map(asset => ({ id: asset.id, kind: asset.kind })),
-  ];
-  return { draft, drafted: draftAt >= 0, review, inventory, stop, notGenerated };
+  const rendered = new Set([...draft.sections, ...draft.diagrams, ...draft.deepDives].map(item => item.id));
+  const deferredSections = new Set(draftAt >= 0 ? [] : draft.sections.map(section => section.id));
+  const notGenerated = requested.filter(asset => !rendered.has(asset.id)).map(asset => ({ id: asset.id, kind: asset.kind }));
+  return { draft, drafted: draftAt >= 0, review, inventory, stop, deferredSections, notGenerated };
 }
 
 export function renderDossier(input: DossierRenderInput): RenderedDossier {
@@ -227,10 +231,9 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const notGenerated = (id: string, kind: string): string => claim('aside', `not-generated:${id}`, 'unknown',
     `<strong>${escape(id)}</strong> (${escape(kind)}): not generated; the run stopped before it was written (${escape(stop!.shown)}). ${marking('unknown')}`)
     .replace('<aside ', `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="${escape(stop!.shown)}" `);
-  const generatedSection = new Set(view.notGenerated.filter(item => item.kind === 'section').map(item => item.id));
   const sections = draft.sections.map((section, index) => {
     const head = `<span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2>${escape(section.title)}</h2>`;
-    if (generatedSection.has(section.id)) return `<section id="section-${escape(section.id)}" data-reading-level="1" data-topics="">${head}${notGenerated(section.id, 'section')}</section>`;
+    if (view.deferredSections.has(section.id)) return `<section id="section-${escape(section.id)}" data-reading-level="1" data-topics="">${head}${notGenerated(section.id, 'section')}</section>`;
     if (section.disposition.kind !== 'produced') return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${notice(section.id, section.disposition)}</section>`;
     const figures = draft.diagrams.map((d, i) => d.sectionId === section.id ? diagram(from, d, i) : '').join('');
     const dives = draft.deepDives.filter(dive => dive.sectionId === section.id).map(dive => dive.disposition.kind === 'produced'
@@ -241,8 +244,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
     `<strong>Incomplete dossier.</strong> The run stopped (${escape(stop.shown)}) ${stop.lastStage === null ? 'before any stage completed' : `after the ${escape(stop.lastStage)} stage`}${view.drafted && view.review === null ? '; no fidelity review covers this draft, so every generated sentence is Unknown' : ''}. ${marking('unknown')}`)
     .replace('<aside ', `<aside class="run-stopped" data-stop-reason="${escape(stop.shown)}" `);
   const introduction = view.drafted ? paragraph(from, draft.introduction, 'p') : '';
-  const missing = view.notGenerated.filter(item => item.kind !== 'section' || !draft.sections.some(section => section.id === item.id));
-  const missingList = missing.length === 0 ? '' : `<section id="not-generated" data-reading-level="1" data-topics=""><h2>Not generated</h2>${missing.map(item => notGenerated(item.id, item.kind)).join('')}</section>`;
+  const missingList = view.notGenerated.length === 0 ? '' : `<section id="not-generated" data-reading-level="1" data-topics=""><h2>Not generated</h2>${view.notGenerated.map(item => notGenerated(item.id, item.kind)).join('')}</section>`;
   add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${banner}${introduction}${unresolved}</header>${sections}${missingList}`);
 
   // --- deep dives
