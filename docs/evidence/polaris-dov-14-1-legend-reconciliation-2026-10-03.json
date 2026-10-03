@@ -1,0 +1,319 @@
+{
+ "bead": "syzygy-dov.14.1",
+ "date": "2026-10-03",
+ "subject": "P-81 M14 slices 3-4: one POLARIS_COPY source-identity legend sentence beside the sources table, and one catalog reconciliation line with Observed machine counts, Inferred sums and marker count, and an Unknown markers-minus-items remainder",
+ "subjectFiles": {
+  "apps/three-surface-poc/src/polaris-copy.ts": {
+   "sha256": "e78d29c58d52c06afcee389a68b8cef3b879702934bd2090dfbb676eddb1fe63"
+  },
+  "apps/three-surface-poc/src/polaris.ts": {
+   "sha256": "99e7dfab5e4469efa6fd9af4f3958aafd18ce94f67a22f7f9c15b677c3a1784f"
+  },
+  "apps/three-surface-poc/src/polaris-reconciliation.ts": {
+   "sha256": "e2392ed6d08f1dd9ba9ea441835630cd660c0fce869ce93e2f32390c4e76b623"
+  },
+  "apps/three-surface-poc/src/polaris-reconciliation.test.ts": {
+   "sha256": "449757ce575a0c22d53e0839d544879e216886096b0bc920eae16ed170e4b4d3"
+  },
+  "apps/three-surface-poc/src/polaris-parity-sweep.test.ts": {
+   "sha256": "f0ad254253c8cb9e4184bdc56ed988aaf982901632ebf00cd0a4e1261f2cbff6"
+  },
+  "docs/POLARIS-READING-LAYOUT.md": {
+   "sha256": "4338342fe1c7cad84ce7f480c91ca42f8cb4a9e5496edb1b48ca8413565423e4"
+  }
+ },
+ "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-81 (Q3, Q4) under .syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md. No PocModel, machine answer, schema, route, read, egress or governed change.",
+ "measurement": {
+  "method": "Committed clean tree; npm run build:poc; private daemon (apps/three-surface-poc/dist/main.js --port 0, scratch --state-dir) against the registered Butlers checkout; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net. Base measured the same way at the base commit in the same worktree.",
+  "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+  "base": {
+   "commit": "33f5cf45c938a3055876cf84a7b9521ef9567d11",
+   "polaris": {
+    "direct": {
+     "bytes": 1478811,
+     "sha256": "0424fca3794bc7f9362187910a487b8ce575874fd8540d7d52265c902dc5e3e5"
+    },
+    "tailnet": {
+     "bytes": 1484916,
+     "sha256": "8d0cd24df0180cf60a1bac9e67505433b78d066476cb39ecc1c4bf1496e9d515"
+    }
+   }
+  },
+  "slice": {
+   "commit": "c0913c3b",
+   "polaris": {
+    "direct": {
+     "bytes": 1482755,
+     "sha256": "caf9b158552b10df467befb879c3fc646451a66fde01d5554e83aa1186eca283"
+    },
+    "tailnet": {
+     "bytes": 1488860,
+     "sha256": "ef7b03ff1469da3f16c2452d64e93cb52263f2bc0ba43a8b0ef80d9383027cc5"
+    }
+   }
+  },
+  "polarisDeltaBytes": {
+   "direct": 3944,
+   "tailnet": 3944
+  },
+  "ceiling": 2097152,
+  "ceilingMargin": {
+   "direct": 614397,
+   "tailnet": 608292
+  },
+  "liveReconciliation": {
+   "linesRendered": 1,
+   "figures": [
+    "sources|Observed|285",
+    "items|Observed|392",
+    "class:project-account-section|Observed|6",
+    "class:principle|Observed|7",
+    "class:success-criterion|Observed|13",
+    "class:catalog-entry|Observed|64",
+    "class:design-contract|Observed|37",
+    "class:baseline-spec|Observed|195",
+    "class:topology-component|Observed|57",
+    "class:craft-policy|Observed|7",
+    "class:roster-identity|Observed|6",
+    "sum:nine-classes|Inferred|392",
+    "sum:eight-classes|Inferred|386",
+    "markers|Inferred|386",
+    "remainder|Unknown|−6"
+   ],
+   "markerOccurrencesRegex": "\\sdata-polaris-item=\"",
+   "markerOccurrences": 386,
+   "distinctMarkerIds": 386,
+   "legendIds": 1,
+   "legendDescribedBy": 1,
+   "placeholdersLeft": 0,
+   "note": "[Observed] Live Butlers renders 386 markers over 392 items, remainder -6 (the six project-account items render as account sections, not item markers). The funnel 417/415 capture is reproduced as a synthetic fixture in polaris-reconciliation.test.ts."
+  }
+ },
+ "mutants": {
+  "method": "One exact string replacement per mutant (old occurs once), targeted vitest run, file restored; ran at commit c0913c3b with a clean tree before and after.",
+  "total": 14,
+  "killed": 14,
+  "resultsNote": "Per-file results recovered from the runner log, which truncated each line at 400 characters; the parity-sweep result is missing for the four mutants whose log line was cut (sum-label-observed, eight-sum-wrong, remainder-label-inferred, marker-is-items). Each of the 14 is killed by polaris-reconciliation.test.ts alone.",
+  "runs": [
+   {
+    "id": "stale-legend-rule",
+    "mutation": "legend drops a rule",
+    "file": "apps/three-surface-poc/src/polaris-copy.ts",
+    "old": "(root-index, pillar-index, pillar-named-file, baseline-spec-tree or roster-tree)",
+    "new": "(root-index, pillar-index, pillar-named-file or baseline-spec-tree)",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "stale-legend-outcome",
+    "mutation": "legend drops an outcome",
+    "file": "apps/three-surface-poc/src/polaris-copy.ts",
+    "old": "Outcome is body-classified, path-only, excluded or unavailable;",
+    "new": "Outcome is body-classified, path-only or excluded;",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "legend-no-permission-clause",
+    "mutation": "legend drops the not-permission clause",
+    "file": "apps/three-surface-poc/src/polaris-copy.ts",
+    "old": "it is neither permission to read those bytes nor a verification of them.",
+    "new": "it identifies those bytes.",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "sixth-rule",
+    "mutation": "a sixth source rule appears",
+    "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+    "old": "'baseline-spec-tree', 'roster-tree'] as const;",
+    "new": "'baseline-spec-tree', 'roster-tree', 'workflow-tree'] as const;",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "legend-not-described",
+    "mutation": "table region loses aria-describedby",
+    "file": "apps/three-surface-poc/src/polaris.ts",
+    "old": "' data-source-index aria-describedby=\"polaris-source-legend\"'",
+    "new": "' data-source-index'",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "class-label-inferred",
+    "mutation": "class counts labelled Inferred",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "figure(`class:${entry.cls}`, 'Observed'",
+    "new": "figure(`class:${entry.cls}`, 'Inferred'",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)",
+     "polaris-parity-sweep.test.ts": "24 failed | 24 passed (48)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "sum-label-observed",
+    "mutation": "nine-class sum labelled Observed",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "figure('sum:nine-classes', 'Inferred'",
+    "new": "figure('sum:nine-classes', 'Observed'",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "3 failed | 9 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "eight-sum-wrong",
+    "mutation": "eight-class sum keeps the account class",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "classes.filter((entry) => entry.cls !== 'project-account-section').reduce",
+    "new": "classes.reduce",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "2 failed | 10 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "remainder-label-inferred",
+    "mutation": "remainder labelled Inferred",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "figure('remainder', 'Unknown'",
+    "new": "figure('remainder', 'Inferred'",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "3 failed | 9 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "predicate-distinct",
+    "mutation": "markers counted per distinct id",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "return [...html.matchAll(ITEM_MARKER)].length;",
+    "new": "return new Set([...html.matchAll(/\\sdata-polaris-item=\"([^\"]*)\"/g)].map((m) => m[1])).size;",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "2 failed | 10 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "marker-is-items",
+    "mutation": "marker count taken from the model",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "    markers,\n    remainder: markers - shape.items.length,",
+    "new": "    markers: shape.items.length,\n    remainder: 0,",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "4 failed | 8 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "placeholder-truncated-accepted",
+    "mutation": "truncated placeholder opening not checked",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "if (exact !== 1 || openings !== 1)",
+    "new": "if (exact !== 1)",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "placeholder-repeat-accepted",
+    "mutation": "repeated placeholder accepted",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "if (exact !== 1 || openings !== 1)",
+    "new": "if (exact < 1)",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)"
+    },
+    "outcome": "killed"
+   },
+   {
+    "id": "unobserved-zero",
+    "mutation": "unobserved renders a zero",
+    "file": "apps/three-surface-poc/src/polaris-reconciliation.ts",
+    "old": "${figure('reconciliation', 'Unknown', copyText('label.unknown'))}",
+    "new": "${figure('reconciliation', 'Unknown', '0')}",
+    "commit": "c0913c3b",
+    "testsRun": [
+     "polaris-reconciliation.test.ts",
+     "polaris-parity-sweep.test.ts"
+    ],
+    "results": {
+     "polaris-reconciliation.test.ts": "1 failed | 11 passed (12)",
+     "polaris-parity-sweep.test.ts": "18 failed | 30 passed (48)"
+    },
+    "outcome": "killed"
+   }
+  ]
+ },
+ "notRun": "An added anchor kind or rendered outcome is guarded at typecheck by type-keyed Records in the test; that mutant was not executed."
+}
