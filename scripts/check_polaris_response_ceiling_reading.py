@@ -20,7 +20,8 @@ covers. This script checks, read-only:
      zlib, gzip and content-encoding leave the sweep and every other term
      stays in it. A decisions file anywhere under decisions/ closes the
      gate when one of its paragraphs names the direction (file name or
-     Decision ID) beside a form of "withdraw" or "narrow".
+     Decision ID) beside a form of "withdraw" or "narrow", or when it names
+     the direction anywhere and carries a labelled "Withdraws:" line.
   C4 the packet keeps its candidate banner, an open-questions section in
      which every question states a default, and no 64-hex digest;
   C5 every candidate patch under contracts/candidates/*/proposed/ that
@@ -37,10 +38,15 @@ the issued direction's own text:
     through an alias, a computed import specifier, a dependency other than
     the `compression` package, or a coding name split across lines is not
     seen;
-  - a withdrawal or narrowing whose naming words and withdrawing words sit
-    in different paragraphs (a blank line or a new list item apart) does
-    not close the gate, and one that names
-    neither the file nor the Decision ID is not seen at all;
+  - unlabelled prose whose naming words and withdrawing words sit in
+    different paragraphs (a blank line or a new list item apart) does not
+    close the gate, and one that names neither the file nor the Decision ID
+    is not seen at all. A record that names the file or Decision ID anywhere
+    and carries a labelled "Withdraws:" or "Narrows:" line (also
+    "Withdrawn:", "Narrowed:") anywhere closes it, whatever paragraph the
+    label sits in (syzygy-xohp); the label is not checked against what it
+    withdraws, so an unrelated labelled line in a record naming the
+    direction also closes it (fail-closed);
   - any withdrawal or narrowing word closes the gate, whatever it narrows
     (fail-closed);
   - a direction permitting a coding other than gzip opens nothing until
@@ -128,6 +134,9 @@ PERMIT_MARKERS: tuple[tuple[str, str], ...] = (
 WITHDRAW = re.compile(r"withdr[ae]w|narrow", re.I)
 # A blank line, or the start of a list item, opens a new paragraph.
 PARAGRAPH = re.compile(r"\n[ \t>]*\n|\n(?=[ \t>]*(?:\d+\.|[-*+])[ \t])")
+# A labelled withdrawal line is Decision-ID-bound by the record naming the
+# direction anywhere, not by sharing a paragraph with the name.
+WITHDRAW_LABEL = re.compile(r"^[ \t>*_-]*(?:\d+\.[ \t]*)?\**(?:withdraws|withdrawn|narrows|narrowed)\**[ \t]*:", re.I | re.M)
 DECISION_ID = re.compile(r"Decision ID:\s*`([^`]+)`")
 HEX64 = re.compile(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])")
 
@@ -239,7 +248,10 @@ def direction_permits(root: str) -> frozenset[str]:
             rel = os.path.relpath(os.path.join(dirpath, entry), root).replace(os.sep, "/")
             if rel in (DIRECTION, PACKET) or not entry.endswith(".md"):
                 continue
-            for para in PARAGRAPH.split(read(root, rel) or ""):
+            doc = read(root, rel) or ""
+            if any(n in doc for n in names) and WITHDRAW_LABEL.search(doc):
+                return frozenset()
+            for para in PARAGRAPH.split(doc):
                 if any(n in para for n in names) and WITHDRAW.search(para):
                     return frozenset()
     return permitted
@@ -524,6 +536,9 @@ def selftest() -> int:
         ("C3 M6 the name and a withdrawal word in different paragraphs do not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-SHAPE.md", "Recorded in the shape of `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md`.\n\n6. **Withdrawal.** A later direction may narrow or withdraw this one; withdrawal defeats grant.\n")), True),
         ("C3 M6 the name and a withdrawal word in sibling list items do not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-ITEMS.md", "1. A slope target is withdrawn.\n2. Compression (see `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md`) changes bytes sent.\n")), True),
         ("C3 a list item naming the direction beside a withdrawal closes the gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-LIST.md", "1. Unrelated.\n2. `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md` is withdrawn.\n")), False),
+        ("C3 xohp a labelled withdrawal in another paragraph than the name closes the gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-LABEL.md", "# Record\n\nSubject: `SELFTEST-DIR-1`.\n\nRationale: the slope target moved.\n\nWithdraws: this direction.\n")), False),
+        ("C3 xohp a labelled withdrawal in a record that does not name the direction does not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-OTHER.md", "# Other\n\nSubject: `OTHER-DIR-9`.\n\nWithdraws: that one.\n")), True),
+        ("C3 xohp unlabelled withdrawal prose in another paragraph than the name does not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-PROSE.md", "Subject: `SELFTEST-DIR-1`.\n\nThe slope target was withdrawn.\n")), True),
         ("C3 an empty direction file does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, "")), False),
         ("C3 a direction without a Q1 reading does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("before any HTTP content coding is applied", "somehow"))), False),
         ("C3 a direction without WHAT MAY SHIP does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("WHAT MAY SHIP.", "SHIPPING."))), False),
