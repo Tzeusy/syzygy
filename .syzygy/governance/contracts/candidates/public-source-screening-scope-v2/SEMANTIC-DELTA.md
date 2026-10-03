@@ -57,6 +57,8 @@ and its check fails if they differ from the policy bytes. They are the only
 statement of what is sendable and what is withheld.
 
 <!-- BEGIN GENERATED: lists -->
+**In one sentence:** the rule withholds policy and governance text by name only, using the listed words; such text under any other name is sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.
+
 **Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):
 
 - Root-level files named README, CHANGELOG, CHANGES, RELEASE-NOTES, RELEASE_NOTES, RELEASENOTES, CONTRIBUTING, LICENSE, LICENCE, COPYING, NOTICE, NOTICES, NEWS, HISTORY, AUTHORS, FAQ (any letter case; an optional prefix of two ASCII digits and a hyphen, so 00-RELEASENOTES counts; no extension or one of .md, .rst, .txt).
@@ -67,7 +69,7 @@ statement of what is sendable and what is withheld.
 **Stays withheld** (excluded from reading and from egress, hash-not-body):
 
 - Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.
-- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct; and, unless the variant adds them, architecture, manifesto. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
+- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles; and, unless the variant adds them, architecture, architectures, manifesto, manifestos. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
 - Under a docs or doc folder, .txt files named cmakelists.txt, robots.txt or starting requirements.
 - READMEs and the other root names when they sit below the root outside docs or doc (vendored libraries carry their own).
 - Any other path: it is not named by the rule, so it is indeterminate and withheld.

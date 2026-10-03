@@ -1,9 +1,10 @@
-# Review brief — public-source screening scope, version 2 (round 3)
+# Review brief — public-source screening scope, version 2 (round 4, narrow delta)
 
 > **Candidate — binds nothing.** Not a review; carries no verdict. Rounds 1
-> and 2 returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`,
-> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md`); the repairs are in
-> `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md`.
+> to 3 returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`,
+> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md`,
+> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-3-RAW.md`); the repairs are in
+> `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md` and `ROUND-3-DISPOSITIONS.md`.
 
 ## What the reviewer is given
 
@@ -71,6 +72,14 @@ own `activeContentClassification`, `rawBodyHandling` and
     the variant-named `policyVersion` (F2, F3); the literal-rule note for a
     TypeScript consumer (F4).
 
+11. **Do the round-3 repairs hold (narrow delta)?** Finding 1 blocking, 2 to 5
+    notes; review only the diff from the round-3 reviewed commit. The scope
+    sentence is inside the generated block and checked in both files (F1);
+    `doctrine`, `principle(s)` and the opt-in plurals are in the right
+    denylists (F2, F3); Q2 and Q4 carry defaults, the names are a fact, and Q1
+    states the recorder requirement as intent (F4); Q3 names the mapped side
+    (F5).
+
 ## Out of scope
 
 Whether to perform the act; the read-gate re-pin (see the packet's order section); the
@@ -79,7 +88,7 @@ RFC-0005 amendment itself.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-3-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-4-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce:** the first
 four non-blank lines are the title and exactly
 

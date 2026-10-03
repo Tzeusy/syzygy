@@ -9,8 +9,8 @@
 The version-1 scope lets the generator read a public repository's source code
 and nothing else. A dossier needs the project's own explanation of itself, so
 this version lets it read the README, changelog, contribution and licence
-files, and the guides under a top-level docs folder. It maps no policy,
-governance or decision text.
+files, and the guides under a top-level docs folder. What it withholds, and
+what that leaves sendable, is stated once, in the generated block below.
 
 ## What becomes sendable, and what stays withheld
 
@@ -18,6 +18,8 @@ The lists below are generated from the rule's own constants by the package
 builder, and its check fails if they differ from the policy bytes.
 
 <!-- BEGIN GENERATED: lists -->
+**In one sentence:** the rule withholds policy and governance text by name only, using the listed words; such text under any other name is sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.
+
 **Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):
 
 - Root-level files named README, CHANGELOG, CHANGES, RELEASE-NOTES, RELEASE_NOTES, RELEASENOTES, CONTRIBUTING, LICENSE, LICENCE, COPYING, NOTICE, NOTICES, NEWS, HISTORY, AUTHORS, FAQ (any letter case; an optional prefix of two ASCII digits and a hyphen, so 00-RELEASENOTES counts; no extension or one of .md, .rst, .txt).
@@ -28,7 +30,7 @@ builder, and its check fails if they differ from the policy bytes.
 **Stays withheld** (excluded from reading and from egress, hash-not-body):
 
 - Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.
-- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct; and, unless the variant adds them, architecture, manifesto. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
+- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles; and, unless the variant adds them, architecture, architectures, manifesto, manifestos. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
 - Under a docs or doc folder, .txt files named cmakelists.txt, robots.txt or starting requirements.
 - READMEs and the other root names when they sit below the root outside docs or doc (vendored libraries carry their own).
 - Any other path: it is not named by the rule, so it is indeterminate and withheld.
@@ -76,10 +78,12 @@ explanation, but RFC5-14 says that for an architecture overview the declared
 policy decides, and it may be design authority. *Recommended:* none, unless you
 have seen the file; or manifesto if you accept the risk that it is doctrine.
 Signing a variant is the whole decision: no regeneration or review follows, and
-only one variant act may ever be recorded for this manifest.
+the recorder, when written, must refuse a second variant act over this
+manifest unless it is a declared superseding version (the bytes do not enforce
+this).
 
-**Q2. Sign the chosen variant?** *Recommended:* yes, after a confirming review,
-once the order above is met.
+**Q2. Sign the chosen variant? Default: yes, after a confirming review,** once
+the order above is met.
 
 **Q3. Policy and governance text, withheld by name. Default: withheld.** The
 rule cannot read a file's content, so it withholds by name: root files named
@@ -88,19 +92,21 @@ directory or file name contains, as a whole word, decision, specification,
 design, governance, policy, security, conduct, adr or rfc (or the MANIFESTO and
 ARCHITECTURE words unless you pick them). The lists above show the exact words.
 The cost runs both ways: a tutorial named "design-patterns" is withheld, and a
-governance document with an unremarkable name under docs (a protocol write-up
-called "wire-format", say) is sendable. Withholding design is this policy's
+governance document whose name carries none of the words is sendable: an
+unremarkable name (a protocol write-up called "wire-format"), a name written
+without a separator (SecurityPolicy, CodeOfConduct, ADR0001), or one split by a
+character outside the separator list ("spec(v2)"). Withholding design is this policy's
 choice (RFC5-14 names doctrine, spec, decision and policy text, not design).
 Build and tooling files under docs (CMakeLists.txt, requirements*.txt,
 robots.txt) are withheld because they are not prose. *Recommended:* accept; the
 alternative is a separate closed rule for `governance-text` with its own review.
 
-**Q4. Nested READMEs.** Only the root README is mapped, because a README below
+**Q4. Nested READMEs. Default: root README only.** Only the root README is mapped, because a README below
 the root outside docs is often a vendored library's. *Recommended:* accept; for
 a project that bundles libraries, those READMEs stay withheld, which is the
 safer side.
 
-**Q5. The names themselves.** The names, folders and denylists in the rule are a
+**The names themselves (fact, not a question).** The names, folders and denylists in the rule are a
 proposal [Inferred] from the class text; a file outside them is withheld, never
 guessed. Adding a name later is a further version.
 
