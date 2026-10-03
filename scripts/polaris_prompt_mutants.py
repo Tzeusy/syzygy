@@ -15,9 +15,7 @@ P=C+'prompts.ts'
 D=C+'provider-draft.ts'
 V=C+'discovery-provider.ts'
 I=C+'index.ts'
-Q=C+'quotations.ts'
-DV=C+'dossier-validation.ts'
-TESTS=[C+'dossier-prompts.test.ts',C+'prompts.test.ts',C+'discovery-provider.test.ts',C+'provider-draft.test.ts',C+'quotations.test.ts']
+TESTS=[C+'dossier-prompts.test.ts',C+'prompts.test.ts',C+'discovery-provider.test.ts',C+'provider-draft.test.ts']
 M=[
  # Dossier rules and guidance (instruction bytes).
  (P,'rule-7-unnumbered',"\n7. Thin evidence stays Unknown. Where","\nThin evidence. Where"),
@@ -117,37 +115,7 @@ M=[
  (P,'map-version-unbumped',"'discovery-map': 'polaris-discovery-map-v2'","'discovery-map': 'polaris-discovery-map-v1'"),
  (P,'reduce-version-unbumped',"'discovery-reduce': 'polaris-discovery-reduce-v2' }","'discovery-reduce': 'polaris-discovery-reduce-v1' }"),
  (P,'discovery-instructions-swapped',"{ 'discovery-map': mapInstructions, 'discovery-reduce': reduceInstructions }","{ 'discovery-map': reduceInstructions, 'discovery-reduce': mapInstructions }"),
- # The quotation check in code.
- (Q,'q-lead-changed',"QUOTATION_LEAD = 'The project states: \"';","QUOTATION_LEAD = 'The maintainers state: \"';"),
- (Q,'q-link-kept',"    .replace(/(?<!!)\\[([^\\]]*)\\]\\([^)\\s]*(?:\\s+\"[^\"]*\")?\\)/gu, '$1')\n",""),
- (Q,'q-image-unguarded',"(?<!!)\\[([^","\\[([^"),
- (Q,'q-strong-kept',"    .replace(/(\\*\\*|__)(?=\\S)([\\s\\S]*?\\S)\\1/gu, '$2')\n",""),
- (Q,'q-star-kept',"    .replace(/(?<![\\p{L}\\p{N}*])\\*(?=\\S)([\\s\\S]*?\\S)\\*(?![\\p{L}\\p{N}*])/gu, '$1')\n",""),
- (Q,'q-star-unguarded',"/(?<![\\p{L}\\p{N}*])\\*(?=\\S)([\\s\\S]*?\\S)\\*(?![\\p{L}\\p{N}*])/gu","/\\*(?=\\S)([\\s\\S]*?\\S)\\*/gu"),
- (Q,'q-underscore-kept',"    .replace(/(?<![\\p{L}\\p{N}_])_(?=\\S)([\\s\\S]*?\\S)_(?![\\p{L}\\p{N}_])/gu, '$1')\n",""),
- (Q,'q-underscore-unguarded',"/(?<![\\p{L}\\p{N}_])_(?=\\S)([\\s\\S]*?\\S)_(?![\\p{L}\\p{N}_])/gu","/_(?=\\S)([\\s\\S]*?\\S)_/gu"),
- (Q,'q-whitespace-kept',".replace(/\\s+/gu, ' ')",".replace(/ +/gu, ' ')"),
- (Q,'q-trim-dropped',"\n    .trim();",";"),
- (Q,'q-source-unnormalized',"const sources = sourceTexts.map(normalizeQuotation);","const sources = sourceTexts;"),
- (Q,'q-quote-unnormalized',"const quoted = normalizeQuotation(text.slice(start, end));","const quoted = text.slice(start, end);"),
- (Q,'q-empty-allowed',"quoted.length === 0 || ",""),
- (Q,'q-first-close-only',"const end = text.lastIndexOf('\"', (next < 0 ? text.length : next) - 1);","const end = text.indexOf('\"', start);"),
- (Q,'q-next-lead-ignored',"(next < 0 ? text.length : next) - 1","text.length - 1"),
- (Q,'q-unterminated-allowed',"if (end < start) return false;","if (end < start) return true;"),
- (Q,'q-sources-joined',"sources.some(source => source.includes(quoted))","sources.join(' ').includes(quoted)"),
- (Q,'q-first-quotation-only',"    at = next;\n","    at = -1;\n"),
- (DV,'dv-validate-skipped',"const validated = validateStage(stage, value, context);","const validated = value;"),
- (DV,'dv-children-skipped',"blocks.flatMap(block => [block, ...block.children])","blocks"),
- (DV,'dv-intro-skipped',"[draft.introduction, ...draft.sections","[...draft.sections"),
- (DV,'dv-sections-skipped',"...draft.sections.flatMap(section => tree(section.paragraphs)), ",""),
- (DV,'dv-deep-dives-skipped',", ...draft.deepDives.flatMap(dive => tree(dive.paragraphs))",""),
- (DV,'dv-inventory-skipped',"stage === 'inventory' ? (validated","stage === ('none' as GenerationStage) ? (validated"),
- (DV,'dv-edit-skipped',"stage === 'author' || stage === 'edit' || stage === 'repair'","stage === 'author' || stage === 'repair'"),
- (DV,'dv-repair-skipped',"stage === 'author' || stage === 'edit' || stage === 'repair'","stage === 'author' || stage === 'edit'"),
- (DV,'dv-fidelity-skipped',"stage === 'fidelity' ? draftClaims(context.draft as ProviderDraft) : []","[]"),
- (DV,'dv-uncited-sources',"claim.sourceIds.map(id => texts.get(id) ?? '')","[...texts.values()]"),
- (DV,'dv-throw-swallowed',"throw new Error('unverified-quotation');","return validated;"),
- (I,'dv-index-export-dropped',"export { validateDossierStage } from './dossier-validation.js';\n",""),
+ # The quotation check in code lives in quote-fidelity.ts (single checker); its mutants are in docs/evidence/quote-fidelity-mutants-2026-10-04.json.
  # Schemas and reply validation.
  (D,'reduce-schema-version',"'discovery-map': 'v1', 'discovery-reduce': 'v1' };","'discovery-map': 'v1', 'discovery-reduce': 'v2' };"),
  (D,'schema-map-blob-unpatterned',"  blobId: handle, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },","  blobId: text, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },"),

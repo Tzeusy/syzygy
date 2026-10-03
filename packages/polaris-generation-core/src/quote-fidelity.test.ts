@@ -219,3 +219,34 @@ describe('a quotation after the lead-in', () => {
     expect(checkBlockQuotes(block(`He wrote "bogus" first. ${QUOTE_LEAD_IN} "in-memory cache"`, 'src-readme'), SOURCES).map(f => f.quote)).toEqual(['bogus']);
   });
 });
+
+describe('the cases the retired quotations.ts held, now enforced by this checker', () => {
+  const SRC = sourceTextById(files([['src-brindle', 'Brindle is **fast**.\nIt reads [the content directory](docs/content.md) and calls it "the tree".']]));
+  const quote = (text: string): string => `The project states: "${text}"`;
+  const ok = (text: string, ...ids: string[]): boolean => checkBlockQuotes(block(text, ...(ids.length === 0 ? ['src-brindle'] : ids)), SRC).length === 0;
+  it.each([
+    ['an exact quotation', quote('Brindle is **fast**.')],
+    ['a quotation across the source line break', quote('Brindle is fast. It reads the content directory')],
+    ['a quotation with the link syntax kept', quote('It reads [the content directory](docs/content.md)')],
+    ['a quotation that itself contains double quotes', quote('and calls it "the tree".')],
+    ['two quotations in one text', `${quote('Brindle is fast.')} Also, ${quote('It reads the content directory')}`],
+    ['text with no quotation', 'Brindle reads the content directory.'],
+  ])('accepts %s', (_name, text) => { expect(ok(text)).toBe(true); });
+  it.each([
+    ['a changed word', quote('Brindle is quick.')],
+    ['a changed case', quote('brindle is fast.')],
+    ['dropped punctuation', quote('Brindle is fast It reads')],
+    ['an added word', quote('Brindle is very fast.')],
+    ['an empty quotation', quote('')],
+    ['an unterminated quotation', 'The project states: "Brindle is fast.'],
+    ['a second quotation that does not match', `${quote('Brindle is fast.')} Also, ${quote('It writes the tree.')}`],
+    ['a quotation spliced from two places', quote('Brindle is fast. It calls it "the tree".')],
+    ['a matching opening with an unverified tail after an inner quote', quote('It reads the content directory and calls it "the tree" and "the root".')],
+    ['a quotation followed by prose that contains a double quote', `${quote('Brindle is fast.')} Its "speed" is not quantified.`],
+  ])('refuses %s', (_name, text) => { expect(ok(text)).toBe(false); });
+  it('matches within one source, never across two', () => {
+    const two = sourceTextById(files([['one', 'one'], ['two', 'two']]));
+    expect(checkBlockQuotes(block(quote('one two'), 'one', 'two'), two).map(f => f.kind)).toEqual(['quote-not-in-cited-sources']);
+    expect(checkBlockQuotes(block(quote('two'), 'one', 'two'), two)).toEqual([]);
+  });
+});

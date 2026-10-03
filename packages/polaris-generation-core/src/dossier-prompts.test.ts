@@ -2,8 +2,11 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
-import { validateDossierStage } from './dossier-validation.js';
-import { QUOTATION_LEAD, quotationsMatch } from './quotations.js';
+import { QUOTE_LEAD_IN, checkBlockQuotes, checkDraftQuotes } from './quote-fidelity.js';
+
+const QUOTATION_LEAD = `${QUOTE_LEAD_IN} "`;
+const quotationsMatch = (text: string, texts: readonly string[]): boolean =>
+  checkBlockQuotes({ id: 'claim', text, sourceIds: texts.map((_, index) => `s${index}`) }, new Map(texts.map((body, index) => [`s${index}`, body]))).length === 0;
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
@@ -147,7 +150,7 @@ describe('dossier stage prompts', () => {
 describe('dossier stage illustrations pass the stage validators', () => {
   it.each(recipes)('validates the %s illustration', (stage) => {
     expect(validateStage(stage, illustration(stage), context())).toEqual(illustration(stage));
-    expect(validateDossierStage(stage, illustration(stage), context())).toEqual(illustration(stage));
+    if (stage === 'author' || stage === 'edit' || stage === 'repair') expect(checkDraftQuotes(illustration(stage), new Map(DOSSIER_ILLUSTRATION_SOURCES.map(source => [source.sourceId, source.text])))).toEqual([]);
   });
 
   it('shares one draft illustration across author, edit and repair', () => {
