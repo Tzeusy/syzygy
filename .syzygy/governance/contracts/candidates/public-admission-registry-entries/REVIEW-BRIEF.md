@@ -1,8 +1,8 @@
-# Review brief — public-admission registry entries (round 3)
+# Review brief — public-admission registry entries (round 4)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
 > is given and what they decide. It is not a review and carries no verdict.
-> Rounds 1 and 2 returned REVISE; this is the round-3 brief over the repaired bytes.
+> Rounds 1 to 3 returned REVISE; this is the round-4 brief over the repaired bytes. Under the stopping rule, a further blocking or revise finding goes to the owner and no round 5 runs.
 
 ## What the reviewer is given, and nothing else
 
@@ -35,6 +35,22 @@ registration in `scripts/check_governance.py` (`PUBLIC_REGISTRY_DIR`, `PUBLIC_RE
 - `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` and
   `decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md` (Ceremony).
 - `packages/polaris-generation-core/src/pipeline.ts` (`PipelinePorts`).
+
+## Round 3 and the repair
+
+The round-3 raw is `reviews/R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-3-RAW.md`
+(REVISE: findings 1 and 2 revise; 3 to 6 notes). Check each repair:
+
+- F1: `requestBytes.headers` carries each header as a pinned literal, a closed
+  shape or a value rule, plus a closed name set; no open transport class. The
+  builder compares the table with its own copy.
+- F2: provenance is one commit and three blobs, each re-derivable with
+  `git rev-parse <commit>:<path>`; the builder re-checks them when the commit
+  is present locally. The inline thinking text matches that version (off).
+- F3: the Observed label covers only runtime additions; the pins are [Inferred].
+- F4, F5: O4 names the pinned fields and the strip option; stale sentences fixed.
+- F6: the selftest checks values (headers, model, effort, thinking, ceiling,
+  appended acceptance text, provenance pairs).
 
 ## Round 2 and the repair
 
@@ -133,7 +149,7 @@ Each is a yes/no question with the evidence that settles it.
 ## Recording
 
 Store the raw output verbatim in this package's `reviews/` directory as
-`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-3-RAW.md` (a re-issue is a further
+`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-4-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
 first four non-blank lines must be the title and exactly:
 

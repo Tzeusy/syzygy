@@ -73,10 +73,15 @@ run that does not start.
 endpoint] The pinned runtime (SDK 0.3.288, CLI 2.1.288) adds a fixed system
 prefix, an empty system message, a per-run-directory device and session id,
 platform headers naming the OS, CPU architecture and Node version, and
-sometimes a body-less HEAD probe. The entry lists these by reference to
-`PROVIDER-EGRESS-BYTES.md` (PR #258) and accepts the adapter only when
+sometimes a body-less HEAD probe (which the cited gate answers locally). The
+entry carries every one of those bytes inline, with each header value as a
+literal or a closed shape, and accepts the adapter only when the
 generator-built parts match byte for byte and nothing falls outside the lists.
-*Recommended:* accept the listed envelope for this route. Accepting it also needs a version of the egress record whose Conditions no longer say the route "adds no context of its own" and shows "nothing else" than the generator's parts; otherwise the two signed records contradict each other. The entry pins model `claude-opus-5-5`, no tools, effort `high` and a max_tokens ceiling (an [Inferred] proposal of 64000, the owner's choice, to be checked against the first requests run) as bytes it lists, and carries the runtime-fixed byte list inline. If the owner will not
+`PROVIDER-EGRESS-BYTES.md` (PR #258) is cited as provenance, by commit and
+blob. The cited gate can also strip the three machine-identifying headers
+(OS, CPU architecture, Node version); that is off by default and the entry
+assumes no answer: whether the egress record requires stripping is an owner choice.
+*Recommended:* accept the listed envelope for this route. Accepting it also needs a version of the egress record whose Conditions no longer say the route "adds no context of its own" and shows "nothing else" than the generator's parts; otherwise the two signed records contradict each other. The entry pins model `claude-opus-5-5`, no tools, effort `high` and a max_tokens ceiling (an [Inferred] proposal of 64000, the owner's choice, to be checked against the first requests run) as bytes it lists, and carries the runtime-fixed byte list inline. The further egress record version must admit those pinned fields (`model`, `tools`, `max_tokens`, effort and thinking off) as well as the runtime-fixed context, because the record refuses "a field outside the table" on either route, and whether its phrase "fixed by the runtime" covers values the entry pins is a reading, not settled. If the owner will not
 send those bytes, the answer is a different route (PR #264), which replaces
 this entry under RFC4-1.
 
