@@ -152,7 +152,7 @@ describe('synthetic secrets of each detector class', () => {
       .filter(row => !row.endsWith('\tsrc/ok.c')).map(row => row.split(' ')[2]!.split('\t')[0]!);
     expect(ids).toHaveLength(3);
     const corpus = await readScreenedRepoCorpus(only.root, cfg(revision), { admission: allow, policyAct: goodPort });
-    expect(corpus.count).toMatchObject({ listed: 4, unquotablePath: 3, selected: 1, secretDetectorMatches: 3, sourceRows: 1 });
+    expect(corpus.count).toMatchObject({ listed: 4, unquotablePath: 3, selected: 1, unquotablePathSecretMatches: 3, secretDetectorMatches: 0, sourceRows: 1 });
     expect(corpus.unrepresentable).toEqual([]);
     const serialized = JSON.stringify(corpus);
     expect(serialized).not.toContain(DIR_TOKEN);
