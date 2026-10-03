@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { GENERATION_EXCLUSION_REASONS, generationSourcesForBody, segmentBody, generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationExclusionReason, type GenerationSource } from './generation-source.js';
+import { GENERATION_EXCLUSION_REASONS, excludedSourceId, keyedDigest, newGenerationRunKey, generationSourcesForBody, segmentBody, generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationExclusionReason, type GenerationSource } from './generation-source.js';
 
 const body = 'A supported purpose.\n';
 const base = { repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'intent/purpose.md', objectId: gitBlobObjectId(body) };
@@ -174,5 +174,22 @@ describe('oversize bodies', () => {
     }
     expect(sources.at(-1)!.segment!.end).toBe(blob.length);
     expect(validateGenerationSources(sources)).toHaveLength(sources.length);
+  });
+});
+
+describe('the run key', () => {
+  it('refuses a key shorter than 32 bytes, so no keyed id is derivable from the path alone', () => {
+    for (const key of [new Uint8Array(0), Buffer.alloc(16, 1), Buffer.alloc(31, 1)]) {
+      expect(() => keyedDigest(key, 'src/a.c')).toThrow('generation run key shorter than 32 bytes');
+      expect(() => excludedSourceId(key, 'src/a.c')).toThrow('generation run key shorter than 32 bytes');
+    }
+  });
+
+  it('accepts a 32-byte key: stable under it, different under another', () => {
+    const key = Buffer.alloc(32, 1);
+    expect(excludedSourceId(key, 'src/a.c')).toMatch(/^s-[0-9a-f]{24}$/u);
+    expect(excludedSourceId(key, 'src/a.c')).toBe(excludedSourceId(Buffer.alloc(32, 1), 'src/a.c'));
+    expect(excludedSourceId(key, 'src/a.c')).not.toBe(excludedSourceId(Buffer.alloc(32, 2), 'src/a.c'));
+    expect(newGenerationRunKey().byteLength).toBe(32);
   });
 });
