@@ -9,7 +9,7 @@ import { rmSync } from 'node:fs';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { SOURCE_RULES, type PocModel, type ProjectShape, type ProjectShapeSource } from '@syzygy/three-surface-poc-core';
+import { SOURCE_RULES, sourceIdentityOf, type PocModel, type ProjectShape, type ProjectShapeSource } from '@syzygy/three-surface-poc-core';
 
 import { copyText } from './polaris-copy.js';
 import {
@@ -188,11 +188,31 @@ describe('M14 slice 3: one legend sentence for the source-identity grammar', () 
 
   it('names every identity part and field, and says the digest is neither permission nor verification', () => {
     const legend = legendOf(page('observed'));
-    for (const part of ['the repository', 'the evaluated revision', 'the repository-relative path', 'the Git object id', 'Rule ', 'Anchor ', 'Outcome ', 'Digest ']) {
+    for (const part of ['the repository', 'the evaluated revision', 'the repository-relative path', 'Rule ', 'Anchor ', 'Outcome ', 'Digest ']) {
       expect(legend, part).toContain(part);
     }
     expect(legend).toContain('neither permission to read those bytes nor a verification of them');
     expect(legend).toContain('shown only where it read one');
+  });
+
+  it('names the identity suffix for each of the three anchor kinds sourceIdentityOf writes (syzygy-ccqk)', () => {
+    const legend = legendOf(page('observed'));
+    expect(legend).toContain(
+      'its identity joins the repository, the evaluated revision, the repository-relative path and what the path held: the Git object id for a blob, not-a-blob for a tree or commit, or missing;',
+    );
+    // The suffix each anchor kind actually produces, against the legend's
+    // word for it; expected suffixes are hand-typed literals.
+    const base = { path: 'p/q.md', rule: 'root-index' as const, extractionClasses: [] };
+    const objectId = 'a'.repeat(40);
+    const cases = [
+      { anchor: { kind: 'blob' as const, mode: '100644', objectId }, suffix: `#${objectId}`, word: 'the Git object id for a blob' },
+      { anchor: { kind: 'not-a-blob' as const, mode: '040000', type: 'tree' as const }, suffix: '#not-a-blob', word: 'not-a-blob for a tree or commit' },
+      { anchor: { kind: 'missing-at-revision' as const }, suffix: '#missing', word: 'or missing;' },
+    ];
+    for (const { anchor, suffix, word } of cases) {
+      expect(sourceIdentityOf('repository:x', 'b'.repeat(40), { ...base, anchor })).toBe(`repository:x@${'b'.repeat(40)}:p/q.md${suffix}`);
+      expect(legend, anchor.kind).toContain(word);
+    }
   });
 
   it('holds the legend to the five rules, the anchor union and the outcomes the table renders (drift)', () => {
