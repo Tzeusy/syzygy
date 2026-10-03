@@ -41,7 +41,6 @@ export interface AgentSdkAttemptRecord {
 
 /** What the profile may choose for thinking. 'adaptive' adds the bytes listed in PROVIDER-EGRESS-BYTES.md. */
 export type ThinkingProfile = 'off' | 'adaptive';
-const DIAGNOSTIC_ENV_KEYS: ReadonlySet<string> = new Set(['HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY']);
 
 export interface AgentSdkProviderConfig {
   /** Absolute, existing directory outside git. All runtime state of the CLI lives under it. */
@@ -64,8 +63,6 @@ export interface AgentSdkProviderConfig {
   /** 'text' sends no tool; 'schema-tool' lets the SDK add its StructuredOutput tool. */
   readonly outputMode?: 'text' | 'schema-tool';
   readonly retry?: { readonly maxAttempts: number; readonly baseDelayMs: number; readonly maxDelayMs: number; readonly budgetMs: number };
-  /** Proxy variables only (HTTP_PROXY, HTTPS_PROXY, NO_PROXY); anything else is refused. */
-  readonly diagnosticEnv?: Readonly<Record<string, string>>;
   /** Test seam for the version check; production uses the pinned constants. */
   readonly pin?: { readonly sdk: string; readonly cli: string };
   readonly sleep?: (ms: number, signal: AbortSignal) => Promise<void>;
@@ -98,8 +95,11 @@ const abortableSleep = (ms: number, signal: AbortSignal): Promise<void> => new P
 
 /** The complete subprocess environment. Nothing is inherited from process.env;
  * every name here is chosen, and all state paths point into the run directory.
- * `gateUrl` is the adapter's own loopback egress gate, never a provider. */
-export function agentSdkEnvironment(config: Pick<AgentSdkProviderConfig, 'runDir' | 'auth' | 'diagnosticEnv'>, gateUrl: string, maxOutputTokens: number): Record<string, string> {
+ * `gateUrl` is the adapter's own loopback egress gate, never a provider. No
+ * proxy variable is ever passed: a proxy would see the request before the gate
+ * does. NO_PROXY=* (both spellings) keeps a proxy-honouring client direct even
+ * if one were inherited. */
+export function agentSdkEnvironment(config: Pick<AgentSdkProviderConfig, 'runDir' | 'auth'>, gateUrl: string, maxOutputTokens: number): Record<string, string> {
   const dir = (name: string): string => join(config.runDir, name);
   const base: Record<string, string> = {
     HOME: dir('home'), CLAUDE_CONFIG_DIR: dir('config'), TMPDIR: dir('tmp'),
@@ -110,11 +110,8 @@ export function agentSdkEnvironment(config: Pick<AgentSdkProviderConfig, 'runDir
     CLAUDE_CODE_SIMPLE: '1', CLAUDE_CODE_ATTRIBUTION_HEADER: '0', CLAUDE_CODE_MAX_RETRIES: '0',
     CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_CLAUDE_MDS: '1',
     CLAUDE_CODE_MAX_OUTPUT_TOKENS: String(maxOutputTokens),
+    NO_PROXY: '*', no_proxy: '*',
   };
-  for (const [key, value] of Object.entries(config.diagnosticEnv ?? {})) {
-    if (!DIAGNOSTIC_ENV_KEYS.has(key) || key in base) throw new AgentSdkProviderError('invalid-config', 0);
-    base[key] = value;
-  }
   return base;
 }
 
@@ -139,7 +136,8 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   const installed = (JSON.parse(readFileSync(join(dirname(createRequire(import.meta.url).resolve('@anthropic-ai/claude-agent-sdk')), 'package.json'), 'utf8')) as { version?: string }).version;
   if (installed !== pin.sdk) throw new AgentSdkProviderError('unpinned-version', 0);
   if (config.maxOutputTokens !== undefined && !(Number.isSafeInteger(config.maxOutputTokens) && config.maxOutputTokens > 0)) throw new AgentSdkProviderError('invalid-config', 0);
-  agentSdkEnvironment(config, 'http://127.0.0.1:1', 1);   // validates diagnosticEnv at construction
+  // The removed diagnosticEnv option passed proxy variables to the CLI; a caller still naming it is refused, not ignored.
+  if (Object.hasOwn(config, 'diagnosticEnv')) throw new AgentSdkProviderError('invalid-config', 0);
   if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new AgentSdkProviderError('invalid-config', 0); } }
   const query = config.query ?? sdkQuery;
   const sleep = config.sleep ?? abortableSleep;

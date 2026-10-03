@@ -8,7 +8,7 @@ read, egress or write: a real call still needs the egress consent act.
   One single-turn CLI call per try; the stage `system` is the custom system
   prompt and the stage `input` is the only user message.
 - **Closed environment.** `agentSdkEnvironment` names every variable; nothing is
-  inherited from `process.env` (`diagnosticEnv` admits proxy variables only). Every state path (home, config, tmp, XDG) is
+  inherited from `process.env`, and no proxy variable is ever passed (`NO_PROXY=*` in both spellings). Every state path (home, config, tmp, XDG) is
   inside the run directory, and the working directory is an empty
   `<runDir>/cwd` that the adapter refuses to use if anything else wrote there.
 - **Runtime egress gate.** The CLI's `ANTHROPIC_BASE_URL` is always an in-process

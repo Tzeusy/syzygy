@@ -24,6 +24,9 @@ const send = (url: string, method: string, path: string, body = '', extra: Recor
   req.end(body);
 });
 const accepting = () => ({ accepted: true, violations: [] as string[] });
+/** A module specifier that names the gate file itself (any directory, src or dist, any extension), statically or dynamically. */
+const importsGateByPath = (text: string): boolean =>
+  /(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*)['"][^'"]*\begress-gate(?:\.[cm]?[jt]s)?['"]/u.test(text);
 
 describe('egress gate', () => {
   it('forwards only an armed, accepted, permitted request to the configured upstream', async () => {
@@ -194,6 +197,32 @@ describe('egress gate', () => {
     expect(await call.done).toBe(403);
     expect(upstream.requests).toEqual([]);
   });
+  it('refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv', async () => {
+    upstream = await startCaptureEndpoint();
+    const saved = [...process.execArgv];
+    for (const flag of ['--use-system-ca', '--use-openssl-ca', '--tls-min-v1.0', '--tls-max-v1.2', '--tls-cipher-list=ALL', '--tls-keylog=/tmp/keys']) {
+      try {
+        process.execArgv.push(flag);
+        await expect(startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true }), flag).rejects.toThrow('ambient');
+      } finally { process.execArgv.splice(0, process.execArgv.length, ...saved); }
+      const g = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
+      try {
+        g.arm(accepting);
+        process.execArgv.push(flag);
+        expect((await send(g.url, 'POST', '/v1/messages', '{}')).status, flag).toBe(403);
+        expect(g.decisions.at(-1), flag).toMatchObject({ decision: 'refused', reasons: ['ambient Node network environment is set'] });
+      } finally { process.execArgv.splice(0, process.execArgv.length, ...saved); await g.close(); }
+    }
+    // Flags that only look alike are not refused.
+    for (const flag of ['--use-bundled-ca', '--title=tls-runner', '--max-old-space-size=4096']) {
+      try {
+        process.execArgv.push(flag);
+        const g = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
+        await g.close();
+      } finally { process.execArgv.splice(0, process.execArgv.length, ...saved); }
+    }
+    expect(upstream.requests).toEqual([]);
+  });
   it('refuses to start, and to forward, while any ambient Node network variable is set', async () => {
     const names = ['NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_USE_SYSTEM_CA', 'NODE_OPTIONS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
     upstream = await startCaptureEndpoint();
@@ -279,6 +308,19 @@ describe('egress gate', () => {
       expect(gate.takeRejectedUnbilled()).toBe(false);
     } finally { flaky.close(); }
   });
+  it('recognises every by-path form of a gate import: source or dist, absolute-package or relative, static or dynamic', () => {
+    for (const text of [
+      "import { startEgressGate } from '../../packages/polaris-generation-provider/src/egress-gate.js';",
+      "import { startEgressGate } from '../packages/polaris-generation-provider/dist/egress-gate.js';",
+      "import { LOOPBACK_FOR_TESTS as t } from './dist/egress-gate.js';",
+      "export * from \"../dist/egress-gate\";",
+      "const gate = await import('../dist/egress-gate.js');",
+      "const gate = require('./egress-gate.cjs');",
+    ]) expect(importsGateByPath(text), text).toBe(true);
+    for (const text of ["import { startEgressGate } from '@syzygy/polaris-generation-provider';", "// see egress-gate.ts for the gate", "const name = 'egress-gate-report';"]) {
+      expect(importsGateByPath(text), text).toBe(false);
+    }
+  });
   it('is imported by name outside tests and testkits nowhere: LOOPBACK_FOR_TESTS appears only in the gate module, tests and testkits', () => {
     const here = path.dirname(fileURLToPath(import.meta.url));
     const root = path.resolve(here, '../../..');
@@ -292,7 +334,7 @@ describe('egress gate', () => {
         if (/\.test\.(ts|tsx|mts)$/.test(entry) || /\.testkit\.ts$/.test(entry)) continue;
         const text = readFileSync(full, 'utf8');
         if (text.includes('LOOPBACK_FOR_TESTS') && path.relative(root, full) !== 'packages/polaris-generation-provider/src/egress-gate.ts') hits.push(path.relative(root, full));
-        if (/polaris-generation-provider\/src\/egress-gate/.test(text) && !path.relative(root, full).startsWith('packages/polaris-generation-provider/')) hits.push(`${path.relative(root, full)} (imports the gate by path)`);
+        if (importsGateByPath(text) && !path.relative(root, full).startsWith('packages/polaris-generation-provider/')) hits.push(`${path.relative(root, full)} (imports the gate by path)`);
       }
     };
     walk(path.join(root, 'packages')); walk(path.join(root, 'apps')); if (existsSync(path.join(root, 'scripts'))) walk(path.join(root, 'scripts'));

@@ -43,8 +43,9 @@ describe('environment', () => {
       expect(Object.keys(env).sort()).toEqual([
         'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'CLAUDE_CODE_ATTRIBUTION_HEADER', 'CLAUDE_CODE_DISABLE_AUTO_MEMORY', 'CLAUDE_CODE_DISABLE_CLAUDE_MDS',
         'CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC', 'CLAUDE_CODE_MAX_OUTPUT_TOKENS', 'CLAUDE_CODE_MAX_RETRIES', 'CLAUDE_CODE_SIMPLE',
-        'CLAUDE_CONFIG_DIR', 'DISABLE_AUTOUPDATER', 'DISABLE_ERROR_REPORTING', 'DISABLE_TELEMETRY', 'HOME', 'TMPDIR',
-        'XDG_CACHE_HOME', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_STATE_HOME']);
+        'CLAUDE_CONFIG_DIR', 'DISABLE_AUTOUPDATER', 'DISABLE_ERROR_REPORTING', 'DISABLE_TELEMETRY', 'HOME', 'NO_PROXY', 'TMPDIR',
+        'XDG_CACHE_HOME', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_STATE_HOME', 'no_proxy']);
+      expect([env.NO_PROXY, env.no_proxy]).toEqual(['*', '*']);
       expect(env.DISABLE_TELEMETRY).toBe('1');
       expect(env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC).toBe('1');
       for (const key of ['HOME', 'CLAUDE_CONFIG_DIR', 'TMPDIR', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME', 'XDG_STATE_HOME']) expect(env[key]!.startsWith(runDir + '/')).toBe(true);
@@ -62,7 +63,7 @@ describe('captured request (text mode)', () => {
     try {
       const e = envelope();
       endpoint.script({ kind: 'text', text: '{"stage":"inventory"}', inputTokens: 40, outputTokens: 9 });
-      const handle = make(config({ diagnosticEnv: { HTTP_PROXY: proxy.url, HTTPS_PROXY: proxy.url, NO_PROXY: '127.0.0.1' } }));
+      const handle = make(config());
       const reply = await call(handle, e);
       expect(endpoint.messages()).toHaveLength(1);
       const captured = endpoint.messages()[0]!;
@@ -316,12 +317,73 @@ describe('runtime gate in the adapter', () => {
   });
 });
 
-describe('diagnostic environment', () => {
-  it('admits only proxy variables and refuses any name the adapter sets or could abuse', () => {
-    for (const key of ['ANTHROPIC_BASE_URL', 'ANTHROPIC_API_KEY', 'HOME', 'LD_PRELOAD', 'NODE_OPTIONS', 'PATH', 'DISABLE_TELEMETRY']) {
-      expect(() => createAgentSdkGenerate(config({ diagnosticEnv: { [key]: 'x' } })), key).toThrow(AgentSdkProviderError);
+describe('no proxy reaches the CLI', () => {
+  const PROXY_NAMES = ['HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
+  const withParentEnv = async <T>(vars: Record<string, string>, body: () => Promise<T>): Promise<T> => {
+    const before = Object.fromEntries(Object.keys(vars).map(name => [name, process.env[name]]));
+    Object.assign(process.env, vars);
+    try { return await body(); } finally {
+      for (const [name, value] of Object.entries(before)) { if (value === undefined) delete process.env[name]; else process.env[name] = value; }
     }
-    expect(() => createAgentSdkGenerate(config({ diagnosticEnv: { HTTP_PROXY: 'http://127.0.0.1:1', HTTPS_PROXY: 'http://127.0.0.1:1', NO_PROXY: '127.0.0.1' } }))).not.toThrow();
+  };
+
+  it('refuses the removed diagnosticEnv option, whatever it carries', async () => {
+    const proxy = await startRecordingProxy();
+    try {
+      for (const diagnosticEnv of [{ HTTPS_PROXY: proxy.url }, { HTTP_PROXY: proxy.url, NO_PROXY: '127.0.0.1' }, {}]) {
+        expect(() => createAgentSdkGenerate({ ...config(), diagnosticEnv } as AgentSdkProviderConfig)).toThrow(AgentSdkProviderError);
+      }
+      expect(proxy.hits).toEqual([]);
+    } finally { await proxy.close(); }
+  });
+
+  it('a proxy set in the parent after the gate started sees nothing; the gate refuses and logs the decision', async () => {
+    const proxy = await startRecordingProxy();
+    try {
+      const e = envelope();
+      endpoint.script({ kind: 'text', text: '{"stage":"inventory"}' }, { kind: 'text', text: '{"stage":"inventory"}' });
+      const handle = make(config());
+      await call(handle, e);                                   // starts the gate with a clean parent environment
+      expect(endpoint.messages()).toHaveLength(1);
+      await withParentEnv(Object.fromEntries(PROXY_NAMES.map(name => [name, proxy.url])), async () => {
+        await expect(call(handle, e)).rejects.toMatchObject({ code: 'egress-refused' });
+      });
+      expect(proxy.hits).toEqual([]);
+      expect(endpoint.messages()).toHaveLength(1);
+      const last = handle.gateDecisions().at(-1)!;
+      expect(last).toMatchObject({ method: 'POST', decision: 'refused', reasons: ['ambient Node network environment is set'] });
+      expect(last.url.startsWith('/v1/messages')).toBe(true);
+    } finally { await proxy.close(); }
+  });
+
+  it('a proxy set in the parent before the first call stops the gate from starting; nothing is sent anywhere', async () => {
+    const proxy = await startRecordingProxy();
+    try {
+      const handle = make(config());
+      await withParentEnv({ HTTPS_PROXY: proxy.url, HTTP_PROXY: proxy.url }, async () => {
+        await expect(call(handle, envelope())).rejects.toThrow();
+      });
+      expect(proxy.hits).toEqual([]);
+      expect(endpoint.requests).toEqual([]);
+    } finally { await proxy.close(); }
+  });
+
+  it('the CLI environment is not merged with the parent: ANTHROPIC_* in the parent changes nothing sent', async () => {
+    const proxy = await startRecordingProxy();
+    try {
+      const e = envelope();
+      endpoint.script({ kind: 'text', text: '{"stage":"inventory"}' });
+      const handle = make(config());
+      await withParentEnv({ ANTHROPIC_BASE_URL: proxy.url, ANTHROPIC_API_KEY: 'sk-ant-parent-must-not-be-sent', ANTHROPIC_CUSTOM_HEADERS: 'x-syzygy-parent-canary: leaked' }, async () => {
+        await call(handle, e);
+      });
+      expect(proxy.hits).toEqual([]);
+      const captured = endpoint.messages()[0]!;
+      expect(captured.headers['x-api-key']).toBe(DUMMY_KEY);
+      expect(captured.headers['x-syzygy-parent-canary']).toBeUndefined();
+      expect(acceptCapturedRequest(captured, expectation(e))).toEqual({ accepted: true, violations: [] });
+      expect(handle.gateDecisions().filter(d => d.decision === 'forwarded')).toHaveLength(1);
+    } finally { await proxy.close(); }
   });
 });
 
