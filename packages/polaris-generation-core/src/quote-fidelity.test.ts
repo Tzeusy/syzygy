@@ -63,6 +63,8 @@ describe('checkBlockQuotes', () => {
     expect(kinds('A blank "  *  " quote.', 'src-readme')).toEqual(['empty-quote']);
     expect(kinds(`${QUOTE_LEAD_IN} Tidemark is an in-memory cache.`, 'src-readme')).toEqual(['lead-in-without-quote']);
     expect(kinds(`${QUOTE_LEAD_IN} "Tidemark is an in-memory cache."`, 'src-readme')).toEqual([]);
+    expect(kinds(`${QUOTE_LEAD_IN} "Tidemark is an in-memory cache." Later: ${QUOTE_LEAD_IN} that it is fast.`, 'src-readme')).toEqual(['lead-in-without-quote']);
+    expect(kinds(`${QUOTE_LEAD_IN} that it is fast. Later: ${QUOTE_LEAD_IN} "Tidemark is an in-memory cache."`, 'src-readme')).toEqual(['lead-in-without-quote']);
     expect(kinds(`${QUOTE_LEAD_IN}   “Tidemark is an in-memory cache.”`, 'src-readme')).toEqual([]);
   });
 

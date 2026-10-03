@@ -49,4 +49,16 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     const wrongSource = await evaluateWithIntro(() => `"${other.slice(0, 25).replace(/"/gu, '')}"`);
     expect(wrongSource.fidelity.inBlockQuotes.failures.map(f => f.kind)).toEqual(['quote-not-in-cited-sources']);
   });
+  it('checks only claims that name a source: an unresolved question may carry quotation marks, and a page with no cited claim is unknown, not verbatim', async () => {
+    const draft = structuredClone(run.result.draft) as { unresolved: unknown[] };
+    draft.unresolved.push({ question: 'What does "the spec" mean here?', reason: 'Not stated.', references: [run.sources[0]!.sourceId] });
+    const { files } = renderDossier({ sources: run.sources, result: { ...run.result, draft } });
+    expect(files.get('index.html')).toContain('What does &quot;the spec&quot; mean here?');
+    const manifest = parseDossierManifest(files.get('dossier.json')!);
+    const evaluate = (transform: (html: string) => string) => evaluateDossier({ manifestText: files.get('dossier.json')!,
+      pages: new Map(manifest.pages.map(page => [page.path, new TextEncoder().encode(transform(files.get(page.path)!))])), sources: run.sources, questionsText: QUESTIONS }, signal);
+    expect((await evaluate(html => html)).fidelity.inBlockQuotes).toMatchObject({ failures: [], outcome: 'all-verbatim' });
+    const uncited = await evaluate(html => html.replaceAll('aria-label="Read source', 'aria-label="Source'));
+    expect(uncited.fidelity.inBlockQuotes).toEqual({ denominator: 0, failures: [], outcome: 'unknown' });
+  });
 });
