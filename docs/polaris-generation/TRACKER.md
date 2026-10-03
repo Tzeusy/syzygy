@@ -178,8 +178,10 @@ Authorized implementation work (generator implementation authorization,
         and no generate port exists (exit 5 after recording the corpus). Git
         runs with a minimal environment and a bare, template-free fetch;
         discovery calls are permitted only while the egress record holds;
-        the polaris-dossier-v1 renderer is injected (`render` port) until
-        the renderer PR lands.
+        the run is written by `writeDossierRun` (realpath parent, fail-closed
+        git check, atomic staging) and rendered by `renderDossier`
+        (polaris-dossier-v1), which `dossier-main` wires as the default `render`
+        port.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
