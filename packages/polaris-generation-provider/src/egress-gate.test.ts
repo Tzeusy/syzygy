@@ -242,8 +242,14 @@ describe('egress gate', () => {
       server = https.createServer({ key: readFileSync(path.join(dir, 'k.pem')), cert: readFileSync(path.join(dir, 'c.pem')) }, (_req, res) => { hits++; res.writeHead(200); res.end('x'); });
       await new Promise<void>(r => server!.listen(0, '127.0.0.1', r));
       gate = await startEgressGate({ upstream: { url: `https://127.0.0.1:${(server.address() as { port: number }).port}`, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
-      gate.arm(accepting);
-      expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(502);
+      // Even if the process-wide default agent is made insecure, the gate's own pinned agent must still verify.
+      const globalOptions = https.globalAgent.options as { rejectUnauthorized?: boolean };
+      const before = globalOptions.rejectUnauthorized;
+      globalOptions.rejectUnauthorized = false;
+      try {
+        gate.arm(accepting);
+        expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(502);
+      } finally { globalOptions.rejectUnauthorized = before; }
       expect(hits).toBe(0);
       expect(gate.decisions.at(-1)).toMatchObject({ reasons: ['upstream unreachable'] });
     } finally { server?.close(); rmSync(dir, { recursive: true, force: true }); }

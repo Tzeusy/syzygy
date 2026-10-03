@@ -124,8 +124,8 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
         let allowed = false;
         try { allowed = (await options.permitted()) === true; } catch { allowed = false; }
         if (!allowed) { refuse(res, { ...base, reasons: ['consent not permitted'] }); return; }
-        // Consent was answered a moment ago; the try must still be the same arming and the caller still connected.
-        if (armed === null || armGeneration !== mine || clientGone || req.socket.destroyed) { refuse(res, { ...base, reasons: ['try ended while consent was being asked'] }); return; }
+        // Consent was answered a moment ago; the try must still be the same arming (disarm() and arm() both advance the generation) and the caller still connected.
+        if (armGeneration !== mine || clientGone) { refuse(res, { ...base, reasons: ['try ended while consent was being asked'] }); return; }
         if (ambientNetworkEnvironment().length > 0) { refuse(res, { ...base, reasons: ['ambient Node network environment is set'] }); return; }
         if (options.upstream === undefined) { refuse(res, { ...base, reasons: ['no upstream configured'] }); return; }
         const target = new URL(options.upstream.url);
