@@ -113,8 +113,8 @@ describe('multi-page dossier render', () => {
     expect(() => renderDossier({ ...run, topics: { how: ['marketing' as never] } })).toThrow('unknown-topic');
   });
 
-  it('refuses a stopped run and a citation of a source with no admitted text', () => {
-    expect(() => renderDossier({ result: { status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }, sources: run.sources })).toThrow('not-renderable');
+  it('refuses a stopped run with no requested assets, and a citation of a source with no admitted text', () => {
+    expect(() => renderDossier({ result: { status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }, sources: run.sources })).toThrow('missing-requested-assets');
     const { body: _body, ...rest } = run.sources[0]!;
     const pathOnly: GenerationSource = { ...rest, classificationBasis: 'path-only', spans: [] };
     expect(() => renderDossier({ result: run.result, sources: [pathOnly, ...run.sources.slice(1)] })).toThrow('unquotable-source');
@@ -353,5 +353,107 @@ describe('run directory', () => {
     execFileSync('git', ['init', '-q', parent]);
     await expect(writeDossierRun(join(parent, 'run'), renderDossier(run).files)).rejects.toThrow('run-directory-inside-git-work-tree');
     expect(existsSync(join(parent, 'run'))).toBe(false);
+  });
+});
+
+describe('a stopped run still renders (syzygy-k4t2)', () => {
+  type Stopped = Extract<PipelineResult, { status: 'stopped' }>;
+  const stopAfter = async (budget: { maxCalls?: number; maxUsageUnits?: number }) => {
+    const synthetic = await runSyntheticProject(syntheticProjects[0]!, budget);
+    if (synthetic.result.status !== 'stopped') throw new Error('expected a stopped run');
+    return { sources: synthetic.sources, result: synthetic.result as Stopped, requestedAssets: synthetic.requestedAssets };
+  };
+  const asides = (html: string, kind: string): string[] => [...html.matchAll(new RegExp(`<aside class="${kind}"[^>]*>`, 'gu'))].map(match => match[0]);
+
+  it('renders the latest draft when the budget runs out before review, every generated sentence Unknown', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    expect(stopped.result.reason).toBe('budget-exhausted');
+    expect(stopped.result.artifacts.map(artifact => artifact.stage)).toEqual(['inventory', 'plan', 'author', 'edit']);
+    const { files } = renderDossier(stopped);
+    const index = files.get('index.html')!;
+    expect(asides(index, 'run-stopped')).toEqual(['<aside class="run-stopped" data-stop-reason="deferred-by-budget" data-claim-id="run-stopped" data-epistemic="unknown">']);
+    expect(index).toContain('after the edit stage; no fidelity review covers this draft, so every generated sentence is Unknown.');
+    expect(files.has('deep-dives/component-depth.html')).toBe(true);
+    expect(asides(index, 'unresolved-asset')).toEqual([]);
+    const report = await evaluate(files, stopped.sources);
+    // run-stopped, opening, mechanism-text, mechanism-detail-0, qualification-text, depth-text: Unknown;
+    // the diagram's two nodes and edge keep their own Observed marking.
+    expect(report.fidelity.claims).toMatchObject({ denominator: 9, labelled: 9, byLabel: { observed: 3, inferred: 0, unknown: 6 }, outcome: 'all-labelled' });
+    expect(report.fidelity.quotes).toMatchObject({ outcome: 'all-resolved' });
+    expect(report.scanFindings).toEqual([]);
+  });
+
+  it('stops on the usage total the same way', async () => {
+    // Each permit reserves 5 units; after three calls 4 of 7 remain, so the fourth (edit) is refused.
+    const stopped = await stopAfter({ maxUsageUnits: 7 });
+    expect(stopped.result.reason).toBe('budget-exhausted');
+    expect(stopped.result.artifacts.map(artifact => artifact.stage)).toEqual(['inventory', 'plan', 'author']);
+    expect(renderDossier(stopped).files.get('index.html')).toContain('after the author stage; no fidelity review covers this draft');
+  });
+
+  it('turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists', async () => {
+    const stopped = await stopAfter({ maxCalls: 2 });
+    const { files, manifest } = renderDossier(stopped);
+    const index = files.get('index.html')!;
+    expect(manifest.title).toBe('Dossier draft (incomplete)');
+    const notices = asides(index, 'unresolved-asset');
+    expect(notices).toEqual(['how', 'judgment', 'architecture', 'component-depth'].map(id =>
+      `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="deferred-by-budget" data-claim-id="not-generated:${id}" data-epistemic="unknown">`));
+    expect(index).toContain('<strong>architecture</strong> (diagram): not generated; the run stopped before it was written (deferred-by-budget).');
+    expect(index).toContain('<section id="section-how" data-reading-level="1" data-topics=""><span class="eyebrow">01</span><h2>How the pieces connect</h2>');
+    expect(index).toContain('after the plan stage.');
+    expect([...files.keys()].some(path => path.startsWith('deep-dives/'))).toBe(false);
+    const report = await evaluate(files, stopped.sources);
+    expect(report.fidelity.claims).toMatchObject({ denominator: 5, labelled: 5, byLabel: { observed: 0, inferred: 0, unknown: 5 }, outcome: 'all-labelled' });
+    expect(report.coverage.every(row => row.declaredBy.length === 0)).toBe(true);
+    expect(report.scanFindings).toEqual([]);
+  });
+
+  it('falls back to the requested assets, and an Unknown glossary, when nothing ran', async () => {
+    const first = await stopAfter({ maxCalls: 2 });
+    const stopped = { ...first, result: { status: 'stopped' as const, reason: 'budget-exhausted' as const, receipts: [], artifacts: [] } };
+    const { files } = renderDossier(stopped);
+    const index = files.get('index.html')!;
+    expect(asides(index, 'unresolved-asset').map(tag => /not-generated:([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
+    expect(index).toContain('The run stopped (deferred-by-budget) before any stage completed.');
+    expect(files.get('glossary.html')).toContain('data-claim-id="glossary:not-generated" data-epistemic="unknown">No inventory was produced before the run stopped (deferred-by-budget), so this glossary is empty.');
+  });
+
+  it('keeps the glossary from an inventory that did complete', async () => {
+    const stopped = await stopAfter({ maxCalls: 1 });
+    const { files } = renderDossier(stopped);
+    expect(files.get('glossary.html')).toContain('The inventory recorded no terms, so this glossary is empty.');
+    expect(asides(files.get('index.html')!, 'unresolved-asset').map(tag => /not-generated:([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
+  });
+
+  it('shows any stop reason other than the budget verbatim', async () => {
+    const stopped = await stopAfter({ maxCalls: 2 });
+    for (const reason of ['deadline', 'admission-refused', 'invalid-output'] as const) {
+      const index = renderDossier({ ...stopped, result: { ...stopped.result, reason } }).files.get('index.html')!;
+      expect(asides(index, 'run-stopped')[0]).toContain(`data-stop-reason="${reason}"`);
+      expect(asides(index, 'unresolved-asset').every(tag => tag.includes(`data-stop-reason="${reason}"`))).toBe(true);
+    }
+  });
+
+  it('labels a stopped draft Inferred only where a review later than it says supported', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const review = structuredClone(run.result.review);
+    const reviewedThenRedrafted = { ...stopped, result: { ...stopped.result, artifacts: [...stopped.result.artifacts.slice(0, 3), { stage: 'fidelity' as const, value: review }, stopped.result.artifacts[3]!] } };
+    expect((await evaluate(renderDossier(reviewedThenRedrafted).files, stopped.sources)).fidelity.claims.byLabel.inferred).toBe(0);
+    const reviewedLast = { ...stopped, result: { ...stopped.result, artifacts: [...stopped.result.artifacts, { stage: 'fidelity' as const, value: review }] } };
+    const files = renderDossier(reviewedLast).files;
+    expect((await evaluate(files, stopped.sources)).fidelity.claims.byLabel.inferred).toBe(5);
+    expect(files.get('index.html')).not.toContain('no fidelity review covers this draft');
+  });
+
+  it('refuses a stopped result without the requested assets it must account for', async () => {
+    const stopped = await stopAfter({ maxCalls: 2 });
+    expect(() => renderDossier({ result: stopped.result, sources: stopped.sources })).toThrow('missing-requested-assets');
+  });
+
+  it('leaves a complete run without a stop banner or not-generated notice', () => {
+    const index = renderDossier(run).files.get('index.html')!;
+    expect(index).not.toContain('run-stopped');
+    expect(index).not.toContain('not-generated');
   });
 });
