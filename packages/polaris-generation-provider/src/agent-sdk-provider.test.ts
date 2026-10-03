@@ -7,6 +7,7 @@ import { digestCanonicalJson, encodeCanonicalJson, promptForStage, runGeneration
 import { generationAnchorId, gitBlobObjectId, type GenerationSource } from '@syzygy/polaris-generation-core';
 import { AGENT_SDK_BUILTIN_TOOLS, AgentSdkProviderError, agentSdkEnvironment, createAgentSdkGenerate, type AgentSdkAttemptRecord, type AgentSdkProviderConfig } from './agent-sdk-provider.js';
 import { acceptCapturedRequest, acceptCapturedTraffic, isConnectivityProbe, SDK_FIXED_IDENTITY, type CapturedRequest, type ExpectedRequest } from './request-acceptance.js';
+import { LOOPBACK_FOR_TESTS } from './egress-gate.js';
 import { startCaptureEndpoint, startRecordingProxy, type CaptureEndpoint } from './capture-endpoint.testkit.js';
 
 const DUMMY_KEY = 'sk-ant-dummy-capture-only';
@@ -25,7 +26,7 @@ beforeEach(async () => { endpoint = await startCaptureEndpoint(); runDir = mkdte
 afterEach(async () => { for (const h of handles.splice(0)) await h.close(); await endpoint.close(); rmSync(runDir, { recursive: true, force: true }); });
 
 const config = (extra: Partial<AgentSdkProviderConfig> = {}): AgentSdkProviderConfig => ({
-  runDir, model: 'claude-opus-5-5', auth: { apiKey: DUMMY_KEY }, upstream: { url: endpoint.url }, permitted: async () => true,
+  runDir, model: 'claude-opus-5-5', auth: { apiKey: DUMMY_KEY }, upstream: { url: endpoint.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true,
   retry: { maxAttempts: 3, baseDelayMs: 1, maxDelayMs: 2, budgetMs: 60_000 }, ...extra,
 });
 const expectation = (e: { system: string; input: string }, over: Partial<ExpectedRequest> = {}): ExpectedRequest => ({
@@ -289,6 +290,11 @@ describe('runtime gate in the adapter', () => {
   it('refuses everything when no upstream is configured', async () => {
     const h = make(config({ upstream: undefined as never }));
     await expect(call(h, envelope())).rejects.toMatchObject({ code: 'egress-refused' });
+    expect(endpoint.requests).toEqual([]);
+  });
+  it('refuses a loopback upstream when the test-only token is absent (production wiring)', async () => {
+    const h = make(config({ upstream: { url: endpoint.url } }));
+    await expect(call(h, envelope())).rejects.toThrow();
     expect(endpoint.requests).toEqual([]);
   });
   it('answers the connectivity probe locally and never forwards it', async () => {

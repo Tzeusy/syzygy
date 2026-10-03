@@ -12,12 +12,15 @@ import { isConnectivityProbe, type CapturedRequest, type RequestAcceptance } fro
  * answered here and never forwarded. */
 export interface EgressGateOptions {
   /** Explicit allowRemote: the only host bytes may be forwarded to. Absent = every request is refused. */
-  readonly upstream?: { readonly url: string };
+  readonly upstream?: { readonly url: string; /** Test-only: allows a loopback upstream. Not exported from the package index, so production wiring cannot name it. */ readonly loopbackForTests?: typeof LOOPBACK_FOR_TESTS };
   /** Consent switch, asked for every request including retries. Only `true` permits. */
   readonly permitted: () => Promise<boolean>;
   /** Drop the machine-identifying `x-stainless-os`, `-arch` and `-runtime-version` headers before forwarding. Default false: bytes are forwarded as accepted. */
   readonly stripFingerprint?: boolean;
 }
+
+/** Capability token for tests that point the gate at a local capture endpoint. Deliberately absent from `index.ts`. */
+export const LOOPBACK_FOR_TESTS: unique symbol = Symbol('loopback-upstream-for-tests');
 
 const FINGERPRINT_HEADERS = ['x-stainless-os', 'x-stainless-arch', 'x-stainless-runtime-version'] as const;
 const RATE_ERRORS: ReadonlySet<string> = new Set(['rate_limit_error', 'overloaded_error']);
@@ -60,18 +63,19 @@ export function parseRetryAfterMs(value: string | string[] | undefined | null, n
 /** The only remote destination bytes may ever be forwarded to. */
 export const PROVIDER_ORIGIN = 'https://api.anthropic.com';
 
-/** Throws unless the upstream is exactly the provider origin, or a loopback
- * address (a local capture endpoint: no byte leaves the machine). */
-export function assertAllowedUpstream(url: string): void {
+/** Throws unless the upstream is exactly the provider origin. A loopback
+ * address is accepted only with the test-only token: in production a local
+ * listener could forward anywhere. */
+export function assertAllowedUpstream(url: string, loopbackToken?: typeof LOOPBACK_FOR_TESTS): void {
   let parsed: URL;
   try { parsed = new URL(url); } catch { throw new Error('egress gate: upstream is not a URL'); }
   const loopback = (parsed.protocol === 'http:' || parsed.protocol === 'https:') && (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost' || parsed.hostname === '[::1]');
   const provider = parsed.origin === PROVIDER_ORIGIN && parsed.username === '' && parsed.password === '';
-  if (!loopback && !provider) throw new Error(`egress gate: upstream must be ${PROVIDER_ORIGIN} or a loopback address`);
+  if (!(loopback && loopbackToken === LOOPBACK_FOR_TESTS) && !provider) throw new Error(`egress gate: upstream must be ${PROVIDER_ORIGIN} (tests may add a loopback address)`);
 }
 
 export async function startEgressGate(options: EgressGateOptions): Promise<EgressGate> {
-  if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url);
+  if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url, options.upstream.loopbackForTests);
   let spent = false;
   const decisions: GateDecision[] = [];
   let armed: ((captured: CapturedRequest) => RequestAcceptance) | null = null;
