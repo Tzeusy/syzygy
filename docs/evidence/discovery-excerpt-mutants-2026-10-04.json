@@ -1,6 +1,10 @@
 {
+  "subjects": {
+    "packages/polaris-generation-core/src/discovery.ts": "3eb393b24b2100cbd7bb0498ad71c64be76b6b2fae77d86315e15977ec922ec5",
+    "packages/polaris-generation-core/src/excerpt.ts": "5b996974a65cdd51258fc590b3a804f5e57192c3e705383474c346caccff3937"
+  },
   "measuredOn": "synthetic fixture and unit fixtures only",
-  "commit": "3e6c7c19b3f897dd1c79145773e975b42dbe09ef",
+  "commit": "d63d73107c48d213ca04ac967318e5ef8952a736",
   "testFiles": [
     "packages/polaris-generation-core/src/excerpt",
     "packages/polaris-generation-core/src/discovery",
@@ -13,7 +17,7 @@
       "old": "'Copyright', 'SPDX",
       "new": "'SPDX",
       "outcome": "killed",
-      "failingTests": 13,
+      "failingTests": 19,
       "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > sends exact"
     },
     {
@@ -112,7 +116,7 @@
       "old": "start - last[1] <= 1",
       "new": "start - last[1] <= 2",
       "outcome": "killed",
-      "failingTests": 1,
+      "failingTests": 4,
       "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > count bytes, not characters, with"
     },
     {
@@ -157,7 +161,7 @@
       "old": "segments.map(segment => segment.text).join('\\n')",
       "new": "segments.map(segment => segment.text).join('\\n\\n')",
       "outcome": "killed",
-      "failingTests": 9,
+      "failingTests": 16,
       "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > sends exact"
     },
     {
@@ -193,7 +197,7 @@
       "old": "licenceSkipped: skipped === null ? null : [base + skipped[0], base + skipped[1]],",
       "new": "licenceSkipped: null,",
       "outcome": "killed",
-      "failingTests": 10,
+      "failingTests": 13,
       "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > records the"
     },
     {
@@ -204,6 +208,34 @@
       "outcome": "killed",
       "failingTests": 1,
       "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > state the skipped licence comment"
+    },
+    {
+      "id": "tag-regex-quadratic",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "(?:struct|enum|union)\\b[^;()]*$/u",
+      "new": "(?:struct|enum|union)\\b[^;()]*\\{?[ \\t]*$/u",
+      "outcome": "equivalent",
+      "reason": "the quadratic tail needs a line over 512 characters, which the pattern-prefix bound already skips, so with that bound in place the mutant behaves the same",
+      "failingTests": 0,
+      "firstFailure": null
+    },
+    {
+      "id": "pattern-prefix-removed",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "t === '' || t.length > PATTERN_PREFIX_MAX",
+      "new": "t === ''",
+      "outcome": "killed",
+      "failingTests": 2,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: line endings and hostile lines > stays linear on one 100k line of spaces after a tag keyword"
+    },
+    {
+      "id": "blank-line-added-as-empty-segment",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "if (text === '') return true; // a blank line has no bytes to quote",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: line endings and hostile lines > a blank line inside a CRLF doc comment leaves no empty range"
     },
     {
       "id": "range-count-unbounded",
