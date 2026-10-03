@@ -72,7 +72,10 @@ row, the case also replays `spec.md` as the pinned bytes (the re-pin
 builder's `spec_at_pin`, every later signed patch reversed): R6 must read
 zero over that tree, and R2, R3 and R4, which then see bytes no act binds,
 must fail exactly. On the tree itself R6 reports both pins until their own
-re-pin act.
+re-pin act. The strict case `pins-after-tree-framing-repin-acts` does the
+same for the `syzygy-2g0d` package, which re-pins both to the tree-framing
+`spec.md` row: with its proposed bytes in place of both subjects, R6 must
+examine both pins and report zero, and no other predicate may fail.
 The R7 case `union-after-successor-act` does the same with the
 `syzygy-c51h` successor package's proposed union. Before that act it
 required R2, and only R2, to fail by design; the reconciliation was
@@ -114,7 +117,7 @@ REGISTRY = (".syzygy/governance/declarations/adapter-registry/"
             "POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json")
 POLICY = (".syzygy/governance/policies/"
           "POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json")
-PIN_BEAD = "syzygy-jloi"
+PIN_BEAD = "syzygy-2g0d"
 UNION_SUCCESSOR = (f"{CANDIDATES}/"
                    "polaris-understanding-dependency-union-successor")
 UNION_BEAD = "syzygy-c51h"
@@ -1006,10 +1009,10 @@ def _pin_moved(root):
     return apply
 
 
-def _repin_package(root):
-    """Map each pinned subject's current text to the re-pin package's bytes."""
+def _repin_package(root, module="build_pwb_behavior_contract_repin"):
+    """Map each pinned subject's current text to a re-pin package's bytes."""
     sys.path.insert(0, str(root / "scripts"))
-    import build_pwb_behavior_contract_repin as repin
+    repin = __import__(module)
     by_text = {}
     for subject in repin.SUBJECTS:
         current = read_text(root, subject.path.as_posix())
@@ -1149,6 +1152,12 @@ def mutants(root):
         # reversed); once a later sign-off moved it, R2-R4 fail by design.
         ("pins-after-repin-acts", (REGISTRY, POLICY, FAMILY_SPECS["PWB"]),
          _repin_package(root), "R6=0|R2,R3,R4"),
+        # The syzygy-2g0d package's proposed bytes, pinned to the current
+        # (tree-framing) spec.md: R6 reads zero and nothing else fails.
+        ("pins-after-tree-framing-repin-acts",
+         (REGISTRY, POLICY, FAMILY_SPECS["PWB"]),
+         _repin_package(root, "build_pwb_behavior_contract_repin_tree_framing"),
+         "R6=0"),
         # The syzygy-c51h successor package's proposed union, as
         # readability_successor.py installs it at the act: R7 must then
         # report exactly zero. Before the re-derivation R2 failed by design
