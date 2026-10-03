@@ -112,7 +112,10 @@ Authorized implementation work (generator implementation authorization,
         `--repo`, `--revision`, `--repository-id`, include/exclude globs and a
         JSON config (reader questions, assets, budget, oversize policy); the
         read happens only after an admission port answers `allowed: true`
-        (default port refuses). `readSelfCorpus` is unchanged.
+        (default port refuses). `readSelfCorpus` is unchanged. Every git call runs
+        with an allowlisted environment and `--no-replace-objects`
+        (`isolated-git.ts`); an ambient `GIT_DIR` or a `refs/replace` entry
+        cannot change what the pinned commit reads.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:
