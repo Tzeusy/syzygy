@@ -1,0 +1,99 @@
+{
+  "subject": "scripts/check_governance.py",
+  "subjectSha256": "8641978e28d817723c0bf6c5d2a6c23d26fd28ead054bd2f3a775322882bbb26",
+  "commit": "719f404d5b1e0da26c716e639f22107ee6c63ec8",
+  "bead": "syzygy-eexf",
+  "rule": "AGENTS.md verification rule 6",
+  "baselineSelftestExit": 0,
+  "mutants": [
+    {
+      "id": "M1-cg22c-coverage-always",
+      "mutates": "CG-22c treats every dimension as covered",
+      "file": "scripts/check_governance.py",
+      "old": "                if not any(d.endswith(q) for q in STATUS_QUALIFIERS)]",
+      "new": "                if False]",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-22c registry dimension the list misses detected"
+      ]
+    },
+    {
+      "id": "M2-cg22c-unparsed-passes",
+      "mutates": "CG-22c passes when the dimension table does not parse",
+      "file": "scripts/check_governance.py",
+      "old": "        res.add(\"FAIL\", label, 0, 1, \"dimension\",",
+      "new": "        res.add(\"OK\", label, 0, 0, \"dimension\",",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-22c unparseable dimension table fails, never passes"
+      ]
+    },
+    {
+      "id": "M3-cg22c-exact-match",
+      "mutates": "CG-22c requires an exact name instead of a suffix",
+      "file": "scripts/check_governance.py",
+      "old": "                if not any(d.endswith(q) for q in STATUS_QUALIFIERS)]",
+      "new": "                if d not in STATUS_QUALIFIERS]",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-22c dimension in its long prose form is still covered",
+        "FAIL  CG-22c registry dimension the list misses detected"
+      ]
+    },
+    {
+      "id": "M4-cg17-hardcoded-population",
+      "mutates": "CG-17 population hard-coded back to RFC 6-11",
+      "file": "scripts/check_governance.py",
+      "old": "    sections = {int(n) for n in MATRIX_SECTION.findall(body)}",
+      "new": "    sections = {6, 7, 8, 9, 10, 11}",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-17 a twelfth contract's section joins the population"
+      ]
+    },
+    {
+      "id": "M5-cg17-no-section-passes",
+      "mutates": "CG-17 with no parsed section falls through instead of failing",
+      "file": "scripts/check_governance.py",
+      "old": "    if not sections:\n        res.add(\"FAIL\", \"CG-17  surface clauses routed exactly once\", 0, 1,",
+      "new": "    if False:\n        res.add(\"FAIL\", \"CG-17  surface clauses routed exactly once\", 0, 1,",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-17 matrix with no contract section fails"
+      ]
+    },
+    {
+      "id": "M6-cg17-unsectioned-silent",
+      "mutates": "CG-17 stops printing contracts outside the population",
+      "file": "scripts/check_governance.py",
+      "old": "            unsectioned.add(n)\n",
+      "new": "",
+      "occurrences": 1,
+      "run": "check_governance.py --selftest (fresh clone)",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  CG-17 contract with modules and no section is printed"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "killed": 6
+  }
+}
