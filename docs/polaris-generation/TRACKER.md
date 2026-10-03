@@ -19,6 +19,10 @@ The gap analysis is [REDIS-DOSSIER-GAP-ANALYSIS.md](REDIS-DOSSIER-GAP-ANALYSIS.m
 (research note, binds nothing). Its gap numbers (#1–#22) are cited below as
 `[gap #n]`.
 
+After the sitting, [REDIS-DOSSIER-RUN-GUIDE.md](REDIS-DOSSIER-RUN-GUIDE.md) says
+what to run and what to expect (candidate; its `poc:dossier` commands are
+Unknown until the wiring PR merges).
+
 **The floor.** SEC-2 makes consent per project, so the sentence still needs one
 owner sitting for the first target. After that, each new repository needs one
 option-selection.
