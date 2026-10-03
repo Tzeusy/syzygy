@@ -117,8 +117,9 @@ rule names `.claim-section` as well: the reading layout's later
 
 One `POLARIS_COPY` sentence (`legend.sources`) sits directly before the
 sources table, and the table region names it with `aria-describedby`. It
-decodes the identity (repository, revision, path, Git object id) and the
-Rule, Anchor, Outcome and Digest fields, and says a digest is neither
+decodes the identity (repository, revision, path, and the Git object id for
+a blob, `not-a-blob` for a tree or commit, or `missing`) and the Rule,
+Anchor, Outcome and Digest fields, and says a digest is neither
 permission to read the bytes nor a verification of them. It is outside any
 `<details>` and adds no link. `polaris-reconciliation.test.ts` holds it to
 the five source rules, the anchor union and the four rendered outcomes.
