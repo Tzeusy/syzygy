@@ -15,6 +15,26 @@ interface CleanupObservation {
   readonly livePids: number[];
 }
 const cleanupObservations: CleanupObservation[] = [];
+
+// Two kinds of wall-clock bound live in this file, and they are kept apart
+// (syzygy-ve8n: three tests failed under a full suite at load average 60-90).
+//
+// LIVENESS_MS bounds a wait for a state the test goes on to assert: a fixture
+// binding, a marker file, a process exit, a successor listener. It never
+// decides an outcome, so it is generous; under load it only waits longer.
+// The same budget is passed as `timeoutMs` wherever the restart is expected
+// to finish before its deadline (30 s is restart.ts's own ceiling).
+//
+// An outcome deadline (100 ms, 150 ms) is kept short only where the test makes
+// the deadline the sole possible exit: a held listener that cannot close, an
+// inspection that never reports socket absence, or a cleanup scan whose
+// injected reader can never succeed. No scheduling delay can let
+// any other outcome win there, so no clock injection is needed.
+//
+// TEST_MS is vitest's per-test budget: several fixture spawns at LIVENESS_MS
+// each must fit inside it.
+const LIVENESS_MS = 30_000;
+const TEST_MS = 180_000;
 let startedTests = 0;
 const ownerUid = process.getuid?.();
 
@@ -69,7 +89,7 @@ async function freePort(): Promise<number> {
   return address.port;
 }
 
-async function readRevision(port: number, timeoutMs = 5000): Promise<string> {
+async function readRevision(port: number, timeoutMs = LIVENESS_MS): Promise<string> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
@@ -81,7 +101,7 @@ async function readRevision(port: number, timeoutMs = 5000): Promise<string> {
   throw new Error('private fixture listener did not start');
 }
 
-async function waitForMarker(marker: string, timeoutMs = 5000): Promise<void> {
+async function waitForMarker(marker: string, timeoutMs = LIVENESS_MS): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (!existsSync(marker)) {
     if (Date.now() >= deadline) throw new Error(`private fixture did not write ${marker}`);
@@ -89,7 +109,7 @@ async function waitForMarker(marker: string, timeoutMs = 5000): Promise<void> {
   }
 }
 
-async function waitForExit(pid: number, timeoutMs = 5000): Promise<void> {
+async function waitForExit(pid: number, timeoutMs = LIVENESS_MS): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (readProcessProvenance(pid) !== undefined) {
     if (Date.now() >= deadline) throw new Error(`private fixture process ${pid} did not exit`);
@@ -243,7 +263,7 @@ async function drainPrivateFixtureProcesses(options: {
   const readIdentity = options.readIdentity ?? readProcessIdentity;
   const signal = options.signal ?? ((pid, value) => process.kill(pid, value));
   const sleep = options.sleep ?? (() => new Promise(resolveWait => setTimeout(resolveWait, 25)));
-  const deadline = Date.now() + (options.timeoutMs ?? 5000);
+  const deadline = Date.now() + (options.timeoutMs ?? LIVENESS_MS);
   const seen = new Map<number, ProcessIdentity>();
   while (true) {
     try {
@@ -298,7 +318,7 @@ afterEach(async () => {
   expect(observation.livePids).toEqual([]);
   pids.splice(0);
   for (const root of roots) rmSync(root, { recursive: true, force: true });
-});
+}, TEST_MS);
 
 afterAll(() => {
   // Denominator: every test that started was observed once, so an empty or
@@ -308,7 +328,7 @@ afterAll(() => {
   expect(exactPrivateFixtureProcesses()).toEqual([]);
 });
 
-describe('one-listener POC restart on private fixture sockets', () => {
+describe('one-listener POC restart on private fixture sockets', { timeout: TEST_MS }, () => {
   it('waits through one vanished post-SIGTERM identity, then starts exactly one successor after socket absence', async () => {
     const f = await startedFixture('slow');
     const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
@@ -316,7 +336,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(await readRevision(f.port)).toBe('old-revision');
     let inspections = 0;
     const result = await restartOnePocListener({
-      port: f.port, expectedScript: fixture, timeoutMs: 5000,
+      port: f.port, expectedScript: fixture, timeoutMs: LIVENESS_MS,
       inspect: port => {
         inspections += 1;
         if (inspections === 3) throw new RestartRefusal('listener-identity-unreadable');
@@ -331,14 +351,14 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(await readRevision(f.port)).toBe('new-revision');
     expect(readFileSync(join(f.stateDir, 'machine-credential.token'))).toEqual(credentialBefore);
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-  }, 15_000);
+  });
 
   it.each(['listener-identity-unreadable', 'listener-identity-incomplete'])(
     'refuses a %s identity before SIGTERM and leaves the old listener serving', async code => {
       const f = await startedFixture();
       let inspections = 0;
       await expect(restartOnePocListener({
-        port: f.port, expectedScript: fixture, timeoutMs: 1000,
+        port: f.port, expectedScript: fixture, timeoutMs: LIVENESS_MS,
         inspect: port => {
           inspections += 1;
           if (inspections === 2) throw new RestartRefusal(code);
@@ -363,7 +383,11 @@ describe('one-listener POC restart on private fixture sockets', () => {
         },
       })).rejects.toMatchObject({ code: 'listener-close-timeout' });
       expect(inspections).toBeGreaterThan(2);
+      // SIGTERM was sent; the closed socket is a state, so wait for the exit
+      // rather than racing the fixture's shutdown, then assert no successor.
+      await waitForExit(f.pid);
       await expect(fetch(`http://127.0.0.1:${f.port}/`)).rejects.toThrow();
+      expect(exactPrivateFixtureProcesses()).toEqual([]);
       expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
     },
   );
@@ -376,7 +400,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
       const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
       let inspections = 0;
       await expect(restartOnePocListener({
-        port: f.port, expectedScript: fixture, timeoutMs: 1000,
+        port: f.port, expectedScript: fixture, timeoutMs: LIVENESS_MS,
         inspect: port => {
           inspections += 1;
           if (inspections === 3) {
@@ -391,7 +415,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
       expect(inspections).toBe(3);
       expect(readFileSync(join(f.stateDir, 'machine-credential.token'))).toEqual(credentialBefore);
       expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-    }, 15_000,
+    },
   );
 
   it('closes one listener, reuses credential bytes and state dir, and serves only the new fixture revision', async () => {
@@ -400,7 +424,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
     const credentialBefore = readFileSync(credentialPath);
     writeFileSync(join(f.repo, 'revision'), 'new-revision');
     expect(await readRevision(f.port)).toBe('old-revision');
-    const result = await restartOnePocListener({ port: f.port, expectedScript: fixture, expectedCwd: process.cwd(), timeoutMs: 5000 });
+    const result = await restartOnePocListener({ port: f.port, expectedScript: fixture, expectedCwd: process.cwd(), timeoutMs: LIVENESS_MS });
     pids.push(result.newPid);
     expect(result.oldPid).toBe(f.pid);
     expect(result.newPid).not.toBe(f.pid);
@@ -408,11 +432,11 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(await readRevision(f.port)).toBe('new-revision');
     expect(readFileSync(credentialPath)).toEqual(credentialBefore);
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-  }, 15_000);
+  });
 
   it('refuses an absent listener and ambiguous owner rows without signaling anyone', async () => {
     const port = await freePort();
-    await expect(restartOnePocListener({ port, expectedScript: fixture, timeoutMs: 1000 })).rejects.toMatchObject({ code: 'listener-absent' });
+    await expect(restartOnePocListener({ port, expectedScript: fixture, timeoutMs: LIVENESS_MS })).rejects.toMatchObject({ code: 'listener-absent' });
     const row = `LISTEN 0 511 127.0.0.1:${port} 0.0.0.0:* users:(("node",pid=123,fd=9))`;
     expect(() => listenerPidFromSs(`${row}\n${row}`, port)).toThrow('multiple-listeners');
     expect(() => listenerPidFromSs(row.replace('pid=123', 'fd=123'), port)).toThrow('listener-owner-ambiguous');
@@ -486,7 +510,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
     const first: PocListener = { pid: f.pid, started: '1', argv, cwd: process.cwd() };
     const second: PocListener = { ...first, started: '2' };
     let calls = 0;
-    await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: 1000, inspect: () => ++calls === 1 ? first : second }))
+    await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: LIVENESS_MS, inspect: () => ++calls === 1 ? first : second }))
       .rejects.toMatchObject({ code: 'listener-changed-before-signal' });
     expect(await readRevision(f.port)).toBe('old-revision');
   });
@@ -504,13 +528,13 @@ describe('one-listener POC restart on private fixture sockets', () => {
     await waitForExit(f.pid);
     expect(exactPrivateFixtureProcesses()).toEqual([]);
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-  }, 15_000);
+  });
 
   it('discovers an unreturned successor after a post-spawn identity refusal', async () => {
     const f = await startedFixture();
     let successorPid: number | undefined;
     await expect(restartOnePocListener({
-      port: f.port, expectedScript: fixture, timeoutMs: 5000,
+      port: f.port, expectedScript: fixture, timeoutMs: LIVENESS_MS,
       inspect: port => {
         const current = inspectPocPort(port);
         if (current === null || current.pid === f.pid) return current;
@@ -525,11 +549,11 @@ describe('one-listener POC restart on private fixture sockets', () => {
   it('reports a failed successor and lets a concurrent loser fail before signaling', async () => {
     const failed = await startedFixture();
     writeFileSync(join(failed.repo, 'fail-next'), 'yes');
-    await expect(restartOnePocListener({ port: failed.port, expectedScript: fixture, timeoutMs: 3000 }))
+    await expect(restartOnePocListener({ port: failed.port, expectedScript: fixture, timeoutMs: LIVENESS_MS }))
       .rejects.toMatchObject({ code: 'successor-failed' });
     const concurrent = await startedFixture('held');
     writeFileSync(join(concurrent.repo, 'revision'), 'new-revision');
-    const first = restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 10_000 })
+    const first = restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: LIVENESS_MS })
       .then(result => ({ kind: 'succeeded' as const, result }), error => ({ kind: 'failed' as const, error }));
     let winner: Awaited<ReturnType<typeof restartOnePocListener>> | undefined;
     try {
@@ -537,7 +561,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
       writeFileSync(join(concurrent.repo, 'hold-probe'), 'probe');
       await waitForMarker(join(concurrent.repo, 'hold-ack'));
       expect(await readRevision(concurrent.port)).toBe('old-revision');
-      const second = await restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 5000 })
+      const second = await restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: LIVENESS_MS })
         .then(result => { pids.push(result.newPid); return { kind: 'succeeded' as const, result }; },
           error => ({ kind: 'refused' as const, error }));
       expect(second.kind).toBe('refused');
@@ -554,5 +578,5 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(winner.newPid).not.toBe(concurrent.pid);
     expect(await readRevision(concurrent.port)).toBe('new-revision');
     expect(readdirSync(concurrent.stateDir)).toEqual(['machine-credential.token']);
-  }, 20_000);
+  });
 });
