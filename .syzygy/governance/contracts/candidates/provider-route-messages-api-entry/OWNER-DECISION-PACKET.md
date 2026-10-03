@@ -1,0 +1,71 @@
+# Owner decision packet — Messages API provider route registry entry
+
+> **Candidate — binds nothing.** Drafted 2026-10-03. Effect comes only from an
+> owner act over the entry's exact bytes. A commit, a review or a passing check
+> performs none. No target repository body has been read and no provider has
+> been called.
+
+## What this is
+
+One registry entry for the provider route that calls the Anthropic Messages
+API directly through `@anthropic-ai/sdk` 0.131.0 (PR #264), as route B. It is
+**a substitute for PR #255's Agent SDK provider entry, never an addition**:
+RFC4-1 allows one adapter per authority per project, both entries address the
+same authority, and the owner adopts one. Choosing this one leaves PR #255's
+provider entry unadopted (its source-acquisition entry is unaffected).
+
+Like PR #255's entries it is a candidate to read, not a usable entry:
+`implementationVersion` is null, so RFC4-3 admits no output from it. Signing it
+registers its declared boundary and enables nothing.
+
+## How the act would be given
+
+The form proposed is the same as PR #255's: an option selection naming the
+entry "at the manifest row" of `MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt`,
+stated as provenance state (1), `owner-adopted (bootstrap, uncorrelated)`, A1
+audit-record identity absent. A recorder would bind the act to that row. The
+version-tagged Scope A sign-off is not used [Inferred], for the reason PR #255
+gives.
+
+## Questions for the owner
+
+None is decided by this packet.
+
+**O1. Messages API route or Agent SDK route?** *Recommended:* this route, if
+the owner accepts a direct API key. It sends strictly less than the Agent SDK
+route (no system prefix, metadata, environment message, per-run device id or
+probe), it has no bundled CLI, and its whole request is listed in the entry.
+The cost: it needs an API key, not the owner's sign-in. If the owner will not
+supply one, PR #255's entry is the route.
+
+**O2. Reading of the confirmed egress record.** [Inferred] No enforceable
+condition of the record (PR #215) is violated. Three wordings need the owner's
+reading (set out in the entry's `egressRecordFit` and the semantic delta): the
+record names the Agent SDK route; it permits only bytes "fixed by the runtime"
+beyond the generator's, while this entry pins model, effort and a ceiling
+itself; and it says "nothing else". If any is read restrictively a text-only
+egress record version is needed, adding no class and no destination, and the
+same holds for PR #255's entry on the last two. *Recommended:* read them as
+descriptive and the pinned fields as the entry's listed bytes; the owner's
+reading decides.
+
+**O3. Credential.** API key only, from one environment variable, never logged.
+The name `ANTHROPIC_API_KEY` is a proposal [Inferred]. *Recommended:* accept;
+any other name is a different byte in the entry.
+
+**O4. Profile pins.** Model `claude-opus-5-5`, effort `high`, no tools,
+thinking off or adaptive only (no `budget_tokens`), max_tokens ceiling 64000.
+The ceiling is an [Inferred] proposal, not measured. *Recommended:* accept as
+the ceiling for the first run and treat its measurement as the input to a
+later entry version.
+
+## What it does not do
+
+It grants no read, egress, write, execution or release; installs nothing in
+the registry directory; and changes no adopted specification, policy or
+consent. It does not touch the Butlers entry.
+
+## Review
+
+A fresh-context review precedes any offering; `REVIEW-BRIEF.md` names the
+artifacts, references and criteria. No round has run.

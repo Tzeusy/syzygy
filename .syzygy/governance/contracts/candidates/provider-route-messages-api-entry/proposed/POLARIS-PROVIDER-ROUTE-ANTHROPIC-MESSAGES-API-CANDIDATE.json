@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "registryVersion": "1.0.0-candidate.1",
+  "status": "candidate-entry-no-effect-until-owner-act",
+  "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+  "project": "project:syzygy",
+  "entries": [
+    {
+      "observerId": "polaris-provider-route-anthropic-messages-api",
+      "observerVersion": "1.0.0-candidate.1",
+      "role": "adapter",
+      "implementationId": "polaris-generation/provider-messages-api",
+      "implementationVersion": null,
+      "implementationStatus": "not-yet-implemented as a registered adapter: the adapter (createMessagesApiGenerate) is on an unmerged branch (PR #264, stacked on PR #258, head dd526b0c3d4de2c1add4288469e320c8c52af99b at drafting). This version is a candidate for the owner to read, not a usable entry: RFC4-3 admits no output from an entry whose implementationVersion is Unknown, so a later version carrying the implementation version and the pinned governing contract version replaces this one through its own review and act. implementationVersion stays null (Unknown), never a placeholder",
+      "contractId": "RFC-0004/general-contract",
+      "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
+      "contractVersionSource": "the value the adopted Butlers observer entry declares for the same contract; re-derive by script before the offering",
+      "governingBehaviorContract": {
+        "id": "polaris-manifesto-generation",
+        "version": "Unknown: pinned by the offering step to the generation specification bytes in force, base REQ-polaris-generation-017 plus the understanding and tree-form amendments",
+        "signedBy": "pending exact owner act over this entry"
+      },
+      "subject": {
+        "observingProject": "project:syzygy",
+        "provider": "provider:anthropic"
+      },
+      "authorizationModes": [
+        "owner-trusted-bootstrap"
+      ],
+      "authorizationModeDerivation": "the entry needs an effective exact owner act (RFC3-16(a)) and the effective egress consent for the (project:syzygy, provider:anthropic) pair; owner-trusted-bootstrap while those acts are state (1); every other combination dispatches nothing",
+      "provenanceDisclosure": "The route is admitted on owner-trusted records; independent audit is not configured.",
+      "inputClasses": [
+        {
+          "class": "admitted-source-bundle",
+          "identityScheme": "canonical-json-sha256-of-admitted-input"
+        },
+        {
+          "class": "stage-prompt",
+          "identityScheme": "stage-plus-prompt-version"
+        },
+        {
+          "class": "response-schema",
+          "identityScheme": "stage-plus-schema-version"
+        },
+        {
+          "class": "egress-consent",
+          "identityScheme": "record-id-plus-version-plus-provenance-state"
+        },
+        {
+          "class": "content-classification-policy",
+          "identityScheme": "policy-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "provider-route-registry-entry",
+          "identityScheme": "observer-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "run-and-attempt-identity",
+          "identityScheme": "run-id-plus-stage-plus-attempt-ordinal"
+        },
+        {
+          "class": "run-budget",
+          "identityScheme": "canonical-json-sha256"
+        },
+        {
+          "class": "runtime-version-and-configuration",
+          "identityScheme": "sdk-version-plus-canonical-json-sha256-of-run-profile"
+        },
+        {
+          "class": "api-key-credential",
+          "identityScheme": "not-recorded: the name of the one environment variable that supplies it is recorded; its presence is a precondition, its value and identity are never written to a record or log"
+        }
+      ],
+      "outputFactClasses": [
+        {
+          "class": "provider-reply-capture",
+          "identityScheme": "attempt-id-plus-sha256-of-reply-bytes"
+        },
+        {
+          "class": "usage-record",
+          "identityScheme": "attempt-id-plus-reported-or-unknown"
+        },
+        {
+          "class": "dispatch-evidence",
+          "identityScheme": "attempt-id-plus-captured-request-sha256"
+        },
+        {
+          "class": "model-identity",
+          "identityScheme": "attempt-id-plus-model-id-reported-or-unknown"
+        },
+        {
+          "class": "unknown",
+          "identityScheme": "claim-identity-plus-closed-reason"
+        }
+      ],
+      "determinismClass": "capture",
+      "determinism": "every output is a recording of what the provider returned at a capture instant; a re-dispatch may legitimately differ. The generated prose is editorial inference, never an Observed claim and never repeatable by contract",
+      "typedAuthority": {
+        "authorityType": "model-provider",
+        "authorityTypeLabel": "[Inferred] a provider is an external authority of project:syzygy under RFC4-1; the typed-authority list in the RFC names version control, hosting, the scheduler and the OpenSpec CLI as examples, so this type name is the drafter's",
+        "questions": [
+          "What did the provider return for this exact request?"
+        ],
+        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the profile-set fields and the headers listed in full in requestBytes, and receives the reply. [Observed, capture endpoint, no provider contacted] the body is exactly: model, max_tokens, system (a string), messages (one user message whose content is the stage input string), output_config.effort, stream, and the profile's thinking field when it is not off; there is no tools, metadata, context or cache_control field, no subprocess, no probe request and no ?beta query",
+        "writeSurface": [],
+        "runDirectoryWrites": "provider requests, replies and run records are written inside the run directory under project:syzygy's state directory, outside git, from the start of the run (the egress record's retention line). The route has no subprocess and no runtime state or session transcript of its own. [Unknown] whether the SDK library writes any file outside that directory; the isolation test (PR #264) shows only the capture endpoint named on one successful path and checks no file writes",
+        "databaseAccess": [],
+        "networkAccess": [
+          "the Anthropic API host, POST /v1/messages only, from the loopback runtime egress gate, signed with the API key in the x-api-key header; no probe, no other path and no other destination"
+        ],
+        "executeObservedCode": false,
+        "workingTreeRead": false,
+        "toolInvocation": [],
+        "generatorBuiltContent": "exactly two request parts are generator content: the stage system prompt (the system field, a string) and the stage input envelope (the content of the one user message, a string). Everything else in the request is listed in requestBytes as SDK-fixed or pinned by this entry and carries no source span",
+        "writeSurfaceArgument": "writeSurface is empty because nothing is written to the observed repository, its forks, its tracker or any Anthropic-hosted object the owner could later edit. The dispatch itself is an effect (the pipeline rechecks effect permission immediately before it, and the runtime egress gate asks the consent switch again for every request, retries included); the egress consent is the explicit authority for that effect and for the provider's retention under the account's terms, which this entry does not widen",
+        "toolInvocationNote": "the empty list holds: the body carries no tools field, and the adapter refuses any reply content block that is not text, thinking or redacted thinking, so a tool call is never output",
+        "credential": {
+          "kind": "API key only; no subscription sign-in, no OAuth, no credential file",
+          "source": "one environment variable, ANTHROPIC_API_KEY [Inferred: the name is this entry's proposal; the adapter takes the key as its apiKey configuration value and no code at the drafting commit reads any environment variable for it, so the caller that builds the configuration reads exactly this variable and no other]",
+          "disclosure": "the key leaves the machine in the x-api-key header of the one forwarded request, to the upstream host only; the gate refuses any request whose x-api-key differs from the configured key",
+          "neverLogged": "the key is never written to a record, log, error or receipt. [Observed in the adapter source at drafting] the failure object carries a closed code, an attempt count and a status; the attempt record carries ids, outcome, status, usage and backoff; the gate decision records are content-free; none has a credential field. A later version's offering re-checks this against the implementation",
+          "refresh": "none: a static key is neither refreshed nor rewritten"
+        },
+        "runtimeEgressGate": {
+          "name": "the loopback runtime egress gate (startEgressGate)",
+          "source": "packages/polaris-generation-provider/src/egress-gate.ts at commit dd526b0c3d4de2c1add4288469e320c8c52af99b of PR #264, git blob 3704e4036479cb5edd7f63700380e645370a3c59; request-acceptance.ts blob 87b30864de8d79fa8b69f2be2ca94d8c22f94a3d; messages-api-provider.ts blob 5247e452e79810fda944b6bb8ec2e4900d27c7d6. Unmerged; provenance only, and the rules below are the entry's own statement of what the implementation will enforce",
+          "rules": [
+            "the adapter's client is pointed at an in-process loopback server and never at a provider",
+            "a request is forwarded only when all hold: (1) the current try armed an acceptance predicate and the exact request satisfies it (body fields by value, header names and values against the literals and shapes in requestBytes, x-api-key equal to the configured key); (2) the injected consent switch permitted() returns exactly true now, asked again for every request, retries included; (3) an explicit upstream is configured",
+            "otherwise the gate answers 403 and no byte leaves; one try is armed at a time",
+            "the gate removes the incoming host and connection headers and forwards the rest unchanged; it forwards to the one configured upstream only",
+            "a body-less HEAD /api/hello is answered by the gate and never forwarded; this route sends none"
+          ],
+          "limits": "[Observed in the source] the gate sees only HTTP to its own port; anything the process does outside that port is bounded by the environment, the run directory and the isolation test, not by the gate"
+        }
+      },
+      "routeConditions": {
+        "source": "record PUBLIC-EGRESS-anthropic of the public-repo admission package (PR #215), record version 0.1.0-candidate.7. A version string does not identify bytes (the record kept that version across edits), so this entry pins the bytes it was compared against: path .syzygy/governance/contracts/candidates/public-repo-admission/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md, git blob 57f11a71e944e94f640f1748358e76faba49ae90, identical at commit 7704b4a575acf29de93e3872ff549a856e6395ec and at the branch head b17207ce7d2d5d314b683e111e4440886916cffe at drafting; the offering step re-pins the record by the digest of its own manifest row. The egress record is the authority; this block only declares what the implementation will enforce and cannot widen it",
+        "tools": "the body carries no tools field and no tool of the provider's side is offered or invoked; a reply content block that is not text, thinking or redacted thinking is refused as no output",
+        "ambientContext": "none: the request carries no instruction or memory files, settings, MCP servers, hooks, environment summary, safeguards block, metadata or context field, and no system prefix of the SDK's own. The only model-visible bytes the generator did not build are the profile-set fields listed in requestBytes (model, max_tokens, output_config.effort and the thinking field when on), which steer the model without being context",
+        "telemetry": "the route has no subprocess, runtime or update check; the SDK is a library called in-process and sends nothing outside the gated request. [Observed, capture endpoint] the one successful path names no other socket address; error paths beyond 429 and 529 were not captured",
+        "stateLocation": "the route keeps no state or transcript of its own; run records are written inside the run directory. A run whose adapter cannot write there does not start",
+        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts (system string, user message string) byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: the sdkFixed list, the routeFixedByThisEntry values, the headers list and the shapes, for the pinned SDK version. Any byte, header or field in neither fails. The same predicate is enforced per request by the runtime egress gate",
+        "fallback": "none: a failure never routes to another provider, to the Agent SDK route or to a tool",
+        "egressRecordFit": {
+          "status": "[Inferred] a drafter's comparison of this entry with the confirmed egress record bytes pinned in source; the owner reads the record's own wording",
+          "fitsWithoutNewVersion": [
+            "permitted content classes and the generated field table: route-independent; the route sends system as the system prompt and input as the user message, exactly the table's last block of rows",
+            "no tools on the provider's or the route's side: satisfied (no tools field)",
+            "adds no context of its own: satisfied more strictly than the Agent SDK route (no system prefix, no metadata, no environment message)",
+            "telemetry, error reporting and update checks disabled: vacuous, no runtime process exists",
+            "retention in the run directory: satisfied; there is no runtime state to keep"
+          ],
+          "needsReading": [
+            "the record's 'Provider and route' line and title name the Claude Agent SDK (Claude Code runtime). If the owner reads that as descriptive, this route fits; if as restrictive, this route needs an egress record version that names the Messages API route, a text-only change that adds no class and no destination",
+            "the record says a field outside the table is refused and the route adds 'only the bytes that its registered provider execution route entry lists as fixed by the runtime'. model, max_tokens, output_config.effort and thinking are not table fields and are not fixed by a runtime; this entry pins them (the same method the Agent SDK entry uses), and stream and the headers are fixed by the SDK library. Whether pinned profile fields satisfy 'fixed by the runtime' is the owner's reading and is the same open point as the Agent SDK entry's",
+            "the record says the adapter is accepted only when a captured request shows the system prompt and messages the generator built 'and nothing else'. The captured body also carries the profile-set fields. If read literally, a text-only egress version is needed for either route"
+          ],
+          "conclusion": "no enforceable condition of the record is violated by this route; two wordings (the route name, 'nothing else') need the owner's reading, and the route sends strictly less than the Agent SDK route"
+        }
+      },
+      "portMapping": {
+        "implements": "PipelinePorts.generate in packages/polaris-generation-core/src/pipeline.ts",
+        "consumes": [
+          "permissionIdentity",
+          "admit",
+          "permitted",
+          "releaseUnsent",
+          "record",
+          "lateReceipt"
+        ],
+        "note": "[Observed in the adapter source at drafting] the ports exist; the usage figure is the sum of the final message's token counts across the tries made, Unknown (null) when any count is not a non-negative integer or any try's billing is unknown, so usage fields are Unknown (Missing quantity) rather than zero when unreported; the model identifier is the final message's model field"
+      },
+      "unknowns": [
+        "[Unknown] whether the real API accepts output_config.effort, or the adaptive thinking field, for the pinned model with this body: only a capture endpoint has seen these bytes (PROVIDER-EGRESS-BYTES.md, PR #264)",
+        "[Unknown] traffic on paths the capture did not take: error handling beyond 429 and 529, long streams and connection resets",
+        "[Unknown] whether the SDK library writes a file outside the run directory",
+        "[Unknown] no code at the drafting commit reads ANTHROPIC_API_KEY; the credential path is a proposal until the caller exists",
+        "the model's context window and the account's rate limits",
+        "the provider's own retention under the terms and settings of the key used, which the egress record discloses and does not promise"
+      ],
+      "failureStates": {
+        "consentWithdrawn": {
+          "degradationState": "Consent withdrawn",
+          "unknownReason": "unconsented-source-or-provider"
+        },
+        "routeUnreachable": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "gateOrConfigurationCannotMeetRouteConditions": {
+          "executionFact": "the run does not start",
+          "unknownReason": "execution-blocked",
+          "note": "an invalid configuration, a missing key, an SDK version other than the pin, a missing upstream or an unwritable run directory: an environment the profile could not satisfy (RFC2-24 reason 12); not an observer error, and no degradation state is invented"
+        },
+        "gateRefusedRequest": {
+          "executionFact": "the gate answered 403 and no byte left",
+          "unknownReason": "unconsented-source-or-provider when the consent switch refused; execution-blocked when the acceptance predicate or the upstream setting refused",
+          "note": "the adapter's egress-refused failure; the gate decision records name fields, never values"
+        },
+        "classificationIndeterminate": {
+          "degradationState": "Excluded content",
+          "unknownReason": "excluded-content"
+        },
+        "usageUncertain": {
+          "degradationState": "Missing quantity",
+          "unknownReason": "missing-evidence",
+          "note": "the pipeline stops with usage-uncertain when a try's billing is unknown; absent tokens are Unknown, never zero (RFC2-23). RFC2-23 names no reason for Missing quantity: unreported usage is an absent evidence quantity for a cost claim, which is reason 2 rather than an uncaptured deterministic input (reason 10) [Inferred]"
+        },
+        "dispatchUncertain": "not a degradation state: an execution fact (the pipeline stops with effect-uncertain and a lease expiry never replays the request), routed through the existing claim-reason predicate like budget exhaustion (ADAPTER-DECLARATIONS.md, failure behaviour)",
+        "budgetExhaustedOrRejectedOutput": "not a degradation state: distinct execution facts (ADAPTER-DECLARATIONS.md, failure behaviour); a reply with no text, or with a block other than text or thinking, is rejected output",
+        "adapterFailureAtReachableEndpoint": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable",
+          "note": "a provider error status, or rate limiting that outlasts the retry budget (429 and 529 are retried inside it), at a reachable endpoint is an adapter error (RFC4-4), distinct from routeUnreachable"
+        },
+        "cancelledOrDeadline": "not a degradation state: execution facts like budget exhaustion (the pipeline stops with cancelled or deadline; the adapter's aborted and deadline failures), routed through the existing claim-reason predicate"
+      },
+      "admissionFailureMapping": {
+        "missingConsent": "unconsented-source-or-provider (a refused effect under the permission predicate; no withdrawal event is invented)",
+        "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",
+        "missingRegistryEntry": "source-uncaptured-or-unreachable",
+        "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
+      },
+      "adoptionStatus": "candidate-entry-unadopted",
+      "supersession": "signing these bytes would register the route's declared boundary and enable nothing; a usable entry is a later observerVersion that fills implementationVersion and governingBehaviorContract.version, is reviewed afresh and is signed by its own act (rule 10: any byte change retires this row)",
+      "routeSubstitution": {
+        "rule": "RFC4-1: every external authority is reached through exactly one registered adapter per project. This entry is a SUBSTITUTE for the Agent SDK entry polaris-provider-route-anthropic-agent-sdk (PR #255), never an addition: it names the same project and the same provider authority, and adopting it replaces that entry by a successor version or entry under a new act; it never runs beside it and neither falls back to the other",
+        "substitutes": "polaris-provider-route-anthropic-agent-sdk",
+        "authorityKey": {
+          "observingProject": "project:syzygy",
+          "provider": "provider:anthropic",
+          "authorityType": "model-provider"
+        },
+        "onlyOneAdoptable": "an owner who signs both entries leaves two registered adapters for one authority, which RFC4-1 forbids; the packet asks for exactly one"
+      },
+      "runtimePin": {
+        "package": "@anthropic-ai/sdk",
+        "version": "0.131.0",
+        "bundledCli": null,
+        "note": "[Inferred] per PROVIDER-EGRESS-BYTES.md (PR #264): the header literals were observed against 0.131.0 and are enforced as literals, so another SDK version makes requests fail closed until the literals are re-derived; the adapter is unmerged and a bump is a new entry version. There is no bundled CLI or subprocess"
+      },
+      "snapshotInputMapping": {
+        "label": "[Inferred] RFC2-1 items; the installed Butlers entry carries no mapping, so the gap is inherited and this mapping is the drafter's",
+        "admitted-source-bundle": "item 8 (deterministic configuration affecting classification) and item 1 for the admitted revisions it was drawn from",
+        "stage-prompt": "item 8",
+        "response-schema": "item 8",
+        "egress-consent": "item 11 (owner-act record establishing effective status)",
+        "content-classification-policy": "items 7 and 11",
+        "provider-route-registry-entry": "items 7 and 11",
+        "run-and-attempt-identity": "item 6 (captured execution evidence)",
+        "run-budget": "item 8",
+        "runtime-version-and-configuration": "item 7",
+        "api-key-credential": "none: never recorded (its presence is a precondition, not a snapshot input)",
+        "outputs": "provider-reply-capture, usage-record, dispatch-evidence and model-identity are item 6"
+      },
+      "determinismByOutputClass": {
+        "provider-reply-capture": "capture",
+        "usage-record": "capture",
+        "dispatch-evidence": "capture",
+        "model-identity": "capture",
+        "unknown": "derivation-deterministic"
+      },
+      "requestBytes": {
+        "status": "the exact request the route may carry for the pinned version, inline so the bytes an act binds are these bytes; PROVIDER-EGRESS-BYTES.md is cited as provenance only and its later edits change nothing here",
+        "provenance": "[Observed, capture endpoint, no provider contacted] PROVIDER-EGRESS-BYTES.md, section 'Messages API route', on the branch of PR #264: blob cd50a3139f0ea35dbb5134f7b233afe452836071 at commit dd526b0c3d4de2c1add4288469e320c8c52af99b; the header literals and shapes below are those of acceptMessagesApiRequest in messages-api-provider.ts (blob 5247e452e79810fda944b6bb8ec2e4900d27c7d6) at that commit. No separate review record of the header list exists at drafting; this list is the source and the capture test, and the reviewer re-derives it. That adapter is unmerged",
+        "pinnedVersions": {
+          "package": "@anthropic-ai/sdk",
+          "version": "0.131.0",
+          "bundledCli": null
+        },
+        "endpoint": "POST /v1/messages (no query string)",
+        "generatorBuilt": [
+          "system: exactly the stage system prompt, as a string (no cache_control)",
+          "messages[0]: one user message whose content is exactly the stage input envelope, as a string (no cache_control)"
+        ],
+        "sdkFixed": [
+          "stream: true (the SDK's stream helper)",
+          "messages[0].role: user",
+          "the headers below, in the literals and shapes listed"
+        ],
+        "runtimeFixed": [
+          "none: no subprocess, no system prefix, no empty system message, no metadata"
+        ],
+        "routeFixedByThisEntry": {
+          "model": "claude-opus-5-5",
+          "tools": "absent: the body has no tools field",
+          "effort": "high (sent as output_config.effort)",
+          "thinking": "profile-set, one of two values only: off (the thinking field is absent) or adaptive (exactly {\"type\":\"adaptive\"}). Any other value, including an enabled form with budget_tokens, is not a permitted configuration of this entry even though the adapter source accepts it, and the acceptance check refuses it",
+          "maxTokensCeiling": "[Inferred proposal, an owner choice] 64000, because a multi-page draft stage can exceed 32000; check it against the first requests run; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances (at least 1), so the permit may only lower it",
+          "note": "model, tools, effort, thinking and max_tokens are profile-set in the measurement; this entry pins them so they are bytes it lists as fixed, the form the egress record admits"
+        },
+        "headers": [
+          "user-agent: Anthropic/JS 0.131.0",
+          "anthropic-version: 2023-06-01",
+          "accept: application/json",
+          "content-type: application/json",
+          "accept-language: *",
+          "sec-fetch-mode: cors",
+          "x-stainless-lang: js",
+          "x-stainless-package-version: 0.131.0",
+          "x-stainless-retry-count: 0",
+          "x-stainless-runtime: node",
+          "x-stainless-helper-method: stream",
+          "x-stainless-os (shape: letters, 1 to 16)",
+          "x-stainless-arch (shape: lower-case letters, digits and underscore, 1 to 16)",
+          "x-stainless-runtime-version (shape: v<digits>.<digits>.<digits>)",
+          "accept-encoding (shape: lower-case letters, comma and space, 1 to 40)",
+          "content-length (must equal the byte length of the body)",
+          "x-api-key (must equal the configured key)",
+          "x-stainless-timeout (optional; the adapter's predicate checks the name only, not the value)",
+          "host and connection (removed by the gate; the Node forwarding hop sets its own for the upstream host)"
+        ],
+        "headerNote": "the x-stainless-os, x-stainless-arch and x-stainless-runtime-version headers identify the machine's OS, CPU architecture and Node runtime version, and are sent; x-stainless-retry-count is always 0 because the SDK's own retries are off, and the adapter's retries (429 and 529 only, inside a run budget) are new requests",
+        "probe": "none: the route sends no HEAD /api/hello; a probe arriving at the gate would be answered locally and never forwarded",
+        "absentByConstruction": [
+          "tools, metadata, context_management and cache_control fields",
+          "a system prefix or an empty system message",
+          "the ?beta=true query and the anthropic-beta header",
+          "any cookie, authorization or other header not listed",
+          "a thinking field other than the two permitted values"
+        ],
+        "unlistedBytes": "any byte, header or field not listed above fails the acceptance check"
+      },
+      "determinismClassNote": "the scalar form is kept for the shape precedent's key and names the primary class; determinismByOutputClass is the machine form and governs"
+    }
+  ]
+}
