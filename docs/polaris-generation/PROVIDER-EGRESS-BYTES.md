@@ -179,3 +179,17 @@ SDK route counts against it: give the budget real headroom.
 ### Messages route: ambient Node network environment (syzygy-yqtg)
 
 Besides any `ANTHROPIC_*` variable, construction and every later start refuse while `NODE_TLS_REJECT_UNAUTHORIZED`, `NODE_EXTRA_CA_CERTS`, `NODE_USE_ENV_PROXY`, `HTTPS_PROXY`, `HTTP_PROXY`, `ALL_PROXY` or their lower-case forms are set. The Messages route accepts `x-stainless-timeout` only as `600` and `connection` only as `keep-alive` (required, not optional). The Agent SDK route builds a closed child environment and is not affected by the ambient variables; its `diagnosticEnv` proxy variables are an explicit measurement option.
+
+## Run accounting and known limits (poc:dossier wiring)
+
+Accounting policy `dossier-units-v1`: one unit is 1,000 tokens (input, cache and
+output together), rounded up per attempt. A reply with no usage, or usage above
+the permit, counts at the permit's ceiling; a try whose billing is unknown ends
+the call (no further retry). `max_tokens` is the least of the permit's output
+allowance, 64,000, the configured value and the room the call's units leave after
+the system and input bytes; below one token the adapter refuses before arming.
+
+[Unknown] No request has left the machine. Whether the API accepts the effort and
+thinking values chosen for Opus 5.5, and what an empty or absent system field
+does, is untested; the first real call is that test. If a field is rejected, the
+first call must fail with a typed error naming the field, not a generic one.

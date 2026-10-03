@@ -208,6 +208,24 @@ Authorized implementation work (generator implementation authorization,
         renderer requires for a stopped result; a page-level test runs a
         scripted pipeline out of usage budget after two stages and checks the
         banner and every requested asset as Unknown `deferred-by-budget`.
+  - [x] **Provider wiring (syzygy-bc0g, draft PR #334).** `poc:dossier` takes
+        `--route agent-sdk|messages-api` (no default) and starts only when that
+        route's registry entry is an in-force `adopt-registry-entry` act over the
+        installed bytes. The credential is `SYZYGY_POLARIS_PROVIDER_API_KEY`
+        only, read once and removed from the environment. The egress gate and
+        the durable lifecycle sit behind the consent ports; every request is
+        asked of the egress record again, and the digest of the in-force egress
+        instance decides the stage (version 2: narrative and discovery;
+        version 1: narrative only; any other digest: nothing). Run budget
+        (`dossier-units-v1`): 4000 units, discovery 1000 at most 40 per call,
+        narrative 3000; unknown usage counts at the call's ceiling and no retry
+        follows it. Verified against a loopback stub provider (no real call):
+        `dossier-pipeline-run.test.ts`, run record
+        `docs/evidence/dossier-pipeline-loopback-run-2026-10-04.json`, mutants
+        `docs/evidence/dossier-wiring-mutants-2026-10-04.json`.
+        [Unknown] The first real call is the first test of the empty-or-absent
+        system field and of the effort and thinking values for Opus 5.5; token
+        and price figures are unmeasured.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.

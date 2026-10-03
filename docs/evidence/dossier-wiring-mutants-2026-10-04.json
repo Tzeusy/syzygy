@@ -1,0 +1,154 @@
+{
+ "subject": "poc:dossier wiring: egress gate permitted/stage authority, discovery share ledger, run profile, credential handling, route registry check, screened corpus read",
+ "subjectFiles": [
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "sha256": "006b9a122107a558fc84e7e48523676cff122b62886e6014808c39f49e74ac18"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+   "sha256": "9e7fce315051dd8d87fe6220f1f979f4005d73f0554da06569f45f4413b08512"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+   "sha256": "4df569779d08800fe03ff03633a77c0cd52edb11371959172c307bc96a84db84"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+   "sha256": "f9a168a18f0e5474b2c24716ef8ea2c0f37d94e37466ff58ae9aa6ec496bb623"
+  }
+ ],
+ "ranAtCommit": "85f4f3051512184afa124e0d15c62449b010e064",
+ "ranAt": "2026-10-03T21:03:33Z",
+ "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run apps/three-surface-poc/src/polaris-generation`; killed = at least one failed test; file restored after each run",
+ "mutants": [
+  {
+   "id": "W1-gate-permitted-not-wired",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "permitted: async (_permit, stage) => authorise(stage),",
+   "new": "permitted: async () => true,",
+   "outcome": "killed",
+   "failedTests": 6,
+   "totalTests": 253
+  },
+  {
+   "id": "W2-stage-authority-ignored",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "return inForce !== null && stageAuthorisedBy(inForce.digest, stage);",
+   "new": "return inForce !== null;",
+   "outcome": "killed",
+   "failedTests": 4,
+   "totalTests": 253
+  },
+  {
+   "id": "W3-egress-check-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "if (soundAnswer(await records.check(egress)).satisfied !== true) return false;",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "W4-discovery-share-uncapped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "discoverySpent + callUnits <= profile.owner.discoveryUnits && await",
+   "new": "await",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 253
+  },
+  {
+   "id": "W5-unknown-usage-counts-zero",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "let counted = input.permit.maxUsageUnits, unknown = true;",
+   "new": "let counted = 0, unknown = true;",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "W6-credential-left-in-env",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+   "old": "delete env[CREDENTIAL_VARIABLE];",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "W7-route-not-required-in-force",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+   "old": "if (!registered.inForce) {",
+   "new": "if (false as boolean) {",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "W8-credential-check-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "if (typeof options.apiKey !== 'string' || options.apiKey.length === 0) throw",
+   "new": "if (false as boolean) throw",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 253
+  },
+  {
+   "id": "W9-consent-half-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "permitted: async (input, permit) => (await consented.permitted(input, permit)) === true && await authorise(input.stage),",
+   "new": "permitted: async (input) => await authorise(input.stage),",
+   "outcome": "SURVIVED",
+   "failedTests": 0,
+   "totalTests": 253,
+   "note": "not distinguished by any test: withConsent also replaces admit, which refuses the same withdrawal before dispatch, so the permitted half is a second layer that only matters for a withdrawal between admit and dispatch; W9b removes the whole consent wrapper and is killed"
+  },
+  {
+   "id": "W10-screening-bypassed",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+   "old": "corpus = await readScreenedRepoCorpus(checkout, config,",
+   "new": "corpus = await readRepoCorpus(checkout, config,",
+   "outcome": "killed",
+   "failedTests": 18,
+   "totalTests": 253
+  },
+  {
+   "id": "W11-discovery-map-calls-uncapped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+   "old": "maxMapCalls: Math.min(DEFAULT_DISCOVERY_BUDGET.maxMapCalls, calls - 1),",
+   "new": "maxMapCalls: DEFAULT_DISCOVERY_BUDGET.maxMapCalls,",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "W12-state-dir-world-readable",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "try { mkdirSync(stateDir, { mode: 0o700 }); }",
+   "new": "try { mkdirSync(stateDir, { mode: 0o777 }); }",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 253
+  },
+  {
+   "id": "X-noop-control",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "const digest = (text: string): string =>",
+   "new": "const digest = (text: string): string =>",
+   "outcome": "SURVIVED",
+   "failedTests": 0,
+   "totalTests": 253
+  },
+  {
+   "id": "W9b-consent-ports-not-installed",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+   "old": "        ...consented,\n",
+   "new": "        ...base,\n",
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 253
+  }
+ ],
+ "summary": "12 of 14 mutants killed at 85f4f3051512184afa124e0d15c62449b010e064; not killed: ['W9-consent-half-dropped', 'X-noop-control'] (X-noop-control is the control; see W9's note)"
+}
