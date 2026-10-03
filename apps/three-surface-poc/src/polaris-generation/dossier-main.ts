@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { renderDossier } from './dossier-render.js';
 import { formatOutcome, gitMaterialize, runDossierTrigger, type TriggerPorts } from './dossier-trigger.js';
 
-const EXIT: Record<string, number> = { complete: 0, 'invalid-input': 2, 'unresolved-revision': 4, 'admission-missing': 3, 'generation-unavailable': 5, 'generation-stopped': 6 };
+const EXIT: Record<string, number> = { complete: 0, 'invalid-input': 2, 'unresolved-revision': 4, 'admission-missing': 3, 'generation-unavailable': 5, 'generation-stopped': 6, 'generation-stopped-partial': 7 };
 
 /** `poc:dossier -- <github-url> [--out <dir>] [--json]`. */
 export async function main(argv: readonly string[], ports: TriggerPorts = {}): Promise<number> {
