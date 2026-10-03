@@ -5,9 +5,12 @@
 > answer binds anything (VIS-4).
 
 **Status:** drafted 2026-10-03 for bead `syzygy-u05.10` under the overnight
-direction of the same date. The review round's verdict and how each finding
-was handled are in `ROUND-1-DISPOSITIONS.md` beside this file, which also
-says whether this version is ready to offer.
+direction of the same date. Review round 1 (2026-10-03) was `REVISE`: seven
+revise findings and five notes. Every finding was repaired once and, under
+the stopping rule, no round 2 was dispatched. **The repaired bytes are
+unconfirmed, and this version is not offered for sign-off**; the drafter
+recommends one confirmation round before you sign. How each finding was
+handled is in `ROUND-1-DISPOSITIONS.md` beside this file.
 
 ## The problem in one paragraph
 
@@ -33,9 +36,11 @@ These are facts from the accepted contracts, quoted so you can check them.
 - **Syzygy's own record is where the link belongs.** RFC4-17 says that when
   Syzygy creates a work item it also writes the intent reference into that
   item as a copy, and that Syzygy's own creation record "stays
-  authoritative". Syzygy has created one work item in Butlers so far. Its
-  stored record does not yet keep the intent reference, although the request
-  it was made from carries one. [Observed in the POC code.]
+  authoritative". The POC's creation action may create at most one work
+  item in Butlers (a code bound, `MATERIALIZATION_EXTERNAL_REF`); whether it
+  has created any is [Unknown]. The record it would store does not keep the
+  intent reference, although the request it is made from carries one.
+  [Observed in the POC code.]
 - **Work with no traceable intent is shown, counted and never green.**
   RFC8-23 calls this state "Unknown-provenance". RFC8-22 forbids guessing the
   link "by similarity, interpolation, or inference".

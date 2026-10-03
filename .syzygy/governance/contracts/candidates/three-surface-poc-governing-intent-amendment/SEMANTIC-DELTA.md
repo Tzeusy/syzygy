@@ -192,9 +192,11 @@ resolving action — never dressed as a reason". [Inferred: that this sentence
 fits a second route as well as a second condition.]
 
 **Why no edge can exist today.** No admitted input carries a warrant: none of
-the nine read expressions names one, and the one bead the POC materializes
-records no governing intent in Syzygy's stored record (point 2 above).
-[Inferred from the code at `c371339d`.]
+the nine read expressions names one, and the materialization record the POC
+would store for the at most one bead its action may create (a code bound,
+`MATERIALIZATION_EXTERNAL_REF`) has no governing-intent field (point 2
+above). Whether any such bead was created is [Unknown]. [Inferred from the
+code at `c371339d`.]
 
 **`external_ref` is not wholly untouched.** The POC's materialization action,
 `findByExternalRef` in `packages/three-surface-poc-core/src/materialization.ts`,

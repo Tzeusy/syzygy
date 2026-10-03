@@ -69,8 +69,8 @@ the Syzygy tree or is labelled with the revision it was measured at.
    `source-uncaptured-or-unreachable`, fits RFC2-24's condition text better
    than the alternatives the delta weighs.
 4. **Signed bytes.** No signed byte outside the proposed patches changes.
-   The only signed rows that move are RFC8-22 and RFC8-23, from Part B2 to
-   Part A.
+   The only signed rows that move are RFC8-22, RFC8-23 and RFC8-24, from
+   Part B2 to Part A.
 5. **Mechanics.** The proposed `GOVERNING-DEPENDENCIES.md` equals what
    `scripts/build_three_surface_poc_spec_dependencies.py` generates from the
    proposed `spec.md`. The matrix totals equal computation. The ledger's
