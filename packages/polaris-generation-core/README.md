@@ -78,13 +78,16 @@ flowchart LR
     one `Inferred:` sentence citing the mechanism's sources and agreeing with
     them; otherwise it stays unresolved. Every inferential block must begin
     `Inferred:`.
-  - `validateDossierStage` is the dossier profile's validate port:
-    `validateStage`, then `quotationsMatch` on every inventory entry and draft
-    block (the fidelity stage checks the draft it reviews). A quotation must
-    equal a contiguous span of one cited source after whitespace runs collapse
-    to one space and markdown emphasis and link syntax drop, keeping the link
-    text; otherwise the stage fails with `unverified-quotation`. The pipeline
-    still sends the manifesto profile, so no run uses it yet.
+  - `checkDraftQuotes` (`quote-fidelity.ts`) is the one deterministic quote
+    check. A quotation opens with `The project states: "`, runs to the last
+    straight quote before the next lead-in, and must equal one contiguous
+    span of one cited source on word boundaries after whitespace runs
+    collapse and formatting drift (comment leaders, link syntax, entities,
+    backslash escapes, backticks, paired emphasis, curly quotes) is folded
+    on both sides. An ellipsis is allowed only where the source has it
+    (`elided-quote` otherwise). The pipeline joins it to the reviewer's
+    verdict: a failure earns a repair, and one that survives the last repair
+    is returned as `quoteFindings` so the renderer shows that block Unknown.
 - `parseBoundedJson` refuses duplicate keys, malformed responses and
   byte/depth/node overflow before stage validation.
 - `validateStage` checks closed fields, source references, requested section

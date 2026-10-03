@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { validateGenerationSources, type GenerationSource } from './generation-source.js';
+import { inspectBlockQuotes, sourceTextById } from './quote-fidelity.js';
 
 /**
  * Evaluation harness for a generated static Polaris dossier (TRACKER G5,
@@ -126,7 +127,15 @@ function attributes(source: string): Map<string, string> {
 }
 
 export interface ScannedSection { readonly id: string | null; readonly topics: readonly string[] }
-export interface ScannedClaim { readonly id: string; readonly epistemic: string | null; readonly hasQuote: boolean }
+export interface ScannedClaim {
+  readonly id: string;
+  readonly epistemic: string | null;
+  readonly hasQuote: boolean;
+  /** The claim element's text as a reader sees it (entities decoded, tags removed). */
+  readonly text: string;
+  /** Source ids named by `Read source <id>` anchors inside the claim, in page order. */
+  readonly citedSourceIds: readonly string[];
+}
 export interface ScannedQuote { readonly sourceId: string | null; readonly start: string | null; readonly end: string | null; readonly text: string }
 export interface ScannedPage {
   readonly bytes: number;
@@ -141,7 +150,7 @@ export interface ScannedPage {
   readonly findings: readonly string[];
 }
 
-interface Open { readonly name: string; readonly level: string | null; readonly quote: { text: string } | null; readonly claim: { hasQuote: boolean } | null }
+interface Open { readonly name: string; readonly level: string | null; readonly quote: { text: string } | null; readonly claim: { hasQuote: boolean; text: string; citedSourceIds: string[] } | null }
 
 export function scanDossierPage(html: string): ScannedPage {
   const byLevel: Record<string, number> = {};
@@ -149,7 +158,7 @@ export function scanDossierPage(html: string): ScannedPage {
   let lastLevelZeroClose: number | null = null;
   const sections: ScannedSection[] = [];
   const ids = new Set<string>();
-  const claims: { id: string; epistemic: string | null; hasQuote: boolean }[] = [];
+  const claims: { id: string; epistemic: string | null; hasQuote: boolean; text: string; citedSourceIds: string[] }[] = [];
   const quotes: (ScannedQuote & { text: string })[] = [];
   const findings: string[] = [];
   const stack: Open[] = [];
@@ -161,7 +170,7 @@ export function scanDossierPage(html: string): ScannedPage {
     // HTML input-stream preprocessing: a reader's DOM has LF where the bytes have
     // CRLF or a lone CR, so a source CR survives only as a character reference.
     const decoded = decodeHtmlText(raw.replace(/\r\n?/gu, '\n'));
-    for (const open of stack) if (open.quote !== null) open.quote.text += decoded;
+    for (const open of stack) { if (open.quote !== null) open.quote.text += decoded; if (open.claim !== null) open.claim.text += decoded; }
     const words = countWords(decoded);
     if (words === 0) return;
     const current = level();
@@ -199,11 +208,13 @@ export function scanDossierPage(html: string): ScannedPage {
       if (id === undefined) findings.push('section-without-id');
     }
     const claimId = attrs.get('data-claim-id');
-    let claim: { id: string; epistemic: string | null; hasQuote: boolean } | null = null;
+    let claim: { id: string; epistemic: string | null; hasQuote: boolean; text: string; citedSourceIds: string[] } | null = null;
     if (claimId !== undefined) {
-      claim = { id: claimId, epistemic: attrs.has('data-epistemic') ? attrs.get('data-epistemic')! : null, hasQuote: false };
+      claim = { id: claimId, epistemic: attrs.has('data-epistemic') ? attrs.get('data-epistemic')! : null, hasQuote: false, text: '', citedSourceIds: [] };
       claims.push(claim);
     }
+    const cited = name === 'a' ? /^Read source (.+)$/u.exec(attrs.get('aria-label') ?? '') : null;
+    if (cited !== null) for (const open of stack) if (open.claim !== null) open.claim.citedSourceIds.push(cited[1]!);
     let quote: { text: string } | null = null;
     if (attrs.has('data-quote-source') || attrs.has('data-quote-start') || attrs.has('data-quote-end')) {
       for (const open of stack) if (open.claim !== null) open.claim.hasQuote = true;
@@ -354,6 +365,12 @@ export function fidelity(manifest: DossierManifest, scanned: ReadonlyMap<string,
       : (EPISTEMIC as readonly string[]).includes(claim.epistemic) ? claim.epistemic as Epistemic : 'invalid-label' as const;
     return { page: page.path, claimId: claim.id, label, hasQuote: claim.hasQuote };
   }));
+  // Quotation marks inside a cited block: every quoted span must occur, normalised, in a source that block cites. A claim naming no source is not a block.
+  const sourceText = sourceTextById(sources);
+  const checkedBlocks = manifest.pages.flatMap(page => scanned.get(page.path)!.claims.filter(claim => claim.citedSourceIds.length > 0).map(claim => ({ page: page.path, claim })));
+  const inspected = checkedBlocks.map(({ page, claim }) => ({ page, ...inspectBlockQuotes({ id: claim.id, text: claim.text, sourceIds: claim.citedSourceIds }, sourceText) }));
+  const quotesChecked = inspected.reduce((total, row) => total + row.quotes, 0);
+  const quoteFailures = inspected.flatMap(row => row.findings.map(finding => ({ page: row.page, claimId: finding.blockId, kind: finding.kind, quote: finding.quote })));
   const failedQuotes = quotes.filter(quote => quote.outcome !== 'exact');
   const unlabelled = claims.filter(claim => claim.label === 'missing-label' || claim.label === 'invalid-label');
   const duplicateClaimIds = [...claimIds].filter(([, count]) => count > 1).map(([id]) => id).sort();
@@ -361,6 +378,8 @@ export function fidelity(manifest: DossierManifest, scanned: ReadonlyMap<string,
     failures > 0 ? 'failures' : population === 0 ? 'unknown' : pass;
   return {
     quotes: { denominator: quotes.length, exact: quotes.length - failedQuotes.length, failures: failedQuotes.map(({ page, sourceId, start, end, outcome: result }) => ({ page, sourceId, start, end, outcome: result })), outcome: outcome(quotes.length, failedQuotes.length, 'all-resolved') },
+    inBlockQuotes: { denominator: checkedBlocks.length, quotesChecked, failures: quoteFailures,
+      outcome: quoteFailures.length > 0 ? 'failures' as const : checkedBlocks.length === 0 ? 'unknown' as const : quotesChecked === 0 ? 'no-quotes' as const : 'all-verbatim' as const },
     claims: {
       denominator: claims.length,
       labelled: claims.length - unlabelled.length,

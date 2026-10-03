@@ -171,7 +171,7 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
       const written = await writeDossierRun(runDir, new Map([recordFile]));
       return { state: 'generation-unavailable', target, revision: pinned.revision, runDir: written, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
     }
-    const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)());
+    const request = { ...buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)()), promptProfile: 'dossier' as const };
     const result = await ports.runPipeline(request);
     if (result.status === 'stopped') {
       // Render what the completed stages support; a renderer that cannot (no usable artifact) leaves the record alone.
