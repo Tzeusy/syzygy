@@ -184,7 +184,8 @@ Authorized implementation work (generator implementation authorization,
         ranking that names them 15 of 18 fit: `server.c` and
         `cluster_legacy.c` are 130,000 bytes each and `t_string.c`, `t_zset.c`
         and `t_stream.c` are deferred. A real `server.c` is larger than the
-        whole cap.
+        whole cap. 24 mutants, all killed:
+        `docs/evidence/discovery-byte-cap-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading

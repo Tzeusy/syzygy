@@ -1,0 +1,309 @@
+{
+  "subject": {
+    "commit": "5abc25bc7cfd0d6b6038c638a4f17744bfc53e3d",
+    "branch": "agent/dossier-byte-cap",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "4832dd2cfce3ec775e1b2ab070f7923276b687551723abab3e6b2d1309b9202f",
+      "packages/polaris-generation-core/src/discovery.ts": "fd5704acc5175d00219fc9f1a3dd323f8d5cf9261630e2a7b1c54a8f292f7f0b"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": "546dab1f9ee1e266bc34786167aad7beaf0fb0c05afb45b7d41939d948b13cc2",
+      "packages/polaris-generation-core/src/discovery.test.ts": "edf82718336ef23cb209f24d84d79c70715f78ef4b75510c968a538f1bfe05a1"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-03T23:15:13+00:00",
+  "mutants": [
+    {
+      "id": "cap-exact-fit-refused",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "usedBytes + blob.bytes > byteCap",
+      "new": "usedBytes + blob.bytes >= byteCap",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 48
+    },
+    {
+      "id": "cap-off-by-one-allowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "usedBytes + blob.bytes > byteCap",
+      "new": "usedBytes + blob.bytes > byteCap + 1",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 48
+    },
+    {
+      "id": "cap-check-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (byteCap !== undefined && usedBytes + blob.bytes > byteCap) {",
+      "new": "if (false) {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 48
+    },
+    {
+      "id": "cap-ignored-when-set",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (byteCap !== undefined && usedBytes",
+      "new": "if (byteCap === undefined && usedBytes",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 48
+    },
+    {
+      "id": "skip-stops-selection",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "`${blob.bytes} bytes of quotable text${blob.pieces.length > 1 ? ` in ${blob.pieces.length} pieces` : ''} did not fit the remaining ${byteCap - usedBytes} of the ${byteCap}-byte selection cap`);\n      continue;",
+      "new": "`${blob.bytes} bytes of quotable text${blob.pieces.length > 1 ? ` in ${blob.pieces.length} pieces` : ''} did not fit the remaining ${byteCap - usedBytes} of the ${byteCap}-byte selection cap`);\n      break;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 48
+    },
+    {
+      "id": "bytes-not-accumulated",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    usedBytes += blob.bytes;\n",
+      "new": "    usedBytes += 0;\n",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 48
+    },
+    {
+      "id": "chars-for-bytes",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Buffer.byteLength(span.text, 'utf8')",
+      "new": "span.text.length",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "pieces-first-only",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "pieces.reduce((total, piece) => total + piece.spans",
+      "new": "pieces.slice(0, 1).reduce((total, piece) => total + piece.spans",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "deferred-bytes-counts-chosen",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(chosen.has(blob.blobId) ? 0 : blob.bytes)",
+      "new": "blob.bytes",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 48
+    },
+    {
+      "id": "deferred-bytes-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(chosen.has(blob.blobId) ? 0 : blob.bytes)",
+      "new": "0",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 48
+    },
+    {
+      "id": "skip-detail-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "detail: byteSkip.get(id) ?? (noFit",
+      "new": "detail: (noFit",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 48
+    },
+    {
+      "id": "skip-remaining-wrong",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "did not fit the remaining ${byteCap - usedBytes} of",
+      "new": "did not fit the remaining ${byteCap} of",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "skip-pieces-note-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "${blob.pieces.length > 1 ? ` in ${blob.pieces.length} pieces` : ''} did not",
+      "new": "${false ? '' : ''} did not",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "report-cap-null-always",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "cap: byteCap ?? null",
+      "new": "cap: null",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 48
+    },
+    {
+      "id": "report-selected-bytes-zero",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "bytes: { selected: usedBytes,",
+      "new": "bytes: { selected: 0,",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 48
+    },
+    {
+      "id": "validation-zero-allowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "budget.maxSelectedBytes < 1))) throw",
+      "new": "budget.maxSelectedBytes < 0))) throw",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "validation-fraction-allowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(!Number.isSafeInteger(budget.maxSelectedBytes) || budget.maxSelectedBytes < 1)",
+      "new": "(budget.maxSelectedBytes < 1)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "validation-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    || (budget.maxSelectedBytes !== undefined && (!Number.isSafeInteger(budget.maxSelectedBytes) || budget.maxSelectedBytes < 1))) throw",
+      "new": "    ) throw",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "count-cap-ignored-with-bytes",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (used + blob.pieces.length > budget.maxSelected) {",
+      "new": "if (byteCap === undefined && used + blob.pieces.length > budget.maxSelected) {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "dossier-cap-value",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "DOSSIER_MAX_SELECTED_BYTES = 400_000",
+      "new": "DOSSIER_MAX_SELECTED_BYTES = 4_000_000",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "dossier-budget-without-cap",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "{ ...DEFAULT_DISCOVERY_BUDGET, maxSelectedBytes: DOSSIER_MAX_SELECTED_BYTES }",
+      "new": "{ ...DEFAULT_DISCOVERY_BUDGET }",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 48
+    },
+    {
+      "id": "default-budget-capped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "maxSelected: PIPELINE_QUOTABLE_CAP, maxMapCalls: 40,",
+      "new": "maxSelected: PIPELINE_QUOTABLE_CAP, maxSelectedBytes: 400_000, maxMapCalls: 40,",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 48
+    },
+    {
+      "id": "trigger-default-budget",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "config.readerQuestions.map(question => question.text), DOSSIER_DISCOVERY_BUDGET,",
+      "new": "config.readerQuestions.map(question => question.text), { ...DOSSIER_DISCOVERY_BUDGET, maxSelectedBytes: undefined },",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 28
+    },
+    {
+      "id": "trigger-wrong-budget-field",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "config.readerQuestions.map(question => question.text), DOSSIER_DISCOVERY_BUDGET,",
+      "new": "config.readerQuestions.map(question => question.text), { ...DOSSIER_DISCOVERY_BUDGET, maxSelectedBytes: 1_000_000 },",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 28
+    }
+  ]
+}
