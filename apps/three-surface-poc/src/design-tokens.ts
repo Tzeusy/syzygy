@@ -1,3 +1,7 @@
+import type { ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
+
+import type { PolarisCopyId } from './polaris-copy.js';
+
 export type PocEpistemicLabel = 'Observed' | 'Unknown';
 
 interface EpistemicEncoding {
@@ -41,6 +45,78 @@ export const EPISTEMIC_TREATMENTS_CSS = EPISTEMIC_ENCODING.map((entry) => {
   const symbolSelectors = selectors.map((selector) => `${selector}::before`);
   return `${selectors.join(', ')} { color: var(${entry.token}); }\n  ${symbolSelectors.join(', ')} { content: "${entry.symbol} "; }\n  [data-epistemic-scope-label="${entry.label}"] { --claim-color: var(${entry.token}); --claim-symbol: "${entry.symbol} "; }${entry.label === 'Unknown' ? '\n  [data-unknown-disclosure] { border-left: 3px solid var(--unknown); }\n  [data-unknown-disclosure] a { color: inherit; }' : ''}`;
 }).join('\n  ');
+
+type Tier = NonNullable<ProjectShapeClaim['epistemic']['tier']>;
+type Freshness = NonNullable<ProjectShapeClaim['epistemic']['freshness']>;
+type Challenge = ProjectShapeClaim['challenge'];
+
+export type TupleField = 'tier' | 'freshness' | 'challenge';
+
+/** One declared treatment of a tuple field value (syzygy-dov.3.2; P-70 M3
+ * slice 5): the value, the class its span and its glossary row carry, the
+ * symbol and semantic token that class renders, the copy row that describes
+ * it, and — where a value can be absent from an evaluation — the reason and
+ * route the glossary states when no claim carries it. */
+export interface TupleFieldEncoding<V extends string = string> {
+  readonly field: TupleField;
+  readonly value: V;
+  readonly className: string;
+  readonly symbol: string;
+  readonly token: '--ink' | '--muted';
+  readonly description: PolarisCopyId;
+  readonly unreachable?: string;
+}
+
+/** The six RFC2-25 rendering tiers, closed at six. */
+export const TIER_ENCODING: readonly TupleFieldEncoding<Tier>[] = [
+  { field: 'tier', value: 'gate-backed', className: 'tt-gate-backed', symbol: '◆', token: '--ink', description: 'states.tier.gate-backed' },
+  { field: 'tier', value: 'report-fact', className: 'tt-report-fact', symbol: '◇', token: '--ink', description: 'states.tier.report-fact' },
+  { field: 'tier', value: 'reduced-fidelity', className: 'tt-reduced-fidelity', symbol: '◒', token: '--muted', description: 'states.tier.reduced-fidelity' },
+  { field: 'tier', value: 'asserted-by-worker', className: 'tt-asserted-by-worker', symbol: '✎', token: '--muted', description: 'states.tier.asserted-by-worker' },
+  { field: 'tier', value: 'declared-only', className: 'tt-declared-only', symbol: '○', token: '--muted', description: 'states.tier.declared-only' },
+  { field: 'tier', value: 'suspended', className: 'tt-suspended', symbol: '‖', token: '--muted', description: 'states.tier.suspended' },
+];
+
+/** No tier applies (an Unknown with no evidence). A treatment of the tier
+ * slot's absence, never a seventh tier: it sits outside TIER_ENCODING. */
+export const TIER_ABSENCE_ENCODING: TupleFieldEncoding<'unstated'> = {
+  field: 'tier', value: 'unstated', className: 'tt-unstated', symbol: '∅', token: '--muted', description: 'states.tier.unstated',
+};
+
+/** The four RFC2-10 freshness values. A claim with no freshness carries no
+ * value from this slot; its absence is disclosed beside the tuple. */
+export const FRESHNESS_ENCODING: readonly TupleFieldEncoding<Freshness>[] = [
+  { field: 'freshness', value: 'fresh', className: 'tt-fresh', symbol: '▲', token: '--ink', description: 'states.freshness.fresh',
+    unreachable: 'Not reachable at this evaluation: no claim was captured at this evaluation. Route: capture an evaluation that carries the evidence.' },
+  { field: 'freshness', value: 'stale', className: 'tt-stale', symbol: '△', token: '--muted', description: 'states.freshness.stale',
+    unreachable: 'Not reachable at this evaluation: no claim freshness is judged against a currency bound; declare the bound and route freshness through the currency assessor.' },
+  { field: 'freshness', value: 'broken', className: 'tt-broken', symbol: '✕', token: '--muted', description: 'states.freshness.broken',
+    unreachable: 'Not reachable at this evaluation: one pinned revision carries no earlier claim; a changed source belongs to a later evidence probe, not this freshness value. Route: re-observe the repository.' },
+  { field: 'freshness', value: 'superseded', className: 'tt-superseded', symbol: '»', token: '--muted', description: 'states.freshness.superseded',
+    unreachable: 'Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.' },
+];
+
+/** The one challenge value the model carries. */
+export const CHALLENGE_ENCODING: readonly TupleFieldEncoding<Challenge>[] = [
+  { field: 'challenge', value: 'unchallenged', className: 'tt-unchallenged', symbol: '◌', token: '--ink', description: 'states.challenge.unchallenged' },
+];
+
+const TUPLE_FIELD_TREATMENTS: readonly TupleFieldEncoding[] = [...TIER_ENCODING, TIER_ABSENCE_ENCODING, ...FRESHNESS_ENCODING, ...CHALLENGE_ENCODING];
+
+/** The declared treatment of one served field value; an undeclared value
+ * refuses to render rather than falling back to an ad hoc style. */
+export function tupleFieldEncoding(field: TupleField, value: string): TupleFieldEncoding {
+  const encoding = TUPLE_FIELD_TREATMENTS.find((entry) => entry.field === field && entry.value === value);
+  if (encoding === undefined) throw new Error(`no declared ${field} encoding for value: ${value}`);
+  return encoding;
+}
+
+/** One rule pair per declared value, shared by the tuple's field mark and
+ * the glossary row that defines it. The symbol carries an empty alternative
+ * text: the value's word is already in the tuple and the row. */
+export const TUPLE_FIELD_TREATMENTS_CSS = TUPLE_FIELD_TREATMENTS
+  .map((entry) => `.${entry.className} { color: var(${entry.token}); }\n  .${entry.className}::before { content: "${entry.symbol} " / ""; }`)
+  .join('\n  ');
 
 export function epistemicClassName(label: PocEpistemicLabel): string {
   const encoding = EPISTEMIC_ENCODING.find((entry) => entry.label === label);

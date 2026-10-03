@@ -1,0 +1,325 @@
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import type { PocModel } from '@syzygy/three-surface-poc-core';
+
+import { TAILNET_HOST } from './browser-origin.js';
+import { findBrowserExecutable, withBrowserPage, type BrowserPage } from './cdp-browser.js';
+import { CHALLENGE_ENCODING, DESIGN_TOKENS_CSS, EPISTEMIC_ENCODING, FRESHNESS_ENCODING, TIER_ABSENCE_ENCODING, TIER_ENCODING } from './design-tokens.js';
+import { ORRERY_HUMAN_PATH } from './orrery.js';
+import { copyText } from './polaris-copy.js';
+import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
+import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
+import { fetchWithHost } from './test-http-client.js';
+import { buildFixtureModel } from './test-model-fixture.js';
+import {
+  ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE,
+  REJECTING_AUTHORITY,
+  projectShapeFixtureGit,
+  projectShapeItemStateFixture,
+} from './test-project-shape-fixture.js';
+import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
+
+// syzygy-dov.3.2 (P-70 M3 slice 5): the tier, freshness and challenge
+// encoding tables. Everything below is the hand-typed oracle; nothing is
+// derived from the declaration under test except where a test compares
+// against it.
+
+const TIERS = ['gate-backed', 'report-fact', 'reduced-fidelity', 'asserted-by-worker', 'declared-only', 'suspended'] as const;
+const FRESHNESS = ['fresh', 'stale', 'broken', 'superseded'] as const;
+const CHALLENGE = ['unchallenged'] as const;
+
+/** value → [class, symbol, token]; `unstated` is the tier slot's absence. */
+const TREATMENTS: Readonly<Record<string, readonly [string, string, '--ink' | '--muted']>> = {
+  'gate-backed': ['tt-gate-backed', '◆', '--ink'],
+  'report-fact': ['tt-report-fact', '◇', '--ink'],
+  'reduced-fidelity': ['tt-reduced-fidelity', '◒', '--muted'],
+  'asserted-by-worker': ['tt-asserted-by-worker', '✎', '--muted'],
+  'declared-only': ['tt-declared-only', '○', '--muted'],
+  suspended: ['tt-suspended', '‖', '--muted'],
+  unstated: ['tt-unstated', '∅', '--muted'],
+  fresh: ['tt-fresh', '▲', '--ink'],
+  stale: ['tt-stale', '△', '--muted'],
+  broken: ['tt-broken', '✕', '--muted'],
+  superseded: ['tt-superseded', '»', '--muted'],
+  unchallenged: ['tt-unchallenged', '◌', '--ink'],
+};
+/** The two tokens' computed colours (--ink #dfe9e7, --muted #8ca3a4). */
+const RGB = { '--ink': 'rgb(223, 233, 231)', '--muted': 'rgb(140, 163, 164)' } as const;
+
+const cleanups: string[] = [];
+const running: RunningDaemon[] = [];
+const browserExecutable = findBrowserExecutable();
+
+afterEach(async () => {
+  for (const daemon of running.splice(0)) await daemon.close().catch(() => undefined);
+  for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });
+});
+
+function tempDir(prefix: string): string {
+  const directory = mkdtempSync(join(tmpdir(), prefix));
+  cleanups.push(directory);
+  return directory;
+}
+
+function attribute(tag: string, name: string): string | undefined {
+  return new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1];
+}
+
+function variants(): readonly { readonly name: string; readonly model: PocModel }[] {
+  const base = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+  return [
+    { name: 'unevaluated', model: buildFixtureModel(cleanups) },
+    { name: 'rejected', model: buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }) },
+    { name: 'observed', model: base },
+    { name: 'secret', model: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } }) },
+    { name: 'degraded', model: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } }) },
+    { name: 'missing-freshness', model: withoutFreshness(projectShapeItemStateFixture(base, 'unknown')) },
+  ];
+}
+
+/** One Unknown item with no freshness: the absence the slot must not hold. */
+function withoutFreshness(model: PocModel): PocModel {
+  const shape = model.projectShape;
+  if (shape.kind !== 'observed') throw new Error('fixture shape unavailable');
+  const item = shape.items.find((candidate) => candidate.state === 'unknown');
+  if (item === undefined) throw new Error('unknown item missing');
+  const absent = { ...item, claim: { ...item.claim, epistemic: { ...item.claim.epistemic, freshness: undefined } } };
+  return { ...model, projectShape: { ...shape, items: shape.items.map((candidate) => candidate === item ? absent : candidate) } };
+}
+
+interface Census {
+  readonly tuples: number;
+  readonly histogram: Record<string, Record<string, number>>;
+  readonly absences: number;
+}
+
+/** Server-body census: every claim tuple, the marks that follow it, and the
+ * absence disclosure where its freshness slot is empty. `omit` drops one
+ * family to prove the denominator check is not vacuous. */
+function serverCensus(html: string, omit?: 'tier' | 'freshness' | 'challenge'): Census {
+  const body = html.replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+  const histogram: Record<string, Record<string, number>> = { label: {}, tier: {}, freshness: {}, challenge: {} };
+  let tuples = 0;
+  let absences = 0;
+  const bump = (family: string, value: string): void => {
+    const counts = histogram[family] as Record<string, number>;
+    counts[value] = (counts[value] ?? 0) + 1;
+  };
+  for (const match of body.matchAll(/<span class="claim-tuple"[^>]*>[^<]*<\/span>((?:<span class="tt-[a-z-]+"><\/span>)*)(<span class="freshness-absence"[^>]*>)?/g)) {
+    tuples += 1;
+    const tag = match[0];
+    const label = attribute(tag, 'data-epistemic-label') as string;
+    const tier = attribute(tag, 'data-epistemic-tier') as string;
+    const freshness = attribute(tag, 'data-epistemic-freshness');
+    const challenge = attribute(tag, 'data-challenge-state') as string;
+    const marks = [...(match[1] as string).matchAll(/class="(tt-[a-z-]+)"/g)].map((mark) => mark[1] as string);
+    const expected = [
+      ...(omit === 'tier' ? [] : [TREATMENTS[tier]?.[0]]),
+      ...(omit === 'freshness' || freshness === undefined ? [] : [TREATMENTS[freshness]?.[0]]),
+      ...(omit === 'challenge' ? [] : [TREATMENTS[challenge]?.[0]]),
+    ];
+    if (marks.join(' ') !== expected.join(' ')) throw new Error(`marks ${marks.join(' ')} do not resolve the tuple ${tier}/${freshness ?? '-'}/${challenge}`);
+    bump('label', label);
+    bump('tier', tier);
+    if (freshness !== undefined) bump('freshness', freshness);
+    bump('challenge', challenge);
+    if (freshness === undefined) {
+      if (label !== 'Unknown') throw new Error('a positive claim has no freshness');
+      if (match[2] === undefined) throw new Error('missing freshness is not disclosed beside the tuple');
+      absences += 1;
+    } else if (match[2] !== undefined) {
+      throw new Error('absence disclosed beside a tuple that carries freshness');
+    }
+  }
+  const independent = [...body.matchAll(/class="claim-tuple"/g)].length;
+  if (independent !== tuples) throw new Error(`census reached ${tuples} of ${independent} tuples`);
+  const sum = (family: string): number => Object.values(histogram[family] as Record<string, number>).reduce((a, b) => a + b, 0);
+  if (sum('tier') !== tuples || sum('challenge') !== tuples || sum('freshness') + absences !== tuples) throw new Error('a family does not cover the tuple denominator');
+  return { tuples, histogram, absences };
+}
+
+describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => {
+  it('closes six tiers, four freshness values and one challenge value, with unstated outside the tier registry', () => {
+    expect(TIER_ENCODING.map((entry) => entry.value)).toEqual([...TIERS]);
+    expect(FRESHNESS_ENCODING.map((entry) => entry.value)).toEqual([...FRESHNESS]);
+    expect(CHALLENGE_ENCODING.map((entry) => entry.value)).toEqual([...CHALLENGE]);
+    expect(TIER_ABSENCE_ENCODING.value).toBe('unstated');
+    expect(TIER_ENCODING.map((entry) => entry.value)).not.toContain('unstated');
+    const all = [...TIER_ENCODING, TIER_ABSENCE_ENCODING, ...FRESHNESS_ENCODING, ...CHALLENGE_ENCODING];
+    expect(all.map((entry) => entry.value).sort()).toEqual(Object.keys(TREATMENTS).sort());
+    for (const entry of all) {
+      expect([entry.className, entry.symbol, entry.token], entry.value).toEqual(TREATMENTS[entry.value]);
+      expect(copyText(entry.description).startsWith(`${entry.value} — `), entry.value).toBe(true);
+      expect(DESIGN_TOKENS_CSS).toContain(`${entry.token}: `);
+    }
+    // No two treatments share a class or a symbol, and none reuses a label's symbol.
+    expect(new Set(all.map((entry) => entry.className)).size).toBe(all.length);
+    const symbols = [...all.map((entry) => entry.symbol), ...EPISTEMIC_ENCODING.map((entry) => entry.symbol)];
+    expect(new Set(symbols).size).toBe(symbols.length);
+    // Only the freshness slot declares a reachability note, each with a reason.
+    for (const entry of FRESHNESS_ENCODING) expect(entry.unreachable).toMatch(/^Not reachable at this evaluation: .+/);
+    for (const entry of [...TIER_ENCODING, TIER_ABSENCE_ENCODING, ...CHALLENGE_ENCODING]) expect(entry.unreachable).toBeUndefined();
+  });
+
+  it('generates one treatment rule pair per declared value and no other tuple-field rule', () => {
+    const html = renderPolarisPage(variants()[2]?.model as PocModel);
+    const css = (/<style>([\s\S]*?)<\/style>/.exec(html)?.[1] ?? '').replace(/\/\*[\s\S]*?\*\//g, '');
+    for (const [value, [className, symbol, token]] of Object.entries(TREATMENTS)) {
+      expect(css, value).toContain(`.${className} { color: var(${token}); }`);
+      expect(css, value).toContain(`.${className}::before { content: "${symbol} " / ""; }`);
+    }
+    const selectors = [...css.matchAll(/(\.tt-[a-z-]+)(?:::before)?\s*\{/g)].map((match) => match[1] as string);
+    expect(new Set(selectors)).toEqual(new Set(Object.values(TREATMENTS).map(([className]) => `.${className}`)));
+    expect(selectors.length).toBe(Object.keys(TREATMENTS).length * 2);
+  });
+
+  it('generates the glossary rows from the declaration: every value once, in its class, with freshness reachability stated both ways', () => {
+    for (const { name, model } of variants()) {
+      const html = renderPolarisPage(model);
+      const block = /<details id="polaris-claim-states"[^>]*>([\s\S]*?)<\/details>/.exec(html)?.[1] as string;
+      expect(block, name).toBeDefined();
+      const rows = [...block.matchAll(/<li class="(tt-[a-z-]+)"[^>]*>([^<]*)<\/li>/g)].map((match) => ({ className: match[1] as string, text: match[2] as string }));
+      expect(rows.map((row) => row.className), name).toEqual([...TIERS, 'unstated', ...FRESHNESS, ...CHALLENGE].map((value) => TREATMENTS[value]?.[0]));
+      expect(block.split('<li').length - 1, name).toBe(rows.length);
+      expect(block, name).toContain(copyText('states.strengthen'));
+      const served = new Set([...html.matchAll(/<span class="claim-tuple"[^>]*\sdata-epistemic-freshness="([^"]*)"/g)].map((match) => match[1]));
+      for (const value of FRESHNESS) {
+        const row = rows.find((candidate) => candidate.className === TREATMENTS[value]?.[0]);
+        expect(row?.text.startsWith(`${value} — `), `${name}: ${value}`).toBe(true);
+        expect(row?.text.includes('Not reachable at this evaluation'), `${name}: ${value} reachability`).toBe(!served.has(value));
+      }
+    }
+  });
+
+  it('follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed at four, and discloses its absence', () => {
+    let total = 0;
+    let absences = 0;
+    for (const { name, model } of variants()) {
+      const html = renderPolarisPage(model);
+      const census = serverCensus(html);
+      for (const value of Object.keys(census.histogram['freshness'] as object)) expect(FRESHNESS, `${name}: ${value}`).toContain(value);
+      for (const value of Object.keys(census.histogram['tier'] as object)) expect([...TIERS, 'unstated'], `${name}: ${value}`).toContain(value);
+      const attributes = [...html.matchAll(/\sdata-epistemic-freshness="([^"]*)"/g)].map((match) => match[1]);
+      for (const value of attributes) expect(FRESHNESS).toContain(value);
+      for (const absence of html.matchAll(/<span class="freshness-absence"[^>]*>([\s\S]*?)<\/span>/g)) {
+        expect(absence[1]).toBe('Currency bound not declared; this claim remains Unknown.');
+        expect(absence[0]).not.toContain('href=');
+      }
+      total += census.tuples;
+      absences += census.absences;
+    }
+    expect(total).toBeGreaterThan(150);
+    expect(absences).toBe(1);
+  });
+
+  it('rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a mark that does not resolve', () => {
+    const { model } = variants()[5] as { model: PocModel };
+    const html = renderPolarisPage(model);
+    expect(serverCensus(html).tuples).toBeGreaterThan(40);
+    for (const family of ['tier', 'freshness', 'challenge'] as const) expect(() => serverCensus(html, family)).toThrow();
+    const fifth = html.replace(/data-epistemic-freshness="fresh"/, 'data-epistemic-freshness="unrecorded"');
+    expect(() => serverCensus(fifth)).toThrow();
+    const positive = html.replace(/(<span class="claim-tuple"[^>]*data-epistemic-label=")Unknown("[^>]*>[^<]*<\/span>(?:<span class="tt-[a-z-]+"><\/span>)*<span class="freshness-absence")/, '$1Observed$2');
+    expect(positive).not.toBe(html);
+    expect(() => serverCensus(positive)).toThrow('a positive claim has no freshness');
+    const swapped = html.replace('<span class="tt-report-fact"></span>', '<span class="tt-declared-only"></span>');
+    expect(() => serverCensus(swapped)).toThrow();
+  });
+
+  it.skipIf(browserExecutable === undefined)('sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row renders its declared symbol and token', async () => {
+    const model = variants()[5]?.model as PocModel;
+    const start = await createDaemon({ stateDir: join(tempDir('syzygy-dov32-state-'), 'state'), routes: pocRoutes(() => model), port: 0 });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+    const directory = tempDir('syzygy-dov32-pages-');
+    await withBrowserPage(browserExecutable as string, async (page) => {
+      for (const form of ['direct', 'tailnet'] as const) {
+        const perPage: Record<string, BrowserTupleCensus> = {};
+        for (const path of [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
+          const response = form === 'direct' ? await fetch(`${baseUrl}${path}`) : await fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
+          expect(response.status).toBe(200);
+          const html = await response.text();
+          const file = join(directory, `${form}-${path === '/' ? 'home' : path.slice(1)}.html`);
+          writeFileSync(file, html);
+          await page.navigate(pathToFileURL(file).href);
+          const runtime = await browserTupleCensus(page);
+          const server = serverCensus(html);
+          expect(runtime.failures, `${form} ${path}`).toEqual([]);
+          expect(runtime.queried, `${form} ${path}`).toBe(runtime.walked);
+          expect(runtime.walked, `${form} ${path}`).toBe(server.tuples);
+          expect(runtime.histogram, `${form} ${path}`).toEqual(server.histogram);
+          perPage[path] = runtime;
+        }
+        // The page population is hand-typed: Home plus the three surfaces.
+        expect(Object.keys(perPage).sort()).toEqual(['/', '/orrery', '/polaris', '/trajectory']);
+        const surfaces = [POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH].map((path) => perPage[path] as BrowserTupleCensus);
+        expect(surfaces.length).toBe(3);
+        const total = surfaces.reduce((sum, census) => sum + census.walked, 0);
+        expect(total).toBe((perPage[POLARIS_HUMAN_PATH] as BrowserTupleCensus).walked);
+        expect(total).toBeGreaterThan(40);
+        expect((perPage[POC_HUMAN_PATH] as BrowserTupleCensus).walked).toBe(0);
+        expect((perPage[POLARIS_HUMAN_PATH] as BrowserTupleCensus).glossaryRows).toBe(12);
+      }
+    });
+  }, 60_000);
+});
+
+interface BrowserTupleCensus {
+  readonly queried: number;
+  readonly walked: number;
+  readonly glossaryRows: number;
+  readonly histogram: Record<string, Record<string, number>>;
+  readonly failures: readonly string[];
+}
+
+/** Two methods over the runtime DOM: a selector count and a TreeWalker that
+ * reads each tuple's values, its marks' computed symbol and colour, and the
+ * glossary rows' treatment, against the hand-typed table. */
+async function browserTupleCensus(page: BrowserPage): Promise<BrowserTupleCensus> {
+  return page.evaluate<BrowserTupleCensus>(`(() => {
+    const TREATMENTS = ${JSON.stringify(TREATMENTS)};
+    const RGB = ${JSON.stringify(RGB)};
+    const failures = [];
+    const histogram = { label: {}, tier: {}, freshness: {}, challenge: {} };
+    const bump = (family, value) => { histogram[family][value] = (histogram[family][value] || 0) + 1; };
+    const check = (element, value, where) => {
+      const expected = TREATMENTS[value];
+      if (!expected) { failures.push(where + ': undeclared ' + value); return; }
+      if (!element.classList.contains(expected[0])) failures.push(where + ': class ' + element.className + ' for ' + value);
+      const symbol = getComputedStyle(element, '::before').content;
+      if (!symbol.includes(expected[1])) failures.push(where + ': symbol ' + symbol + ' for ' + value);
+      if (getComputedStyle(element).color !== RGB[expected[2]]) failures.push(where + ': colour ' + getComputedStyle(element).color + ' for ' + value);
+    };
+    const queried = document.querySelectorAll('.claim-tuple').length;
+    let walked = 0;
+    const nodes = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    while (nodes.nextNode()) {
+      const tuple = nodes.currentNode;
+      if (!tuple.classList.contains('claim-tuple')) continue;
+      walked++;
+      const id = tuple.getAttribute('data-claim-id');
+      const fields = [['tier', tuple.getAttribute('data-epistemic-tier')], ['freshness', tuple.getAttribute('data-epistemic-freshness')], ['challenge', tuple.getAttribute('data-challenge-state')]].filter((field) => field[1] !== null);
+      bump('label', tuple.getAttribute('data-epistemic-label'));
+      let mark = tuple.nextElementSibling;
+      for (const [family, value] of fields) {
+        bump(family, value);
+        if (!mark) { failures.push(id + ': no ' + family + ' mark'); break; }
+        check(mark, value, id + ' ' + family);
+        if (mark.textContent !== '') failures.push(id + ': mark carries text');
+        mark = mark.nextElementSibling;
+      }
+      if (tuple.getAttribute('data-epistemic-freshness') === null && !(mark && mark.classList.contains('freshness-absence'))) failures.push(id + ': absence not disclosed');
+    }
+    const rows = [...document.querySelectorAll('#polaris-claim-states li[class^="tt-"]')];
+    for (const row of rows) check(row, row.textContent.split(' — ')[0], 'glossary');
+    return { queried, walked, glossaryRows: rows.length, histogram, failures };
+  })()`);
+}
