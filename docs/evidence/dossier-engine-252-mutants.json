@@ -1,0 +1,119 @@
+{
+  "subject": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+  "subjectSha256": "6785203c6fe5848d372c30c9bbb676b47adcddb604a7ca651ec85aa224f0bf72",
+  "ranAtCommit": "e56f2483d9dce27e41bf2d5e85a2e952522e310c",
+  "worktreeClean": true,
+  "tests": [
+    "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
+  ],
+  "baseline": "17 passed (17)",
+  "mutants": [
+    {
+      "id": "gate-strict-true",
+      "old": "if (decision.allowed !== true)",
+      "new": "if (decision.allowed === false)",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "include-filter",
+      "old": "if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }",
+      "new": "",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "exclude-filter",
+      "old": "if (exclude.some(re => re.test(record.path)))",
+      "new": "if (false)",
+      "result": "3 failed | 14 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "symlink-skip",
+      "old": "|| record.mode === '120000'",
+      "new": "",
+      "result": "3 failed | 14 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "gitlink-type-check",
+      "old": "record.type !== 'blob' || ",
+      "new": "",
+      "result": "3 failed | 14 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "nul-check",
+      "old": "bytes.includes(0) ? undefined :",
+      "new": "",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "ignoreBOM",
+      "old": "{ fatal: true, ignoreBOM: true }",
+      "new": "{ fatal: true }",
+      "result": "2 failed | 15 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "empty-file",
+      "old": "if (body.length === 0) {",
+      "new": "if (false) {",
+      "result": "2 failed | 15 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "unquotable-path",
+      "old": "if (!representablePath(record.path)) {",
+      "new": "if (false) {",
+      "result": "2 failed | 15 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "hash-check",
+      "old": "!== record.objectId) throw new Error('corpus-object-mismatch')",
+      "new": "!== record.objectId && false) throw new Error('corpus-object-mismatch')",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "commit-guard",
+      "old": "if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw",
+      "new": "if (false) throw",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "permission-identity",
+      "old": "if (typeof decision.permissionIdentity !== 'string' || decision.permissionIdentity.length === 0) throw",
+      "new": "if (false) throw",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "git-isolation-fsmonitor",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "'core.fsmonitor=false'",
+      "new": "'core.fsmonitor=true'",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "git-isolation-hooks",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "'core.hooksPath=/dev/null'",
+      "new": "'core.hooksPath=/tmp'",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    },
+    {
+      "id": "sum-invariant-count",
+      "old": "unquotablePath++;",
+      "new": "",
+      "result": "1 failed | 16 passed (17)",
+      "outcome": "killed"
+    }
+  ]
+}
