@@ -1,5 +1,5 @@
 import { types } from 'node:util';
-import type { GenerationStage } from './prompts.js';
+import type { DiscoveryStage, GenerationStage, PromptStage } from './prompts.js';
 
 // Provider-local intermediate records only. These neither mint identities nor
 // implement the authored asset bundle, source admission or semantic review.
@@ -11,6 +11,7 @@ type Schema = { type: 'object'; properties: Record<string, Schema>; required: st
   | { type: 'array'; items: Schema; minItems: number; maxItems: number; uniqueItems?: boolean }
   | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] }
   | { type: 'boolean' }
+  | { type: 'number'; minimum: number; maximum: number }
   | { oneOf: readonly Schema[] };
 
 /** The handle shape every id in this module's schemas (and, per admitted-input.ts's
@@ -61,11 +62,21 @@ const blockSupport = list(object({ blockId: handle, verdict: { ...text, enum: ['
 const fidelity = object({ inventoryCoverage, blockSupport,
   findings: list(object({ severity: { ...text, enum: ['blocking', 'advisory'] }, message: text, target: handle }), 0, 1000),
 });
-const schemas: Record<GenerationStage, Schema> = { inventory, plan, author: draft, edit: draft, repair: draft, fidelity };
+/** Bounds a discovery claim; discovery.ts truncates at `maxClaimChars` (default 400). */
+export const DISCOVERY_CLAIM_MAX_LENGTH = 400;
+export const DISCOVERY_RELEVANCE_MAX = 10;
+// Fixed and closed; the blob ids a reply may name are the call's own input,
+// checked by validateDiscoveryReply, never written into this schema.
+const discoveryMap = object({ claims: list(object({
+  blobId: handle, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },
+  relevance: { type: 'number', minimum: 0, maximum: DISCOVERY_RELEVANCE_MAX },
+}), 0, 200) });
+const discoveryReduce = object({ ranked: { ...list(handle, 0, 200), uniqueItems: true } });
+const schemas: Record<PromptStage, Schema> = { inventory, plan, author: draft, edit: draft, repair: draft, fidelity, 'discovery-map': discoveryMap, 'discovery-reduce': discoveryReduce };
 // v2: tree blocks and marked, kinded diagrams. Only the draft stages changed shape.
-const schemaVersions: Record<GenerationStage, 'v1' | 'v2'> = { inventory: 'v1', plan: 'v1', author: 'v2', edit: 'v2', repair: 'v2', fidelity: 'v1' };
+const schemaVersions: Record<PromptStage, 'v1' | 'v2'> = { inventory: 'v1', plan: 'v1', author: 'v2', edit: 'v2', repair: 'v2', fidelity: 'v1', 'discovery-map': 'v1', 'discovery-reduce': 'v1' };
 
-export function stageSchema(stage: GenerationStage): { version: string; schema: Schema } {
+export function stageSchema(stage: PromptStage): { version: string; schema: Schema } {
   if (!Object.hasOwn(schemas, stage)) throw new Error('invalid-stage');
   return { version: `polaris-provider-${stage}-${schemaVersions[stage]}`, schema: structuredClone(schemas[stage]) };
 }
@@ -85,6 +96,10 @@ function check(schema: Schema, value: unknown): void {
   }
   if (schema.type === 'boolean') {
     if (typeof value !== 'boolean') throw new Error('invalid-boolean');
+    return;
+  }
+  if (schema.type === 'number') {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < schema.minimum || value > schema.maximum) throw new Error('invalid-number');
     return;
   }
   if (typeof value !== 'object' || value === null || types.isProxy(value)) throw new Error('invalid-structure');
@@ -398,4 +413,21 @@ export function diagramToMermaid(diagram: Pick<ProviderDiagram, 'nodes' | 'edges
   }
   lines.push('  classDef inferred stroke-dasharray:6 4', '  classDef unknown stroke-dasharray:2 4');
   return `${lines.join('\n')}\n`;
+}
+
+/**
+ * Validates a discovery reply against its stage's schema and its own call:
+ * every blobId must be one of `candidateIds` (the map input's items, or the
+ * blob ids the reduce input's claims name), each at most once, and a reduce
+ * ranking holds at most `maxSelected` ids. Throws on any breach.
+ */
+export function validateDiscoveryReply(stage: DiscoveryStage, value: unknown, call: { readonly candidateIds: readonly string[]; readonly maxSelected?: number }): unknown {
+  if (stage !== 'discovery-map' && stage !== 'discovery-reduce') throw new Error('invalid-stage');
+  check(schemas[stage], value);
+  const candidates = unique([...call.candidateIds]);
+  const ids = stage === 'discovery-map' ? (value as { claims: { blobId: string }[] }).claims.map(claim => claim.blobId) : (value as { ranked: string[] }).ranked;
+  unique(ids);
+  if (ids.some(id => !candidates.has(id))) throw new Error('unknown-blob');
+  if (stage === 'discovery-reduce' && (!Number.isSafeInteger(call.maxSelected) || ids.length > call.maxSelected!)) throw new Error('over-selection');
+  return structuredClone(value);
 }

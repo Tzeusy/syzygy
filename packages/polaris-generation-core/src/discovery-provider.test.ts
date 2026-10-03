@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
-  DISCOVERY_MAP_ILLUSTRATION, DISCOVERY_MAP_SYSTEM, DISCOVERY_REDUCE_ILLUSTRATION, DISCOVERY_REDUCE_SYSTEM,
-  discoveryMapEnvelope, discoveryMapReplySchema, discoveryReduceEnvelope, discoveryReduceReplySchema,
-  parseDiscoveryMapReply, parseDiscoveryReduceReply, type DiscoveryMapRequest, type DiscoveryReduceRequest,
+  discoveryMapEnvelope, discoveryReduceEnvelope, parseDiscoveryMapReply, parseDiscoveryReduceReply,
+  type DiscoveryMapRequest, type DiscoveryReduceRequest,
 } from './discovery-provider.js';
+import { DISCOVERY_STAGE_ILLUSTRATIONS, promptForStage } from './prompts.js';
+import { stageSchema, validateDiscoveryReply } from './provider-draft.js';
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
@@ -27,31 +28,73 @@ const reduceRequest = (): DiscoveryReduceRequest => ({
     ] },
   ],
 });
-interface MapReplySchema {
-  additionalProperties: boolean;
-  properties: { claims: { maxItems: number; items: { additionalProperties: boolean; required: string[]; properties: { blobId: { enum: string[] }; claim: unknown; relevance: unknown } } } };
-}
-interface ReduceReplySchema { additionalProperties: boolean; required: string[]; properties: { ranked: { maxItems: number } } }
 const json = (value: unknown): string => JSON.stringify(value);
 const claim = (blobId: string, relevance = 5, text = 'Shows something.') => ({ blobId, claim: text, relevance });
 
-describe('discovery instruction text', () => {
+const MAP_SYSTEM = promptForStage('discovery-map').system;
+const REDUCE_SYSTEM = promptForStage('discovery-reduce').system;
+
+describe('discovery instruction text comes from promptForStage and stageSchema', () => {
   // Recipe replay: an intentional edit needs a version decision and a new digest.
   it.each([
-    ['map', DISCOVERY_MAP_SYSTEM, 'b522e91ae2c99e659d1f9e39114698f5b0c2ae98e2fdffd473cb78638620dcef'],
-    ['reduce', DISCOVERY_REDUCE_SYSTEM, '300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3'],
-  ])('pins the %s prompt bytes', (_step, system, digest) => {
-    expect(sha256(system)).toBe(digest);
-    expect(Buffer.byteLength(system, 'utf8')).toBeLessThan(4096);
+    ['discovery-map', 'polaris-discovery-map-v1', 'b522e91ae2c99e659d1f9e39114698f5b0c2ae98e2fdffd473cb78638620dcef'],
+    ['discovery-reduce', 'polaris-discovery-reduce-v1', '300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3'],
+  ] as const)('pins the %s prompt bytes', (stage, version, digest) => {
+    const prompt = promptForStage(stage);
+    expect(prompt.version).toBe(version);
+    expect(sha256(prompt.system)).toBe(digest);
+    expect(Buffer.byteLength(prompt.system, 'utf8')).toBeLessThan(4096);
+    expect(promptForStage(stage, 'dossier')).toEqual(prompt);
+  });
+
+  it.each([
+    ['discovery-map', 'polaris-provider-discovery-map-v1', 'cf4dd39aa3eb3c1bc3805f4de902c8e679cb8956f74d853ee80ab599496ed894'],
+    ['discovery-reduce', 'polaris-provider-discovery-reduce-v1', 'fd1deb4230c7892e05a05dfe07f5cc6221f817fe46142541d57f1783c321a14d'],
+  ] as const)('pins the %s reply schema bytes', (stage, version, digest) => {
+    const schema = stageSchema(stage);
+    expect(schema.version).toBe(version);
+    expect(sha256(JSON.stringify(schema.schema))).toBe(digest);
+  });
+
+  it('closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)', () => {
+    expect(stageSchema('discovery-map').schema).toEqual({ type: 'object', additionalProperties: false, required: ['claims'], properties: {
+      claims: { type: 'array', minItems: 0, maxItems: 200, items: { type: 'object', additionalProperties: false, required: ['blobId', 'claim', 'relevance'], properties: {
+        blobId: { type: 'string', minLength: 1, maxLength: 100, pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]*$' },
+        claim: { type: 'string', minLength: 1, maxLength: 400 },
+        relevance: { type: 'number', minimum: 0, maximum: 10 },
+      } } } } });
+  });
+
+  it('closes the reduce reply schema: exactly a unique ranked list of handles', () => {
+    expect(stageSchema('discovery-reduce').schema).toEqual({ type: 'object', additionalProperties: false, required: ['ranked'], properties: {
+      ranked: { type: 'array', minItems: 0, maxItems: 200, uniqueItems: true, items: { type: 'string', minLength: 1, maxLength: 100, pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]*$' } } } });
+  });
+
+  it('sends exactly those two symbols\' output as the instruction text, whatever the request', () => {
+    const other: DiscoveryMapRequest = { subsystem: 'elsewhere', readerQuestions: ['other'], items: [{ blobId: 'zzz', path: 'z', excerpt: 'z' }] };
+    for (const request of [mapRequest(), other]) {
+      const { envelope } = discoveryMapEnvelope(request);
+      expect(envelope.system).toBe(promptForStage('discovery-map').system);
+      expect(envelope.promptVersion).toBe(promptForStage('discovery-map').version);
+      expect(envelope.responseSchema).toEqual(stageSchema('discovery-map').schema);
+      expect(envelope.responseSchemaVersion).toBe(stageSchema('discovery-map').version);
+    }
+    const { envelope } = discoveryReduceEnvelope(reduceRequest());
+    expect(envelope.system).toBe(promptForStage('discovery-reduce').system);
+    expect(envelope.responseSchema).toEqual(stageSchema('discovery-reduce').schema);
   });
 
   it('ends each prompt with an illustration its own parser accepts', () => {
-    const mapTail = DISCOVERY_MAP_SYSTEM.split('\n').at(-1)!;
-    const reduceTail = DISCOVERY_REDUCE_SYSTEM.split('\n').at(-1)!;
-    expect(JSON.parse(mapTail)).toEqual(DISCOVERY_MAP_ILLUSTRATION);
-    expect(JSON.parse(reduceTail)).toEqual(DISCOVERY_REDUCE_ILLUSTRATION);
-    expect(parseDiscoveryMapReply(mapRequest(), mapTail)).toEqual(DISCOVERY_MAP_ILLUSTRATION);
-    expect(parseDiscoveryReduceReply(reduceRequest(), reduceTail)).toEqual(DISCOVERY_REDUCE_ILLUSTRATION);
+    const mapTail = MAP_SYSTEM.split('\n').at(-1)!;
+    const reduceTail = REDUCE_SYSTEM.split('\n').at(-1)!;
+    expect(JSON.parse(mapTail)).toEqual(DISCOVERY_STAGE_ILLUSTRATIONS['discovery-map']);
+    expect(JSON.parse(reduceTail)).toEqual(DISCOVERY_STAGE_ILLUSTRATIONS['discovery-reduce']);
+    expect(parseDiscoveryMapReply(mapRequest(), mapTail)).toEqual(DISCOVERY_STAGE_ILLUSTRATIONS['discovery-map']);
+    expect(parseDiscoveryReduceReply(reduceRequest(), reduceTail)).toEqual(DISCOVERY_STAGE_ILLUSTRATIONS['discovery-reduce']);
+  });
+
+  it('refuses a generation-stage name in validateDiscoveryReply', () => {
+    expect(() => validateDiscoveryReply('author' as 'discovery-map', { claims: [] }, { candidateIds: [] })).toThrow('invalid-stage');
   });
 });
 
@@ -61,8 +104,8 @@ describe('discovery envelopes', () => {
     const { envelope, input } = discoveryMapEnvelope(request);
     expect(Object.keys(envelope).sort()).toEqual(['inputs', 'promptVersion', 'responseSchema', 'responseSchemaVersion', 'system']);
     expect(envelope.promptVersion).toBe('polaris-discovery-map-v1');
-    expect(envelope.responseSchemaVersion).toBe('polaris-discovery-map-reply-v1');
-    expect(envelope.system).toBe(DISCOVERY_MAP_SYSTEM);
+    expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-map-v1');
+    expect(envelope.system).toBe(MAP_SYSTEM);
     expect(envelope.inputs).toEqual(mapRequest());
     expect(JSON.parse(input)).toEqual(envelope);
     expect(input).not.toContain('never sent');
@@ -73,8 +116,8 @@ describe('discovery envelopes', () => {
     const request = { ...reduceRequest(), extra: 'never sent' };
     const { envelope, input } = discoveryReduceEnvelope(request);
     expect(envelope.promptVersion).toBe('polaris-discovery-reduce-v1');
-    expect(envelope.responseSchemaVersion).toBe('polaris-discovery-reduce-reply-v1');
-    expect(envelope.system).toBe(DISCOVERY_REDUCE_SYSTEM);
+    expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-reduce-v1');
+    expect(envelope.system).toBe(REDUCE_SYSTEM);
     expect(envelope.inputs).toEqual(reduceRequest());
     expect(JSON.parse(input)).toEqual(envelope);
     expect(input).not.toContain('never sent');
@@ -82,30 +125,10 @@ describe('discovery envelopes', () => {
 
   // The whole user message, schema included, for the fixtures above.
   it.each([
-    ['map', () => discoveryMapEnvelope(mapRequest()).input, '6ba8c20b41937aac5bf5f725ea6ad1dcaf0e3ef6b3840def48f9a1a941aa3a44'],
-    ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'a30543e18dae2ccb683a8d2c54b269c8875036f9b9595d680b96e773f2dec95a'],
+    ['map', () => discoveryMapEnvelope(mapRequest()).input, 'e97e79b4f81d66140637b4fba58c35cf2b189c672f2b295b4225caf1eeba2b5f'],
+    ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'ef6a83e716a32bdd5957d7f0bf2bceba5802b513efb76b60f471394e1dabab5f'],
   ])('pins the %s envelope encoding', (_step, encode, digest) => {
     expect(sha256(encode())).toBe(digest);
-  });
-
-  it('closes the map reply schema over the request\'s own blob ids', () => {
-    const schema = discoveryMapReplySchema(mapRequest()) as unknown as MapReplySchema;
-    expect(schema.additionalProperties).toBe(false);
-    expect(schema.properties.claims.maxItems).toBe(3);
-    const item = schema.properties.claims.items;
-    expect(item.additionalProperties).toBe(false);
-    expect(item.required).toEqual(['blobId', 'claim', 'relevance']);
-    expect(item.properties.blobId.enum).toEqual(['blob-readme', 'blob-server', 'blob-evict']);
-    expect(item.properties.claim).toEqual({ type: 'string', minLength: 1, maxLength: 400 });
-    expect(item.properties.relevance).toEqual({ type: 'number', minimum: 0, maximum: 10 });
-  });
-
-  it('closes the reduce reply schema over the claims\' blob ids and maxSelected', () => {
-    const schema = discoveryReduceReplySchema({ ...reduceRequest(), maxSelected: 2 }) as unknown as ReduceReplySchema;
-    expect(schema.additionalProperties).toBe(false);
-    expect(schema.required).toEqual(['ranked']);
-    expect(schema.properties.ranked).toEqual({ type: 'array', uniqueItems: true, maxItems: 2, items: { type: 'string', enum: ['blob-readme', 'blob-server', 'blob-evict'] } });
-    expect((discoveryReduceReplySchema({ ...reduceRequest(), maxSelected: 50 }) as unknown as ReduceReplySchema).properties.ranked.maxItems).toBe(3);
   });
 
   it.each([
