@@ -128,10 +128,20 @@ Authorized implementation work (generator implementation authorization,
         indeterminate; the detectors also run over every path; with a screen
         in force, binary, empty and oversize-excluded rows are withheld rows
         too; a test pins a match past the first 100,000-character piece.
-        Policy residuals, pinned by tests: an encoded or line-split secret
-        passes the detectors. Not yet: the trigger wiring (#268) and #278's
-        shared run key. Nothing passes the gate until the owner performs the
-        act.
+        One run key keys every withheld id (#278, #323). A path carrying a
+        control character (tab, CR, LF, DEL and every other C0 code point),
+        a backslash or non-UTF-8 bytes is unquotable: under a screen it is
+        counted only, and a path-detector match on it is counted separately
+        (#333). Policy residuals, pinned by tests: an encoded or line-split
+        secret passes the detectors. Screening scope v2 (package #326, draft
+        PR, `project-documentation.ts`): the policy's root, docs/doc and
+        licenses rules map `project-documentation` under the v2 act, only
+        while the RFC5-14 class act is in force (otherwise those paths stay
+        indeterminate); every screen still runs first; parity with the
+        builder's reference reader over 126 fixtures and 4,592 generated
+        paths per variant. Not yet: the trigger wiring (#268), the
+        run-profile and instruction-text rules, and consent filtering by
+        class. Nothing passes the gate until the owner performs the acts.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:
