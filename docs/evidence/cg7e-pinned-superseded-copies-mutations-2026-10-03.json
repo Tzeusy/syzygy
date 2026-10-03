@@ -1,0 +1,442 @@
+{
+  "bead": "syzygy-yu4a",
+  "date": "2026-10-03",
+  "subject": {
+    "path": "scripts/check_governance.py",
+    "commit": "f338c2aba7c79c4f4be8ed4a013f0f66607e4bff"
+  },
+  "baseline": {
+    "path": "scripts/check_governance.py",
+    "commit": "ef5d5f03"
+  },
+  "population": {
+    "predicate": "every standalone token matching STANDALONE_DIGEST in each tracked .md/.txt file CG-7e examines (registered current or historical, after its own exemptions), classified against that file's allowed arguments and the corpus's recognized (current or performed) digests; measured at ef5d5f03 before the change",
+    "files": 67,
+    "tokens": 545,
+    "classes": {
+      "allowed": 161,
+      "other": 368,
+      "recognized-not-allowed": 16
+    },
+    "recognized_not_allowed": [
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 66,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 67,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-IMPACT"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 95,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 119,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 195,
+        "labels": [
+          "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 221,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 281,
+        "labels": [
+          "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 308,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 857,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "line": 21,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+        "line": 22,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "line": 21,
+        "labels": [
+          "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 143,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 144,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-IMPACT"
+        ]
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 181,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+        ]
+      },
+      {
+        "file": "PROJECT-STATUS.md",
+        "line": 374,
+        "labels": [
+          "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
+        ]
+      }
+    ],
+    "added_outside_that_predicate": [
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 105,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-TEST-2"
+        ],
+        "why": "act 2 never performed, so the digest is not recognized; registered as a retired offer"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 109,
+        "labels": [
+          "CONFIRM CRAFT AMENDMENT: CC-TEST-2"
+        ],
+        "why": "same digest as line 105, on its phrase line"
+      }
+    ],
+    "continuation_forms": {
+      "wrapped_across_line_break": 0,
+      "uppercase_64_hex": 0,
+      "truncated_prefix_of_known_digest": 17,
+      "note": "truncated prefixes (12+ hex then an ellipsis) are not full copies; the near-miss pass cannot judge them and they are out of scope"
+    },
+    "not_registered": "INSTALL-RECORD.md lines 52 and 72 carry the earlier retired CC-TEST-2 offers aa2d6353/3858820f, each marked retired at the line; outside the bead's named population"
+  },
+  "mutation": {
+    "method": "one file at a time, one character at position 40 of the line's 64-hex token (to 'e', or 'f' if already 'e'); full check_governance.py run under the baseline checker and the subject checker; file restored and sha256-compared after each",
+    "rows": [
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 66,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 5 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument>",
+        "new": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument, edit applied>",
+        "tokenStartColumn": 33,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 67,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 4 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "CONFIRM CRAFT AMENDMENT: CC-IMPACT@<argument>",
+        "new": "CONFIRM CRAFT AMENDMENT: CC-IMPACT@<argument, edit applied>",
+        "tokenStartColumn": 35,
+        "characterIndexInToken": 40,
+        "fromChar": "2",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 95,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument>",
+        "new": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument, edit applied>",
+        "tokenStartColumn": 33,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 119,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "| 5 | `confirm-craft-amendment` | in-force policy `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1..11) | `<argument>` | Amend CC-SPEC-8's reviewed-N/A",
+        "new": "| 5 | `confirm-craft-amendment` | in-force policy `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1..11) | `<argument, edit applied>` | Amend CC-SPEC-8'",
+        "tokenStartColumn": 116,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 195,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 7 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: <argument>",
+        "new": "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: <argument, edit applied>",
+        "tokenStartColumn": 54,
+        "characterIndexInToken": 40,
+        "fromChar": "e",
+        "toChar": "f"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 221,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 7 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument>",
+        "new": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument, edit applied>",
+        "tokenStartColumn": 61,
+        "characterIndexInToken": 40,
+        "fromChar": "5",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 281,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 6 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: <argument>",
+        "new": "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: <argument, edit applied>",
+        "tokenStartColumn": 54,
+        "characterIndexInToken": 40,
+        "fromChar": "b",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 308,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 6 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument>",
+        "new": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument, edit applied>",
+        "tokenStartColumn": 61,
+        "characterIndexInToken": 40,
+        "fromChar": "9",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "line": 857,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 20 WARN, 2 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 6 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument>",
+        "new": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: <argument, edit applied>",
+        "tokenStartColumn": 61,
+        "characterIndexInToken": 40,
+        "fromChar": "5",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "line": 21,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "Its argument `<argument>` was the subject's exact digest until",
+        "new": "Its argument `<argument, edit applied>` was the subject's exact digest until",
+        "tokenStartColumn": 14,
+        "characterIndexInToken": 40,
+        "fromChar": "5",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+        "line": 22,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "Its argument `<argument>` was the subject's exact digest until",
+        "new": "Its argument `<argument, edit applied>` was the subject's exact digest until",
+        "tokenStartColumn": 14,
+        "characterIndexInToken": 40,
+        "fromChar": "9",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "line": 21,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "Its argument `<argument>` was the subject's exact digest until",
+        "new": "Its argument `<argument, edit applied>` was the subject's exact digest until",
+        "tokenStartColumn": 14,
+        "characterIndexInToken": 40,
+        "fromChar": "b",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 143,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument>",
+        "new": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument, edit applied>",
+        "tokenStartColumn": 33,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 144,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "CONFIRM CRAFT AMENDMENT: CC-IMPACT@<argument>",
+        "new": "CONFIRM CRAFT AMENDMENT: CC-IMPACT@<argument, edit applied>",
+        "tokenStartColumn": 35,
+        "characterIndexInToken": 40,
+        "fromChar": "2",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 181,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "<argument>  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+        "new": "<argument, edit applied>  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+        "tokenStartColumn": 0,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      },
+      {
+        "file": "PROJECT-STATUS.md",
+        "line": 374,
+        "registration_class": "superseded",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (baseline already failed through another predicate; subject adds the line-precise near-miss finding)",
+        "old": "python3 scripts/record_pwb_registry_currency_amendment.py --check <argument> --date 2026-09-30  # registry act record and aggregate block regenerate exactly",
+        "new": "python3 scripts/record_pwb_registry_currency_amendment.py --check <argument, edit applied> --date 2026-09-30  # registry act record and aggregate block regenera",
+        "tokenStartColumn": 66,
+        "characterIndexInToken": 40,
+        "fromChar": "5",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 105,
+        "registration_class": "retired-offer",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "<argument>  testing-and-verification.md",
+        "new": "<argument, edit applied>  testing-and-verification.md",
+        "tokenStartColumn": 0,
+        "characterIndexInToken": 40,
+        "fromChar": "6",
+        "toChar": "e"
+      },
+      {
+        "file": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+        "line": 109,
+        "registration_class": "retired-offer",
+        "new_near_miss_finding_at_line": true,
+        "baseline_summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "subject_cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "outcome": "killed (masked under baseline)",
+        "old": "`CC-TEST-2@<argument>`",
+        "new": "`CC-TEST-2@<argument, edit applied>`",
+        "tokenStartColumn": 11,
+        "characterIndexInToken": 40,
+        "fromChar": "6",
+        "toChar": "e"
+      }
+    ],
+    "totals": {
+      "mutants": 18,
+      "near_miss_finding_at_mutated_line": 18,
+      "masked_under_baseline": 8
+    }
+  },
+  "digestPolicy": "No act argument or truncated digest is quoted (AGENTS.md: CG-7e/CG-15 copy rule). Each mutant is re-runnable from file, line, tokenStartColumn, characterIndexInToken and fromChar/toChar at the subject commit; the subject and baseline are named by commit and path."
+}

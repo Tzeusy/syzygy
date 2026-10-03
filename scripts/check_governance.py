@@ -3194,6 +3194,116 @@ def _activate_readability_successor_copies(registry=None, root=None):
 _activate_readability_successor_copies()
 
 
+#: bd `syzygy-yu4a`: superseded arguments that registered files still carry
+#: on purpose — the performed record's own phrase lines, a later act's
+#: "Its argument … was the subject's exact digest" sentence, an install
+#: record's checksum row, the battery's recorder `--check`. Each is one of
+#: the label's performed digests but not the file's current argument, so
+#: until it was registered here the near-miss pass had nothing to measure a
+#: corrupted copy against. Rows are (label, digest, text before, text
+#: after); the pin is that exact line text, anchored at line start, so the
+#: digest is allowed only in the file and at the line that carries it.
+SUPERSEDED_ACT_ARGUMENT_COPIES = {
+    f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md": (
+        (CC_SPEC_LABEL, CC_SPEC_ACT_6_DIGEST, f"{CC_SPEC_LABEL}@", "$"),
+        (CC_IMPACT_LABEL, CC_IMPACT_ACT_7_DIGEST, f"{CC_IMPACT_LABEL}@", "$"),
+        (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST, f"{CC_SPEC_LABEL}@", "$"),
+        (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST,
+         "| 5 | `confirm-craft-amendment` | in-force policy "
+         "`SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1..11) | `",
+         "` |"),
+        (PWB_EFFECT_ACTS[1][0],
+         "513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61",
+         f"{PWB_EFFECT_ACTS[1][0]}: ", "$"),
+        (PWB_EFFECT_ACTS[2][0],
+         "d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7",
+         f"{PWB_EFFECT_ACTS[2][0]}: ", "$"),
+        (PWB_EFFECT_ACTS[1][0],
+         "d148f0360841cfc30cdc9ecedbffe722e31044e4bb048cd33f83cc193ee88e75",
+         f"{PWB_EFFECT_ACTS[1][0]}: ", "$"),
+        (PWB_EFFECT_ACTS[2][0],
+         "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f",
+         f"{PWB_EFFECT_ACTS[2][0]}: ", "$"),
+        (PWB_EFFECT_ACTS[2][0],
+         "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a",
+         f"{PWB_EFFECT_ACTS[2][0]}: ", "$"),
+    ),
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md": (
+        (PWB_EFFECT_ACTS[2][0],
+         "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a",
+         "Its argument `", "` was the subject's exact digest until"),
+    ),
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md": (
+        (PWB_EFFECT_ACTS[2][0],
+         "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f",
+         "Its argument `", "` was the subject's exact digest until"),
+    ),
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md": (
+        (PWB_EFFECT_ACTS[1][0],
+         "d148f0360841cfc30cdc9ecedbffe722e31044e4bb048cd33f83cc193ee88e75",
+         "Its argument `", "` was the subject's exact digest until"),
+    ),
+    f"{CRAFT}/INSTALL-RECORD.md": (
+        (CC_SPEC_LABEL, CC_SPEC_ACT_6_DIGEST, f"{CC_SPEC_LABEL}@", "$"),
+        (CC_IMPACT_LABEL, CC_IMPACT_ACT_7_DIGEST, f"{CC_IMPACT_LABEL}@", "$"),
+        (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST, "",
+         f"  {CC_SPEC_SUBJECT}$"),
+    ),
+    "PROJECT-STATUS.md": (
+        (PWB_EFFECT_ACTS[2][0],
+         "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a",
+         "python3 scripts/record_pwb_registry_currency_amendment.py --check ",
+         " --date 2026-09-30"),
+    ),
+}
+
+#: bd `syzygy-yu4a`: an argument that was offered, never performed, and then
+#: retired when its subject moved. Act 2 still awaits the owner; the install
+#: record's 2026-08-06 block offered it at the digest below, and the
+#: 2026-09-28 restyle moved the subject. It cannot be performed history
+#: (that registration fails on a never-performed digest), so it is its own
+#: class: pinned like the rows above, and refused if it is ever performed or
+#: becomes the current argument, since either would put it in another class.
+RETIRED_OFFER_ARGUMENT_COPIES = {
+    f"{CRAFT}/INSTALL-RECORD.md": (
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0",
+         "", "  testing-and-verification.md$"),
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0",
+         "`CC-TEST-2@", "`$"),
+    ),
+}
+ACT_RETIRED_OFFER_COPY_FILES = {}
+
+
+def _activate_pinned_argument_copies(superseded=None, retired=None,
+                                     history=None, retired_history=None):
+    """Add the pinned rows above to the history registries.
+
+    Appends to any binding an earlier activation made for the same file and
+    label, so a later act's own historical pin is never replaced.
+    """
+    superseded = (SUPERSEDED_ACT_ARGUMENT_COPIES if superseded is None
+                  else superseded)
+    retired = RETIRED_OFFER_ARGUMENT_COPIES if retired is None else retired
+    history = ACT_HISTORICAL_DIGEST_COPY_FILES if history is None else history
+    retired_history = (ACT_RETIRED_OFFER_COPY_FILES if retired_history is None
+                       else retired_history)
+    for rows, target in ((superseded, history), (retired, retired_history)):
+        for rel, pins in rows.items():
+            for label, digest, before, after in pins:
+                end = "$" if after.endswith("$") else ""
+                pattern = re.compile(
+                    "^" + re.escape(before) + digest
+                    + re.escape(after[:len(after) - len(end)]) + end, re.M)
+                labels = target.setdefault(rel, {})
+                labels[label] = labels.get(label, ()) + ((digest, pattern),)
+
+
+_activate_pinned_argument_copies()
+
+
 #: The bare-copy *shape* every PWB owner packet and act record uses for
 #: convenience, ahead of the phrase line CG-7d reads: a heading/label line
 #: — optionally qualified ("Behavior manifest", "Effect manifest",
@@ -3332,18 +3442,20 @@ def cg7e_act_digest_copies(paths, res):
             continue
         current_declared = ACT_DIGEST_COPY_FILES.get(rel, ())
         historical_declared = ACT_HISTORICAL_DIGEST_COPY_FILES.get(rel, {})
+        retired_declared = ACT_RETIRED_OFFER_COPY_FILES.get(rel, {})
         # Unregistered banner-marked records remain CG-15b's population.
         # Explicit historical registrations are checked here despite their
         # banner: the registration's purpose is to pin their exact act-time
         # digest without pretending they are current offers.
         if (not current_declared and not historical_declared
+                and not retired_declared
                 and re.search(r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|"
                               r"RETIRED|Retired)\b",
                               "\n".join(body.splitlines()[:12]), re.M)):
             continue
         held = {lab for digest, labels in recognized.items() if digest in body
                 for lab in labels}
-        if current_declared or historical_declared:
+        if current_declared or historical_declared or retired_declared:
             examined += 1
             by_label = {lab: d for lab, _sub, d in phrases}
             missing_current = [lab for lab in current_declared
@@ -3366,8 +3478,9 @@ def cg7e_act_digest_copies(paths, res):
             # digest must not excuse this one).
             allowed_bare = {by_label[lab] for lab in current_declared
                            if by_label.get(lab)}
-            for lab, bindings in historical_declared.items():
-                allowed_bare.update(digest for digest, _pattern in bindings)
+            for declared_bindings in (historical_declared, retired_declared):
+                for lab, bindings in declared_bindings.items():
+                    allowed_bare.update(digest for digest, _pattern in bindings)
             for m in BARE_DIGEST_HEADING.finditer(body):
                 heading_raw, bare = m.group(1), m.group(2)
                 heading = heading_raw.strip().rstrip("(").strip().lower()
@@ -3409,9 +3522,10 @@ def cg7e_act_digest_copies(paths, res):
             for lab in current_declared:
                 if by_label.get(lab):
                     allowed_labels.setdefault(by_label[lab], set()).add(lab)
-            for lab, bindings in historical_declared.items():
-                for digest, _pattern in bindings:
-                    allowed_labels.setdefault(digest, set()).add(lab)
+            for declared_bindings in (historical_declared, retired_declared):
+                for lab, bindings in declared_bindings.items():
+                    for digest, _pattern in bindings:
+                        allowed_labels.setdefault(digest, set()).add(lab)
             judged = {m.start(2) for m in BARE_DIGEST_HEADING.finditer(body)}
             for m in STANDALONE_DIGEST.finditer(body):
                 token = m.group(0)
@@ -3456,6 +3570,29 @@ def cg7e_act_digest_copies(paths, res):
                         f"its exact act-time quotation line(s) "
                         f"{[d[:12] + '…' for d in missing_quotes]}")
 
+            # bd `syzygy-yu4a`: a retired offer is pinned only while it stays
+            # retired. Performed, it belongs in the history registry; current,
+            # in the current one. Its labels never join `declared`: it is not
+            # a recognized digest, so it cannot excuse one.
+            for lab, bindings in retired_declared.items():
+                for digest, pattern in bindings:
+                    if digest in performed.get(lab, ()):
+                        findings.append(
+                            f"{rel} — retired-offer registration for `{lab}` "
+                            f"names `{digest[:12]}…`, which "
+                            f"{PERFORMED_ACT_RECORD} records as performed; "
+                            f"register it as performed history instead")
+                    elif digest == by_label.get(lab):
+                        findings.append(
+                            f"{rel} — retired-offer registration for `{lab}` "
+                            f"names `{digest[:12]}…`, which is that act's "
+                            f"current argument; register it as current")
+                    elif not pattern.search(body):
+                        findings.append(
+                            f"{rel} — retired offer for `{lab}` does not "
+                            f"contain its exact pinned line for "
+                            f"`{digest[:12]}…`")
+
             declared = set(current_declared) | set(historical_declared)
             undeclared = sorted(held - declared)
             if undeclared:
@@ -3464,8 +3601,9 @@ def cg7e_act_digest_copies(paths, res):
                     f"{undeclared} but does not declare those copies in the "
                     f"current or performed-history registry")
             registered.append(
-                f"{rel} — declares {len(current_declared)} current and "
-                f"{len(historical_declared)} performed-history act(s); "
+                f"{rel} — declares {len(current_declared)} current, "
+                f"{len(historical_declared)} performed-history and "
+                f"{len(retired_declared)} retired-offer act(s); "
                 f"{len(current_declared) - len(missing_current)} current, "
                 f"{len(historical_declared) - len(missing_historical)} "
                 f"historical valid")
@@ -7512,6 +7650,27 @@ def selftest():
                   first[0] == "FAIL" and len(near_findings(first)) == 1
                   and all(r == first for r in rest)))
 
+    # bd syzygy-yu4a: pinned superseded and retired copies, own file only.
+    row = _selftest_cg7e_pinned_copy("own")
+    cases.append(("CG-7e pinned superseded and retired copies pass in their "
+                  "own file",
+                  row[0] == "OK" and row[3] == 0))
+    for kind, line in (("corrupt-superseded", 5), ("corrupt-retired", 7)):
+        row = _selftest_cg7e_pinned_copy(kind)
+        cases.append((f"CG-7e pinned copy one character off fails ({kind})",
+                      row[0] == "FAIL" and any(
+                          x.startswith(f"OWN-RECORD.md:{line} — unlabeled digest")
+                          for x in row[4])))
+    for kind in ("foreign-superseded", "foreign-retired"):
+        row = _selftest_cg7e_pinned_copy(kind)
+        cases.append((f"CG-7e pinned copy is refused in a foreign file ({kind})",
+                      row[0] == "FAIL" and row[3] == 1
+                      and row[4][0].startswith("FOREIGN-PACKET.md:3 — bare")))
+    row = _selftest_cg7e_pinned_copy("retired-performed")
+    cases.append(("CG-7e retired-offer pin naming a performed digest fails",
+                  row[0] == "FAIL" and row[3] == 1
+                  and "register it as performed history" in row[4][0]))
+
     # Version-tagged sign-off exemptions (Scope A): existence-gated per package.
     import tempfile as _tempfile
     with _tempfile.TemporaryDirectory() as _d:
@@ -8536,6 +8695,10 @@ def _selftest_pwb_act_copy_registry(kind, link=None):
     keep = ROOT
     cache = dict(_ActSubjects._cache)
     current_files = dict(ACT_DIGEST_COPY_FILES)
+    # The real tree's pinned history (bd `syzygy-yu4a`) names the aggregate
+    # record; this fixture root performs nothing those pins name.
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    retired_files = dict(ACT_RETIRED_OFFER_COPY_FILES)
     try:
         manifest = os.path.join(d, subject)
         os.makedirs(os.path.dirname(manifest), exist_ok=True)
@@ -8560,6 +8723,8 @@ def _selftest_pwb_act_copy_registry(kind, link=None):
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ),)
         ACT_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
         activate()
         c = Cap()
         cg7e_act_digest_copies(list(ACT_DIGEST_COPY_FILES), c)
@@ -8567,6 +8732,10 @@ def _selftest_pwb_act_copy_registry(kind, link=None):
     finally:
         ACT_DIGEST_COPY_FILES.clear()
         ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.update(retired_files)
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep
@@ -8827,6 +8996,101 @@ def _selftest_cg7e_unlabeled_near_miss(kind):
         _ActSubjects._cache.update(cache)
         shutil.rmtree(d, ignore_errors=True)
 
+def _selftest_cg7e_pinned_copy(kind):
+    """bd `syzygy-yu4a`: a pinned superseded or retired copy is allowed in its
+    own file only.
+
+    The fixture root performs `older` then the current argument and never
+    performs `retired`. `OWN-RECORD.md` carries the current phrase, `older`
+    on its pinned phrase line and `retired` on its pinned checksum row, both
+    registered through `_activate_pinned_argument_copies`. Returns the CG-7e
+    row.
+
+    ``kind``:
+      - "own" — the file as registered: passes.
+      - "corrupt-superseded" / "corrupt-retired" — that pinned copy one
+        character off: fails at its line.
+      - "foreign-superseded" / "foreign-retired" — `OWN-RECORD.md` intact,
+        and a second file declaring the same act carries that digest as a
+        bare `Manifest SHA-256:` copy: fails in the second file only.
+      - "retired-performed" — the retired row names `older`, a performed
+        digest: fails, as a misfiled registration.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pinned-copy-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    retired_files = dict(ACT_RETIRED_OFFER_COPY_FILES)
+    try:
+        subject = "synthetic-subject.txt"
+        with open(os.path.join(d, subject), "w", encoding="utf-8") as fh:
+            fh.write("synthetic pinned-copy subject\n")
+        argument = sha256_file(os.path.join(d, subject))
+        label = "SIGN OFF SYNTHETIC PINNED TEST"
+        older, retired = "a" * 64, "b" * 64
+
+        def flip(digest):
+            return digest[:40] + "e" + digest[41:]
+
+        record = os.path.join(d, PERFORMED_ACT_RECORD)
+        os.makedirs(os.path.dirname(record))
+        with open(record, "w", encoding="utf-8") as fh:
+            fh.write(f"{label}: {older}\n{label}: {argument}\n")
+        own, foreign = "OWN-RECORD.md", "FOREIGN-PACKET.md"
+        old_copy = flip(older) if kind == "corrupt-superseded" else older
+        row_copy = flip(retired) if kind == "corrupt-retired" else retired
+        with open(os.path.join(d, own), "w", encoding="utf-8") as fh:
+            fh.write(f"# Own\n\n{label}: {argument}\n\n{label}: {old_copy}\n\n"
+                     f"{row_copy}  {subject}\n")
+        paths = [own]
+        if kind.startswith("foreign-"):
+            quoted = older if kind == "foreign-superseded" else retired
+            with open(os.path.join(d, foreign), "w", encoding="utf-8") as fh:
+                fh.write(f"# Foreign\n\nManifest SHA-256: {quoted}\n\n"
+                         f"{label}: {argument}\n")
+            paths.append(foreign)
+
+        ROOT = d
+        _ActSubjects._cache[d] = (
+            (label, subject,
+             re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")),
+        )
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update({own: (label,), foreign: (label,)})
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
+        pinned_retired = older if kind == "retired-performed" else retired
+        _activate_pinned_argument_copies(
+            superseded={own: ((label, older, f"{label}: ", "$"),)},
+            retired={own: ((label, pinned_retired, "", f"  {subject}$"),)})
+        c = Cap()
+        cg7e_act_digest_copies(paths, c)
+        return c.row("CG-7e")
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.update(retired_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def _selftest_pwb_effect_act_copy_registry(kind):
     class Cap:
         def __init__(self): self.rows = []
@@ -8843,6 +9107,10 @@ def _selftest_pwb_effect_act_copy_registry(kind):
     keep = ROOT
     cache = dict(_ActSubjects._cache)
     current_files = dict(ACT_DIGEST_COPY_FILES)
+    # The real tree's pinned history (bd `syzygy-yu4a`) names the aggregate
+    # record; this fixture root performs nothing those pins name.
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    retired_files = dict(ACT_RETIRED_OFFER_COPY_FILES)
     try:
         # Only the first act is "performed" in the fixture; the other two
         # dedicated records are absent and must register nothing.
@@ -8869,6 +9137,8 @@ def _selftest_pwb_effect_act_copy_registry(kind):
             (l, sub, re.compile(re.escape(l) + r"\s*:\s*`?([0-9a-f]{64})"))
             for l, sub, _a in PWB_EFFECT_ACTS)
         ACT_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
         _activate_pwb_effect_act_copy_registries()
         registered = tuple(sorted(ACT_DIGEST_COPY_FILES))
         c = Cap()
@@ -8877,6 +9147,10 @@ def _selftest_pwb_effect_act_copy_registry(kind):
     finally:
         ACT_DIGEST_COPY_FILES.clear()
         ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        ACT_RETIRED_OFFER_COPY_FILES.clear()
+        ACT_RETIRED_OFFER_COPY_FILES.update(retired_files)
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep
