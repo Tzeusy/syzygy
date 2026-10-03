@@ -102,3 +102,39 @@ commit, computed by script. It is not any row inside the manifest.
 Then add a `## Findings` section, numbering findings as
 `**Finding N — title** (blocking|revise|note)`. CONFIRM WITH EXCEPTIONS means
 every finding is a `note`.
+
+## Round 2 (added 2026-10-03, bead `syzygy-zeaf`)
+
+Round 1 returned `REVISE`, and its findings were repaired with no review
+round over the repaired bytes. Round 2 reviews those bytes against the same
+seven criteria, on their own merits. Do not read `ROUND-1-DISPOSITIONS.md`
+or anything under `docs/reviews/`.
+
+**Raw-head digest predicate.** The version-tag sign-off binds a review by the
+manifest digest in the raw's head. Over the first four non-blank lines of
+your raw:
+
+- line 2 is `Reviewed commit: ` followed by the 40-hex commit you read;
+- line 3 is `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of
+  the bytes of `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at that commit,
+  computed by script (`git show <commit>:<path> | sha256sum`). It is never a
+  row inside the manifest;
+- line 4 is `Verdict: ` followed by exactly one of `CONFIRM`,
+  `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+**Two notes carried from the merge review of PR 241.** Judge each one and
+give it a finding of whatever severity you find:
+
+1. In the proposed `spec.md`, the not-read form requires the statement
+   "release tags were not read". Under test 3 (tag set captured, ancestry
+   incomplete), that statement is false: the tags were read and the history
+   was not. The packet already says "the tags, or the history needed to judge
+   them"; the specification text should match.
+2. Test 5 and its scenario say "no release tag reaches", while the
+   recommended answer to the packet's Question 4 counts every tag under
+   `refs/tags/`. "Release tag" is undefined until Question 4 is ruled.
+
+**Stopping rule, set before this round.** A notes-only round, meaning
+`CONFIRM` or `CONFIRM WITH EXCEPTIONS` with every finding a note, clears the
+bytes it read. Any other verdict sends the package to the owner with its
+findings open. No round 3 is dispatched.
