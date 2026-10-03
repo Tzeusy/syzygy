@@ -1,7 +1,7 @@
 {
- "subject": "Public-source screening review repairs (syzygy-vjqd): reviewer-6 B1-B4 on #292 and the #323 review (unrepresentable paths under a screen, control-character paths, sourceExtensions '..' and whitespace), on top of #278's keyed run key",
+ "subject": "Public-source screening review repairs (syzygy-vjqd): reviewer-6 B1-B4 on #292 and the #323 review (unrepresentable paths under a screen, control-character paths, sourceExtensions '..' and whitespace), on top of #278's keyed run key; and the #278 review's run-key guard in keyedDigest",
  "date": "2026-10-04",
- "ranAt": "94082ce53a8100f9f3fd0326e6bea73364de8a44",
+ "ranAt": "2f313de7092ca5d7ee0825fcbaff6f522df43432",
  "predecessor": "docs/evidence/public-source-screening-mutants-2026-10-03.json (21 of 21 at the #292 bytes; retained unchanged)",
  "subjectFiles": [
   {
@@ -15,13 +15,21 @@
   {
    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
    "fileSha256": "ccc48e6e4580cf5b9a94560d010329faa3aa9863b140c970ce81b2e089ffb14f"
+  },
+  {
+   "path": "packages/polaris-generation-core/src/generation-source.ts",
+   "fileSha256": "7e4846366bb256790cd6a308e801d4307855c735883906635c4700db9da87548"
+  },
+  {
+   "path": "packages/polaris-generation-core/src/generation-source.test.ts",
+   "fileSha256": "349671600cff0fdea95816ee2b1b37fc66ee1bcb0221a9b21f9b55f1f0b0569f"
   }
  ],
- "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran npx vitest run apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts (23 tests), and restored the file; the worktree was clean afterwards (asserted). A mutant is killed when at least one test fails.",
- "tests": "public-source-screening.test.ts (23); all fixtures synthetic git repositories built in the test, every secret assembled at runtime, no external repository read, no provider call",
+ "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran npx vitest run apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts packages/polaris-generation-core/src/generation-source.test.ts, and restored the file; the worktree was clean afterwards (asserted). A mutant is killed when at least one test fails.",
+ "tests": "public-source-screening.test.ts (23) and generation-source.test.ts; all fixtures synthetic git repositories or literal strings built in the test, every secret assembled at runtime, no external repository read, no provider call",
  "result": {
-  "mutants": 38,
-  "killed": 38,
+  "mutants": 40,
+  "killed": 40,
   "survived": []
  },
  "notes": [
@@ -36,7 +44,7 @@
    "old": "const screenedOut = screen?.screenBody(body);",
    "new": "const screenedOut = undefined as 'secret-detector-match' | 'active-content' | undefined;",
    "killed": true,
-   "tests": "4 failed | 19 passed (23)"
+   "tests": "4 failed | 36 passed (40)"
   },
   {
    "id": "body-screen-first-piece",
@@ -45,7 +53,7 @@
    "old": "const screenedOut = screen?.screenBody(body);",
    "new": "const screenedOut = screen?.screenBody(body.slice(0, 100_000));",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "path-screen-skipped",
@@ -54,7 +62,7 @@
    "old": "const reason = screen.screenPath(record.path);",
    "new": "const reason = undefined as CorpusScreenReason | undefined;",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "path-screened-blob-read",
@@ -63,7 +71,7 @@
    "old": "batch.filter(record => !byPath.has(record)).map(record => record.objectId)",
    "new": "batch.map(record => record.objectId)",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "withheld-keeps-path",
@@ -72,7 +80,7 @@
    "old": "path: `withheld/${sourceId}`, objectId: null,",
    "new": "path: record.path, objectId: null,",
    "killed": true,
-   "tests": "4 failed | 19 passed (23)"
+   "tests": "4 failed | 36 passed (40)"
   },
   {
    "id": "withheld-keeps-object-id",
@@ -81,7 +89,7 @@
    "old": "path: `withheld/${sourceId}`, objectId: null,",
    "new": "path: `withheld/${sourceId}`, objectId: record.objectId,",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "excluded-row-unscreened",
@@ -90,7 +98,7 @@
    "old": "screen !== undefined ? withheld(record, reason)\n",
    "new": "false ? withheld(record, reason)\n",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "oversize-row-unscreened",
@@ -99,7 +107,7 @@
    "old": ": screen !== undefined ? withheld(record, row.exclusion.reason) :",
    "new": ": false ? withheld(record, row.exclusion.reason) :",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "secret-count-dropped",
@@ -108,7 +116,7 @@
    "old": "secretDetectorMatches: screened['secret-detector-match']",
    "new": "secretDetectorMatches: 0",
    "killed": true,
-   "tests": "4 failed | 19 passed (23)"
+   "tests": "4 failed | 36 passed (40)"
   },
   {
    "id": "indeterminate-count-dropped",
@@ -117,7 +125,7 @@
    "old": "indeterminate: screened['unknown-extraction-class']",
    "new": "indeterminate: 0",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "opaque-id-unkeyed",
@@ -126,7 +134,7 @@
    "old": "opaqueId: identity => excludedSourceId(key, identity),",
    "new": "opaqueId: identity => `s-${createHash('sha256').update(identity).digest('hex').slice(0, 24)}`,",
    "killed": true,
-   "tests": "2 failed | 21 passed (23)"
+   "tests": "2 failed | 38 passed (40)"
   },
   {
    "id": "detectors-skipped",
@@ -135,7 +143,7 @@
    "old": "detectSecrets(detectors, body) !== undefined ? 'secret-detector-match'",
    "new": "false ? 'secret-detector-match'",
    "killed": true,
-   "tests": "4 failed | 19 passed (23)"
+   "tests": "4 failed | 36 passed (40)"
   },
   {
    "id": "active-content-skipped",
@@ -144,7 +152,7 @@
    "old": "scanActiveContent(body).length > 0 ? 'active-content'",
    "new": "false ? 'active-content'",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "denied-rules-ignored",
@@ -153,7 +161,7 @@
    "old": "screenPath: path => deniedPathReason(path, rules) !== undefined ? 'denied-path'",
    "new": "screenPath: path => false ? 'denied-path'",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "path-detectors-skipped",
@@ -162,7 +170,7 @@
    "old": ": detectSecrets(detectors, path) !== undefined ? 'secret-detector-match'",
    "new": ": false ? 'secret-detector-match'",
    "killed": true,
-   "tests": "5 failed | 18 passed (23)"
+   "tests": "5 failed | 35 passed (40)"
   },
   {
    "id": "path-detectors-basename-only",
@@ -171,7 +179,7 @@
    "old": "detectSecrets(detectors, path)",
    "new": "detectSecrets(detectors, path.split('/').at(-1) ?? '')",
    "killed": true,
-   "tests": "4 failed | 19 passed (23)"
+   "tests": "4 failed | 36 passed (40)"
   },
   {
    "id": "extension-rule-off",
@@ -180,7 +188,7 @@
    "old": "? undefined : 'unknown-extraction-class',",
    "new": "? undefined : undefined,",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "extension-case-folded",
@@ -189,7 +197,7 @@
    "old": ".endsWith(extension))",
    "new": ".toLowerCase().endsWith(extension.toLowerCase()))",
    "killed": true,
-   "tests": "3 failed | 20 passed (23)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "extensions-unvalidated",
@@ -198,7 +206,7 @@
    "old": " || extensions.some(extension => !/^\\.[^/\\s]+$/u.test(extension) || extension.includes('..'))",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "two-code-content-rules",
@@ -207,7 +215,7 @@
    "old": "codeContent.length !== 1 ||",
    "new": "codeContent.length === 0 ||",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "act-absent-allowed",
@@ -216,7 +224,7 @@
    "old": "if (actRecord === undefined) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "2 failed | 21 passed (23)"
+   "tests": "2 failed | 38 passed (40)"
   },
   {
    "id": "policy-absent-allowed",
@@ -225,7 +233,7 @@
    "old": "if (policy === undefined) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "act-identity-unchecked",
@@ -234,7 +242,7 @@
    "old": "if (!ACT_IDENTITY.test(act) || ",
    "new": "if (",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "act-type-unchecked",
@@ -243,7 +251,7 @@
    "old": " || !act.includes('\\nAct type: `approve-policy`\\n')",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "artifact-unchecked",
@@ -252,7 +260,7 @@
    "old": " || !act.includes(`\\nArtifact identity: \\`${PUBLIC_SOURCE_POLICY_PATH}\\`\\n`)",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "second-digest-allowed",
@@ -261,7 +269,7 @@
    "old": "if (digests.length !== 1)",
    "new": "if (digests.length === 0)",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "digest-not-compared",
@@ -270,7 +278,7 @@
    "old": "if (policySha256 !== digests[0]) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "scope-not-required",
@@ -279,7 +287,7 @@
    "old": "if (scope === null || typeof scope !== 'object' || Array.isArray(scope)) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "denied-rules-unvalidated",
@@ -288,7 +296,7 @@
    "old": "|| !stringList(admission.deniedPathSuffixes)) refuse(",
    "new": ") refuse(",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "short-key-allowed",
@@ -297,7 +305,7 @@
    "old": "if (runKey.byteLength < 32)",
    "new": "if (runKey.byteLength < 0)",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "screen-after-admission",
@@ -306,7 +314,7 @@
    "old": "const screen = await loadPublicSourceScreen(ports.policyAct, runKey);\n  return readRepoCorpus(",
    "new": "const asked = await (ports.admission ?? { decide: async () => ({ allowed: false as const, reason: 'none' }) }).decide({ repositoryId: config.repositoryId, revision: config.revision, include: config.include, exclude: config.exclude });\n  void asked;\n  const screen = await loadPublicSourceScreen(ports.policyAct, runKey);\n  return readRepoCorpus(",
    "killed": true,
-   "tests": "8 failed | 15 passed (23)"
+   "tests": "8 failed | 32 passed (40)"
   },
   {
    "id": "unrepresentable-carried",
@@ -315,7 +323,7 @@
    "old": "if (ports.screen === undefined) unrepresentable.push(",
    "new": "if (true) unrepresentable.push(",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "unrepresentable-secret-uncounted",
@@ -324,7 +332,7 @@
    "old": "else if (ports.screen.screenPath(record.path) === 'secret-detector-match') screened['secret-detector-match']++;",
    "new": "else if (false) screened['secret-detector-match']++;",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "control-char-representable",
@@ -333,7 +341,7 @@
    "old": "!/[\\u0000-\\u001f\\u007f]/u.test(path) && ",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "tree-record-single-line",
@@ -342,7 +350,7 @@
    "old": "\\t(.+)$/su.exec(row)",
    "new": "\\t(.+)$/u.exec(row)",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "glob-not-dotall",
@@ -351,7 +359,7 @@
    "old": "`^${out}$`, 'su')",
    "new": "`^${out}$`, 'u')",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "extension-dotdot-allowed",
@@ -360,7 +368,7 @@
    "old": " || extension.includes('..')",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
   },
   {
    "id": "extension-whitespace-allowed",
@@ -369,11 +377,30 @@
    "old": "!/^\\.[^/\\s]+$/u.test(extension)",
    "new": "!/^\\.[^/]+$/u.test(extension)",
    "killed": true,
-   "tests": "1 failed | 22 passed (23)"
+   "tests": "1 failed | 39 passed (40)"
+  },
+  {
+   "id": "run-key-guard-removed",
+   "file": "packages/polaris-generation-core/src/generation-source.ts",
+   "description": "keyedDigest accepts a key of any length, the empty key included",
+   "old": "|| runKey.byteLength < GENERATION_RUN_KEY_MIN_BYTES)",
+   "new": "|| runKey.byteLength < 0)",
+   "killed": true,
+   "tests": "1 failed | 39 passed (40)"
+  },
+  {
+   "id": "run-key-guard-31",
+   "file": "packages/polaris-generation-core/src/generation-source.ts",
+   "description": "keyedDigest accepts a 31-byte key",
+   "old": "const GENERATION_RUN_KEY_MIN_BYTES = 32;",
+   "new": "const GENERATION_RUN_KEY_MIN_BYTES = 31;",
+   "killed": true,
+   "tests": "1 failed | 39 passed (40)"
   }
  ],
  "history": [
   "At 89740a04 and again at d2a0ce6f (after a rebase onto main changed two test fixtures) 31 of 31 were killed over the B1-B4 repairs.",
-  "The #323 review (CHANGES at 91b4254d) added the unrepresentable-path, control-character and extension-validation repairs and seven mutants; #278 (keyed run key) then merged, opaque-id-unkeyed and the screen-order fragments were re-pointed to its excludedSourceId and shared runKey, and this run is on main after #278, 38 of 38 killed."
+  "The #323 review (CHANGES at 91b4254d) added the unrepresentable-path, control-character and extension-validation repairs and seven mutants; #278 (keyed run key) then merged, opaque-id-unkeyed and the screen-order fragments were re-pointed to its excludedSourceId and shared runKey, and this run is on main after #278, 38 of 38 killed.",
+  "The #278 review asked for a 32-byte guard inside keyedDigest; two mutants were added for it (removed, and lowered to 31 bytes). After rebasing onto main at 812d3a3f, this run is at 2f313de7: 40 of 40 killed."
  ]
 }
