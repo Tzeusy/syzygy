@@ -27,6 +27,17 @@ The proposal and design are restyled prose; their claims are classified in
 ``SEMANTIC-MAP.json`` and judged by review, while the checks hold the
 coverage quotations, the relation diagram and the removal of stale status
 sentences.
+
+**After sign-off** (syzygy-6bv9, 2026-10-03). The owner signed this package
+off as v1.0 on 2026-10-02 (``decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md``).
+``--check`` then reported the applied state through ``applied()``. That lasted
+until the tree-framing v1.0 sign-off of 2026-10-03 rewrote five of the eleven
+subjects. Since then ``applied()`` is false and ``--check`` falls through to
+the candidate check. Its predecessor pins and patches no longer match, so it
+fails with "stale predecessor" and "patch does not apply". That result means
+superseded, not broken. ``--selftest`` builds from the pre-adoption bytes and
+fails the same way. To check the bytes in force, run the builder of the latest
+sign-off (``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
 """
 
 from __future__ import annotations
