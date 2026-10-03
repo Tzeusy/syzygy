@@ -212,7 +212,8 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
       expect(block, name).toBeDefined();
       const rows = [...block.matchAll(/<li class="(tt-[a-z-]+)"[^>]*>([^<]*)<\/li>/g)].map((match) => ({ className: match[1] as string, text: match[2] as string }));
       expect(rows.map((row) => row.className), name).toEqual([...TIERS, 'unstated', ...FRESHNESS, ...CHALLENGE].map((value) => TREATMENTS[value]?.[0]));
-      expect(block.split('<li').length - 1, name).toBe(rows.length);
+      // Every other row is the one proposal disclosure row (slice 6).
+      expect(block.split('<li').length - 1, name).toBe(rows.length + 1);
       expect(block, name).toContain(copyText('states.strengthen'));
       const served = new Set([...html.matchAll(/<span class="claim-tuple"[^>]*\sdata-epistemic-freshness="([^"]*)"/g)].map((match) => match[1]));
       for (const value of FRESHNESS) {

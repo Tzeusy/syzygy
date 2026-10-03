@@ -135,6 +135,39 @@ export const TUPLE_MARKS_CSS = TUPLE_FIELD_TREATMENTS
   .map((entry) => `.claim-tuple[${TUPLE_MARK_SLOTS[entry.field].attribute}="${entry.value}"]${TUPLE_MARK_SLOTS[entry.field].slot} { content: "${entry.symbol} " / ""; color: var(${entry.token}); }`)
   .join('\n  ');
 
+/** Proposed-not-authority (syzygy-dov.3.2; P-70 M3 slice 6): a disclosure
+ * about a candidate future, never a claim state, so it is declared apart from
+ * the label, tier, freshness and challenge tables. The served proposal
+ * section takes `className`, its label `labelClassName`; the glossary row
+ * that defines it carries `labelClassName` too. `--proposed` and its
+ * contrast evidence landed in M3 slices 1–4 and are not changed here. */
+export interface DisclosureEncoding {
+  readonly value: 'proposed';
+  readonly className: 'proposal';
+  readonly labelClassName: 'proposal-label';
+  readonly symbol: string;
+  readonly token: '--proposed';
+  readonly description: PolarisCopyId;
+  readonly unreachable: string;
+}
+
+export const PROPOSAL_DISCLOSURE: DisclosureEncoding = {
+  value: 'proposed',
+  className: 'proposal',
+  labelClassName: 'proposal-label',
+  symbol: '✧',
+  token: '--proposed',
+  description: 'states.proposed',
+  unreachable: 'Not on this page at this evaluation: no proposed change names a capability shown here.',
+};
+
+/** The section rule names `.claim-section` as well: the reading layout's
+ * later `.claim-section { border: 0 }` otherwise removes the proposal's
+ * border (it did, unnoticed, until the slice 6 browser sweep). */
+export const PROPOSAL_TREATMENT_CSS = `.claim-section.${PROPOSAL_DISCLOSURE.className} { border-left: 4px solid var(${PROPOSAL_DISCLOSURE.token}); padding-left: 1rem; }
+  .${PROPOSAL_DISCLOSURE.labelClassName} { color: var(${PROPOSAL_DISCLOSURE.token}); }
+  .${PROPOSAL_DISCLOSURE.labelClassName}::before { content: "${PROPOSAL_DISCLOSURE.symbol} " / ""; }`;
+
 export function epistemicClassName(label: PocEpistemicLabel): string {
   const encoding = EPISTEMIC_ENCODING.find((entry) => entry.label === label);
   if (encoding === undefined) {
