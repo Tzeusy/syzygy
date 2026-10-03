@@ -25,10 +25,14 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import os
 import tarfile
 import tempfile
 
 HELPER = pathlib.Path(__file__).resolve()
+#: Set for the nested run, so a pre-adoption tree that somehow carries the
+#: record can never start a second archive inside the first.
+NESTED = "PWB_SIGNED_SELFTEST_NESTED"
 
 
 def sha256(path: pathlib.Path) -> str:
@@ -43,6 +47,10 @@ def rerun_before_signoff(script: str, record: str, commit: str) -> int | None:
     if not (root / record).is_file():
         return None
     name = builder.name
+    if os.environ.get(NESTED):
+        print(f"refusing: {record} exists inside the pre-adoption tree; "
+              f"not starting a nested rerun")
+        return 1
     print(f"{name}: signed off ({record}); running this file's current bytes "
           f"against the pre-adoption tree {commit[:12]} (git archive)", flush=True)
     with tempfile.TemporaryDirectory() as temp:
@@ -74,22 +82,24 @@ def rerun_before_signoff(script: str, record: str, commit: str) -> int | None:
                   f"which is therefore not a pre-adoption tree")
             return 1
         return subprocess.run([sys.executable, str(tree / "scripts" / name),
-                               "--selftest"], cwd=tree).returncode
+                               "--selftest"], cwd=tree,
+                              env={**os.environ, NESTED: "1"}).returncode
 
 
 # ------------------------------------------------------------------ selftest
 
-BUILDER = '''import pathlib, sys
+BUILDER = '''import os, pathlib, sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import pwb_signed_selftest as helper
 VERSION = "{version}"
 if "--selftest" in sys.argv:
-    rerun = helper.rerun_before_signoff(__file__, "RECORD.md", sys.argv[-1])
+    rerun = helper.rerun_before_signoff(__file__, "RECORD.md", os.environ["COMMIT"])
     if rerun is not None:
         raise SystemExit(rerun)
     root = pathlib.Path(__file__).resolve().parents[1]
-    print("ran", VERSION, "fixture" if (root / "FIXTURE").is_file() else "no-fixture")
-    raise SystemExit(0 if (root / "FIXTURE").is_file() else 3)
+    here = (root / "FIXTURE").is_file() and (pathlib.Path.cwd() / "FIXTURE").is_file()
+    print("ran", VERSION, "fixture" if here else "no-fixture")
+    raise SystemExit(0 if here else 3)
 '''
 
 
@@ -105,7 +115,8 @@ def selftest() -> int:
 
         def run(commit: str) -> subprocess.CompletedProcess:
             return subprocess.run([sys.executable, str(repo / "scripts/build.py"),
-                                   "--selftest", commit], capture_output=True, text=True)
+                                   "--selftest"], capture_output=True, text=True,
+                                  cwd=repo, env={**os.environ, "COMMIT": commit})
 
         git("init", "-q")
         git("config", "user.email", "selftest@example.invalid")
@@ -139,10 +150,17 @@ def selftest() -> int:
                       and len(git("worktree", "list").splitlines()) == 1))
         signed_run = run(signed)
         cases.append(("a commit carrying the record is refused",
-                      signed_run.returncode == 1 and "refusing" in signed_run.stdout))
+                      signed_run.returncode == 1
+                      and "is therefore not a pre-adoption tree" in signed_run.stdout))
         missing = run("0" * 40)
         cases.append(("an unreadable commit refuses rather than passing",
-                      missing.returncode == 1 and "refusing" in missing.stdout))
+                      missing.returncode == 1
+                      and "cannot read pre-adoption commit" in missing.stdout))
+        nested = subprocess.run([sys.executable, str(repo / "scripts/build.py"), "--selftest"],
+                                capture_output=True, text=True, cwd=repo,
+                                env={**os.environ, "COMMIT": candidate, NESTED: "1"})
+        cases.append(("a nested rerun is refused",
+                      nested.returncode == 1 and "nested rerun" in nested.stdout))
 
     failed = [name for name, caught in cases if not caught]
     for name, caught in cases:
