@@ -95,8 +95,11 @@ beside `EPISTEMIC_ENCODING` in `design-tokens.ts`: six tiers, four freshness
 values and `unchallenged`, each with a class, symbol, token, copy row and,
 for freshness, the reason and route stated when no claim carries it.
 `unstated` is the tier slot's absence and sits outside the six. Each tuple
-stays one text node; after it, one empty mark per field takes its value's
-class and renders the symbol in its token. The words carry the value, so a
-mark's symbol has an empty alternative text. The claim-state glossary rows
-are generated from the same tables and carry the same classes. An undeclared
-value refuses to render. The full proposal legend is later work.
+stays one text node. Generated CSS keyed on the tuple's own attributes
+renders each value's symbol in its token: the tier on the tuple's
+`::after` (its `::before` is the label's symbol), freshness and challenge
+on the two pseudo-elements of one empty `<i>` after it. That is the only
+mark markup, about 7 bytes a tuple, and each field keeps its own token.
+The words carry the value, so a mark's symbol has an empty alternative
+text. The claim-state glossary rows are generated from the same tables and
+carry the value classes. An undeclared value refuses to render. The full proposal legend is later work.
