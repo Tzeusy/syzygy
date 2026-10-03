@@ -152,6 +152,21 @@ describe('REQ-031 clarification', () => {
     await expect(clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [entry] as never })).resolves.toMatchObject({ suppressedAsRepeats: ['purpose'] });
   });
 
+  it('counts default-ignorable and zero-width-split text as blank or unknown, and trims a long run of spaces in linear time', async () => {
+    for (const text of ['\u3164', '\u2800', '\u034f', '\u115f', '\u200b\u3164\u2800', 'un\u200bknown', 'UN\u2060KNOWN', 'unk\u034fnown\u3164']) {
+      const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: text }) });
+      expect(record.answers[0], JSON.stringify(text)).toMatchObject({ disposition: 'unknown', answer: null });
+    }
+    const spaced = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: `${' '.repeat(400_000)}cache${' '.repeat(400_000)}` }) });
+    expect(spaced.answers[0]).toMatchObject({ disposition: 'answered' });
+    const started = performance.now();
+    for (const filler of [' ', '\u200b', '\u3164', '\t \u2003']) {
+      const blank = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: `${filler.repeat(40_000)}x`.slice(0, 40_000), attribution: filler.repeat(40_000) }) });
+      expect(blank.aborted).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
+    }
+    expect(performance.now() - started).toBeLessThan(2000);
+  });
+
   it('records an owner answer with attribution without adopting it, and keeps a declined one as a limitation', async () => {
     const asked: string[] = [];
     const ask = async (q: { id: OwnerAnswer['id'] }): Promise<OwnerAnswer> => { asked.push(q.id); return q.id === 'purpose' ? answer('purpose') : answer('audience', 'unknown'); };
