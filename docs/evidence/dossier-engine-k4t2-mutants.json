@@ -1,15 +1,15 @@
 {
   "subject": {
-    "commit": "5b1b7ee91a2eb4d0571356a71304aa829779b386",
+    "commit": "35a835341d1ac54c7381fca5e41c5789ce82785b",
     "branch": "agent/partial-render-on-stop",
     "fileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "03124d8c25b1f36a84001c006e0f1dc9565f64da2680003eb8fb6ae0927cca4d",
-      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "f115d1cb325b0fa492551e31c60ff5f5950cb49012257d67859391f959be86ca"
+      "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "4ec9cb847e226dccf7499bdd4868a2b2c7efd904424b0e1724f2da5b708a9674",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "44c921ea8eda4f35d457f16816af58f22ab33ae216573c4eea32d2a70e8809be"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T15:31:53+00:00",
+  "ranAt": "2026-10-03T19:07:29+00:00",
   "mutants": [
     {
       "id": "stopped-not-rendered",
@@ -20,8 +20,8 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 22
+      "failedTests": 3,
+      "totalTests": 26
     },
     {
       "id": "render-error-swallows-all",
@@ -33,7 +33,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 22
+      "totalTests": 26
     },
     {
       "id": "partial-record-collision-unchecked",
@@ -45,7 +45,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 22
+      "totalTests": 26
     },
     {
       "id": "partial-state-collapsed",
@@ -56,8 +56,8 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 22
+      "failedTests": 4,
+      "totalTests": 26
     },
     {
       "id": "partial-exit-code-reused",
@@ -68,8 +68,8 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 22
+      "failedTests": 2,
+      "totalTests": 26
     },
     {
       "id": "partial-record-dropped",
@@ -80,8 +80,20 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "main-drops-requested-assets",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "renderDossier({ result, sources, requestedAssets: DOSSIER_REQUESTED_ASSETS })",
+      "new": "renderDossier({ result, sources })",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 22
+      "totalTests": 26
     }
   ]
 }
