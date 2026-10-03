@@ -1,0 +1,61 @@
+{
+  "record": "Rule-6 mutants for classifying the governing-intent amendment as a pending sibling of the block-provenance amendment (syzygy-34yu). Not authority.",
+  "measuredOn": {
+    "commit": "0eeab2689ebbf4f72345bfdc2c6a9be038ae9b75",
+    "subjects": [
+      {
+        "path": "scripts/build_three_surface_poc_block_provenance_amendment.py",
+        "sha256": "2f2694ac8f12c2653aa2227da7ad68981827b0c47305494f892feddd9e5be888"
+      },
+      {
+        "path": "scripts/build_pwb_anchor_resolution_amendment.py",
+        "sha256": "173f4ee43faa4f36225a7d61870cc2b5feddd75c07084e9b86c13a2f1081f733"
+      }
+    ]
+  },
+  "method": "Each mutant replaces every occurrence of `old` with `new` in one file of a fresh `git archive <commit>` extraction, then runs `command` from that extraction's root. Killed only when it replaced at least one occurrence, the command exits nonzero, and its output contains `expected`. M1 removes the sibling entry (the acceptance criterion's fixture); M2 silences the unclassified finding, which the new removal fixture must catch; M3 skips composition.",
+  "finding": "A first M2 (`if record is None:` -> `if False:`) crashed the selftest with a TypeError before any fixture ran; it exited nonzero but proved nothing about the fixture, so it was replaced by M2 above.",
+  "result": {
+    "killed": 3,
+    "total": 3
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "file": "scripts/build_three_surface_poc_block_provenance_amendment.py",
+      "old": "        \"three-surface-poc-governing-intent-amendment\",\n",
+      "new": "",
+      "occurrencesReplaced": 1,
+      "command": "python3 scripts/build_three_surface_poc_block_provenance_amendment.py --check",
+      "expected": "unclassified sibling package patches the spec: three-surface-poc-governing-intent-amendment",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "  unclassified sibling package patches the spec: three-surface-poc-governing-intent-amendment"
+    },
+    {
+      "id": "M2",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "            findings.append(f\"unclassified sibling package patches the spec: {name}\")\n",
+      "new": "            pass\n",
+      "occurrencesReplaced": 1,
+      "command": "python3 scripts/build_three_surface_poc_block_provenance_amendment.py --selftest",
+      "expected": "SELFTEST FAILED: removing pending sibling three-surface-poc-governing-intent-amendment",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "SELFTEST FAILED: removing pending sibling three-surface-poc-governing-intent-amendment gave []"
+    },
+    {
+      "id": "M3",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "    for name in sorted(pkg.pending_siblings):\n        sibling = siblings.get(name)",
+      "new": "    for name in []:\n        sibling = siblings.get(name)",
+      "occurrencesReplaced": 1,
+      "command": "python3 scripts/build_three_surface_poc_block_provenance_amendment.py --selftest",
+      "expected": "SELFTEST FAILED: a clashing sibling composed",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "SELFTEST FAILED: a clashing sibling composed: []"
+    }
+  ],
+  "runner": "\"\"\"Rule-6 mutants for syzygy-34yu, each applied to a fresh `git archive` of\nthe whole tree at the given commit; the named command must fail with the\nexpected text.\"\"\"\nimport json, pathlib, shutil, subprocess, sys, tempfile\n\nREPO = pathlib.Path(sys.argv[1])\nCOMMIT = subprocess.run([\"git\", \"rev-parse\", \"HEAD\"], cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()\nPOC = \"scripts/build_three_surface_poc_block_provenance_amendment.py\"\nENGINE = \"scripts/build_pwb_anchor_resolution_amendment.py\"\nMUTANTS = [\n    (\"M1\", POC, '        \"three-surface-poc-governing-intent-amendment\",\\n', \"\",\n     POC, \"--check\", \"unclassified sibling package patches the spec: three-surface-poc-governing-intent-amendment\"),\n    (\"M2\", ENGINE, '            findings.append(f\"unclassified sibling package patches the spec: {name}\")\\n',\n     \"            pass\\n\",\n     POC, \"--selftest\", \"SELFTEST FAILED: removing pending sibling three-surface-poc-governing-intent-amendment\"),\n    (\"M3\", ENGINE, \"    for name in sorted(pkg.pending_siblings):\\n        sibling = siblings.get(name)\",\n     \"    for name in []:\\n        sibling = siblings.get(name)\",\n     POC, \"--selftest\", \"SELFTEST FAILED: a clashing sibling composed\"),\n]\nresults = []\nfor mid, rel, old, new, script, flag, expect in MUTANTS:\n    tmp = pathlib.Path(tempfile.mkdtemp(prefix=f\"34yu-{mid}-\"))\n    try:\n        archive = subprocess.run([\"git\", \"archive\", COMMIT], cwd=REPO, capture_output=True, check=True).stdout\n        subprocess.run([\"tar\", \"-x\", \"-C\", str(tmp)], input=archive, check=True)\n        target = tmp / rel\n        text = target.read_text(encoding=\"utf-8\")\n        n = text.count(old)\n        target.write_text(text.replace(old, new), encoding=\"utf-8\")\n        run = subprocess.run([sys.executable, str(tmp / script), flag], cwd=tmp, capture_output=True, text=True)\n        out = run.stdout + run.stderr\n        results.append({\"id\": mid, \"file\": rel, \"old\": old, \"new\": new, \"occurrencesReplaced\": n,\n                        \"command\": f\"python3 {script} {flag}\", \"expected\": expect,\n                        \"exitCode\": run.returncode,\n                        \"killed\": n >= 1 and run.returncode != 0 and expect in out,\n                        \"outputMatch\": next((l for l in out.splitlines() if expect in l), None)})\n    finally:\n        shutil.rmtree(tmp, ignore_errors=True)\nprint(json.dumps({\"commit\": COMMIT, \"mutants\": results,\n                  \"killed\": sum(r[\"killed\"] for r in results), \"total\": len(results)}, indent=2, ensure_ascii=False))\n"
+}
