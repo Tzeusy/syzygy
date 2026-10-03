@@ -449,6 +449,8 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
   it('refuses a stopped result without the requested assets it must account for', async () => {
     const stopped = await stopAfter({ maxCalls: 2 });
     expect(() => renderDossier({ result: stopped.result, sources: stopped.sources })).toThrow('missing-requested-assets');
+    const how = stopped.requestedAssets[0]!;
+    expect(() => renderDossier({ ...stopped, requestedAssets: [how, how] })).toThrow('duplicate-handle');
   });
 
   it('leaves a complete run without a stop banner or not-generated notice', () => {
