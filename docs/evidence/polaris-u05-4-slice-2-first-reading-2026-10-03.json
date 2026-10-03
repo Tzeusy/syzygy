@@ -1,0 +1,282 @@
+{
+  "bead": "syzygy-u05.4",
+  "slice": 2,
+  "date": "2026-10-03",
+  "subject": "Polaris first reading: the first tuple's vocabulary glossed before it renders (S1-F1), a proof strip between Purpose and Promises (S1-M3), gap entries whose count is findable (S4-F4), and 'By cause' as one item per cause (S4-F5); pursuit 2026-09-22 N4",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/polaris.ts": {
+      "sha256": "46e50512856231cef923a5cc267194c1e33f134e8ebe6db223ec9c941d03e18b"
+    },
+    "apps/three-surface-poc/src/polaris-copy.ts": {
+      "sha256": "bf4215d5e61a03ff20d4e01aaf8d8d83a002d2b503a2c3724262f81b24d250af"
+    },
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts": {
+      "sha256": "d4ef4916ba70144d9859b03c8aec8a6ce1e0d24ebe653c134c2edab403e54a44"
+    },
+    "apps/three-surface-poc/src/polaris-copy.test.ts": {
+      "sha256": "9e2a7d58a4d9ca8fdf3c6cbb91bc3df1ffab80d2cf13084773f5bd7a8565ff3a"
+    },
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts": {
+      "sha256": "cbb8e4ea42e52d6c4919ae4ecc101aace672fc8529e2a53043b954c3dee1687a"
+    }
+  },
+  "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-75 Q6 (general reading) under .syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md; HOLD gate syzygy-dca closed. No PocModel change.",
+  "decisions": {
+    "proofStripUnknown": "The strip counts sources, items and facts and gives the Unknown claims a route with no number. [Observed] PWB-REQ-010's scenario 'One opening Unknown aggregate, reconciled with members' says 'exactly one such aggregate is rendered there' (before the first capability catalog), and the opening Unknown band is that aggregate; a numeric Unknown count in the strip would be a second one, without the tuple and reason counts PWB-REQ-007 asks of an aggregate. A four-count strip needs a CC-REV-2 scenario first.",
+    "gapCount": "The gap count keeps the whole shape-claim population, which the PWB-REQ-020 parity sweep (polaris-parity-sweep.test.ts 'gaps' family) and the reachability test compare against the machine answer. The entry now names the counted members that have no tuple line of their own (reconciled facts, account-section items), so stated count = distinct tuples carrying the reason + named folded members. No test oracle was changed for this.",
+    "gloss": "The full claim-state explanation stays after the overview (PWB-LIVE-06 order, pinned by 'opens on Butlers'); the opening gloss repeats only the first tuple's four sentences from the same copy rows, with a link to the full explanation.",
+    "byCause": "Only the gap entry takes the list; the reason-counts disclosure keeps the run-on form because its route sits in a <p>, which cannot hold a list. At Butlers 32f38feb the excluded-content reason has 9 causes, not the 8 the 2026-09-22 capture had; the list carries all 9, equal to the 9 rendered exclusion rows.",
+    "openingBandCount": "Not changed: the opening band's 'N Unknown claim(s) on this page' still counts over every shape claim (12 at Butlers 32f38feb where 11 have tuples). It sits behind P-71's opening-band gate; filed as a follow-up."
+  },
+  "testOracleChanges": [
+    "polaris-copy.test.ts: native-anchor population 144 -> 149 (the gloss's glossary link and the strip's four segments).",
+    "walkthrough-preflight.test.ts: the 'glossary does not explain a tier' counterexample now mutates the glossary's own 'report-fact —', since the opening gloss repeats it earlier on the page."
+  ],
+  "measurement": {
+    "method": "As slice 1: node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>, from the u05.4 worktree at the commit, detached and clean, after npm run build:poc; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net; one private daemon; the loopback daemon on 7478 was not contacted.",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "base": {
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "note": "Slice 1's measured capture (docs/evidence/polaris-u05-4-slice-1-legend-2026-10-03.json); c4a88a94 between it and slice 2 adds only that evidence file.",
+      "direct": {
+        "bytes": 1467261,
+        "sha256": "ec37c7084d882d0d53297bd2f38e8f73a5f88d18ffdf2e3abee7e98769bdef68"
+      },
+      "tailnet": {
+        "bytes": 1473366,
+        "sha256": "d23451b8afaebd09996254b6794163481b85ada8ea9ced02fc745474c4e8facc"
+      }
+    },
+    "slice2": {
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "direct": {
+        "bytes": 1470273,
+        "sha256": "0dad48e3d19bc9ae6cbd94268fef6516789c265e60dccd34c12f47b82a40a1b6",
+        "glossOffset": 43839,
+        "glossClaim": "claim:project-account:purpose",
+        "firstTupleOffset": 48039,
+        "firstTupleClaim": "claim:project-account:purpose",
+        "proofStrip": {
+          "counts": {
+            "sources": 285,
+            "items": 392,
+            "facts": 416
+          },
+          "unknownRoute": "polaris-opening-unknowns",
+          "afterPurpose": true,
+          "beforePromises": true,
+          "introductoryDiagramRendered": false
+        },
+        "renderedSourceRows": 285,
+        "renderedExclusionRows": 9,
+        "gaps": {
+          "excluded-content": {
+            "statedCount": 12,
+            "distinctTuplesWithReason": 11,
+            "foldedNamed": [
+              "claim:fact:count:roster-identity"
+            ],
+            "causeItems": 9,
+            "causesAttr": 9
+          }
+        }
+      },
+      "tailnet": {
+        "bytes": 1476378,
+        "sha256": "6d1c11c82067d3ac295b9aaf730468ea53a34c7eb97a3f41446786ba68279052",
+        "glossOffset": 43914,
+        "glossClaim": "claim:project-account:purpose",
+        "firstTupleOffset": 48114,
+        "firstTupleClaim": "claim:project-account:purpose",
+        "proofStrip": {
+          "counts": {
+            "sources": 285,
+            "items": 392,
+            "facts": 416
+          },
+          "unknownRoute": "polaris-opening-unknowns",
+          "afterPurpose": true,
+          "beforePromises": true,
+          "introductoryDiagramRendered": false
+        },
+        "renderedSourceRows": 285,
+        "renderedExclusionRows": 9,
+        "gaps": {
+          "excluded-content": {
+            "statedCount": 12,
+            "distinctTuplesWithReason": 11,
+            "foldedNamed": [
+              "claim:fact:count:roster-identity"
+            ],
+            "causeItems": 9,
+            "causesAttr": 9
+          }
+        }
+      }
+    },
+    "deltaBytes": {
+      "direct": 3012,
+      "tailnet": 3012
+    },
+    "ceiling": "2 MiB response ceiling (2,097,152 bytes); headroom after slice 2: direct 626879, tailnet 620774 bytes",
+    "crossCheck": "The served page's on-demand coverage counts (shape.counts) read '81 of 285 source bodies readable; 195 path-only source identities; 392 items (...); 416 facts', equal to the strip's 285 / 392 / 416 and to the 285 rendered source rows.",
+    "rebasedCapture": {
+      "commit": "31f9b91d039271a7b6251c6c47cd615f6c5e0793",
+      "note": "Re-measured after rebasing onto origin/main (slice 1 merged as ed4519cc/b1199fa8, svoj as f054c80e/d1ce1da1). Same byte counts; the captures differ only in evaluation timestamps, the evaluation digest and the observer commit, all equal-length. The subjectFiles digests are unchanged by the rebase; the rule-6 commit 9b223495 is the pre-rebase head of the same bytes.",
+      "direct": {
+        "bytes": 1470273,
+        "sha256": "b10e5520c757d87c730d77d79a12f856d648b6ec5f1258e02d6975d33d70ee85"
+      },
+      "tailnet": {
+        "bytes": 1476378,
+        "sha256": "84518e9b438255f3a886dfc244c2ab7f0cd49da31c49e54e625577604e1f6a2b"
+      }
+    }
+  },
+  "rule6": [
+    {
+      "id": "S2-M1",
+      "predicate": "the gloss renders before the first claim tuple",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "    ${tupleGloss(firstTupleClaim(shape))}\n    ${projectGroupBody(shape, 'overview')}",
+          "new": "    ${projectGroupBody(shape, 'overview')}\n    ${tupleGloss(firstTupleClaim(shape))}"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > glosses every value of the first claim tuple before that tuple renders 308ms"
+      ]
+    },
+    {
+      "id": "S2-M2",
+      "predicate": "the gloss defines every value of the first tuple",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "    `states.tier.${epistemic.tier ?? 'unstated'}`,\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > glosses every value of the first claim tuple before that tuple renders 309ms"
+      ]
+    },
+    {
+      "id": "S2-M3",
+      "predicate": "the gloss is bound to the claim rendered first",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "  return shape.projectAccount.find((entry) => entry.key === 'purpose')?.claim ?? shape.claim;",
+          "new": "  return shape.claim;"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > glosses every value of the first claim tuple before that tuple renders 322ms"
+      ]
+    },
+    {
+      "id": "S2-M4",
+      "predicate": "each strip count equals its model population",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "segment('facts', shape.facts.length,",
+          "new": "segment('facts', shape.facts.length + 1,"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > puts the proof strip between Purpose and Promises with counts equal to the model and the rendered so"
+      ]
+    },
+    {
+      "id": "S2-M5",
+      "predicate": "the strip sits between Purpose and Promises",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "${accountByKey(shape, 'purpose')}${proofStrip(shape)}${introductoryDiagram(shape)}${accountByKey(shape, 'promises')}",
+          "new": "${accountByKey(shape, 'purpose')}${introductoryDiagram(shape)}${accountByKey(shape, 'promises')}${proofStrip(shape)}"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > puts the proof strip between Purpose and Promises with counts equal to the model and the rendered so"
+      ]
+    },
+    {
+      "id": "S2-M6",
+      "predicate": "the Unknown route targets an id present on the page",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "? 'polaris-opening-unknowns' : 'polaris-shape-gaps';",
+          "new": "? 'polaris-opening-unknown' : 'polaris-shape-gaps';"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > puts the proof strip between Purpose and Promises with counts equal to the model and the rendered so"
+      ]
+    },
+    {
+      "id": "S2-M7",
+      "predicate": "the gap entry names its folded members",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "${reasonRouteHtml(reason, true)}${folded(reason)}</li>",
+          "new": "${reasonRouteHtml(reason, true)}</li>"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > makes every claim a gap entry counts findable: its tuples on the page plus the folded members it nam"
+      ]
+    },
+    {
+      "id": "S2-M8",
+      "predicate": "By cause renders one item per cause",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "9b223495f5eaa98def0afa88c127b74151f28b86",
+      "edits": [
+        {
+          "old": "${reasonRouteHtml(reason, true)}${folded(reason)}</li>",
+          "new": "${reasonRouteHtml(reason)}${folded(reason)}</li>"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris opening gloss, proof strip and gap entries (syzygy-u05.4) > lists each recorded cause of a gap as its own item 99ms"
+      ]
+    }
+  ]
+}
