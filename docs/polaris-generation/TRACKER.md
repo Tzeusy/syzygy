@@ -178,7 +178,13 @@ Authorized implementation work (generator implementation authorization,
         and no generate port exists (exit 5 after recording the corpus). Git
         runs with a minimal environment and a bare, template-free fetch;
         discovery calls are permitted only while the egress record holds;
-        the run is written by `writeDossierRun` (realpath parent, fail-closed
+        the repository id admitted and used for the run is the one the single
+        observation record whose `Upstream:` is the canonical URL carries,
+        read through `AdmissionRecordsPort.repositoryIdsFor` (zero or several
+        records: exit 3, nothing read); the URL-derived spelling is only a
+        label. The run directory is pre-flighted before any fetch; one created
+        after that check is refused at write time and the run is not recorded
+        elsewhere. The run is written by `writeDossierRun` (realpath parent, fail-closed
         git check, atomic staging) and rendered by `renderDossier`
         (polaris-dossier-v1), which `dossier-main` wires as the default `render`
         port.

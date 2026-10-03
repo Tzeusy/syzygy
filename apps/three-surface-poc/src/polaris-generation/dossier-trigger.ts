@@ -10,6 +10,7 @@ import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type Re
 import { checkDossierRunDestination, writeDossierRun } from './dossier-render-main.js';
 import { ISOLATED_GIT_FLAGS, minimalGitEnv } from './isolated-git.js';
 
+/** `repositoryId` is only a label (a collision-free spelling of owner and repo) when parsed; `runDossierTrigger` replaces it with the id the matching observation record carries before any requirement is built. */
 export interface GithubTarget { readonly owner: string; readonly repo: string; readonly ref?: string; readonly url: string; readonly repositoryId: string }
 
 /** Public https://github.com/<owner>/<repo> only, optionally `/tree/<ref>`. No credentials, no other host. */
@@ -50,11 +51,14 @@ export interface AdmissionRequirement { readonly kind: AdmissionKind; readonly r
 export type AdmissionAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
 export interface AdmissionRecordsPort {
   readonly source: string;
+  /** The repository ids of every observation record whose `Upstream:` is exactly this canonical URL. The trigger never derives the id it admits under: it uses the one record's id, and refuses on zero or several. */
+  readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
   readonly check: (requirement: AdmissionRequirement) => Promise<AdmissionAnswer>;
 }
 /** With no store wired, no record exists, and the report says so. */
 export const noAdmissionRecords: AdmissionRecordsPort = {
   source: 'no record store is wired into this command',
+  repositoryIdsFor: async () => [],
   check: async () => ({ satisfied: false, why: 'no record found: no admission record store is wired' }),
 };
 
@@ -72,7 +76,7 @@ export function soundAnswer(answer: unknown): AdmissionAnswer {
   const a = answer as { satisfied?: unknown; record?: unknown; why?: unknown } | null;
   if (a === null || typeof a !== 'object') return { satisfied: false, why: 'malformed admission answer: not an object' };
   if (a.satisfied === true) {
-    return typeof a.record === 'string' && a.record.length > 0 ? { satisfied: true, record: a.record } : { satisfied: false, why: 'malformed admission answer: satisfied without a record' };
+    return typeof a.record === 'string' && a.record.trim().length > 0 ? { satisfied: true, record: a.record } : { satisfied: false, why: 'malformed admission answer: satisfied without a record' };
   }
   return { satisfied: false, why: a.satisfied === false && typeof a.why === 'string' ? a.why : 'malformed admission answer: satisfied is not a boolean' };
 }
@@ -112,6 +116,14 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   try { pinned = pinRevision((ports.lsRemote ?? gitLsRemote)(target.url), target.ref); }
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
   const records = ports.records ?? noAdmissionRecords;
+  const idPattern = /^[A-Za-z0-9:_-]+$/u;
+  const ids = [...new Set((await records.repositoryIdsFor(target.url)).filter((id): id is string => typeof id === 'string' && idPattern.test(id)))];
+  if (ids.length !== 1) {
+    const why = ids.length === 0 ? `no observation record names ${target.url} as its Upstream` : `${ids.length} observation records name ${target.url} as their Upstream (${ids.join(', ')}); the repository identity is ambiguous`;
+    const requirements = admissionRequirements(target, pinned.revision).map(requirement => ({ ...requirement, answer: { satisfied: false as const, why } }));
+    return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements, missing: requirements.length };
+  }
+  target = { ...target, repositoryId: ids[0]! };
   const requirements = admissionRequirements(target, pinned.revision);
   const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
   const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
@@ -122,6 +134,7 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   const checkoutDir = join(mkdtempSync(join(tmpdir(), 'syzygy-dossier-src-')), 'repo');
   try {
     // Refuse a misplaced run directory before the checkout, the reads or any provider call.
+    // Limit: a directory created at runDir after this check (while the checkout and pipeline run) is caught by writeDossierRun, which throws run-directory-exists; the run is then lost, not recorded elsewhere.
     await checkDossierRunDestination(runDir);
     if (ports.materialize === undefined) return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'admission is satisfied but no checkout port is wired' };
     const checkout = await ports.materialize({ url: target.url, revision: pinned.revision, dir: checkoutDir });
