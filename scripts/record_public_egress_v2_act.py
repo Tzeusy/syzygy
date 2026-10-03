@@ -83,14 +83,21 @@ DISPOSITION_REL = PKG / "ROUND-3-DISPOSITIONS.md"
 #: or notes-only CONFIRM WITH EXCEPTIONS; then set to that commit and the
 #: round's two paths above, never hand-edited again. While None, every
 #: `--record` is refused: an unreviewed package cannot be recorded.
-FROZEN_SUBJECT: str | None = None
+FROZEN_SUBJECT: str | None = "905899957a056a4c64cd24b575be07f70540fada"
 #: SHA-256 of each file the confirming review read, taken from that commit by
 #: script (empty while FROZEN_SUBJECT is None). The commit is provenance only:
 #: a rebase-merge leaves it unreachable from main, so validation compares the
 #: presented bytes with these digests and never reads the commit (AGENTS.md:
 #: bind by digest, not by commit). Keys: the manifest, packet, brief,
 #: `v2.json`, the template and the record.
-FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}
+FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
+    MANIFEST_REL: "15c3c304de06bc5d9e9af10f872bfe481cded3c1c16605bf8b4b6ace8d9f1881",
+    PACKET_REL: "e026d097a4771bdc98a36326224d9391893078a6ac825a8840af2a8a3f7bf7b1",
+    BRIEF_REL: "1c78cb298ee35637bb2ead83534d6efd2f3dd34b30964c65b7a83d5e77b294e1",
+    SETTINGS_REL: "8dd8f398c0fc9bdc5b174fff9fe44b9132b4b1dfbb79a90601b6a665a0684f63",
+    TEMPLATE_REL: "788412eea6ced6de3664e5e942469dc9f1c820d7c75dbbc2e7148a7d0cba94d3",
+    RECORD_REL: "2a97b98f0e707b39ee06bdc8f9e0d1f8cd351bddd2a09312c9c4a7302b2bbf3e",
+}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 #: The moment of recording, UTC, whole seconds. A record that carried only a
@@ -216,19 +223,24 @@ def live_inputs(root: pathlib.Path) -> Inputs:
 #: the first word is the severity, so this recorder reads that form too and
 #: still refuses a qualified `(revise — …)` or `(blocking — …)`.
 QUALIFIED_SEVERITY_RE = re.compile(
-    r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?: [—–-][^)\n]*)?\)",
+    r"^\*\*(?:Finding |N-)(\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?:[ ;—–-][^)\n]*)?\)",
     re.MULTILINE)
 
 
 def review_findings(review: str) -> dict[int, str]:
+    """Finding number -> severity. Round 3's raw labels its notes `**N-1 — …**`
+    with a `(note; …)` qualifier; `N-k` is finding k, matched by the
+    disposition's `### k —` headings. Every opening `**Finding n` or `**N-n`
+    line must carry a severity, or the parse refuses."""
     section = vs.beh._raw_findings_section(review, vs.FINDINGS_HEADING)
-    numbers = vs.beh._finding_number_set(
-        section, label="review findings", forms=vs.beh.RAW_FINDING_FORMS)
+    opened = [int(n) for n in re.findall(r"^\*\*(?:Finding |N-)(\d+)\b", section, re.MULTILINE)]
     severities = {int(n): sev for n, sev in QUALIFIED_SEVERITY_RE.findall(section)}
-    missing = sorted(numbers - set(severities))
+    if len(opened) != len(set(opened)):
+        raise ValueError("review findings repeat a number")
+    missing = sorted(set(opened) - set(severities))
     if missing:
         raise ValueError(f"review findings {missing} carry no (blocking|revise|note) severity")
-    return {n: severities[n] for n in numbers}
+    return {n: severities[n] for n in opened}
 
 
 def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str]:
