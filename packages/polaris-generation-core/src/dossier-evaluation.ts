@@ -154,9 +154,7 @@ export function scanDossierPage(html: string): ScannedPage {
     for (let i = stack.length - 1; i >= 0; i--) if (stack[i]!.level !== null) return stack[i]!.level;
     return null;
   };
-  const inHead = (): boolean => stack.some(open => open.name === 'head');
   const text = (raw: string): void => {
-    if (inHead()) return;
     const decoded = decodeHtmlText(raw);
     for (const open of stack) if (open.quote !== null) open.quote.text += decoded;
     const words = countWords(decoded);
@@ -216,7 +214,7 @@ export function scanDossierPage(html: string): ScannedPage {
       close.lastIndex = cursor;
       const end = close.exec(html);
       const body = html.slice(cursor, end === null ? html.length : end.index);
-      // Only <title> and <textarea> carry text; script and style never count.
+      // Script, style and title text is not page reading; a textarea's is.
       if (name === 'textarea') { stack.push({ name, level: readingLevel, quote }); text(body); stack.pop(); }
       cursor = end === null ? html.length : close.lastIndex;
       token.lastIndex = cursor;

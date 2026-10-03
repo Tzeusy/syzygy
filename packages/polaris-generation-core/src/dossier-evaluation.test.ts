@@ -93,7 +93,7 @@ describe('dossier input format', () => {
 });
 
 describe('(a) reader cost', () => {
-  it('counts words by reading level from the page bytes, skipping head, script and style', () => {
+  it('counts words by reading level from the page bytes, skipping title, script and style', () => {
     const scan = scanDossierPage(INDEX);
     // Level 0: "Kv store" 2 + "Kv keeps data in memory." 5 + quote 5 + "Core ideas" 2 + "Memory first." 2.
     // Level 1: "More" 1 + "Durability is unclear." 3. Unlabelled: trade section 3 + 4, footer 3.
