@@ -18,7 +18,21 @@ import { inForceRecords } from './consent-ports.js';
 
 export const DECISIONS_DIR = '.syzygy/governance/decisions';
 export const INSTANCES_DIR = '.syzygy/governance/contracts/candidates/public-repo-admission/instances';
-const ACT_FILE = /^PUBLIC-REPO-ADMISSION-[A-Z0-9-]+-ACT\.md$/;
+export const EGRESS_V2_INSTANCE = '.syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md';
+/** A recorder's act form for an admission record: the one file it writes, its title, the identity it renders and the one instance it
+ * binds (scripts/record_public_repo_admission_acts.py, scripts/record_public_egress_v2_act.py). The list is closed: a decisions file
+ * about the package that is not one of these (or the pinned owner-answers direction) refuses the read, and an act whose type,
+ * identity, title or artifact is not its form's is refused. */
+export interface AdmissionActForm { readonly file: string; readonly title: string; readonly type: 'consent-observation' | 'consent-egress'; readonly identity: (date: string) => string; readonly artifact: string; readonly version: 1 | 2 }
+export const ADMISSION_ACT_FORMS: readonly AdmissionActForm[] = Object.freeze(([
+  { file: 'PUBLIC-REPO-ADMISSION-REQUESTS-OBSERVATION-ACT.md', title: '# Owner act — psf/requests public-repository observation consent', type: 'consent-observation', identity: d => `PUBLIC-OBS-REQUESTS-${d}`, artifact: `${INSTANCES_DIR}/requests/OBSERVATION-CONSENT.md`, version: 1 },
+  { file: 'PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md', title: '# Owner act — redis/redis public-repository observation consent', type: 'consent-observation', identity: d => `PUBLIC-OBS-REDIS-${d}`, artifact: `${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md`, version: 1 },
+  { file: 'PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md', title: '# Owner act — public-target egress consent to Anthropic', type: 'consent-egress', identity: d => `PUBLIC-EGRESS-ANTHROPIC-${d}`, artifact: `${INSTANCES_DIR}/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md`, version: 1 },
+  { file: 'PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md', title: '# Owner act — public-target egress consent to Anthropic, version 2', type: 'consent-egress', identity: d => `PUBLIC-EGRESS-ANTHROPIC-V2-${d}`, artifact: EGRESS_V2_INSTANCE, version: 2 },
+] as readonly AdmissionActForm[]).map(form => Object.freeze(form)));
+/** The v2 record's revocation line, exactly: it replaces version 0.1.0-candidate.7 of the same record once its own act is in force (RFC5-13). */
+const V2_REVOCATION = 'Proposed revocation state: active; supersedes version 0.1.0-candidate.7 of this record, if an act over that version is in force, from the effective instant of the act on this version (prospective, RFC5-13); with none in force it supersedes nothing';
+const V2_SUPERSEDES = 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7';
 /** The one plain owner direction in the package's name space, pinned by name and digest: it performs no act. Any other
  * file (or these bytes edited) is an unknown form and refuses the whole read. */
 const OWNER_ANSWERS_FILE = 'PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md';
@@ -35,17 +49,20 @@ const refuse = (): never => { throw new AdmissionRecordError('invalid-records');
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const one = (text: string, re: RegExp): string => { const all = [...text.matchAll(re)]; return all.length === 1 ? all[0]![1]! : refuse(); };
 
-interface Act { readonly type: 'observation' | 'egress'; readonly inForce: number; readonly artifact: string; readonly digest: string }
+interface Act { readonly type: 'observation' | 'egress'; readonly inForce: number; readonly artifact: string; readonly digest: string; readonly version: 1 | 2 }
 
-function parseAct(text: string): Act {
+function parseAct(text: string, form: AdmissionActForm): Act {
+  if (!text.startsWith(`${form.title}\n`)) refuse();
   const type = one(text, /^Act type: `(consent-observation|consent-egress)`$/gm);
   const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm);
   const at = Date.parse(`${date}T00:00:00Z`);
-  if (!Number.isSafeInteger(at)) refuse();
+  if (!Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 10) !== date) refuse();
+  if (type !== form.type || one(text, /^Act identity: `([^`\n]+)`$/gm) !== form.identity(date)) refuse();
   const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm);
+  if (artifact !== form.artifact) refuse();
   const digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
   one(text, /^Project identity: `(project:syzygy)`$/gm);
-  return { type: type === 'consent-observation' ? 'observation' : 'egress', inForce: actInstant(text, date, at), artifact, digest };
+  return { type: type === 'consent-observation' ? 'observation' : 'egress', inForce: actInstant(text, date, at), artifact, digest, version: form.version };
 }
 
 /** The act's effective instant: the `Recorded at (UTC)` line when the record has exactly one (whole seconds, same
@@ -91,8 +108,11 @@ function parseInstance(text: string, act: Act, inForceAt: number | null): Admiss
   const recordId = one(text, /^Record ID: `([^`\n]+)`$/gm);
   const version = one(text, /^Record version: `([^`\n]+)`$/gm);
   const subject = one(text, /^Subject: `([^`\n]+)`$/gm);
-  if (!/^Proposed revocation state: active; supersedes no earlier consent$/m.test(text)) refuse();   // a successor form is not parsed: refuse rather than guess
-  const base = { recordId, version, digest: act.digest, inForceAt, withdrawnAt: null, supersedes: null, project: 'project:syzygy' } as const;
+  // The revocation line is exactly the form's (the first versions supersede nothing; version 2 supersedes version 1 of its record): any other successor form is refused rather than guessed.
+  const revocations = [...text.matchAll(/^Proposed revocation state: .*$/gm)].map(m => m[0]);
+  if (revocations.length !== 1 || revocations[0] !== (act.version === 2 ? V2_REVOCATION : 'Proposed revocation state: active; supersedes no earlier consent')) refuse();
+  if (act.version === 2 && (act.type !== 'egress' || recordId !== 'PUBLIC-EGRESS-anthropic' || version !== '0.2.0-candidate.1')) refuse();
+  const base = { recordId, version, digest: act.digest, inForceAt, withdrawnAt: null, supersedes: act.version === 2 ? V2_SUPERSEDES : null, project: 'project:syzygy' } as const;
   if (act.type === 'observation') {
     const m = /^\(project:syzygy, repository:([a-z0-9][a-z0-9-]*)\)$/.exec(subject) ?? refuse();
     const revisions = [...text.matchAll(/^\| `[^`\n]+` \| `([0-9a-f]+)` \|$/gm)].map(r => r![1]!);
@@ -114,20 +134,19 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
       try { names = await fs.readdir(path.join(options.root, DECISIONS_DIR)); } catch { return refuse(); }
       const records: AdmissionRecord[] = [];
       for (const name of [...names].sort()) {
-        if (!name.startsWith('PUBLIC-REPO-ADMISSION-')) continue;
+        if (!name.startsWith('PUBLIC-REPO-ADMISSION-') && !name.startsWith('PUBLIC-EGRESS-V2-')) continue;
         if (name === OWNER_ANSWERS_FILE) {
           let direction: string;
           try { direction = await fs.readFile(path.join(options.root, DECISIONS_DIR, name)); } catch { return refuse(); }
           if (sha256(direction) !== OWNER_ANSWERS_SHA256) refuse();
           continue;
         }
-        if (!ACT_FILE.test(name)) refuse();
+        const form = ADMISSION_ACT_FORMS.find(f => f.file === name);
+        if (form === undefined) refuse();
         let act: Act;
-        try { act = parseAct(await fs.readFile(path.join(options.root, DECISIONS_DIR, name))); } catch { return refuse(); }
-        const normalized = path.posix.normalize(act.artifact);
-        if (normalized !== act.artifact || !normalized.startsWith(`${INSTANCES_DIR}/`) || normalized.includes('..')) refuse();
+        try { act = parseAct(await fs.readFile(path.join(options.root, DECISIONS_DIR, name)), form!); } catch { return refuse(); }
         let artifact: string;
-        try { artifact = await fs.readFile(path.join(options.root, normalized)); } catch { return refuse(); }
+        try { artifact = await fs.readFile(path.join(options.root, act.artifact)); } catch { return refuse(); }
         records.push(parseInstance(artifact, act, sha256(artifact) === act.digest ? act.inForce : null));
       }
       return Object.freeze(records);
