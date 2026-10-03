@@ -138,9 +138,13 @@ def applied(root: pathlib.Path) -> bool:
 
 
 def _table_rows(text: str) -> list[str]:
-    start = text.index("**RFC5-14.**")
+    start = text.find("**RFC5-14.**")
+    if start < 0:
+        return []
     body = text[start:]
-    end = body.index("\n\n- A composite")
+    end = body.find("\n\n- A composite")
+    if end < 0:
+        return []
     return [l for l in body[:end].splitlines() if l.startswith("| `")]
 
 
@@ -285,7 +289,6 @@ def selftest() -> int:
         with_patch(lambda s: s.replace(row + "\n", "", 1),
                    "new class row removed rejected", "not the six classes")
         with_patch(lambda s: s.replace(row + "\n", "", 1).replace(
-            "| `derived-composites`", "| `derived-composites`", 1).replace(
             "\n\n- A composite", "\n" + row + "\n\n- A composite", 1),
             "new class row misplaced rejected", "not the six classes")
         with_patch(lambda s: s.replace(
@@ -301,10 +304,32 @@ def selftest() -> int:
         with_patch(lambda s: s.replace(shared.headings(s)[0],
                                        shared.headings(s)[0] + " changed", 1),
                    "heading change rejected", "heading lines changed")
+        with_patch(lambda s: s.replace("**RFC5-14.**", "**RFC5-14**", 1),
+                   "clause lead change rejected", "clause")
+        with_patch(lambda s: s.replace("\n---\n", "\nstatus: x\n---\n", 1),
+                   "front matter change rejected", "front matter")
+        mutate_file(patch_path(), lambda t: t.write_text(
+            f"--- a/{MODULE}\n+++ b/{MODULE}\n@@ -1,3 +1,3 @@\n"
+            f" {old.decode('utf-8').splitlines()[0]}\n"
+            f"-{old.decode('utf-8').splitlines()[1]}\n"
+            f"+{old.decode('utf-8').splitlines()[1]}\n"
+            f" {old.decode('utf-8').splitlines()[2]}\n"),
+            "patch that changes nothing rejected", "changes nothing")
+        mutate_file(PROPOSED / "RFC-0003" / "extra.md.patch",
+                    lambda t: _mk(t).write_text("x"),
+                    "patch outside the one-module population rejected",
+                    "outside the one-module population")
         with_patch(lambda s: s + "word " * 9000 + "\n",
                    "verify_final_prespec failure on the patched tree rejected",
                    "verify_final_prespec.py fails", scratch_run=True)
         expect("restored package verifies again", check(root), None)
+        (passed if applied(root) is False else failures).append(
+            "applied() is false while the mirrors lack the proposed bytes")
+        patched = proposed_bytes(root)[0][MODULE]
+        for base in (CONTRACTS, CANDIDATES):
+            (root / base / MODULE).write_bytes(patched)
+        (passed if applied(root) else failures).append(
+            "applied() is true once both mirrors hold the proposed bytes")
         absent = pathlib.Path(directory) / "absent"
         absent.mkdir()
         code, message = check_command(absent)
