@@ -1,0 +1,155 @@
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { quotableGenerationSources, type PipelineRequest, type ProviderDraft } from '@syzygy/polaris-generation-core';
+
+import { main } from './dossier-main.js';
+import { admissionRequirements, formatOutcome, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
+  type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
+
+const SHA_A = 'a'.repeat(40), SHA_B = 'b'.repeat(40), SHA_C = 'c'.repeat(40);
+const LS = `${SHA_A}\tHEAD\n${SHA_A}\trefs/heads/unstable\n${SHA_B}\trefs/tags/8.0.0\n${SHA_C}\trefs/tags/8.0.0^{}\n${SHA_B}\trefs/tags/light\n`;
+const cleanups: string[] = [];
+afterEach(() => { for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true }); });
+const scratch = (): string => { const dir = mkdtempSync(join(tmpdir(), 'syzygy-trigger-')); cleanups.push(dir); return dir; };
+const all: AdmissionRecordsPort = { source: 'fixture store', check: async r => ({ satisfied: true, record: `fixture/${r.kind}` }) };
+
+describe('github url and revision pinning', () => {
+  it('accepts public github urls and rejects everything else', () => {
+    expect(parseGithubUrl('https://github.com/redis/redis')).toEqual({ owner: 'redis', repo: 'redis', url: 'https://github.com/redis/redis', repositoryId: 'github:redis:redis' });
+    expect(parseGithubUrl('https://github.com/psf/requests.git/')).toMatchObject({ repo: 'requests', repositoryId: 'github:psf:requests' });
+    expect(parseGithubUrl('https://github.com/redis/redis/tree/8.0.0')).toMatchObject({ ref: '8.0.0' });
+    expect(parseGithubUrl('https://github.com/a/b.js').repositoryId).toBe('github:a:b_js');
+    for (const bad of ['http://github.com/a/b', 'https://gitlab.com/a/b', 'https://user:pw@github.com/a/b', 'https://github.com/a', 'https://github.com/a/b/issues',
+      'https://github.com/a/b/tree/../x', 'git@github.com:a/b.git', 'https://www.github.com/a/b', 'file:///tmp/x', 'https://github.com/a/b?x=1', 'https://github.com/-a/b', 'https://github.com/a/..']) {
+      expect(() => parseGithubUrl(bad), bad).toThrow('invalid-github-url');
+    }
+  });
+
+  it('pins HEAD, branches, lightweight tags and peels annotated tags to their commit', () => {
+    expect(pinRevision(LS)).toEqual({ revision: SHA_A, resolvedRef: 'HEAD' });
+    expect(pinRevision(LS, 'unstable')).toEqual({ revision: SHA_A, resolvedRef: 'refs/heads/unstable' });
+    expect(pinRevision(LS, '8.0.0')).toEqual({ revision: SHA_C, resolvedRef: 'refs/tags/8.0.0' });
+    expect(pinRevision(LS, 'light')).toEqual({ revision: SHA_B, resolvedRef: 'refs/tags/light' });
+    expect(() => pinRevision(LS, 'nope')).toThrow('revision-not-found');
+    expect(() => pinRevision(LS, SHA_A)).toThrow('unpinnable-revision');
+    expect(() => pinRevision('garbage line\n')).toThrow('unreadable-ls-remote');
+    expect(() => pinRevision('')).toThrow('revision-not-found');
+  });
+});
+
+describe('trigger stops at the first unmet gate', () => {
+  it('with no records wired, names every missing record and reads and fetches nothing', async () => {
+    const lsRemote = vi.fn(() => LS), materialize = vi.fn(), runPipeline = vi.fn();
+    const outcome = await runDossierTrigger('https://github.com/redis/redis/tree/8.0.0', { lsRemote, materialize, runPipeline });
+    expect(lsRemote).toHaveBeenCalledWith('https://github.com/redis/redis');
+    expect(materialize).not.toHaveBeenCalled();
+    expect(runPipeline).not.toHaveBeenCalled();
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, missing: 3, source: noAdmissionRecords.source });
+    const text = formatOutcome(outcome);
+    for (const kind of ['observation-consent', 'public-source-policy', 'egress-consent']) expect(text).toContain(`MISSING  ${kind}`);
+    expect(text).toContain(`revision ${SHA_C}`);
+    expect(text).toContain('STOPPED: 3 of 3 admission record(s) missing. No repository body was read and no provider was called.');
+  });
+
+  it('asks each requirement about the pinned revision, and one unmet record still stops', async () => {
+    const asked: string[] = [];
+    const records: AdmissionRecordsPort = { source: 'partial store', check: async r => { asked.push(`${r.kind}@${r.revision}`); return r.kind === 'egress-consent' ? { satisfied: false, why: 'no egress record' } : { satisfied: true, record: `r/${r.kind}` }; } };
+    const materialize = vi.fn();
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records, materialize });
+    expect(asked.sort()).toEqual([`egress-consent@${SHA_A}`, `observation-consent@${SHA_A}`, `public-source-policy@${SHA_A}`]);
+    expect(outcome).toMatchObject({ state: 'admission-missing', missing: 1 });
+    expect(formatOutcome(outcome)).toContain('OK       observation-consent: r/observation-consent');
+    expect(formatOutcome(outcome)).toContain('STOPPED: 1 of 3');
+    expect(materialize).not.toHaveBeenCalled();
+    expect(admissionRequirements(parseGithubUrl('https://github.com/a/b'), SHA_A).map(r => r.needs).join(' ')).toContain(SHA_A);
+  });
+
+  it('refuses a bad url or an unresolvable revision before consulting any record', async () => {
+    const records = { source: 's', check: vi.fn() };
+    expect(await runDossierTrigger('https://example.com/a/b', { records })).toMatchObject({ state: 'invalid-input' });
+    expect(await runDossierTrigger('https://github.com/a/b', { records, lsRemote: () => { throw new Error('network down'); } })).toMatchObject({ state: 'unresolved-revision', reason: 'network down' });
+    expect(await runDossierTrigger('https://github.com/a/b/tree/zz', { records, lsRemote: () => LS })).toMatchObject({ state: 'unresolved-revision', reason: 'revision-not-found' });
+    expect(records.check).not.toHaveBeenCalled();
+  });
+});
+
+describe('with every record satisfied', () => {
+  let repo = '', commit = '';
+  beforeAll(() => {
+    repo = mkdtempSync(join(tmpdir(), 'syzygy-trigger-repo-'));
+    const run = (...a: string[]): string => execFileSync('git', ['-C', repo, ...a], { encoding: 'utf8' }).trim();
+    run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+    for (const [p, body] of Object.entries({ 'README.md': '# Fixture\nIt does a thing.\n', 'src/core.c': 'int core(void) { return 1; }\n', 'bin/blob': 'x' })) {
+      mkdirSync(dirname(join(repo, p)), { recursive: true }); writeFileSync(join(repo, p), body);
+    }
+    run('add', '-A'); run('commit', '-qm', 'fixture'); commit = run('rev-parse', 'HEAD');
+  });
+  afterAll(() => rmSync(repo, { recursive: true, force: true }));
+  const ls = () => `${commit}\tHEAD\n`;
+  const draftFor = (request: PipelineRequest): ProviderDraft => {
+    const [first, second] = quotableGenerationSources(request.sources);
+    const a = first!.sourceId, b = second!.sourceId;
+    const p = (id: string, ids: string[]) => ({ id, text: `Claim ${id}.`, sourceIds: ids, children: [] });
+    return { title: 'Fixture dossier', introduction: p('intro', [a]), sections: [{ id: 'core-ideas', title: 'Core ideas', paragraphs: [p('ci', [b])], disposition: { kind: 'produced', assetIds: ['core-ideas'] } }],
+      diagrams: [], deepDives: [], unresolved: [] };
+  };
+  const base = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: ls, records: all, materialize: async () => repo, ...extra });
+
+
+  it('reads the pinned commit, discovers, clarifies and writes the site and a run record outside git', async () => {
+    const out = join(scratch(), 'run');
+    let seen: PipelineRequest | undefined;
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, runPipeline: async request => { seen = request; return { status: 'draft', draft: draftFor(request) }; } }));
+    expect(outcome).toMatchObject({ state: 'complete', revision: commit });
+    expect(readdirSync(out)).toEqual(expect.arrayContaining(['index.html', 'sources.html', 'size-report.json', 'run-record.json']));
+    expect(seen).toMatchObject({ projectId: 'github:fixture:repo', readerQuestions: expect.arrayContaining([expect.stringContaining('core ideas')]) });
+    const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
+    expect(record).toMatchObject({ profile: 'dossier-v1', revision: commit, permissionIdentity: 'fixture/observation-consent+fixture/public-source-policy+fixture/egress-consent',
+      corpusCount: { selected: 3 }, clarification: { mode: 'zero-interaction', fabricatedDefaults: 0 } });
+    expect(record.clarification.wouldHaveAsked.map((q: { id: string }) => q.id)).toEqual(['audience']);
+  });
+
+  it('records the corpus and stops honestly when no generate port exists or the pipeline stops', async () => {
+    const out = join(scratch(), 'run');
+    const unavailable = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out }));
+    expect(unavailable).toMatchObject({ state: 'generation-unavailable', runDir: out });
+    expect(readdirSync(out)).toEqual(['run-record.json']);
+    const out2 = join(scratch(), 'run');
+    const stopped = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out2, runPipeline: async () => ({ status: 'stopped', reason: 'budget-exhausted' }) }));
+    expect(stopped).toMatchObject({ state: 'generation-stopped', detail: 'budget-exhausted' });
+    expect(readdirSync(out2)).toEqual(['run-record.json']);
+  });
+
+  it('refuses to write the run into a git work tree', async () => {
+    const inside = join(repo, 'run');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: inside }))).rejects.toThrow('run-directory-inside-git-work-tree');
+    expect(existsSync(inside)).toBe(false);
+  });
+
+  it('fetches only the pinned commit objects, and refuses a non-https url by default', async () => {
+    const dir = join(scratch(), 'src');
+    expect(await gitMaterialize({ url: repo, revision: commit, dir }, 'file')).toBe(dir);
+    expect(execFileSync('git', ['-C', dir, 'cat-file', '-t', commit], { encoding: 'utf8' }).trim()).toBe('commit');
+    await expect(gitMaterialize({ url: repo, revision: commit, dir: join(scratch(), 'src2') })).rejects.toThrow();
+  });
+});
+
+describe('command', () => {
+  it('exits 2 on usage, 3 when records are missing (text and json), and prints what is missing', async () => {
+    const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true), err = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
+    try {
+      expect(await main([])).toBe(2);
+      expect(await main(['https://github.com/a/b', 'extra'])).toBe(2);
+      expect(await main(['https://github.com/a/b', '--out'])).toBe(2);
+      expect(await main(['https://nope.example/a/b'])).toBe(2);
+      expect(await main(['https://github.com/a/b'], { lsRemote: () => LS })).toBe(3);
+      expect(String(out.mock.calls.at(-1)![0])).toContain('MISSING  observation-consent');
+      expect(await main(['https://github.com/a/b', '--json'], { lsRemote: () => LS })).toBe(3);
+      expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'admission-missing', missing: 3 });
+      expect(await main(['https://github.com/a/b'], { lsRemote: () => { throw new Error('x'); } })).toBe(4);
+    } finally { out.mockRestore(); err.mockRestore(); }
+  });
+});

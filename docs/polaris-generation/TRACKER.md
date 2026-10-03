@@ -170,6 +170,12 @@ Authorized implementation work (generator implementation authorization,
         reason is `secret-detector-match`) and falls back to
         `unclassified-exclusion`; it never passes the classifier's sentence
         through.
+  - [x] **One-line trigger (gap #9).** `npm run poc:dossier -- <github-url>`
+        pins the revision with `git ls-remote` (metadata), prints which
+        admission records (observation consent, public-source policy, egress
+        consent) are missing, and stops (exit 3). It reads and generates only
+        once an injected record store satisfies all three; none is wired yet,
+        and no generate port exists (exit 5 after recording the corpus).
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
