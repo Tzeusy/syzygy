@@ -1,6 +1,6 @@
 {
   "bead": "syzygy-tmkb",
-  "measuredAt": "c6e74e4eedb4f2edbf5a7145093f43136cca8ad9",
+  "measuredAt": "8788530c8d83d49b347d26e7f88bab33ae9f977f",
   "question": "the six versioned-sign-off PWB builders' --selftest stops at 'patch does not apply' at main",
   "rejectedAlternative": {
     "method": "reverse-apply the package's own patches to the current subjects (tree-framing, the only package whose patches all reverse-apply at main)",
@@ -50,7 +50,7 @@
     },
     {
       "builder": "scripts/build_pwb_item_depth_amendment.py",
-      "builderSha256": "3c152fca9c3fe8b92544ba98d60715f3c90a475b93d917bed2fce0c10bc2d275",
+      "builderSha256": "30a16ac208e73f7e645be29fc5db7055ab201a2592b32a32cc9166e26453a870",
       "signoffRecord": ".syzygy/governance/decisions/PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md",
       "signoffCommit": "1ecb99854c4859786cfa8626cfc1698b73271809",
       "preAdoptionCommit": "c444824df560a6cfa0daf5810228ec1f639bb15a",
@@ -62,7 +62,7 @@
     },
     {
       "builder": "scripts/build_pwb_readability_successor.py",
-      "builderSha256": "0bf59250a19e5f31c70de8702c19697aaa92705d53743c0a4082240b662afc23",
+      "builderSha256": "7f7b6e89c73606820f227bbb3b0bfdd34aecd7809dbdecc0a5f7c5b61ff2d5ac",
       "signoffRecord": ".syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
       "signoffCommit": "bd47409c126424c59efa1d63a12297f1b85d5469",
       "preAdoptionCommit": "0dbe7ce6038c15b8eaffcfc2512580320614d345",
@@ -74,7 +74,7 @@
     },
     {
       "builder": "scripts/build_pwb_tree_framing_amendment.py",
-      "builderSha256": "356fc724893e0f89e491e3d796fcdd81bb4755e5c403da2f865d7a5b84f9dd66",
+      "builderSha256": "bdaf3736b4ff98ef7f344589a5a939a8a3c3c3ffe6436415abbeca3ceadb3b70",
       "signoffRecord": ".syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
       "signoffCommit": "4b2c75bd04f6b8124705b779ea5f6f14d620ecd0",
       "preAdoptionCommit": "250a479a3c5cd2ddf71aabbf7be5d9d07e7053e9",
