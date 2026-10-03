@@ -25,6 +25,18 @@ function assertOutsideGit(directory: string, path: string | undefined): void {
   throw new Error('run-directory-inside-git-work-tree');
 }
 
+/** The destination checks of `writeDossierRun` alone (real parent outside Git, directory absent), so a caller can refuse before spending anything. */
+export async function checkDossierRunDestination(destination: string, env: { readonly PATH?: string } = process.env): Promise<{ readonly parent: string; readonly target: string; readonly absent: () => Promise<void> }> {
+  const parent = await realpath(dirname(resolve(destination)));
+  assertOutsideGit(parent, env.PATH);
+  const target = join(parent, basename(resolve(destination)));
+  const absent = async (): Promise<void> => {
+    if (await lstat(target).then(() => true, (error: NodeJS.ErrnoException) => { if (error.code === 'ENOENT') return false; throw error; })) throw new Error('run-directory-exists');
+  };
+  await absent();
+  return { parent, target, absent };
+}
+
 /**
  * Writes a rendered dossier into a new run directory. The parent must exist;
  * it is resolved through every symlink, and the real parent must lie outside
@@ -39,13 +51,7 @@ function assertOutsideGit(directory: string, path: string | undefined): void {
  */
 export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>, env: { readonly PATH?: string } = process.env): Promise<string> {
   for (const path of files.keys()) if (!isDossierPagePath(path)) throw new Error('invalid-output-path');
-  const parent = await realpath(dirname(resolve(destination)));
-  assertOutsideGit(parent, env.PATH);
-  const target = join(parent, basename(resolve(destination)));
-  const absent = async (): Promise<void> => {
-    if (await lstat(target).then(() => true, (error: NodeJS.ErrnoException) => { if (error.code === 'ENOENT') return false; throw error; })) throw new Error('run-directory-exists');
-  };
-  await absent();
+  const { parent, target, absent } = await checkDossierRunDestination(destination, env);
   const staging = await mkdtemp(join(parent, `.${basename(target)}.partial-`));
   try {
     for (const [path, content] of files) {

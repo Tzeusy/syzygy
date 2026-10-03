@@ -3,11 +3,11 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { clarify, DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
+import { clarify, DEFAULT_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
   type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
-import { writeDossierRun } from './dossier-render-main.js';
+import { checkDossierRunDestination, writeDossierRun } from './dossier-render-main.js';
 import { ISOLATED_GIT_FLAGS, minimalGitEnv } from './isolated-git.js';
 
 export interface GithubTarget { readonly owner: string; readonly repo: string; readonly ref?: string; readonly url: string; readonly repositoryId: string }
@@ -17,7 +17,7 @@ export function parseGithubUrl(input: string): GithubTarget {
   const match = /^https:\/\/github\.com\/([A-Za-z0-9][A-Za-z0-9-]{0,38})\/([A-Za-z0-9._-]{1,100}?)(?:\.git)?(?:\/tree\/([A-Za-z0-9._\/-]{1,200}))?\/?$/u.exec(input);
   if (match === null || match[2] === '.' || match[2] === '..' || (match[3] ?? '').split('/').some(part => part === '..')) throw new Error('invalid-github-url');
   const [, owner, repo, ref] = match as unknown as [string, string, string, string | undefined];
-  return { owner, repo, ...(ref === undefined ? {} : { ref }), url: `https://github.com/${owner}/${repo}`, repositoryId: `github:${owner}:${repo.replace(/\./gu, '_')}` };
+  return { owner, repo, ...(ref === undefined ? {} : { ref }), url: `https://github.com/${owner}/${repo}`, repositoryId: `github:${owner}:${repo.replace(/[_.]/gu, ch => (ch === '_' ? '__' : '_d'))}` };
 }
 
 /** Picks the commit for a ref (or HEAD) from `git ls-remote` output. An annotated tag resolves to the commit it peels to. */
@@ -67,6 +67,16 @@ export function admissionRequirements(target: GithubTarget, revision: string): r
   ];
 }
 
+/** A satisfied answer is exactly `satisfied: true` with a non-empty record string; any other shape from a record store is an unmet gate, never a pass. */
+export function soundAnswer(answer: unknown): AdmissionAnswer {
+  const a = answer as { satisfied?: unknown; record?: unknown; why?: unknown } | null;
+  if (a === null || typeof a !== 'object') return { satisfied: false, why: 'malformed admission answer: not an object' };
+  if (a.satisfied === true) {
+    return typeof a.record === 'string' && a.record.length > 0 ? { satisfied: true, record: a.record } : { satisfied: false, why: 'malformed admission answer: satisfied without a record' };
+  }
+  return { satisfied: false, why: a.satisfied === false && typeof a.why === 'string' ? a.why : 'malformed admission answer: satisfied is not a boolean' };
+}
+
 export interface TriggerPorts {
   readonly lsRemote?: (url: string) => string;
   readonly records?: AdmissionRecordsPort;
@@ -103,14 +113,16 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
   const records = ports.records ?? noAdmissionRecords;
   const requirements = admissionRequirements(target, pinned.revision);
-  const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: await records.check(requirement) })));
-  const missing = checked.filter(entry => !entry.answer.satisfied).length;
+  const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
+  const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
   if (missing > 0) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };
 
   const defaultOut = ports.outDir === undefined ? mkdtempSync(join(tmpdir(), 'syzygy-dossier-')) : undefined;
   const runDir = ports.outDir ?? join(defaultOut!, 'site');
   const checkoutDir = join(mkdtempSync(join(tmpdir(), 'syzygy-dossier-src-')), 'repo');
   try {
+    // Refuse a misplaced run directory before the checkout, the reads or any provider call.
+    await checkDossierRunDestination(runDir);
     if (ports.materialize === undefined) return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'admission is satisfied but no checkout port is wired' };
     const checkout = await ports.materialize({ url: target.url, revision: pinned.revision, dir: checkoutDir });
     const permissionIdentity = checked.map(entry => (entry.answer as { record: string }).record).join('+');
@@ -120,10 +132,18 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const corpus: RepoCorpus = await readRepoCorpus(checkout, config, { admission });
     // A provider call is permitted only while the egress record that admitted this run still holds.
     const egress = requirements.find(requirement => requirement.kind === 'egress-consent')!;
-    const permitted = async (): Promise<boolean> => (await records.check(egress)).satisfied === true;
-    const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DEFAULT_DISCOVERY_BUDGET,
-      { permitted, ...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),
-        ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
+    const permitted = async (): Promise<boolean> => soundAnswer(await records.check(egress)).satisfied === true;
+    let discovery: Awaited<ReturnType<typeof discoverAndSelect>>;
+    try {
+      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DEFAULT_DISCOVERY_BUDGET,
+        { permitted, ...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),
+          ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
+    } catch (error) {
+      if (!(error instanceof DiscoveryRefusal)) throw error;
+      const refused = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count, discoveryRefusal: error.reason };
+      const written = await writeDossierRun(runDir, new Map([['run-record.json', `${JSON.stringify(refused, null, 2)}\n`]]));
+      return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: `discovery-refused: ${error.reason}` };
+    }
     const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
     const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
       discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
