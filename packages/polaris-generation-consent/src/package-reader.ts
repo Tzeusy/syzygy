@@ -11,8 +11,8 @@ import { inForceRecords } from './consent-ports.js';
  * (`.syzygy/governance/decisions/PUBLIC-REPO-ADMISSION-*-ACT.md`) names it by
  * path and digest. If the instance bytes no longer hash to the act's digest
  * the record comes back with `inForceAt: null` (the act bound other bytes). The
- * act record carries a date, not an instant, so the record is in force from
- * the start of the next UTC day (fail-closed). A decisions file about the
+ * instant is the act record's `Recorded at (UTC)` line when it has one; a record
+ * with only a date is in force from the start of the next UTC day (fail-closed). A decisions file about the
  * package that is neither an act record nor the owner-answers direction is
  * unknown (a withdrawal form is not defined yet): the whole read is refused. */
 
@@ -32,7 +32,7 @@ const refuse = (): never => { throw new AdmissionRecordError('invalid-records');
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const one = (text: string, re: RegExp): string => { const all = [...text.matchAll(re)]; return all.length === 1 ? all[0]![1]! : refuse(); };
 
-interface Act { readonly type: 'observation' | 'egress'; readonly date: number; readonly artifact: string; readonly digest: string }
+interface Act { readonly type: 'observation' | 'egress'; readonly inForce: number; readonly artifact: string; readonly digest: string }
 
 function parseAct(text: string): Act {
   const type = one(text, /^Act type: `(consent-observation|consent-egress)`$/gm);
@@ -42,7 +42,19 @@ function parseAct(text: string): Act {
   const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm);
   const digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
   one(text, /^Project identity: `(project:syzygy)`$/gm);
-  return { type: type === 'consent-observation' ? 'observation' : 'egress', date: at + DAY_MS, artifact, digest };
+  return { type: type === 'consent-observation' ? 'observation' : 'egress', inForce: actInstant(text, date, at), artifact, digest };
+}
+
+/** The act's effective instant: the `Recorded at (UTC)` line when the record has exactly one (whole seconds, same
+ * calendar day as `Date:`), else the start of the next UTC day (a date alone is not an instant: fail-closed). */
+function actInstant(text: string, date: string, startOfDay: number): number {
+  const lines = [...text.matchAll(/^Recorded at \(UTC\): (\S+)$/gm)];
+  if (lines.length === 0) return startOfDay + DAY_MS;
+  if (lines.length > 1) return refuse();
+  const m = /^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}Z$/.exec(lines[0]![1]!);
+  const at = m === null ? NaN : Date.parse(lines[0]![1]!);
+  if (m === null || m[1] !== date || !Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 19) + 'Z' !== lines[0]![1]) return refuse();
+  return at;
 }
 
 function bullets(text: string, heading: RegExp): string[] {
@@ -93,7 +105,46 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
         if (normalized !== act.artifact || !normalized.startsWith(`${INSTANCES_DIR}/`) || normalized.includes('..')) refuse();
         let artifact: string;
         try { artifact = await fs.readFile(path.join(options.root, normalized)); } catch { return refuse(); }
-        records.push(parseInstance(artifact, act, sha256(artifact) === act.digest ? act.date : null));
+        records.push(parseInstance(artifact, act, sha256(artifact) === act.digest ? act.inForce : null));
+      }
+      return Object.freeze(records);
+    },
+  };
+}
+
+/** The public-source screening-scope policy (an `approve-policy` act over the
+ * policy file). It counts only while the policy file's current bytes hash to the
+ * act's digest AND declare a `publicSourceScope` object: the 2026-09 policy acts
+ * approved the Butlers-only policy and satisfy nothing here. The act record's
+ * file name is not keyed on: every decisions record naming the policy path is
+ * read, and one that names it without a readable act form refuses the read. */
+export const POLICY_PATH = '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json';
+export interface PolicyActRecord { readonly actIdentity: string; readonly digest: string; readonly inForceAt: number }
+export interface PolicyActReader { readonly read: () => Promise<readonly PolicyActRecord[]> }
+
+export function createPackagePolicyReader(options: { readonly root: string; readonly fs?: PackageReaderFs }): PolicyActReader {
+  const fs = options.fs ?? nodeFs;
+  return {
+    read: async () => {
+      let policy: string;
+      let names: readonly string[];
+      try { policy = await fs.readFile(path.join(options.root, POLICY_PATH)); names = await fs.readdir(path.join(options.root, DECISIONS_DIR)); } catch { return refuse(); }
+      let scope: unknown;
+      try { scope = (JSON.parse(policy) as { publicSourceScope?: unknown }).publicSourceScope; } catch { return refuse(); }
+      if (scope === null || typeof scope !== 'object' || Array.isArray(scope)) return [];
+      const digest = sha256(policy);
+      const records: PolicyActRecord[] = [];
+      for (const name of [...names].sort()) {
+        if (!name.endsWith('.md')) continue;
+        let text: string;
+        try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, name)); } catch { return refuse(); }
+        if (!text.includes(`Artifact identity: \`${POLICY_PATH}\``)) continue;
+        const act = { type: one(text, /^Act type: `([a-z-]+)`$/gm), identity: one(text, /^Act identity: `([^`\n]+)`$/gm), digest: one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm), date: one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm) };
+        one(text, /^Project identity: `(project:syzygy)`$/gm);
+        const at = Date.parse(`${act.date}T00:00:00Z`);
+        if (!Number.isSafeInteger(at)) refuse();
+        if (act.type !== 'approve-policy' || act.digest !== digest) continue;
+        records.push(Object.freeze({ actIdentity: act.identity, digest, inForceAt: actInstant(text, act.date, at) }));
       }
       return Object.freeze(records);
     },
@@ -109,13 +160,26 @@ export interface AdmissionRecordsPortLike {
 }
 
 /** Answers each requirement from the reader, fresh on every call, with the same
- * in-force polarity as the consent ports. A public-source policy record has no
- * act form in this package yet, so it is never satisfied here. */
-export function createAdmissionRecordsPort(options: { readonly reader: AdmissionRecordReader; readonly now: () => number }): AdmissionRecordsPortLike {
+ * in-force polarity as the consent ports. The public-source policy requirement
+ * needs the `policy` reader and is otherwise never satisfied. */
+/** Both readers over one checkout, as the dossier trigger wires them. */
+export function createPackageAdmissionRecordsPort(options: { readonly root: string; readonly now: () => number; readonly fs?: PackageReaderFs }): AdmissionRecordsPortLike {
+  const fsOption = options.fs === undefined ? {} : { fs: options.fs };
+  return createAdmissionRecordsPort({ reader: createPackageAdmissionReader({ root: options.root, ...fsOption }), policy: createPackagePolicyReader({ root: options.root, ...fsOption }), now: options.now });
+}
+
+export function createAdmissionRecordsPort(options: { readonly reader: AdmissionRecordReader; readonly policy?: PolicyActReader; readonly now: () => number }): AdmissionRecordsPortLike {
   return {
     source: 'public-repo-admission act records (owner acts over the instance records)',
     check: async requirement => {
-      if (requirement.kind === 'public-source-policy') return { satisfied: false, why: 'no record found: the public-source policy scope has no owner act form in the admission package' };
+      if (requirement.kind === 'public-source-policy') {
+        if (options.policy === undefined) return { satisfied: false, why: 'no record found: no policy act reader is wired' };
+        try {
+          const now = options.now();
+          const hit = (await options.policy.read()).find(r => r.inForceAt <= now);
+          return hit === undefined ? { satisfied: false, why: 'no record found: no owner approve-policy act covers the current public-source screening scope' } : { satisfied: true, record: hit.actIdentity };
+        } catch { return { satisfied: false, why: 'no record found: the policy act records could not be read' }; }
+      }
       let live: readonly AdmissionRecord[];
       try { live = inForceRecords(await options.reader.read(), options.now()); } catch { return { satisfied: false, why: 'no record found: the admission act records could not be read' }; }
       const hit = requirement.kind === 'observation-consent'

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
-import { DECISIONS_DIR, INSTANCES_DIR, createAdmissionRecordsPort, createPackageAdmissionReader, type PackageReaderFs } from './package-reader.js';
+import { DECISIONS_DIR, INSTANCES_DIR, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, type PackageReaderFs } from './package-reader.js';
 
 const REDIS_REV = '498ecd0d6d007db11ddb3aea9428552598a78622';
 const OTHER_REV = 'd2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7';
@@ -148,5 +148,81 @@ describe('admission records port', () => {
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(true);
     files[`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-WITHDRAWAL.md`] = 'withdrawn';
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(false);
+  });
+});
+
+describe('act instant', () => {
+  const withInstant = (instant: string, date = '2026-10-04'): string => actText('consent-observation', REDIS_PATH, obsText(), date).replace(`Date: ${date}\n`, `Date: ${date}\n\nRecorded at (UTC): ${instant}\n`);
+  const actPath = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
+  it('uses the Recorded at (UTC) instant when the record carries exactly one', async () => {
+    const records = await reader(world({ [actPath]: withInstant('2026-10-04T09:30:00Z') })).read();
+    expect(records.find(r => r.class === 'observation')!.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
+  });
+  it('refuses a malformed, repeated, wrong-day or non-whole-second instant', async () => {
+    for (const bad of ['2026-10-04T09:30:00', '2026-10-04T09:30:00.5Z', '2026-10-05T00:00:00Z', '2026-10-04T25:00:00Z', '2026-02-30T00:00:00Z', 'soon'])
+      await expect(reader(world({ [actPath]: withInstant(bad) })).read(), bad).rejects.toBeInstanceOf(AdmissionRecordError);
+    const twice = withInstant('2026-10-04T09:30:00Z').replace('Recorded at (UTC): 2026-10-04T09:30:00Z', 'Recorded at (UTC): 2026-10-04T09:30:00Z\n\nRecorded at (UTC): 2026-10-04T10:30:00Z');
+    await expect(reader(world({ [actPath]: twice })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('keeps the next-UTC-day fallback for a record with only a date', async () => {
+    expect((await reader(world()).read()).find(r => r.class === 'observation')!.inForceAt).toBe(DAY);
+  });
+});
+
+describe('public-source policy act', () => {
+  const policyText = (scope = true): string => JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', ...(scope ? { publicSourceScope: { rules: [] } } : {}) }, null, 1) + '\n';
+  const policyAct = (over: { type?: string; digest?: string; instant?: string | null; project?: string; identity?: string } = {}, text = policyText()): string => `# Owner act — policy
+
+Date: 2026-10-04
+${over.instant === null || over.instant === undefined ? '' : `\nRecorded at (UTC): ${over.instant}\n`}
+Act identity: \`${over.identity ?? 'PWB-APPROVE-POLICY-PUBLIC-SOURCE-2026-10-04'}\`
+
+Act type: \`${over.type ?? 'approve-policy'}\`
+
+Project identity: \`${over.project ?? 'project:syzygy'}\`
+
+Artifact identity: \`${POLICY_PATH}\`
+
+Exact digest (SHA-256): \`${over.digest ?? sha(text)}\`
+`;
+  const POLICY_ACT = `${DECISIONS_DIR}/ANY-NAME-AT-ALL.md`;
+  const policyWorld = (policy = policyText(), act = policyAct({}, policy), extra: Record<string, string> = {}): Record<string, string> => ({ ...world(), [POLICY_PATH]: policy, [POLICY_ACT]: act, ...extra });
+  const policyReader = (files: Record<string, string>) => createPackagePolicyReader({ root: '/r', fs: memoryFs(files) });
+  const check = (files: Record<string, string>, now: number) => createPackageAdmissionRecordsPort({ root: '/r', now: () => now, fs: memoryFs(files) }).check(requirement('public-source-policy'));
+
+  it('recognises the act by path and digest, whatever the record is named, in force from a date-only next day', async () => {
+    expect(await policyReader(policyWorld()).read()).toEqual([{ actIdentity: 'PWB-APPROVE-POLICY-PUBLIC-SOURCE-2026-10-04', digest: sha(policyText()), inForceAt: DAY }]);
+    expect(await check(policyWorld(), DAY)).toEqual({ satisfied: true, record: 'PWB-APPROVE-POLICY-PUBLIC-SOURCE-2026-10-04' });
+    expect(await check(policyWorld(), DAY - 1)).toMatchObject({ satisfied: false });
+  });
+  it('uses the act instant when present', async () => {
+    const files = policyWorld(policyText(), policyAct({ instant: '2026-10-04T09:30:00Z' }));
+    expect(await check(files, Date.UTC(2026, 9, 4, 9, 30, 0))).toMatchObject({ satisfied: true });
+    expect(await check(files, Date.UTC(2026, 9, 4, 9, 29, 59))).toMatchObject({ satisfied: false });
+  });
+  it('is unsatisfied when the policy declares no public-source scope, even under an act over those bytes', async () => {
+    const old = policyText(false);
+    expect(await check(policyWorld(old, policyAct({}, old)), DAY)).toMatchObject({ satisfied: false });
+  });
+  it('is unsatisfied when the policy bytes changed after the act, or the act is another type', async () => {
+    expect(await check(policyWorld(policyText() + ' ', policyAct({}, policyText())), DAY)).toMatchObject({ satisfied: false });
+    expect(await check(policyWorld(policyText(), policyAct({ type: 'adopt-doctrine' })), DAY)).toMatchObject({ satisfied: false });
+  });
+  it('is unsatisfied with no act record', async () => {
+    const files = policyWorld(); delete files[POLICY_ACT];
+    expect(await check(files, DAY)).toMatchObject({ satisfied: false });
+  });
+  it('refuses the read on a record that names the policy without a readable act form, or for another project', async () => {
+    for (const act of [policyAct({ digest: 'abc' }), policyAct({ project: 'project:butlers' }), policyAct({ instant: 'soon' }), policyAct().replace('Act identity:', 'Act ident:')])
+      await expect(policyReader(policyWorld(policyText(), act)).read(), act).rejects.toBeInstanceOf(AdmissionRecordError);
+    expect(await check(policyWorld(policyText(), policyAct({ digest: 'abc' })), DAY)).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
+  });
+  it('refuses when the policy file is missing or not JSON', async () => {
+    const files = policyWorld(); delete files[POLICY_PATH];
+    await expect(policyReader(files).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    await expect(policyReader(policyWorld('not json')).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('without a policy reader the requirement stays unsatisfied', async () => {
+    expect(await createAdmissionRecordsPort({ reader: reader(world()), now: () => DAY }).check(requirement('public-source-policy'))).toMatchObject({ satisfied: false });
   });
 });
