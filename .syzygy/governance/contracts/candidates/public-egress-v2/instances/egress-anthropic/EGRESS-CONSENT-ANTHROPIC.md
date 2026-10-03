@@ -43,15 +43,18 @@ table gives, and nothing else:
 
 - **target-content** and **composite**: content read under an in-force
   observation consent for one of these `(project:syzygy, repository)` pairs,
-  and validated stage artifacts computed from it (RFC5-14):
+  including the bounded file excerpts the discovery stages send, and validated
+  stage artifacts computed from it (RFC5-14):
 
 - `(project:syzygy, repository:psf-requests)`
 - `(project:syzygy, repository:redis-redis)`
 
 - **target-metadata**: the source ids, classification bases, exclusion flags
-  and closed exclusion reasons of the same pairs' sources, with no body.
-  Excluded sources' metadata may leave: it names no content, and a repository's
-  paths are tree metadata (`code-structure`) of a public target.
+  and closed exclusion reasons of the same pairs' sources, with no body, and
+  the discovery stages' subsystem names (path prefixes), per-subsystem blob
+  counts, blob ids and paths. Excluded sources' metadata may leave: it names no
+  content, and a repository's paths are tree metadata (`code-structure`) of a
+  public target.
 - **instruction-text**, **envelope-control** and **run-profile**: text authored
   by Syzygy, classified by the generator-authored-request-text rule of
   `project:syzygy`'s effective public-source screening scope, which names each
@@ -129,25 +132,40 @@ in force, and approving a route entry is a separate act (RFC4-1). A request
 carrying any other byte, header or field, or a field outside the table, is
 refused at the single egress check.
 
+In the Stages column, `all` means the six pipeline stages (inventory, plan,
+author, edit, fidelity, repair); the discovery stages are named in the column.
+The `generate port` rows describe what the port receives for the pipeline
+stages; [Inferred] the discovery envelopes cross the same port and the same
+single egress check once an adapter sends them, and no adapter does yet.
+
 ### Bytes each registered route entry lists
 
 A route's bytes are permitted only while that route's registry entry is in
 force; with no entry in force, no route byte is permitted. The lists are the
-entries' own `requestBytes`; this record cites them and does not restate them.
+entries' own `requestBytes`; this record cites them and spells out only where
+the two routes differ. The entries govern if this summary and an entry differ.
 
 - **Agent SDK route** (implementation `polaris-generation/provider-agent-sdk`):
-  the runtime's additions to the generator's request: a fixed system prefix, an
-  empty system message, a per-run device and session id, a closed set of
-  headers that includes `x-stainless-os`, `x-stainless-arch` and
-  `x-stainless-runtime-version` (which identify the machine), and sometimes a
-  body-less probe that the entry's gate answers locally and never forwards. The
-  entry also pins the model, the effort, the tool list, the thinking setting and
-  a maximum output ceiling.
+  endpoint `POST /v1/messages?beta=true`, streamed; the runtime's additions to
+  the generator's request: a fixed system prefix and an empty system message,
+  `metadata.user_id` carrying a random per-run device id, a random session id
+  and an empty account id, and `cache_control` on the generator's system prompt
+  and input; a closed header set that includes `x-stainless-os`,
+  `x-stainless-arch` and `x-stainless-runtime-version` (which identify the
+  machine); and sometimes a body-less probe that the entry's gate answers
+  locally and never forwards. The environment message, the billing header
+  block, the safeguards block and any tool are absent by construction.
 - **Messages API route** (implementation `polaris-generation/provider-messages-api`):
-  the SDK library's fixed headers (the same three machine-identifying headers
-  among them), the headers the Node runtime fixes, and the same pinned
-  parameters. It adds no system prefix, no metadata, no environment message, no
-  device id and no probe.
+  endpoint `POST /v1/messages` with no query string, streamed; the SDK
+  library's fixed headers (the same three machine-identifying headers among
+  them) and the headers the Node runtime fixes. It adds no system prefix, empty
+  system message, metadata, `cache_control` or tools field, and no probe.
+- **Parameters each entry pins, route by route.** Model, effort and the output
+  ceiling are as each entry pins them. The tool list differs: the Agent SDK
+  route sends an empty `tools` list and the Messages API route sends no
+  `tools` field; neither invokes a tool. Thinking differs: the Agent SDK route
+  sends none (off); the Messages API route sends none (off) or exactly the
+  adaptive setting, and nothing else.
 - Stripping the three machine-identifying headers is an option of the gate, off
   by default. This record neither requires nor forbids it; whether a later
   version should require it is the owner's option in each route's packet.
@@ -170,10 +188,10 @@ entries' own `requestBytes`; this record cites them and does not restate them.
   access or other tool), and adds no context beyond those listed bytes:
   the route loads no instruction or memory files, user or project
   settings, MCP servers, hooks or environment summary (working directory, Git
-  status) beyond what the registered entry lists; its working directory, if it
-  has one, is an empty directory inside the run directory. The adapter is
-  accepted only when a captured request shows the generator's parts and the
-  entry's listed bytes and nothing else.
+  status); a route entry may narrow this and can never override it. Its working
+  directory, if it has one, is an empty directory inside the run directory. The
+  adapter is accepted only when a captured request shows the generator's parts
+  and the entry's listed bytes and nothing else.
 - The route sends nothing to any destination other than the provider:
   no telemetry, error reporting or update check is sent; a route that cannot
   disable them does not start.

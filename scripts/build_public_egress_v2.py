@@ -90,6 +90,26 @@ def v1_fields(v1=None):
     return {**common, **entry["fields"]}, entry["template"]
 
 
+def template_delta(root=None, v1=None):
+    """(hunks, removed lines, added lines) of this package's template against
+    the first version's. ``v2.json`` pins these counts, so an edit to the
+    template that the record's description does not cover is reported by
+    ``--check`` and not left to a review to notice."""
+    import difflib
+    root = PKG if root is None else root
+    v1 = V1 if v1 is None else v1
+    _, name = v1_fields(v1)
+    a = (v1 / "templates" / name).read_text().splitlines()
+    b = (root / "templates" / TEMPLATE).read_text().splitlines()
+    hunks = removed = added = 0
+    for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if tag != "equal":
+            hunks += 1
+            removed += i2 - i1
+            added += j2 - j1
+    return hunks, removed, added
+
+
 def settings(root=None):
     root = PKG if root is None else root
     return json.loads((root / "v2.json").read_text())
@@ -168,6 +188,10 @@ def stale(root=None, v1=None, table_fn=None):
     for extra in sorted((root / "instances").rglob("*.md")):
         if extra != rec:
             bad.append(extra)
+    pinned = settings(root).get("templateDelta")
+    tpl = root / "templates" / TEMPLATE
+    if pinned is None or [pinned["hunks"], pinned["removedLines"], pinned["addedLines"]] != list(template_delta(root, v1)):
+        bad.append(tpl)
     man = root / MANIFEST_NAME
     if not man.exists() or man.read_text() != manifest_text(root, v1, table_fn):
         bad.append(man)
@@ -177,6 +201,7 @@ def stale(root=None, v1=None, table_fn=None):
 def selftest():
     import contextlib
     import io
+    import subprocess
     import tempfile
     caught = 0
     table = ("| Where | Field | Stages | Class |\n|---|---|---|---|\n"
@@ -196,10 +221,14 @@ def selftest():
         root = base / "v2"
         (root / "instances/egress-anthropic").mkdir(parents=True)
         (root / "templates").mkdir()
-        (root / "templates" / TEMPLATE).write_text(
-            "# E {{PROVIDER}}\n\n> Template. x\n\nv `{{VERSION}}`\n{{CONTENT_CLASSES}}\n{{SUPERSEDES}}\n{{CARRIED_TABLE}}\n")
+        base_tpl = "# E {{PROVIDER}}\n\n> Template. x\n\nv `{{VERSION}}`\n{{CONTENT_CLASSES}}\n{{SUPERSEDES}}\n{{CARRIED_TABLE}}\n"
+        (v1 / "templates").mkdir(exist_ok=True)
+        (v1 / "templates/EGRESS-CONSENT-TEMPLATE.md").write_text(base_tpl)
+        (root / "templates" / TEMPLATE).write_text(base_tpl + "extra line\n")
+        assert template_delta(root, v1) == (1, 0, 1)
 
         def setup(cfg):
+            cfg = {**cfg, "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}
             (root / "v2.json").write_text(json.dumps(cfg))
             (root / RECORD).write_text(record_text(root, v1, lambda: table))
             (root / MANIFEST_NAME).write_text(manifest_text(root, v1, lambda: table))
@@ -269,6 +298,30 @@ def selftest():
             root=_with(root, {"version": "0.2.0-candidate.1", "requiredStages": ["map"],
                               "fieldOverrides": {"NOT_A_FIELD": "x"}}), v1=v1, table_fn=lambda: table),
             "an override of a field the first version does not fill not refused")
+        # the template's delta against the first version's is pinned
+        setup({"version": "0.2.0-candidate.1", "requiredStages": ["map", "reduce"]})
+        assert stale(root, v1, lambda: table) == []
+        saved_tpl = (root / "templates" / TEMPLATE).read_text()
+        (root / "templates" / TEMPLATE).write_text(saved_tpl + "second extra line\n")
+        assert (root / "templates" / TEMPLATE) in stale(root, v1, lambda: table), "template drift not caught"
+        (root / "templates" / TEMPLATE).write_text(saved_tpl)
+        pinned_cfg = json.loads((root / "v2.json").read_text())
+        (root / "v2.json").write_text(json.dumps({k: v for k, v in pinned_cfg.items() if k != "templateDelta"}))
+        assert (root / "templates" / TEMPLATE) in stale(root, v1, lambda: table), "unpinned template delta not caught"
+        (root / "v2.json").write_text(json.dumps(pinned_cfg))
+        caught += 2
+        # the derivation refuses a reader-question leaf it has no class for
+        mutant = REPO / "scripts" / "_derive_mutant_v2.mjs"
+        try:
+            src = (REPO / "scripts" / "derive_generator_sent_text.mjs").read_text()
+            frag = "const READER_QUESTION_LEAVES = ['id', 'topics', 'text'];"
+            assert frag in src
+            mutant.write_text(src.replace(frag, "const READER_QUESTION_LEAVES = ['id', 'topics'];", 1))
+            done = subprocess.run(["node", str(mutant), "--table"], cwd=REPO, capture_output=True, text=True)
+            assert done.returncode == 2 and "readerQuestions[] leaf text" in done.stderr, "reader-question leaf not refused"
+            caught += 1
+        finally:
+            mutant.unlink(missing_ok=True)
         # digest modes refuse while not ready, silently on stdout
         global PKG, V1
         saved_pkg, saved_v1 = PKG, V1
@@ -276,7 +329,7 @@ def selftest():
         real_table = derive_table
         globals()["derive_table"] = lambda: table
         try:
-            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": []}))
+            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": [], "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}))
             (root / RECORD).write_text(record_text(root, v1, lambda: table))
             (root / MANIFEST_NAME).write_text(manifest_text(root, v1, lambda: table))
             for mode in ("--digests", "--manifest-digest"):
@@ -285,7 +338,7 @@ def selftest():
                     rc = main(["x", mode])
                 assert rc == 1 and out.getvalue() == "", f"{mode} did not refuse while not ready"
                 caught += 1
-            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": ["map"]}))
+            (root / "v2.json").write_text(json.dumps({"version": "0.2.0-candidate.1", "requiredStages": ["map"], "templateDelta": {"hunks": 1, "removedLines": 0, "addedLines": 1}}))
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 assert main(["x", "--manifest-digest"]) == 0 and re.fullmatch(r"[0-9a-f]{64}\n", out.getvalue())

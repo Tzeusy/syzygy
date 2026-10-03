@@ -82,6 +82,18 @@ jobs:
       - name: typecheck (npm run typecheck)
         run: npm run typecheck
 
+      # The egress records embed a carried-content table generated from the
+      # generator's code (scripts/derive_generator_sent_text.mjs). A change to
+      # the generator, or to the script, that moves the table without
+      # regenerating the records, or that makes the derivation fail, is red
+      # here. Both builders need the compiled packages and node, so they live
+      # in this workflow and not in the stdlib-only governance battery.
+      - name: public-repo admission builder --check
+        run: python3 scripts/build_public_repo_admission.py --check
+
+      - name: public egress v2 builder --check
+        run: python3 scripts/build_public_egress_v2.py --check
+
       # Unit and conformance suites: the pure domain model against the
       # adopted Capability 1 requirements.
       - name: unit + conformance tests (npm test)

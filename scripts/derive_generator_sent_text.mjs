@@ -15,7 +15,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
-import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId, discoveryMapEnvelope, discoveryReduceEnvelope } from '../packages/polaris-generation-core/dist/index.js';
+import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId, READER_QUESTION_TOPICS, discoveryMapEnvelope, discoveryReduceEnvelope } from '../packages/polaris-generation-core/dist/index.js';
 
 const STAGES = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
 const sha = text => createHash('sha256').update(text).digest('hex');
@@ -38,11 +38,20 @@ const ports = {
 const request = {
   requestId: 'derive', projectId: 'derive', snapshotId: 'derive',
   routes: Object.fromEntries(STAGES.map(s => [s, 'derive'])), startedAt: Date.now(),
-  sources: [source], readerQuestions: ['q'], requestedAssets: [{ id: 'x', kind: 'section', required: true }],
+  sources: [source], readerQuestions: [{ id: 'q1', topics: [READER_QUESTION_TOPICS[0]], text: 'q' }], requestedAssets: [{ id: 'x', kind: 'section', required: true }],
   budget: { maxCalls: 7, maxInputBytes: 500_000, maxOutputBytes: 100_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'derive' },
 };
 const outcome = await runGenerationPipeline(request, ports, new AbortController().signal).catch(e => e); if (!captured.length) { console.error("no generate call; pipeline outcome:", JSON.stringify(outcome)?.slice(0, 400), String(outcome).slice(0,200)); process.exit(1); }
 const envelope = JSON.parse(captured[0].input);
+// The pipeline's reader questions are structured ({ id, topics, text }). The
+// table classes the field as a whole (run-profile), so every leaf the captured
+// envelope carries must be one of these three; a new leaf has no class and
+// fails the run (exit 2) instead of leaving unclassified text in a request.
+const READER_QUESTION_LEAVES = ['id', 'topics', 'text'];
+for (const q of envelope.inputs.readerQuestions ?? []) {
+  const keys = q !== null && typeof q === 'object' && !Array.isArray(q) ? Object.keys(q) : ['<non-object>'];
+  for (const key of keys) if (!READER_QUESTION_LEAVES.includes(key)) { console.error(`readerQuestions[] leaf ${key} has no class`); process.exit(2); }
+}
 
 // 2. Per stage, the generator-authored text: promptForStage (prompts.ts) and
 //    stageSchema (provider-draft.ts).

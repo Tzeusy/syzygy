@@ -2,4 +2,4 @@
 # Candidate; this file and its row bind nothing by themselves.
 # 1 record; the row hashes the record's exact bytes and is the argument of one
 # owner act over that record (sitting row 8). It depends on row 7.
-5c729afe4ef26ea7d7aaf3cbef213bc25308a788a15c39439ec0607dc6cc156e  .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md
+d0b895062f245d58b541c58e75b09e976bf307b52b7ac5c3644feceb64e1a86f  .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md
