@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createHash, randomBytes } from 'node:crypto';
 
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -74,7 +75,7 @@ describe('hostile tree entries never fail the run', () => {
     const bom = corpus.sources.find(source => source.path === 'bom.txt')!;
     expect(bom.body!.startsWith('\uFEFF')).toBe(true);
     expect(corpus.sources.find(source => source.path === 'empty/__init__.py')).toMatchObject({ exclusion: { excluded: true, reason: 'empty-file' } });
-    expect(corpus.unrepresentable[0]).toMatchObject({ reason: 'unquotable-path', pathSha256: expect.stringMatching(/^[0-9a-f]{64}$/u) });
+    expect(corpus.unrepresentable[0]).toMatchObject({ reason: 'unquotable-path', pathHmac: expect.stringMatching(/^[0-9a-f]{64}$/u) });
     expect(JSON.stringify(corpus.sources)).not.toContain('ird.txt');
   });
 
@@ -166,6 +167,36 @@ describe('any-repo reader', () => {
   it('is deterministic for one commit', async () => {
     const a = await readRepoCorpus(root, cfg(), { admission: allow }), b = await readRepoCorpus(root, cfg(), { admission: allow });
     expect(a.identityDigest).toBe(b.identityDigest);
+  });
+
+  describe('keyed excluded ids (syzygy-75ds)', () => {
+    const plain = (path: string) => `s-${createHash('sha256').update(path).digest('hex').slice(0, 24)}`;
+    const excludedIds = (corpus: Awaited<ReturnType<typeof readRepoCorpus>>) => new Map(corpus.sources.filter(source => source.exclusion.excluded).map(source => [source.path, source.sourceId]));
+    const read = (runKey?: Buffer) => readRepoCorpus(root, cfg({ oversize: 'exclude' }), { admission: allow, ...(runKey === undefined ? {} : { runKey }) });
+
+    it('keys every excluded row, oversize included, away from the unkeyed path hash', async () => {
+      const ids = excludedIds(await read());
+      expect([...ids.keys()].sort()).toEqual(['assets/latin1.txt', 'assets/logo.bin', 'src/big.c']);
+      for (const [path, id] of ids) { expect(id).toMatch(/^s-[0-9a-f]{24}$/u); expect(id).not.toBe(plain(path)); }
+    });
+    it('differs between runs and is stable within one key; admitted rows keep the unkeyed id', async () => {
+      const key = randomBytes(32);
+      const [a, b, c] = [await read(key), await read(key), await read(randomBytes(32))];
+      expect(excludedIds(a)).toEqual(excludedIds(b));
+      expect(excludedIds(a).get('src/big.c')).not.toBe(excludedIds(c).get('src/big.c'));
+      expect(a.sources.find(source => source.path === 'src/a.c')!.sourceId).toBe(plain('src/a.c'));
+    });
+    it('keeps the identity digest (and so request and snapshot ids) stable across keys', async () => {
+      const [a, c] = [await read(randomBytes(32)), await read(randomBytes(32))];
+      expect(a.identityDigest).toBe(c.identityDigest);
+    });
+    it('keys the unrepresentable path digest: not the sha256, stable per key, different across keys', async () => {
+      const key = randomBytes(32);
+      const digest = async (runKey: Buffer) => (await readRepoCorpus(hostile, { ...cfg({ exclude: [] }), revision: hostileCommit }, { admission: allow, runKey })).unrepresentable[0]!.pathHmac;
+      expect(await digest(key)).not.toBe(createHash('sha256').update('we\\ird.txt').digest('hex'));
+      expect(await digest(key)).toBe(await digest(key));
+      expect(await digest(key)).not.toBe(await digest(randomBytes(32)));
+    });
   });
 });
 
