@@ -10,25 +10,60 @@
 > reading order only; the PR, its raw reviews and its register row own the
 > state, and a stale cell here loses to them.
 
+## Terms used here
+
+- **Observation** is reading a repository's files; **egress** is sending some
+  of what was read to the model provider. They are separate consents (REQ-polaris-generation-025).
+- **Manifest row**: the line of a package's manifest that holds one record's
+  digest. An **option at the manifest row** is a structured question whose
+  option names the record; selecting it is the act, and no phrase is typed
+  (admission packet, Q5). This page quotes no phrase: where a typed phrase is
+  an alternative (rows 7 and 9), its exact text is issued with the act package
+  when the act is given, because a phrase carries a digest that would go stale
+  here.
+- **Content class** (RFC5-14): the closed list of kinds of content an egress
+  consent may name, such as code or evidence. **RFC5-14 class** in row 7 is a
+  seventh class, `project-documentation`, for README and LICENSE files.
+- **RFC4-1 / RFC4-3 / RFC7-14**: contract clauses; RFC4-1 admits one
+  implementation per registry role, RFC4-3 says a registry entry enables
+  nothing without an implementation version, RFC7-14 is the clause the
+  narrative profile may amend.
+- **P-87 to P-91**: rows of `decisions/PENDING-OWNER-DECISIONS.md`, the
+  register of open owner decisions. **gap n**: item n of the numbered gap list
+  in `docs/polaris-generation/REDIS-DOSSIER-GAP-ANALYSIS.md`. **O1 to O4**: the
+  options inside a row's own packet. **Q2, Q5, Q6**: questions of the
+  screening-scope packet (Q2) and the admission packet (Q5, Q6).
+- A spec change travels as a reviewed semantic delta and binds only when the
+  owner signs it (CC-REV-2); that is what row 9's sign-off is.
+
 ## The sitting, in dependency order
 
 Each act is separate and separately revocable (REQ-polaris-generation-025);
 none implies another. "Option" means a structured question whose option names
 the records at their manifest rows (admission packet Q5). "Ruling" means a plain
-owner direction. Status is as of 2026-10-03 and none of it is an act.
+owner direction. Status is as of 2026-10-03 and none of it is an act. Rows 2, 3, 9 and 10 each
+hold several separate decisions, listed as a, b, c and d; each is answerable
+on its own.
 
 | # | You give | Record and where | Form | Depends on | Status |
 |---|---|---|---|---|---|
-| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row, plus the packet's Q2 continuation direction (see "Row 1 and the Butlers pin") | nothing; blocks every read | merged to main as a candidate, confirmed (CONFIRM WITH EXCEPTIONS at round 4, 895f1622, manifest 1cbf45a0, notes only); the exclusion-reason constant must exist before the act; recorder on main |
-| 2 | Provider execution route: one of two entries, see "Row 2 is one choice" below | route A in `public-admission-registry-entries` (PR #255); route B in the Messages API entry (PR #273) | option at the manifest row | gap 21 check for route A | PR #255 merged to main as a candidate, confirmed at d08f4400 (CONFIRM WITH EXCEPTIONS, round 4, notes only); PR #273 round 1 REVISE (5 findings), repaired; cleared at round 3 (CONFIRM WITH EXCEPTIONS); merged; three entry notes carried as known limitations |
-| 3 | Git-hosting source-acquisition adapter | `public-admission-registry-entries` (PR #255); P-89 O1 shared or per-target, O2 the proposed limits | option at the manifest row | row 1 | merged to main as a candidate, confirmed at d08f4400, as row 2 |
+| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row, plus the packet's Q2 continuation direction (see "Row 1 and the Butlers pin") | nothing; blocks every read | merged to main as a candidate, confirmed (CONFIRM WITH EXCEPTIONS at round 4, 895f1622, manifest in its package directory, notes only); the exclusion-reason constant must exist before the act; recorder on main |
+| 2a | Provider execution route: route A or route B, see "Row 2 is one choice" below | route A in `public-admission-registry-entries` (PR #255); route B in the Messages API entry (PR #273) | option at the manifest row | gap 21 check for route A | PR #255 merged to main as a candidate, confirmed at d08f4400 (CONFIRM WITH EXCEPTIONS, round 4, notes only); PR #273 cleared at round 3 (CONFIRM WITH EXCEPTIONS); merged; three entry notes carried as known limitations |
+| 2b | Credential and billing: will you supply an API key and accept API-account billing and terms | both routes (see below) | plain direction | 2a | not an act; no phrase |
+| 3a | Git-hosting source-acquisition adapter: one shared adapter or one per target (P-89 O1) | `public-admission-registry-entries` (PR #255) | option at the manifest row | row 1 | merged to main as a candidate, confirmed at d08f4400, as row 2a |
+| 3b | The adapter's proposed acquisition limits (P-89 O2, labelled Inferred) | same entry | part of the same option at the manifest row; the limits are bytes of the entry | 3a | as row 3a |
 | 4 | Observation consent, psf/requests `v2.34.2` | `public-repo-admission` (PR #215) | option at the manifest row | rows 1, 3 | merged to main as a candidate, confirmed at 7704b4a5 (round 7) |
 | 5 | Observation consent, redis/redis `8.10.2` plus `7.2.4`, `7.4.0`, `8.0.0` | same package (PR #215) | option at the manifest row | rows 1, 3 | merged to main as a candidate, confirmed at 7704b4a5 |
 | 6 | Egress consent, `(project:syzygy, provider:anthropic)` listing requests and Redis | same package (PR #215) | option at the manifest row | rows 2, 4, 5; gap 21 | merged to main as a candidate, confirmed at 7704b4a5 |
-| 7 | RFC5-14 `project-documentation` class | `rfc5-project-documentation-class` (PR #257) | contract-amendment act: option at the manifest row, or typed phrase (packet O-form); P-88 | its review | merged to main as a candidate, confirmed at dff2f0dc; its phrase registration lands in the install change |
+| 7 | RFC5-14 `project-documentation` class | `rfc5-project-documentation-class` (PR #257) | contract-amendment act, in one of three forms (its packet): an option at the manifest row (binds the row), a typed contract act phrase over the manifest file (binds the file), or the version-tagged sign-off of the 2026-10-02 Scope A direction, which applies only if you rule that it reaches this amendment; P-88 | its review | merged to main as a candidate, confirmed at dff2f0dc (the commit its review read); its phrase registration lands in the install change |
 | 8 | Egress, a second version adding `project-documentation` and the discovery stages | `public-egress-v2` (draft PR #299), generated by one command from the first version's parameters | option at the manifest row | rows 6 (optional once this is signed), 7 | drafted as a candidate in PR #299, **not ready**: the discovery stages are delivered by PR #281 and the record is generated from its head, but the builder prints no digest until #281 is on main; not reviewed; recorder not drafted. Perform row 7 first: until RFC5-14 lists the class, the record would permit a class no accepted contract defines. It must be confirmed beforehand against the row-7 package's proposed text; then row 7 and row 8 fit one sitting in that order |
-| 9 | Non-governed narrative profile | `polaris-non-governed-narrative-profile` (PR #256); P-90 O1 overlay or RFC7-14 amendment first, O2 reality band, O3 sign-off form, O4 adoption path | spec sign-off per O3 | its review | merged to main as a candidate, cleared at round 3 (CONFIRM WITH EXCEPTIONS, notes only); spec 3b2abfe9; two spec-text notes are disclosed in its packet as known limitations |
-| 10 | Rulings: altitude order (gap 17d); advantages as maintainer-stated only or with external sources (gap 18); page budget after the T1 measurement (gap 19, deferrable) | `docs/polaris-generation/REDIS-DOSSIER-GAP-ANALYSIS.md` | plain direction, P-91 | none | no review needed |
+| 9a | Narrative profile, first choice: an overlay on the generation spec, or an RFC7-14 amendment first (P-90 O1) | `polaris-non-governed-narrative-profile` (PR #256) | spec sign-off per 9c | its review | merged to main as a candidate, cleared at round 3 (CONFIRM WITH EXCEPTIONS, notes only); its raw review is `.syzygy/governance/contracts/candidates/non-governed-narrative-profile/reviews/R-NON-GOVERNED-NARRATIVE-PROFILE-3-RAW.md`; two spec-text notes are disclosed in its packet as known limitations |
+| 9b | The omitted reality band (P-90 O2) | same package | part of 9c | 9a | as 9a |
+| 9c | The sign-off form: Scope A reading, or a typed phrase over the spec digest (P-90 O3) | same package | the form itself | 9a, 9b | as 9a |
+| 9d | The adoption path: move the spec file and generalize the scenario-count tooling (P-90 O4) | same package | install step | 9c | as 9a |
+| 10a | Ruling: altitude order of a dossier (gap 17d) | `docs/polaris-generation/REDIS-DOSSIER-GAP-ANALYSIS.md` | plain direction, P-91 | none | no review needed |
+| 10b | Ruling: advantages as maintainer-stated claims only, or also external comparison sources (gap 18) | same | plain direction, P-91 | none | no review needed |
+| 10c | Ruling: the page budget, after the first measurement (gap 19, deferrable) | same | plain direction, P-91 | the first run | no review needed |
 | 11 | Optional standing direction: per-target consent and egress-version instances are the builder's deterministic fill of reviewed templates, and the per-target act is one option naming them | gap 9; P-91 | plain direction; a novel reading of Q5, so it needs its own review | row 6 | not drafted as a review item |
 
 PR #120 is the sibling self-observation scope. Row 1 and PR #120 each add a
@@ -36,6 +71,26 @@ top-level object to the same secret-classification policy and bump its version:
 whichever is performed second must regenerate its package with `--write` first,
 and row 1 uses its own version label so neither is renamed by the other. Row 1
 does not depend on PR #120.
+
+## If you decline or defer
+
+The default is what happens with no answer; the cost is what that leaves out.
+[Inferred] throughout, from the dependencies above and the gap analysis.
+
+| Row | If declined or not yet given | Cost |
+|---|---|---|
+| 1 | No act is recorded. If Q2 is declined, the act waits for another ruling on the re-pin (see "Row 1 and the Butlers pin") | No Redis or other public body is read, so every later row has nothing to act on |
+| 2a, 2b | No provider route; nothing is sent to any model | The dossier cannot be generated; reads and screening can still happen |
+| 3a, 3b | No adapter | No repository is fetched, so no body is read |
+| 4, 5 | No observation consent for that repository | That repository is not read (requests for 4, Redis for 5) |
+| 6 | No egress consent | Reads may happen; nothing leaves the machine |
+| 7 | The `project-documentation` class stays outside the vocabulary | README and LICENSE stay unsent; the licence-history regeneration waits |
+| 8 | Egress stays at the first version | The new class and the discovery stages are not permitted, so discovery and README text cannot be sent |
+| 9a to 9d | No profile | A dossier-shaped page for a non-governed repository has no specification basis |
+| 10a | The specification's existing altitude order applies (it is reserved to you unless you rule otherwise, gap 17) | A different order is not available |
+| 10b | Advantages are maintainer-stated only, which is lawful now (gap 18) | No external comparison sources |
+| 10c | No page budget until the first run is measured | The first page is judged without a size limit |
+| 11 | Each later target takes its own option at its manifest row | One extra question per target |
 
 ## Row 1 and the Butlers pin
 
@@ -121,12 +176,12 @@ enables output by being signed (RFC4-3).
 | | Route A (Agent SDK) | Route B (Messages API) |
 |---|---|---|
 | Credential | API key only under the confirmed bytes (the closed header set carries no other credential); billing is the API account, not a signed-in plan | API key only, from one environment variable (name proposed, [Inferred]) |
-| Bytes beyond the generator's text | the runtime's own: system prefix, metadata, environment message, device id and probe, bounded by the header table and the loopback gate | none beyond the entry's listed request |
-| Surface | a bundled CLI in the path | no CLI |
-| Review | confirmed at d08f4400 | round 1 REVISE (5 findings), round 2 pending |
+| Bytes beyond the generator's text | the runtime's own: a fixed system prefix, an empty system message, a per-run device and session id, headers naming the OS, CPU architecture and Node version, and sometimes a body-less probe the gate answers locally | the entry's listed fixed request, which includes the same three machine-identifying headers (OS, CPU architecture, Node version); the entry lists them as sent, and whether the egress record should require stripping them is your choice (PR #273, O2) |
+| Surface | a bundled CLI process in the path | no bundled CLI; the Anthropic SDK library (0.131.0) is in the path |
+| Review | confirmed at d08f4400 | cleared at round 3 (CONFIRM WITH EXCEPTIONS); merged |
 
-Ask: which route, and, because both are API-key only, whether the owner will
-supply a key and accept API-account billing and terms; if not, neither route
+Ask: which route (2a), and, because both are API-key only, whether the owner will
+supply a key and accept API-account billing and terms (2b); if not, neither route
 runs. This page makes no recommendation between the routes.
 
 Pins common to both (labelled [Inferred], not measured): model `claude-opus-5-5`,
@@ -134,7 +189,11 @@ effort `high`, no tools, and a `max_tokens` ceiling of 64000. Say whether the
 ceiling is acceptable for the first run; its measurement informs a later entry
 version. Also decide the egress-record wording both entries need read: the
 record's "fixed by the runtime" and "nothing else" phrases against the pinned
-fields.
+fields. Both entries' packets say the first egress version's conditions (it "adds
+no context of its own") may need a version describing the route's fixed bytes;
+[Observed] row 8's record as drafted copies the first version's route wording and
+does not yet carry it, so which wording the route needs is an open reading, not
+settled by row 8.
 
 ## Proposed run budget (owner-adjustable, not an act)
 
