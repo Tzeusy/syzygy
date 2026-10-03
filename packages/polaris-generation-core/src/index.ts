@@ -33,5 +33,5 @@ export {
   type DossierManifest, type DossierEvaluationInput, type ReaderQuestion, type ReaderAnswer, type ReaderAnswerPort, type ReaderPortFactory, type ReaderLocation,
   type PageBudget, type BoundOutcome, type QuoteOutcome, type ScannedPage, type OwnerTopic,
 } from './dossier-evaluation.js';
-export { discoverAndSelect, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
-export type { DiscoveryBudget, DiscoveryClaim, DiscoveryPorts, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
+export { discoverAndSelect, reportFromReceipts, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
+export type { DiscoveryBudget, DiscoveryCall, DiscoveryReceipt, MapReply, ReduceReply, DiscoveryClaim, DiscoveryPorts, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
