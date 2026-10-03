@@ -268,6 +268,11 @@ CAMPAIGNS = (
         "N10 POC governing-intent gate",
         r"R-N10-POC-GOVERNING-INTENT-.*\.md",
     ),
+    campaign(
+        "pwb-opening-index-accessible-name",
+        "PWB opening-index and accessible-name gate",
+        r"R-PWB-(?:OPENING-INDEX|ACCESSIBLE-NAME)-AMENDMENT-.*\.md",
+    ),
 )
 
 
