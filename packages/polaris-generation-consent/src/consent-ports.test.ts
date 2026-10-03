@@ -258,7 +258,7 @@ describe('parseAdmissionRecords', () => {
     const bad: [string, (r: Record<string, unknown>) => void][] = [
       ['unknown key', r => { r.extra = 1; }], ['missing key', r => { delete r.digest; }], ['short digest', r => { r.digest = 'abc'; }],
       ['bad class', r => { r.class = 'other'; }], ['non-integer instant', r => { r.inForceAt = 1.5; }], ['string instant', r => { r.withdrawnAt = '2026'; }],
-      ['observation with provider', r => { r.providerId = 'anthropic'; }], ['observation without repository', r => { r.repositoryId = null; }],
+      ['supersession instant without a predecessor', r => { r.supersessionAt = 5; }], ['observation with provider', r => { r.providerId = 'anthropic'; }], ['observation without repository', r => { r.repositoryId = null; }],
     ];
     for (const [name, edit] of bad) {
       const list = good() as Record<string, unknown>[];

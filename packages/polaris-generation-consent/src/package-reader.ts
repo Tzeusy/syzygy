@@ -51,16 +51,17 @@ const nodeFs: PackageReaderFs = { readdir: dir => nodeReaddir(dir), readFile: fi
 const refuse = (): never => { throw new AdmissionRecordError('invalid-records'); };
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
-/** The text with every fenced code block blanked (a fence opens and closes on a line of three or more backticks or tildes, up to
- * three spaces in; an unclosed fence runs to the end). Line count is kept. */
+/** The text with every fenced code block and every HTML comment blanked (a fence opens and closes on a line of three or more
+ * backticks or tildes, up to three spaces in; an unclosed fence or comment runs to the end). Line count is kept. */
 function outsideFences(text: string): string {
   let open: string | null = null;
-  return text.split('\n').map(line => {
+  const unfenced = text.split('\n').map(line => {
     const m = /^ {0,3}(`{3,}|~{3,})/.exec(line);
     if (open === null) { if (m !== null) { open = m[1]![0]!; return ''; } return line; }
     if (m !== null && m[1]![0] === open) open = null;
     return '';
   }).join('\n');
+  return unfenced.replace(/<!--[\s\S]*?(?:-->|$)/g, comment => comment.replace(/[^\n]/g, ''));
 }
 /** The one capture of `re` in the prose. Refuses when it is absent, repeated, or counts differently once fences are ignored (a field
  * that is partly or wholly inside a fence is not a field). */
@@ -111,6 +112,22 @@ function actInstant(text: string, date: string, label = 'Recorded at \\(UTC\\)',
   if (m === null || m[1] !== date || !Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 19) + 'Z' !== value) return refuse();
   return at;
 }
+
+/** The act's one `Supersession / revocation:` field with its wrapped continuation lines (up to the next blank line) joined by a space;
+ * '' when the act has none. A repeated field, or one that counts differently once fences and comments are ignored, refuses. */
+function supersessionText(text: string): string {
+  const re = /^Supersession \/ revocation:/gm;
+  const lines = outsideFences(text).split('\n'), at = lines.map((line, i) => (re.test(line) ? i : -1)).filter(i => i >= 0);
+  re.lastIndex = 0;
+  if (at.length > 1 || [...text.matchAll(re)].length !== at.length) return refuse();
+  if (at.length === 0) return '';
+  const out: string[] = [];
+  for (const line of lines.slice(at[0])) { if (line.trim() === '') break; out.push(line.trim()); }
+  return out.join(' ');
+}
+
+/** What the strict readers return for one act record: the recorder's head fields, parsed from prose only. */
+export interface ParsedAct { readonly file: string; readonly identity: string; readonly type: string; readonly artifact: string; readonly project: string; readonly digest: string; readonly date: string; readonly recordedAt: number; readonly supersession: string; readonly text: string }
 
 function bullets(source: string, heading: RegExp): string[] {
   const text = outsideFences(source);
@@ -171,17 +188,12 @@ function parseInstance(text: string, act: Act, inForceAt: number | null): Admiss
  * the act record exists in the form the recorder writes, and the installed module hashes to its digest. */
 const CLASS_ACT_FILE = 'RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md';
 const CLASS_MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+const CLASS_TITLE = '# Owner act — RFC5-14 project-documentation content-class amendment';
 async function checkClassAct(fs: PackageReaderFs, root: string, files: ReadonlySet<string>, v2At: number): Promise<void> {
   if (!files.has(CLASS_ACT_FILE)) return refuse();
-  let text: string, module: string;
-  try { text = await fs.readFile(path.join(root, DECISIONS_DIR, CLASS_ACT_FILE)); module = await fs.readFile(path.join(root, CLASS_MODULE)); } catch { return refuse(); }
-  if (!text.startsWith('# Owner act — RFC5-14 project-documentation content-class amendment\n')) refuse();
-  const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm);
-  if (one(text, /^Act identity: `([^`\n]+)`$/gm) !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}`
-    || one(text, /^Act type: `([^`\n]+)`$/gm) !== 'contract-amendment' || one(text, /^Artifact identity: `([^`\n]+)`$/gm) !== CLASS_MODULE
-    || one(text, /^Project identity: `(project:syzygy)`$/gm) !== 'project:syzygy' || one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm) !== sha256(module)) refuse();
+  const hit = await readClassAct(fs, root);
   // The amendment took effect no later than the egress act that relies on it.
-  if (actInstant(text, date, 'Act instant', /^\s*act instant\b/gim) > v2At) refuse();
+  if (hit === null || hit.act.recordedAt > v2At) refuse();
 }
 
 /** A decisions file that is outside the closed list and the pins yet names an admission artifact, an act identity or a record id,
@@ -282,42 +294,132 @@ function namesPolicy(rel: string, text: string): boolean {
   return fold(rel).includes(POLICY_STEM) && /withdraw|revok/u.test(fold(rel));
 }
 
+function parsePolicyAct(text: string, form: PolicyActForm): ParsedAct {
+  if (!text.startsWith(`${form.title}\n`) || one(text, /^Artifact identity: `([^`\n]+)`$/gm) !== POLICY_PATH) refuse();
+  const act = { type: one(text, /^Act type: `([a-z-]+)`$/gm), identity: one(text, /^Act identity: `([^`\n]+)`$/gm), digest: one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm), date: one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm) };
+  const project = one(text, /^Project identity: `(project:syzygy)`$/gm);
+  one(text, /^Provenance state: `(owner-adopted \(bootstrap, uncorrelated\))`/gm);
+  if (act.type !== 'approve-policy' || act.identity !== form.identity(act.date)) refuse();
+  const at = Date.parse(`${act.date}T00:00:00Z`);
+  if (!Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 10) !== act.date) refuse();
+  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH, project, digest: act.digest, date: act.date, recordedAt: actInstant(text, act.date), supersession: supersessionText(text), text };
+}
+
+/** The policy, its declared scope, and the recorder acts over it (version 1, version 2), every decisions file swept. The chain is
+ * strict: version 2 needs version 1, took effect strictly later, binds other bytes, and its supersession text names version 1's
+ * record path and argument. */
+async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ readonly policy: string; readonly scope: unknown; readonly v1: ParsedAct | null; readonly v2: ParsedAct | null }> {
+  let policy: string;
+  try { policy = await fs.readFile(path.join(root, POLICY_PATH)); } catch { return refuse(); }
+  const files = await walk(fs, path.join(root, DECISIONS_DIR));
+  let scope: unknown;
+  try { scope = (JSON.parse(policy) as { publicSourceScope?: unknown }).publicSourceScope; } catch { return refuse(); }
+  const parsed: Array<ParsedAct | null> = POLICY_ACT_FORMS.map(() => null);
+  for (const rel of files) {
+    let text: string;
+    try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
+    const at = POLICY_ACT_FORMS.findIndex(f => f.file === rel);
+    if (at < 0) {
+      // Another record that names the policy is a known historical act (by name and digest) or an unknown form: refuse the unknown.
+      const pinned = HISTORICAL_POLICY_ACTS.get(rel);
+      if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }
+      if (namesPolicy(rel, text)) refuse();
+      continue;
+    }
+    parsed[at] = parsePolicyAct(text, POLICY_ACT_FORMS[at]!);
+  }
+  const [v1, v2] = parsed;
+  if (v1 === null || v1 === undefined || v2 === null || v2 === undefined) { if (v2 !== null && v2 !== undefined) refuse(); return { policy, scope, v1: v1 ?? null, v2: null }; }
+  if (v2.recordedAt <= v1.recordedAt || v2.digest === v1.digest || !v2.supersession.includes(`\`${v1.digest}\``) || !v2.supersession.includes(`${DECISIONS_DIR}/${v1.file}`)) refuse();
+  return { policy, scope, v1, v2 };
+}
+
 export function createPackagePolicyReader(options: { readonly root: string; readonly fs?: PackageReaderFs }): PolicyActReader {
   const fs = options.fs ?? nodeFs;
   return {
     read: async () => {
-      let policy: string;
-      try { policy = await fs.readFile(path.join(options.root, POLICY_PATH)); } catch { return refuse(); }
-      const files = await walk(fs, path.join(options.root, DECISIONS_DIR));
-      let scope: unknown;
-      try { scope = (JSON.parse(policy) as { publicSourceScope?: unknown }).publicSourceScope; } catch { return refuse(); }
+      const { policy, scope, v1, v2 } = await readPolicyActs(fs, options.root);
       const records: PolicyActRecord[] = [];
-      for (const rel of files) {
-        let text: string;
-        try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, rel)); } catch { return refuse(); }
-        const form = POLICY_ACT_FORMS.find(f => f.file === rel);
-        if (form === undefined) {
-          // Another record that names the policy is a known historical act (by name and digest) or an unknown form: refuse the unknown.
-          const pinned = HISTORICAL_POLICY_ACTS.get(rel);
-          if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }
-          if (namesPolicy(rel, text)) refuse();
-          continue;
-        }
-        if (!text.startsWith(`${form.title}\n`) || one(text, /^Artifact identity: `([^`\n]+)`$/gm) !== POLICY_PATH) refuse();
-        const act = { type: one(text, /^Act type: `([a-z-]+)`$/gm), identity: one(text, /^Act identity: `([^`\n]+)`$/gm), digest: one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm), date: one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm) };
-        one(text, /^Project identity: `(project:syzygy)`$/gm);
-        one(text, /^Provenance state: `(owner-adopted \(bootstrap, uncorrelated\))`/gm);
-        if (act.type !== 'approve-policy' || act.identity !== form.identity(act.date)) refuse();
-        const at = Date.parse(`${act.date}T00:00:00Z`);
-        if (!Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 10) !== act.date) refuse();
-        const inForceAt = actInstant(text, act.date);
+      for (const act of [v1, v2]) {
         // The act binds the policy bytes it names: stale bytes or a policy that declares no public-source scope do not count.
-        if (act.digest !== sha256(policy) || scope === null || typeof scope !== 'object' || Array.isArray(scope)) continue;
-        records.push(Object.freeze({ actIdentity: act.identity, digest: act.digest, inForceAt }));
+        if (act === null || act.digest !== sha256(policy) || scope === null || typeof scope !== 'object' || Array.isArray(scope)) continue;
+        records.push(Object.freeze({ actIdentity: act.identity, digest: act.digest, inForceAt: act.recordedAt }));
       }
       return Object.freeze(records);
     },
   };
+}
+
+/** The result of a strict act read: the parsed record(s), or why there are none. `absent` (no record) and `refused` (a bad form, a
+ * withdrawal-naming file, or bytes that no longer match) both mean "not in force"; they are told apart for the report only. */
+export type ActState<T> = ({ readonly state: 'ok' } & T) | { readonly state: 'absent'; readonly why: string } | { readonly state: 'refused'; readonly why: string };
+export interface StrictReadOptions { readonly root: string; readonly fs?: PackageReaderFs }
+async function strict<T>(read: () => Promise<ActState<T>>): Promise<ActState<T>> {
+  try { return await read(); } catch (error) { if (error instanceof AdmissionRecordError) return { state: 'refused', why: error.message }; throw error; }
+}
+
+/** The screening-scope policy act chain. `ok` only when the final act (version 2 if recorded, else version 1) binds exactly the
+ * on-disk policy bytes. */
+export type PolicyActChain = { readonly v1: ParsedAct | null; readonly v2: ParsedAct | null; readonly final: ParsedAct; readonly policyDigest: string };
+export function readPolicyActChain(options: StrictReadOptions): Promise<ActState<PolicyActChain>> {
+  return strict<PolicyActChain>(async () => {
+    const { policy, v1, v2 } = await readPolicyActs(options.fs ?? nodeFs, options.root);
+    const final = v2 ?? v1;
+    if (final === null) return { state: 'absent', why: 'no screening-scope policy act is recorded' };
+    const policyDigest = sha256(policy);
+    if (final.digest !== policyDigest) return { state: 'refused', why: 'the policy bytes differ from the final act\'s argument' };
+    return { state: 'ok', v1, v2, final, policyDigest };
+  });
+}
+
+const CLASS_STEM = 'rfc5-project-documentation';
+function namesClassAct(rel: string, text: string): boolean {
+  const folded = fold(text);
+  return fold(rel).includes(CLASS_STEM) || (rel !== AGGREGATE_RECORD && (folded.includes(CLASS_STEM) || folded.includes(fold(CLASS_MODULE)))) || folded.split('\n').some(line => {
+    const field = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity)\s*\**\s*:\s*(.*)$/u.exec(line);
+    return field !== null && (field[2]!.includes(fold(CLASS_MODULE)) || field[2]!.includes(CLASS_STEM));
+  });
+}
+async function readClassAct(fs: PackageReaderFs, root: string): Promise<{ readonly act: ParsedAct; readonly moduleDigest: string } | null> {
+  const files = await walk(fs, path.join(root, DECISIONS_DIR));
+  let found: string | null = null;
+  for (const rel of files) {
+    let text: string;
+    try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
+    if (rel === CLASS_ACT_FILE) { found = text; continue; }
+    if (namesClassAct(rel, text)) refuse();
+  }
+  if (found === null) return null;
+  let module: string;
+  try { module = await fs.readFile(path.join(root, CLASS_MODULE)); } catch { return refuse(); }
+  const text = found;
+  if (!text.startsWith(CLASS_TITLE + '\n')) refuse();
+  const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), identity = one(text, /^Act identity: `([^`\n]+)`$/gm), type = one(text, /^Act type: `([^`\n]+)`$/gm);
+  const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
+  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment' || artifact !== CLASS_MODULE || digest !== sha256(module)) refuse();
+  return { act: { file: CLASS_ACT_FILE, identity, type, artifact, project, digest, date, recordedAt: actInstant(text, date, 'Act instant', /^\s*act instant\b/gim), supersession: supersessionText(text), text }, moduleDigest: sha256(module) };
+}
+/** The RFC5-14 project-documentation class amendment act: `ok` when the recorder's record exists in form and its argument is the
+ * sha256 of the installed RFC-0005 module; `absent` when none is recorded; `refused` for any bad form, a file elsewhere in the
+ * decisions tree that names it, or an installed module that no longer matches. */
+export type ClassActRead = { readonly act: ParsedAct; readonly moduleDigest: string };
+export function readClassActState(options: StrictReadOptions): Promise<ActState<ClassActRead>> {
+  return strict<ClassActRead>(async () => {
+    const hit = await readClassAct(options.fs ?? nodeFs, options.root);
+    return hit === null ? { state: 'absent', why: 'no class amendment act is recorded' } : { state: 'ok', ...hit };
+  });
+}
+
+/** The in-force egress record to Anthropic at `now` (version 2 replaces version 1 from its act's instant), with its listed content classes. */
+export type InForceEgress = { readonly recordId: string; readonly version: string; readonly digest: string; readonly contentClasses: readonly string[] };
+export function readInForceEgress(options: StrictReadOptions & { readonly now: number }): Promise<ActState<InForceEgress>> {
+  return strict<InForceEgress>(async () => {
+    const live = inForceRecords(await createPackageAdmissionReader(options).read(), options.now).filter(r => r.class === 'egress' && r.providerId === 'anthropic');
+    if (live.length === 0) return { state: 'absent', why: 'no egress record is in force' };
+    if (live.length > 1) return { state: 'refused', why: 'more than one egress record is in force' };
+    const [r] = live;
+    return { state: 'ok', recordId: r!.recordId, version: r!.version, digest: r!.digest, contentClasses: r!.contentClasses };
+  });
 }
 
 /** Structurally the poc:dossier trigger's `AdmissionRecordsPort`. */

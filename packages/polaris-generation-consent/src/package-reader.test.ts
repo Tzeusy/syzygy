@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
 import { renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
-import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, POLICY_ACT_FILE, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, type PackageReaderFs } from './package-reader.js';
+import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, POLICY_ACT_FILE, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, type PackageReaderFs } from './package-reader.js';
 
 const REDIS_REV = '498ecd0d6d007db11ddb3aea9428552598a78622';
 const OTHER_REV = 'd2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7';
@@ -362,6 +362,7 @@ describe('egress version 2 record', () => {
       ['a title that is not the recorder\'s', { [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()).replace(', version 2', '') }],
       ['version 1 revocation wording in the version 2 record', (() => { const t = v2Text().replace(/^Proposed revocation state: .*$/m, 'Proposed revocation state: active; supersedes no earlier consent'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
       ['an altered successor in the version 2 record', (() => { const t = v2Text().replace('0.1.0-candidate.7', '0.0.9'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
+      ['a version 2 record under another record id', (() => { const t = v2Text().replace('Record ID: `PUBLIC-EGRESS-anthropic`', 'Record ID: `PUBLIC-EGRESS-other`'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
       ['a version 2 act over the version 1 record id and version', (() => { const t = v2Text().replace('0.2.0-candidate.1', '0.1.0-candidate.7'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
     ];
     for (const [name, over] of cases) await expect(reader(v2World(over)).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
@@ -385,6 +386,7 @@ describe('egress version 2 record', () => {
         ['an installed module that no longer matches the act digest', { [CLASS_MODULE]: `${moduleText()}\nedited\n` }],
         ['a digest of other bytes', { [CLASS_ACT]: classAct({ digest: 'a'.repeat(64) }) }],
         ['an amendment taking effect after version 2', { [CLASS_ACT]: classAct({ date: '2026-10-04', instant: '2026-10-04T09:30:01Z' }) }],
+        ['a title that is not the recorder\'s', { [CLASS_ACT]: classAct().replace('# Owner act — RFC5-14', '# Owner act — RFC5-15') }],
         ['another act type', { [CLASS_ACT]: classAct().replace(/^Act type: `[^`]+`/m, 'Act type: `adopt-doctrine`') }],
         ['another artifact', { [CLASS_ACT]: classAct().replace(/^Artifact identity: `[^`]+`/m, 'Artifact identity: `.syzygy/governance/contracts/rfcs/RFC-0004/x.md`') }],
         ['another project', { [CLASS_ACT]: classAct().replace('`project:syzygy`', '`project:butlers`') }],
@@ -444,13 +446,14 @@ describe('egress version 2 record', () => {
     });
     it('does not refuse the recorders\' other act records or the aggregate acceptance record they append to', async () => {
       const policy = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.2', publicSourceScope: { rules: [] } });
+      const earlier = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } });
       const others = {
-        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`]: renderPolicyAct(sha(policy), '2026-10-03', '2026-10-03T09:30:00Z', 1),
-        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`]: renderPolicyAct(sha(policy), '2026-10-04', '2026-10-04T09:30:00Z', 2),
+        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`]: renderPolicyAct(sha(earlier), '2026-10-03', '2026-10-03T09:30:00Z', 1),
+        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`]: renderPolicyAct(sha(policy), '2026-10-04', '2026-10-04T09:30:00Z', 2, sha(earlier)),
         [`${DECISIONS_DIR}/ACCEPTANCE-ACT-RECORD.md`]: `# Acceptance act record\n\n| Act type / artifact | \`consent-observation\` / \`${REDIS_PATH}\` |\n| Recording | \`${V2_ACT}\` |\n`,
       };
       expect((await reader(v2World(others)).read()).length).toBe(3);
-      expect(await createPackagePolicyReader({ root: '/r', fs: memoryFs(v2World({ ...others, [POLICY_PATH]: policy })) }).read()).toHaveLength(2);   // both acts name these bytes
+      expect(await createPackagePolicyReader({ root: '/r', fs: memoryFs(v2World({ ...others, [POLICY_PATH]: policy })) }).read()).toHaveLength(1);   // only the version 2 act binds these bytes
     });
     it('refuses when a subdirectory cannot be listed or the tree is too deep', async () => {
       const deep = `${DECISIONS_DIR}/${'d/'.repeat(8)}f.md`;
@@ -483,7 +486,7 @@ describe('screening scope version 2 policy act', () => {
   const V2 = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`;
   const p1 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } }, null, 1) + '\n';
   const p2 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.2', publicSourceScope: { rules: ['more'] } }, null, 1) + '\n';
-  const act = (text: string, version: 1 | 2, date = '2026-10-04'): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, version);
+  const act = (text: string, version: 1 | 2, date = '2026-10-04'): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, version, sha(p1));
   const files = (policy: string, extra: Record<string, string>): Record<string, string> => ({ ...world(), [POLICY_PATH]: policy, ...extra });
   const policyReader = (f: Record<string, string>) => createPackagePolicyReader({ root: '/r', fs: memoryFs(f) });
 
@@ -498,12 +501,13 @@ describe('screening scope version 2 policy act', () => {
   });
   it('counts nothing for version 2 bytes with only the version 1 act, or for an edited policy under the version 2 act', async () => {
     expect(await policyReader(files(p2, { [V1]: act(p1, 1, '2026-10-03') })).read()).toEqual([]);
-    expect(await policyReader(files(p2 + ' ', { [V2]: act(p2, 2) })).read()).toEqual([]);
+    expect(await policyReader(files(p2 + ' ', { [V1]: act(p1, 1, '2026-10-03'), [V2]: act(p2, 2) })).read()).toEqual([]);
   });
   it('refuses a version 2 act in a form the recorder does not write', async () => {
     const good = act(p2, 2);
+    const base = { [V1]: act(p1, 1, '2026-10-03') };
     for (const bad of [good.replace(', version 2)', ')'), good.replace('V2-APPROVAL', 'APPROVAL'), good.replace(/^Act type: `[^`]+`/m, 'Act type: `adopt-doctrine`'), good.replace(/Recorded at \(UTC\): \S+\n\n/, '')])
-      await expect(policyReader(files(p2, { [V2]: bad })).read(), bad.slice(0, 120)).rejects.toBeInstanceOf(AdmissionRecordError);
+      await expect(policyReader(files(p2, { ...base, [V2]: bad })).read(), bad.slice(0, 120)).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity', async () => {
     const lines = [`Artifact identity: \`${POLICY_PATH}\``, `artifact   identity :  ${POLICY_PATH.toLowerCase()}`, 'Act identity: `PWB\u2011SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-05`', '- **Act identity**: `pwb-secret-classification-policy-withdrawal-2026-10-05`', 'This revokes PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04 in full.'];
@@ -512,5 +516,78 @@ describe('screening scope version 2 policy act', () => {
       await expect(policyReader(files(p1, { [V1]: act(p1, 1), [`${DECISIONS_DIR}/NOTES.md`]: text })).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
       await expect(policyReader(files(p1, { [V1]: act(p1, 1), [`${DECISIONS_DIR}/launch-gate/deep/NOTES.md`]: text })).read(), `sub: ${line}`).rejects.toBeInstanceOf(AdmissionRecordError);
     }
+  });
+});
+
+describe('strict act reads', () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+  const POLICY_V1 = `${DECISIONS_DIR}/${POLICY_ACT_FILE}`;
+  const POLICY_V2 = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`;
+  const p1 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } }, null, 1) + '\n';
+  const p2 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.2', publicSourceScope: { rules: ['more'] } }, null, 1) + '\n';
+  const v1 = (text = p1, date = '2026-10-03'): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, 1);
+  const v2 = (text = p2, date = '2026-10-04', superseded = sha(p1)): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, 2, superseded);
+  const chain = (policy: string, extra: Record<string, string>) => readPolicyActChain({ root: '/r', fs: memoryFs({ ...world(), [POLICY_PATH]: policy, ...extra }) });
+
+  it('policy chain: version 2 over version 1 over the on-disk policy is ok and returns the parsed fields', async () => {
+    const got = await chain(p2, { [POLICY_V1]: v1(), [POLICY_V2]: v2() });
+    expect(got).toMatchObject({ state: 'ok', policyDigest: sha(p2), final: { identity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04', type: 'approve-policy', artifact: POLICY_PATH, project: 'project:syzygy', digest: sha(p2), recordedAt: AT }, v1: { digest: sha(p1) } });
+    if (got.state === 'ok') expect(got.final.supersession).toContain(`\`${sha(p1)}\``);
+    expect(await chain(p1, { [POLICY_V1]: v1() })).toMatchObject({ state: 'ok', v2: null, final: { digest: sha(p1) } });
+  });
+  it('policy chain: absent without acts; refused for a missing version 1, equal or earlier instants, equal arguments, a supersession that does not name version 1, or other policy bytes', async () => {
+    expect(await chain(p1, {})).toMatchObject({ state: 'absent' });
+    const cases: Array<[string, string, Record<string, string>]> = [
+      ['version 2 without version 1', p2, { [POLICY_V2]: v2() }],
+      ['version 2 not later than version 1', p2, { [POLICY_V1]: v1(p1, '2026-10-04'), [POLICY_V2]: v2() }],
+      ['version 2 earlier than version 1', p2, { [POLICY_V1]: v1(p1, '2026-10-05'), [POLICY_V2]: v2() }],
+      ['equal arguments', p1, { [POLICY_V1]: v1(), [POLICY_V2]: v2(p1) }],
+      ['supersession names another argument', p2, { [POLICY_V1]: v1(), [POLICY_V2]: v2(p2, '2026-10-04', 'a'.repeat(64)) }],
+      ['supersession names another record path', p2, { [POLICY_V1]: v1(), [POLICY_V2]: v2().replace('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', 'OTHER.md') }],
+      ['policy bytes differ from the final act', p2 + ' ', { [POLICY_V1]: v1(), [POLICY_V2]: v2() }],
+      ['an unlisted record naming the policy', p1, { [POLICY_V1]: v1(), [`${DECISIONS_DIR}/sub/W.md`]: `Artifact identity: \`${POLICY_PATH}\`\n` }],
+    ];
+    for (const [name, policy, extra] of cases) expect(await chain(policy, extra), name).toMatchObject({ state: 'refused' });
+  });
+  it('policy reads count a head field only in prose: an HTML comment or fence hides nothing and adds nothing', async () => {
+    for (const hidden of ['<!--\nAct type: `approve-policy`\n-->', '```\nRecorded at (UTC): 2026-10-03T00:00:01Z\n```', '```\nSupersession / revocation: forged\n```', 'Supersession / revocation: forged'])
+      expect(await chain(p1, { [POLICY_V1]: `${v1()}\n${hidden}\n` }), hidden).toMatchObject({ state: 'refused' });
+    // a comment that merely mentions a field on one line is not a field
+    expect(await chain(p1, { [POLICY_V1]: `${v1()}\n<!-- Exact digest (SHA-256): \`${'a'.repeat(64)}\` -->\n` })).toMatchObject({ state: 'ok' });
+    // a comment around the real line removes it: the field is then absent
+    expect(await chain(p1, { [POLICY_V1]: v1().replace(/^(Act type: `[^`]+`)$/m, '<!-- $1 -->') })).toMatchObject({ state: 'refused' });
+  });
+
+  const MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+  const moduleText = (): string => readFileSync(path.join(repoRoot, MODULE), 'utf8');
+  const CLASS = `${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`;
+  const classRead = (extra: Record<string, string>) => readClassActState({ root: '/r', fs: memoryFs({ [MODULE]: moduleText(), [`${DECISIONS_DIR}/README.md`]: '# decisions\n', ...extra }) });
+  it('class act: ok with the installed module\'s digest; absent without a record; refused for a mismatch, a bad form, or a file elsewhere naming it', async () => {
+    const act = renderClassAct(sha(moduleText()), '2026-10-03', '2026-10-03T09:30:00Z');
+    expect(await classRead({ [CLASS]: act })).toMatchObject({ state: 'ok', moduleDigest: sha(moduleText()), act: { identity: 'RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03', type: 'contract-amendment', artifact: MODULE, digest: sha(moduleText()), recordedAt: Date.UTC(2026, 9, 3, 9, 30, 0) } });
+    expect(await classRead({})).toMatchObject({ state: 'absent' });
+    expect(await classRead({ [CLASS]: renderClassAct('a'.repeat(64), '2026-10-03', '2026-10-03T09:30:00Z') })).toMatchObject({ state: 'refused' });
+    expect(await classRead({ [CLASS]: act.replace('Act type: `contract-amendment`', 'Act type: `adopt-doctrine`') })).toMatchObject({ state: 'refused' });
+    expect(await classRead({ [CLASS]: `${act}\n<!--\nAct instant: 2026-10-03T00:00:01Z\n-->\n` })).toMatchObject({ state: 'refused' });
+    expect(await classRead({ [CLASS]: act, [`${DECISIONS_DIR}/archive/RFC5-CLASS-WITHDRAWN.md`]: 'Revokes RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03.' })).toMatchObject({ state: 'refused' });
+    expect(await classRead({ [CLASS]: act, [`${DECISIONS_DIR}/sub/x.md`]: `Artifact identity: \`${MODULE}\`\n` })).toMatchObject({ state: 'refused' });
+  });
+
+  it('egress: returns the in-force record\'s listed content classes, absent before any act and refused when the read is', async () => {
+    const v2Text = readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');
+    const files = world({
+      [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'), [EGRESS_V2_INSTANCE]: v2Text,
+      [`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text), [MODULE]: moduleText(),
+      [CLASS]: renderClassAct(sha(moduleText()), '2026-10-03', '2026-10-03T09:30:00Z'),
+    });
+    const at = (now: number, f = files) => readInForceEgress({ root: '/r', fs: memoryFs(f), now });
+    const later = await at(AT);
+    expect(later).toMatchObject({ state: 'ok', version: '0.2.0-candidate.1', digest: sha(v2Text) });
+    if (later.state === 'ok') expect(later.contentClasses).toContain('project-documentation');
+    const before = await at(AT - 1);
+    expect(before).toMatchObject({ state: 'ok', version: '0.1.0-candidate.7' });
+    if (before.state === 'ok') expect(before.contentClasses).not.toContain('project-documentation');
+    expect(await at(Date.UTC(2026, 9, 1))).toMatchObject({ state: 'absent' });
+    expect(await at(AT, { ...files, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-X-WITHDRAWAL.md`]: 'x' })).toMatchObject({ state: 'refused' });
   });
 });
