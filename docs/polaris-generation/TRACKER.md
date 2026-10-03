@@ -152,6 +152,14 @@ Authorized implementation work (generator implementation authorization,
         basis. Every call is permitted per call and leaves a durable receipt;
         a report replays from receipts alone, bound to each call's request
         digest. Wiring to a real model is still G2/G3.
+  - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
+        (`generation-source.ts`, a plain literal array) lists every reason an
+        excluded source may carry; `validateGenerationSources` refuses any
+        other reason and any excluded row whose id is not `s-` plus 24 hex
+        digits of a digest (no path-derived id). The PWB adapter maps its
+        closed withholding reasons onto the set and falls back to
+        `unclassified-exclusion`; it never passes the classifier's sentence
+        through.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
