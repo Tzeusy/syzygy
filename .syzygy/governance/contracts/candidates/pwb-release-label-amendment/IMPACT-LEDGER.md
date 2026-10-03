@@ -18,8 +18,8 @@
 | `docs/reviews/` raw reviews | 19 | None. Raw output is never edited (CC-REV-6). |
 | Other `docs/` (plans, designs, evidence, pursuits) | 16 | None. Evidence records name the bytes they measured. |
 | `.syzygy/governance/contracts/candidates/` sibling packages | 15 | None. Every sibling is performed or declined; none is pending against the PWB spec. The builder's sibling classification checks this. |
-| `openspec/changes/polaris-project-wide-butlers-model/` | 11 | Four patched (spec, capability coverage, design, proposal) and one regenerated (`GOVERNING-DEPENDENCIES.md`). The contract-coverage matrix, parts, repair delta, `CONTRACT-COVERAGE.md` and `tasks.md` are unchanged. |
-| `scripts/` | 5 | `check_spec_reconciliation.py`'s literal census changes at sign-off (17 requirements, 55 scenarios, PWB-REQ-001 at 5). The others are unchanged: the coverage and dependency builders regenerate, and the two sibling builders are history. |
+| `openspec/changes/polaris-project-wide-butlers-model/` | 11 | Five patched (spec, capability coverage, design, proposal, contract-coverage repair delta) and two regenerated (`GOVERNING-DEPENDENCIES.md`, `CONTRACT-COVERAGE.md`). The three matrix files, the three parts files and `tasks.md` are unchanged. |
+| `scripts/` | 5 | At sign-off, `check_spec_reconciliation.py` changes twice: its literal census (17 requirements, 55 scenarios, PWB-REQ-001 at 5) and the PWB child's successor chain. The others are unchanged: the coverage and dependency builders regenerate, and the two sibling builders are history. |
 | `packages/three-surface-poc-core/src/` | 5 | Implementation consumers. Sign-off authorizes no change to them. |
 | `apps/three-surface-poc/src/` | 2 | The mutation sweep cites PWB-REQ-001's oracle. Sign-off authorizes no change. |
 | `AGENTS.md` | 1 | None. |

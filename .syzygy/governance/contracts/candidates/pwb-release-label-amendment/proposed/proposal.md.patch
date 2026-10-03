@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/proposal.md b/openspec/changes/polaris-project-wide-butlers-model/proposal.md
-index 2d4ecc3..41f95c7 100644
+index 2d4ecc3..307b699 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/proposal.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/proposal.md
-@@ -27,6 +27,13 @@ gap visible, and reads Butlers only under owner authority.
+@@ -27,6 +27,14 @@ gap visible, and reads Butlers only under owner authority.
    - An opening aggregate over the evaluation's Unknown project-shape claims
      may appear before the first capability catalog; if it does, there is
      exactly one, and it displaces no project-level category.
@@ -11,8 +11,9 @@ index 2d4ecc3..41f95c7 100644
 +  beneath it; every claim still binds to that object id.
 +  - A revision after a tag reads as that tag plus a count of later commits; a
 +    revision no tag reaches shows a short object id, labelled as untagged.
-+  - A tag that moved since an earlier held evaluation is disclosed as moved,
-+    and a tag set that was not read is never shown as untagged.
++  - A tag that moved since a compared earlier evaluation is disclosed as
++    moved, and tags or history that were not read are never shown as
++    untagged.
  - **Every declared item is counted.** The shared model accounts for every
    declared staffer, domain butler, module, connector and major interface in
    the configured Butlers revision.

@@ -18,15 +18,17 @@ candidate commit, review, manifest or merge performs no owner act.
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
                  required phrases, not each one), plus patch drift and an
                  unclassified sibling
-    --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
-                 manifest over the proposed bytes
+    --write      regenerate the two derived patches (GOVERNING-DEPENDENCIES and
+                 CONTRACT-COVERAGE) and the manifest over the proposed bytes
     --diff       print the proposed patches
     --apply --at-adoption   write the proposed bytes (sign-off change only)
 
 Outside PWB-REQ-001, every requirement block and the text before the
 requirements must survive byte for byte, and no signed line of the proposal,
-the design or the capability table may be lost, except the two capability
-count lines that ``capability_findings`` recomputes.
+the design, the capability table or the contract-coverage repair delta may be
+lost, except the two capability count lines that ``capability_findings``
+recomputes and the repair delta's two declared-totals lines, which the
+contract-coverage generator's own ``--check`` recomputes.
 """
 
 from __future__ import annotations
@@ -82,9 +84,10 @@ BEHAVIOR_SUBJECTS = tuple(
         key=lambda path: path.as_posix(),
     )
 )
-PATCHED = frozenset({CAPABILITY, GOVERNING, DESIGN, PROPOSAL, SPEC})
+REPAIR_DELTA = CHANGE / "CONTRACT-COVERAGE-REPAIR-DELTA.md"
+PATCHED = frozenset({CAPABILITY, REPAIR_DELTA, CONTRACT_COVERAGE, GOVERNING, DESIGN, PROPOSAL, SPEC})
 #: Subjects whose proposed bytes are generated from the others, never authored.
-DERIVED = frozenset({GOVERNING})
+DERIVED = frozenset({GOVERNING, CONTRACT_COVERAGE})
 
 #: Every other candidate package whose spec patch targets the PWB spec, closed:
 #: a sibling is either performed (its record exists in decisions/) or declined
@@ -110,13 +113,18 @@ REQ_001 = "PWB-REQ-001"
 #: exactly once, whitespace-normalized.
 REQUIRED_ONCE = (
     "Wherever Polaris names the observed revision, it SHALL lead with that revision's release label",
-    "SHALL show the revision's full Git object id beneath the label, on the same surface and without further disclosure",
+    "SHALL show the revision's full Git object id beneath the label, on the same surface and without expanding anything",
+    "They are not a project-shape claim or fact, and they carry no epistemic tuple of their own.",
     "every claim, evaluation identity, link and comparison binds to it",
     "nothing binds to a tag name",
     "The captured tag set is every ref under `refs/tags/`",
-    "It is a deterministic evaluation input with an identity of its own",
+    "Two deterministic evaluation inputs, each with an identity of its own, feed the label.",
     "no tag message or signature is read into the model or rendered",
-    "The label takes exactly one of four forms, tested in this order",
+    "A tag that peels to anything but a commit reaches no revision.",
+    "It is complete only when every commit in that history was read",
+    "The label takes exactly one of four forms.",
+    "**Not read**, when the captured ancestry is incomplete.",
+    "They are named in its inputs by evaluation identity",
     "It never states that the revision is untagged.",
     "the name of the reaching tag with the least distance",
     "every tied name is carried in the machine answer",
@@ -124,7 +132,9 @@ REQUIRED_ONCE = (
     "Nothing presents a tag as unmoved.",
     "so every label value Polaris presents is recoverable from it",
     "Expected labels come from the checker's own Git listing of each fixture",
-    "an uncaptured tag set stated as untagged",
+    "an uncaptured tag set or incomplete ancestry stated as untagged",
+    "The count of those sites is the denominator.",
+    "zero occurrences of the tag message",
 )
 #: Signed PWB-REQ-001 text the amendment keeps.
 KEPT_IN_001 = (
@@ -138,14 +148,21 @@ NEW_SCENARIOS = (
     "#### Scenario: Unread tags are never shown as untagged",
     "#### Scenario: A moved tag is disclosed, not trusted",
 )
-WARRANT_CONTRACTS = (
-    "  contracts: [RFC2-1, RFC2-2, RFC2-24, RFC4-1, RFC4-2, RFC4-3, RFC4-11, "
-    "RFC6-15, RFC7-10]"
+#: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
+WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
+WARRANT_RE = re.compile(r"^  contracts: \[([^\]\n]*)\]$", re.MULTILINE)
+REPAIR_ROWS = (
+    "| RFC4-11.r1 | RFC4-11.c4 | RFC4-11 | A count over commit history is computed only from completely captured ancestry and is never reconstructed from history the adapter cannot reach | covered:PWB-REQ-001 |",
+    "| RFC4-11.r2 | RFC4-11.c4 | RFC4-11 | Squash/deletion loss becomes reduced-fidelity PR facts | believed-not-applicable |",
+)
+REPAIR_TOTALS_LINES = (
+    "Declared totals: **92 rows; 77 superseded base rows; 60 covered; 27 Unknown",
+    "uncovered; 5 believed not applicable.**",
 )
 CAPABILITY_ROW = (
     "| 34 | Lead every human naming of the observed revision with its release "
     "label, keep the full object id beneath it as the identity claims bind to, "
-    "disclose moved tags, and never state an unread tag set as untagged | "
+    "disclose moved tags, and never state unread tags or incomplete history as untagged | "
     "covered — PWB-REQ-001 |"
 )
 CAPABILITY_COUNT_LINES = re.compile(r"^(?:Population: \d+ positive|Totals: )")
@@ -283,8 +300,11 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
     for phrase in KEPT_IN_001 + NEW_SCENARIOS:
         if block.count(phrase) != 1:
             findings.append(f"PWB-REQ-001 lacks exactly one: {phrase.splitlines()[0][:60]!r}")
-    if WARRANT_CONTRACTS not in block:
-        findings.append("PWB-REQ-001 warrants do not carry RFC2-2 and RFC2-24")
+    warrants = WARRANT_RE.search(block)
+    cited = {item.strip() for item in warrants.group(1).split(",")} if warrants else set()
+    missing = sorted(WARRANT_CONTRACTS - cited)
+    if missing:
+        findings.append(f"PWB-REQ-001 warrants omit {', '.join(missing)}")
     return findings
 
 
@@ -325,6 +345,18 @@ def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     return findings
 
 
+def repair_findings(proposed: bytes, current: bytes) -> list[str]:
+    new, old = proposed.decode("utf-8"), current.decode("utf-8")
+    findings = []
+    lost = lost_lines(old, new, lambda line: line in REPAIR_TOTALS_LINES)
+    if lost:
+        findings.append(f"signed repair-delta line edited or removed: {lost[0]!r}")
+    for row in REPAIR_ROWS:
+        if new.count(row) != 1:
+            findings.append(f"repair row missing: {row.split(' | ')[0][2:]}")
+    return findings
+
+
 def companion_findings(proposed: dict[pathlib.Path, bytes], current: dict[pathlib.Path, bytes]) -> list[str]:
     findings = []
     for rel in (PROPOSAL, DESIGN):
@@ -355,8 +387,8 @@ def generated_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
     return []
 
 
-def coverage_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
-    """Run the contract-coverage generator's own --check over the proposed bytes."""
+def run_coverage(proposed: dict[pathlib.Path, bytes], *args: str) -> tuple[subprocess.CompletedProcess, bytes]:
+    """Run the contract-coverage generator in a scratch mirror of the proposed bytes."""
     with tempfile.TemporaryDirectory() as temp:
         mirror = pathlib.Path(temp)
         for rel in (
@@ -375,13 +407,29 @@ def coverage_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
         parent = pathlib.Path("openspec/changes/three-surface-poc-experience")
         shutil.copytree(ROOT / parent, mirror / parent)
         result = subprocess.run(
-            [sys.executable, str(mirror / COVERAGE_SCRIPT), "--check"],
+            [sys.executable, str(mirror / COVERAGE_SCRIPT), *args],
             cwd=mirror, capture_output=True, text=True,
         )
-        if result.returncode != 0:
-            output = (result.stdout + result.stderr).strip().splitlines() or ["no output"]
-            return ["contract-coverage --check fails over the proposed bytes: " + output[-1]]
+        return result, (mirror / CONTRACT_COVERAGE).read_bytes()
+
+
+def coverage_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
+    """The contract-coverage generator's own --check over the proposed bytes."""
+    result, _ = run_coverage(proposed, "--check")
+    if result.returncode != 0:
+        output = (result.stdout + result.stderr).strip().splitlines() or ["no output"]
+        return ["contract-coverage --check fails over the proposed bytes: " + output[-1]]
     return []
+
+
+def regenerate_coverage_patch() -> str:
+    semantic = [p for p in patch_files() if patch_target(p) not in DERIVED]
+    proposed = proposed_bytes(patches=semantic)
+    proposed = {**proposed, GOVERNING: dependencies.generate(proposed[SPEC].decode("utf-8"))[0].encode()}
+    result, generated = run_coverage(proposed)
+    if result.returncode != 0:
+        raise ValueError("contract-coverage generator failed: " + (result.stdout + result.stderr).strip())
+    return unified_patch(CONTRACT_COVERAGE, read_subjects()[CONTRACT_COVERAGE], generated)
 
 
 def structure_findings(
@@ -390,6 +438,7 @@ def structure_findings(
     return (
         spec_findings(proposed[SPEC], current[SPEC])
         + capability_findings(proposed[CAPABILITY], current[CAPABILITY])
+        + repair_findings(proposed[REPAIR_DELTA], current[REPAIR_DELTA])
         + companion_findings(proposed, current)
         + generated_findings(proposed)
     )
@@ -440,7 +489,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     except ValueError as error:
         return [str(error)], None
     if set(targets) != PATCHED or len(targets) != len(PATCHED):
-        findings.append("patch targets differ from the closed five-subject population")
+        findings.append("patch targets differ from the closed seven-subject population")
     try:
         proposed = proposed_bytes(patches=patches)
     except ValueError as error:
@@ -488,11 +537,11 @@ def selftest() -> int:
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "unread shown as untagged": (
-            SPEC, _replace(proposed[SPEC], "It\n    never states that the revision is untagged.", "It\n    may state that the revision is untagged."),
+            SPEC, _replace(proposed[SPEC], "It never\n  states that the revision is untagged.", "It may\n  state that the revision is untagged."),
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "tag message read": (
-            SPEC, _replace(proposed[SPEC], "no tag message or\n    signature is read into the model or rendered", "the tag message is\n    rendered"),
+            SPEC, _replace(proposed[SPEC], "no tag\n    message or signature is read into the model or rendered", "the tag\n    message is rendered"),
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "signed scenario dropped": (
@@ -505,7 +554,19 @@ def selftest() -> int:
         ),
         "warrant dropped": (
             SPEC, _replace(proposed[SPEC], "RFC2-1, RFC2-2, RFC2-24, RFC4-1", "RFC2-1, RFC2-2, RFC4-1"),
-            "PWB-REQ-001 warrants do not carry RFC2-2 and RFC2-24",
+            "PWB-REQ-001 warrants omit RFC2-24",
+        ),
+        "ancestry limb dropped": (
+            SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.\n", ""),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "repair row dropped": (
+            REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], REPAIR_ROWS[0] + "\n", ""),
+            "repair row missing: RFC4-11.r1",
+        ),
+        "signed repair row edited": (
+            REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], "| RFC2-1.r2 | RFC2-1.c12 |", "| RFC2-1.r2 | RFC2-1.c13 |"),
+            "signed repair-delta line edited or removed",
         ),
         "capability row dropped": (
             CAPABILITY, _replace(proposed[CAPABILITY], CAPABILITY_ROW + "\n", ""),
@@ -582,10 +643,12 @@ def selftest() -> int:
 # --- modes -------------------------------------------------------------------
 
 def write() -> int:
-    target = ROOT / PROPOSED / "GOVERNING-DEPENDENCIES.md.patch"
-    target.write_text(regenerate_governing_patch(), encoding="utf-8")
+    governing = ROOT / PROPOSED / "GOVERNING-DEPENDENCIES.md.patch"
+    governing.write_text(regenerate_governing_patch(), encoding="utf-8")
+    coverage = ROOT / PROPOSED / "CONTRACT-COVERAGE.md.patch"
+    coverage.write_text(regenerate_coverage_patch(), encoding="utf-8")
     (ROOT / MANIFEST).write_text(render_manifest(proposed_bytes()), encoding="utf-8")
-    print(f"wrote {target.relative_to(ROOT)} and {MANIFEST}")
+    print(f"wrote the two derived patches and {MANIFEST}")
     return 0
 
 

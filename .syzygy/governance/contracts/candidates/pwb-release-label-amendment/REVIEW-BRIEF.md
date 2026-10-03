@@ -8,7 +8,7 @@
 One amendment package against the signed PWB specification,
 `openspec/changes/polaris-project-wide-butlers-model/`. It consists of:
 
-- the five patches under `proposed/`;
+- the seven patches under `proposed/` (five authored, two regenerated);
 - the manifest `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt`;
 - `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md` and `OWNER-DECISION-PACKET.md` in
   this directory;
@@ -59,7 +59,8 @@ a scratch copy. Never apply them in the tree.
    four-form rule decides every revision without judgment.
 3. **Contract claims.** Each claim is anchored to a defined clause and quoted
    (rule 8). No contract-coverage row claims something the oracle does not
-   observe, and the claim that no coverage row moves is true.
+   observe, and the coverage rows the delta says move are the only ones that
+   do.
 4. **Signed bytes.** No signed byte outside the patches changes. Every
    requirement but PWB-REQ-001 is byte-identical, and PWB-REQ-001's signed
    text and scenario survive.

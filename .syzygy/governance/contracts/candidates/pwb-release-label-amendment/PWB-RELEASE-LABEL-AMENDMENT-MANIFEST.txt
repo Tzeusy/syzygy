@@ -5,13 +5,13 @@
 # All rows take effect together or none do.
 # Rows hash PROPOSED bytes; signed openspec bytes remain unchanged.
 bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
-487a347b0a7d30ff6e5b2813a5158f7e672b190551a99f4e69fd55f83c6618b2  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
-1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
-d54acd212916fb83047874484c9e47acd1fade453384403ba600a7b2a0244d9c  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
-76319cb408efa7ab28889a071bad750bcad9a26b5d0337399fc24602e5144454  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+7ac71b7067340a6ce95deba2daa8ebd8653bec0329b83834468b189b5f67817f  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+ac2f21e2a9969fe7922485ea1d03dbd92713af609997ced7a4f00034d955c477  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+0fd7ff1dfe0f30b055ab50415728ef3fc51f912634aa6dfb7fb9983b1e5253de  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+999d9db372b325d86bb329e1bd17f8fc69f6b7f50d318df003874d84b48f01ad  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
 f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
 ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
 6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
-7447852b60c965754889a2479f50e90455fdfec13d5bd8e18eaccf03777c40d0  openspec/changes/polaris-project-wide-butlers-model/design.md
-326c4d3ce7a1ec2edc429e20c8d010f2e7a708e5d7b615139f9c729436a2ddbf  openspec/changes/polaris-project-wide-butlers-model/proposal.md
-e0855436f6d1e90ff9f0937141af8bfc48bc489cfb62230856a959b742522cb6  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+02073950a04d98377259934aa90e59b9c2eab84db5a7f278f7568b3a1ad7c643  openspec/changes/polaris-project-wide-butlers-model/design.md
+c4167244a783f647501ea0c3682af5bfa5fdabdd0d7095a75d0a3428d5c6fc92  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+d6b728571a9b7f7ca3c426e2fc7d70ad64afdc3dec5e4e47ff9dc29b0d801f77  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md

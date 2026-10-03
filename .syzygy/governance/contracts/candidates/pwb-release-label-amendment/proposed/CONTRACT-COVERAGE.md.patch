@@ -1,0 +1,18 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+@@ -9,5 +9,5 @@
+
+ Accepted RFC 0001–0009 clauses: **324**.
+-Effective consequence rows: **628** — 136 covered, 247 Unknown uncovered, 245 believed not applicable.
++Effective consequence rows: **629** — 137 covered, 247 Unknown uncovered, 245 believed not applicable.
+
+ Every accepted clause has at least one effective consequence row. A
+@@ -25,6 +25,6 @@
+ ## Repair overlay
+
+-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6`
+-supersedes 77 base rows with 92 effective rows.
++`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `ac2f21e2a9969fe7922485ea1d03dbd92713af609997ced7a4f00034d955c477`
++supersedes 78 base rows with 94 effective rows.
+
+ ## Verification

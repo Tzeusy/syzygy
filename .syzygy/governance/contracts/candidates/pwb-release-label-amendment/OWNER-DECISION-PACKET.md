@@ -18,18 +18,29 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
   the full Git object id beneath it. Every claim still binds to the object id,
   never to a tag.
 - **Four forms, in order:**
-  - **not read:** a short id, and the statement that tags were not read;
+  - **not read:** a short id, and the statement that tags were not read, used
+    whenever the tags, or the history needed to judge them, were not read;
   - **tagged:** "Butlers v1.0.23";
   - **described:** the nearest tag plus a count of later commits;
   - **untagged:** a short id, and the statement that no release tag reaches
     it.
 
   A tag set nobody read is never shown as "untagged".
-- **Moved tags** are disclosed when an earlier evaluation saw the tag on
-  another commit. Nothing ever says a tag is unmoved.
+- **Moved tags** are disclosed when an earlier evaluation, named as compared,
+  saw the tag on another commit. Nothing ever says a tag is unmoved.
 - **Determinism is kept.** The tags are an input of the evaluation. Your
   "some cost in determinism" is paid only here: the same commit can show a
   different label once its tags change.
+
+**What it touches besides PWB-REQ-001.**
+
+- **One contract-coverage row.** RFC4-11's "not applicable" basis, "no commit
+  history is rendered", stops being true, so that row is split into two
+  repair rows (see `SEMANTIC-DELTA.md` §"Coverage matrix").
+- **Not PWB-REQ-007 or PWB-REQ-020.** Your direction named the
+  "PWB-REQ-007/020 tuple". The label is treated as a presentation of the
+  revision, not a project claim, so neither requirement changes. Answer
+  "Revise" if you want it to be a challengeable claim instead.
 
 **What signing does not do.**
 
@@ -59,7 +70,7 @@ but the label needs two reads the observer is not admitted to make today:
 | Option | Meaning |
 |---|---|
 | **Draft a registry amendment admitting both, metadata only** (recommended) | A separate Scope A package amends the observer registry entry. It admits ref names, peeled object ids and parent ids only: no tag message, signature or commit message. You would sign it separately. |
-| Admit tag refs only | The tagged and untagged forms work. The described form becomes "not read" for a revision that sits after a tag. |
+| Admit tag refs only | Only the tagged form works. Every other revision reads "not read", because neither "N later commits" nor "untagged" can be decided without the history. |
 | Admit nothing | The specification is signed, and every label stays "not read" until you decide otherwise. |
 
 ## Question 3 — Trajectory and Orrery
