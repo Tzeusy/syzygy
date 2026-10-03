@@ -49,14 +49,34 @@ it already read the status pages and the governance checker, at C1.
       The row is consulted whenever one exists, not only when the bytes
       differ from the adopted ones, and a written-back file passes only when
       the row keeps the adopted bytes. Before round 17 such a file was
-      never compared with its row.
-    - **What the recorder alone still accepts** [Inferred, from the code
-      at `d9f14202`]: a refused package whose config is then made unloadable
-      or whose directory is removed. It is skipped, so the others compose
-      around it. Isolating a malformed sibling is the round-7 design (N1),
-      so this is not closed here. The tool refuses an unloadable config; a
-      removed directory is outside both. The battery, never the recorder
-      alone, is the claim.
+      never compared with its row. The written-back test is a dedicated
+      message over the drift test, which already refuses those bytes
+      (round 17's N3).
+    - **An honest revert is refused** (round 17's N1, tree P11): performed
+      A→B, then a performed B→A, with today's bytes A. The tool accepts
+      it; the recorder composes no first digest from the cycle, so the row
+      is contested and the file is refused. That fails closed, but no
+      later act can clear it: undoing a restyle this way needs a recorder
+      change and a new history review.
+    - **What the recorder alone still accepts**, examples rather than a
+      complete list [Inferred, from the code at `d9f14202`; round 17's N2
+      added the second and third]:
+      - a refused package whose config is then made unloadable (P5e). It
+        is skipped, so the others compose around it. Isolating a malformed
+        sibling is the round-7 design (N1), so this is not closed here; the
+        tool refuses it;
+      - a refused package whose config is repointed to a never-recorded
+        label, marker and act, so it reads as unperformed (P5d); the tool
+        refuses it when it regenerates the manifest;
+      - a stale unperformed candidate whose recorded predecessor differs
+        from today's bytes (P12), which the tool refuses and the recorder
+        skips, as it skips every unperformed package. This predates
+        round 17.
+
+      Outside both the tool and the recorder: a removed package directory
+      (P5f), an act record and aggregate block both erased (P5c), and a
+      repointed config with a regenerated manifest (P5g). The battery, never
+      the recorder alone, is the claim.
     - Paths are normalized before they are compared, so `./x` and `x` are
       one path.
     - **The chain** (since round 14). A later successor of a file names the
@@ -319,6 +339,21 @@ it already read the status pages and the governance checker, at C1.
     - N3: a refused package contests every path it names, so drift on a
       path no adopted subject depends on can contest an adopted one. That
       matches the tool and fails closed.
+  - Round 17 (`HISTORY-REVIEW-17-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
+    only) binds the current recorder, closing both residuals of round 16's
+    N1 (`syzygy-lmjg`). Under the 2026-09-26 stopping rule its notes are
+    answered here, not in the reviewed bytes:
+    - N1: an honest revert (P11) is now refused; named above as a
+      fail-closed case that only a recorder change can clear.
+    - N2: the list of trees the recorder alone accepts is examples, not
+      exhaustive; P5d and P12 are added and P5c and P5g named as outside
+      both.
+    - N3: rows 124 and 126 kill by message only; the written-back and
+      contested tests are dedicated messages over the drift test, and row
+      123 is the load-bearing predicate.
+    - N4: in `baseline_proof` the successor row rebinds the loop's `row`
+      name. Behaviour is correct; renaming it is left for the recorder's
+      next change, since any edit retires this review.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
