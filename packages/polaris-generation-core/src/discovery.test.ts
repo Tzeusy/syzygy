@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
 const make = (path: string, body: string, sourceId?: string): readonly GenerationSource[] =>
@@ -74,6 +74,49 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     const sources = [...make('vendor/x/a.c', 'v\n'), ...make('tests/t.c', 't\n'), ...make('docs/ARCHITECTURE.md', 'a\n'), ...make('README.md', 'r\n')];
     const { sources: out } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 2 }, { permitted: allow });
     expect(quotableGenerationSources(out).map(q => q.sourceId).sort()).toEqual([sources[2]!.sourceId, sources[3]!.sourceId].sort());
+  });
+
+  it('ranks vendored code below every first-party file, even a vendored README, and still counts it deferred', async () => {
+    const sources = [...make('deps/lib/README.md', 'vendored readme\n'), ...make('src/a.c', 'a\n'), ...make('tests/unit/t.tcl', 't\n'), ...make('third_party/z/docs/ARCHITECTURE.md', 'z\n')];
+    const { sources: out, report } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 2 }, { permitted: allow });
+    expect(quotableGenerationSources(out).map(q => q.sourceId).sort()).toEqual([sources[1]!.sourceId, sources[2]!.sourceId].sort());
+    expect(report.deferred.map(entry => entry.path).sort()).toEqual(['deps/lib/README.md', 'third_party/z/docs/ARCHITECTURE.md']);
+    expect(out.filter(s => s.exclusion.excluded && s.exclusion.reason === DEFERRED_BY_BUDGET).map(s => s.path).sort()).toEqual(['deps/lib/README.md', 'third_party/z/docs/ARCHITECTURE.md']);
+    const roomy = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 4 }, { permitted: allow });
+    expect(roomy.report.deferred).toEqual([]);
+  });
+
+  it('demotes every vendored or generated directory name, as a whole path segment only', async () => {
+    for (const segment of ['vendor', 'third_party', 'deps', 'node_modules', 'dist', 'build', 'DEPS']) {
+      const sources = [...make(`${segment}/lib/README.md`, 'readme\n'), ...make('src/a.c', 'a\n')];
+      const { sources: out } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1 }, { permitted: allow });
+      expect(quotableGenerationSources(out).map(q => q.sourceId), segment).toEqual([sources[1]!.sourceId]);
+    }
+    const sources = [...make('src/builder/README.md', 'readme\n'), ...make('src/depsx/a.c', 'a\n')];
+    expect(sources.map(source => heuristicScore(source.path, [source])).every(score => score > -900)).toBe(true);
+    // The file's own name is not a directory: a script called `build` or `deps` is first-party.
+    for (const name of ['build', 'src/dist', 'deps']) { const [file] = make(name, 'x\n'); expect(heuristicScore(name, [file!]), name).toBeGreaterThan(-900); }
+  });
+
+  it('scores size by doublings of 1 KiB of quotable text, capped, and breaks a path tie by size rather than path order', () => {
+    const score = (path: string, chars: number): number => heuristicScore(path, make(path, 'x'.repeat(chars)));
+    const flat = score('src/a.c', 500);
+    expect(score('src/a.c', 1023)).toBe(flat);
+    expect(score('src/a.c', 2000)).toBe(flat);
+    expect(score('src/a.c', 2048)).toBe(flat + 1);
+    expect(score('src/a.c', 4096)).toBe(flat + 2);
+    expect(score('src/a.c', 64 * 1024)).toBe(flat + 6);
+    expect(score('src/a.c', 99_000)).toBe(flat + 6);
+    expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(100_001)))).toBe(flat + 6 - 1);
+    expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(300_000)))).toBe(flat + 8 - 2);
+    expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(600_000)))).toBe(flat + 8 - 5);
+    expect(score('deps/a/b.c', 500)).toBe(flat - 1002);
+  });
+
+  it('prefers the larger of two same-depth files when the cap fits one, whatever their path order', async () => {
+    const sources = [...make('src/a_small.c', 'x'.repeat(200)), ...make('src/z_big.c', 'x'.repeat(40_000))];
+    const { sources: out } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1 }, { permitted: allow });
+    expect(quotableGenerationSources(out).map(q => q.sourceId)).toEqual([sources[1]!.sourceId]);
   });
 
   it('records subsystems it had no map call for and counts failed calls without hiding them', async () => {
