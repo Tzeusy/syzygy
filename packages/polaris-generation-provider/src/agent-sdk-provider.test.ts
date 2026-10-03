@@ -232,7 +232,7 @@ describe('through the pipeline', () => {
       requestId: 'r1', projectId: 'project-a', snapshotId: 's1', startedAt: Date.now(),
       routes: { inventory: 'agent-sdk', plan: 'agent-sdk', author: 'agent-sdk', edit: 'agent-sdk', fidelity: 'agent-sdk', repair: 'agent-sdk' },
       budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100_000, maxElapsedMs: 120_000, maxRepairCycles: 0, accountingPolicy: 'agent-sdk-tokens-v1' },
-      sources: [source()], readerQuestions: ['Why does this project exist?'], requestedAssets: [],
+      sources: [source()], readerQuestions: [{ id: 'why', topics: [], text: 'Why does this project exist?' }], requestedAssets: [],
     };
     const handle = make(config());
     const outcomes: AttemptOutcome[] = [];
