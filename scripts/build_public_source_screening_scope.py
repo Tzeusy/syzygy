@@ -11,11 +11,15 @@ bytes live only as a unified diff under `proposed/`; the one-row manifest
 hashes the bytes the diff produces, and that row is the argument a superseding
 `approve-policy` act would take.
 
-The diff is GENERATED from the policy bytes on disk, never hand-written. That
-is the reconciliation with PR #120 (self-observation scope, which also adds a
-top-level object and bumps the version): whichever act lands second reruns
-`--write` against the other's performed bytes, and the next minor follows
-automatically. `--check` fails while the package is stale against the policy.
+The diff is GENERATED from the policy bytes on disk, never hand-written. PR #120
+(self-observation scope) also adds a top-level object and bumps the version,
+and the ordering is asymmetric: if PR #120 is performed first, this package
+reruns `--write` against its performed bytes and the next minor follows; if
+this package is performed first, PR #120's builder needs code edits and a changed
+digest-bound consent. This package therefore uses its own label
+(`public-source-candidate.1`). `--check` fails while the package is stale
+against the policy, and also while the target-metadata field list it embeds
+differs from the pipeline's `sourcePopulation` in `pipeline.ts`.
 
   --write            regenerate the patch and the manifest
   --check            verify the package against the policy on disk
@@ -57,7 +61,7 @@ SCOPE_CLASSES = ("code-structure", "code-content", "derived-composites")
 ROW = re.compile(r"^([0-9a-f]{64})  (\S+)$", re.MULTILINE)
 
 #: [Inferred] proposals for the owner; a file with another extension is
-#: indeterminate and refused egress, never guessed.
+#: indeterminate: excluded from reading and from egress, never guessed.
 SOURCE_EXTENSIONS = [".c", ".h", ".cc", ".cpp", ".hpp", ".cs", ".go", ".java", ".js",
                      ".mjs", ".cjs", ".jsx", ".kt", ".lua", ".php", ".py", ".pyi",
                      ".rb", ".rs", ".sh", ".sql", ".swift", ".tcl", ".ts", ".tsx"]
@@ -71,6 +75,27 @@ INSTRUCTION_SYMBOLS = [
     {"path": "packages/polaris-generation-core/src/prompts.ts", "symbol": "promptForStage"},
     {"path": "packages/polaris-generation-core/src/provider-draft.ts", "symbol": "stageSchema"},
 ]
+
+
+PIPELINE = pathlib.Path("packages/polaris-generation-core/src/pipeline.ts")
+#: The emitted exclusion classes of the base policy (`redactionClasses.emitted`).
+EXCLUSION_REASONS = ["excluded-artifact", "unclassifiable-excluded"]
+
+
+def source_population_fields(root: pathlib.Path = ROOT) -> list[str]:
+    """Field names of the `sourcePopulation` entry the pipeline sends, read from
+    pipeline.ts. Fails closed: a shape this cannot read is an error, never an
+    empty list (the egress record's generated table classes the field
+    `sourcePopulation` as target-metadata; this names its members)."""
+    text = (root / PIPELINE).read_text()
+    m = re.search(r"const sourcePopulation = frozen\.sources\.map\(source => \(\{(.*?)\}\)\);", text, re.S)
+    if not m:
+        raise ValueError("cannot read the sourcePopulation entry shape in pipeline.ts")
+    body = re.sub(r"\.\.\.\(source\.exclusion\.excluded \? \{ reason: [^}]*\} : \{\}\)", "reason: <excluded only>", m.group(1))
+    names = re.findall(r"(?:^|,)\s*(\w+)\s*:", body)
+    if not names or "sourceId" not in names:
+        raise ValueError("sourcePopulation entry has no readable fields")
+    return names
 
 
 def public_scope() -> dict:
@@ -110,12 +135,19 @@ def public_scope() -> dict:
             "rule": "the generator's instruction text is the text produced by exactly these two symbols at the prompt and schema versions a request names; it is not target content and is not read from a target. No other file or symbol of project:syzygy's repository is classified by this rule. Every detector in this policy applies to it before the first request of a run",
         },
         "classificationBasis": "a class is decided at the runtime check from the origin of the content, tracked from where it entered the choke point (RFC5-14); a field name never assigns it. The field-level table in a public-target egress record is a gate on which fields may be carried and cannot confer a class, so content under a classed field name keeps the class of its origin (REQ-polaris-generation-025: composition preserves embedded classifications and origins)",
-        "exclusionMetadata": "the metadata of an excluded source that may leave the host is its content digest, its policy id and version and one exclusion reason drawn from this policy's closed redaction and exclusion classes; a free-text reason never leaves, and a path of an excluded source is carried only as code-structure tree metadata, which the pipeline does not send today",
+        "targetMetadataRule": {
+            "class": "code-structure",
+            "fields": source_population_fields(),
+            "fieldsDerivedFrom": "the sourcePopulation entry in packages/polaris-generation-core/src/pipeline.ts, read by this builder; the confirmed admission egress record's generated table classes the field sourcePopulation as target-metadata",
+            "rule": "the metadata the generator carries for each admitted-snapshot source, admitted or excluded alike, is exactly the fields listed and nothing else; reason is carried only for an excluded source and only as one of exclusionReasons. No body, no content digest and no policy detail is carried under this rule. A path of an excluded source is not in the list and is not carried",
+            "exclusionReasons": EXCLUSION_REASONS,
+            "reasonNote": "[Observed] the generator also emits the reason oversize-source-excluded (generation-source.ts); no class of this policy lists it, so a source excluded for size would carry a reason this rule refuses until the owner adds it (packet question)",
+        },
         "runProfileRule": {
             "class": "code-content",
             "classOwner": "project:syzygy",
             "closedList": RUN_PROFILE_SYMBOLS,
-            "rule": "the run's reader questions and requested assets are classified only when they are the values of exactly these code-declared symbols at the profile id a request names (dossier-v1 at drafting). A value from any other origin, including a run-directory file or an operator-supplied string, is unclassified under this scope and is not carried until a later policy version defines its origin and a validation. [Observed on the branch of PR #259] these symbols are readonly constants in dossier-profile.ts; [Observed on the base] the pipeline types readerQuestions as unknown, validates only requestedAssets and forwards readerQuestions unchanged, and no code reads a run-profile file. The typed reader-question validation the owner asked for is not yet in code and is not assumed here",
+            "rule": "the run's reader questions and requested assets are classified only when they are the values of exactly these code-declared symbols, selected by a profile id a request carries (which id and which carrier is an open owner question: the base has no request field for one). A value from any other origin, including a run-directory file or an operator-supplied string, is unclassified under this scope and is not carried until a later policy version defines its origin and a validation. [Observed on the branch of PR #259] these symbols are readonly constants in dossier-profile.ts; [Observed on the base] the pipeline types readerQuestions as unknown, validates only requestedAssets and forwards readerQuestions unchanged, and no code reads a run-profile file. The typed reader-question validation the owner asked for is not yet in code and is not assumed here",
         },
         "detectors": "every detector in this policy applies unchanged to every body under this scope, including inert code contexts; public visibility exempts nothing, and a match excludes the whole artifact with hash-not-body provenance (matchAction, RFC5-17)",
         "activeContent": {
@@ -137,7 +169,7 @@ def public_scope() -> dict:
             "externalEgress": "classified-content-under-an-effective-egress-consent",
             "rule": "storage is permitted only inside a run directory under project:syzygy's state directory, outside git; rendering only in a generated editorial draft; external egress only for content this scope classifies and only under a separate egress consent for the pair",
         },
-        "inheritedRules": "every other rule in this policy applies to this scope unchanged: detectors, matchAction, unclassifiableExclusion, redactionClasses, activeContentClassification and the strict-UTF-8 and NUL rules. 'Every other rule' means the policy's rules outside any named scope object; the rules inside the base scope object, and inside any sibling scope object another act adds, do not govern this scope. The base classificationOrder and classificationSuccess name the signed PWB grammar; under this scope they read: membership in the admitted snapshot replaces membership in a PWB phase, and the content-classification rules above replace the PWB closed extraction class, so a blob with no class under those rules has an unknown extraction class and is excluded whole (step 6), while a code-content body needs no extractor and is admitted as whole-blob spans. No approved requirement names this reading, so it is this policy's own and binds only through the act that approves it",
+        "inheritedRules": "every other rule in this policy applies to this scope unchanged: detectors, matchAction, unclassifiableExclusion, redactionClasses, activeContentClassification and the strict-UTF-8 and NUL rules. 'Every other rule' means the policy's rules outside any named scope object; the rules inside the base scope object, and inside any sibling scope object another act adds, do not govern this scope, and the other way round: the routes, boundaries, rawBodyHandling and rules written inside this object govern only the repositories in observedRepositories and never the base scope or a sibling scope. The base classificationOrder and classificationSuccess name the signed PWB grammar; under this scope they read: membership in the admitted snapshot replaces membership in a PWB phase, and the content-classification rules above replace the PWB closed extraction class, so a blob with no class under those rules has an unknown extraction class and is excluded whole (step 6), while a code-content body needs no extractor and is admitted as whole-blob spans. No approved requirement names this reading, so it is this policy's own and binds only through the act that approves it",
         "selfReferenceRule": "a target repository's policy, configuration or documentation text is never an input to this policy's evaluation (RFC3-30); authority for a pair is evaluated only for that pair and is never inherited from another pair, including through expectations keyed only by the observing project",
     }
 
@@ -232,6 +264,15 @@ def semantic_findings(base_text: str, proposed_text: str) -> list[str]:
         bad.append("run-profile list is not exactly the two declared symbols")
     if "never assigns it" not in scope.get("classificationBasis", ""):
         bad.append("classificationBasis does not say a field name never assigns a class")
+    tm = scope.get("targetMetadataRule", {})
+    if tm.get("fields") != source_population_fields():
+        bad.append("targetMetadataRule fields differ from the pipeline's sourcePopulation")
+    if tm.get("exclusionReasons") != EXCLUSION_REASONS or tm.get("class") != "code-structure":
+        bad.append("targetMetadataRule reasons or class differ from the declared ones")
+    if "exclusionMetadata" in scope:
+        bad.append("exclusionMetadata (digest and policy fields the pipeline does not send) is back")
+    if "the other way round" not in scope["inheritedRules"]:
+        bad.append("sibling separation holds in one direction only")
     raw = scope["rawBodyHandling"]
     if raw["logging"] != "never" or raw["machineResponse"] != "never":
         bad.append("logging and machine response must stay never")
@@ -347,6 +388,10 @@ def selftest() -> int:
         sem("a third instruction symbol is caught", lambda x: x[SCOPE_KEY]["instructionTextRule"]["closedList"].append({"path": "x.ts", "symbol": "y"}), "instruction-text list")
         sem("a third run-profile symbol is caught", lambda x: x[SCOPE_KEY]["runProfileRule"]["closedList"].append({"path": "x.ts", "symbol": "y"}), "run-profile list")
         sem("classification by field name is caught", lambda x: x[SCOPE_KEY].update(classificationBasis="by field name"), "classificationBasis")
+        sem("target metadata fields changed is caught", lambda x: x[SCOPE_KEY]["targetMetadataRule"].update(fields=["sourceId"]), "targetMetadataRule")
+        sem("content digest added to target metadata is caught", lambda x: x[SCOPE_KEY]["targetMetadataRule"]["fields"].append("contentDigest"), "targetMetadataRule")
+        sem("old exclusionMetadata returns is caught", lambda x: x[SCOPE_KEY].update(exclusionMetadata="digest"), "exclusionMetadata")
+        sem("one-way sibling separation is caught", lambda x: x[SCOPE_KEY].update(inheritedRules=x[SCOPE_KEY]["inheritedRules"].replace("the other way round", "")), "one direction")
         sem("logging opened is caught", lambda x: x[SCOPE_KEY]["rawBodyHandling"].update(logging="run-directory-only"), "logging")
         sem("workingTree opened is caught", lambda x: x[SCOPE_KEY]["accessBoundary"].update(workingTree=True), "accessBoundary")
         sem("a third egress route is caught", lambda x: x[SCOPE_KEY]["accessBoundary"]["networkEgressRoutes"].append("z"), "exactly two")
@@ -358,6 +403,19 @@ def selftest() -> int:
         sem("indeterminate reading dropped is caught", lambda x: x[SCOPE_KEY]["contentClassification"].update(indeterminate="refused egress"), "indeterminate")
         sem("sibling scope separation dropped is caught", lambda x: x[SCOPE_KEY].update(inheritedRules="every other rule"), "sibling")
         sem("governance-text path rule added is caught", lambda x: x[SCOPE_KEY]["contentClassification"].update(governanceTextPaths=["docs/**"]), "non-empty")
+    # the field list is read from pipeline.ts: a changed shape moves it, an unreadable one is refused
+    with tempfile.TemporaryDirectory() as d:
+        root = pathlib.Path(d)
+        (root / PIPELINE).parent.mkdir(parents=True)
+        real = (ROOT / PIPELINE).read_text()
+        (root / PIPELINE).write_text(real.replace("sourceId: source.sourceId,", "sourceId: source.sourceId, path: source.path,", 1))
+        results.append(("a field added to sourcePopulation moves the list", "path" in source_population_fields(root)))
+        (root / PIPELINE).write_text(real.replace("const sourcePopulation = frozen.sources.map", "const sourcePopulation = frozen.sources.filter", 1))
+        try:
+            source_population_fields(root)
+            results.append(("an unreadable sourcePopulation shape is refused", False))
+        except ValueError:
+            results.append(("an unreadable sourcePopulation shape is refused", True))
     failed = [n for n, ok in results if not ok]
     for n, ok in results:
         print(("ok   " if ok else "FAIL ") + n)

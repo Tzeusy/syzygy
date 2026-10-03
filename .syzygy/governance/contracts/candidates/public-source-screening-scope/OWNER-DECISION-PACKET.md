@@ -25,13 +25,17 @@ re-pin [Inferred: the same form fits]. A recorder is written after the review.
 
 **Q2. Read-gate continuation.** An act over these bytes makes the Butlers
 read gate refuse the policy on its digest first and its version second. The
-change that records the act would re-point every pin the impact ledger lists
-(`governance-inputs.ts` and its act-record path and scope anchors,
-`git-object-reader.ts`, the value `content-classification.ts` takes from it, and
-the tests that assert them), in the same commit, with the tests. *Recommended:*
-widen the owner's continuation from the gate alone to all of those, as the
-2026-10-02 re-pin did for its set. Not bumping the version would not avoid the
-refusal.
+change that records the act would re-point exactly the list the simulation
+script produces (impact ledger, "What the act breaks"), in the same commit,
+with the tests: the gate's expected version, scope anchors, act identity,
+recording tag and the act-record and superseded-record pointers in
+`governance-inputs.ts`; the version copy in `git-object-reader.ts` and the value
+`content-classification.ts` takes from it; the tests that assert them; the
+`PROJECT-STATUS.md` battery lines and the two CI steps that carry the policy
+digest; and the act-subject chain and digest-copy rows in `check_governance.py`.
+*Recommended:* widen the owner's continuation from the gate alone to all of
+those, as the 2026-10-02 re-pin did for its set. Not bumping the version would
+not avoid the refusal.
 
 **Q3. Source extensions.** The `code-content` list is a proposal [Inferred],
 matched case-sensitively on the final path segment. *Recommended:* accept it; a
@@ -55,10 +59,31 @@ rather than have a class guessed. The alternative is a later closed rule for
 specification paths, offered with its own review.
 
 **Q6. Active content stays as the base has it.** No loosening is proposed
-[Inferred]: a source file with markup-like bytes outside a valid inert code
-context is withheld, so some target files will be. *Recommended:* accept, run
-the first target, and decide any loosening from the measured count as a later
-version.
+[Inferred]: a body with markup-like bytes outside a valid inert code context is
+withheld, so some target files will be. Two cases are worth naming: `.jsx` and
+`.tsx` files contain element forms by construction and will nearly always be
+withheld, though the list proposes a class for them; and an unmatched backtick
+run (an unclosed inline span) excludes the whole artifact, so shell scripts with
+command substitution, Go raw strings and JavaScript template literals of odd
+backtick count are excluded independent of markup. *Recommended:* accept, run the
+first target, and decide any loosening or any trimming of the list from the
+measured counts as a later version.
+
+**Q7. Which exclusion reasons may leave.** The rule carries a source's reason
+only as one of the policy's two emitted classes (`excluded-artifact`,
+`unclassifiable-excluded`). The generator also emits `oversize-source-excluded`
+for a source that is too large, which no class lists, so that reason would be
+refused. *Recommended:* add it to the closed list in this scope rather than
+widen to free text.
+
+**Q8. The run-profile carrier.** The rule classifies reader questions and
+requested assets only as the values of the code-declared symbols in the
+dossier profile, selected by a profile id a request carries. The base has no
+request field for one, and the engine branch selects a profile by configuration
+(`profile: "dossier"`), not by an id. Until you decide the id and its carrier,
+nothing is classified under the rule and a request that carries reader
+questions is refused. *Recommended:* decide the carrier when the dossier
+engine lands, not here.
 
 ## What it does not do
 

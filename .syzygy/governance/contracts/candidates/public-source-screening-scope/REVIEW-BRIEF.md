@@ -1,7 +1,7 @@
-# Review brief — public-source screening scope (round 2)
+# Review brief — public-source screening scope (round 3)
 
-> **Candidate — binds nothing.** Not a review; carries no verdict. Round 1
-> returned REVISE; this is the round-2 brief.
+> **Candidate — binds nothing.** Not a review; carries no verdict. Rounds 1
+> and 2 returned REVISE; this is the round-3 brief.
 
 ## What the reviewer is given
 
@@ -47,7 +47,8 @@ rule it relies on; and the owner answers of 2026-10-03 (Q2, Q3, Q6, Q7).
    that a bumped version without a re-point fails closed for Butlers.
 7. **Are the sweeps honest?** Re-run Sweep 1 and 2 with the stated predicates.
 8. **Authority.** No file may label anything accepted or approved; no 64-hex
-   digest may appear in any Markdown file of the package.
+   digest may appear in any Markdown file of the package outside `reviews/`
+   (retained raws carry the manifest digest in their head, by contract).
 
 9. **Does each round-1 repair hold, and did one introduce a defect?** The raw
    is `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-1-RAW.md` (REVISE: findings 1,
@@ -57,6 +58,19 @@ rule it relies on; and the owner answers of 2026-10-03 (Q2, Q3, Q6, Q7).
    asymmetric ordering; one reading of indeterminate; active content
    unchanged; the Q2/Q7 narrowing disclosed.
 
+10. **Does each round-2 repair hold, and did one introduce a defect?** The raw
+    is `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-2-RAW.md` (REVISE: findings 1
+    and 2 revise; 3 to 8 notes). Specifically: run
+    `python3 scripts/simulate_public_source_screening_scope_act.py --tests`
+    yourself and compare its failing checks and literal hits with the ledger
+    tables (F1); check that `targetMetadataRule` admits exactly what the
+    confirmed admission egress record's generated table sends for sources and
+    nothing the pipeline does not send (F2); the stale docstring and comment,
+    the version-literal sentence and the one-way sibling clause (F3 to F5);
+    the run-profile carrier as an open question (F6); Q6 naming `.jsx`/`.tsx`
+    and the unclosed-backtick exclusion (F7); this criterion's scoping (F8).
+    Population: findings 1 to 8; revise 1 and 2; notes 3 to 8.
+
 ## Out of scope
 
 Whether to perform the act; the extension list's membership beyond its
@@ -65,7 +79,7 @@ labelling; PR #120's contents.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-2-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-3-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate the recorder enforces:** the first
 four non-blank lines are the title and exactly
 
