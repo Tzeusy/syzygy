@@ -107,7 +107,10 @@ DOC_TOKEN_GROUPS = {
     "adr": ["adr", "adrs"], "decision": ["decision", "decisions"], "rfc": ["rfc", "rfcs"],
     "spec": ["spec", "specs", "specification", "specifications"], "design": ["design", "designs"],
     "governance": ["governance"], "policy": ["policy", "policies"], "security": ["security"],
-    "conduct": ["conduct"]}
+    "conduct": ["conduct"], "doctrine": ["doctrine", "doctrines"],
+    "principles": ["principle", "principles"]}
+#: The docs-tree words each opt-in lifts when the variant adds it (denied otherwise).
+OPT_IN_DOC_WORDS = {"architecture": ["architecture", "architectures"], "manifesto": ["manifesto", "manifestos"]}
 DOC_EXCLUDED_TOKENS = [t for g in DOC_TOKEN_GROUPS.values() for t in g]
 DOC_TOKEN_SEPARATORS = "-_. "
 #: Root names withheld on purpose (policy or governance text by ordinary content).
@@ -207,6 +210,8 @@ FIXTURES = [
     ("docs/x_spec.md", False), ("docs/x.spec.md", False), ("docs/x spec.md", False), ("docs/Code of Conduct.md", False),
     ("docs/a/b/DESIGN-notes.rst", False), ("docs/the-design-of-x.md", False), ("docs/conduct/x.md", False),
     ("docs/specimen.md", True), ("docs/aspect/x.md", True), ("docs/designer.md", True), ("docs/adrift.md", True),
+    ("docs/doctrine/x.md", False), ("docs/principles.md", False), ("docs/principle.md", False),
+    ("docs/SecurityPolicy.md", True), ("docs/ADR0001.md", True), ("docs/spec(v2).md", True), ("docs/CodeOfConduct.md", True),
     ("docs/guide-to-specs.md", False), ("docs/policyholder.md", True),
     # build and tooling .txt files under docs
     ("docs/CMakeLists.txt", False), ("docs/requirements.txt", False), ("docs/requirements-dev.txt", False),
@@ -229,7 +234,7 @@ FIXTURES = [
 #: Opt-in root names: mapped only in the variants that enable them.
 OPT_IN_FIXTURES = [("ARCHITECTURE.md", "architecture"), ("Architecture", "architecture"),
                    ("docs/ARCHITECTURE.md", "architecture"), ("docs/architecture/overview.md", "architecture"),
-                   ("docs/MANIFESTO.md", "manifesto"), ("doc/manifesto/why.txt", "manifesto"),
+                   ("docs/MANIFESTO.md", "manifesto"), ("docs/manifestos/x.md", "manifesto"), ("docs/architectures.md", "architecture"), ("doc/manifesto/why.txt", "manifesto"),
                    ("MANIFESTO", "manifesto"), ("MANIFESTO.rst", "manifesto"), ("00-MANIFESTO.txt", "manifesto")]
 
 
@@ -269,7 +274,7 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
         "documentSuffixes": DOCUMENT_SUFFIXES,
         "docTreeRoots": DOC_TREE_ROOTS,
         "docTreeExtensions": DOC_TREE_EXTENSIONS,
-        "docExcludedTokens": DOC_EXCLUDED_TOKENS + [n for n in OPT_IN_STEMS.values() if n not in VARIANTS[variant]],
+        "docExcludedTokens": DOC_EXCLUDED_TOKENS + [w for k, ws in OPT_IN_DOC_WORDS.items() if k not in VARIANTS[variant] for w in ws],
         "docTokenSeparators": DOC_TOKEN_SEPARATORS,
         "docTxtExcludedNames": DOC_TXT_EXCLUDED_NAMES,
         "docTxtExcludedPrefixes": DOC_TXT_EXCLUDED_PREFIXES,
@@ -528,9 +533,13 @@ def packet_block() -> str:
     up = lambda xs: ", ".join(x.upper() for x in xs)
     words = lambda xs: ", ".join(xs)
     base_tokens = DOC_EXCLUDED_TOKENS
-    opt = list(OPT_IN_STEMS.values())
+    opt = [w for ws in OPT_IN_DOC_WORDS.values() for w in ws]
     sep = " ".join(repr(c) for c in r["docTokenSeparators"])
     return "\n".join([
+        "**In one sentence:** the rule withholds policy and governance text by name only, using the "
+        "listed words; such text under any other name is sendable, including names written without a "
+        "separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.",
+        "",
         "**Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):",
         "",
         f"- Root-level files named {up(ROOT_STEMS)} (any letter case; an optional prefix of two ASCII digits and a "
