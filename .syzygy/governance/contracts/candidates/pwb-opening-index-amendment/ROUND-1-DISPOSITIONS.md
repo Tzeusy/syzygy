@@ -22,8 +22,10 @@
 - **Figures** [Observed]. Re-derived after the repair by
   `scripts/build_pwb_opening_index_amendment.py --check`: 11 proposed
   subjects, 2 patched; 17 requirements and 53 scenarios; `--selftest` 23
-  structure mutants, each failing on its own predicate. All 24 orders of
-  the four pending PWB spec patches apply to one identical result.
+  structure mutants, each failing on its own predicate. All 120 orders of
+  the five pending PWB spec patches apply to one identical result
+  (corrected 2026-10-03 after PR review: this line first said 24 orders of
+  four, omitting P-96, the N9 anchor-resolution amendment).
 
 Reviewed record: docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-1-RAW.md
 
@@ -75,8 +77,10 @@ change. No package text changed for this finding.
 ### 6 — pair-checking and "do not overlap" overstate what was checked (note)
 
 **Repaired.** The ledger now says the builder checks this package against
-each of the other three, and that all 24 orders were applied to one
-identical result. The packet no longer says the changes do not overlap; it
+each of the other four, and that all 120 orders of the five pending spec
+patches were applied to one identical result (corrected 2026-10-03 after PR
+review: first written as "other three" and "24 orders", omitting P-96).
+The packet no longer says the changes do not overlap; it
 names the design decision and capability row P-85 and P-86 share.
 
 ### 7 — replaced lines may lose signed text, and table targets are unpinned (note)

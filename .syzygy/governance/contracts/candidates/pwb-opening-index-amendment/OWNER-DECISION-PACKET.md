@@ -128,11 +128,21 @@ home page.
 
 ## Order against the other pending packages
 
-The accessible-name (P-99), class-granular (P-86) and release-label (P-85)
-packages are pending over the same signed specification. Their spec changes
-compose in any order (P-85 and P-86 also share a design decision and a
-capability row number), but each manifest is built over the
-current tree, so whichever is signed second is regenerated and reviewed
-again first.
+The accessible-name (P-99), anchor-resolution (P-96, PWB-REQ-014),
+class-granular (P-86) and release-label (P-85) packages are pending over
+the same signed specification. Their spec changes compose in any order —
+all 120 orders of the five spec patches apply to one identical result,
+re-derived 2026-10-03 (an earlier count of 24 orders over four patches
+omitted P-96) — and P-85 and P-86 also share a design decision and a
+capability row number. Each manifest is built over the current tree, so
+whichever is signed second is regenerated and reviewed again first.
+
+**Interaction with the P-95 re-pin.** Signing this package moves PWB
+`spec.md` again. The behaviour-contract pins that P-95's re-pin acts would
+write (registry entry and secret-classification policy, re-pinned to the
+tree-framing sign-off) would then be stale once more, and R6 would report
+them Unknown until a further re-pin. If P-95 is performed first, signing
+this package re-stales it; if this package is signed first, P-95's acts
+must be regenerated against the new `spec.md` before they are performed.
 
 **If unanswered,** nothing is signed and the package stays a candidate.

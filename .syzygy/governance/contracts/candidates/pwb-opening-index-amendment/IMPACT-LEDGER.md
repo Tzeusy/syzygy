@@ -53,15 +53,20 @@ requirement only in run form (`PWB-REQ-001/002/…/010/…`, line 226).
 
 - **Accessible-name amendment** (P-99, `pwb-accessible-name-amendment/`),
   drafted in the same change. It changes PWB-REQ-016 only.
+- **Anchor-resolution amendment** (P-96,
+  `pwb-anchor-resolution-amendment/`, pursuit move N9), pending. It changes
+  PWB-REQ-014 only.
 - **Class-granular extraction amendment** (P-86) and **release-label
   amendment** (P-85), pending. They change the reader definitions,
   PWB-REQ-001 and PWB-REQ-002.
 
-All four spec patches touch different requirements and compose in any
-order: this package's builder checks it against each of the other three,
-and all 24 orders of the four were applied on 2026-10-03 to one identical
-result. P-85 and P-86 do overlap outside the spec (both add design decision
-12 and capability row 34). All four rewrite the one
+All five spec patches touch different requirements and compose in any
+order: this package's builder checks it against each of the other four,
+and all 120 orders of the five were applied on 2026-10-03 to one identical
+result. (An earlier version of this ledger said "the other three" and "24
+orders of the four"; that population omitted P-96 and is superseded.)
+P-85 and P-86 do overlap outside the spec (both add design decision
+12 and capability row 34). All five rewrite the one
 digest line of the generated dependency file and hash post-apply bytes
 against the current tree, so whichever is signed second is regenerated with
 `--write`, and its manifest reviewed again, before it is offered.
@@ -72,4 +77,7 @@ against the current tree, so whichever is signed second is regenerated with
 registry entry and the secret-classification policy pin a PWB spec digest
 that is no longer current (PROJECT-STATUS.md, the reconciliation row's
 2026-10-03 note). This package edits neither. Signing it moves the spec
-digest again.
+digest again, so it interacts with the P-95 re-pin: pins re-written to the
+tree-framing sign-off go stale once more when this package is signed, and
+P-95's acts, if not yet performed, are regenerated against the new
+`spec.md` first.

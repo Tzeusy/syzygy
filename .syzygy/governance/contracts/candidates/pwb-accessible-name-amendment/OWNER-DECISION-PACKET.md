@@ -91,10 +91,13 @@ package and is put to you there (its question 6).
 
 ## Question 5 — order against the other pending packages
 
-The opening-index (P-98), class-granular (P-86) and release-label (P-85)
-packages are pending over the same signed specification. Their spec changes
-compose in any order (P-85 and P-86 also share a design decision and a
-capability row number), but each manifest is built over the current tree.
+The opening-index (P-98), anchor-resolution (P-96, PWB-REQ-014),
+class-granular (P-86) and release-label (P-85) packages are pending over
+the same signed specification. Their spec changes compose in any order —
+all 120 orders of the five spec patches apply to one identical result,
+re-derived 2026-10-03 (an earlier count of 24 orders over four patches
+omitted P-96) — and P-85 and P-86 also share a design decision and a
+capability row number. Each manifest is built over the current tree.
 
 | Option | Meaning |
 |---|---|

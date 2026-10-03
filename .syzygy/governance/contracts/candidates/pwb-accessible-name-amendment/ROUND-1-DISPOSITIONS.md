@@ -66,8 +66,11 @@ commit on this branch. No package text changed for this finding.
 ### 5 — pair-checking and "do not overlap" overstate what was checked (note)
 
 **Repaired.** As finding 6 of the opening-index round: the ledger and
-packet now state what was checked (each other pending package, plus all 24
-orders applied on 2026-10-03), and name the P-85/P-86 overlap.
+packet now state what was checked (each other pending package, plus all 120
+orders of the five pending spec patches applied on 2026-10-03), and name the
+P-85/P-86 overlap. (Corrected 2026-10-03 after PR review: first written as 24
+orders, a population that omitted P-96, the N9 anchor-resolution
+amendment.)
 
 ### 6 — a replaced line may lose signed text (note)
 

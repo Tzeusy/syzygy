@@ -172,15 +172,20 @@ touch are named there for planning only; signing authorizes no build.
   `python3 scripts/build_pwb_opening_index_amendment.py --apply --at-adoption`
   through `scripts/record_versioned_signoff.py`, which needs a registry entry
   for this package added in that change.
-- The accessible-name amendment (P-99), the class-granular extraction
-  amendment (P-86) and the release-label amendment (P-85) are pending over
+- The accessible-name amendment (P-99), the anchor-resolution amendment
+  (P-96), the class-granular extraction amendment (P-86) and the
+  release-label amendment (P-85) are pending over
   the same signed subject. The spec patches touch different requirements and
   compose in any order: each builder checks its package against each other
-  pending package, and all 24 orders of the four spec patches were applied
+  pending package, and all 120 orders of the five spec patches were applied
   on 2026-10-03 to one identical result. But every package's
   manifest hashes post-apply bytes against the current tree, so whichever is
   signed second is regenerated with `--write` first and its new manifest is
   reviewed again.
+- Signing moves PWB `spec.md`, so it interacts with the P-95
+  behaviour-contract re-pin: pins re-written to the tree-framing sign-off
+  go stale again, and P-95's acts, if not yet performed, are regenerated
+  against the new `spec.md` first.
 - `scripts/check_spec_reconciliation.py` carries a literal PWB census (17
   requirements and the scenario count); the sign-off change updates it, as
   for every PWB amendment.
