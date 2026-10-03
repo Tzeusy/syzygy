@@ -19,3 +19,12 @@ export function isolatedGit(repoRoot: string, args: readonly string[], input?: s
   return execFileSync('git', [...ISOLATED_GIT_FLAGS, '-C', repoRoot, ...args], { maxBuffer: 512_000_000, env: isolatedGitEnv(),
     ...(input === undefined ? {} : { input }), stdio: ['pipe', 'pipe', 'ignore'] });
 }
+
+/** For git calls that reach a remote or create a repository: nothing is inherited from the
+ * caller's environment except PATH, so `GIT_DIR`, `GIT_EXEC_PATH`, `GIT_SSH_COMMAND`,
+ * `GIT_CONFIG_*`, askpass and proxy variables cannot steer the call. `home` is a scratch
+ * directory, never the caller's. */
+export const minimalGitEnv = (home: string, allowProtocol: string): NodeJS.ProcessEnv => ({
+  PATH: process.env.PATH ?? '/usr/bin:/bin', HOME: home, LANG: 'C', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null',
+  GIT_TERMINAL_PROMPT: '0', GIT_ALLOW_PROTOCOL: allowProtocol,
+});
