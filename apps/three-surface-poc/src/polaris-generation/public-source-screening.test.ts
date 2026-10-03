@@ -187,8 +187,13 @@ describe('the policy act gate fails closed', () => {
   it('refuses a policy whose detectors or denied paths cannot be read', async () => {
     const noDetectors = policyBytes({ publicSourceScope: {}, detectors: [] });
     expect(await refusal(port(actRecord(sha(noDetectors)), noDetectors))).toMatch(/^public-source-policy: detectors: /u);
-    const noDenied = policyBytes({ publicSourceScope: {}, sourceAdmission: { deniedPathBasenames: ['.env'] } });
-    expect(await refusal(port(actRecord(sha(noDenied)), noDenied))).toBe('public-source-policy: policy denied-path rules unreadable');
+    // Each of the three lists, missing alone, refuses.
+    for (const missing of ['deniedPathBasenames', 'deniedPathPrefixes', 'deniedPathSuffixes']) {
+      const lists: Record<string, readonly string[]> = { deniedPathBasenames: ['.env'], deniedPathPrefixes: ['.env.'], deniedPathSuffixes: ['.pem'] };
+      delete lists[missing];
+      const noDenied = policyBytes({ publicSourceScope: {}, sourceAdmission: lists });
+      expect(await refusal(port(actRecord(sha(noDenied)), noDenied))).toBe('public-source-policy: policy denied-path rules unreadable');
+    }
   });
   it('refuses a short run key', async () => {
     await expect(loadPublicSourceScreen(goodPort, new Uint8Array(16))).rejects.toThrow('run key shorter than 32 bytes');
