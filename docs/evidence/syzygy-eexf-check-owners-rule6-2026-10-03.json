@@ -1,7 +1,7 @@
 {
   "subject": "scripts/check_governance.py",
-  "subjectSha256": "df5841ea803c8f0a289e2dec4a1555cbc3c895c044580935308ddc33594b4c48",
-  "commit": "ae48229bbda9b74e444a3365a03b67bf3b13b608",
+  "subjectSha256": "ae8f749a374420dd081525978c09564af363d40612209771a222dc83c817d446",
+  "commit": "e5a0e3f154233dd33582d8db5dbfae396787af5a",
   "bead": "syzygy-eexf",
   "rule": "AGENTS.md verification rule 6",
   "baselineSelftestExit": 0,
