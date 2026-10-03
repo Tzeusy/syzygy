@@ -4,6 +4,13 @@
 > decision, and no act is performed by reading it. It is offered only after a
 > confirming review.
 
+> **Unreviewed repair.** Repaired after the final (4th) review round. This
+> delta, 70 insertions and 28 deletions in 8 files (commit 33b15a65 over the reviewed
+> commit 72ddd762: this packet, the semantic delta, the manifest, four patches
+> and the builder; it excludes the retained round-4 raw, the round-4
+> dispositions and this statement), is unreviewed. The owner may sign the
+> reviewed state at 72ddd762 plus this delta, or ask for one more review.
+
 ## What this is, in plain words
 
 The version-1 scope lets the generator read a public repository's source code
