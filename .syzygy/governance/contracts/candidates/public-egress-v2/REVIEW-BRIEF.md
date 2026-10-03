@@ -1,10 +1,11 @@
 # Review brief — second Anthropic egress version (sitting row 8)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
-> is given and what they decide. It carries no verdict. Dispatch it only after
-> PR #281 is on main and `python3 scripts/build_public_egress_v2.py --ready`
-> exits 0); a review over a not-ready record is wasted by the next edit
-> (rule 10).
+> is given and what they decide. It carries no verdict. Dispatch it only when
+> `python3 scripts/build_public_egress_v2.py --check` and `--ready` both pass on
+> a tree that carries current main; a review over bytes that the next edit
+> changes is void (rule 10). Round 1 returned REVISE
+> (`reviews/R-EGRESS-V2-1-RAW.md`, `ROUND-1-DISPOSITIONS.md`).
 
 ## What the reviewer is given, and nothing else
 
@@ -23,7 +24,7 @@ force; `public-source-screening-scope`'s instruction-text rule.
 
 **The head of your raw review** must be four lines, in this order, with the
 manifest FILE digest (the output of `--manifest-digest`, not the digest of the
-row inside it): the title, `Verdict:`, `Reviewed commit:`, `Manifest SHA-256:`.
+row inside it): the title, `Reviewed commit:`, `Manifest SHA-256:`, `Verdict:`.
 A blank line after the title breaks the head.
 
 ## Acceptance criteria
@@ -35,7 +36,9 @@ Each is yes or no with the evidence that settles it.
    route-neutral wording (provider line, retention, the "beyond these fields"
    paragraph, the model-sees-only condition, route context and telemetry) the
    only differences, other than the instance header, the title and the
-   revocation line? Quote each differing line. Does the template differ from
+   revocation line? Quote each differing line. The added class
+   `project-documentation` is a declared, intended widening of what may leave;
+   say whether it is declared as such and not hidden. Does the template differ from
    the first version's template only in the lines that make this so?
 2. **Is the supersession sentence right?** Quote RFC5-13. Does "prospective"
    hold, and is signing this version alone coherent with REQ-polaris-generation-025
@@ -52,9 +55,10 @@ Each is yes or no with the evidence that settles it.
 6. **Readiness gate.** Mutate `requiredStages` (empty; a stage the table lacks;
    a substring of a stage); do `--digests` and `--manifest-digest` refuse each?
    Run `--selftest` and read its output.
-7. **Nothing else moved.** Are retention, route context and the admitted
-   repositories byte-identical to the first version's? Is any claim here a
-   promise the record cannot keep?
+7. **Nothing else moved.** The admitted repositories are the first version's,
+   byte for byte. Retention, route context, telemetry and the provider line
+   differ deliberately (route-neutral wording): is each change a restatement or
+   a loosening? Is any claim here a promise the record cannot keep?
 
 ## Verdict form
 
@@ -81,3 +85,16 @@ findings). Findings as `**Finding N — title** (blocking|revise|note)`.
     `provider-route-messages-api-entry/proposed/`)? Quote the entry field and
     the record line side by side. Does the record permit a route's bytes only
     while its entry is in force, and does it leave stripping to the owner?
+12. **What the owner is told.** Does the packet say in plain words what signing
+    lets leave the machine (excerpts of files of the two named repositories for
+    discovery ranking, and README and guide files under the new class), with the
+    caps, and that nothing about the route changes? Check the caps against
+    `packages/polaris-generation-core/src/discovery.ts`.
+13. **Per-route parameters.** For each route, are the pinned parameters (model,
+    effort, tools, thinking, output ceiling) and the endpoint stated as that
+    entry lists them, with the differences between the routes spelled out and no
+    sentence saying they are "the same"?
+14. **Order of signing.** Is signing the first version after this one refused
+    (the first version's recorder), and is the packet's statement of it true?
+15. **The pinned template delta.** Does `--check` fail when the template moves
+    without `templateDelta` in `v2.json` being updated?

@@ -419,6 +419,14 @@ battery is clean" are one claim rather than two a reader conflates. The
 **CG-26** parses both lists and fails on any divergence, including a
 miscounted number in the sentence above.
 
+Two builders that need node and the compiled packages are in neither list:
+`scripts/build_public_repo_admission.py --check` and
+`scripts/build_public_egress_v2.py --check` regenerate the egress records'
+carried-content tables from the generator's code, so they run in the
+`node-ci` workflow (`.github/workflows/node-ci.yml`), which is the hosted
+denominator for node-dependent checks. Run both from the repository root
+after `npm ci` when a change touches the generator.
+
 Two historical generators are deliberately absent from both lists:
 `scripts/build_pwb_effect_acts_packet.py` and
 `scripts/build_pwb_state1_amendment_manifest.py`. Their 2026-09-02 packets
