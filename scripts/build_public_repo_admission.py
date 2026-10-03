@@ -19,17 +19,42 @@ is the argument of one separate owner act over that record (Q5); no row binds
 another. ``--check`` also fails when the manifest differs from its
 regeneration.
   --selftest  build one mutant per predicate; each must be caught
+
+A template that holds ``{{CARRIED_TABLE}}`` gets, as that field, the table
+printed by ``scripts/derive_generator_sent_text.mjs --table`` (after building
+``packages/polaris-generation-core``). The table is therefore GENERATED from
+the code: a field with no class makes the derivation fail, and ``--check``
+reports the record stale when its table differs from a fresh derivation.
 """
+import functools
 import hashlib
 import json
 import pathlib
 import re
+import subprocess
 import sys
 
 PKG = pathlib.Path(".syzygy/governance/contracts/candidates/public-repo-admission")
 MANIFEST_NAME = "PUBLIC-REPO-ADMISSION-MANIFEST.txt"
 FIELD = re.compile(r"\{\{([A-Z_]+)\}\}")
 HEADER = re.compile(r"\A(# [^\n]*\n\n)(?:> [^\n]*\n)+")
+
+
+REPO = pathlib.Path(__file__).resolve().parents[1]
+
+
+@functools.lru_cache(maxsize=None)
+def derive_table():
+    """The carried-content table, derived from the generator's code."""
+    build = subprocess.run(["npx", "tsc", "-b", "packages/polaris-generation-core"],
+                           cwd=REPO, capture_output=True, text=True)
+    if build.returncode != 0:
+        raise RuntimeError("cannot build polaris-generation-core: " + build.stdout[-300:])
+    done = subprocess.run(["node", "scripts/derive_generator_sent_text.mjs", "--table"],
+                          cwd=REPO, capture_output=True, text=True)
+    if done.returncode != 0:
+        raise RuntimeError("derivation failed (a field has no class?): " + done.stderr.strip()[-400:])
+    return done.stdout.strip()
 
 
 def render(template_text, fields, template_name):
@@ -57,6 +82,8 @@ def instances(root=None):
         for out_name, entry in spec.items():
             tpl = root / "templates" / entry["template"]
             fields = {**common, **entry["fields"]}
+            if "{{CARRIED_TABLE}}" in tpl.read_text():
+                fields["CARRIED_TABLE"] = derive_table()
             yield params.parent / out_name, render(tpl.read_text(), fields, entry["template"])
 
 
@@ -127,12 +154,47 @@ def selftest():
         caught += 1
         (lone / "REC.md").unlink()
         lone.rmdir()
-        (root / MANIFEST_NAME).write_text(manifest_text(root).replace("1", "2", 1))
+        lines = manifest_text(root).splitlines(True)
+        row = next(i for i, l in enumerate(lines) if re.match(r"[0-9a-f]{64}  ", l))
+        lines[row] = ("0" if lines[row][0] != "0" else "1") + lines[row][1:]
+        (root / MANIFEST_NAME).write_text("".join(lines))
         assert stale(root) == [root / MANIFEST_NAME], "stale manifest not caught"
         caught += 1
         (root / MANIFEST_NAME).write_text(manifest_text(root))
         assert stale(root) == []
-    # refusals while stale: both digest modes exit 1 and print nothing
+    # the carried-content table is generated: a different derivation is stale,
+    # and a field with no class makes the derivation itself fail
+    global derive_table
+    real = derive_table
+    with tempfile.TemporaryDirectory() as d:
+        root = pathlib.Path(d)
+        (root / "templates").mkdir()
+        (root / "instances" / "x").mkdir(parents=True)
+        (root / "templates" / "T.md").write_text("# T\n\n> Template. x\n\n{{CARRIED_TABLE}}\n")
+        (root / "instances" / "x" / "params.json").write_text(json.dumps(
+            {"R.md": {"template": "T.md", "fields": {}}}))
+        try:
+            derive_table = lambda: "| a |"
+            [(path, text)] = list(instances(root))
+            path.write_text(text)
+            (root / MANIFEST_NAME).write_text(manifest_text(root))
+            assert stale(root) == []
+            derive_table = lambda: "| a |\n| b |"
+            assert path in stale(root), "a table that differs from a fresh derivation not caught"
+            caught += 1
+        finally:
+            derive_table = real
+    mutant = REPO / "scripts" / "_derive_mutant.mjs"
+    try:
+        src = (REPO / "scripts" / "derive_generator_sent_text.mjs").read_text()
+        assert "requestedAssets: 'run-profile'," in src
+        mutant.write_text(src.replace("requestedAssets: 'run-profile',", "", 1))
+        done = subprocess.run(["node", str(mutant), "--table"], cwd=REPO, capture_output=True, text=True)
+        assert done.returncode == 2 and "requestedAssets" in done.stderr, "unclassified field not caught"
+        caught += 1
+    finally:
+        mutant.unlink(missing_ok=True)
+    # refusals while stale: both digest modes exit 1 and print nothing on stdout
     global PKG
     saved = PKG
     with tempfile.TemporaryDirectory() as d:
@@ -143,18 +205,23 @@ def selftest():
         (PKG / "instances" / "x" / "params.json").write_text(json.dumps(
             {"R.md": {"template": "T.md", "fields": {"A": "1", "B": "2"}}}))
         try:
+            import contextlib, io
             for mode in ("--digests", "--manifest-digest"):
-                assert main(["x", mode]) == 1, f"{mode} did not refuse while stale"
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+                    rc = main(["x", mode])
+                assert rc == 1 and out.getvalue() == "", f"{mode} did not refuse silently on stdout while stale"
                 caught += 1
             assert main(["x", "--bogus"]) == 2, "unknown mode not refused"
             caught += 1
         finally:
             PKG = saved
-    print(f"selftest: {caught} of 11 checks held: one positive render check "
-          "(banner replaced) and ten mutants: unfilled field, placeholder in value, "
+    print(f"selftest: {caught} of 13 checks held: one positive render check "
+          "(banner replaced) and twelve mutants: unfilled field, placeholder in value, "
           "missing banner, stale instance, orphan record, record in a "
           "directory with no params.json, stale manifest, refusals of "
-          "--digests and --manifest-digest while stale, unknown mode")
+          "--digests and --manifest-digest while stale, unknown mode, a carried-content"
+          " table that differs from a fresh derivation, a field with no class")
 
 
 def stale(root=None):

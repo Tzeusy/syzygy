@@ -173,8 +173,10 @@ the contract successors queued behind them, and these are consents, which
 that direction does not mention [Inferred]. Before the first offering: a
 recorder that binds each act to its manifest row and the act labels and
 packet copies registered in `scripts/check_governance.py`, following the
-repository's recorder convention; both are prepared after the confirming
-review, against the confirmed commit. Registry entries are signed the same way
+repository's recorder convention. Both are drafted
+(`scripts/record_public_repo_admission_acts.py`, which refuses every record
+until a confirming review sets its frozen commit) and are not yet bound; they
+get their own check after the confirming review. Registry entries are signed the same way
 when they are drafted.
 
 **Q6. Where generated pages may be served.** *Recommended:* only on the local
@@ -290,6 +292,25 @@ finding 3), so this repair changes the model, not the sentence.
 | 5 Q6 had no carrier | Carried by the egress record's own condition and by outline item 4's rendering line: local daemon draft view or run-directory file only, never published |
 | 6 Stale review sentences | Marked and dated at the sentences; "next version" now reads "next candidate draft" |
 
+Round 6 (`reviews/R-PUBLIC-ADMISSION-6-RAW.md`), over commit 10829599 of
+the branch, returned REVISE with one blocking finding and six notes. The
+blocking finding was the fourth round on the same item (R3 finding 5, R4
+finding 3, R5 finding 1): the Scope still named only target spans, composites
+and the instruction symbols, while every request also carries the run
+profile's reader questions and requested assets and the source population's
+metadata. A fourth prose repair would repeat the failure, so the fix is
+structural.
+
+| R6 finding | Disposition |
+|---|---|
+| 1 Scope excludes fields every request carries (blocking) | The record's "What a request carries" table is now GENERATED: `scripts/derive_generator_sent_text.mjs --table` classes every envelope, `inputs` and `generate`-port field, and fails (exit 2) on a field with no class; the builder embeds that table and `--check` reports the record stale when it differs from a fresh derivation. Six closed classes: target-content, target-metadata, composite, instruction-text, envelope-control, run-profile. Scope now enumerates those populations; the screening template's item 5 gives one closed rule for the three Syzygy-authored classes (by symbol or file) and a `code-structure` rule for target metadata; the first condition refuses any field outside the table. The two "only Syzygy-authored" sentences are removed. Two points are owner rulings, listed under "Open before an offering": the class for operator-authored run-profile text, and sending excluded sources' metadata |
+| 2 Plan's `sources` | The generated table shows plan's `sources` as target-metadata, because the call site assigns the source population |
+| 3 Port fields | All six are in the table; the record says which reach the wire |
+| 4 Audit schema version | Stated as it is: the audit record carries the envelope digest and the prompt version, and the schema version is bound through that digest |
+| 5 Sign-in mode | Dropped from the provider field; sign-in mode is [Unknown] and an open owner choice below |
+| 6 Recorder timing | Sentence corrected above |
+| 7 Selftest wording | The stale-manifest mutant now alters a digest row; the digest refusals assert empty stdout; the count reads 13 checks, one positive and twelve mutants |
+
 ## Open before an offering
 
 These are not decided by this package and none is written into a signed record
@@ -303,16 +324,27 @@ as pending:
   provider execution route's registry entry, and the egress record refuses any
   other byte. Route B, the Messages API with an API key, sends exactly the
   generator's envelope and would revise Q1; choosing it regenerates the egress
-  record. Source: lane-v's capture test, whose byte list is not yet landed.
+  record's provider field. Sign-in mode no longer appears in the record, so
+  route A with an API key needs no regeneration.
 - **Account and billing.** Whether the owner's personal runs may use a
   subscription login is [Unknown] (the docs say third-party products may not
   offer claude.ai login); an API key is supported. The terms document and
   training-use setting that govern the chosen account are disclosed by the
   owner at the offering.
+- **Run-profile class.** RFC5-14 has no class for operator-authored question
+  text; the screening scope proposes `code-content` of `project:syzygy`
+  [Inferred]. *Recommended:* accept; the alternative is a vocabulary
+  amendment, which this package does not propose.
+- **Excluded sources' metadata.** The record lets ids, closed reasons and
+  paths of excluded sources leave as `code-structure` of a public target.
+  *Recommended:* accept; the alternative is to send admitted sources' metadata
+  only.
 - **Telemetry-off** is [Observed] on a local capture (no other host), but
   error paths beyond 429 and 529, long runs and subscription login remain
   [Unknown].
 
-Round 6 is to run over the whole package after this repair
+Round 7 is to run over the whole package after this repair
 (`REVIEW-BRIEF.md` in this directory names the artifacts, references and
-criteria). Everything above is unreviewed until it returns.
+criteria). Everything above is unreviewed until it returns. Stopping rule: if
+round 7 blocks again on the carried-content item, it goes to the owner rather
+than to a round 8.

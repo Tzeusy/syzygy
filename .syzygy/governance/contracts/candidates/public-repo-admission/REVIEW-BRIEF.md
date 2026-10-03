@@ -1,10 +1,10 @@
-# Review brief — public-repository admission, round 6
+# Review brief — public-repository admission, round 7
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries no
-> verdict. Rounds 1-5 returned REVISE (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`
-> to `-5-RAW.md`); round 6 is over the round-5 repair, which changed the
-> egress record's model of what a request carries.
+> verdict. Rounds 1-6 returned REVISE (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`
+> to `-6-RAW.md`); round 7 is over the round-6 repair, which makes the egress
+> record's carried-content table generated from the code.
 
 ## What the reviewer is given, and nothing else
 
@@ -76,20 +76,21 @@ Each is a yes/no question with the evidence that settles it.
    Markdown file of the package may carry a 64-hex digest.
 9. **Is the packet accurate about itself?** Its file locations, round
    counts, dispositions and the statement of what is unreviewed.
-10. **Is the sent-content model closed and consistent?** Run
-    `npx tsc -b packages/polaris-generation-core` then
-    `node scripts/derive_generator_sent_text.mjs`. Do the envelope fields,
-    per-stage `inputs` fields and the two instruction-text symbols in the
-    egress record's "What a request carries" section equal the script's
-    output? Is every byte a request can carry either a target span under
-    an observation consent, a composite computed from one, an instruction-text
-    symbol the screening scope's rule names, or a runtime-fixed byte the route
-    entry will list? Under RFC5-15 part 2 and RFC5-14 ("never an attribute the
-    composing step asserts about its own output"), is the instruction-text
-    class determined by a policy rule rather than by the consent? Name any byte
-    not covered.
-11. **Do the R5 dispositions hold?** For each of R5 findings 1 to 6, quote
-    the bytes that repair it and say whether they do.
+10. **Is every byte a request can carry classed, once, and covered by Scope?**
+    Run `python3 scripts/build_public_repo_admission.py --check` (it rebuilds
+    `packages/polaris-generation-core` and re-derives the table) and
+    `node scripts/derive_generator_sent_text.mjs` for the raw report. Confirm the
+    record's table equals a fresh derivation; every envelope, `inputs` and
+    `generate`-port field has exactly one row and one class from the closed
+    set; and the Scope section enumerates each class. For each Syzygy-authored
+    class (instruction-text, envelope-control, run-profile), quote the
+    screening template's rule that classifies it by symbol or file. Under
+    RFC5-15 part 2 and RFC5-14 ("never an attribute the composing step asserts
+    about its own output"), is each class determined by a policy rule and not
+    by the consent? Name any byte, field or sentence not covered, including
+    sentences that claim a population is the only one.
+11. **Do the R6 dispositions hold?** For each of R6 findings 1 to 7, quote the
+    bytes that repair it and say whether they do.
 
 ## Out of scope
 
@@ -101,7 +102,7 @@ Each is a yes/no question with the evidence that settles it.
 ## Recording
 
 Store the raw output verbatim under the package's `reviews/` as
-`R-PUBLIC-ADMISSION-6-RAW.md` (a re-issue is a second `-RAW.md`, never an
+`R-PUBLIC-ADMISSION-7-RAW.md` (a re-issue is a second `-RAW.md`, never an
 overwrite). **The raw's head is a predicate the recorder enforces.** The first
 four non-blank lines must be the title and exactly:
 

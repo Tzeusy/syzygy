@@ -63,14 +63,24 @@
    - committed test reports and benchmark outputs → `evidence-content`;
    - all other prose (README, guides, tutorials, LICENSE files) →
      indeterminate, refused egress, until the packet's Q7 is resolved;
-   - **the generator's instruction text** → `code-content` of
-     `project:syzygy`, by one closed rule that names exactly `promptForStage`
+   - **generator-authored request text** → `code-content` of
+     `project:syzygy`, by one closed rule that covers every non-target field
+     of the generated carried-content table (egress template): the
+     `instruction-text` class is the output of `promptForStage`
      (`packages/polaris-generation-core/src/prompts.ts`) and `stageSchema`
-     (`packages/polaris-generation-core/src/provider-draft.ts`) at the versions
-     a request names. This is not target content and is not read from a
-     target; it is the only Syzygy-authored text a request carries. The
-     secret detectors still apply to it, and no other file or symbol of
-     Syzygy's repository is classified by this rule;
+     (`packages/polaris-generation-core/src/provider-draft.ts`); the
+     `envelope-control` class is the version and stage labels those two
+     symbols produce; the `run-profile` class is the run's reader questions
+     and requested assets, read from the run profile file in the run
+     directory and validated by the generator before use. No RFC5-14 class
+     names operator-authored question text, so assigning it `code-content` is
+     [Inferred] and an owner ruling. The secret detectors apply to all of it,
+     and no other file or symbol of Syzygy's repository is classified by this
+     rule. A field with no class in the table is a build failure, not a
+     default;
+   - the target's own **source metadata** (ids, classification bases,
+     exclusion flags and closed reasons, paths) → `code-structure` of the
+     target, without bodies;
    - anything else the rules do not determine → indeterminate, refused
      egress visibly.
 
