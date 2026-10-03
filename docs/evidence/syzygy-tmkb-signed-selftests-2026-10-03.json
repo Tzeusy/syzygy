@@ -1,0 +1,198 @@
+{
+  "bead": "syzygy-tmkb",
+  "measuredAt": "c6e74e4eedb4f2edbf5a7145093f43136cca8ad9",
+  "question": "the six versioned-sign-off PWB builders' --selftest stops at 'patch does not apply' at main",
+  "rejectedAlternative": {
+    "method": "reverse-apply the package's own patches to the current subjects (tree-framing, the only package whose patches all reverse-apply at main)",
+    "result": "SELFTEST PRECONDITION FAILED: sibling spec patch is neither pending, applied, performed nor declined: pwb-anchor-resolution-amendment/proposed/spec.md.patch; a sibling drafted after the sign-off is unclassifiable against reconstructed bytes, and the five superseded packages' patches no longer reverse-apply at all"
+  },
+  "helper": {
+    "subject": "scripts/pwb_signed_selftest.py",
+    "subjectSha256": "499174eb373f5aec5e3811d0063ad84e872dc1098c6a81679fabc253a4d91001",
+    "selftest": "python3 scripts/pwb_signed_selftest.py --selftest (6 cases)"
+  },
+  "packages": [
+    {
+      "builder": "scripts/build_pwb_missing_currency_disclosure_scenario.py",
+      "builderSha256": "7e28431b1cf9cfc676f7144ea127d44681d50eed0af04828db1d3d6d2e090876",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md",
+      "signoffCommit": "92387584317e9a13f8bb2a89e1274d74d8432eea",
+      "preAdoptionCommit": "d9846de3ebf3f4b0be3e870c8138f1129c690d41",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: missing/duplicate scenario, placement, fabricated freshness, aggregate absorption, stale manifest, path order, patch drift, dependency drift, contract-coverage drift, sibling orders and generated-patch collision all fail closed"
+      }
+    },
+    {
+      "builder": "scripts/build_pwb_dismissal_expiry_amendment.py",
+      "builderSha256": "90759e3eee2e562177b5dcc29fa0b4fdd08ce8511b2e2b809b3eb697e830ab5f",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-DISMISSAL-EXPIRY-AMENDMENT-SIGNOFF-v1.0.md",
+      "signoffCommit": "5de4ce7feb3681f0cda292c80be38df1651b78f7",
+      "preAdoptionCommit": "9bf3ea5eb63243a1bd423758d01ab1e497b1292a",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: 166 mutants killed — stale manifest, path order, patch population, 35 paragraph rules, paragraph missing/duplicate/placement, 3 scenarios x missing/duplicate/placement, 17 scenario-body rules, 12 forbidden wordings x paragraph/scenario, 2 once-only scenario phrases, a dropped fact, the scenario-2 reversion, three round-3 mutants, 12 round-4 mutants against the whole-spec pin, 6 drifted pin anchors, 12 case-swapped forbidden wordings, 7 warrants, dependency and contract-coverage drift, proposal, capability row and totals, 13 repair rows, patch drift, 12 check() cases (manifest content/order/missing, patch population, undeclared subject, pin edges, dependencies, proposal, capability, contract coverage), all fail closed"
+      }
+    },
+    {
+      "builder": "scripts/build_pwb_container_shape_profile_amendment.py",
+      "builderSha256": "1e88906899261e85da9c029ec15b407a49db14a04876d10e1ef35ff10e9d2f1a",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md",
+      "signoffCommit": "4d51679b46f6b5f0e4ff056cd4c764820f02b4f4",
+      "preAdoptionCommit": "07df24bef5a8b7cf281720dc9730e6763047869d",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: 184 mutants killed — stale manifest, path order, a corrupted row digest, patch population, an undeclared subject change, 9 shape and 8 key-form sentences, entry dropped/added/moved and closure for each vocabulary, the duplicate-key rule, 8 vocabulary, 3 key-form, 8 profile and 13 loaded-profile rules, 4 declared-item rules and the rule made 'any', the source-path bullet, shared-text drift on either vocabulary and on both packages at once, the whole-spec pin over 15 unamended clauses, a scenario swap, the unscoped falsifier, 8 drifted and 8 duplicated anchors, check() without its manifest comparison, its shared-text digest, its patch population or its structure predicate, bullet order/duplicate/missing, retired opening, the hoisted exactness paragraph reworded or left behind, Butlers grammar drift, 23 PWB-REQ-002 rules, retired requirement text, SHALL made MAY, the falsifier relabelled, three scenario clauses and the first scenario altered, 5 scenarios x missing/duplicate/placement plus each scenario rule, warrants, dependency and contract-coverage drift, capability row and totals, patch drift and two table-shape mutants all fail closed"
+      }
+    },
+    {
+      "builder": "scripts/build_pwb_item_depth_amendment.py",
+      "builderSha256": "3c152fca9c3fe8b92544ba98d60715f3c90a475b93d917bed2fce0c10bc2d275",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md",
+      "signoffCommit": "1ecb99854c4859786cfa8626cfc1698b73271809",
+      "preAdoptionCommit": "c444824df560a6cfa0daf5810228ec1f639bb15a",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: 63 package predicates fail closed"
+      }
+    },
+    {
+      "builder": "scripts/build_pwb_readability_successor.py",
+      "builderSha256": "0bf59250a19e5f31c70de8702c19697aaa92705d53743c0a4082240b662afc23",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+      "signoffCommit": "bd47409c126424c59efa1d63a12297f1b85d5469",
+      "preAdoptionCommit": "0dbe7ce6038c15b8eaffcfc2512580320614d345",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: 52 package predicates fail closed"
+      }
+    },
+    {
+      "builder": "scripts/build_pwb_tree_framing_amendment.py",
+      "builderSha256": "356fc724893e0f89e491e3d796fcdd81bb4755e5c403da2f865d7a5b84f9dd66",
+      "signoffRecord": ".syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+      "signoffCommit": "4b2c75bd04f6b8124705b779ea5f6f14d620ecd0",
+      "preAdoptionCommit": "250a479a3c5cd2ddf71aabbf7be5d9d07e7053e9",
+      "choice": "reconstruct: --selftest runs this builder's current bytes in a git archive of the sign-off's parent",
+      "selftestAtMain": {
+        "exit": 0,
+        "lastLine": "selftest: 117 package predicates fail closed"
+      }
+    }
+  ],
+  "inputMutant": {
+    "id": "I1-signoff-commit-wired",
+    "mutates": "item-depth wired to its sign-off commit instead of the parent",
+    "file": "scripts/build_pwb_item_depth_amendment.py",
+    "old": "c444824df560a6cfa0daf5810228ec1f639bb15a",
+    "new": "1ecb99854c4859786cfa8626cfc1698b73271809",
+    "exit": 1,
+    "outcome": "refused: the archive carries the sign-off record, so it is not a pre-adoption tree"
+  },
+  "rule6": {
+    "subject": "scripts/pwb_signed_selftest.py",
+    "subjectSha256": "499174eb373f5aec5e3811d0063ad84e872dc1098c6a81679fabc253a4d91001",
+    "commit": "c6e74e4eedb4f2edbf5a7145093f43136cca8ad9",
+    "bead": "syzygy-tmkb",
+    "rule": "AGENTS.md verification rule 6",
+    "baselineSelftestExit": 0,
+    "note": "The commit is provenance only; a rebase-merge leaves it reachable from no ref, so subjectSha256 is the anchor.",
+    "mutants": [
+      {
+        "id": "H1-record-inverted",
+        "mutates": "the pre-adoption rerun fires only when the record is absent",
+        "old": "    if not (root / record).is_file():\n        return None\n",
+        "new": "    if (root / record).is_file():\n        return None\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: no record: the selftest runs in place: FAILED",
+          "selftest: after sign-off: current bytes run in the pre-adoption tree: FAILED",
+          "selftest: a commit carrying the record is refused: FAILED",
+          "selftest: an unreadable commit refuses rather than passing: FAILED",
+          "selftest: a nested rerun is refused: FAILED"
+        ],
+        "stderrTail": ""
+      },
+      {
+        "id": "H2-old-bytes",
+        "mutates": "the builder's current bytes are not copied into the archive",
+        "old": "        for source in (builder, HELPER):\n",
+        "new": "        for source in (HELPER,):\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: after sign-off: current bytes run in the pre-adoption tree: FAILED"
+        ],
+        "stderrTail": ""
+      },
+      {
+        "id": "H3-no-preadoption-guard",
+        "mutates": "an archive that already carries the record is accepted",
+        "old": "        if (tree / record).is_file():\n",
+        "new": "        if False:\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: a commit carrying the record is refused: FAILED"
+        ],
+        "stderrTail": ""
+      },
+      {
+        "id": "H4-archive-failure-ignored",
+        "mutates": "a failed git archive is not refused",
+        "old": "        if proc.wait() != 0:\n",
+        "new": "        if proc.wait() != 0 and False:\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: an unreadable commit refuses rather than passing: FAILED"
+        ],
+        "stderrTail": ""
+      },
+      {
+        "id": "H5-runs-in-place",
+        "mutates": "the selftest's working directory is the repository, not the archive",
+        "old": "                               \"--selftest\"], cwd=tree,\n",
+        "new": "                               \"--selftest\"], cwd=builder.parents[1],\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: after sign-off: current bytes run in the pre-adoption tree: FAILED"
+        ],
+        "stderrTail": ""
+      },
+      {
+        "id": "H6-no-nested-guard",
+        "mutates": "a nested rerun is not refused",
+        "old": "    if os.environ.get(NESTED):\n",
+        "new": "    if False:\n",
+        "occurrences": 1,
+        "run": "python3 scripts/pwb_signed_selftest.py --selftest",
+        "exit": 1,
+        "outcome": "killed",
+        "killedBy": [
+          "selftest: a nested rerun is refused: FAILED"
+        ],
+        "stderrTail": ""
+      }
+    ],
+    "killed": 6,
+    "total": 6
+  }
+}
