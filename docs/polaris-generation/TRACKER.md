@@ -166,9 +166,17 @@ Authorized implementation work (generator implementation authorization,
       and a size report, in `polaris-dossier-v1` markup; the run directory is
       refused inside a Git work tree; round-trips through `evaluateDossier`
       with 0 fidelity failures on synthetic runs
-- [ ] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
-      and say what was and was not read
-- [ ] REQ-031 owner clarification: the consequential-questions step
+- [~] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
+      and say what was and was not read (engine built and tested on synthetic
+      trees; no real tree walked)
+- [~] REQ-031 owner clarification: the consequential-questions step
+      (`dossier-profile.ts`: question budget, no repeats, attributed
+      non-adopting answers, zero-interaction mode that records the questions
+      it would have asked; synthetic only)
+- [x] Dossier run profile `dossier-v1`: five reader questions (core ideas,
+      end-to-end workflows, underlying mechanisms, maintainer-claimed
+      advantages, trade-offs) and their requested assets;
+      `profile: "dossier"` in the reader config
 - [ ] Real provider adapter behind the single egress check (refuses without
       consent; no call happens until admission)
 - [~] Evaluation runner: frozen reader questions, fresh-reader answers,
