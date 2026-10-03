@@ -45,9 +45,9 @@ in order.
      F-2, a quotation its source never contained.
 
 **Resolution.** A locator path is tried relative to the citing file, then
-to the repository root, then as a suffix of every tracked path; every
-candidate that exists is searched, so a bare `README.md:60` is not failed
-for naming the wrong README. A locator that resolves to no tracked file is
+to the repository root; only when neither exists, as a suffix of every
+tracked path. Every candidate found is searched, so `README.md:60` written
+in `decisions/` passes on the root README as well as its own. A locator that resolves to no tracked file is
 counted and skipped: CG-1 owns dangling paths.
 
 **Population.** Tracked `.md` files, less three classes that are verbatim
@@ -240,16 +240,16 @@ def quotations(rel, text):
 
 
 def resolve(citer, path, corpus, tracked):
-    """Every tracked file `path` can name from `citer`, nearest first."""
+    """The tracked files `path` names from `citer`: relative or root-relative
+    if either exists, else every tracked path ending in it."""
     out = []
     for cand in (os.path.normpath(os.path.join(os.path.dirname(citer), path)),
                  os.path.normpath(path)):
         if cand in corpus and cand not in out:
             out.append(cand)
-    for rel in tracked:
-        if rel.endswith("/" + path) and rel in corpus and rel not in out:
-            out.append(rel)
-    return out
+    if out:
+        return out
+    return [rel for rel in tracked if rel.endswith("/" + path) and rel in corpus]
 
 
 def git_history(root):
@@ -346,8 +346,10 @@ def check(corpus, tracked=None, revisions=None, recorded=RECORDED):
                 res.amended.append(f"{where} — \"{shown}\" left {past[0]} "
                                    f"after {past[1]}")
                 continue
+            named = ", ".join(targets[:3]) + (
+                f" and {len(targets) - 3} more" if len(targets) > 3 else "")
             finding = (f"{where} — quotes {q.path}:{q.first} (\"{shown}\"), "
-                       f"in no revision of {', '.join(targets)}")
+                       f"in no revision of {named}")
             entry = next((e for e in unmatched
                           if e[0] == rel and q.text.startswith(e[1])), None)
             if entry:
@@ -430,6 +432,9 @@ OLD_SOURCE = "An earlier sentence the amendment replaced.\n"
 CASES = (
     ("loc-paren-quote passes",
      '`a/SOURCE.md:5` ("The modules win over this file, always.")',
+     (1, 0, 0, 0)),
+    ("a quotation wrapped across the citing lines is one quotation",
+     '`a/SOURCE.md:5` ("The modules win\nover this file, always.")',
      (1, 0, 0, 0)),
     ("loc-colon-quote passes across a wrap and emphasis",
      'See `SOURCE.md:6-7`: "a second sentence that wraps across two lines"',
