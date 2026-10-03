@@ -65,6 +65,12 @@ Authorized implementation work (generator implementation authorization,
         every unselected file stays counted as `deferred-by-budget`. Model
         ports are injected and egress-gated; the report names the ranking
         basis. Wiring to a real model is still G2/G3.
+  - [x] **Multi-page static output (gap #8).** `dossier-site.ts`: entry
+        page (section answers, contents), a page per section and deep dive,
+        glossary, cited exact-source pages, a sources index and a size report
+        (HTML and JSON), written into a fresh run directory outside git, strict
+        CSP kept. The glossary lists supplied definitions and diagram names
+        only; the provider draft still has no glossary field.
   - [ ] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
