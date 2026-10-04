@@ -1,0 +1,55 @@
+{
+  "subject": {
+    "commit": "5e8dc0aecd8f908375774384d988e3e2da222670",
+    "branch": "agent/dossier-check",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "dc87801e8060197317e0d65f0698680a2511e8d61803ce27be0b0314a30f2789"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts": "2e60155c73392812718ee05376b814c5d4b959fe4508bb7f8fcb02077321cc17"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-04T10:14:18+00:00",
+  "mutants": [
+    {
+      "id": "config-id-from-url-label",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "target = { ...target, repositoryId: sole };",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 9,
+      "totalTests": 10
+    },
+    {
+      "id": "admission-asked-about-url-label",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "  const requirements = admissionRequirements(target, pinned.revision);\n  const checked",
+      "new": "  const requirements = admissionRequirements({ ...target, repositoryId: parseGithubUrl(rawUrl).repositoryId }, pinned.revision);\n  const checked",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 9,
+      "totalTests": 10
+    },
+    {
+      "id": "corpus-id-from-url-label",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "const config: ReaderConfig = { repositoryId: target.repositoryId,",
+      "new": "const config: ReaderConfig = { repositoryId: parseGithubUrl(rawUrl).repositoryId,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 10
+    }
+  ]
+}

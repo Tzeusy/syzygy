@@ -125,4 +125,42 @@ describe('durable lifecycle with an injected generate port', () => {
       expect(journal(stateDir).map(entry => entry.state)).toEqual(['released']);
     }
   }, T);
+
+  it('reserves a ceiling per stage when the option is a function, and holds the cumulative bound to those reservations', async () => {
+    const stateDir = scratch(), stub: Stub = { calls: [] };
+    const result = await runGenerationPipeline(request({ maxUsageUnits: 40 }), lifecycle(stateDir, stub, async stage => ok(stage, 1), { maxAttemptUsageUnits: stage => (stage === 'inventory' ? 20 : 5) }), new AbortController().signal);
+    expect(result.status).toBe('awaiting-rendered-review');
+    expect(stub.calls.map(call => [call.stage, call.permit.maxUsageUnits])).toEqual([['inventory', 20], ['plan', 5], ['author', 5], ['edit', 5], ['fidelity', 5]]);
+    // reserved 20 + 5 + 5 + 5 + 5 would pass 40 only if completed attempts were counted at their ceiling: they are counted at their actual 1
+    const tight: Stub = { calls: [] };
+    const stopped = await runGenerationPipeline(request({ maxUsageUnits: 24 }), lifecycle(scratch(), tight, async stage => ok(stage, 20), { maxAttemptUsageUnits: stage => (stage === 'inventory' ? 20 : 5) }), new AbortController().signal);
+    expect(stopped).toMatchObject({ status: 'stopped', reason: 'budget-exhausted' });
+    expect(tight.calls.map(call => call.stage)).toEqual(['inventory']);
+  }, T);
+
+  it('refuses a malformed per-stage ceiling for any stage before creating state', () => {
+    for (const bad of [0, 1.5, Number.NaN, '5']) {
+      const dir = join(scratch(), 'state');
+      expect(() => lifecycle(dir, { calls: [] }, async stage => ok(stage), { maxAttemptUsageUnits: ((stage: string) => (stage === 'repair' ? bad : 5)) as never })).toThrow('invalid-lifecycle-option: maxAttemptUsageUnits');
+      expect(existsSync(dir)).toBe(false);
+    }
+  });
+
+  it('refuses budget-exhausted before reserving when the permit is below the minimum for the input, and still reuses a completed attempt', async () => {
+    const stateDir = scratch(), stub: Stub = { calls: [] }, same = request();
+    const refused = await runGenerationPipeline(same, lifecycle(stateDir, stub, async stage => ok(stage), { minimumAttemptUsageUnits: () => 6 }), new AbortController().signal);
+    expect(refused).toMatchObject({ status: 'stopped', reason: 'budget-exhausted' });
+    expect(stub.calls).toEqual([]);
+    expect(journal(stateDir)).toEqual([]);
+    const done = await runGenerationPipeline(same, lifecycle(stateDir, stub, async stage => ok(stage), { minimumAttemptUsageUnits: () => 5 }), new AbortController().signal);
+    expect(done, JSON.stringify(done)).toMatchObject({ status: 'awaiting-rendered-review' });
+    for (const bad of [0, 1.5, Number.NaN]) {
+      const stop = await runGenerationPipeline(request(), lifecycle(scratch(), { calls: [] }, async stage => ok(stage), { minimumAttemptUsageUnits: () => bad }), new AbortController().signal);
+      expect(stop.status, String(bad)).toBe('stopped');
+    }
+    const replay: Stub = { calls: [] };
+    const again = await runGenerationPipeline(same, lifecycle(stateDir, replay, async stage => ok(stage), { minimumAttemptUsageUnits: () => 99 }), new AbortController().signal);
+    expect(again.status).toBe('awaiting-rendered-review');   // completed checkpoints are reused, never re-asked
+    expect(replay.calls).toEqual([]);
+  }, T);
 });

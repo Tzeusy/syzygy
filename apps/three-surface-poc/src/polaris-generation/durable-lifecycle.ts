@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, unlinkSync, writeSync } from 'node:fs';
 import { join } from 'node:path';
 
-import type { AdmissionDecision, AttemptInput, AttemptOutcome, DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
+import type { AdmissionDecision, AttemptInput, AttemptOutcome, DispatchPermit, GenerationStage, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 
 /** A private durable lifecycle adapter. Files are outside a governed tree; this
  * module installs no network client or provider: the caller injects `generate`,
@@ -21,11 +21,15 @@ export interface DurableLifecycleOptions {
   /** Reserved per attempt, capped by the request budget. Required, with no default: a live
    * caller derives it from the run profile and the provider entry (a unit is whatever the
    * request budget's `accountingPolicy` names and `generate` reports in `usageUnits`; this
-   * module only sums them). */
-  readonly maxAttemptUsageUnits: number;
+   * module only sums them). A function sets a ceiling per stage: the reservation of each attempt, and so the
+   * cumulative bound, follows the stage that makes it. */
+  readonly maxAttemptUsageUnits: number | ((stage: GenerationStage) => number);
   /** Reserved per attempt, capped by the request budget. Required, with no default: it must
    * cover the provider entry's largest reply for any stage, or that stage is refused. */
   readonly maxAttemptOutputBytes: number;
+  /** Fewest units an attempt of this input can run in (a live caller derives it from the provider's accounting policy).
+   * An attempt whose permit would be lower is refused `budget-exhausted` before anything is reserved or sent. */
+  readonly minimumAttemptUsageUnits?: (input: AttemptInput) => number;
   readonly now?: () => number;
 }
 
@@ -66,9 +70,13 @@ function replaceAtomic(path: string, value: unknown): void {
 /** The persistent file is the dispatch claim. A crash after claim leaves a
  * reserved record, which refuses replay even if a lease or receipt is lost. */
 export function createDurableLifecycle(options: DurableLifecycleOptions): PipelinePorts {
-  for (const [name, value] of [['maxAttemptUsageUnits', options.maxAttemptUsageUnits], ['maxAttemptOutputBytes', options.maxAttemptOutputBytes]] as const) {
-    if (!Number.isSafeInteger(value) || value < 1) throw new Error(`invalid-lifecycle-option: ${name}`);
+  const usageCeiling = options.maxAttemptUsageUnits;
+  const stages: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
+  const ceilings = typeof usageCeiling === 'function' ? stages.map(stage => usageCeiling(stage)) : [usageCeiling];
+  for (const [name, value] of [['maxAttemptUsageUnits', ceilings], ['maxAttemptOutputBytes', [options.maxAttemptOutputBytes]]] as const) {
+    if (!value.every(item => Number.isSafeInteger(item) && item >= 1)) throw new Error(`invalid-lifecycle-option: ${name}`);
   }
+  const ceilingFor = (stage: GenerationStage): number => (typeof usageCeiling === 'function' ? usageCeiling(stage) : usageCeiling);
   mkdirSync(options.stateDir, { recursive: true, mode: 0o700 });
   const fileFor = (permit: DispatchPermit): string => join(options.stateDir, `${permit.attemptId}.json`);
   const read = (path: string): JournalEntry => JSON.parse(readFileSync(path, 'utf8')) as JournalEntry;
@@ -88,7 +96,7 @@ export function createDurableLifecycle(options: DurableLifecycleOptions): Pipeli
       try { fd = openSync(lock, 'wx', 0o600); }
       catch { return { kind: 'refused', reason: 'uncertain' }; }
       try {
-        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(options.maxAttemptUsageUnits, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes, input.budget.maxOutputBytes) };
+        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(ceilingFor(input.stage), input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes, input.budget.maxOutputBytes) };
         const path = fileFor(permit);
         if (existsSync(path)) {
           let prior: JournalEntry;
@@ -102,6 +110,11 @@ export function createDurableLifecycle(options: DurableLifecycleOptions): Pipeli
             model: prior.outcome.model, usageUnits: prior.outcome.usageUnits, value: prior.outcome.value,
           };
           return { kind: 'refused', reason: prior.state === 'reserved' ? 'in-flight' : 'uncertain' };
+        }
+        if (options.minimumAttemptUsageUnits !== undefined) {
+          const minimum = options.minimumAttemptUsageUnits(input);
+          if (!Number.isSafeInteger(minimum) || minimum < 1) return { kind: 'refused', reason: 'uncertain' };
+          if (permit.maxUsageUnits < minimum) return { kind: 'refused', reason: 'budget-exhausted' };
         }
         let entries: JournalEntry[];
         try { entries = readdirSync(options.stateDir).filter(name => name.endsWith('.json')).map(name => read(join(options.stateDir, name)))

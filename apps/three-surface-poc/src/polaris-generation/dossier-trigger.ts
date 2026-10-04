@@ -4,9 +4,12 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { clarify, DOSSIER_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
-  type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
+  type ClarificationRecord, type DiscoveryBudget, type DiscoveryCall, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type GenerationStage,
+  type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
-import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
+import { buildPipelineRequest, CorpusRefusal, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
+import { DOSSIER_RUN_PROFILE, narrativeBudgetFor } from './dossier-run-profile.js';
+import { readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
 import { checkDossierRunDestination, writeDossierRun } from './dossier-render-main.js';
 import { ISOLATED_GIT_FLAGS, minimalGitEnv } from './isolated-git.js';
 
@@ -49,10 +52,15 @@ const fileOverride = (allowProtocol: string): readonly string[] => (allowProtoco
 export type AdmissionKind = 'observation-consent' | 'public-source-policy' | 'egress-consent';
 export interface AdmissionRequirement { readonly kind: AdmissionKind; readonly repositoryId: string; readonly revision: string; readonly url: string; readonly needs: string }
 export type AdmissionAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
+export interface ConsentedRevision { readonly label: string; readonly commitId: string }
+/** Where the run's revision came from: a ref the URL named, or the one revision the observation consent admits. */
+export type RevisionSource = { readonly from: 'url'; readonly ref?: string } | { readonly from: 'consent'; readonly label: string; readonly commitId: string };
 export interface AdmissionRecordsPort {
   readonly source: string;
   /** The repository ids of every observation record whose `Upstream:` is exactly this canonical URL. The trigger never derives the id it admits under: it uses the one record's id, and refuses on zero or several. */
   readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
+  /** The revisions the in-force observation consent admits for this repository id: the consent's label (a tag or ref) and the commit object id it admits. Absent or empty means the consent names none, and a URL without a ref pins the default-branch tip as before. */
+  readonly consentedRevisionsFor?: (repositoryId: string) => Promise<readonly ConsentedRevision[]>;
   readonly check: (requirement: AdmissionRequirement) => Promise<AdmissionAnswer>;
 }
 /** With no store wired, no record exists, and the report says so. */
@@ -81,6 +89,33 @@ export function soundAnswer(answer: unknown): AdmissionAnswer {
   return { satisfied: false, why: a.satisfied === false && typeof a.why === 'string' ? a.why : 'malformed admission answer: satisfied is not a boolean' };
 }
 
+/** What the generation session needs to know about the run it serves. */
+export interface GenerationOpenContext {
+  readonly target: GithubTarget;
+  readonly revision: string;
+  /** The run directory the trigger will write; it does not exist yet. */
+  readonly runDir: string;
+  /** The egress requirement that admitted this run. */
+  readonly egress: AdmissionRequirement;
+  readonly records: AdmissionRecordsPort;
+}
+/** Provider-backed generation for one run: opened after every admission record is satisfied and before any repository object is fetched. */
+export interface GenerationSession {
+  readonly discovery: Pick<DiscoveryPorts, 'map' | 'reduce'>;
+  readonly discoveryReceipt: (receipt: DiscoveryReceipt) => Promise<void>;
+  /** Asked before each discovery call, besides the egress record: the discovery share and the stage authority. */
+  readonly discoveryPermitted: (call: DiscoveryCall) => Promise<boolean>;
+  readonly discoveryBudget: DiscoveryBudget;
+  /** The narrative's budget after discovery used `elapsedMs` of the run's wall clock. */
+  readonly narrativeBudget: (elapsedMs: number) => GenerationBudget;
+  readonly wallClockMs: number;
+  readonly routes: Readonly<Record<GenerationStage, string>>;
+  readonly runPipeline: (request: PipelineRequest, signal: AbortSignal) => Promise<PipelineResult>;
+  /** Content-free accounting for the run record: budget, calls, counted units, attempts, gate decisions. */
+  readonly record: () => unknown;
+  readonly close: () => Promise<void>;
+}
+
 export interface TriggerPorts {
   readonly lsRemote?: (url: string) => string;
   readonly records?: AdmissionRecordsPort;
@@ -90,6 +125,10 @@ export interface TriggerPorts {
   readonly discovery?: Pick<DiscoveryPorts, 'map' | 'reduce'>;
   /** Durable sink for per-call discovery receipts; the run record also keeps them. */
   readonly discoveryReceipt?: (receipt: DiscoveryReceipt) => Promise<void>;
+  /** Opens provider-backed generation for the run. Throws an error named `GenerationUnavailable` (with a `detail`) to refuse; the trigger then reads and sends nothing. When present it replaces `discovery`, `discoveryReceipt` and `runPipeline`. */
+  readonly openGeneration?: (context: GenerationOpenContext) => Promise<GenerationSession>;
+  /** The public-source policy act the screened read verifies; absent: this checkout's own record. */
+  readonly policyAct?: PublicSourcePolicyActPort;
   /** Runs the six-stage pipeline; absent until a real generate port exists. */
   readonly runPipeline?: (request: PipelineRequest) => Promise<PipelineResult>;
   /** Turns a finished pipeline result into the dossier's files (path -> content); the polaris-dossier-v1 renderer is injected here. */
@@ -106,15 +145,29 @@ export type TriggerOutcome =
       readonly requirements: readonly (AdmissionRequirement & { readonly answer: AdmissionAnswer })[]; readonly missing: number }
   | { readonly state: 'generation-unavailable' | 'generation-stopped' | 'generation-stopped-partial' | 'complete'; readonly target: GithubTarget; readonly revision: string; readonly runDir: string; readonly detail: string };
 
-const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
+/** The narrative budget when no provider session supplies one: the agreed profile (2 h wall clock, units, calls derived from the repair cycles). */
+const BUDGET: GenerationBudget = narrativeBudgetFor(DOSSIER_RUN_PROFILE);
 
-/** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
-export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
+const CONSENT_LABEL = /^[A-Za-z0-9._\/-]{1,200}$/u;
+
+/** What the gates before any read establish: the target under its record id, the pinned revision and where it came from, and every requirement answered satisfied. */
+export interface ResolvedAdmission {
+  readonly target: GithubTarget;
+  readonly pinned: { readonly revision: string; readonly resolvedRef: string };
+  readonly revisionSource: RevisionSource;
+  readonly records: AdmissionRecordsPort;
+  readonly requirements: readonly AdmissionRequirement[];
+  readonly checked: readonly (AdmissionRequirement & { readonly answer: AdmissionAnswer })[];
+}
+
+/** The gates shared by a run and by `--check`: parse, ls-remote (metadata only), one record id, the consented revision, and every admission record. Returns the first unmet gate as an outcome. Reads no repository object. */
+export async function resolveAdmission(rawUrl: string, ports: TriggerPorts = {}): Promise<ResolvedAdmission | TriggerOutcome> {
   let target: GithubTarget;
   try { target = parseGithubUrl(rawUrl); } catch (error) { return { state: 'invalid-input', reason: error instanceof Error ? error.message : 'invalid' }; }
-  let pinned: ReturnType<typeof pinRevision>;
-  try { pinned = pinRevision((ports.lsRemote ?? gitLsRemote)(target.url), target.ref); }
+  let pinned: ReturnType<typeof pinRevision>, lsOutput: string;
+  try { lsOutput = (ports.lsRemote ?? gitLsRemote)(target.url); pinned = pinRevision(lsOutput, target.ref); }
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
+  let revisionSource: RevisionSource = target.ref === undefined ? { from: 'url' } : { from: 'url', ref: target.ref };
   const records = ports.records ?? noAdmissionRecords;
   const idPattern = /^[A-Za-z0-9:_-]+$/u;
   // The port must answer an array of exactly one valid id; anything else (none, several, duplicates, a malformed element, a non-array, a throw) is an unmet gate.
@@ -130,49 +183,114 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements, missing: requirements.length };
   }
   target = { ...target, repositoryId: sole };
+  const unmet = (why: string): TriggerOutcome => {
+    const unmetRequirements = admissionRequirements(target, pinned.revision).map(requirement => ({ ...requirement, answer: { satisfied: false as const, why } }));
+    return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: unmetRequirements, missing: unmetRequirements.length };
+  };
+  if (target.ref === undefined && records.consentedRevisionsFor !== undefined) {
+    // A bare URL runs at the revision the observation consent admits, when it admits exactly one; the tip of the default branch has no consent that names it.
+    let consented: unknown;
+    try { consented = await records.consentedRevisionsFor(sole); } catch { consented = undefined; }
+    const sound = Array.isArray(consented) && consented.every((entry): entry is ConsentedRevision => entry !== null && typeof entry === 'object'
+      && typeof (entry as ConsentedRevision).label === 'string' && /^[0-9a-f]{40}$|^[0-9a-f]{64}$/u.test(String((entry as ConsentedRevision).commitId)));
+    if (!sound) return unmet(`the record store gave a malformed list of consented revisions for ${sole}`);
+    const revisions = consented as readonly ConsentedRevision[];
+    if (revisions.length > 1) {
+      return unmet(`the observation consent admits ${revisions.length} revisions of ${target.url} (${revisions.map(entry => entry.label).join(', ')}); the URL names none, so none is chosen. Add /tree/<ref> to the URL to pick one`);
+    }
+    if (revisions.length === 1) {
+      const only = revisions[0]!;
+      if (!CONSENT_LABEL.test(only.label) || only.label.split('/').some(part => part === '..')) return unmet(`the consented revision label ${JSON.stringify(only.label)} is not a usable tag or ref name; add /tree/<ref> to the URL`);
+      try { pinned = pinRevision(lsOutput, only.label); }
+      catch (error) { return { state: 'unresolved-revision', reason: `consented revision ${only.label}: ${error instanceof Error ? error.message : 'ls-remote-failed'}` }; }
+      if (pinned.revision !== only.commitId) {
+        return unmet(`the consented revision ${only.label} now resolves to ${pinned.revision}, but the consent admits ${only.commitId}; the ref has moved, so nothing is read`);
+      }
+      revisionSource = { from: 'consent', label: only.label, commitId: only.commitId };
+    }
+  }
   const requirements = admissionRequirements(target, pinned.revision);
   const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
   const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
   if (missing > 0) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };
+  return { target, pinned, revisionSource, records, requirements, checked };
+}
+
+/** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
+export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
+  const resolved = await resolveAdmission(rawUrl, ports);
+  if ('state' in resolved) return resolved;
+  const { target, pinned, revisionSource, records, requirements, checked } = resolved;
 
   const defaultOut = ports.outDir === undefined ? mkdtempSync(join(tmpdir(), 'syzygy-dossier-')) : undefined;
   const runDir = ports.outDir ?? join(defaultOut!, 'site');
   const checkoutDir = join(mkdtempSync(join(tmpdir(), 'syzygy-dossier-src-')), 'repo');
+  let session: GenerationSession | undefined;
+  const runStartedAt = (ports.now ?? Date.now)();
   try {
     // Refuse a misplaced run directory before the checkout, the reads or any provider call.
     // Limit: a directory created at runDir after this check (while the checkout and pipeline run) is caught by writeDossierRun, which throws run-directory-exists; the run is then lost, not recorded elsewhere.
     await checkDossierRunDestination(runDir);
     if (ports.materialize === undefined) return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'admission is satisfied but no checkout port is wired' };
+    // A provider-backed run is opened (credential, gate, state directory) before anything is fetched: a run that cannot generate reads nothing.
+    const egress = requirements.find(requirement => requirement.kind === 'egress-consent')!;
+    if (ports.openGeneration !== undefined) {
+      try { session = await ports.openGeneration({ target, revision: pinned.revision, runDir, egress, records }); }
+      catch (error) {
+        if (error instanceof Error && error.name === 'GenerationUnavailable') return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: (error as { detail?: string }).detail ?? error.message };
+        throw error;
+      }
+    }
     const checkout = await ports.materialize({ url: target.url, revision: pinned.revision, dir: checkoutDir });
     const permissionIdentity = checked.map(entry => (entry.answer as { record: string }).record).join('+');
     const admission: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity }) };
     const config: ReaderConfig = { repositoryId: target.repositoryId, revision: pinned.revision, include: ports.include ?? ['**'], exclude: ports.exclude ?? [],
-      readerQuestions: DOSSIER_READER_QUESTIONS, requestedAssets: DOSSIER_REQUESTED_ASSETS, budget: BUDGET, oversize: 'split' };
-    const corpus: RepoCorpus = await readRepoCorpus(checkout, config, { admission });
-    // A provider call is permitted only while the egress record that admitted this run still holds.
-    const egress = requirements.find(requirement => requirement.kind === 'egress-consent')!;
-    const permitted = async (): Promise<boolean> => soundAnswer(await records.check(egress)).satisfied === true;
+      readerQuestions: DOSSIER_READER_QUESTIONS, requestedAssets: DOSSIER_REQUESTED_ASSETS, budget: BUDGET, oversize: 'split',
+      ...(session === undefined ? {} : { routes: session.routes }) };
+    // Every blob is screened against the public-source policy before any of it is carried further; a missing or unverifiable policy act refuses the read.
+    let corpus: RepoCorpus;
+    try { corpus = await readScreenedRepoCorpus(checkout, config, { admission, ...(ports.policyAct === undefined ? {} : { policyAct: ports.policyAct }) }); }
+    catch (error) {
+      if (!(error instanceof CorpusRefusal)) throw error;
+      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: `corpus-refused: ${error.message}` };
+    }
+    // A provider call is permitted only while the egress record that admitted this run still holds (and, with a session, its stage and budget limits).
+    const permitted = async (call: DiscoveryCall): Promise<boolean> => soundAnswer(await records.check(egress)).satisfied === true && (session === undefined || await session.discoveryPermitted(call));
+    const discoveryPorts = session?.discovery ?? ports.discovery, receiptSink = session?.discoveryReceipt ?? ports.discoveryReceipt;
+    const wall = new AbortController();
+    const wallTimer = session === undefined ? undefined : setTimeout(() => wall.abort(), session.wallClockMs);
     let discovery: Awaited<ReturnType<typeof discoverAndSelect>>;
     try {
-      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DOSSIER_DISCOVERY_BUDGET,
-        { permitted, ...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),
-          ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
+      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), session?.discoveryBudget ?? DOSSIER_DISCOVERY_BUDGET,
+        { permitted, ...(discoveryPorts?.map === undefined ? {} : { map: discoveryPorts.map }), ...(discoveryPorts?.reduce === undefined ? {} : { reduce: discoveryPorts.reduce }),
+          ...(receiptSink === undefined ? {} : { receipt: receiptSink }) }, wall.signal);
     } catch (error) {
       if (!(error instanceof DiscoveryRefusal)) throw error;
-      const refused = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count, discoveryRefusal: error.reason };
+      const refused = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, revisionSource, permissionIdentity, corpusCount: corpus.count, discoveryRefusal: error.reason,
+        ...(session === undefined ? {} : { generation: session.record() }) };
       const written = await writeDossierRun(runDir, new Map([['run-record.json', `${JSON.stringify(refused, null, 2)}\n`]]));
       return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: `discovery-refused: ${error.reason}` };
     }
+    finally { if (wallTimer !== undefined) clearTimeout(wallTimer); }
     const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
-    const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
+    const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, revisionSource, permissionIdentity, corpusCount: corpus.count,
       discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
-    const recordFile = ['run-record.json', `${JSON.stringify(record, null, 2)}\n`] as const;
-    if (ports.runPipeline === undefined) {
-      const written = await writeDossierRun(runDir, new Map([recordFile]));
+    // Written last, so the accounting of the narrative is in it.
+    const recordFile = (): readonly [string, string] => ['run-record.json', `${JSON.stringify({ ...record, ...(session === undefined ? {} : { generation: session.record() }) }, null, 2)}\n`];
+    const runPipeline = session === undefined ? ports.runPipeline : (request: PipelineRequest) => session!.runPipeline(request, new AbortController().signal);
+    if (runPipeline === undefined) {
+      const written = await writeDossierRun(runDir, new Map([recordFile()]));
       return { state: 'generation-unavailable', target, revision: pinned.revision, runDir: written, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
     }
-    const request = { ...buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)()), promptProfile: 'dossier' as const };
-    const result = await ports.runPipeline(request);
+    const startedAt = (ports.now ?? Date.now)();
+    // The wall clock covers the whole run: what discovery used is gone from the narrative's allowance.
+    const budget = session === undefined ? config.budget : session.narrativeBudget(startedAt - runStartedAt);
+    if (budget.maxElapsedMs <= 0) {
+      const written = await writeDossierRun(runDir, new Map([recordFile()]));
+      return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: 'wall-clock-exhausted: discovery used the whole run allowance' };
+    }
+    const request = { ...buildPipelineRequest({ ...corpus, sources: discovery.sources }, { ...config, budget }, startedAt), promptProfile: 'dossier' as const };
+    const result = await runPipeline(request);
     if (result.status === 'stopped') {
       // Render what the completed stages support; a renderer that cannot (no usable artifact) leaves the record alone.
       let partial: ReadonlyMap<string, string> | undefined;
@@ -180,23 +298,25 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
         try { partial = ports.render({ result, sources: discovery.sources }).files; }
         catch (error) { if (!(error instanceof Error) || error.name !== 'DossierRenderError') throw error; }
       }
-      if (partial !== undefined && partial.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');
-      const written = await writeDossierRun(runDir, new Map([...(partial ?? []), recordFile]));
+      if (partial !== undefined && partial.has(recordFile()[0])) throw new Error('renderer-collides-with-run-record');
+      const written = await writeDossierRun(runDir, new Map([...(partial ?? []), recordFile()]));
       return partial === undefined
         ? { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: result.reason }
         : { state: 'generation-stopped-partial', target, revision: pinned.revision, runDir: written, detail: `${result.reason}; ${partial.size} files rendered from ${result.artifacts.length} completed stage outputs` };
     }
     if (ports.render === undefined) {
-      const written = await writeDossierRun(runDir, new Map([recordFile, ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));
+      const written = await writeDossierRun(runDir, new Map([recordFile(), ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));
       return { state: 'generation-unavailable', target, revision: pinned.revision, runDir: written, detail: 'the pipeline finished but no renderer is wired; the result is recorded unrendered' };
     }
     const rendered = ports.render({ result, sources: discovery.sources });
-    if (rendered.files.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');
-    const written = await writeDossierRun(runDir, new Map([...rendered.files, recordFile]));
+    if (rendered.files.has(recordFile()[0])) throw new Error('renderer-collides-with-run-record');
+    const written = await writeDossierRun(runDir, new Map([...rendered.files, recordFile()]));
     return { state: 'complete', target, revision: pinned.revision, runDir: written, detail: `${rendered.files.size} files` };
   } finally {
     rmSync(dirname(checkoutDir), { recursive: true, force: true });
-    if (defaultOut !== undefined && !existsSync(runDir)) rmSync(defaultOut, { recursive: true, force: true });
+    // A run that opened generation keeps its state directory (journals, receipts, consent audit) even when no run directory was written.
+    if (session !== undefined) await session.close();
+    else if (defaultOut !== undefined && !existsSync(runDir)) rmSync(defaultOut, { recursive: true, force: true });
   }
 }
 
