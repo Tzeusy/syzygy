@@ -174,3 +174,19 @@ export function buildExcerpt(path: string, text: string, base: number, maxChars:
   const head = cut(text, maxChars);
   return { text: head, kind: 'head', ranges: head === '' ? [] : [[base, base + Buffer.byteLength(head, 'utf8')]], licenceSkipped: null };
 }
+
+/** Characters in the first non-licence comment block at the top of a C-family file (the author's own account of the unit), 0 for any other file or when there is none. Linear in the text. */
+export function leadingCommentChars(path: string, text: string): number {
+  if (!(C_FAMILY as readonly string[]).includes(extensionOf(path.split('/').at(-1) ?? ''))) return 0;
+  const lines = splitLines(text);
+  const { next } = skipLicence(lines);
+  for (let i = next; i < lines.length; i++) {
+    const t = lines[i]!.text;
+    if (t.trim() === '') continue;
+    if (!(t.startsWith('/*') || t.startsWith('//'))) return 0;
+    const end = commentEnd(lines, i);
+    if (end === -1 || hasMarker(lines.slice(i, end))) return 0;
+    return lines.slice(i, end).reduce((n, line) => n + line.text.length, 0);
+  }
+  return 0;
+}
