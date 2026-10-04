@@ -220,7 +220,8 @@ Authorized implementation work (generator implementation authorization,
         bytes do not move: a group's items stay in path order and the model
         calls never see the prior; only which groups are mapped when calls run
         short, and the order of the no-model fallback, can change. Evidence
-        `docs/evidence/discovery-role-prior-2026-10-04.json`.
+        `docs/evidence/discovery-role-prior-2026-10-04.json` (23 mutants, 21
+        killed, 2 documented equivalent).
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
