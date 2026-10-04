@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 
-import { DEFAULT_DISCOVERY_BUDGET, DOSSIER_READER_QUESTIONS, buildExcerpt, discoverAndSelect, quotableGenerationSources, type DiscoveryBudget, type DiscoveryResult, type GenerationSource } from '@syzygy/polaris-generation-core';
+import { DEFAULT_DISCOVERY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_READER_QUESTIONS, buildExcerpt, discoverAndSelect, quotableGenerationSources, type DiscoveryBudget, type DiscoveryResult, type GenerationSource } from '@syzygy/polaris-generation-core';
 
-import { CORE_FILES, buildRedisShapedFixture, redisShapedFiles, type RedisShapedFixture } from './redis-shaped-fixture.js';
+import { CORE_FILES, DESIGN_DOCS, buildRedisShapedFixture, redisShapedFiles, type RedisShapedFixture } from './redis-shaped-fixture.js';
 import { readRepoCorpus, type RepoCorpus } from './repo-corpus.js';
 
 const VENDORED = /^(?:deps|vendor|third_party)\//u;
@@ -98,4 +98,46 @@ export async function measureRedisShapedDiscovery(dir: string, budget: Discovery
       deferredVendored: [...deferredPaths].filter(path => VENDORED.test(path)).length,
       closes: result.report.selected.blobs + result.report.deferred.length === result.report.population.candidateBlobs },
   } };
+}
+
+export interface DossierCapMeasurement {
+  readonly selectedBytes: number;
+  readonly selectedBlobs: number;
+  readonly partialBlobs: number;
+  /** Core-mechanism files with at least one piece read, of the 18 the fixture names. */
+  readonly coreRead: number;
+  readonly coreReadBytes: number;
+  readonly designDocsRead: number;
+  /** Quotable text read, by class: design documents, other prose, source files, configuration, tests, vendored, release notes, build files. */
+  readonly bytesByClass: Readonly<Record<string, number>>;
+}
+
+const classOf = (path: string): string => {
+  if (VENDORED.test(path)) return 'vendored';
+  if (/^tests?\//u.test(path)) return 'tests';
+  if (/\.(?:conf|cfg|ini|toml|ya?ml|json)$/u.test(path)) return 'configuration';
+  if (/(?:^|\/)(?:Makefile|CMakeLists\.txt)$|\.(?:mk|cmake)$/u.test(path)) return 'build';
+  if (/release-?notes|changelog|changes|history|news/iu.test(path)) return 'release-notes';
+  if ((DESIGN_DOCS as readonly string[]).includes(path)) return 'design-docs';
+  if (/\.(?:md|rst|txt|adoc)$/u.test(path)) return 'other-prose';
+  return 'source';
+};
+
+/** Heuristic-only discovery (no model) on the design-prose variant of the fixture under the dossier budget, and what it read, by class. */
+export async function measureDossierCapSelection(dir: string): Promise<DossierCapMeasurement> {
+  const fixture = buildRedisShapedFixture(dir, { designProse: true });
+  const corpus = await readRepoCorpus(dir, { repositoryId: 'repository:synthetic-kv-server', revision: fixture.commit, include: ['**'], exclude: [], oversize: 'split' },
+    { admission: { decide: async () => ({ allowed: true, permissionIdentity: 'synthetic-fixture-consent-v1' }) } });
+  const result = await discoverAndSelect(corpus.sources, DOSSIER_READER_QUESTIONS.map(question => question.text), DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
+  const bytesByClass: Record<string, number> = {};
+  const read = new Map<string, number>();
+  for (const source of result.sources) {
+    if (source.exclusion.excluded || source.spans.length === 0) continue;
+    const bytes = source.spans.reduce((n, span) => n + Buffer.byteLength(span.text, 'utf8'), 0);
+    read.set(source.path, (read.get(source.path) ?? 0) + bytes);
+    bytesByClass[classOf(source.path)] = (bytesByClass[classOf(source.path)] ?? 0) + bytes;
+  }
+  const core = Object.values(CORE_FILES).flat() as string[];
+  return { selectedBytes: result.report.bytes.selected, selectedBlobs: result.report.selected.blobs, partialBlobs: result.report.partialBlobs, coreRead: core.filter(path => read.has(path)).length,
+    coreReadBytes: core.reduce((n, path) => n + (read.get(path) ?? 0), 0), designDocsRead: DESIGN_DOCS.filter(path => read.has(path)).length, bytesByClass };
 }
