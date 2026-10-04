@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { COMMENT_BONUS_MAX, CONFIGURATION_PENALTY, BUILD_PENALTY, HISTORY_PENALTY, SOURCE_ROOT_BONUS, DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { digestCanonicalJson } from './canonical-json.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
@@ -111,7 +111,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(100_001)))).toBe(flat + 6 - 1);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(300_000)))).toBe(flat + 8 - 2);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(600_000)))).toBe(flat + 8 - 5);
-    expect(score('deps/a/b.c', 500)).toBe(flat - 1002);
+    expect(score('deps/a/b.c', 500)).toBe(flat - 1002 - SOURCE_ROOT_BONUS);   // no source-root bonus under deps/
   });
 
   it('prefers the larger of two same-depth files when the cap fits one, whatever their path order', async () => {
@@ -672,5 +672,55 @@ describe('selection under a byte cap', () => {
     const replay = await reportFromReceipts(files, Q, { ...budget, maxSelectedBytes: 2500 }, ports.receipts, RUN_KEY);
     expect(replay.report).toEqual(live.report);
     expect(replay.report.bytes).toEqual({ selected: 2300, deferred: 5000, cap: 2500 });
+  });
+});
+
+describe('role signals of the prior', () => {
+  const score = (path: string, body = 'int x;\n'): number => heuristicScore(path, make(path, body));
+  const same = (a: string, b: string): number => score(a) - score(b);
+
+  it('ranks a source root above the rest of the tree at the same depth, and not a bare top-level file', () => {
+    expect(same('src/a.c', 'extra/a.c')).toBe(SOURCE_ROOT_BONUS);
+    expect(same('lib/a.c', 'extra/a.c')).toBe(SOURCE_ROOT_BONUS);
+    expect(score('src')).toBe(score('other'));
+  });
+
+  it('ranks configuration, build and history files below source and prose', () => {
+    expect(same('src/a.c', 'src/a.conf')).toBe(CONFIGURATION_PENALTY * -1);
+    for (const name of ['a.toml', 'a.yaml', 'a.yml', 'a.json', 'a.ini', 'a.xml', 'a.lock']) expect(same('src/a.c', `src/${name}`), name).toBe(CONFIGURATION_PENALTY * -1);
+    for (const name of ['Makefile', 'CMakeLists.txt', 'rules.mk', 'a.cmake', 'Dockerfile']) expect(same('src/a.c', `src/${name}`), name).toBe(BUILD_PENALTY * -1);
+    for (const name of ['CHANGELOG', 'RELEASE-NOTES', 'HISTORY.txt', 'news.txt']) expect(score(name) - score('plain'), name).toBeLessThanOrEqual(HISTORY_PENALTY + 10);
+    expect(score('docs/internals.md')).toBeGreaterThan(score('src/a.c'));
+  });
+
+  it('names more design documents: rationale, notes, implementation', () => {
+    for (const name of ['RATIONALE.md', 'NOTES.md', 'IMPLEMENTATION.md', 'how-it-works.md']) expect(score(name) - score('zzz.md'), name).toBe(50);
+  });
+
+  it('adds a bonus that doubles with the size of the file\'s own opening comment, to a maximum, and ignores a licence block', () => {
+    const comment = (chars: number): string => `/* ${'a'.repeat(chars)} */\nint x;\n`;
+    const base = score('src/a.c', 'int x;\n');
+    expect(score('src/a.c', comment(50)) - base).toBe(0);
+    expect(score('src/a.c', comment(400)) - base).toBe(1);
+    expect(score('src/a.c', comment(1600)) - base).toBe(3);
+    expect(score('src/a.c', comment(10_000_00 / 10)) - base).toBeLessThanOrEqual(COMMENT_BONUS_MAX);
+    // Controls of the same length whose comment is not the file's opening one.
+    const licence = `/* Copyright (c) someone. ${'a'.repeat(3000)} */\nint x;\n`;
+    expect(score('src/a.c', licence)).toBe(score('src/a.c', `int y;\n${licence}`));
+    const after = `/* Copyright (c) someone. */\n${comment(1600)}`;
+    expect(score('src/a.c', after) - score('src/a.c', `int y;\n${after}`)).toBe(3);
+    expect(score('src/a.c', `int y;\n${comment(3000)}`)).toBe(score('src/a.c', `int y;\n${comment(3000)}`));
+    expect(score('docs/a.md', comment(3000))).toBe(score('docs/a.md', `int y;\n${comment(3000)}`));
+    expect(score('src/a.c', `// ${'a'.repeat(400)}\nint x;\n`) - base).toBe(1);
+  });
+
+  it('puts documented core code ahead of undocumented code and configuration under a byte cap', async () => {
+    const documented = make('src/core.c', `/* ${'The core does this and that. '.repeat(60)} */\n${'int f(void);\n'.repeat(250)}`);
+    const plain = make('src/plain.c', 'int f(void);\n'.repeat(400));
+    const conf = make('server.conf', 'port 1\n'.repeat(900));
+    const notes = make('RELEASE-NOTES', 'fixed a bug\n'.repeat(900));
+    const { sources } = await discoverAndSelect([...conf, ...notes, ...plain, ...documented], Q, { ...budget, maxSelectedBytes: 6000 }, { permitted: allow, runKey: RUN_KEY });
+    const kept = sources.filter(source => !source.exclusion.excluded && source.spans.length > 0).map(source => source.path);
+    expect(kept).toEqual(['src/core.c']);
   });
 });

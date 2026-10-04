@@ -15,7 +15,7 @@
  */
 
 import { digestCanonicalJson } from './canonical-json.js';
-import { buildExcerpt, type ExcerptKind, type ExcerptRange } from './excerpt.js';
+import { buildExcerpt, leadingCommentChars, type ExcerptKind, type ExcerptRange } from './excerpt.js';
 import { excludedSourceId, newGenerationRunKey, type GenerationSource } from './generation-source.js';
 
 export const DEFERRED_BY_BUDGET = 'deferred-by-budget';
@@ -151,14 +151,34 @@ export const VENDORED_TIER = -1000;
 /** Size bonus ceiling, in doublings of 1 KiB of quotable text (256 KiB and above earn the same). */
 export const SIZE_BONUS_MAX = 8;
 
+const SOURCE_ROOT = /^(src|lib|libs|source|sources|core|pkg|internal|app|apps|cmd|crates|include)$/iu;
+const CONFIGURATION = /\.(conf|cfg|ini|toml|ya?ml|json|xml|properties|env|lock)$/iu;
+const BUILD_FILE = /^(makefile|gnumakefile|cmakelists\.txt|dockerfile|rakefile|build\.gradle|pom\.xml)$|\.(mk|cmake|gradle|bzl)$/iu;
+const HISTORY_FILE = /(release[-_ ]?notes?|changelog|changes|history|news)/iu;
+export const SOURCE_ROOT_BONUS = 10;
+export const CONFIGURATION_PENALTY = -20;
+export const BUILD_PENALTY = -15;
+export const HISTORY_PENALTY = -15;
+/** A leading comment of this many characters earns one point, doubling per point to the maximum. */
+export const COMMENT_BONUS_UNIT = 200;
+export const COMMENT_BONUS_MAX = 8;
+
 /** Path-and-size prior used as the fallback ranking and as the tie-break. */
 export function heuristicScore(path: string, pieces: readonly GenerationSource[]): number {
   const parts = path.split('/'), name = (parts.at(-1) ?? '').toLowerCase();
   let score = 0;
-  if (/^(readme|overview|architecture|design|concepts?|internals?|contributing|index)(\.|$)/u.test(name)) score += 50;
+  if (/^(readme|overview|architecture|design|concepts?|internals?|contributing|index|rationale|notes|implementation|how[-_ ]it[-_ ]works)(\.|$)/u.test(name)) score += 50;
   if (parts.slice(0, -1).some(part => /^(docs?|documentation|design|architecture)$/iu.test(part))) score += 30;
-  if (/\.(md|rst|txt|adoc)$/u.test(name)) score += 10;
+  if (/\.(md|rst|txt|adoc)$/u.test(name) && !BUILD_FILE.test(name)) score += 10;
   if (parts.slice(0, -1).some(part => /^(tests?|__tests__|spec|fixtures?|examples?)$/iu.test(part)) || /\.(test|spec)\./u.test(name)) score -= 20;
+  // Role signals, all generic. A source root outranks the rest of the tree; configuration, build and history files say little about how the project works and rank below prose and code.
+  if (SOURCE_ROOT.test(parts[0] ?? '') && parts.length > 1) score += SOURCE_ROOT_BONUS;
+  if (CONFIGURATION.test(name)) score += CONFIGURATION_PENALTY;
+  else if (BUILD_FILE.test(name)) score += BUILD_PENALTY;
+  if (HISTORY_FILE.test(name)) score += HISTORY_PENALTY;
+  // A file that opens with a long comment of its own explains itself: more of its head is worth reading.
+  const head = pieces[0]?.body ?? pieces[0]?.spans[0]?.text ?? '';
+  score += Math.min(COMMENT_BONUS_MAX, Math.floor(Math.log2(Math.max(1, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT))));
   // Among files the path rules do not separate, more quotable text means more substance; without this a tie fell to path order.
   const chars = pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + span.text.length, 0), 0);
   score += Math.min(SIZE_BONUS_MAX, Math.floor(Math.log2(Math.max(1, chars / 1024))));
