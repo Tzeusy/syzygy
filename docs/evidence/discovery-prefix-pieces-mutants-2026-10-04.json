@@ -1,0 +1,330 @@
+{
+  "subject": {
+    "commit": "38d04802a1a04d64a08fa3f399b8ce63ff10dda7",
+    "branch": "agent/dossier-prefix-pieces",
+    "fileSha256": {
+      "packages/polaris-generation-core/src/discovery.ts": "0784c8c189ad6ab0cdee340764c5cff7dabbfbdc468189043ff97826f8922df3",
+      "packages/polaris-generation-core/src/generation-source.ts": "47b8853ceced0b4d6b2563831a9e55ac1c66ef5fdee8ad9e30c7203f2b972c42",
+      "packages/polaris-generation-core/src/quote-fidelity.ts": "2f18f848195164d3faf634add026e9bb2b778608a6d635a4cc4af70bfa89ffcb"
+    },
+    "testFileSha256": {
+      "packages/polaris-generation-core/src/discovery.test.ts": "eedff459ae3ca6c5dcc0d70bb36e4a946b01618fb4e5f1d3ebe338a8f7659315",
+      "packages/polaris-generation-core/src/generation-source.test.ts": "349671600cff0fdea95816ee2b1b37fc66ee1bcb0221a9b21f9b55f1f0b0569f",
+      "packages/polaris-generation-core/src/quote-fidelity.test.ts": "55b1bafe6a588f5cd7283d6a5662daf94af618fdcc0059d9d50b26b86b956934"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-04T00:36:28+00:00",
+  "mutants": [
+    {
+      "id": "share-half",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.floor(byteCap / 4)",
+      "new": "Math.floor(byteCap / 2)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 57
+    },
+    {
+      "id": "share-ignored",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.min(roomBytes, share)",
+      "new": "roomBytes",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 57
+    },
+    {
+      "id": "room-ignored",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.min(roomBytes, share)",
+      "new": "share",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "limit-exclusive",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "takeBytes + pieceBytes(sorted[take]!) <= limit",
+      "new": "takeBytes + pieceBytes(sorted[take]!) < limit",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "count-room-ignored",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "take < total && take < roomCount &&",
+      "new": "take < total &&",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "partial-not-counted",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "      partialBlobs++;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "partial-deferred-bytes-whole",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "deferredBytes += blob.bytes - takeBytes;",
+      "new": "deferredBytes += blob.bytes;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "partial-deferred-bytes-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "deferredBytes += blob.bytes - takeBytes;",
+      "new": "deferredBytes += 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "selected-blobs-counts-partial",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "blobs: [...chosen].filter(([id, take]) => take === byId.get(id)!.pieces.length).length",
+      "new": "blobs: chosen.size",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "keeps-one-piece-too-many",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "source.segment.index < take)",
+      "new": "source.segment.index <= take)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 57
+    },
+    {
+      "id": "no-first-piece-branch-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    if (take === 0) {",
+      "new": "    if (false) {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 57
+    },
+    {
+      "id": "prefix-without-byte-cap",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    if (byteCap === undefined) {\n      if (used + total",
+      "new": "    if (false) {\n      if (used + total",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 57
+    },
+    {
+      "id": "note-range-from-zero",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "bytes ${from.start}..${from.blobBytes}",
+      "new": "bytes 0..${from.blobBytes}",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "note-piece-numbers",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "pieces ${take + 1}..${total} of ${total} not read",
+      "new": "pieces ${take}..${total} of ${total} not read",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 57
+    },
+    {
+      "id": "piece-bytes-by-chars",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "const pieceBytes = (piece: GenerationSource): number => quotableBytes([piece]);",
+      "new": "const pieceBytes = (piece: GenerationSource): number => piece.spans.reduce((n, span) => n + span.text.length, 0);",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "first-piece-not-deferred-whole-detail",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "not even the first piece (",
+      "new": "not the first piece (",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 57
+    },
+    {
+      "id": "unsplit-takes-share",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "    if (total === 1 || sorted[0]!.segment === undefined) {",
+      "new": "    if (false) {",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 57
+    },
+    {
+      "id": "validation-prefix-without-row",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "(complete ? blob.deferred : !blob.deferred || pieces.length >= pieces[0]!.count)",
+      "new": "(complete ? blob.deferred : pieces.length >= pieces[0]!.count)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 74
+    },
+    {
+      "id": "validation-complete-with-row",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "(complete ? blob.deferred : !blob.deferred ||",
+      "new": "(complete ? false : !blob.deferred ||",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 74
+    },
+    {
+      "id": "validation-prefix-as-complete",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "|| pieces.length >= pieces[0]!.count)) fail",
+      "new": "|| false)) fail",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 74
+    },
+    {
+      "id": "validation-any-excluded-is-deferred",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "else if (source.exclusion.excluded && source.exclusion.reason === DEFERRED_BY_BUDGET_REASON) blob.deferred = true;",
+      "new": "else if (source.exclusion.excluded) blob.deferred = true;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 74
+    },
+    {
+      "id": "validation-deferred-never-set",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "blob.deferred = true;",
+      "new": "blob.deferred = false;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 74
+    },
+    {
+      "id": "validation-gap-allowed",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end)",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts",
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 74
+    },
+    {
+      "id": "quote-pieces-require-count",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (ordered.some((piece, i) => piece.segment!.index !== i)) continue;",
+      "new": "if (ordered.length !== ordered[0]!.segment!.count || ordered.some((piece, i) => piece.segment!.index !== i)) continue;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 46
+    },
+    {
+      "id": "quote-gap-joined",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (ordered.some((piece, i) => piece.segment!.index !== i)) continue;",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 46,
+      "note": "Equivalent: a population with a gap in its pieces fails validateGenerationSources before sourceTextById reaches its grouping (quotableGenerationSources validates first), so the index-contiguity guard in the grouping is unreachable defence."
+    }
+  ]
+}

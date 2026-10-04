@@ -202,7 +202,9 @@ Authorized implementation work (generator implementation authorization,
         digests are unchanged. [Observed] on the Redis-shaped fixture with a
         model ranking that names the 18 core files, all 18 are read:
         `server.c` and `cluster_legacy.c` by their first ~100,000 bytes. A
-        `server.c` over 400,000 bytes contributes its first pieces too.
+        `server.c` over 400,000 bytes contributes its first pieces too. 25
+        mutants, 24 killed and 1 documented equivalent:
+        `docs/evidence/discovery-prefix-pieces-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
