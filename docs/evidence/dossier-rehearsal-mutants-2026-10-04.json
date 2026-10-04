@@ -1,16 +1,23 @@
 {
   "subject": {
-    "commit": "7fe00d96d5d6e753561bb2da338ac9018581acaf",
+    "commit": "7b12944a66e2367235a923857783c53cf94552d7",
     "branch": "agent/dossier-rehearsal",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts": "57285c8de17e9b79c14db1a3cca1a8168a8751f063f56bbb1e97fa4d30f8e9f7",
       "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts": "bd872dd1c1ccaf13ad41ef96f8d9332c1f87b5cc9ba743bb696f3089d8038567",
-      "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts": "fbf68d4122f30923bfca033de3d5b52723f04239b70783c611a3b4c65462c293"
+      "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts": "5dba17ee9df3add45440da766db3972a5e646537a9f9a3d00ba8d756fc6f33f4",
+      "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts": "f915fb00ab5f6bb1c3e484ba8539f6876009ca5b090b14b80a5439fb89da3a76"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts": "e491b12ec094e914672868128aaa1a197742edbe67b8cc216dc352d3365a3609",
+      "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts": "e51c99b0f051997107f950851c8ecf556d73f825f454e69c7683cf56878d617c"
     }
   },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T22:36:48+00:00",
+  "ranAt": "2026-10-04T00:01:54+00:00",
   "mutants": [
     {
       "id": "site-index-not-required",
@@ -447,7 +454,7 @@
     {
       "id": "selection-fit-unchecked",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
-      "old": "r.sources !== null && minimumUsageUnits(quotableBytes(r.sources)) <= (CEILING.inventory ?? 0),",
+      "old": "r.sources !== null && SOURCE_STAGES.every(stage => minimumUsageUnits(quotableBytes(r.sources!)) <= (CEILING[stage] ?? 0)),",
       "new": "true,",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
@@ -611,6 +618,42 @@
       "outcome": "killed",
       "failedTests": 13,
       "totalTests": 52
+    },
+    {
+      "id": "source-stages-checks-inventory-only",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "const SOURCE_STAGES = ['inventory', 'author', 'edit', 'fidelity'] as const;",
+      "new": "const SOURCE_STAGES = ['inventory'] as const;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "plan-cites-excluded-rows",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "inputs.sources.filter((s: Json) => s.excluded !== true).map(",
+      "new": "inputs.sources.map(",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "run-profile-byte-cap-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+      "old": "    maxSelectedBytes: DOSSIER_MAX_SELECTED_BYTES,\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
     }
   ]
 }
