@@ -253,6 +253,20 @@ Authorized implementation work (generator implementation authorization,
         `revisionSource` (`consent` with label and commit id, or `url`). 23
         mutants, all killed:
         `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
+  - [x] **`poc:dossier --check <url>` and a progress line.** `--check` runs
+        the gates a run passes before it reads (`resolveAdmission`, shared with
+        `runDossierTrigger`): parse, `ls-remote`, one record id, the consented
+        revision, every admission record. It needs no credential, route,
+        session or checkout, prints the pinned revision and its source, the
+        records found or missing and the budget arithmetic derived from the
+        run profile (including whether the 400,000-byte selection fits the
+        smallest source-carrying stage ceiling), and exits 2, 3, 4 or 5 like
+        the run; with `--route` it also refuses a route not in force. A run
+        writes one content-free line per finished provider call to stderr
+        (stage, units counted against the share, elapsed). Resume is not
+        built. 29 mutants, 27 killed and 2 documented (one equivalent by
+        typing, one not reached by any test here):
+        `docs/evidence/dossier-check-progress-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading

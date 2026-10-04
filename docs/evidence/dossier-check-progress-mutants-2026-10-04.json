@@ -1,0 +1,375 @@
+{
+  "subject": {
+    "commit": "b9b17673e7417194aa9e84ad3b1b6b0fc791fb21",
+    "branch": "agent/dossier-check",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-check.ts": "97aa162963a31f2d88542f597534e0f8966f7492d2e89225234fe52293493591",
+      "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts": "3292ba49595bf608099456aed49d486ba508e04b988a06b03b1466726b76ff62",
+      "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "3cfbb22e987fbd57e5d31f1ee0e40d793f6ca211cf784677509f1235039d83f9",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "dc87801e8060197317e0d65f0698680a2511e8d61803ce27be0b0314a30f2789"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts": "3a77030c6dc0351f4d8b359e016973ef3c3e58d921557b25cc11550868c0172b",
+      "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts": "f7ccb3d9bc44148454f3cfae857976f867491e371a4227e8cb9c38ea4c384753",
+      "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts": "6d605efda404acb5f871f8e422b6af042e0b63b45c91020b61759b200472e2d9"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-04T01:34:03+00:00",
+  "mutants": [
+    {
+      "id": "check-branch-off",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "  if (check) {\n    // The same gates",
+      "new": "  if (false) {\n    // The same gates",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 14
+    },
+    {
+      "id": "check-exit-always-zero",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "return checked.state === 'check-ready' ? 0 : EXIT[checked.state] ?? 1;",
+      "new": "return 0;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "check-route-required",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "if (!check && (route === undefined ||",
+      "new": "if ((route === undefined ||",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 14
+    },
+    {
+      "id": "check-out-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "if (check && outDir !== undefined)",
+      "new": "if (false)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "check-unknown-route-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "if (check && route !== undefined && !(DOSSIER_ROUTES",
+      "new": "if (false && !(DOSSIER_ROUTES",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "check-route-registry-skipped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "route === undefined ? { inForce: true as const } : await routeInForce(",
+      "new": "true ? { inForce: true as const } : await routeInForce(",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "check-opens-generation-and-reads",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "  const resolved = await resolveAdmission(rawUrl, ports);\n  if ('state' in resolved) return resolved;",
+      "new": "  const resolved = await resolveAdmission(rawUrl, ports);\n  if ('state' in resolved) return resolved;\n  await (ports as { materialize?: () => Promise<void> }).materialize?.();",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 14,
+      "note": "equivalent by construction: checkDossier is typed to receive only lsRemote and records, so a materialize port can never reach it; the not-called assertions in the main tests cover the real boundary"
+    },
+    {
+      "id": "gate-missing-threshold",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (missing > 0) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };\n  return { target",
+      "new": "if (missing > 2) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };\n  return { target",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 14
+    },
+    {
+      "id": "revision-source-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "revisionSource: resolved.revisionSource, source",
+      "new": "revisionSource: { from: 'url' }, source",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "records-source-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "source: resolved.records.source,",
+      "new": "source: 'none',",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "requirements-unlisted",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "requirements: resolved.checked, budget",
+      "new": "requirements: [], budget",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "repair-cycles-ceil",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "Math.floor(headroom / cycle)",
+      "new": "Math.ceil(headroom / cycle)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "repair-cycles-uncapped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "Math.min(profile.maxRepairCycles, Math.max(0, Math.floor(headroom / cycle)))",
+      "new": "Math.max(0, Math.floor(headroom / cycle))",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "repair-cycle-without-fidelity",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "const cycle = stages.repair + stages.fidelity;",
+      "new": "const cycle = stages.repair;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 14
+    },
+    {
+      "id": "fits-strict",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "minimum <= sourceCeiling",
+      "new": "minimum < sourceCeiling",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "source-ceiling-max",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "Math.min(stages.inventory, stages.author, stages.edit, stages.fidelity)",
+      "new": "Math.max(stages.inventory, stages.author, stages.edit, stages.fidelity)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "base-omits-plan",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "stages.inventory + stages.plan + stages.author",
+      "new": "stages.inventory + stages.author",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 14
+    },
+    {
+      "id": "discovery-calls-ceil",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "Math.floor(profile.owner.discoveryUnits / profile.owner.discoveryCallUnits)",
+      "new": "Math.ceil(profile.owner.discoveryUnits / profile.owner.discoveryCallUnits)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "ready-line-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-check.ts",
+      "old": "'READY: every gate before a read is satisfied. Nothing was read and no provider was called.', ''",
+      "new": "''",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 14
+    },
+    {
+      "id": "progress-hours-boundary",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "seconds >= 3600 ?",
+      "new": "seconds > 3600 ?",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "progress-minutes-boundary",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "seconds >= 60 ?",
+      "new": "seconds > 60 ?",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "progress-negative-elapsed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "Math.max(0, Math.round(elapsedMs / 1000))",
+      "new": "Math.round(elapsedMs / 1000)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "progress-unknown-hidden",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "const unknown = call.usageUnknown ?",
+      "new": "const unknown = false ?",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "share-phase-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "calls.filter(entry => entry.phase === phase)",
+      "new": "calls.filter(entry => true)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "share-units-swapped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "units: phase === 'discovery' ? profile.owner.discoveryUnits : narrativeUnits(profile)",
+      "new": "units: phase === 'discovery' ? narrativeUnits(profile) : profile.owner.discoveryUnits",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 14
+    },
+    {
+      "id": "progress-never-written",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "if (options.progress !== undefined) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "progress-throw-escapes",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "catch { /* a closed stderr must not fail the run */ }",
+      "new": "catch (error) { throw error; }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "progress-after-call-only-first",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "const share = shareProgress(phase, calls, profile);",
+      "new": "const share = shareProgress(phase, calls.slice(0, 1), profile);",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "main-passes-no-progress",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "apiKey: apiKey ?? '', root, now, progress: err,",
+      "new": "apiKey: apiKey ?? '', root, now,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 23,
+      "note": "not killed: reaching the progress argument needs main to build the production session over a wired records port and a provider factory, which no test in this branch drives; per-call lines are pinned at openGeneration (progress-never-written) and the rehearsal (#345) is the place to assert them end to end"
+    }
+  ]
+}
