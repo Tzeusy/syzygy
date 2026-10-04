@@ -115,6 +115,24 @@ const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOut
 
 const CONSENT_LABEL = /^[A-Za-z0-9._\/-]{1,200}$/u;
 
+/** A dense copy of the consented revisions as primitive strings, or undefined when the answer is not an array of well-formed entries (holes, non-objects, a non-string label, a commit id that is not 40 or 64 hex digits, a throwing getter). */
+function snapshotConsented(answer: unknown): readonly ConsentedRevision[] | undefined {
+  if (!Array.isArray(answer)) return undefined;
+  const out: ConsentedRevision[] = [];
+  try {
+    const length = answer.length;
+    for (let index = 0; index < length; index++) {
+      if (!(index in answer)) return undefined;
+      const entry: unknown = answer[index];
+      if (entry === null || typeof entry !== 'object') return undefined;
+      const { label, commitId } = entry as { label?: unknown; commitId?: unknown };
+      if (typeof label !== 'string' || typeof commitId !== 'string' || !/^[0-9a-f]{40}$|^[0-9a-f]{64}$/u.test(commitId)) return undefined;
+      out.push({ label, commitId });
+    }
+  } catch { return undefined; }
+  return out;
+}
+
 /** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
 export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
   let target: GithubTarget;
@@ -142,23 +160,28 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const unmetRequirements = admissionRequirements(target, pinned.revision).map(requirement => ({ ...requirement, answer: { satisfied: false as const, why } }));
     return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: unmetRequirements, missing: unmetRequirements.length };
   };
-  if (target.ref === undefined && records.consentedRevisionsFor !== undefined) {
+  // The record store is untrusted: its property, its call, its array and each entry are read once, inside this block, and only primitive snapshots are used afterwards.
+  let consentFn: AdmissionRecordsPort['consentedRevisionsFor'], consented: unknown, consultable = true;
+  if (target.ref === undefined) {
+    try { consentFn = records.consentedRevisionsFor; if (consentFn !== undefined) consented = await consentFn.call(records, sole); } catch { consultable = false; }
+  }
+  if (target.ref === undefined && (consentFn !== undefined || !consultable)) {
     // A bare URL runs at the revision the observation consent admits, when it admits exactly one; the tip of the default branch has no consent that names it.
-    let consented: unknown;
-    try { consented = await records.consentedRevisionsFor(sole); } catch { consented = undefined; }
-    const sound = Array.isArray(consented) && consented.every((entry): entry is ConsentedRevision => entry !== null && typeof entry === 'object'
-      && typeof (entry as ConsentedRevision).label === 'string' && /^[0-9a-f]{40}$|^[0-9a-f]{64}$/u.test(String((entry as ConsentedRevision).commitId)));
-    if (!sound) return unmet(`the record store gave a malformed list of consented revisions for ${sole}`);
-    const revisions = consented as readonly ConsentedRevision[];
+    const revisions = consultable ? snapshotConsented(consented) : undefined;
+    if (revisions === undefined) return unmet(`the record store gave a malformed list of consented revisions for ${sole}`);
     if (revisions.length > 1) {
-      return unmet(`the observation consent admits ${revisions.length} revisions of ${target.url} (${revisions.map(entry => entry.label).join(', ')}); the URL names none, so none is chosen. Add /tree/<ref> to the URL to pick one`);
+      return unmet(`the observation consent admits ${revisions.length} revisions of ${target.url} (${revisions.map(entry => entry.label).join(', ')}); the URL names none, so none is chosen. Add /tree/<ref> to the URL to pick one`)
     }
     if (revisions.length === 1) {
       const only = revisions[0]!;
-      if (!CONSENT_LABEL.test(only.label) || only.label.split('/').some(part => part === '..')) return unmet(`the consented revision label ${JSON.stringify(only.label)} is not a usable tag or ref name; add /tree/<ref> to the URL`);
+      if (!CONSENT_LABEL.test(only.label) || only.label.split('/').some(part => part === '..')) return unmet(`the consented revision label ${JSON.stringify(only.label)} is not a usable tag or ref name; add /tree/<ref> to the URL`)
+      // The consent names this ref, so a ref the remote no longer lists is an unmet admission, not an unresolvable URL.
       try { pinned = pinRevision(lsOutput, only.label); }
-      catch (error) { return { state: 'unresolved-revision', reason: `consented revision ${only.label}: ${error instanceof Error ? error.message : 'ls-remote-failed'}` }; }
+      catch (error) { return unmet(`the consented revision ${only.label} cannot be resolved with git ls-remote (${error instanceof Error ? error.message : 'ls-remote-failed'}); nothing is read`); }
       if (pinned.revision !== only.commitId) {
+        if (lsOutput.split('\n').some(line => line === `${only.commitId}\trefs/tags/${only.label}`)) {
+          return unmet(`the consent records the tag object of ${only.label} (${only.commitId}), not the commit it peels to (${pinned.revision}); record the commit id. Nothing is read`);
+        }
         return unmet(`the consented revision ${only.label} now resolves to ${pinned.revision}, but the consent admits ${only.commitId}; the ref has moved, so nothing is read`);
       }
       revisionSource = { from: 'consent', label: only.label, commitId: only.commitId };

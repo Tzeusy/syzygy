@@ -122,20 +122,84 @@ describe('a URL without a ref runs at the revision the observation consent admit
     }
   });
 
-  it('refuses when the consented tag has moved, naming both commits, and reads nothing', async () => {
-    const records = withConsent(async () => [{ label: '8.0.0', commitId: SHA_B }]);
+  it('refuses when the consented tag has moved to another commit, naming both, and reads nothing', async () => {
+    const SHA_D = 'd'.repeat(40);
+    const records = withConsent(async () => [{ label: '8.0.0', commitId: SHA_D }]);
     const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
     expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, missing: 3 });
     const text = formatOutcome(outcome);
     expect(text).toContain(`now resolves to ${SHA_C}`);
-    expect(text).toContain(`admits ${SHA_B}`);
+    expect(text).toContain(`admits ${SHA_D}`);
     expect(text).toContain('has moved');
     expect(records.check).not.toHaveBeenCalled();
   });
 
-  it('says unresolved-revision when the consented label is not in the remote refs', async () => {
+  it('says the consent records the tag object, not the commit, when the consented id is the annotated tag itself', async () => {
+    const records = withConsent(async () => [{ label: '8.0.0', commitId: SHA_B }]);
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, missing: 3 });
+    const text = formatOutcome(outcome);
+    expect(text).toContain(`records the tag object of 8.0.0 (${SHA_B}), not the commit it peels to (${SHA_C})`);
+    expect(text).not.toContain('has moved');
+    expect(records.check).not.toHaveBeenCalled();
+  });
+
+  it('an unpeeled lightweight tag is its own commit: a consent recording it resolves', async () => {
+    const records = withConsent(async () => [{ label: 'light', commitId: SHA_B }]);
+    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records })).toMatchObject({ state: 'admission-missing', revision: SHA_B, resolvedRef: 'refs/tags/light' });
+    expect(records.check).toHaveBeenCalledTimes(3);
+  });
+
+  it('an admitted 64-hex commit id is well-formed; a 41-, 63- and 65-digit or uppercase one is not', async () => {
+    const H64 = 'e'.repeat(64);
+    const ok = withConsent(async () => [{ label: 'sha256-tag', commitId: H64 }]);
+    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => `${SHA_A}\tHEAD\n${H64}\trefs/tags/sha256-tag\n`, records: ok })).toMatchObject({ revision: H64, resolvedRef: 'refs/tags/sha256-tag' });
+    for (const bad of ['e'.repeat(41), 'e'.repeat(63), 'e'.repeat(65), 'E'.repeat(40)]) {
+      const records = withConsent(async () => [{ label: '8.0.0', commitId: bad }]);
+      expect(formatOutcome(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records })), bad).toContain('malformed list of consented revisions');
+      expect(records.check).not.toHaveBeenCalled();
+    }
+  });
+
+  it('reads ls-remote exactly once, whatever the consent names', async () => {
+    const lsRemote = vi.fn(() => LS);
+    await runDossierTrigger('https://github.com/redis/redis', { lsRemote, records: withConsent(async () => one) });
+    expect(lsRemote).toHaveBeenCalledTimes(1);
+  });
+
+  it('an untrusted record store is an unmet gate, never a throw: holes, a throwing getter or call, non-objects, a hostile entry', async () => {
+    const materialize = vi.fn();
+    const throwingGetter = { source: 'fixture store', repositoryIdsFor: ids, check: vi.fn(), get consentedRevisionsFor(): never { throw new Error('getter'); } } as unknown as AdmissionRecordsPort;
+    const hostile = [{ get label(): string { throw new Error('label'); }, commitId: SHA_C }];
+    const answers: unknown[] = [new Array(1), [one[0], , one[0]], [null], ['x'], [{ label: 8, commitId: SHA_C }], [{ label: '8.0.0', commitId: { toString: () => SHA_C } }], hostile, undefined, 'str', {}];
+    for (const answer of answers) {
+      const records = withConsent(async () => answer);
+      const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records, materialize });
+      expect(outcome, `answer ${answers.indexOf(answer)}`).toMatchObject({ state: 'admission-missing', missing: 3 });
+      expect(formatOutcome(outcome)).toContain('malformed list of consented revisions');
+      expect(records.check).not.toHaveBeenCalled();
+    }
+    const callThrows = withConsent(async () => { throw new Error('call'); });
+    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records: callThrows, materialize })).toMatchObject({ state: 'admission-missing' });
+    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records: throwingGetter, materialize })).toMatchObject({ state: 'admission-missing', missing: 3 });
+    expect(throwingGetter.check).not.toHaveBeenCalled();
+    expect(materialize).not.toHaveBeenCalled();
+  });
+
+  it('records the entry as it was read once: a getter that changes its answer cannot change the pinned commit or the record', async () => {
+    let reads = 0;
+    const shifty = { label: '8.0.0', get commitId(): string { return reads++ < 1 ? SHA_C : SHA_B; } };
+    const records = withConsent(async () => [shifty]);
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C });
+    expect(reads).toBe(1);
+  });
+
+  it('says admission-missing, not unresolved-revision, when the consented label is not in the remote refs', async () => {
     const records = withConsent(async () => [{ label: '9.9.9', commitId: SHA_C }]);
-    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records })).toMatchObject({ state: 'unresolved-revision', reason: 'consented revision 9.9.9: revision-not-found' });
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ state: 'admission-missing', missing: 3 });
+    expect(formatOutcome(outcome)).toContain('consented revision 9.9.9 cannot be resolved with git ls-remote (revision-not-found)');
     expect(records.check).not.toHaveBeenCalled();
   });
 

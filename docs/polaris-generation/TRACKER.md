@@ -190,12 +190,17 @@ Authorized implementation work (generator implementation authorization,
         https://github.com/<owner>/<repo>` with no `/tree/<ref>` asks the
         records port (`consentedRevisionsFor(repositoryId)`, labels and commit
         ids from the observation consent): exactly one admitted revision is
-        pinned by its tag or ref with `ls-remote` and refused (exit 3) unless
-        it resolves to the consented commit id; several are listed and none
-        chosen (exit 3, add `/tree/<ref>`); none behaves as before. A
-        malformed or failing answer is an unmet gate. The run record carries
-        `revisionSource` (`consent` with label and commit id, or `url`). 23
-        mutants, all killed:
+        pinned by its tag or ref with one `ls-remote` and refused (exit 3) unless
+        it resolves to the consented commit id (a consent that records an
+        annotated tag's object id instead of the commit gets its own
+        message; a consented ref the remote no longer lists is also exit 3);
+        several are listed and none chosen (exit 3, add `/tree/<ref>`); none
+        behaves as before. A malformed or failing answer (holes, a throwing
+        getter or call, a hostile entry) is an unmet gate; each entry is
+        snapshotted to strings once and only the snapshot is used. The run
+        record carries `revisionSource` (`consent` with label and commit id,
+        or `url`). The CLI does not reach this until a records port with
+        `consentedRevisionsFor` is wired (with #334). MUTANTS_PLACEHOLDER
         `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
