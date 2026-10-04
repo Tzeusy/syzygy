@@ -150,8 +150,18 @@ const BUDGET: GenerationBudget = narrativeBudgetFor(DOSSIER_RUN_PROFILE);
 
 const CONSENT_LABEL = /^[A-Za-z0-9._\/-]{1,200}$/u;
 
-/** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
-export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
+/** What the gates before any read establish: the target under its record id, the pinned revision and where it came from, and every requirement answered satisfied. */
+export interface ResolvedAdmission {
+  readonly target: GithubTarget;
+  readonly pinned: { readonly revision: string; readonly resolvedRef: string };
+  readonly revisionSource: RevisionSource;
+  readonly records: AdmissionRecordsPort;
+  readonly requirements: readonly AdmissionRequirement[];
+  readonly checked: readonly (AdmissionRequirement & { readonly answer: AdmissionAnswer })[];
+}
+
+/** The gates shared by a run and by `--check`: parse, ls-remote (metadata only), one record id, the consented revision, and every admission record. Returns the first unmet gate as an outcome. Reads no repository object. */
+export async function resolveAdmission(rawUrl: string, ports: TriggerPorts = {}): Promise<ResolvedAdmission | TriggerOutcome> {
   let target: GithubTarget;
   try { target = parseGithubUrl(rawUrl); } catch (error) { return { state: 'invalid-input', reason: error instanceof Error ? error.message : 'invalid' }; }
   let pinned: ReturnType<typeof pinRevision>, lsOutput: string;
@@ -203,6 +213,14 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
   const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
   if (missing > 0) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };
+  return { target, pinned, revisionSource, records, requirements, checked };
+}
+
+/** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
+export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
+  const resolved = await resolveAdmission(rawUrl, ports);
+  if ('state' in resolved) return resolved;
+  const { target, pinned, revisionSource, records, requirements, checked } = resolved;
 
   const defaultOut = ports.outDir === undefined ? mkdtempSync(join(tmpdir(), 'syzygy-dossier-')) : undefined;
   const runDir = ports.outDir ?? join(defaultOut!, 'site');

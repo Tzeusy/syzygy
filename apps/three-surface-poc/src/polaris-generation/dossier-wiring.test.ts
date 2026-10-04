@@ -107,6 +107,33 @@ describe('openGeneration against a loopback provider', () => {
     expect(upstream!.messages()).toHaveLength(0);
   });
 
+  it('writes one content-free progress line per finished provider call', async () => {
+    upstream = await startCaptureEndpoint({ kind: 'text', text: '{"claims":[]}', inputTokens: 1000, outputTokens: 39000 });
+    const parent = mkdtempSync(path.join(tmpdir(), 'wiring-')); dirs.push(parent);
+    const context: GenerationOpenContext = { target: { owner: 'redis', repo: 'redis' } as never, revision: 'a'.repeat(40), runDir: path.join(parent, 'run'), egress: requirement, records: recordsFor(EGRESS_V2_DIGEST) };
+    const lines: string[] = [];
+    let clock = 1_000_000;
+    const session = await openGeneration({ route: 'messages-api', apiKey: SECRET, root: REPO_ROOT, providerFactory: loopbackFactory(upstream.url), progress: line => lines.push(line), now: () => (clock += 2000) })(context);
+    sessions.push(session);
+    await session.discovery.map!(mapInput(0), new AbortController().signal);
+    await session.discovery.map!(mapInput(1), new AbortController().signal);
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatch(/^\[discovery discovery-map\] counted 40 of ceiling 40; discovery share 40 of 1000 units; elapsed \d+s\n$/u);
+    expect(lines[1]).toContain('discovery share 80 of 1000 units');
+    expect(lines.join('')).not.toContain('src/f0.c');
+    expect(lines.join('')).not.toContain(SECRET);
+  });
+
+  it('a progress sink that throws cannot fail the call', async () => {
+    upstream = await startCaptureEndpoint({ kind: 'text', text: '{"claims":[]}', inputTokens: 1000, outputTokens: 39000 });
+    const parent = mkdtempSync(path.join(tmpdir(), 'wiring-')); dirs.push(parent);
+    const context: GenerationOpenContext = { target: { owner: 'redis', repo: 'redis' } as never, revision: 'a'.repeat(40), runDir: path.join(parent, 'run'), egress: requirement, records: recordsFor(EGRESS_V2_DIGEST) };
+    const session = await openGeneration({ route: 'messages-api', apiKey: SECRET, root: REPO_ROOT, providerFactory: loopbackFactory(upstream.url), progress: () => { throw new Error('stderr closed'); } })(context);
+    sessions.push(session);
+    await expect(session.discovery.map!(mapInput(0), new AbortController().signal)).resolves.toBeDefined();
+    expect((session.record() as { spend: { discoveryCountedUnits: number } }).spend.discoveryCountedUnits).toBe(40);
+  });
+
   it('a run cannot send more discovery calls than the discovery share allows', async () => {
     const { session } = await open(EGRESS_V2_DIGEST);
     const signal = new AbortController().signal;

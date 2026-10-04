@@ -11,7 +11,7 @@ import { createPackageAdmissionReader, withConsent, type AdmissionRecordReader, 
 import { PROVIDER_ORIGIN, createAgentSdkGenerate, createMessagesApiGenerate, minimumUsageUnits } from '@syzygy/polaris-generation-provider';
 
 import { createDurableLifecycle } from './durable-lifecycle.js';
-import { DOSSIER_RUN_PROFILE, assertRunProfile, discoveryBudgetFor, narrativeBudgetFor, stageCeilingUnits, type DossierRunProfile } from './dossier-run-profile.js';
+import { DOSSIER_RUN_PROFILE, assertRunProfile, discoveryBudgetFor, narrativeBudgetFor, narrativeUnits, stageCeilingUnits, type DossierRunProfile } from './dossier-run-profile.js';
 import { stageAuthorisedBy } from './dossier-stage-authority.js';
 import type { WiredRecordsPort } from './dossier-records.js';
 import { soundAnswer, type AdmissionRequirement, type GenerationOpenContext, type GenerationSession } from './dossier-trigger.js';
@@ -84,6 +84,22 @@ export interface OpenGenerationOptions {
   readonly profile?: DossierRunProfile;
   readonly providerFactory?: ProviderFactory;
   readonly reader?: AdmissionRecordReader;
+  /** One content-free line per finished provider call: stage, units counted against the share's budget, elapsed. The main command writes it to stderr. */
+  readonly progress?: (line: string) => void;
+}
+
+/** Units counted so far against the share the finished call belongs to: the discovery share, or the narrative's. */
+export function shareProgress(phase: MeteredCall['phase'], calls: readonly Pick<MeteredCall, 'phase' | 'countedUnits'>[], profile: DossierRunProfile): { readonly spent: number; readonly units: number } {
+  const spent = calls.filter(entry => entry.phase === phase).reduce((sum, entry) => sum + entry.countedUnits, 0);
+  return { spent, units: phase === 'discovery' ? profile.owner.discoveryUnits : narrativeUnits(profile) };
+}
+
+/** Content-free: names the stage and figures only, never a path, a claim or a reply. */
+export function progressLine(call: Pick<MeteredCall, 'phase' | 'stage' | 'countedUnits' | 'ceilingUnits' | 'usageUnknown'>, shareSpent: number, shareUnits: number, elapsedMs: number): string {
+  const seconds = Math.max(0, Math.round(elapsedMs / 1000));
+  const elapsed = seconds >= 3600 ? `${Math.floor(seconds / 3600)}h${String(Math.floor(seconds % 3600 / 60)).padStart(2, '0')}m` : seconds >= 60 ? `${Math.floor(seconds / 60)}m${String(seconds % 60).padStart(2, '0')}s` : `${seconds}s`;
+  const unknown = call.usageUnknown ? ' (usage unknown, counted at the call ceiling)' : '';
+  return `[${call.phase} ${call.stage}] counted ${call.countedUnits} of ceiling ${call.ceilingUnits}${unknown}; ${call.phase} share ${shareSpent} of ${shareUnits} units; elapsed ${elapsed}\n`;
 }
 
 /**
@@ -101,6 +117,7 @@ export function openGeneration(options: OpenGenerationOptions): (context: Genera
     const records = context.records as WiredRecordsPort;
     if (typeof records.inForceEgress !== 'function') throw new GenerationUnavailable('records-port-cannot-name-the-egress-record');
     const now = options.now ?? Date.now;
+    const openedAt = now();
     const stateDir = `${context.runDir}.state`;
     try { mkdirSync(stateDir, { mode: 0o700 }); } catch { throw new GenerationUnavailable('state-directory-unavailable'); }
     const egress: AdmissionRequirement = context.egress;
@@ -134,6 +151,10 @@ export function openGeneration(options: OpenGenerationOptions): (context: Genera
       } finally {
         calls.push({ phase, stage, ceilingUnits: input.permit.maxUsageUnits, countedUnits: counted, usageUnknown: unknown, promptDigest: digest(input.system) });
         if (phase === 'discovery') discoverySpent += counted;
+        if (options.progress !== undefined) {
+          const share = shareProgress(phase, calls, profile);
+          try { options.progress(progressLine(calls[calls.length - 1]!, share.spent, share.units, now() - openedAt)); } catch { /* a closed stderr must not fail the run */ }
+        }
       }
     };
 
