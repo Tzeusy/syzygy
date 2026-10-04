@@ -11,9 +11,10 @@ import { renderPolicyAct, renderRecorderAct } from '@syzygy/polaris-generation-c
 import { createMessagesApiGenerate } from '@syzygy/polaris-generation-provider';
 import { LOOPBACK_FOR_TESTS } from '@syzygy/polaris-generation-provider/testing';
 
-import { DOSSIER_REQUESTED_ASSETS, promptForStage, type PromptStage } from '@syzygy/polaris-generation-core';
+import { DOSSIER_REQUESTED_ASSETS, promptForStage, type GenerationSource, type PromptStage } from '@syzygy/polaris-generation-core';
 
 import { main } from './dossier-main.js';
+import { renderDossier } from './dossier-render.js';
 import { fixturePolicyActPort, fixtureRouteRoot } from './dossier-fixtures.testkit.js';
 import type { ProviderFactory } from './dossier-generation.js';
 import { EGRESS_V2_DIGEST } from './dossier-stage-authority.js';
@@ -148,6 +149,29 @@ describe('a whole run through the wiring against the loopback stub', () => {
       }, null, 2)}\n`);
     }
   }, 60_000);
+
+  it('admits and maps documentation under the repository id the real redis instance carries, never one built from the URL', async () => {
+    const stub = await startStubProvider(request => ({ text: replyFor(request.system, request.input) }));
+    let seen: readonly GenerationSource[] = [];
+    const runDir = path.join(mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-')), 'run');
+    const code = await main(['https://github.com/redis/redis', '--route', 'messages-api', '--out', runDir, '--json'],
+      { lsRemote: () => `${commit}\tHEAD\n`, materialize: async () => repo, policyAct: fixturePolicyActPort(),
+        render: ({ result, sources }) => { seen = sources; return renderDossier({ result, sources, requestedAssets: DOSSIER_REQUESTED_ASSETS }); } },
+      { root: admissionRoot('messages-api'), env: { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }, providerFactory: loopback(stub.url), stdout: () => undefined, stderr: () => undefined });
+    await stub.close();
+    // The id comes from the instance file, read here from the repository rather than copied into the assertion's expectation of the code.
+    const instance = readFileSync(path.join(REPO_ROOT, INSTANCES_DIR, 'redis/OBSERVATION-CONSENT.md'), 'utf8');
+    expect(/^Subject: `\(project:syzygy, repository:([a-z0-9-]+)\)`$/mu.exec(instance)?.[1]).toBe('redis-redis');
+    expect(code).toBe(0);
+    expect(seen.length).toBeGreaterThan(0);
+    expect(new Set(seen.map(source => source.repositoryId))).toEqual(new Set(['redis-redis']));
+    const readme = seen.filter(source => source.path === 'README.md');
+    expect(readme.length).toBeGreaterThan(0);
+    for (const source of readme) { expect(source.classificationBasis).toBe('body'); expect(source.exclusion.excluded).toBe(false); expect(source.body).toContain('It does a thing.'); }
+    // Every request that left carried the documentation: the inventory input carries the README body.
+    const inventory = stub.requests.find(request => stageOf(request.system) === 'inventory');
+    expect(JSON.stringify(inventory?.input)).toContain('It does a thing.');
+  });
 
   it('never writes the credential into the run directory or the state directory, and never sends it in a body', async () => {
     const r = await run(replyFor);
