@@ -170,6 +170,43 @@ Authorized implementation work (generator implementation authorization,
         selected, selected plus deferred equals the candidates. Evidence
         `docs/evidence/redis-shaped-discovery-2026-10-04.json`;
         `npm run poc:redis-shaped-discovery`.
+  - [x] **Deterministic quote fidelity.** `quote-fidelity.ts`: every
+        double-quoted span in a block (straight, or curly with nesting) must
+        occur in a source the block cites, after one normalisation applied to
+        both sides (comment leaders and closes, link syntax, entities,
+        backslash escapes, backticks and emphasis dropped; curly quotes
+        folded; whitespace collapsed). The lead-in is `The project states:`;
+        a quotation runs from it to the last straight quote before the next
+        lead-in, so it may contain quotes, an unverified tail or a stray
+        quote in the prose after it fails, and elision is not allowed. A
+        quote is one contiguous run of one source on word boundaries; a
+        block citing a piece of a split file is checked against the whole
+        file.
+        An unterminated, empty, uncited or lead-in-without-quote case fails
+        too. A failure earns a repair; one that survives the last repair does
+        not stop the run: the pipeline returns `quoteFindings` per block and
+        `renderDossier` shows each such block as Unknown with the reason,
+        whatever the reviewer said. The pipeline also takes a `promptProfile`
+        (default `manifesto`; the dossier trigger sets `dossier`) and records
+        the profile, prompt version and system-text digest on every receipt. `evaluateDossier` reports
+        `fidelity.inBlockQuotes` (checked blocks, quotes checked, failures,
+        outcome `all-verbatim` / `no-quotes` / `failures` / `unknown`).
+  - [x] **Dossier dry-run rehearsal.** `npm run poc:dossier-rehearsal`
+        (`dossier-rehearsal.testkit.ts`): `poc:dossier` end to end against a
+        four-file repository and the synthetic Redis-shaped one, with the
+        loopback stub provider, no model and no network. Scenarios: complete,
+        at-ceiling, partial (exit 7), wall-clock (exit 6) and three refusals
+        (exits 5, 3, 2). It checks that the rendered site opens (complete
+        documents, no script, no external reference, every link and anchor
+        lands), that every page passes `evaluateDossier`, and that the run
+        record names the profile, the sha256 of the prompt each call sent and
+        the budget spent. [Observed] the Redis-shaped scenario
+        still fails with the 400,000-byte selection cap: inventory, author
+        and edit (about 470 KB each) fit their 600-unit ceilings, but the
+        fidelity request carries the same sources against a 300-unit ceiling
+        and is refused as budget-exhausted, so the run stops partial (exit 7).
+        The earlier failure (200 sources, 1,893,524 bytes, against the
+        inventory ceiling) is fixed by the cap.
   - [x] **Byte-capped selection (`maxSelectedBytes`).** Discovery also stops
         at a cap on the UTF-8 bytes of quotable text; the dossier budget
         (`DOSSIER_DISCOVERY_BUDGET`) sets `DOSSIER_MAX_SELECTED_BYTES` =
@@ -205,6 +242,31 @@ Authorized implementation work (generator implementation authorization,
         `server.c` over 400,000 bytes contributes its first pieces too. 25
         mutants, 24 killed and 1 documented equivalent:
         `docs/evidence/discovery-prefix-pieces-mutants-2026-10-04.json`.
+  - [x] **Bare URL runs at the consented revision.** `poc:dossier
+        https://github.com/<owner>/<repo>` with no `/tree/<ref>` asks the
+        records port (`consentedRevisionsFor(repositoryId)`, labels and commit
+        ids from the observation consent): exactly one admitted revision is
+        pinned by its tag or ref with `ls-remote` and refused (exit 3) unless
+        it resolves to the consented commit id; several are listed and none
+        chosen (exit 3, add `/tree/<ref>`); none behaves as before. A
+        malformed or failing answer is an unmet gate. The run record carries
+        `revisionSource` (`consent` with label and commit id, or `url`). 23
+        mutants, all killed:
+        `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
+  - [x] **`poc:dossier --check <url>` and a progress line.** `--check` runs
+        the gates a run passes before it reads (`resolveAdmission`, shared with
+        `runDossierTrigger`): parse, `ls-remote`, one record id, the consented
+        revision, every admission record. It needs no credential, route,
+        session or checkout, prints the pinned revision and its source, the
+        records found or missing and the budget arithmetic derived from the
+        run profile (including whether the 400,000-byte selection fits the
+        smallest source-carrying stage ceiling), and exits 2, 3, 4 or 5 like
+        the run; with `--route` it also refuses a route not in force. A run
+        writes one content-free line per finished provider call to stderr
+        (stage, units counted against the share, elapsed). Resume is not
+        built. 29 mutants, 28 killed and 1 documented equivalent (by
+        typing):
+        `docs/evidence/dossier-check-progress-mutants-2026-10-04.json`.
   - [x] **Role signals in the discovery prior.** `heuristicScore` stays a
         project-neutral path, size and opening-comment prior; it now also
         adds a bonus for a source root (`src`, `lib`, `core`, ...) at depth,
@@ -304,6 +366,24 @@ Authorized implementation work (generator implementation authorization,
         renderer requires for a stopped result; a page-level test runs a
         scripted pipeline out of usage budget after two stages and checks the
         banner and every requested asset as Unknown `deferred-by-budget`.
+  - [x] **Provider wiring (syzygy-bc0g, draft PR #334).** `poc:dossier` takes
+        `--route agent-sdk|messages-api` (no default) and starts only when that
+        route's registry entry is an in-force `adopt-registry-entry` act over the
+        installed bytes. The credential is `SYZYGY_POLARIS_PROVIDER_API_KEY`
+        only, read once and removed from the environment. The egress gate and
+        the durable lifecycle sit behind the consent ports; every request is
+        asked of the egress record again, and the digest of the in-force egress
+        instance decides the stage (version 2: narrative and discovery;
+        version 1: narrative only; any other digest: nothing). Run budget
+        (`dossier-units-v1`): 4000 units, discovery 1000 at most 40 per call,
+        narrative 3000; unknown usage counts at the call's ceiling and no retry
+        follows it. Verified against a loopback stub provider (no real call):
+        `dossier-pipeline-run.test.ts`, run record
+        `docs/evidence/dossier-pipeline-loopback-run-2026-10-04.json`, mutants
+        `docs/evidence/dossier-wiring-mutants-2026-10-04.json`.
+        [Unknown] The first real call is the first test of the empty-or-absent
+        system field and of the effort and thinking values for Opus 5.5; token
+        and price figures are unmeasured.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
