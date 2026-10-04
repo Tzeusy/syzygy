@@ -591,6 +591,21 @@ describe('selection under a byte cap', () => {
       expect(counted.report.deferred.find(entry => entry.path === 'docs/big.md')!.detail).toContain('pieces 3..4 of 4 not read');
     });
 
+    it('stops at the room left when that is less than the share, and at the share exactly when it holds whole pieces', async () => {
+      // cap 12 first-pieces: share 3, room after ten fillers 2 (+10 bytes).
+      const cap = first * 12;
+      const fillers = Array.from({ length: 10 }, (_, i) => make(`docs/filler${i}.md`, `${'z'.repeat(first - 2)}\n`)).flat();
+      const ports = model({ map: mapOf(item => (item.path.includes('filler') ? 9 : 1)) });
+      const limited = await discoverAndSelect([...fillers, ...big], Q, { ...budget, maxSelectedBytes: cap, maxSelected: 200, maxMapCalls: 100 }, ports);
+      expect(fillers.every(filler => limited.sources.includes(filler))).toBe(true);
+      expect(keptPieces(limited.sources)).toBe(2);
+      expect(limited.report.deferred[0]!.detail).toContain('pieces 3..4 of 4 not read');
+      // A share that equals the first two pieces exactly keeps both; one byte less keeps one.
+      const two = bytesOf(big.slice(0, 2));
+      expect(keptPieces((await run(two * 4)).sources)).toBe(2);
+      expect(keptPieces((await run(two * 4 - 4)).sources)).toBe(1);
+    });
+
     it('defers the whole file when not even its first piece fits, and counts a piece by its UTF-8 bytes', async () => {
       const none = await run(first * 4 - 8);
       expect(keptPieces(none.sources)).toBe(0);
@@ -634,6 +649,8 @@ describe('selection under a byte cap', () => {
       expect(() => validateGenerationSources([...big, row()])).toThrow();
       expect(() => validateGenerationSources([...big.slice(1), row()])).toThrow();
       expect(() => validateGenerationSources([big[0]!, big[1]!, { ...row(), exclusion: { excluded: true, reason: 'oversize-source-excluded' } }])).toThrow();
+      // Pieces that run past a declared size are not a prefix: a forged blob size cannot make the full set look partial.
+      expect(() => validateGenerationSources([...big.map(piece => ({ ...piece, segment: { ...piece.segment!, blobBytes: piece.segment!.blobBytes + 1 } })), row()])).toThrow();
     });
   });
 
