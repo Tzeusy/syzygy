@@ -1,0 +1,306 @@
+{
+ "subject": {
+  "commit": "335a44ec61ece97fcc6b55be1c636e7f4994b6a5",
+  "branch": "agent/dossier-messages-api",
+  "fileSha256": {
+   "packages/polaris-generation-provider/src/egress-gate.ts": "434871348f4552e6da42f10c35a38c32788cae3dbb7e57cc6917cc1069de36e3",
+   "packages/polaris-generation-provider/src/messages-api-provider.ts": "e58a828f79b054247a278e07fbc8692c3d705ef47314a4bcc992dc99b191d46b"
+  }
+ },
+ "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+ "project": "@syzygy/polaris-generation-provider",
+ "ranAt": "2026-10-03T19:40:42+00:00",
+ "mutants": [
+  {
+   "id": "M1-tools-field-added",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "output_config: { effort: config.effort },",
+   "new": "output_config: { effort: config.effort }, tools: [],",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 22
+  },
+  {
+   "id": "M2-retry-on-500",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "status === 429 || status === 529) {",
+   "new": "status === 429 || status === 529 || status === 500) {",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M3-abort-signal-not-passed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "{ signal: controller.signal }",
+   "new": "{}",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 22
+  },
+  {
+   "id": "M4-permit-cap-ignored",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens)",
+   "new": "config.maxOutputTokens",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M5-retry-after-ignored",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "), hinted);",
+   "new": "), 0);",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M6-unknown-billing-coerced",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "total = null;   // the try's billing",
+   "new": "void 0;   // the try's billing",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M7-thinking-bytes-altered",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "{ type: 'adaptive' } : { type: 'enabled'",
+   "new": "{ type: 'adaptive', display: 'x' } : { type: 'enabled'",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M8-try-deadline-removed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "const timer = setTimeout(() => { timedOut = true; controller.abort(); }, remaining);",
+   "new": "const timer = setTimeout(() => undefined, remaining);",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M9-header-literal-dropped",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "'x-stainless-helper-method': 'stream',",
+   "new": "",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 18,
+   "totalTests": 22
+  },
+  {
+   "id": "M10-ambient-env-guard-removed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_')) || ambientNetworkEnvironment().length > 0",
+   "new": "false",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 22
+  },
+  {
+   "id": "M11-version-pin-removed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "if (INSTALLED_MESSAGES_SDK_VERSION !== (config.pinnedVersion ?? PINNED_MESSAGES_SDK_VERSION)) throw",
+   "new": "if (false) throw",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M12-stop-reason-unchecked",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "if (message.stop_reason !== 'end_turn') {",
+   "new": "if (false) {",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 22
+  },
+  {
+   "id": "M13-rejected-try-total-assumed-unbilled",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "total = unbilledTry ? prior(attempts, id, n) : null;",
+   "new": "total = prior(attempts, id, n);",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M14-rejected-try-usage-assumed-zero",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "usageUnits: unbilledTry ? 0 : null, backoffMs: more",
+   "new": "usageUnits: 0, backoffMs: more",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M15-null-usage-coerced",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "? parts.reduce((a, b) => a + b, 0) : null;",
+   "new": "? parts.reduce((a, b) => a + b, 0) : 0;",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M16-non-text-block-allowed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "message.content.some(block => block.type !== 'text' && block.type !== 'thinking' && block.type !== 'redacted_thinking') ||",
+   "new": "false ||",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M17-authToken-null-removed",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "authToken: null, ",
+   "new": "",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "survived",
+   "failedTests": 0,
+   "totalTests": 22,
+   "note": "equivalent while the ambient-environment guard holds: no ANTHROPIC_AUTH_TOKEN can reach the client"
+  },
+  {
+   "id": "M18-noop-control",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "const DEFAULT_RETRY = { maxAttempts: 4,",
+   "new": "const DEFAULT_RETRY = { maxAttempts: 4.0,",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "survived",
+   "failedTests": 0,
+   "totalTests": 22,
+   "note": "equivalent control"
+  },
+  {
+   "id": "M19-node-network-env-ignored",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_')) || ambientNetworkEnvironment().length > 0",
+   "new": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_'))",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 22
+  },
+  {
+   "id": "M22-timeout-and-connection-unpinned",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "'x-stainless-timeout': '600', connection: 'keep-alive',",
+   "new": "",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 18,
+   "totalTests": 22
+  },
+  {
+   "id": "M23-connection-value-unpinned",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "'x-stainless-timeout': '600', connection: 'keep-alive',",
+   "new": "'x-stainless-timeout': '600',",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 18,
+   "totalTests": 22
+  },
+  {
+   "id": "M25-literal-values-unchecked",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "if (name in LITERALS) { if (value !== LITERALS[name])",
+   "new": "if (name in LITERALS) { if (false)",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M27-ambient-env-not-rechecked-per-try",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "      try { refuseAmbientEnvironment(n - 1); } catch (error) { if (error instanceof MessagesApiProviderError) throw fail('ambient-environment', n - 1); throw error; }   // every try, not only the first\n",
+   "new": "",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  },
+  {
+   "id": "M28-upstream-not-validated-at-construction",
+   "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+   "old": "  if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new MessagesApiProviderError('invalid-config', 0); } }\n",
+   "new": "",
+   "tests": [
+    "messages-api-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 22
+  }
+ ],
+ "summary": "24 mutants in one pass: all killed except M17 (authToken: null removed: equivalent while the ambient-environment guard holds) and M18 (no-op control)."
+}
