@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
@@ -19,7 +19,7 @@ export const AGENT_SDK_BUILTIN_TOOLS: readonly string[] = [
   'ListMcpResourcesTool', 'ReadMcpResourceTool', 'GetTask',
 ];
 
-export type AgentSdkProviderFailure = 'unpinned-version' | 'invalid-config' | 'cwd-not-empty' | 'concurrent-call' | 'aborted' | 'deadline'
+export type AgentSdkProviderFailure = 'unpinned-version' | 'invalid-config' | 'cwd-not-empty' | 'managed-settings-present' | 'concurrent-call' | 'aborted' | 'deadline'
   | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output' | 'transport-failed';
 
 /** Messages are code-only: they never carry the request, the reply or a credential. */
@@ -115,6 +115,18 @@ export function agentSdkEnvironment(config: Pick<AgentSdkProviderConfig, 'runDir
   return base;
 }
 
+/** The CLI reads the host's managed-policy directory (managed-settings.json, managed-settings.d/ and its other
+ * policy files) whatever `settingSources` says, and a managed `env` or proxy setting there redirects the child
+ * past the gate. A child-side CLAUDE_CODE_MANAGED_SETTINGS_PATH does not override it (observed with CLI 2.1.288),
+ * so the adapter refuses to spawn while any source exists: the platform directory, and anything the parent's
+ * CLAUDE_CODE_MANAGED_SETTINGS_PATH names. */
+export function managedSettingsSources(platform: NodeJS.Platform = process.platform, env: NodeJS.ProcessEnv = process.env,
+  exists: (path: string) => boolean = existsSync): readonly string[] {
+  const root = platform === 'darwin' ? '/Library/Application Support/ClaudeCode' : platform === 'win32' ? 'C:\\Program Files\\ClaudeCode' : '/etc/claude-code';
+  const named = env.CLAUDE_CODE_MANAGED_SETTINGS_PATH;
+  return [root, ...(named === undefined || named === '' ? [] : [named])].filter(path => exists(path));
+}
+
 interface ResultLike {
   readonly subtype?: string; readonly is_error?: boolean; readonly api_error_status?: number | null;
   readonly result?: unknown; readonly structured_output?: unknown;
@@ -180,6 +192,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       if (input.signal.aborted) throw fail('aborted', n - 1);
       const remaining = retry.budgetMs - (now() - started);
       if (remaining <= 0) throw fail('deadline', n - 1);
+      if (managedSettingsSources().length !== 0) throw fail('managed-settings-present', n - 1);   // re-checked before every spawn
       if (!gate.arm(captured => acceptCapturedRequest(captured, expected))) throw fail('concurrent-call', n - 1);
       slot.current = { permit: input.permit, stage: input.stage };
       const decisionsBefore = gate.decisions.length;

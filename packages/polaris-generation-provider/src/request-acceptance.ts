@@ -106,7 +106,7 @@ export function acceptCapturedRequest(captured: CapturedRequest, expected: Expec
   const adaptive = expected.thinking === 'adaptive';
   const allowedKeys = ['max_tokens', 'messages', 'metadata', 'model', 'output_config', 'stream', 'system', 'tools', ...(adaptive ? ['thinking', 'context_management'] : [])];
   for (const key of Object.keys(body)) if (!allowedKeys.includes(key)) fail(`unlisted body field ${key}`);
-  for (const key of allowedKeys) if (!(key in body)) fail(`missing body field ${key}`);
+  for (const key of allowedKeys) if (!Object.hasOwn(body, key)) fail(`missing body field ${key}`);
   if (body.model !== expected.model) fail('model differs from the configured model');
   if (body.max_tokens !== expected.maxTokens) fail('max_tokens differs from the configured cap');
   if (body.stream !== true) fail('stream is not true');

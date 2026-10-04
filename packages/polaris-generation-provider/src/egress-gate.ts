@@ -1,5 +1,6 @@
 import http from 'node:http';
 import https from 'node:https';
+import tls from 'node:tls';
 import type { AddressInfo } from 'node:net';
 import { isConnectivityProbe, type CapturedRequest, type RequestAcceptance } from './request-acceptance.js';
 
@@ -71,10 +72,23 @@ export function ambientNetworkEnvironment(env: NodeJS.ProcessEnv = process.env):
   return Object.keys(env).filter(name => AMBIENT_NODE_NETWORK_ENV.includes(name));
 }
 
-/** The same switches given as Node flags rather than variables: the system or OpenSSL CA store and any `--tls-*` option. */
+/** Node flags that change who is trusted or run code before the gate: the system or OpenSSL CA store, an
+ * OpenSSL or Node configuration file, a preload or loader, and any `--tls-*` option. */
+export const AMBIENT_NODE_NETWORK_FLAGS: readonly string[] = [
+  '--use-system-ca', '--use-openssl-ca', '--openssl-config', '--openssl-shared-config', '--experimental-config-file',
+  '--experimental-default-config-file', '--require', '-r', '--import', '--loader', '--experimental-loader',
+];
+/** The flags among `execArgv`. Node accepts `_` for `-` inside a flag name (`--use_system_ca`, `--tls_min_v1.0`),
+ * so each name before any `=` is compared with its underscores read as dashes. */
 export function ambientNetworkFlags(execArgv: readonly string[] = process.execArgv): readonly string[] {
-  return execArgv.filter(flag => flag === '--use-system-ca' || flag === '--use-openssl-ca' || flag.startsWith('--use-system-ca=')
-    || flag.startsWith('--use-openssl-ca=') || flag.startsWith('--tls-'));
+  return execArgv.filter(flag => {
+    const name = flag.split('=', 1)[0]!.replaceAll('_', '-');
+    return AMBIENT_NODE_NETWORK_FLAGS.includes(name) || name.startsWith('--tls-');
+  });
+}
+/** True when `body` is exactly `JSON.stringify(JSON.parse(body))`: no duplicate key, escape or whitespace the parse would hide. */
+export function canonicalJson(body: string): boolean {
+  try { return JSON.stringify(JSON.parse(body)) === body; } catch { return false; }
 }
 const ambientNetwork = (): boolean => ambientNetworkEnvironment().length > 0 || ambientNetworkFlags().length > 0;
 
@@ -97,8 +111,10 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
   if (ambientNetwork()) throw new Error('egress gate: ambient Node network environment is set');
   let spent = false;
   let armGeneration = 0;
-  // Pinned for every upstream request: verified certificates, modern TLS, no connection reuse, and no proxy (Node reads none unless NODE_USE_ENV_PROXY, refused above).
-  const upstreamAgent = new https.Agent({ rejectUnauthorized: true, minVersion: 'TLSv1.2', keepAlive: false });
+  // Pinned for every upstream request: verified certificates against Node's bundled roots only (never the system or
+  // OpenSSL store, a config file or an in-process default change), modern TLS, no connection reuse, and no proxy
+  // (Node reads none unless NODE_USE_ENV_PROXY, refused above).
+  const upstreamAgent = new https.Agent({ ca: [...tls.rootCertificates], rejectUnauthorized: true, minVersion: 'TLSv1.2', keepAlive: false });
   const decisions: GateDecision[] = [];
   let armed: ((captured: CapturedRequest) => RequestAcceptance) | null = null;
   let retryAfter: number | null = null;
@@ -123,6 +139,9 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
           decisions.push({ ...base, decision: 'answered-locally', reasons: [], upstreamStatus: 200 });
           res.writeHead(200); res.end(); return;
         }
+        // The predicate parses the body, but the gate forwards the raw bytes: JSON with duplicate keys, escapes or
+        // spacing that parse to an accepted value could carry other bytes upstream. Only the canonical form is forwarded.
+        if (!canonicalJson(captured.body)) { refuse(res, { ...base, reasons: ['body is not canonical JSON'] }); return; }
         let verdict: RequestAcceptance;
         try { verdict = armed(captured); } catch { verdict = { accepted: false, violations: ['acceptance predicate failed'] }; }
         if (!verdict.accepted) { refuse(res, { ...base, reasons: verdict.violations }); return; }

@@ -16,11 +16,18 @@ read, egress or write: a real call still needs the egress consent act.
   values) on every request and forwards only if the injected consent
   `permitted()` is exactly `true` and an explicit `upstream` is configured.
   Otherwise it refuses and nothing leaves. `HEAD /api/hello` is answered locally.
+  Only a canonical JSON body is forwarded, upstream TLS trusts Node's bundled
+  roots only, and Node trust, config and preload flags are refused.
   See `docs/polaris-generation/PROVIDER-EGRESS-BYTES.md` for what is gated and
   what is only version-scoped.
 - **No tools, settings, memory, MCP or skills.** `tools: []`, every built-in
   also in `disallowedTools`, `settingSources: []`, `mcpServers: {}`, bare mode,
   no session persistence, `permissionMode: 'default'`.
+- **No managed policy.** The CLI reads the host's managed-policy directory
+  whatever `settingSources` says, so the adapter refuses to spawn it
+  (`managed-settings-present`) while `/etc/claude-code` (or the macOS or
+  Windows equivalent, or the parent's `CLAUDE_CODE_MANAGED_SETTINGS_PATH`)
+  exists.
 - **Retry.** The CLI's own retry is off. This adapter retries only HTTP 429 and
   529, with capped exponential backoff or the upstream's `Retry-After` (whichever
   is longer), inside a run budget that also bounds each try's deadline, and reports every

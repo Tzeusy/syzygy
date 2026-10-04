@@ -5,7 +5,7 @@ import { getEventListeners } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { digestCanonicalJson, encodeCanonicalJson, promptForStage, runGenerationPipeline, type AttemptOutcome, type DispatchPermit, type PipelinePorts, type PipelineRequest } from '@syzygy/polaris-generation-core';
 import { generationAnchorId, gitBlobObjectId, type GenerationSource } from '@syzygy/polaris-generation-core';
-import { AGENT_SDK_BUILTIN_TOOLS, AgentSdkProviderError, agentSdkEnvironment, createAgentSdkGenerate, type AgentSdkAttemptRecord, type AgentSdkProviderConfig } from './agent-sdk-provider.js';
+import { AGENT_SDK_BUILTIN_TOOLS, AgentSdkProviderError, agentSdkEnvironment, createAgentSdkGenerate, managedSettingsSources, type AgentSdkAttemptRecord, type AgentSdkProviderConfig } from './agent-sdk-provider.js';
 import { acceptCapturedRequest, acceptCapturedTraffic, isConnectivityProbe, SDK_FIXED_IDENTITY, type CapturedRequest, type ExpectedRequest } from './request-acceptance.js';
 import { LOOPBACK_FOR_TESTS } from './egress-gate.js';
 import { startCaptureEndpoint, startRecordingProxy, type CaptureEndpoint } from './capture-endpoint.testkit.js';
@@ -50,6 +50,35 @@ describe('environment', () => {
       expect(env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC).toBe('1');
       for (const key of ['HOME', 'CLAUDE_CONFIG_DIR', 'TMPDIR', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME', 'XDG_STATE_HOME']) expect(env[key]!.startsWith(runDir + '/')).toBe(true);
     } finally { delete process.env.SYZYGY_CANARY_SECRET; }
+  });
+  it('carries no proxy variable while the parent has every proxy name set', () => {
+    const names = ['HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
+    for (const name of names) process.env[name] = 'http://127.0.0.1:9';
+    try {
+      const env = agentSdkEnvironment(config(), 'http://127.0.0.1:1', 500);
+      expect(Object.keys(env).filter(key => /proxy/iu.test(key)).sort()).toEqual(['NO_PROXY', 'no_proxy']);
+    } finally { for (const name of names) delete process.env[name]; }
+  });
+  it('names every managed-policy source the CLI would read: the platform directory and the parent\'s CLAUDE_CODE_MANAGED_SETTINGS_PATH', () => {
+    const all = (): boolean => true;
+    expect(managedSettingsSources('linux', {}, all)).toEqual(['/etc/claude-code']);
+    expect(managedSettingsSources('darwin', {}, all)).toEqual(['/Library/Application Support/ClaudeCode']);
+    expect(managedSettingsSources('win32', {}, all)).toEqual(['C:\\Program Files\\ClaudeCode']);
+    expect(managedSettingsSources('linux', { CLAUDE_CODE_MANAGED_SETTINGS_PATH: '/opt/policy' }, all)).toEqual(['/etc/claude-code', '/opt/policy']);
+    expect(managedSettingsSources('linux', { CLAUDE_CODE_MANAGED_SETTINGS_PATH: '' }, all)).toEqual(['/etc/claude-code']);
+    expect(managedSettingsSources('linux', { CLAUDE_CODE_MANAGED_SETTINGS_PATH: '/opt/policy' }, path => path === '/opt/policy')).toEqual(['/opt/policy']);
+    expect(managedSettingsSources('linux', {}, () => false)).toEqual([]);
+  });
+  it('refuses before spawning while CLAUDE_CODE_MANAGED_SETTINGS_PATH names an existing path, and sends nothing', async () => {
+    const endpoint = await startCaptureEndpoint({ kind: 'text', text: '{"stage":"inventory"}' });
+    const handle = createAgentSdkGenerate({ ...config(), upstream: { url: endpoint.url, loopbackForTests: LOOPBACK_FOR_TESTS } });
+    process.env.CLAUDE_CODE_MANAGED_SETTINGS_PATH = runDir;
+    try {
+      const e = envelope();
+      await expect(handle.generate({ permit, stage: 'inventory', system: e.system, input: e.input, responseSchema: schema, signal: new AbortController().signal })).rejects.toMatchObject({ code: 'managed-settings-present', attempts: 0 });
+      expect(endpoint.requests).toEqual([]);
+      expect(handle.attempts()).toEqual([]);
+    } finally { delete process.env.CLAUDE_CODE_MANAGED_SETTINGS_PATH; await handle.close(); await endpoint.close(); }
   });
   it('rejects a relative run directory and an empty credential', () => {
     expect(() => createAgentSdkGenerate({ ...config(), runDir: 'relative' })).toThrow(AgentSdkProviderError);

@@ -6,7 +6,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
-import { LOOPBACK_FOR_TESTS, assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
+import tls from 'node:tls';
+import { LOOPBACK_FOR_TESTS, ambientNetworkFlags, assertAllowedUpstream, canonicalJson, parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
 import { startCaptureEndpoint, type CaptureEndpoint } from './capture-endpoint.testkit.js';
 
 let upstream: CaptureEndpoint | undefined;
@@ -200,7 +201,7 @@ describe('egress gate', () => {
   it('refuses to start, and to forward, while a CA-store or TLS flag is in process.execArgv', async () => {
     upstream = await startCaptureEndpoint();
     const saved = [...process.execArgv];
-    for (const flag of ['--use-system-ca', '--use-openssl-ca', '--tls-min-v1.0', '--tls-max-v1.2', '--tls-cipher-list=ALL', '--tls-keylog=/tmp/keys']) {
+    for (const flag of ['--use-system-ca', '--use-openssl-ca', '--tls-min-v1.0', '--tls-max-v1.2', '--tls-cipher-list=ALL', '--tls-keylog=/tmp/keys', '--use_system_ca', '--tls_min_v1.0', '--require=x', '--import=x', '--openssl-config=x', '--experimental-config-file=x']) {
       try {
         process.execArgv.push(flag);
         await expect(startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true }), flag).rejects.toThrow('ambient');
@@ -214,7 +215,7 @@ describe('egress gate', () => {
       } finally { process.execArgv.splice(0, process.execArgv.length, ...saved); await g.close(); }
     }
     // Flags that only look alike are not refused.
-    for (const flag of ['--use-bundled-ca', '--title=tls-runner', '--max-old-space-size=4096']) {
+    for (const flag of ['--use-bundled-ca', '--title=tls-runner', '--title=--use_system_ca', '--max-old-space-size=4096', '--trace-tls', '--no-warnings']) {
       try {
         process.execArgv.push(flag);
         const g = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
@@ -223,6 +224,38 @@ describe('egress gate', () => {
     }
     expect(upstream.requests).toEqual([]);
   });
+  it('reads `_` as `-` in a flag name and names every trust, config and preload flag', () => {
+    const refused = ['--use-system-ca', '--use_system_ca', '--use-openssl-ca', '--use_openssl_ca', '--use_system_ca=1', '--tls-min-v1.0', '--tls_min_v1.0',
+      '--tls_keylog=/tmp/k', '--tls-cipher-list=ALL', '--openssl-config=/x', '--openssl_config=/x', '--openssl-shared-config', '--experimental-config-file=/c.json',
+      '--experimental_config_file=/c.json', '--experimental-default-config-file', '--require', '-r', '--require=/x.js', '--import=/x.mjs', '--import', '--loader=/x.mjs',
+      '--experimental-loader=/x.mjs'];
+    expect(ambientNetworkFlags(refused)).toEqual(refused);
+    // A value is never read as a flag name, and look-alike names pass.
+    expect(ambientNetworkFlags(['--title=--use_system_ca', '--use-bundled-ca', '--trace-tls', '--no-warnings', '--max-old-space-size=4096', '/tmp/--require', '--requirex', '--imports'])).toEqual([]);
+  });
+
+  it('forwards only canonical JSON: duplicate keys, escapes and spacing that parse to an accepted body are refused', async () => {
+    upstream = await startCaptureEndpoint();
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
+    const refused = ['{"system":"accepted","system":"canary"}', '{"\\u0073ystem":"x"}', '{"a":"\\u0041"}', '{ "a":1}', '{"a":1}\n', '{"a":1.0}', 'not json', ''];
+    for (const body of refused) {
+      expect(canonicalJson(body), body).toBe(false);
+      gate.arm(accepting);
+      expect((await send(gate.url, 'POST', '/v1/messages', body)).status, body).toBe(403);
+      expect(gate.decisions.at(-1), body).toMatchObject({ decision: 'refused', reasons: ['body is not canonical JSON'] });
+      gate.disarm();
+    }
+    expect(upstream.requests).toEqual([]);
+    // Key order survives a parse, so reordering is canonical here; the Messages predicate compares bytes.
+    for (const body of ['{"b":1,"a":2}', '{"a":"\u00e9"}', '{}']) {
+      expect(canonicalJson(body), body).toBe(true);
+      gate.arm(accepting);
+      expect((await send(gate.url, 'POST', '/v1/messages', body)).status, body).toBe(200);
+      gate.disarm();
+    }
+    expect(upstream.requests.map(r => r.body)).toEqual(['{"b":1,"a":2}', '{"a":"\u00e9"}', '{}']);
+  });
+
   it('refuses to start, and to forward, while any ambient Node network variable is set', async () => {
     const names = ['NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_USE_SYSTEM_CA', 'NODE_OPTIONS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
     upstream = await startCaptureEndpoint();
@@ -283,6 +316,28 @@ describe('egress gate', () => {
       expect(gate.decisions.at(-1)).toMatchObject({ reasons: ['upstream unreachable'] });
     } finally { server?.close(); rmSync(dir, { recursive: true, force: true }); }
   });
+  it('verifies against Node\'s bundled roots: a CA added to the process default list is not trusted by the gate', async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), 'gate-ca-'));
+    let server: https.Server | undefined;
+    const saved = tls.getCACertificates('default');
+    try {
+      execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', path.join(dir, 'k.pem'), '-out', path.join(dir, 'c.pem'), '-days', '1', '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1'], { stdio: 'ignore' });
+      let hits = 0;
+      server = https.createServer({ key: readFileSync(path.join(dir, 'k.pem')), cert: readFileSync(path.join(dir, 'c.pem')) }, (_req, res) => { hits++; res.writeHead(200); res.end('x'); });
+      await new Promise<void>(r => server!.listen(0, '127.0.0.1', r));
+      const url = `https://127.0.0.1:${(server.address() as { port: number }).port}`;
+      tls.setDefaultCACertificates([...saved, readFileSync(path.join(dir, 'c.pem'), 'utf8')]);
+      // Control: with the certificate in the default list, an ordinary agent reaches the server.
+      await new Promise<void>((resolve, reject) => { const r = https.get(`${url}/`, { agent: new https.Agent() }, res => { res.resume(); res.on('end', resolve); }); r.on('error', reject); });
+      expect(hits).toBe(1);
+      gate = await startEgressGate({ upstream: { url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
+      gate.arm(accepting);
+      expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(502);
+      expect(hits).toBe(1);
+      expect(gate.decisions.at(-1)).toMatchObject({ decision: 'forwarded', reasons: ['upstream unreachable'] });
+    } finally { tls.setDefaultCACertificates(saved); server?.close(); rmSync(dir, { recursive: true, force: true }); }
+  });
+
   it('does not carry an earlier rejected try\'s unbilled evidence into a later 429 whose body is cut off', async () => {
     let n = 0;
     const flaky = http.createServer((_req, res) => {
