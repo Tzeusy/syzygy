@@ -186,6 +186,23 @@ Authorized implementation work (generator implementation authorization,
         and `t_stream.c` are deferred. A real `server.c` is larger than the
         whole cap. 24 mutants, all killed:
         `docs/evidence/discovery-byte-cap-mutants-2026-10-04.json`.
+  - [x] **Bare URL runs at the consented revision.** `poc:dossier
+        https://github.com/<owner>/<repo>` with no `/tree/<ref>` asks the
+        records port (`consentedRevisionsFor(repositoryId)`, labels and commit
+        ids from the observation consent): exactly one admitted revision is
+        pinned by its tag or ref with one `ls-remote` and refused (exit 3) unless
+        it resolves to the consented commit id (a consent that records an
+        annotated tag's object id instead of the commit gets its own
+        message; a consented ref the remote no longer lists is also exit 3);
+        several are listed and none chosen (exit 3, add `/tree/<ref>`); none
+        behaves as before. A malformed or failing answer (holes, a throwing
+        getter or call, a hostile entry) is an unmet gate; each entry is
+        snapshotted to strings once and only the snapshot is used. The run
+        record carries `revisionSource` (`consent` with label and commit id,
+        or `url`). The CLI does not reach this until a records port with
+        `consentedRevisionsFor` is wired (with #334). 33 mutants, 31 killed and 2
+        documented equivalent:
+        `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
   - [x] **Oversize files read by their leading pieces.** Under a byte cap a
         split file is no longer all-or-nothing: the longest leading run of
         pieces p1..pk that fits the room left and a per-file share of the cap

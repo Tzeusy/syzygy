@@ -49,10 +49,15 @@ const fileOverride = (allowProtocol: string): readonly string[] => (allowProtoco
 export type AdmissionKind = 'observation-consent' | 'public-source-policy' | 'egress-consent';
 export interface AdmissionRequirement { readonly kind: AdmissionKind; readonly repositoryId: string; readonly revision: string; readonly url: string; readonly needs: string }
 export type AdmissionAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
+export interface ConsentedRevision { readonly label: string; readonly commitId: string }
+/** Where the run's revision came from: a ref the URL named, or the one revision the observation consent admits. */
+export type RevisionSource = { readonly from: 'url'; readonly ref?: string } | { readonly from: 'consent'; readonly label: string; readonly commitId: string };
 export interface AdmissionRecordsPort {
   readonly source: string;
   /** The repository ids of every observation record whose `Upstream:` is exactly this canonical URL. The trigger never derives the id it admits under: it uses the one record's id, and refuses on zero or several. */
   readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
+  /** The revisions the in-force observation consent admits for this repository id: the consent's label (a tag or ref) and the commit object id it admits. Absent or empty means the consent names none, and a URL without a ref pins the default-branch tip as before. */
+  readonly consentedRevisionsFor?: (repositoryId: string) => Promise<readonly ConsentedRevision[]>;
   readonly check: (requirement: AdmissionRequirement) => Promise<AdmissionAnswer>;
 }
 /** With no store wired, no record exists, and the report says so. */
@@ -108,13 +113,34 @@ export type TriggerOutcome =
 
 const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
 
+const CONSENT_LABEL = /^[A-Za-z0-9._\/-]{1,200}$/u;
+
+/** A dense copy of the consented revisions as primitive strings, or undefined when the answer is not an array of well-formed entries (holes, non-objects, a non-string label, a commit id that is not 40 or 64 hex digits, a throwing getter). */
+function snapshotConsented(answer: unknown): readonly ConsentedRevision[] | undefined {
+  if (!Array.isArray(answer)) return undefined;
+  const out: ConsentedRevision[] = [];
+  try {
+    const length = answer.length;
+    for (let index = 0; index < length; index++) {
+      if (!(index in answer)) return undefined;
+      const entry: unknown = answer[index];
+      if (entry === null || typeof entry !== 'object') return undefined;
+      const { label, commitId } = entry as { label?: unknown; commitId?: unknown };
+      if (typeof label !== 'string' || typeof commitId !== 'string' || !/^[0-9a-f]{40}$|^[0-9a-f]{64}$/u.test(commitId)) return undefined;
+      out.push({ label, commitId });
+    }
+  } catch { return undefined; }
+  return out;
+}
+
 /** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
 export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
   let target: GithubTarget;
   try { target = parseGithubUrl(rawUrl); } catch (error) { return { state: 'invalid-input', reason: error instanceof Error ? error.message : 'invalid' }; }
-  let pinned: ReturnType<typeof pinRevision>;
-  try { pinned = pinRevision((ports.lsRemote ?? gitLsRemote)(target.url), target.ref); }
+  let pinned: ReturnType<typeof pinRevision>, lsOutput: string;
+  try { lsOutput = (ports.lsRemote ?? gitLsRemote)(target.url); pinned = pinRevision(lsOutput, target.ref); }
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
+  let revisionSource: RevisionSource = target.ref === undefined ? { from: 'url' } : { from: 'url', ref: target.ref };
   const records = ports.records ?? noAdmissionRecords;
   const idPattern = /^[A-Za-z0-9:_-]+$/u;
   // The port must answer an array of exactly one valid id; anything else (none, several, duplicates, a malformed element, a non-array, a throw) is an unmet gate.
@@ -130,6 +156,37 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements, missing: requirements.length };
   }
   target = { ...target, repositoryId: sole };
+  const unmet = (why: string): TriggerOutcome => {
+    const unmetRequirements = admissionRequirements(target, pinned.revision).map(requirement => ({ ...requirement, answer: { satisfied: false as const, why } }));
+    return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: unmetRequirements, missing: unmetRequirements.length };
+  };
+  // The record store is untrusted: its property, its call, its array and each entry are read once, inside this block, and only primitive snapshots are used afterwards.
+  let consentFn: AdmissionRecordsPort['consentedRevisionsFor'], consented: unknown, consultable = true;
+  if (target.ref === undefined) {
+    try { consentFn = records.consentedRevisionsFor; if (consentFn !== undefined) consented = await consentFn.call(records, sole); } catch { consultable = false; }
+  }
+  if (target.ref === undefined && (consentFn !== undefined || !consultable)) {
+    // A bare URL runs at the revision the observation consent admits, when it admits exactly one; the tip of the default branch has no consent that names it.
+    const revisions = consultable ? snapshotConsented(consented) : undefined;
+    if (revisions === undefined) return unmet(`the record store gave a malformed list of consented revisions for ${sole}`);
+    if (revisions.length > 1) {
+      return unmet(`the observation consent admits ${revisions.length} revisions of ${target.url} (${revisions.map(entry => entry.label).join(', ')}); the URL names none, so none is chosen. Add /tree/<ref> to the URL to pick one`)
+    }
+    if (revisions.length === 1) {
+      const only = revisions[0]!;
+      if (!CONSENT_LABEL.test(only.label) || only.label.split('/').some(part => part === '..')) return unmet(`the consented revision label ${JSON.stringify(only.label)} is not a usable tag or ref name; add /tree/<ref> to the URL`)
+      // The consent names this ref, so a ref the remote no longer lists is an unmet admission, not an unresolvable URL.
+      try { pinned = pinRevision(lsOutput, only.label); }
+      catch (error) { return unmet(`the consented revision ${only.label} cannot be resolved with git ls-remote (${error instanceof Error ? error.message : 'ls-remote-failed'}); nothing is read`); }
+      if (pinned.revision !== only.commitId) {
+        if (lsOutput.split('\n').some(line => line === `${only.commitId}\trefs/tags/${only.label}`)) {
+          return unmet(`the consent records the tag object of ${only.label} (${only.commitId}), not the commit it peels to (${pinned.revision}); record the commit id. Nothing is read`);
+        }
+        return unmet(`the consented revision ${only.label} now resolves to ${pinned.revision}, but the consent admits ${only.commitId}; the ref has moved, so nothing is read`);
+      }
+      revisionSource = { from: 'consent', label: only.label, commitId: only.commitId };
+    }
+  }
   const requirements = admissionRequirements(target, pinned.revision);
   const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
   const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
@@ -159,12 +216,12 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
           ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
     } catch (error) {
       if (!(error instanceof DiscoveryRefusal)) throw error;
-      const refused = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count, discoveryRefusal: error.reason };
+      const refused = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, revisionSource, permissionIdentity, corpusCount: corpus.count, discoveryRefusal: error.reason };
       const written = await writeDossierRun(runDir, new Map([['run-record.json', `${JSON.stringify(refused, null, 2)}\n`]]));
       return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: `discovery-refused: ${error.reason}` };
     }
     const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
-    const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
+    const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, revisionSource, permissionIdentity, corpusCount: corpus.count,
       discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
     const recordFile = ['run-record.json', `${JSON.stringify(record, null, 2)}\n`] as const;
     if (ports.runPipeline === undefined) {
