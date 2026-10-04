@@ -284,6 +284,17 @@ Authorized implementation work (generator implementation authorization,
         short, and the order of the no-model fallback, can change. Evidence
         `docs/evidence/discovery-role-prior-2026-10-04.json` (23 mutants, 21
         killed, 2 documented equivalent).
+  - [x] **Repository id comes from the record (lane-s seam).** The trigger
+        has never built the id it admits under: `repositoryIdsFor(url)` on the
+        records port returns the observation record's own id
+        (`redis-redis` in `public-repo-admission/instances/redis/`, the same
+        string the egress scope lists), and the trigger passes that id to the
+        admission checks, the screened read and the consent ports. A wired
+        run over the real instance files now has a test that every source
+        carries `redis-redis` and that the README is a body source sent to
+        the provider, not withheld (`dossier-pipeline-run.test.ts`). 3
+        mutants that fall back to the URL-built label, all killed:
+        `docs/evidence/dossier-repository-id-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
