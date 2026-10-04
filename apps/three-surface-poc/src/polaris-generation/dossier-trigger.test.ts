@@ -9,7 +9,7 @@ import { createDurableScriptedLifecycle } from './durable-lifecycle.js';
 import { main } from './dossier-main.js';
 import { fixturePolicyActPort, fixtureRouteRoot } from './dossier-fixtures.testkit.js';
 import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
-  type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
+  type AdmissionRecordsPort, type ConsentedRevision, type TriggerPorts } from './dossier-trigger.js';
 
 const SHA_A = 'a'.repeat(40), SHA_B = 'b'.repeat(40), SHA_C = 'c'.repeat(40);
 const LS = `${SHA_A}\tHEAD\n${SHA_A}\trefs/heads/unstable\n${SHA_B}\trefs/tags/8.0.0\n${SHA_C}\trefs/tags/8.0.0^{}\n${SHA_B}\trefs/tags/light\n`;
@@ -83,6 +83,94 @@ describe('trigger stops at the first unmet gate', () => {
   });
 });
 
+describe('a URL without a ref runs at the revision the observation consent admits', () => {
+  const withConsent = (consented: () => Promise<unknown>, extra: Pick<AdmissionRecordsPort, 'consentedRevisionsFor'> = {}): AdmissionRecordsPort & { check: ReturnType<typeof vi.fn> } => ({
+    source: 'fixture store', repositoryIdsFor: ids, check: vi.fn(async (r: { kind: string }) => ({ satisfied: false as const, why: `no ${r.kind}` })),
+    consentedRevisionsFor: consented as AdmissionRecordsPort['consentedRevisionsFor'], ...extra });
+  const one: readonly ConsentedRevision[] = [{ label: '8.0.0', commitId: SHA_C }];
+
+  it('with exactly one consented revision, pins its tag and asks every requirement about that commit', async () => {
+    const records = withConsent(async () => one);
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, resolvedRef: 'refs/tags/8.0.0', missing: 3 });
+    expect(records.check.mock.calls.map(([r]) => `${r.kind}@${r.revision}`).sort()).toEqual([`egress-consent@${SHA_C}`, `observation-consent@${SHA_C}`, `public-source-policy@${SHA_C}`]);
+  });
+
+  it('asks the consent about the repository id its record carries, not the one the URL spells', async () => {
+    const asked: string[] = [];
+    await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records: withConsent(async () => { return one; }, { consentedRevisionsFor: async id => { asked.push(id); return one; } }) });
+    expect(asked).toEqual(['fixture-record-id']);
+  });
+
+  it('with several consented revisions, picks none: it lists them, tells the owner to add /tree/<ref>, and reads nothing', async () => {
+    const records = withConsent(async () => [...one, { label: '7.4.0', commitId: SHA_B }]);
+    const materialize = vi.fn();
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records, materialize });
+    expect(outcome).toMatchObject({ state: 'admission-missing', missing: 3 });
+    const text = formatOutcome(outcome);
+    expect(text).toContain('admits 2 revisions');
+    expect(text).toContain('8.0.0, 7.4.0');
+    expect(text).toContain('Add /tree/<ref>');
+    expect(records.check).not.toHaveBeenCalled();
+    expect(materialize).not.toHaveBeenCalled();
+  });
+
+  it('with none, behaves as before: the default-branch tip is pinned, whether the list is empty or the port is absent', async () => {
+    for (const records of [withConsent(async () => []), { ...withConsent(async () => []), consentedRevisionsFor: undefined }]) {
+      const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+      expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_A, resolvedRef: 'HEAD' });
+      expect(records.check.mock.calls.map(([r]) => r.revision)).toEqual([SHA_A, SHA_A, SHA_A]);
+    }
+  });
+
+  it('refuses when the consented tag has moved, naming both commits, and reads nothing', async () => {
+    const records = withConsent(async () => [{ label: '8.0.0', commitId: SHA_B }]);
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, missing: 3 });
+    const text = formatOutcome(outcome);
+    expect(text).toContain(`now resolves to ${SHA_C}`);
+    expect(text).toContain(`admits ${SHA_B}`);
+    expect(text).toContain('has moved');
+    expect(records.check).not.toHaveBeenCalled();
+  });
+
+  it('says unresolved-revision when the consented label is not in the remote refs', async () => {
+    const records = withConsent(async () => [{ label: '9.9.9', commitId: SHA_C }]);
+    expect(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records })).toMatchObject({ state: 'unresolved-revision', reason: 'consented revision 9.9.9: revision-not-found' });
+    expect(records.check).not.toHaveBeenCalled();
+  });
+
+  it('does not ask the consent when the URL names a ref, and keeps the URL ref', async () => {
+    const consented = vi.fn(async () => one);
+    const records = withConsent(consented as never);
+    const outcome = await runDossierTrigger('https://github.com/redis/redis/tree/light', { lsRemote: () => LS, records });
+    expect(outcome).toMatchObject({ revision: SHA_B, resolvedRef: 'refs/tags/light' });
+    expect(consented).not.toHaveBeenCalled();
+  });
+
+  it('treats a malformed or throwing consent answer as an unmet gate, never as no consent', async () => {
+    const bad: (() => Promise<unknown>)[] = [async () => 'nope', async () => undefined, async () => [{ label: '8.0.0', commitId: 'zz' }], async () => [{ label: 7, commitId: SHA_C }], async () => [null],
+      async () => { throw new Error('store down'); }];
+    for (const consented of bad) {
+      const records = withConsent(consented);
+      const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+      expect(outcome, String(consented)).toMatchObject({ state: 'admission-missing', missing: 3 });
+      expect(formatOutcome(outcome)).toContain('malformed list of consented revisions');
+      expect(records.check).not.toHaveBeenCalled();
+    }
+  });
+
+  it('refuses a consented label that is not a usable ref name', async () => {
+    for (const label of ['../etc', 'a b', '', 'x'.repeat(201), 'v1;rm']) {
+      const records = withConsent(async () => [{ label, commitId: SHA_C }]);
+      const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records });
+      expect(outcome, label).toMatchObject({ state: 'admission-missing' });
+      expect(formatOutcome(outcome)).toContain('not a usable tag or ref name');
+      expect(records.check).not.toHaveBeenCalled();
+    }
+  });
+});
+
 describe('with every record satisfied', () => {
   let repo = '', commit = '';
   beforeAll(() => {
@@ -141,6 +229,23 @@ describe('with every record satisfied', () => {
     const { discovery } = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
     expect(discovery.bytes).toMatchObject({ cap: 400_000, deferred: 0 });
     expect(discovery.bytes.selected).toBeGreaterThan(0);
+  });
+
+  it('records that the revision came from the consent, not the URL; a URL ref is recorded as the URL\'s', async () => {
+    const tip = 'd'.repeat(40);
+    const lsTag = () => `${tip}\tHEAD\n${commit}\trefs/tags/1.0.0\n`;
+    const out = join(scratch(), 'run');
+    const records: AdmissionRecordsPort = { ...all, consentedRevisionsFor: async () => [{ label: '1.0.0', commitId: commit }] };
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, lsRemote: lsTag, records }));
+    expect(outcome).toMatchObject({ state: 'generation-unavailable', revision: commit });
+    const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
+    expect(record).toMatchObject({ revision: commit, resolvedRef: 'refs/tags/1.0.0', revisionSource: { from: 'consent', label: '1.0.0', commitId: commit } });
+    const viaUrl = join(scratch(), 'run');
+    await runDossierTrigger('https://github.com/fixture/repo/tree/1.0.0', base({ outDir: viaUrl, lsRemote: lsTag, records }));
+    expect(JSON.parse(readFileSync(join(viaUrl, 'run-record.json'), 'utf8')).revisionSource).toEqual({ from: 'url', ref: '1.0.0' });
+    const bare = join(scratch(), 'run');
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: bare, lsRemote: () => `${commit}\tHEAD\n` }));
+    expect(JSON.parse(readFileSync(join(bare, 'run-record.json'), 'utf8')).revisionSource).toEqual({ from: 'url' });
   });
 
   it('records the corpus and stops honestly when no generate port exists or the pipeline stops', async () => {
@@ -225,7 +330,7 @@ describe('with every record satisfied', () => {
     expect(await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: refusedDir, discovery: { map } })))
       .toMatchObject({ state: 'generation-stopped', detail: 'discovery-refused: model-ports-need-a-receipt-port', runDir: refusedDir });
     expect(readdirSync(refusedDir)).toEqual(['run-record.json']);
-    expect(JSON.parse(readFileSync(join(refusedDir, 'run-record.json'), 'utf8'))).toMatchObject({ discoveryRefusal: 'model-ports-need-a-receipt-port', corpusCount: expect.anything() });
+    expect(JSON.parse(readFileSync(join(refusedDir, 'run-record.json'), 'utf8'))).toMatchObject({ discoveryRefusal: 'model-ports-need-a-receipt-port', corpusCount: expect.anything(), revisionSource: { from: 'url' } });
     const called = vi.fn(map);
     const withheld: AdmissionRecordsPort = { source: 's', repositoryIdsFor: ids, check: (() => { let n = 0; return async (r: { kind: string }) => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: false as const, why: 'withdrawn' } : { satisfied: true as const, record: `r/${r.kind}` }); })() };
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: withheld, discoveryReceipt: async () => undefined,

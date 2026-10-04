@@ -242,6 +242,17 @@ Authorized implementation work (generator implementation authorization,
         `server.c` over 400,000 bytes contributes its first pieces too. 25
         mutants, 24 killed and 1 documented equivalent:
         `docs/evidence/discovery-prefix-pieces-mutants-2026-10-04.json`.
+  - [x] **Bare URL runs at the consented revision.** `poc:dossier
+        https://github.com/<owner>/<repo>` with no `/tree/<ref>` asks the
+        records port (`consentedRevisionsFor(repositoryId)`, labels and commit
+        ids from the observation consent): exactly one admitted revision is
+        pinned by its tag or ref with `ls-remote` and refused (exit 3) unless
+        it resolves to the consented commit id; several are listed and none
+        chosen (exit 3, add `/tree/<ref>`); none behaves as before. A
+        malformed or failing answer is an unmet gate. The run record carries
+        `revisionSource` (`consent` with label and commit id, or `url`). 23
+        mutants, all killed:
+        `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
