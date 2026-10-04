@@ -200,7 +200,8 @@ Authorized implementation work (generator implementation authorization,
         snapshotted to strings once and only the snapshot is used. The run
         record carries `revisionSource` (`consent` with label and commit id,
         or `url`). The CLI does not reach this until a records port with
-        `consentedRevisionsFor` is wired (with #334). MUTANTS_PLACEHOLDER
+        `consentedRevisionsFor` is wired (with #334). 33 mutants, 31 killed and 2
+        documented equivalent:
         `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
