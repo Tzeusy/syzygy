@@ -186,6 +186,19 @@ describe('a URL without a ref runs at the revision the observation consent admit
     expect(materialize).not.toHaveBeenCalled();
   });
 
+  it('reads the length of the answer once: an array whose length grows cannot add an entry', async () => {
+    let reads = 0;
+    const growing = new Proxy([one[0]!], { get: (target, key, receiver) => (key === 'length' ? (reads++ === 0 ? 1 : 2) : Reflect.get(target, key, receiver)) });
+    const outcome = await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records: withConsent(async () => growing) });
+    expect(outcome).toMatchObject({ state: 'admission-missing', revision: SHA_C, resolvedRef: 'refs/tags/8.0.0' });
+  });
+
+  it('a consent that names the default-branch commit for a tag is a moved tag, not a tag object', async () => {
+    const text = formatOutcome(await runDossierTrigger('https://github.com/redis/redis', { lsRemote: () => LS, records: withConsent(async () => [{ label: '8.0.0', commitId: SHA_A }]) }));
+    expect(text).toContain('has moved');
+    expect(text).not.toContain('tag object');
+  });
+
   it('records the entry as it was read once: a getter that changes its answer cannot change the pinned commit or the record', async () => {
     let reads = 0;
     const shifty = { label: '8.0.0', get commitId(): string { return reads++ < 1 ? SHA_C : SHA_B; } };
