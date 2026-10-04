@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, discoverAndSelect, quotableGenerationSources } from '@syzygy/polaris-generation-core';
+import { DEFAULT_DISCOVERY_BUDGET, gitBlobObjectId, generationSourcesForBody, validateGenerationSources, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, discoverAndSelect, quotableGenerationSources } from '@syzygy/polaris-generation-core';
 
 import { CORE_FILES, redisShapedFiles } from './redis-shaped-fixture.js';
 import { main } from './redis-shaped-measure-main.js';
@@ -141,27 +141,56 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
       expect(deferred.some(entry => entry.detail.includes('byte selection cap'))).toBe(true);
     });
 
-    it('[Observed] with the path-and-size prior alone, the cap leaves most core mechanism files deferred: 5 of 18 are kept', async () => {
+    const bytesKept = (result: Awaited<ReturnType<typeof discoverAndSelect>>, path: string): number =>
+      result.sources.filter(source => source.path === path && !source.exclusion.excluded).reduce((n, source) => n + source.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
+
+    it('[Observed] with the path-and-size prior alone, the three files over 100,000 bytes each take their share and only 2 of 18 core files are read', async () => {
       const capped = await discoverAndSelect(run.corpus.sources, ['q'], DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
       const kept = keptPaths(capped);
-      expect(CORE.filter(path => kept.has(path))).toEqual(['src/ae.c', 'src/ae_epoll.c', 'src/ae_kqueue.c', 'src/aof.c', 'src/cluster_legacy.c']);
-      expect(capped.report.selected.blobs).toBe(15);
+      expect(CORE.filter(path => kept.has(path))).toEqual(['src/ae.c', 'src/cluster_legacy.c']);
+      expect(capped.report).toMatchObject({ partialBlobs: 3, selected: { blobs: 9, sources: 12 } });
+      expect(capped.report.bytes).toEqual({ selected: 399_815, deferred: 3_471_462, cap: 400_000 });
     });
 
-    it('[Observed] once a model ranking names the 18 core mechanism files, 15 fit: the two 130,000-byte files take a third of the cap and three data-type files are deferred', async () => {
+    it('[Observed] once a model ranking names the 18 core mechanism files, all 18 are read: server.c and cluster_legacy.c by their first piece', async () => {
       const capped = await discoverAndSelect(run.corpus.sources, ['q'], { ...DOSSIER_DISCOVERY_BUDGET, maxMapCalls: 100 },
         { permitted: async () => true, map: coreMap, receipt: async () => undefined });
       const kept = keptPaths(capped);
       expect(CORE).toHaveLength(18);
       expect(capped.report.rankingBasis).toBe('model-map');
-      expect(CORE.filter(path => kept.has(path))).toHaveLength(15);
-      expect(CORE.filter(path => !kept.has(path))).toEqual(['src/t_string.c', 'src/t_zset.c', 'src/t_stream.c']);
-      for (const path of ['src/server.c', 'src/cluster_legacy.c']) expect(kept.has(path), path).toBe(true);
-      const missed = capped.report.deferred.filter(entry => !kept.has(entry.path) && CORE.includes(entry.path));
-      expect(missed.map(entry => entry.path).sort()).toEqual(['src/t_stream.c', 'src/t_string.c', 'src/t_zset.c']);
-      expect(missed.every(entry => entry.detail.includes('did not fit the remaining') && entry.detail.includes('400000-byte selection cap'))).toBe(true);
-      expect(capped.report.bytes.selected).toBeLessThanOrEqual(400_000);
-      expect(capped.report.selected.blobs).toBe(18);
+      expect(CORE.filter(path => !kept.has(path))).toEqual([]);
+      expect(capped.report).toMatchObject({ partialBlobs: 2, selected: { blobs: 23, sources: 25 } });
+      expect(capped.report.bytes).toEqual({ selected: 399_902, deferred: 3_471_375, cap: 400_000 });
+      expect(bytesKept(capped, 'src/server.c')).toBe(99_977);
+      expect(bytesKept(capped, 'src/cluster_legacy.c')).toBe(99_983);
+      const rest = capped.report.deferred.filter(entry => entry.path === 'src/server.c');
+      expect(rest).toEqual([expect.objectContaining({ detail: expect.stringContaining('pieces 2..2 of 2 not read: bytes 99977..130118 of the file\'s 130118') })]);
+      expect(() => validateGenerationSources(capped.sources)).not.toThrow();
+    });
+
+    it('a server.c over 400,000 bytes contributes its leading pieces, up to the per-file share, and the rest is one deferred row', async () => {
+      const original = run.corpus.sources.find(source => source.path === 'src/server.c')!;
+      const body = Array.from({ length: 5200 }, (_, i) => `/* line ${i} of a synthetic server.c longer than the whole selection cap */`.padEnd(79, ' ')).join('\n');
+      expect(Buffer.byteLength(body)).toBeGreaterThan(400_000);
+      const { sourceId: _id, spans: _s, body: _b, segment: _g, exclusion: _e, classificationBasis: _c, ...identity } = original;
+      const big = generationSourcesForBody({ ...identity, sourceId: 's-synthetic-server', objectId: gitBlobObjectId(body), body });
+      expect(big.length).toBeGreaterThanOrEqual(4);
+      const population = [...run.corpus.sources.filter(source => source.path !== 'src/server.c'), ...big];
+      const capped = await discoverAndSelect(population, ['q'], { ...DOSSIER_DISCOVERY_BUDGET, maxMapCalls: 100 }, { permitted: async () => true, map: coreMap, receipt: async () => undefined });
+      const kept = capped.sources.filter(source => source.path === 'src/server.c' && !source.exclusion.excluded);
+      expect(kept.length).toBeGreaterThanOrEqual(1);
+      expect(kept.map(source => source.segment!.index)).toEqual(kept.map((_, index) => index));
+      expect(bytesKept(capped, 'src/server.c')).toBeLessThanOrEqual(100_000);
+      expect(bytesKept(capped, 'src/server.c')).toBeGreaterThan(79_000);
+      const rows = capped.sources.filter(source => source.path === 'src/server.c' && source.exclusion.excluded);
+      expect(rows).toHaveLength(1);
+      const note = capped.report.deferred.find(entry => entry.path === 'src/server.c')!.detail;
+      expect(note).toContain(`pieces ${kept.length + 1}..${big.length} of ${big.length} not read: bytes ${big[kept.length]!.segment!.start}..${big[0]!.segment!.blobBytes}`);
+      const populationBytes = population.reduce((n, source) => n + source.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
+      expect(capped.report.bytes.selected + capped.report.bytes.deferred).toBe(populationBytes);
+      expect(capped.report.selected.blobs + capped.report.deferred.length).toBe(capped.report.population.candidateBlobs);
+      expect(() => validateGenerationSources(capped.sources)).not.toThrow();
+      expect(CORE.filter(path => !keptPaths(capped).has(path))).toEqual([]);
     });
   });
 
