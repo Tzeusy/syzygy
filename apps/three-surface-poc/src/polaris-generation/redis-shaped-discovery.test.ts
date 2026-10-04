@@ -105,8 +105,8 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
     }
   });
 
-  it('leaves the heuristic selection exactly as it was: the excerpt changes what the map call sees, not the ranking without a model', () => {
-    expect(run.measurement.selection.selectedBlobs).toBe(196);
+  it('the excerpt changes what the map call sees, not the ranking without a model: the heuristic selection holds every core file', () => {
+    expect(run.measurement.selection.selectedBlobs).toBe(197);   // 196 before the role signals of the prior (syzygy-mea)
     for (const [role, paths] of Object.entries(CORE_FILES)) expect(run.measurement.coreMechanisms[role]!.selected, role).toEqual([...paths]);
   });
 
@@ -144,12 +144,12 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
     const bytesKept = (result: Awaited<ReturnType<typeof discoverAndSelect>>, path: string): number =>
       result.sources.filter(source => source.path === path && !source.exclusion.excluded).reduce((n, source) => n + source.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
 
-    it('[Observed] with the path-and-size prior alone, the three files over 100,000 bytes each take their share and only 2 of 18 core files are read', async () => {
+    it('[Observed] with the path-and-size prior alone, the three files over 100,000 bytes each take their share and only 6 of 18 core files are read', async () => {
       const capped = await discoverAndSelect(run.corpus.sources, ['q'], DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
       const kept = keptPaths(capped);
-      expect(CORE.filter(path => kept.has(path))).toEqual(['src/ae.c', 'src/cluster_legacy.c']);
-      expect(capped.report).toMatchObject({ partialBlobs: 3, selected: { blobs: 9, sources: 12 } });
-      expect(capped.report.bytes).toEqual({ selected: 399_815, deferred: 3_471_462, cap: 400_000 });
+      expect(CORE.filter(path => kept.has(path))).toEqual(['src/ae.c', 'src/ae_epoll.c', 'src/ae_kqueue.c', 'src/server.c', 'src/aof.c', 'src/cluster_legacy.c']);
+      expect(capped.report).toMatchObject({ partialBlobs: 3, selected: { blobs: 13, sources: 16 } });
+      expect(capped.report.bytes).toEqual({ selected: 399_579, deferred: 3_471_698, cap: 400_000 });
     });
 
     it('[Observed] once a model ranking names the 18 core mechanism files, all 18 are read: server.c and cluster_legacy.c by their first piece', async () => {
@@ -159,8 +159,8 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
       expect(CORE).toHaveLength(18);
       expect(capped.report.rankingBasis).toBe('model-map');
       expect(CORE.filter(path => !kept.has(path))).toEqual([]);
-      expect(capped.report).toMatchObject({ partialBlobs: 2, selected: { blobs: 23, sources: 25 } });
-      expect(capped.report.bytes).toEqual({ selected: 399_902, deferred: 3_471_375, cap: 400_000 });
+      expect(capped.report).toMatchObject({ partialBlobs: 2, selected: { blobs: 21, sources: 23 } });
+      expect(capped.report.bytes).toEqual({ selected: 399_913, deferred: 3_471_364, cap: 400_000 });
       expect(bytesKept(capped, 'src/server.c')).toBe(99_977);
       expect(bytesKept(capped, 'src/cluster_legacy.c')).toBe(99_983);
       const rest = capped.report.deferred.filter(entry => entry.path === 'src/server.c');
