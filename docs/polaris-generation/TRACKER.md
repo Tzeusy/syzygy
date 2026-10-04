@@ -223,6 +223,25 @@ Authorized implementation work (generator implementation authorization,
         and `t_stream.c` are deferred. A real `server.c` is larger than the
         whole cap. 24 mutants, all killed:
         `docs/evidence/discovery-byte-cap-mutants-2026-10-04.json`.
+  - [x] **Oversize files read by their leading pieces.** Under a byte cap a
+        split file is no longer all-or-nothing: the longest leading run of
+        pieces p1..pk that fits the room left and a per-file share of the cap
+        (a quarter, 100,000 bytes for the dossier) is kept, and the rest is one
+        `deferred-by-budget` row naming "pieces k+1..N of N" and the byte range
+        not read. A prefix only, never a gap; an unsplit file is kept or
+        deferred whole. `validateGenerationSources` accepts a prefix only when
+        that deferred row for the same blob is present (a truncated tail
+        without it still fails, as does a complete file beside one), and the
+        quote check joins the pieces present. Without a byte cap nothing
+        changes. The report keeps `selected.blobs + deferred.length` equal to
+        the candidate count (`selected.blobs` counts files read whole,
+        `partialBlobs` the prefixed ones) and the byte totals close. Request
+        digests are unchanged. [Observed] on the Redis-shaped fixture with a
+        model ranking that names the 18 core files, all 18 are read:
+        `server.c` and `cluster_legacy.c` by their first ~100,000 bytes. A
+        `server.c` over 400,000 bytes contributes its first pieces too. 25
+        mutants, 24 killed and 1 documented equivalent:
+        `docs/evidence/discovery-prefix-pieces-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
