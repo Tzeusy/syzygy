@@ -36,6 +36,10 @@ describe('budget arithmetic', () => {
     // The least units equal the smallest ceiling: it fits.
     expect(budgetArithmetic({ ...tight, owner: { ...tight.owner, runTotalUnits: 5_000 }, stageCeilingUnits: { inventory: 401, plan: 300, author: 401, edit: 401, fidelity: 401, repair: 300 } }).fullSelectionFits).toBe(true);
     expect(budgetArithmetic({ ...tight, maxRepairCycles: 1 }).repairCyclesAffordable).toBe(1);
+    // Headroom 1000 holds one cycle of 600, not two.
+    expect(budgetArithmetic({ ...tight, owner: { ...tight.owner, runTotalUnits: 3_800 } }).repairCyclesAffordable).toBe(1);
+    // 1,010 discovery units hold 25 calls of 40, not 26.
+    expect(budgetArithmetic({ ...tight, owner: { ...tight.owner, runTotalUnits: 4_010, discoveryUnits: 1_010 } }).maxDiscoveryCalls).toBe(25);
     expect(formatCheck({ ...(budgetOnly(b)) })).toContain('DOES NOT FIT');
   });
 });
@@ -51,6 +55,7 @@ describe('checkDossier reads nothing', () => {
     expect(outcome).toMatchObject({ state: 'check-ready', revision: SHA_A, resolvedRef: 'HEAD', revisionSource: { from: 'url' } });
     const text = formatCheck(outcome);
     for (const kind of ['observation-consent', 'public-source-policy', 'egress-consent']) expect(text).toContain(`OK       ${kind}: fixture/${kind}`);
+    expect(text).toContain('Admission records consulted: fixture store');
     expect(text).toContain('run total 4000 = discovery 1000 + narrative 3000');
     expect(text).toContain('Nothing was read and no provider was called.');
   });
