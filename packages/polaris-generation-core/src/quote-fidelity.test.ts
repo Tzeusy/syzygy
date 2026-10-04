@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { generationSourcesForBody, gitBlobObjectId } from './generation-source.js';
+import { generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 import { QUOTE_LEAD_IN, checkBlockQuotes, inspectBlockQuotes, normaliseForQuote, quoteFindingAsReviewFinding, sourceTextById } from './quote-fidelity.js';
 
 const files = (rows: readonly (readonly [string, string])[]) => rows.flatMap(([sourceId, body]) => generationSourcesForBody({ sourceId, repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: `${sourceId}.txt`, objectId: gitBlobObjectId(body), evaluationId: 'evaluation:fixture', body }));
@@ -179,6 +179,24 @@ describe('a file split into pieces', () => {
     expect(checkBlockQuotes({ id: 'b', text: `"${crossing.split(' ').slice(1, -1).join(' ')}"`, sourceIds: [pieces[0]!.sourceId] }, texts)).toEqual([]);
     expect(checkBlockQuotes({ id: 'b', text: `"${crossing.split(' ').slice(1, -1).join(' ')}"`, sourceIds: [pieces[1]!.sourceId] }, texts)).toEqual([]);
     expect(checkBlockQuotes({ id: 'b', text: '"not anywhere in the long file"', sourceIds: [pieces[0]!.sourceId] }, texts).map(f => f.kind)).toEqual(['quote-not-in-cited-sources']);
+  });
+});
+
+describe('a deferred tail of a split file', () => {
+  const lines = Array.from({ length: 6000 }, (_, i) => `line ${i} of the long file`).join('\n');
+  const pieces = files([['long', `${lines}\nThe boundary quote crosses the piece edge and continues.\n${'padding line\n'.repeat(5000)}\nTail only words here.\n`]]);
+  const last = pieces.at(-1)!;
+  it('checks against the pieces that are present, joined from the first: a prefix keeps its cross-piece quotes and loses the unread tail', () => {
+    expect(pieces.length).toBeGreaterThanOrEqual(3);
+    const prefix = pieces.slice(0, 2);
+    const { body: _b, segment: _s, spans: _p, ...bound } = pieces[2]!;
+    const deferredRow: GenerationSource = { ...bound, sourceId: `s-${'a'.repeat(24)}`, exclusion: { excluded: true, reason: 'deferred-by-budget' }, spans: [] };
+    const texts = sourceTextById([...prefix, deferredRow]);
+    const edge = pieces[0]!.spans[0]!.text.length;
+    const crossing = (prefix[0]!.spans[0]!.text + prefix[1]!.spans[0]!.text).slice(edge - 20, edge + 20).replace(/\s+/gu, ' ').trim().split(' ').slice(1, -1).join(' ');
+    expect(checkBlockQuotes({ id: 'b', text: `"${crossing}"`, sourceIds: [prefix[0]!.sourceId] }, texts)).toEqual([]);
+    expect(checkBlockQuotes({ id: 'b', text: '"Tail only words here."', sourceIds: [prefix[0]!.sourceId] }, texts).map(f => f.kind)).toEqual(['quote-not-in-cited-sources']);
+    expect(checkBlockQuotes({ id: 'b', text: '"Tail only words here."', sourceIds: [last.sourceId] }, sourceTextById(pieces)).map(f => f.kind)).toEqual([]);
   });
 });
 
