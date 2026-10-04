@@ -104,13 +104,13 @@ function stageOf(system: string): string {   // the dossier run sends the dossie
 describe('a whole run through the wiring against the loopback stub', () => {
   const run = async (respond: (system: string, input: string) => string, env: Record<string, string | undefined> = { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }) => {
     const stub = await startStubProvider(request => ({ text: respond(request.system, request.input) }));
-    const out: string[] = [];
+    const out: string[] = [], progress: string[] = [];
     const dir = mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-'));
     const runDir = path.join(dir, 'run');
     const code = await main(['https://github.com/redis/redis', '--route', 'messages-api', '--out', runDir, '--json'], { lsRemote: () => `${commit}\tHEAD\n`, materialize: async () => repo, policyAct: fixturePolicyActPort() },
-      { root: admissionRoot('messages-api'), env, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => out.push(t) });
+      { root: admissionRoot('messages-api'), env, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => progress.push(t) });
     await stub.close();
-    return { code, env, runDir, stateDir: `${runDir}.state`, requests: stub.requests, outcome: JSON.parse(out.join('')) as { state: string; detail: string } };
+    return { code, env, progress, runDir, stateDir: `${runDir}.state`, requests: stub.requests, outcome: JSON.parse(out.join('')) as { state: string; detail: string } };
   };
 
   it('discovers, runs all five narrative stages, renders the dossier with its optional assets, and stays inside the budget', async () => {
@@ -119,6 +119,10 @@ describe('a whole run through the wiring against the loopback stub', () => {
     expect(r.outcome).toMatchObject({ state: 'complete' });
     expect('SYZYGY_POLARIS_PROVIDER_API_KEY' in r.env).toBe(false);   // read once, then removed from the environment
     expect(r.requests.map(q => stageOf(q.system))).toEqual(['discovery-map', 'discovery-reduce', 'inventory', 'plan', 'author', 'edit', 'fidelity']);
+    // One content-free progress line per provider call, on stderr, in call order; stdout stays the outcome alone.
+    expect(r.progress).toHaveLength(7);
+    expect(r.progress.map(line => /^\[(\w+) ([\w-]+)\]/u.exec(line)!.slice(1).join(' '))).toEqual(['discovery discovery-map', 'discovery discovery-reduce', 'narrative inventory', 'narrative plan', 'narrative author', 'narrative edit', 'narrative fidelity']);
+    expect(r.progress.join('')).not.toContain(KEY);
     const record = JSON.parse(readFileSync(path.join(r.runDir, 'run-record.json'), 'utf8')) as { generation: { accountingPolicy: string; route: string; spend: { discoveryCountedUnits: number; narrativeCountedUnits: number }; budget: { runTotalUnits: number }; calls: { phase: string; usageUnknown: boolean }[] } };
     expect(record.generation).toMatchObject({ accountingPolicy: 'dossier-units-v1', route: 'messages-api', budget: { runTotalUnits: 4000 } });
     expect(record.generation.spend.discoveryCountedUnits).toBeGreaterThan(0);

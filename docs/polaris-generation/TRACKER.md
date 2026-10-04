@@ -264,10 +264,9 @@ Authorized implementation work (generator implementation authorization,
         the run; with `--route` it also refuses a route not in force. A run
         writes one content-free line per finished provider call to stderr
         (stage, units counted against the share, elapsed). Resume is not
-        built. 29 mutants, 27 killed and 2 documented (one equivalent by
-        typing, one not reached by any test here):
+        built. 29 mutants, 28 killed and 1 documented equivalent (by
+        typing):
         `docs/evidence/dossier-check-progress-mutants-2026-10-04.json`.
-||||||| b95a09c5
   - [x] **Role signals in the discovery prior.** `heuristicScore` stays a
         project-neutral path, size and opening-comment prior; it now also
         adds a bonus for a source root (`src`, `lib`, `core`, ...) at depth,

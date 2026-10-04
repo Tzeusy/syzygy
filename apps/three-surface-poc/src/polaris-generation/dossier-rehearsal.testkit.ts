@@ -355,7 +355,7 @@ export async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, s
       ? { text: respond(request), inputTokens: 1000, outputTokens: ((CEILING[stage] ?? 1) - 1) * 1000 }
       : { text: respond(request) };
   });
-  const out: string[] = [];
+  const out: string[] = [], progress: string[] = [];
   const runDir = path.join(mkdtempSync(path.join(scratch, 'out-')), 'run');
   const env: Record<string, string | undefined> = def.env === undefined ? { [CREDENTIAL]: STUB_KEY } : { ...def.env };
   let exit: number;
@@ -368,7 +368,7 @@ export async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, s
         render: ({ result, sources }) => { captured = sources; return renderDossier({ result, sources, requestedAssets: DOSSIER_REQUESTED_ASSETS }); },
         ...(def.clock === undefined ? {} : { now: def.clock() }),
       },
-      { root: admissionRoot(fixture.commit, def.withObservation !== false), env, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => out.push(t) });
+      { root: admissionRoot(fixture.commit, def.withObservation !== false), env, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => progress.push(t) });
   } finally { await stub.close(); }
   const text = out.join('');
   let outcome: Ran['outcome'] = null;
