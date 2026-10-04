@@ -1,6 +1,6 @@
 {
   "subject": {
-    "commit": "b9b17673e7417194aa9e84ad3b1b6b0fc791fb21",
+    "commit": "bed4ca616a37f6d9fd4e308573b1d39f3ba8547d",
     "branch": "agent/dossier-check",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-check.ts": "97aa162963a31f2d88542f597534e0f8966f7492d2e89225234fe52293493591",
@@ -10,7 +10,7 @@
     },
     "testFileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts": "3a77030c6dc0351f4d8b359e016973ef3c3e58d921557b25cc11550868c0172b",
-      "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts": "f7ccb3d9bc44148454f3cfae857976f867491e371a4227e8cb9c38ea4c384753",
+      "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts": "a3952d2f261d0ba93df6b44e6ac3836c8e6117e77f2fe98e4598553adeb5154f",
       "apps/three-surface-poc/src/polaris-generation/dossier-wiring.test.ts": "6d605efda404acb5f871f8e422b6af042e0b63b45c91020b61759b200472e2d9"
     }
   },
@@ -18,7 +18,7 @@
   "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-04T01:34:03+00:00",
+  "ranAt": "2026-10-04T01:42:25+00:00",
   "mutants": [
     {
       "id": "check-branch-off",
@@ -366,10 +366,9 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-check.test.ts",
         "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts"
       ],
-      "outcome": "survived",
-      "failedTests": 0,
-      "totalTests": 23,
-      "note": "not killed: reaching the progress argument needs main to build the production session over a wired records port and a provider factory, which no test in this branch drives; per-call lines are pinned at openGeneration (progress-never-written) and the rehearsal (#345) is the place to assert them end to end"
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23
     }
   ]
 }
