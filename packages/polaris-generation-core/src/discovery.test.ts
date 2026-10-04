@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { COMMENT_BONUS_MAX, CONFIGURATION_PENALTY, BUILD_PENALTY, HISTORY_PENALTY, SOURCE_ROOT_BONUS, DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { digestCanonicalJson } from './canonical-json.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
@@ -111,7 +111,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(100_001)))).toBe(flat + 6 - 1);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(300_000)))).toBe(flat + 8 - 2);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(600_000)))).toBe(flat + 8 - 5);
-    expect(score('deps/a/b.c', 500)).toBe(flat - 1002);
+    expect(score('deps/a/b.c', 500)).toBe(flat - 1002 - SOURCE_ROOT_BONUS);   // no source-root bonus under deps/
   });
 
   it('prefers the larger of two same-depth files when the cap fits one, whatever their path order', async () => {
@@ -525,7 +525,7 @@ describe('selection under a byte cap', () => {
     expect(report.bytes).toEqual({ selected: 100, deferred: 199, cap: 150 });
   });
 
-  it('selects the pieces of a split file as a unit: all of them, or one deferred row for the file', async () => {
+  it('defers a split file whole as one row, in its pieces, when its first piece does not fit the share', async () => {
     const line = 'x'.repeat(79) + '\n';
     const big = make('docs/big.md', line.repeat(2000));
     expect(big.length).toBeGreaterThan(1);
@@ -536,9 +536,122 @@ describe('selection under a byte cap', () => {
     expect(tight.sources.filter(source => source.exclusion.excluded)).toHaveLength(1);
     expect(tight.report.deferred).toEqual([expect.objectContaining({ path: 'docs/big.md', detail: expect.stringContaining(`in ${big.length} pieces`) })]);
     expect(tight.report.bytes.deferred).toBe(total);
-    const roomy = await discoverAndSelect([...big, ...small], Q, { ...budget, maxSelectedBytes: total + 5 }, { permitted: allow, runKey: RUN_KEY });
-    expect(quotableGenerationSources(roomy.sources)).toHaveLength(big.length + 1);
-    expect(roomy.report.selected).toEqual({ blobs: 2, sources: big.length + 1 });
+  });
+
+  describe('a split file is admitted by its leading pieces (never a gap), up to a per-file share of the cap', () => {
+    const line = 'x'.repeat(79) + '\n';
+    const bytesOf = (pieces: readonly GenerationSource[]): number => pieces.reduce((n, piece) => n + piece.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
+    const big = make('docs/big.md', line.repeat(4000));   // 320,000 bytes: four pieces
+    const small = make('docs/small.md', 'tiny\n');
+    const first = bytesOf(big.slice(0, 1)), total = bytesOf(big);
+    const run = (cap: number, extra: Partial<typeof budget> = {}) => discoverAndSelect([...big, ...small], Q, { ...budget, maxSelectedBytes: cap, ...extra }, { permitted: allow, runKey: RUN_KEY });
+    const keptPieces = (sources: readonly GenerationSource[]): number => sources.filter(source => source.path === 'docs/big.md' && !source.exclusion.excluded && source.spans.length > 0).length;
+
+    it('has four pieces to work with', () => {
+      expect(big).toHaveLength(4);
+      expect(first).toBeGreaterThan(79_000);
+    });
+
+    it('keeps the whole file when the share holds it', async () => {
+      const { sources, report } = await run(total * 4 + 100);
+      expect(keptPieces(sources)).toBe(4);
+      expect(report.partialBlobs).toBe(0);
+      expect(report.selected).toEqual({ blobs: 2, sources: 5 });
+      expect(report.deferred).toEqual([]);
+      expect(() => validateGenerationSources(sources)).not.toThrow();
+    });
+
+    it('keeps the longest leading run that fits the per-file share, and defers the rest as one row naming the bytes not read', async () => {
+      const cap = first * 2 * 4 + 10;   // share holds two pieces
+      const { sources, report } = await run(cap);
+      expect(sources.filter(source => source.path === 'docs/big.md' && source.segment !== undefined).map(source => source.segment!.index)).toEqual([0, 1]);
+      expect(keptPieces(sources)).toBe(2);
+      const rest = sources.filter(source => source.path === 'docs/big.md' && source.exclusion.excluded);
+      expect(rest).toHaveLength(1);
+      expect(rest[0]!.exclusion).toEqual({ excluded: true, reason: DEFERRED_BY_BUDGET });
+      const from = big[2]!.segment!;
+      expect(report.deferred).toEqual([expect.objectContaining({ path: 'docs/big.md', detail: expect.stringContaining(`pieces 3..4 of 4 not read: bytes ${from.start}..${from.blobBytes} of the file's ${from.blobBytes}`) })]);
+      expect(report.partialBlobs).toBe(1);
+      expect(report.selected).toEqual({ blobs: 1, sources: 3 });
+      expect(report.bytes.selected).toBe(bytesOf(big.slice(0, 2)) + 5);
+      expect(report.bytes.selected + report.bytes.deferred).toBe(total + 5);
+      expect(report.selected.blobs + report.deferred.length).toBe(report.population.candidateBlobs);
+      expect(sources).toHaveLength(big.length + small.length - 2 + 1);
+      expect(() => validateGenerationSources(sources)).not.toThrow();
+    });
+
+    it('is limited by the room left as well as the share, and by the count cap', async () => {
+      const room = (await run(first * 4 + 10)).report;   // share holds one piece
+      expect(room.selected.sources).toBe(2);
+      expect(room.deferred[0]!.detail).toContain('pieces 2..4 of 4 not read');
+      const counted = await run(total * 4 + 100, { maxSelected: 2 });   // big ranks first and takes both places
+      expect(keptPieces(counted.sources)).toBe(2);
+      expect(counted.report.selected.sources).toBe(2);
+      expect(counted.report.deferred.map(entry => entry.path).sort()).toEqual(['docs/big.md', 'docs/small.md']);
+      expect(counted.report.deferred.find(entry => entry.path === 'docs/big.md')!.detail).toContain('pieces 3..4 of 4 not read');
+    });
+
+    it('stops at the room left when that is less than the share, and at the share exactly when it holds whole pieces', async () => {
+      // cap 12 first-pieces: share 3, room after ten fillers 2 (+10 bytes).
+      const cap = first * 12;
+      const fillers = Array.from({ length: 10 }, (_, i) => make(`docs/filler${i}.md`, `${'z'.repeat(first - 2)}\n`)).flat();
+      const ports = model({ map: mapOf(item => (item.path.includes('filler') ? 9 : 1)) });
+      const limited = await discoverAndSelect([...fillers, ...big], Q, { ...budget, maxSelectedBytes: cap, maxSelected: 200, maxMapCalls: 100 }, ports);
+      expect(fillers.every(filler => limited.sources.includes(filler))).toBe(true);
+      expect(keptPieces(limited.sources)).toBe(2);
+      expect(limited.report.deferred[0]!.detail).toContain('pieces 3..4 of 4 not read');
+      // A share that equals the first two pieces exactly keeps both; one byte less keeps one.
+      const two = bytesOf(big.slice(0, 2));
+      expect(keptPieces((await run(two * 4)).sources)).toBe(2);
+      expect(keptPieces((await run(two * 4 - 4)).sources)).toBe(1);
+    });
+
+    it('defers the whole file when not even its first piece fits, and counts a piece by its UTF-8 bytes', async () => {
+      const none = await run(first * 4 - 8);
+      expect(keptPieces(none.sources)).toBe(0);
+      expect(none.report.partialBlobs).toBe(0);
+      expect(none.report.deferred[0]!.detail).toContain('not even the first piece');
+      expect(none.report.bytes.deferred).toBe(total);
+      const wide = make('docs/wide.md', `${'\u00e9'.repeat(60)}\n`.repeat(2200));   // two-byte letters
+      expect(wide.length).toBeGreaterThan(1);
+      const w = await discoverAndSelect(wide, Q, { ...budget, maxSelectedBytes: 4 * bytesOf(wide.slice(0, 1)) - 4 }, { permitted: allow, runKey: RUN_KEY });
+      expect(w.report.selected.sources).toBe(0);
+    });
+
+    it('never admits a gap: the kept pieces are always 1..k, and a count cap without a byte cap still defers the file whole', async () => {
+      for (const cap of [first * 4 + 1, first * 8 + 1, first * 12 + 1]) {
+        const { sources } = await run(cap);
+        const kept = sources.filter(source => source.path === 'docs/big.md' && source.segment !== undefined).map(source => source.segment!.index);
+        expect(kept).toEqual(kept.map((_, i) => i));
+      }
+      const noByteCap = await discoverAndSelect([...big, ...small], Q, { ...budget, maxSelected: 3 }, { permitted: allow, runKey: RUN_KEY });
+      expect(keptPieces(noByteCap.sources)).toBe(0);
+      expect(noByteCap.report.partialBlobs).toBe(0);
+    });
+
+    it('replays to the same report from receipts', async () => {
+      const ports = model({ map: mapOf(() => 1) });
+      const cap = first * 2 * 4 + 10;
+      const live = await discoverAndSelect([...big, ...small], Q, { ...budget, maxSelectedBytes: cap }, ports);
+      const replay = await reportFromReceipts([...big, ...small], Q, { ...budget, maxSelectedBytes: cap }, ports.receipts, RUN_KEY);
+      expect(replay.report).toEqual(live.report);
+      expect(replay.sources).toEqual(live.sources);
+    });
+  });
+
+  describe('a prefix population validates only with its deferred row', () => {
+    const big = make('docs/big.md', ('x'.repeat(79) + '\n').repeat(4000));
+    const row = (): GenerationSource => { const { body: _b, segment: _s, spans: _p, ...bound } = big[2]!; return { ...bound, sourceId: 's-' + 'a'.repeat(24), exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET }, spans: [] }; };
+    it('accepts pieces 1..k with a deferred row for the rest, and refuses the same prefix without it, a gap, or a deferred row beside the complete file', () => {
+      expect(() => validateGenerationSources([big[0]!, big[1]!, row()])).not.toThrow();
+      expect(() => validateGenerationSources([big[0]!, big[1]!])).toThrow();
+      expect(() => validateGenerationSources([big[0]!, big[2]!, row()])).toThrow();
+      expect(() => validateGenerationSources([...big, row()])).toThrow();
+      expect(() => validateGenerationSources([...big.slice(1), row()])).toThrow();
+      expect(() => validateGenerationSources([big[0]!, big[1]!, { ...row(), exclusion: { excluded: true, reason: 'oversize-source-excluded' } }])).toThrow();
+      // Pieces that run past a declared size are not a prefix: a forged blob size cannot make the full set look partial.
+      expect(() => validateGenerationSources([...big.map(piece => ({ ...piece, segment: { ...piece.segment!, blobBytes: piece.segment!.blobBytes + 1 } })), row()])).toThrow();
+    });
   });
 
   it('applies both caps: a count cap still holds when the bytes would allow more', async () => {
@@ -559,5 +672,56 @@ describe('selection under a byte cap', () => {
     const replay = await reportFromReceipts(files, Q, { ...budget, maxSelectedBytes: 2500 }, ports.receipts, RUN_KEY);
     expect(replay.report).toEqual(live.report);
     expect(replay.report.bytes).toEqual({ selected: 2300, deferred: 5000, cap: 2500 });
+  });
+});
+
+describe('role signals of the prior', () => {
+  const score = (path: string, body = 'int x;\n'): number => heuristicScore(path, make(path, body));
+  const same = (a: string, b: string): number => score(a) - score(b);
+
+  it('ranks a source root above the rest of the tree at the same depth, and not a bare top-level file', () => {
+    expect(same('src/a.c', 'extra/a.c')).toBe(SOURCE_ROOT_BONUS);
+    expect(same('lib/a.c', 'extra/a.c')).toBe(SOURCE_ROOT_BONUS);
+    expect(score('src')).toBe(score('other'));
+  });
+
+  it('ranks configuration, build and history files below source and prose', () => {
+    expect(same('src/a.c', 'src/a.conf')).toBe(CONFIGURATION_PENALTY * -1);
+    for (const name of ['a.toml', 'a.yaml', 'a.yml', 'a.json', 'a.ini', 'a.xml', 'a.lock']) expect(same('src/a.c', `src/${name}`), name).toBe(CONFIGURATION_PENALTY * -1);
+    for (const name of ['Makefile', 'CMakeLists.txt', 'rules.mk', 'a.cmake', 'Dockerfile']) expect(same('src/a.c', `src/${name}`), name).toBe(BUILD_PENALTY * -1);
+    for (const name of ['CHANGELOG', 'RELEASE-NOTES', 'HISTORY.txt', 'news.txt']) expect(score(name) - score('plain'), name).toBeLessThanOrEqual(HISTORY_PENALTY + 10);
+    expect(score('docs/internals.md')).toBeGreaterThan(score('src/a.c'));
+  });
+
+  it('names more design documents: rationale, notes, implementation', () => {
+    for (const name of ['RATIONALE.md', 'NOTES.md', 'IMPLEMENTATION.md', 'how-it-works.md']) expect(score(name) - score('zzz.md'), name).toBe(50);
+  });
+
+  it('adds a bonus that doubles with the size of the file\'s own opening comment, to a maximum, and ignores a licence block', () => {
+    const comment = (chars: number): string => `/* ${'a'.repeat(chars)} */\nint x;\n`;
+    const base = score('src/a.c', 'int x;\n');
+    expect(score('src/a.c', comment(50)) - base).toBe(0);
+    expect(score('src/a.c', comment(400)) - base).toBe(1);
+    expect(score('src/a.c', comment(1600)) - base).toBe(3);
+    expect(score('src/a.c', comment(10_000_00 / 10)) - base).toBeLessThanOrEqual(COMMENT_BONUS_MAX);
+    // Controls of the same length whose comment is not the file's opening one.
+    const licence = `/* Copyright (c) someone. ${'a'.repeat(3000)} */\nint x;\n`;
+    expect(score('src/a.c', licence)).toBe(score('src/a.c', `int y;\n${licence}`));
+    const after = `/* Copyright (c) someone. */\n${comment(1600)}`;
+    expect(score('src/a.c', after) - score('src/a.c', `int y;\n${after}`)).toBe(3);
+    // A comment that follows code is not the file's opening one.
+    expect(score('src/a.c', `int y;\n${comment(3000)}`)).toBe(score('src/a.c', `int y;\nint ${'a'.repeat(3000)};\n`));
+    expect(score('docs/a.md', comment(3000))).toBe(score('docs/a.md', `int y;\n${comment(3000)}`));
+    expect(score('src/a.c', `// ${'a'.repeat(400)}\nint x;\n`) - base).toBe(1);
+  });
+
+  it('puts documented core code ahead of undocumented code and configuration under a byte cap', async () => {
+    const documented = make('src/core.c', `/* ${'The core does this and that. '.repeat(60)} */\n${'int f(void);\n'.repeat(250)}`);
+    const plain = make('src/plain.c', 'int f(void);\n'.repeat(400));
+    const conf = make('server.conf', 'port 1\n'.repeat(900));
+    const notes = make('RELEASE-NOTES', 'fixed a bug\n'.repeat(900));
+    const { sources } = await discoverAndSelect([...conf, ...notes, ...plain, ...documented], Q, { ...budget, maxSelectedBytes: 6000 }, { permitted: allow, runKey: RUN_KEY });
+    const kept = sources.filter(source => !source.exclusion.excluded && source.spans.length > 0).map(source => source.path);
+    expect(kept).toEqual(['src/core.c']);
   });
 });

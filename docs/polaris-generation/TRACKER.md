@@ -203,6 +203,42 @@ Authorized implementation work (generator implementation authorization,
         `consentedRevisionsFor` is wired (with #334). 33 mutants, 31 killed and 2
         documented equivalent:
         `docs/evidence/bare-url-consented-revision-mutants-2026-10-04.json`.
+  - [x] **Oversize files read by their leading pieces.** Under a byte cap a
+        split file is no longer all-or-nothing: the longest leading run of
+        pieces p1..pk that fits the room left and a per-file share of the cap
+        (a quarter, 100,000 bytes for the dossier) is kept, and the rest is one
+        `deferred-by-budget` row naming "pieces k+1..N of N" and the byte range
+        not read. A prefix only, never a gap; an unsplit file is kept or
+        deferred whole. `validateGenerationSources` accepts a prefix only when
+        that deferred row for the same blob is present (a truncated tail
+        without it still fails, as does a complete file beside one), and the
+        quote check joins the pieces present. Without a byte cap nothing
+        changes. The report keeps `selected.blobs + deferred.length` equal to
+        the candidate count (`selected.blobs` counts files read whole,
+        `partialBlobs` the prefixed ones) and the byte totals close. Request
+        digests are unchanged. [Observed] on the Redis-shaped fixture with a
+        model ranking that names the 18 core files, all 18 are read:
+        `server.c` and `cluster_legacy.c` by their first ~100,000 bytes. A
+        `server.c` over 400,000 bytes contributes its first pieces too. 25
+        mutants, 24 killed and 1 documented equivalent:
+        `docs/evidence/discovery-prefix-pieces-mutants-2026-10-04.json`.
+  - [x] **Role signals in the discovery prior.** `heuristicScore` stays a
+        project-neutral path, size and opening-comment prior; it now also
+        adds a bonus for a source root (`src`, `lib`, `core`, ...) at depth,
+        penalties for configuration, build and release-history files, a few
+        more design-document names (rationale, notes, implementation), and a
+        bonus that doubles with the size of a C-family file's own opening
+        comment (a licence block is skipped; maximum 8). Vendored and test
+        paths keep their existing penalties. [Observed] on the synthetic
+        design-prose fixture with no model, under the dossier cap, before ->
+        after: core files read 4 -> 10 of 18 (134,671 -> 302,641 bytes);
+        release notes 99,997 -> 0 bytes, configuration 60,050 -> 0, build
+        3,065 -> 0; design documents 5 of 5 -> 5 of 5. Map and reduce request
+        bytes do not move: a group's items stay in path order and the model
+        calls never see the prior; only which groups are mapped when calls run
+        short, and the order of the no-model fallback, can change. Evidence
+        `docs/evidence/discovery-role-prior-2026-10-04.json` (23 mutants, 21
+        killed, 2 documented equivalent).
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading

@@ -15,7 +15,7 @@
  */
 
 import { digestCanonicalJson } from './canonical-json.js';
-import { buildExcerpt, type ExcerptKind, type ExcerptRange } from './excerpt.js';
+import { buildExcerpt, leadingCommentChars, type ExcerptKind, type ExcerptRange } from './excerpt.js';
 import { excludedSourceId, newGenerationRunKey, type GenerationSource } from './generation-source.js';
 
 export const DEFERRED_BY_BUDGET = 'deferred-by-budget';
@@ -107,7 +107,10 @@ export interface DiscoveryReport {
   readonly rankingBasis: 'model-reduce' | 'model-map' | 'heuristic';
   readonly basisNote: string;
   readonly droppedUnknownIds: number;
+  /** `blobs` counts files selected whole; `sources` counts every quotable source kept, pieces of a partly selected file included. */
   readonly selected: { readonly blobs: number; readonly sources: number };
+  /** Split files of which only a leading run of pieces was kept (each also has one deferred row naming the rest). `selected.blobs + deferred.length` is the candidate count. */
+  readonly partialBlobs: number;
   /** UTF-8 bytes of quotable text: kept, deferred (every candidate not kept), and the cap that applied (null when none). */
   readonly bytes: { readonly selected: number; readonly deferred: number; readonly cap: number | null };
   readonly deferred: readonly { readonly blobId: string; readonly path: string; readonly detail: string }[];
@@ -125,6 +128,7 @@ const pieceBase = (source: GenerationSource): string =>
   source.segment === undefined ? source.sourceId : source.sourceId.replace(/-p[0-9]+$/u, '');
 
 /** UTF-8 bytes of the quotable text of these pieces. */
+const pieceBytes = (piece: GenerationSource): number => quotableBytes([piece]);
 const quotableBytes = (pieces: readonly GenerationSource[]): number =>
   pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + Buffer.byteLength(span.text, 'utf8'), 0), 0);
 
@@ -147,14 +151,34 @@ export const VENDORED_TIER = -1000;
 /** Size bonus ceiling, in doublings of 1 KiB of quotable text (256 KiB and above earn the same). */
 export const SIZE_BONUS_MAX = 8;
 
+const SOURCE_ROOT = /^(src|lib|libs|source|sources|core|pkg|internal|app|apps|cmd|crates|include)$/iu;
+const CONFIGURATION = /\.(conf|cfg|ini|toml|ya?ml|json|xml|properties|env|lock)$/iu;
+const BUILD_FILE = /^(makefile|gnumakefile|cmakelists\.txt|dockerfile|rakefile|build\.gradle|pom\.xml)$|\.(mk|cmake|gradle|bzl)$/iu;
+const HISTORY_FILE = /(release[-_ ]?notes?|changelog|changes|history|news)/iu;
+export const SOURCE_ROOT_BONUS = 10;
+export const CONFIGURATION_PENALTY = -20;
+export const BUILD_PENALTY = -15;
+export const HISTORY_PENALTY = -15;
+/** A leading comment of this many characters earns one point, doubling per point to the maximum. */
+export const COMMENT_BONUS_UNIT = 200;
+export const COMMENT_BONUS_MAX = 8;
+
 /** Path-and-size prior used as the fallback ranking and as the tie-break. */
 export function heuristicScore(path: string, pieces: readonly GenerationSource[]): number {
   const parts = path.split('/'), name = (parts.at(-1) ?? '').toLowerCase();
   let score = 0;
-  if (/^(readme|overview|architecture|design|concepts?|internals?|contributing|index)(\.|$)/u.test(name)) score += 50;
+  if (/^(readme|overview|architecture|design|concepts?|internals?|contributing|index|rationale|notes|implementation|how[-_ ]it[-_ ]works)(\.|$)/u.test(name)) score += 50;
   if (parts.slice(0, -1).some(part => /^(docs?|documentation|design|architecture)$/iu.test(part))) score += 30;
-  if (/\.(md|rst|txt|adoc)$/u.test(name)) score += 10;
+  if (/\.(md|rst|txt|adoc)$/u.test(name) && !BUILD_FILE.test(name)) score += 10;
   if (parts.slice(0, -1).some(part => /^(tests?|__tests__|spec|fixtures?|examples?)$/iu.test(part)) || /\.(test|spec)\./u.test(name)) score -= 20;
+  // Role signals, all generic. A source root outranks the rest of the tree; configuration, build and history files say little about how the project works and rank below prose and code.
+  if (SOURCE_ROOT.test(parts[0] ?? '') && parts.length > 1) score += SOURCE_ROOT_BONUS;
+  if (CONFIGURATION.test(name)) score += CONFIGURATION_PENALTY;
+  else if (BUILD_FILE.test(name)) score += BUILD_PENALTY;
+  if (HISTORY_FILE.test(name)) score += HISTORY_PENALTY;
+  // A file that opens with a long comment of its own explains itself: more of its head is worth reading.
+  const head = pieces[0]?.body ?? pieces[0]?.spans[0]?.text ?? '';
+  score += Math.min(COMMENT_BONUS_MAX, Math.floor(Math.log2(Math.max(1, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT))));
   // Among files the path rules do not separate, more quotable text means more substance; without this a tie fell to path order.
   const chars = pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + span.text.length, 0), 0);
   score += Math.min(SIZE_BONUS_MAX, Math.floor(Math.log2(Math.max(1, chars / 1024))));
@@ -323,20 +347,45 @@ async function discover(
   const order = [...rankedIds.map(id => byId.get(id)!), ...rest];
 
   // Rank order until a cap is hit. A file that does not fit is skipped and the next, smaller one is tried; every skip is recorded with its reason.
-  const chosen = new Set<string>(), noFit = new Set<string>(), byteSkip = new Map<string, string>();
-  const byteCap = budget.maxSelectedBytes;
-  let used = 0, usedBytes = 0;
+  // With a byte cap, a split file may be admitted by its leading run of pieces (never a gap): the longest run that fits the room left and a per-file share of the cap. The rest is one deferred row.
+  const chosen = new Map<string, number>(), noFit = new Set<string>(), skipDetail = new Map<string, string>();
+  const byteCap = budget.maxSelectedBytes, share = byteCap === undefined ? 0 : Math.floor(byteCap / 4);
+  let used = 0, usedBytes = 0, deferredBytes = 0, partialBlobs = 0;
   for (const blob of order) {
-    if (used + blob.pieces.length > budget.maxSelected) { noFit.add(blob.blobId); continue; }
-    if (byteCap !== undefined && usedBytes + blob.bytes > byteCap) {
-      byteSkip.set(blob.blobId, `${blob.bytes} bytes of quotable text${blob.pieces.length > 1 ? ` in ${blob.pieces.length} pieces` : ''} did not fit the remaining ${byteCap - usedBytes} of the ${byteCap}-byte selection cap`);
+    const sorted = [...blob.pieces].sort((a, b) => (a.segment?.index ?? 0) - (b.segment?.index ?? 0));
+    const total = sorted.length;
+    if (byteCap === undefined) {
+      if (used + total > budget.maxSelected) { noFit.add(blob.blobId); deferredBytes += blob.bytes; continue; }
+      chosen.set(blob.blobId, total); used += total; usedBytes += blob.bytes;
       continue;
     }
-    chosen.add(blob.blobId);
-    used += blob.pieces.length;
-    usedBytes += blob.bytes;
+    const roomBytes = byteCap - usedBytes, roomCount = budget.maxSelected - used;
+    if (total === 1 || sorted[0]!.segment === undefined) {
+      if (total > roomCount) { noFit.add(blob.blobId); deferredBytes += blob.bytes; continue; }
+      if (blob.bytes > roomBytes) {
+        skipDetail.set(blob.blobId, `${blob.bytes} bytes of quotable text did not fit the remaining ${roomBytes} of the ${byteCap}-byte selection cap`);
+        deferredBytes += blob.bytes;
+        continue;
+      }
+      chosen.set(blob.blobId, total); used += total; usedBytes += blob.bytes;
+      continue;
+    }
+    const limit = Math.min(roomBytes, share);
+    let take = 0, takeBytes = 0;
+    while (take < total && take < roomCount && takeBytes + pieceBytes(sorted[take]!) <= limit) { takeBytes += pieceBytes(sorted[take]!); take++; }
+    if (take === 0) {
+      skipDetail.set(blob.blobId, `${blob.bytes} bytes of quotable text in ${total} pieces: not even the first piece (${pieceBytes(sorted[0]!)} bytes) fit the lesser of the remaining ${roomBytes} bytes and the per-file share of ${share} bytes of the ${byteCap}-byte selection cap`);
+      deferredBytes += blob.bytes;
+      continue;
+    }
+    chosen.set(blob.blobId, take); used += take; usedBytes += takeBytes;
+    if (take < total) {
+      const from = sorted[take]!.segment!;
+      skipDetail.set(blob.blobId, `pieces ${take + 1}..${total} of ${total} not read: bytes ${from.start}..${from.blobBytes} of the file's ${from.blobBytes} (${blob.bytes - takeBytes} bytes of quotable text); pieces 1..${take} (${takeBytes} bytes) were kept within the lesser of the remaining ${roomBytes} bytes and the per-file share of ${share} bytes of the ${byteCap}-byte selection cap`);
+      deferredBytes += blob.bytes - takeBytes;
+      partialBlobs++;
+    }
   }
-  const deferredBytes = blobs.reduce((total, blob) => total + (chosen.has(blob.blobId) ? 0 : blob.bytes), 0);
   const runKey = ports.runKey ?? newGenerationRunKey();
   const deferred: DiscoveryReport['deferred'][number][] = [];
   const emitted = new Set<string>();
@@ -344,13 +393,14 @@ async function discover(
   for (const source of sources) {
     if (source.exclusion.excluded || source.spans.length === 0) { out.push(source); continue; }
     const id = pieceBase(source);
-    if (chosen.has(id)) { out.push(source); continue; }
+    const take = chosen.get(id);
+    if (take !== undefined && (source.segment === undefined || source.segment.index < take)) { out.push(source); continue; }
     if (emitted.has(id)) continue;
     emitted.add(id);
     const { body: _body, segment: _segment, spans: _spans, ...bound } = source;
     out.push({ ...bound, sourceId: excludedSourceId(runKey, id), exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET }, spans: [] });
     const pieces = byId.get(id)!.pieces.length;
-    deferred.push({ blobId: id, path: source.path, detail: byteSkip.get(id) ?? (noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected
+    deferred.push({ blobId: id, path: source.path, detail: skipDetail.get(id) ?? (noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected
       ? `${pieces} quotable sources did not fit the remaining selection cap of ${budget.maxSelected}`
       : `ranked below the selection cut for a cap of ${budget.maxSelected} quotable sources`) });
   }
@@ -361,7 +411,7 @@ async function discover(
     unmappedSubsystems: unmapped.sort(), reduceCalls, reduceFailures, rankingBasis: basis,
     basisNote: basis === 'heuristic' ? 'Ordered by a path-and-size prior only; no model reply was accepted.'
       : 'A model ranking is an Inferred claim. Blobs with no accepted map claim rank below every blob that has one.',
-    droppedUnknownIds: dropped, selected: { blobs: chosen.size, sources: used }, bytes: { selected: usedBytes, deferred: deferredBytes, cap: byteCap ?? null }, deferred,
+    droppedUnknownIds: dropped, selected: { blobs: [...chosen].filter(([id, take]) => take === byId.get(id)!.pieces.length).length, sources: used }, partialBlobs, bytes: { selected: usedBytes, deferred: deferredBytes, cap: byteCap ?? null }, deferred,
     ledger: order.filter(blob => chosen.has(blob.blobId)).map(ledgerFor).filter((c): c is DiscoveryClaim & { path: string } => c !== undefined) } };
 }
 

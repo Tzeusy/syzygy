@@ -28,6 +28,8 @@ export type GenerationSourceFailure =
   | 'invalid-source' | 'duplicate-source' | 'duplicate-anchor' | 'invalid-anchor'
   | 'unquotable-source' | 'body-mismatch' | 'object-mismatch' | 'source-too-long' | 'invalid-segments';
 
+const DEFERRED_BY_BUDGET_REASON = 'deferred-by-budget';
+
 export class GenerationSourceError extends Error {
   constructor(readonly code: GenerationSourceFailure) {
     super(`Generation source rejected: ${code}`);
@@ -110,7 +112,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
   const sourceIds = new Set<string>();
   const identities = new Set<string>();
   const anchorIds = new Set<string>();
-  const blobs = new Map<string, { whole: boolean; pieces: { index: number; count: number; start: number; end: number; blobBytes: number }[] }>();
+  const blobs = new Map<string, { whole: boolean; deferred: boolean; pieces: { index: number; count: number; start: number; end: number; blobBytes: number }[] }>();
   for (const source of value) {
     if (source === null || typeof source !== 'object' || Object.keys(source).some(key => !sourceKeys.has(key))
       || (Object.hasOwn(source, 'body') && source.body === undefined)
@@ -132,8 +134,11 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
       ? `${source.repositoryId}@${source.revision}:${source.path}#unavailable`
       : generationSourceIdentity({ ...source, objectId: source.objectId });
     const identity = segment === undefined ? blobIdentity : `${blobIdentity}[${segment.start}-${segment.end}]`;
-    const blob = blobs.get(blobIdentity) ?? { whole: false, pieces: [] };
-    if (segment === undefined) blob.whole = true; else blob.pieces.push(segment);
+    const blob = blobs.get(blobIdentity) ?? { whole: false, deferred: false, pieces: [] };
+    // A deferred-by-budget row for a blob that also has pieces marks the rest of that blob as not read; any other unsegmented row for it is a whole copy.
+    if (segment !== undefined) blob.pieces.push(segment);
+    else if (source.exclusion.excluded && source.exclusion.reason === DEFERRED_BY_BUDGET_REASON) blob.deferred = true;
+    else blob.whole = true;
     blobs.set(blobIdentity, blob);
     if (sourceIds.has(source.sourceId) || identities.has(identity)) fail('duplicate-source');
     sourceIds.add(source.sourceId);
@@ -174,10 +179,13 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
   for (const blob of blobs.values()) {
     if (blob.pieces.length === 0) continue;
     const pieces = [...blob.pieces].sort((a, b) => a.index - b.index);
-    // The last piece must reach the blob's declared size, so a consistently
-    // truncated tail cannot validate.
-    if (blob.whole || pieces.some((piece, i) => piece.index !== i || piece.count !== pieces.length || piece.blobBytes !== pieces[0]!.blobBytes
-      || piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end)) || pieces.at(-1)!.end !== pieces[0]!.blobBytes) fail('invalid-segments');
+    // The pieces run contiguously from the first. The last piece must reach the
+    // blob's declared size, so a consistently truncated tail cannot validate; the
+    // one exception is a prefix (fewer pieces than the declared count) that a
+    // deferred-by-budget row for the same blob accounts for.
+    const complete = pieces.length === pieces[0]!.count && pieces.at(-1)!.end === pieces[0]!.blobBytes;
+    if (blob.whole || pieces.some((piece, i) => piece.index !== i || piece.count !== pieces[0]!.count || piece.blobBytes !== pieces[0]!.blobBytes
+      || piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end)) || (complete ? blob.deferred : !blob.deferred || pieces.length >= pieces[0]!.count)) fail('invalid-segments');
   }
   return value;
 }

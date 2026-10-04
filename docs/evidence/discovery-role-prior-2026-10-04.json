@@ -1,0 +1,337 @@
+{
+  "measurement": {
+    "subject": "synthetic design-prose fixture variant (redisShapedFiles({designProse:true})), heuristic-only discovery under DOSSIER_DISCOVERY_BUDGET, no model",
+    "command": "measureDossierCapSelection in apps/three-surface-poc/src/polaris-generation/redis-shaped-measure.ts, via dossier-cap-measure.test.ts",
+    "before": {
+      "commit": "6bfe6b6fa43c5e2c6d6ec7578b71a82679778419",
+      "selectedBytes": 399714,
+      "selectedBlobs": 16,
+      "partialBlobs": 2,
+      "coreRead": 4,
+      "coreReadBytes": 134671,
+      "designDocsRead": 5,
+      "bytesByClass": {
+        "release-notes": 99997,
+        "design-docs": 60509,
+        "other-prose": 920,
+        "build": 3065,
+        "configuration": 60050,
+        "source": 175173
+      }
+    },
+    "after": {
+      "commit": "0b649683531cdcb57f5431a2c9606687fdb49487",
+      "selectedBytes": 399859,
+      "selectedBlobs": 19,
+      "partialBlobs": 2,
+      "coreRead": 10,
+      "coreReadBytes": 302641,
+      "designDocsRead": 5,
+      "bytesByClass": {
+        "design-docs": 60509,
+        "other-prose": 920,
+        "source": 338430
+      }
+    },
+    "requestDigests": "map request digests compared on the plain fixture under DOSSIER_DISCOVERY_BUDGET with a scripted map port, main versus this change: 23 of 23 identical with 100 map calls allowed, 8 of 8 identical (same groups, same order) with 8 allowed"
+  },
+  "subject": {
+    "commit": "0b649683531cdcb57f5431a2c9606687fdb49487",
+    "branch": "agent/dossier-role-prior",
+    "fileSha256": {
+      "packages/polaris-generation-core/src/discovery.ts": "71d84d85bd92141d576e8e207ad67af61637cff5effc81911c7fb236556f21e3",
+      "packages/polaris-generation-core/src/excerpt.ts": "23273486f2981227dab7d5afe1a9399c2edd984bdba1faf0996ff4bbb2c26e17"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts": "f3168eefea453fd94c56708210c021d6753518945b5c0d48d4879d792bced828",
+      "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts": "773d09e42861266f35e6efdfa293aa1c5179ac8369eca89067173fd1ea04ab53",
+      "packages/polaris-generation-core/src/discovery.test.ts": "047e7f271b6223702685670229f3ba6d86794f9dd9bd93ddffa4284db78fa581"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-04T01:09:40+00:00",
+  "mutants": [
+    {
+      "id": "source-root-bonus-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "score += SOURCE_ROOT_BONUS;",
+      "new": "score += 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 62
+    },
+    {
+      "id": "source-root-bare-top-level",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "SOURCE_ROOT.test(parts[0] ?? '') && parts.length > 1",
+      "new": "SOURCE_ROOT.test(parts[0] ?? '')",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "source-root-name-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(src|lib|libs|source|sources|core|pkg|internal|app|apps|cmd|crates|include)$/iu",
+      "new": "/^(src)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "configuration-penalty-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (CONFIGURATION.test(name)) score += CONFIGURATION_PENALTY;",
+      "new": "if (false) score += CONFIGURATION_PENALTY;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "configuration-extension-narrowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "conf|cfg|ini|toml|ya?ml|json|xml|properties|env|lock",
+      "new": "conf",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "build-penalty-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "else if (BUILD_FILE.test(name)) score += BUILD_PENALTY;",
+      "new": "else if (false) score += BUILD_PENALTY;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "build-name-narrowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "makefile|gnumakefile|cmakelists\\.txt|dockerfile|rakefile|build\\.gradle|pom\\.xml",
+      "new": "makefile",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "build-counts-as-prose",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": " && !BUILD_FILE.test(name)) score += 10;",
+      "new": ") score += 10;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "history-penalty-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "if (HISTORY_FILE.test(name)) score += HISTORY_PENALTY;",
+      "new": "if (false) score += HISTORY_PENALTY;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "history-name-narrowed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(release[-_ ]?notes?|changelog|changes|history|news)",
+      "new": "(changelog)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "design-name-rationale-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "|rationale|notes|implementation|how[-_ ]it[-_ ]works)",
+      "new": "|notes|implementation|how[-_ ]it[-_ ]works)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "design-name-notes-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "|rationale|notes|implementation",
+      "new": "|rationale|implementation",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "comment-bonus-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "score += Math.min(COMMENT_BONUS_MAX, Math.floor(Math.log2(Math.max(1, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT))));",
+      "new": "score += 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "comment-bonus-uncapped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.min(COMMENT_BONUS_MAX, Math.floor(Math.log2(Math.max(1, leadingCommentChars",
+      "new": "Math.min(100, Math.floor(Math.log2(Math.max(1, leadingCommentChars",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 62,
+      "note": "Equivalent: a quotable piece holds at most 100,000 characters, so the opening comment is at most 100,000 / 200 = 500 units and floor(log2(500)) = 8 already equals the cap."
+    },
+    {
+      "id": "comment-bonus-linear",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.floor(Math.log2(Math.max(1, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT)))",
+      "new": "Math.floor(Math.max(0, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT))",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "comment-unit-changed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "COMMENT_BONUS_UNIT = 200",
+      "new": "COMMENT_BONUS_UNIT = 100",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "comment-head-first-piece-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "const head = pieces[0]?.body ?? pieces[0]?.spans[0]?.text ?? '';",
+      "new": "const head = '';",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "leading-comment-non-c-family",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "  if (!(C_FAMILY as readonly string[]).includes(extensionOf(path.split('/').at(-1) ?? ''))) return 0;\n  const lines = splitLines(text);\n  const { next } = skipLicence(lines);",
+      "new": "  const lines = splitLines(text);\n  const { next } = skipLicence(lines);",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "leading-comment-after-code",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "if (!(t.startsWith('/*') || t.startsWith('//'))) return 0;",
+      "new": "if (!(t.startsWith('/*') || t.startsWith('//'))) continue;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "leading-comment-licence-counted",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "if (end === -1 || hasMarker(lines.slice(i, end))) return 0;",
+      "new": "if (end === -1) return 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 62,
+      "note": "Equivalent: skipLicence has already stepped over every leading comment block that carries a licence marker, so the first block it returns never does; the marker test is defensive."
+    },
+    {
+      "id": "leading-comment-licence-not-skipped",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "  const { next } = skipLicence(lines);\n  for (let i = next; i < lines.length; i++) {\n    const t = lines[i]!.text;\n    if (t.trim() === '') continue;",
+      "new": "  const next = 0;\n  for (let i = next; i < lines.length; i++) {\n    const t = lines[i]!.text;\n    if (t.trim() === '') continue;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "leading-comment-counts-bytes-zero",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "return lines.slice(i, end).reduce((n, line) => n + line.text.length, 0);",
+      "new": "return 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 62
+    },
+    {
+      "id": "measured-comment-bonus-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "score += Math.min(COMMENT_BONUS_MAX, Math.floor(Math.log2(Math.max(1, leadingCommentChars(path, head) / COMMENT_BONUS_UNIT))));",
+      "new": "score += 0;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 15
+    }
+  ]
+}

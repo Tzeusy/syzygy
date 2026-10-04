@@ -208,7 +208,8 @@ export function sourceTextById(sources: readonly GenerationSource[]): ReadonlyMa
   }
   for (const pieces of files.values()) {
     const ordered = [...pieces].sort((a, b) => a.segment!.index - b.segment!.index);
-    if (ordered.length !== ordered[0]!.segment!.count || ordered.some((piece, i) => piece.segment!.index !== i)) continue;
+    // The pieces run from the first without a gap; a deferred tail (a prefix of the file was admitted) is simply not there to quote.
+    if (ordered.some((piece, i) => piece.segment!.index !== i)) continue;
     const whole = ordered.map(piece => quotable.get(piece.sourceId)!).join('');
     for (const piece of ordered) out.set(piece.sourceId, whole);
   }
