@@ -709,7 +709,8 @@ describe('role signals of the prior', () => {
     expect(score('src/a.c', licence)).toBe(score('src/a.c', `int y;\n${licence}`));
     const after = `/* Copyright (c) someone. */\n${comment(1600)}`;
     expect(score('src/a.c', after) - score('src/a.c', `int y;\n${after}`)).toBe(3);
-    expect(score('src/a.c', `int y;\n${comment(3000)}`)).toBe(score('src/a.c', `int y;\n${comment(3000)}`));
+    // A comment that follows code is not the file's opening one.
+    expect(score('src/a.c', `int y;\n${comment(3000)}`)).toBe(score('src/a.c', `int y;\nint ${'a'.repeat(3000)};\n`));
     expect(score('docs/a.md', comment(3000))).toBe(score('docs/a.md', `int y;\n${comment(3000)}`));
     expect(score('src/a.c', `// ${'a'.repeat(400)}\nint x;\n`) - base).toBe(1);
   });
