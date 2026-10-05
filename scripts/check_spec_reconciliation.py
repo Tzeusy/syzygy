@@ -19,7 +19,10 @@ Predicates, each printed with its denominator:
   block appears once in the aggregate record. A missing record is a FAIL,
   never a skipped row. A child may name later digest acts (`successors`)
   that superseded some of its subjects; each one is checked the same way and
-  is equally a terminal record.
+  is equally a terminal record. A signed Polaris addition (below) is a
+  child too: it needs a version-tagged sign-off record in `decisions/` whose
+  `Package:` line names its change, checked the same way; an installed
+  addition with no such record is a FAIL.
 - R2 exact subject bytes: a digest act's successor column equals its
   manifest rows, and every signed subject on disk hashes to its row. A
   versioned sign-off's manifest rows equal the subjects on disk. A child's
@@ -39,21 +42,28 @@ Predicates, each printed with its denominator:
   regular expressions; Polaris composes by ID line in one and by requirement
   name in the other). Both must agree, identifiers must be unique, and the
   result must equal the hard-coded literal census below and the committed
-  `census.json`.
+  `census.json`. A signed Polaris addition is any other change whose
+  `specs/polaris-generation/spec.md` a version-tagged sign-off's builder has
+  installed; it may only ADD requirements and is composed after the overlay
+  by both methods. The expected Polaris totals and identities are derived,
+  never raised by hand: the base-and-overlay literal (31 / 182, IDs 001–031)
+  plus what each signed addition ADDs, read by both block parsers from the
+  addition alone. An unsigned addition is never composed.
 - R4 generated rows: each generated dependency file's source digest and
   requirement count match the spec; every full or continuation-form
-  identifier mention in the five change directories and the default route
-  pages resolves to the population; the CAP1 and PWB capability coverage
+  identifier mention in the five change directories, each signed addition's
+  directory and the default route pages resolves to the population; the CAP1 and PWB capability coverage
   tables carry the whole population.
 - R5 default routes: `openspec/README.md` has one row per tracked change
   directory naming its terminal record; `PROJECT-STATUS.md` cites every
-  terminal record and states the Polaris composition the census computes.
+  terminal record (a signed addition's sign-off record included) and states the Polaris composition the census computes.
 - R6 behaviour-contract pins (report only, never green): the observer
   registry entry and the secret-classification policy pin a PWB `spec.md`
   digest. A pin that differs from the current bytes is Unknown and needs its
   own owner act; this checker never repairs it.
 - R7 Polaris dependency unions (report only, never green): each of the two
-  generated Polaris unions is recomputed from its spec's warrants blocks.
+  generated Polaris unions, and each signed addition's, is recomputed from
+  its spec's warrants blocks.
   Both files are bound bytes, regenerated (never written) by
   `scripts/build_polaris_dependency_unions.py`, so a difference is Unknown
   and needs a signed successor.
@@ -82,6 +92,21 @@ required R2, and only R2, to fail by design; the reconciliation was
 re-derived on 2026-10-02 to name the act as the understanding child's
 successor, so the case now requires every predicate to pass.
 
+`--selftest` also installs a synthetic signed addition into a scratch copy
+(spec, sign-off record, aggregate block, route row, status figure, then
+`--regenerate`), requires it to pass, and kills one mutant per addition
+predicate.
+
+A Polaris addition's recording commit runs one command after the recorder
+has applied the package through its builder:
+
+  python3 scripts/check_spec_reconciliation.py --regenerate
+
+It writes the addition's generated `GOVERNING-DEPENDENCIES.md` (through
+`scripts/build_polaris_dependency_unions.py --write-additions`) and
+`census.json`, and refuses while any installed addition is unsigned. It
+never writes a signed subject, a route page or this script.
+
 A later act over any subject fails R2 by design: the reconciliation is then
 re-derived, never carried forward. The first re-derivation (2026-10-02)
 added the dependency-union successor act to the understanding child; the
@@ -91,6 +116,7 @@ and re-derived the PWB census (PWB-REQ-014 gained seven scenarios).
 Usage:
   python3 scripts/check_spec_reconciliation.py --check
   python3 scripts/check_spec_reconciliation.py --census > <record>/census.json
+  python3 scripts/check_spec_reconciliation.py --regenerate
   python3 scripts/check_spec_reconciliation.py --selftest [--witnesses FILE]
 """
 import argparse
@@ -193,6 +219,37 @@ FAMILY_SPECS = {
 POLARIS_BASE_SPEC = spec_path(BASE_CHANGE, "polaris-generation")
 POLARIS_OVERLAY_SPEC = spec_path(UNDERSTANDING_CHANGE, "polaris-generation")
 POLARIS_ID = "REQ-polaris-generation-"
+POLARIS_ADDITION_GLOB = "*/specs/polaris-generation/spec.md"
+SIGNOFF_RECORD_GLOB = "*-SIGNOFF-v*.md"
+VERSION_LINE = re.compile(r"^Version: (\d+\.\d+)$", re.M)
+
+
+def polaris_additions(root):
+    """Signed-addition candidates: [(change, spec path)], by change name.
+
+    Every change other than the base and the overlay whose Polaris requirements
+    sit installed at `specs/polaris-generation/spec.md` (a version-tagged
+    sign-off's builder moves them there from `proposed/`). Read from the tree,
+    not the index, so `--regenerate` sees the move before it is committed.
+    """
+    base = root / CHANGES
+    found = sorted(p.parent.parent.parent.name for p in
+                   base.glob(POLARIS_ADDITION_GLOB)) if base.is_dir() else []
+    return [(c, spec_path(c, "polaris-generation")) for c in found
+            if c not in (BASE_CHANGE, UNDERSTANDING_CHANGE)]
+
+
+def addition_records(root, change):
+    """[(record path, text, version)] of each versioned sign-off of `change`."""
+    out = []
+    base = root / DECISIONS
+    for path in sorted(base.glob(SIGNOFF_RECORD_GLOB)) if base.is_dir() else ():
+        text = path.read_text(encoding="utf-8")
+        if f"Package: {change}" in text.splitlines():
+            versions = VERSION_LINE.findall(text)
+            out.append((path.relative_to(root).as_posix(), text,
+                        versions[0] if len(versions) == 1 else None))
+    return out
 
 #: Hard-coded literal census (requirement suffix -> scenario count), taken at
 #: main bd47409 on 2026-10-02 and cross-checked by the OpenSpec 1.9.0 CLI in
@@ -484,10 +541,28 @@ def check_outcomes(root, report):
             elif sha(current) != digest:
                 r2.append(f"{tag}: stale digest — `{path}` no longer hashes "
                           "to its signed row")
+    # Signed Polaris additions (reconciled-child hook): each installed
+    # addition is a child whose terminal outcome is its versioned sign-off.
+    additions = polaris_additions(root)
+    for change, spec_rel in additions:
+        tag = f"polaris addition {change}"
+        found = addition_records(root, change)
+        records += max(1, len(found))
+        if not found:
+            r1.append(f"{tag}: unsigned addition — `{spec_rel}` is installed "
+                      f"but no `{SIGNOFF_RECORD_GLOB}` record names `Package: "
+                      f"{change}`; the outcome is Unknown")
+        for rel, text, version in found:
+            if version is None:
+                r1.append(f"{tag}: `{rel}` carries no single `Version:` line")
+                continue
+            check_versioned({"package": change, "version": version},
+                            f"{tag} ({Path(rel).name})", aggregate, text, r1)
     report.add("R1", "terminal outcome for every child", records, r1,
-               f"{len(CHILDREN)} children; digest acts: phrase = manifest "
-               "sha256 and in the aggregate; versioned: package/version/tag "
-               "and one aggregate block")
+               f"{len(CHILDREN)} children and {len(additions)} signed Polaris "
+               "additions; digest acts: phrase = manifest sha256 and in the "
+               "aggregate; versioned: package/version/tag and one aggregate "
+               "block")
     report.add("R2", "signed subjects hash to their rows", subjects_seen, r2)
 
 
@@ -562,11 +637,18 @@ def _polaris_blocks_regex(text):
     return out
 
 
-def compose_polaris_by_id(base, overlay):
-    """Method A: compose base + overlay keyed by each block's ID line."""
+def compose_polaris_by_id(base, overlay, *additions):
+    """Method A: compose base + overlay (+ signed additions) by ID line.
+
+    Each addition is a (label, text) pair and may only ADD requirements.
+    """
     comp, problems = {}, []
-    for label, text in (("base", base), ("overlay", overlay)):
+    for label, text in (("base", base), ("overlay", overlay), *additions):
         for kind, ids, name, scen in _polaris_blocks_regex(text):
+            if label not in ("base", "overlay") and kind != "ADDED":
+                problems.append(f"addition {label}: {kind} section; a signed "
+                                "addition is ADDED-only")
+                continue
             if len(ids) != 1:
                 problems.append(f"{label} `{name}`: {len(ids)} ID lines")
                 continue
@@ -603,16 +685,20 @@ def _polaris_blocks_manual(text):
     return out
 
 
-def compose_polaris_by_name(base, overlay):
+def compose_polaris_by_name(base, overlay, *additions):
     """Method B: compose by normalized requirement name; IDs attached last."""
     comp, problems = {}, []
 
     def norm(name):
         return " ".join(name.split()).casefold()
 
-    for label, text in (("base", base), ("overlay", overlay)):
+    for label, text in (("base", base), ("overlay", overlay), *additions):
         for block in _polaris_blocks_manual(text):
             key = norm(block["name"])
+            if label not in ("base", "overlay") and block["section"] != "ADDED":
+                problems.append(f"addition {label}: {block['section']} "
+                                "section; a signed addition is ADDED-only")
+                continue
             if block["section"] == "ADDED":
                 if key in comp:
                     problems.append(f"{label}: ADDED `{block['name']}` collides")
@@ -654,11 +740,18 @@ def census(root):
         out[family] = a
     base = read_text(root, POLARIS_BASE_SPEC)
     overlay = read_text(root, POLARIS_OVERLAY_SPEC)
+    additions = [(change, read_text(root, rel))
+                 for change, rel in polaris_additions(root)]
+    for change, _text in additions:
+        if not addition_records(root, change):
+            findings.append(f"POLARIS: addition `{change}` has no versioned "
+                            "sign-off record; it is not composed")
+    additions = [(c, x) for c, x in additions if addition_records(root, c)]
     if base is None or overlay is None:
         findings.append("POLARIS: base or overlay spec missing")
     else:
-        a, pa = compose_polaris_by_id(base, overlay)
-        b, pb = compose_polaris_by_name(base, overlay)
+        a, pa = compose_polaris_by_id(base, overlay, *additions)
+        b, pb = compose_polaris_by_name(base, overlay, *additions)
         findings += [f"POLARIS method A: {p}" for p in pa]
         findings += [f"POLARIS method B: {p}" for p in pb]
         if a != b:
@@ -684,10 +777,42 @@ def census_json(pop):
     return json.dumps(doc, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
 
 
+def polaris_expected(root, findings):
+    """Expected Polaris (requirements, scenarios, ids), derived.
+
+    The base-and-overlay literal (31 / 182, IDs 001–031) plus, for each signed
+    addition, the requirements that addition ADDs, read by both block parsers
+    from the addition alone (never from the composition) and required to agree.
+    """
+    n_req, n_scen = EXPECTED_TOTALS["POLARIS"]
+    ids = {f"{POLARIS_ID}{i:03d}" for i in range(1, n_req + 1)}
+    for change, rel in polaris_additions(root):
+        if not addition_records(root, change):
+            continue
+        text = read_text(root, rel) or ""
+        by_regex = sorted((tuple(i), len(s)) for kind, i, _n, s in
+                          _polaris_blocks_regex(text) if kind == "ADDED")
+        by_lines = sorted((tuple(b["ids"]), len(b["scenarios"])) for b in
+                          _polaris_blocks_manual(text) if b["section"] == "ADDED")
+        if by_regex != by_lines:
+            findings.append(f"POLARIS addition `{change}`: the two parsers "
+                            "disagree on what it adds")
+        added = {i[0] for i, _s in by_regex if len(i) == 1}
+        if added & ids:
+            findings.append(f"POLARIS addition `{change}`: re-adds "
+                            f"{sorted(added & ids)}")
+        ids |= added
+        n_req += len(by_regex)
+        n_scen += sum(s for _i, s in by_regex)
+    return n_req, n_scen, ids
+
+
 def check_census(root, report):
     pop, findings = census(root)
     examined = 0
-    for family, (n_req, n_scen) in EXPECTED_TOTALS.items():
+    p_req, p_scen, p_ids = polaris_expected(root, findings)
+    totals = dict(EXPECTED_TOTALS, POLARIS=(p_req, p_scen))
+    for family, (n_req, n_scen) in totals.items():
         reqs = pop.get(family, {})
         got = (len(reqs), sum(len(r["scenarios"]) for r in reqs.values()))
         examined += got[0]
@@ -703,9 +828,10 @@ def check_census(root, report):
                 findings.append(f"{family}: per-requirement census differs "
                                 f"from the literal at {diff[:6]}")
         elif family == "POLARIS":
-            want = {f"{POLARIS_ID}{i:03d}" for i in range(1, 32)}
-            if set(reqs) != want:
-                findings.append("POLARIS: identities are not exactly 001–031")
+            if set(reqs) != p_ids:
+                findings.append("POLARIS: identities are not exactly 001–031 "
+                                "and the signed additions' IDs "
+                                f"(off by {sorted(set(reqs) ^ p_ids)[:6]})")
     committed = read_text(root, CENSUS)
     if committed is None:
         findings.append(f"`{CENSUS}` missing")
@@ -764,8 +890,20 @@ def check_generated(root, pop, report):
     files = []
     for child in CHILDREN:
         files += tracked(root, f"{CHANGES}/{child['change']}")
+    addition_dirs = tuple(f"{CHANGES}/{change}/"
+                          for change, _rel in polaris_additions(root))
+    for prefix in addition_dirs:
+        files += tracked(root, prefix.rstrip("/"))
     files += list(ROUTE_PAGES)
-    mentions = 0
+    # An addition may cite a candidate Polaris requirement still under
+    # another change's `proposed/` (no act binds it); such a mention resolves
+    # to that candidate and is counted apart, never as in force.
+    candidates = set()
+    for spec in sorted((root / CHANGES).glob("*/proposed/polaris-generation/"
+                                             "spec.md")):
+        candidates |= {i[-3:] for kind, ids, _n, _s in _polaris_blocks_regex(
+            spec.read_text(encoding="utf-8")) if kind == "ADDED" for i in ids}
+    mentions = candidate_refs = 0
     for rel in files:
         if not rel.endswith((".md", ".json", ".yaml")):
             continue
@@ -776,6 +914,11 @@ def check_generated(root, pop, report):
             family = m.group(1) or "POLARIS"
             for num in [m.group(2)] + re.findall(r"\d{3}", m.group(3)):
                 mentions += 1
+                if (family == "POLARIS" and rel.startswith(addition_dirs)
+                        and num not in numbers.get(family, set())
+                        and num in candidates):
+                    candidate_refs += 1
+                    continue
                 if num not in numbers.get(family, set()):
                     findings.append(f"`{rel}`: {family} identifier {num} "
                                     f"resolves to no requirement "
@@ -783,7 +926,9 @@ def check_generated(root, pop, report):
     report.add("R4", "generated dependency and coverage rows resolve",
                examined + mentions, findings,
                f"{examined} generated anchors, {mentions} identifier mentions "
-               f"(full and continuation forms) over {len(files)} files")
+               f"(full and continuation forms) over {len(files)} files, "
+               f"{candidate_refs} of them an addition's reference to a "
+               "candidate Polaris requirement under `proposed/`")
 
 
 # --------------------------------------------------------------------------
@@ -818,6 +963,15 @@ def check_routes(root, pop, report):
                 findings.append(f"`{OPENSPEC_README}`: the `{child['change']}` "
                                 f"row does not name its terminal record "
                                 f"`{name}`")
+            if record not in status and name not in status:
+                findings.append(f"`{STATUS}` cites no terminal record `{name}`")
+    for change, _rel in polaris_additions(root):
+        for record, _text, _version in addition_records(root, change):
+            examined += 2
+            name = Path(record).name
+            if not any(name in line for line in rows.get(change, [])):
+                findings.append(f"`{OPENSPEC_README}`: the `{change}` row does "
+                                f"not name its terminal record `{name}`")
             if record not in status and name not in status:
                 findings.append(f"`{STATUS}` cites no terminal record `{name}`")
     figures = STATUS_FIGURE.findall(status)
@@ -918,7 +1072,8 @@ def declared_union(text):
 def check_unions(root, report):
     findings, examined = [], 0
     for spec_rel, change in ((POLARIS_BASE_SPEC, BASE_CHANGE),
-                             (POLARIS_OVERLAY_SPEC, UNDERSTANDING_CHANGE)):
+                             (POLARIS_OVERLAY_SPEC, UNDERSTANDING_CHANGE),
+                             *((rel, c) for c, rel in polaris_additions(root))):
         rel = f"{CHANGES}/{change}/GOVERNING-DEPENDENCIES.md"
         spec, deps = read_text(root, spec_rel), read_text(root, rel)
         if spec is None or deps is None:
@@ -970,6 +1125,8 @@ def inputs(root):
         paths |= {p for _d, p in ROW.findall(manifest)}
         paths |= set(tracked(root, f"{CHANGES}/{child['change']}"))
     paths |= set(tracked(root, CHANGES))
+    for change, rel in polaris_additions(root):
+        paths |= {rel} | {r for r, _t, _v in addition_records(root, change)}
     return sorted(paths)
 
 
@@ -1208,9 +1365,106 @@ def mutants(root):
          f"{CHANGES}/{UNDERSTANDING_CHANGE}/GOVERNING-DEPENDENCIES.md",
          _replace("## decisions\n\nSDR-3\n", "## decisions\n\nSDR-3, SDR-99\n"),
          "R7~"),
-        ("status-figure", STATUS,
-         _replace("31 requirements and 182 scenarios",
-                  "31 requirements and 177 scenarios"), "R5"),
+        ("status-figure", STATUS, _status_figure_moved, "R5"),
+    )
+
+
+def _status_figure_moved(text):
+    """The PROJECT-STATUS Polaris figure, five scenarios short."""
+    m = STATUS_FIGURE.search(text)
+    if not m:
+        raise AssertionError("mutation target absent: the Polaris figure")
+    return (text[:m.start(2)] + str(int(m.group(2)) - 5)
+            + text[m.end(2):])
+
+
+# A synthetic signed addition, installed by `_install_addition` into a scratch
+# tree the way a version-tagged sign-off and `--regenerate` would leave it.
+ADDITION = "polaris-selftest-addition"
+ADDITION_RECORD = f"{DECISIONS}/POLARIS-SELFTEST-ADDITION-SIGNOFF-v1.0.md"
+ADDITION_ID = f"{POLARIS_ID}099"
+ADDITION_SPEC = (
+    "## ADDED Requirements\n\n### Requirement: Selftest addition\n\n"
+    f"ID: {ADDITION_ID}\n\n```yaml\nwarrants:\n"
+    "  primary: [VIS-2]\n  doctrine: [VIS-2]\n  contracts: []\n"
+    "  policies: []\n  decisions: []\n  topology: []\n"
+    "  parent_requirements: []\n```\n\n"
+    "#### Scenario: Selftest one\n\n- **WHEN** x\n- **THEN** y\n\n"
+    "#### Scenario: Selftest two\n\n- **WHEN** x\n- **THEN** y\n")
+
+
+def _install_addition(tree):
+    """Sign, install and regenerate one synthetic addition in `tree`."""
+    spec = tree / spec_path(ADDITION, "polaris-generation")
+    spec.parent.mkdir(parents=True)
+    spec.write_text(ADDITION_SPEC, encoding="utf-8")
+    cited = _candidate_id(tree)
+    (tree / CHANGES / ADDITION / "proposal.md").write_text(
+        f"# Selftest addition\n\nAdds {ADDITION_ID}.\n"
+        + (f"\nBeside the candidate {cited}.\n" if cited else ""),
+        encoding="utf-8")
+    marker = versioned_marker({"package": ADDITION, "version": "1.0"})
+    (tree / ADDITION_RECORD).write_text(
+        f"# Selftest\n\nDate: 2026-10-06\n\nPackage: {ADDITION}\n\n"
+        f"Version: 1.0\n\nTag: {ADDITION}-v1.0\n", encoding="utf-8")
+    with open(tree / AGGREGATE, "a", encoding="utf-8") as fh:
+        fh.write(f"\n{marker}\nSelftest block.\n"
+                 f"{marker.replace('<!-- ', '<!-- /')}\n")
+    name = Path(ADDITION_RECORD).name
+    with open(tree / OPENSPEC_README, "a", encoding="utf-8") as fh:
+        fh.write(f"\n| [`{ADDITION}`](changes/{ADDITION}) | Selftest | "
+                 f"Signed: `{name}` | — |\n")
+    status = (tree / STATUS).read_text(encoding="utf-8")
+    m = STATUS_FIGURE.search(status)
+    status = (status[:m.start()] + f"{int(m.group(1)) + 1} requirements and "
+              f"{int(m.group(2)) + 2} scenarios in the effective composition"
+              + status[m.end():] + f"\nSelftest addition: `{name}`.\n")
+    (tree / STATUS).write_text(status, encoding="utf-8")
+    regenerate(tree)
+
+
+def _candidate_id(root):
+    """The first candidate Polaris ID under any change's `proposed/`, if any."""
+    for spec in sorted((root / CHANGES).glob("*/proposed/polaris-generation/"
+                                             "spec.md")):
+        for kind, ids, _n, _s in _polaris_blocks_regex(
+                spec.read_text(encoding="utf-8")):
+            if kind == "ADDED" and ids:
+                return ids[0]
+    return None
+
+
+def addition_mutants():
+    union = f"{CHANGES}/{ADDITION}/GOVERNING-DEPENDENCIES.md"
+    spec = spec_path(ADDITION, "polaris-generation")
+    marker = versioned_marker({"package": ADDITION, "version": "1.0"})
+    return (
+        ("addition-unsigned", ADDITION_RECORD, None, "R1"),
+        ("addition-record-package", ADDITION_RECORD,
+         _replace(f"Tag: {ADDITION}-v1.0", f"Tag: {ADDITION}-v0.9"), "R1"),
+        ("addition-aggregate-block", AGGREGATE, _replace(marker, "<!-- x -->"),
+         "R1"),
+        ("addition-not-added-only", spec,
+         _replace("## ADDED Requirements", "## MODIFIED Requirements"), "R3"),
+        ("addition-re-adds-base-id", spec,
+         _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}001"), "R3"),
+        ("addition-scenario-dropped", spec,
+         _replace("#### Scenario: Selftest two", "#### Scenery: Selftest two"),
+         "R3"),
+        ("addition-census-stale", CENSUS,
+         _replace(f'"{ADDITION_ID}": {{', '"REQ-polaris-generation-098": {'),
+         "R3"),
+        ("addition-dangling-mention", f"{CHANGES}/{ADDITION}/proposal.md",
+         _replace(f"Adds {ADDITION_ID}.", f"Adds {POLARIS_ID}097."), "R4"),
+        # A candidate ID resolves inside an addition only, never on a route.
+        *((("candidate-mention-on-route", "AGENTS.md",
+            lambda t: t + f"\n{_candidate_id(ROOT)}\n", "R4"),)
+          if _candidate_id(ROOT) else ()),
+        ("addition-route-row", OPENSPEC_README,
+         _replace(f"Signed: `{Path(ADDITION_RECORD).name}`", "Signed"), "R5"),
+        ("addition-status-figure", STATUS, _status_figure_moved, "R5"),
+        ("addition-union-stale", union,
+         _replace("## primary\n\nVIS-2\n", "## primary\n\nVIS-3\n"), "R7~"),
     )
 
 
@@ -1226,9 +1480,22 @@ def selftest(witness_path=None):
             print("\n".join(clean.lines))
             print("SELFTEST FAIL: the unmutated scratch copy does not pass")
             return 1
-        for name, rel, mutate, expect in mutants(ROOT):
+        # The signed-addition hook: a synthetic addition, signed and
+        # regenerated, must pass, and each of its mutants must fail.
+        added = Path(tmp) / "with-signed-addition"
+        shutil.copytree(base, added)
+        _install_addition(added)
+        with_addition = run(added)
+        if with_addition.failed:
+            print("\n".join(with_addition.lines))
+            print("SELFTEST FAIL: the scratch copy with a signed addition "
+                  "does not pass")
+            return 1
+        cases = ([(base, clean, m) for m in mutants(ROOT)]
+                 + [(added, with_addition, m) for m in addition_mutants()])
+        for start, clean, (name, rel, mutate, expect) in cases:
             tree = Path(tmp) / name
-            shutil.copytree(base, tree)
+            shutil.copytree(start, tree)
             rels = rel if isinstance(rel, tuple) else (rel,)
             unchanged, applied = False, False
             for one in rels:
@@ -1294,7 +1561,8 @@ def selftest(witness_path=None):
     if failures:
         print("\n".join(f"SELFTEST FAIL: {f}" for f in failures))
         return 1
-    print(f"SELFTEST PASS: clean scratch copy passes; {len(witnesses)} of "
+    print(f"SELFTEST PASS: clean scratch copy and its signed-addition variant "
+          f"pass; {len(witnesses)} of "
           f"{len(witnesses)} mutants killed by their expected predicate "
           f"(commit {commit[:12]})")
     return 0
@@ -1313,12 +1581,33 @@ def _fragment(before, after):
     return before[lo:len(before) - j][:160], after[lo:len(after) - j][:160]
 
 
+def regenerate(root):
+    """Write each signed addition's union and `census.json`; return paths.
+
+    The one command a Polaris addition's recording commit runs after its
+    builder installs the requirements. The base and understanding unions are
+    signed subjects and are never written.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_polaris_dependency_unions as unions
+    pop, findings = census(root)
+    if findings:
+        raise SystemExit("census refused:\n" + "\n".join(findings))
+    written = unions.write_additions(root)
+    body = census_json(pop)
+    if read_text(root, CENSUS) != body:
+        (root / CENSUS).write_text(body, encoding="utf-8")
+        written.append(CENSUS)
+    return written
+
+
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--census", action="store_true")
     mode.add_argument("--selftest", action="store_true")
+    mode.add_argument("--regenerate", action="store_true")
     parser.add_argument("--witnesses", help="selftest: write rule-6 JSON here")
     args = parser.parse_args(argv)
     if args.census:
@@ -1330,6 +1619,10 @@ def main(argv):
         return 0
     if args.selftest:
         return selftest(args.witnesses)
+    if args.regenerate:
+        for rel in regenerate(ROOT):
+            print(f"wrote {rel}")
+        return 0
     report = run(ROOT)
     print("\n".join(report.lines))
     ok = 7 - len(report.failed)
