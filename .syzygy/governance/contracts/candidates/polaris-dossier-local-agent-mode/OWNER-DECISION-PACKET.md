@@ -27,7 +27,9 @@ mode parked, not withdrawn.
   Syzygy reads only Git objects at that commit, never the working tree. It
   ignores replacement objects, grafts, the clone's own configuration, hooks
   and alternates, and re-hashes every commit, tree and blob it reads, because
-  the agent can write the clone's `.git` directory; a mismatch refuses.
+  the agent can write the clone's `.git` directory; a mismatch refuses. At
+  every later step it checks again that the recorded revision is one your
+  consent names, and the draft, inventory and packets must name it too.
 - **The agent writes, Syzygy checks.** Syzygy issues a brief (your five reader
   topics, an understanding record, the labelling, citation, quotation and
   execution rules, the schema). Every quotation must be one contiguous span of
@@ -35,38 +37,45 @@ mode parked, not withdrawn.
   again, so the page shows Syzygy's bytes, not the agent's or a stored range.
   The agent cannot mark its own claims Observed. Findings go back to the agent
   until clean or until the repair limit you declared.
-- **Running the project.** Not invited yet. Until you adopt the SEC-3
-  amendment your review-1 ruling directs, the brief quotes SEC-3 and does not
-  invite building or running the project outside an execution profile. Once
-  that amendment is in force, the brief may say the agent may build and run
-  it. Either way, anything the agent marks as resting on execution is
-  Inferred, the commands it reports are listed, and Syzygy runs nothing.
+- **Running the project.** Not invited yet. The SEC-3 amendment your
+  review-1 ruling directs is drafted as D9 and under review. The brief may
+  say the agent may build and run the project only when D9 is in force, you
+  are the operator, attending sessions you started on your own machine, and
+  you recorded your choice to allow it before the brief. Otherwise the brief
+  quotes SEC-3 and invites nothing outside an execution profile. Either way,
+  anything the agent marks as resting on execution is Inferred, shown with
+  the commands it names, and Syzygy runs and launches nothing.
 - **Governed projects.** Allowed with a per-project statement naming your
   agent's provider; the statement is a consent record. Every page says that
   neither its content classes nor secret screening (SEC-5) limit what the
   agent reads or sends. "Governed" uses the same four conditions as the
   sibling profile change (032).
-- **Review.** Separate top-level sessions that you start, in a new terminal,
-  write the inventory and the reviews, from packets Syzygy builds. Syzygy
-  proves what each was given; it cannot prove a session saw nothing else, or
-  that the inventory is complete, and the page says so.
+- **Review.** Separate top-level sessions that you start write the inventory
+  and the reviews, from packets Syzygy builds. You start each one in a new
+  terminal, or by typing `!` and the printed command in the authoring
+  session's terminal; the second form is the lead's reading of your words
+  (O4 below). Syzygy proves which packet it built and that the verdict names
+  its digest; it cannot prove the reviewer read that packet unaltered, saw
+  nothing else, or that the inventory is complete, and the page says so.
 - **Limits and usage.** You declare the deadline, the agent's token or turn
   budget, the repair and question limits (zero allowed for the last two), and
   the model. Syzygy enforces the ones that bind its own steps. The agent's
   usage is your declared figure, labelled Inferred, never Observed or zero.
 - **Syzygy's own records.** Kept outside the clone, but on your machine the
-  agent can still write them. Syzygy re-derives every quotation, check and
-  review binding at render instead of trusting them, and labels what it
-  cannot re-derive Inferred. Question R1 below asks whether you accept that.
+  agent can still write them. As you ruled (R1), Syzygy re-derives every
+  quotation, check and review binding at each check and render instead of
+  trusting them, and labels every value it shows from a stored record
+  Inferred.
 - **Disclosure.** Every page states the mode, your declared tool, version,
   provider and model, that the agent read the clone without restriction and
   unscreened, that its read account is self-reported, the execution rule and
   what it reported running, that Syzygy made no provider call and verified
-  every quotation, and that its own records' integrity is Inferred.
+  every quotation, and that every value shown from its stored records is
+  Inferred.
 
 ## Your rulings, as applied
 
-Eight rulings over three records apply. None is put to you again:
+Nine rulings over four records apply. None is put to you again:
 
 - `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`
   (`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`)
@@ -74,53 +83,55 @@ Eight rulings over three records apply. None is put to you again:
   (`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`)
 - `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`
   (`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`)
+- `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`
+  (`POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`)
 
 | # | Question | Your choice | Where it is applied | Trade-off kept visible |
 |---|---|---|---|---|
-| O1 | RFC7-20 and a draft your own session computed | "Rule it by interpretation" (rulings record, item 1), over the recommended per-project provider record; kept as "Keep my ruling" after review 1 (review-1 record, item 3) | 033: an operator-computed draft is admitted with disclosure, the declared and recorded tool and provider, and byte-verified quotes; otherwise the draft layer is Unknown | Review 1, finding 6, found the reading changes the clause's effect; preserved for you below, not resolved |
-| O2 | Which repositories | "Any repo" (scope record, item 1); kept as "Keep any repo, disclose" after review 1 (review-1 record, item 2), over "Public repos for now" | 033: any repository; a governed or silent subject needs an in-force per-project statement, which is a consent record; the spec states that neither its classes nor SEC-5 screening bind the agent's own reads and sends; "governed" uses 032's four conditions | Review 1, finding 7: the class limit is unenforceable and SEC-5 material may reach the provider; you expected SEC-2 "scoped" and SEC-5 to be raised again |
-| O3 | Code execution by the agent | "Allow, disclose" (rulings record, item 2); then "Allow on host, amend SEC-3" (review-1 record, item 1), over "Only in a sandbox" and "Forbid, disclose" | 033 and 034: the brief invites execution only while an owner-adopted SEC-3 amendment permits it, and quotes SEC-3 until then; claims marked as resting on execution are Inferred and name their commands; Syzygy executes nothing | This change may not be signed until you adopt that SEC-3 amendment; it is not drafted yet |
-| O4 | Review independence | "Separate session" (scope record, item 2) | 035: a separate top-level session you start; no subagent or process of the authoring session; declared session ids must differ, for the inventory as well as the reviews. The fidelity packet also carries the frozen inventory | Extending the rule to the inventory and rendered-design review is the drafter's choice, stricter than your words. Freshness and inventory completeness stay Inferred |
+| O1 | RFC7-20 and a draft your own session computed | "Rule it by interpretation" (rulings record, item 1), over the recommended per-project provider record; kept as "Keep my ruling" after review 1 (review-1 record, item 3) | 033: an operator-computed draft is admitted with disclosure, the declared and recorded tool and provider, and byte-verified quotes; otherwise the draft layer is Unknown | Review 1, finding 6, and review 2, finding 7, found the reading changes the clause's effect; review 2 adds that it now does work only for non-governed subjects. Preserved for you below, not resolved |
+| O2 | Which repositories | "Any repo" (scope record, item 1); kept as "Keep any repo, disclose" after review 1 (review-1 record, item 2), over "Public repos for now" | 033: any repository; a governed or silent subject needs an in-force per-project statement, which is a consent record; the spec states that neither its classes nor SEC-5 screening bind the agent's own reads and sends; "governed" uses 032's four conditions | Review 1, finding 7: the class limit is unenforceable and SEC-5 material may reach the provider; you expected SEC-2 "scoped" and SEC-5 to be raised again. Review 2, finding 8, locates it in one sentence of 033, named below; your sign-off decides it |
+| O3 | Code execution by the agent | "Allow, disclose" (rulings record, item 2); then "Allow on host, amend SEC-3" (review-1 record, item 1), over "Only in a sandbox" and "Forbid, disclose" | 033 and 034: the brief invites execution only while D9 is in force, you are the attending operator, and your choice is recorded first; it quotes SEC-3 otherwise; claims marked as resting on execution are Inferred and shown with their commands; Syzygy executes and launches nothing | This change may not be signed until you adopt D9 (draft PR #357, under review); 033 and 034 follow its adopted text |
+| O4 | Review independence | "Separate session" (scope record, item 2) | 035: a separate top-level session you start, in a new terminal or with `!`; no subagent, and no headless session the authoring agent starts and reads; declared session ids must differ, for the inventory as well as the reviews; the launch form is recorded as you declare it. The fidelity packet also carries the frozen inventory | Admitting `!` is the lead's reading of your words "A second top-level Claude Code/Codex session you start", not your ruling. Facts: the printed command is headless (`claude -p` or `codex exec`); launched with `!` it runs as a child of the authoring tool's shell, inherits its environment, and its whole output lands in the authoring agent's context. The only difference from the excluded headless launch is who typed it, which Syzygy cannot observe. Your sign-off covers this reading. Extending the rule to the inventory and rendered-design review is the drafter's choice, stricter than your words. Freshness and inventory completeness stay Inferred |
 | O5 | Sign-off form | "Option pick, v1.0" (scope record, item 3) | The sign-off below | The extension of version-tag sign-off to generator deltas takes effect only when you make the selection |
-
-## Question R1: where Syzygy's own records live
-
-The first review (finding 2) found that the adopted text requires an
-Execution Record that is "immutable, identified, integrity-verifiable" in its
-governing work home (REQ-polaris-generation-018) and an audit trail "outside
-the governed plane and untrusted actor write reach; work records or a
-same-user writable directory SHALL NOT substitute" (REQ-polaris-generation-022).
-On a single-user machine, where your agent runs as you and may run the
-project, no directory Syzygy writes is out of the agent's reach. 033 reads
-both sentences for this mode, and reads REQ-polaris-generation-020's
-work-item gates as not applying to a run with no provider dispatch or
-scheduler effect. Those are security-posture readings, so they are yours.
-
-| Option | What it means | Cost |
-|---|---|---|
-| **A. Accept, re-derive and disclose (recommended)** | As 033 is drafted: records in Syzygy's state directory outside the clone; nothing Observed rests on a stored record; every quotation, check and review binding is re-derived from verified Git objects at render; the repair count, earlier instants and record history are labelled Inferred | An agent could rewind the repair count or the deadline start, and the page would show those as Inferred, not catch it |
-| B. Separate operating-system user | Syzygy's state directory belongs to a user the agent does not run as | Setup on every operator machine; meets 022's text |
-| C. Sandbox the agent | The agent runs where it cannot write Syzygy's state | You declined a sandbox under O3 |
-
-Recommendation: A, because every Observed label on the page is re-derived
-from bytes Syzygy verifies at render, and what the agent could still alter is
-labelled Inferred rather than defended. If you pick B or C, 033 changes
-before the confirming review.
+| R1 | Where Syzygy's own records live | "Re-derive, label Inferred (Recommended)" (records record), over "Separate OS user" and "Sandbox the agent" | 033: no Observed label rests on a stored record; quotations, checks and review bindings re-derived at each check and render; every value shown from a stored record labelled Inferred; no separate user or sandbox | Review 2, finding 5: the question did not cover the 020 reading, and the option's costs were understated; both carried to the sign-off below |
 
 ## Sign-off, and what goes with it
 
-Sign-off waits for two things: your adoption of the SEC-3 amendment (O3), and
-a confirming fresh-context review (CONFIRM, or CONFIRM WITH EXCEPTIONS with
-notes only). Then you will be offered one option selection:
+Two things remain open, and only two: your adoption of the SEC-3 amendment
+drafted as D9 (O3), and the v1.0 sign-off itself. Sign-off follows D9's
+adoption and a confirming fresh-context review (CONFIRM, or CONFIRM WITH
+EXCEPTIONS with notes only). Then you will be offered one option selection:
 
 > Sign off `polaris-dossier-local-agent-mode` v1.0, and extend version-tag
 > sign-off (`OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`) to
 > Polaris generator specification deltas.
 
-The first review's findings 6 (RFC7-20), 7 (SEC-2 and SEC-5) and 8 (SEC-3)
-were reported for you, and neither the drafter nor the lead resolves them.
-They go to you with the sign-off offering, and the sign-off is taken with
-them in view.
+These findings were reported for you, and neither the drafter nor the lead
+resolves them. They go to you with the sign-off offering, and the sign-off is
+taken with them in view:
+
+- **RFC7-20** (review 1, finding 6; review 2, finding 7): the reading
+  changes the clause's effect; under 033 as written it does work only for
+  non-governed subjects.
+- **SEC-2 "scoped" and SEC-5** (review 1, finding 7; review 2, finding 8,
+  first part): your sign-off decides 033's sentence "The statement is a
+  consent record: it is the "explicit, recorded, per-project consent" that
+  SEC-2 requires before governed-project content reaches a model provider",
+  while SEC-2's head reads "explicit, scoped consent" and nothing enforces
+  the statement's class limit.
+- **SEC-3** (review 1, finding 8): answered by D9, which you adopt or not
+  before signing.
+- **The 020 reading and option A's full cost** (review 2, finding 5): 033
+  reads REQ-polaris-generation-020's Proposal, approval, scheduler-creation
+  and materialization gates as not applying to a run with no provider
+  dispatch or scheduler effect. R1 did not ask about that. Option A also
+  means that the audit evidence of admissions, denials and refusals that
+  REQ-polaris-generation-022 asks for is agent-editable (a refusal can be
+  erased), and that the pinned revision and the emitted review packets are
+  stored records, so which revision a run used is Inferred; the consent
+  check on it, and the packet bindings, are re-done at each step.
+- **The `!` launch form** (review 2, finding 4): the lead's reading, as O4
+  states.
 
 The selection binds a git tag, `polaris-dossier-local-agent-mode-v1.0`, on the
 commit that carries the package bytes you were shown, which must equal the
@@ -142,5 +153,8 @@ binds nothing until reviewed and signed off.
 ## Review
 
 Fresh-context review before the offering, per `REVIEW-BRIEF.md`. Round 1
-returned REVISE over `f1bd0b5c`; `REVIEW-BRIEF.md` carries the disposition of
-its 21 findings. The next round is the lead's to dispatch.
+returned REVISE over `f1bd0b5c` (21 findings) and round 2 REVISE over
+`af97611d` (17 findings); `REVIEW-BRIEF.md` carries both dispositions. Round
+3 is the confirming round, dispatched after D9's text is fixed by its own
+review. CONFIRM, or CONFIRM WITH EXCEPTIONS with notes only, clears the
+bytes; a third REVISE comes to you with all three raws.

@@ -9,11 +9,14 @@
 > and `POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`)
 > and `POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`
-> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`).
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`)
+> and `POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`).
 > It is not adopted, performs no act, and grants no read, egress, write or
 > execution. Effect comes only from the owner's sign-off of the exact
 > reviewed bytes (VIS-4), which may not be given until the owner has adopted
-> the SEC-3 amendment that the review-1 rulings direct (item 1).
+> the SEC-3 amendment that the review-1 rulings direct (item 1), drafted as
+> doctrine amendment D9.
 
 **A Polaris dossier can be written by the operator's own Claude Code or Codex
 session over a local clone, while Syzygy checks every quotation against the
@@ -70,11 +73,14 @@ through one reviewed CC-REV-2 delta.
   preserved for the owner, not resolved (review-1 rulings, item 3).
 - **Execution follows SEC-3 until it is amended.** The owner chose to let
   the agent build and run the observed project on the host and directed a
-  SEC-3 amendment to permit it (review-1 rulings, item 1). Until that
-  amendment is adopted, the brief quotes SEC-3 and does not invite execution
-  outside an execution profile, and this change may not be signed. Claims
-  the agent marks as resting on execution are Inferred and the reported
-  commands are listed; Syzygy itself executes no observed code.
+  SEC-3 amendment to permit it (review-1 rulings, item 1), drafted as D9.
+  The brief invites execution only when D9 is in force, the operator is the
+  owner attending sessions the owner started on the owner's host, and the
+  owner's choice is recorded before the brief; otherwise it quotes SEC-3 and
+  invites nothing outside an execution profile, and this change may not be
+  signed before D9 is adopted. Claims the agent marks as resting on
+  execution are Inferred and shown with the commands they name; Syzygy
+  itself executes and launches no observed code.
 - **Parked, not withdrawn:** the provider mode and its route, egress and
   adapter packages, per the direction's item 4.
 
@@ -91,8 +97,12 @@ through one reviewed CC-REV-2 delta.
   amended by the tree-form adoption. No byte of either is edited.
 - It is independent of the candidate
   `openspec/changes/polaris-non-governed-narrative-profile/` (requirement 032)
-  and overlaps it nowhere: 032 says how a non-governed subject's narrative is
-  composed, this change says who authors it and how Syzygy checks it. A Redis
+  in category: 032 says how a non-governed subject's narrative is composed,
+  this change says who authors it and how Syzygy checks it. They share one
+  thing, the predicate that decides whether a subject is governed. 033
+  counts every `.syzygy/` path, because a path listing cannot tell adoption,
+  so it is never less strict than 032's "adopted capability declaration";
+  whichever of the two is adopted second reconciles the two definitions. A Redis
   dossier needs both. The numbers 033 to 036 follow 032; if 032 is never
   adopted the gap stays, because identifiers are never renumbered.
 - **The candidate delta is held in `proposed/`, not `specs/`,** for the reason
@@ -122,13 +132,21 @@ through one reviewed CC-REV-2 delta.
   consent record; neither its content classes nor SEC-5 screening bind what
   the agent reads or sends, and every page says so.
 - **Syzygy's records within the agent's reach.** On a single-user host the
-  agent can write Syzygy's state directory, so nothing Observed rests on a
-  stored record and what cannot be re-derived is labelled Inferred. That
-  reads REQ-polaris-generation-018 and 022 for this mode and is put to the
-  owner (packet, question R1).
+  agent can write Syzygy's state directory. As the owner ruled (R1,
+  `POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`), nothing Observed rests
+  on a stored record and every value shown from one is labelled Inferred.
+  That reads REQ-polaris-generation-018 and 022 for this mode. The reading
+  of 020's work-item gates, and option A's fuller cost (agent-editable
+  refusal records, stored pinned revision and packets), go to the owner with
+  the sign-off.
 - **Reviews in sessions the operator starts.** Separate top-level sessions
-  the operator starts in a new terminal, never a subagent or a process of
-  the author (scope record, item 2).
+  the operator starts, in a new terminal or by typing `!` and the printed
+  command in the authoring session's terminal; never a subagent, and never a
+  headless session the authoring agent starts (scope record, item 2).
+  Admitting `!` is the lead's reading of the owner's words, not an owner
+  ruling: the `!` launch is the same headless command, a child of the
+  authoring tool's shell whose output lands in the author's context, and
+  only who typed it differs. The owner's sign-off covers that reading.
 - **What the agent ran is its report.** Commands the agent says it ran are
   recorded as its report, labelled Inferred; Syzygy cannot observe them.
 - **No new permission.** This is not permission to read, egress, write,

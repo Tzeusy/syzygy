@@ -2,8 +2,12 @@
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries no
-> verdict. Round 1 returned REVISE over `f1bd0b5c`; the repair and its
-> disposition are below. The next round is the lead's to dispatch.
+> verdict. Round 1 returned REVISE over `f1bd0b5c` and round 2 REVISE over
+> `af97611d`; both repairs and dispositions are below. Round 3 is the
+> confirming round, dispatched by the lead after D9's text is fixed by its
+> own review. Stopping rule, set before round 3: CONFIRM, or CONFIRM WITH
+> EXCEPTIONS with notes only, clears the bytes; a third REVISE goes to the
+> owner with all three raws.
 
 ## What the reviewer is given, and nothing else
 
@@ -24,9 +28,16 @@ references and the acceptance criteria.
 - The warrants:
   `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`,
   `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`,
-  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`,
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`
   and
-  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`.
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`.
+- The dependency: doctrine amendment D9, draft PR #357, whose package
+  directory under `contracts/candidates/` is named
+  doctrine-amendment-sec3-attended-agent-session-d9 (not on `main` when
+  this brief was written). Read its `SEMANTIC-DELTA.md`, "Proposed meaning",
+  at the commit the lead names when dispatching (its text as fixed by its
+  own review). 033 and 034 must carry its conditions.
 - `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
   and `SEMANTIC-DELTA-TEMPLATE.md`; CC-SPEC-1 to CC-SPEC-11 in
   `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` and CC-IMPACT-1 to
@@ -38,13 +49,16 @@ references and the acceptance criteria.
   each read at its defining clause and quoted (verification rule 8);
   `DIRECTIVE-REGISTER.md` gives file and line.
 - The effective requirements 001, 002, 003, 004, 005, 006, 012, 017, 018,
-  019, 020, 022, 025, 030 and 031: the base spec
+  019, 020, 021, 022, 025, 030 and 031: the base spec
   `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`,
   the overlay `openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md`,
   `decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md`, and the base change's
-  `INTERFACES.md`, `SECURITY-CONTRACT.md`, `OWNER-FLOW.md` and
-  `SCHEMA-CONTRACT.md`.
-- Doctrine VIS-1 to VIS-4 and SEC-2, SEC-3, SEC-5 (`.syzygy/governance/doctrine/`).
+  `INTERFACES.md`, `SECURITY-CONTRACT.md`, `OWNER-FLOW.md`,
+  `EFFECT-HOST-DESIGN.md` and `SCHEMA-CONTRACT.md`; RFC4-19's table in
+  `.syzygy/governance/contracts/rfcs/RFC-0004/execution-record.md`.
+- Doctrine VIS-1 to VIS-4 and SEC-1, SEC-2, SEC-3, SEC-5 (`.syzygy/governance/doctrine/`).
+- The two earlier raws, `docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-1-RAW.md`
+  and `-2-RAW.md`, to check whether each repair holds.
 - The sibling candidate `openspec/changes/polaris-non-governed-narrative-profile/`,
   for overlap only.
 - `AGENTS.md`, "Hard prohibitions" and "Verification rules".
@@ -107,14 +121,16 @@ Each is a yes/no question with the evidence that settles it.
    trip.
 7. **Is the change class right?** The delta says Normative.
 8. **Is the impact ledger reproducible?** Re-run its published regexes at its
-   commit and compare the counts, the 135-file classification and the
-   14-file extension (149 in all).
+   commit and compare the counts, the 135-file classification, the 14-file
+   extension and the 2-file extension for 021 (151 in all).
 9. **Are the owner's rulings applied exactly?** Compare the packet's table
    and the specification with the three rulings records. Is any ruling
    widened, narrowed or restated as the drafter's choice, and is any
    decision taken that belongs to the owner? The packet's open items should
-   be question R1, the SEC-3 adoption the sign-off waits for, and the
-   sign-off itself, with round 1's findings 6 to 8 carried to it.
+   be only the adoption of D9 and the v1.0 sign-off, with the findings it
+   carries to the sign-off named (round 1: 6 to 8; round 2: 4, 5, 7 and 8).
+   Is R1 applied exactly, with no qualifier the ruling lacks? Do 033 and 034
+   carry every condition D9's text sets?
 10. **Does `design.md` stay design?** No implementation code in `openspec/**`;
     the skill and Codex texts are prose, and no command it names claims
     behavior the requirements do not require.
@@ -149,22 +165,57 @@ The repair re-verified every quotation by script against its source.
 | 20 | Duplicate open question in `design.md` | Fixed: merged |
 | 21 | Warrant `decisions` empty | Fixed: the four direction identifiers listed; dependency union regenerated |
 
+## Round 2 disposition
+
+Round 2 (verdict REVISE over `af97611ddfc5b42f0893837c726a82a9e7a3bb9b`, 17
+findings, 1 to 4 blocking; raw retained by the lead). Dispositions as the lead
+directed. Every quotation was re-verified by script after the repair.
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | Pinned revision is a stored record, never re-bound | Fixed: 033 re-checks the recorded revision against the in-force consent at every check, review check and render; brief, draft, inventory and packets name it, a mismatch refuses; which revision was used is disclosed Inferred; scenario "Recorded revision altered"; falsifier arms |
+| 2 | "Packet's exact contents" labelled Observed | Fixed: 035 Observes only the packet Syzygy built, its digest and the verdict's naming of it; the reviewer reading it unaltered is Inferred; the packet carries its own digest; design decision 5 corrected |
+| 3 | R1 narrowed and uncited | Fixed: qualifier dropped ("a record it stored"); the Inferred list is open and longer; R1 cited in 033 and its warrants and 034's; R1 marked answered in packet, brief, delta, proposal, design and tasks |
+| 4 | `!` launch form not shown to the owner | Fixed as directed: packet O4 row and plain-terms summary, proposal and delta state that admitting `!` is the lead's reading of the owner's words, with the reviewer's facts; the sign-off covers it; no new question |
+| 5 | R1 does not cover the 020 reading; option A's costs understated | For the owner: not recorded as ruled by R1; the 020 reading and the costs (agent-editable 022 audit evidence, stored pinned revision and packets) carried with the sign-off offering |
+| 6 | Second discovery population drawn from a stored read log | Fixed: the Observed population is the objects the render itself reads and verifies; earlier-step membership, where shown, is Inferred; falsifier arm |
+| 7 | RFC7-20 reading | For the owner: preserved with round 1's finding 6, including that the reading now does work only for non-governed subjects |
+| 8 | SEC-2 "scoped"; governed predicate input | First part for the owner: the packet names 033's consent-record sentence as the point the sign-off decides. Second part fixed: every `.syzygy/` path counts, adopted or not, never less strict than 032; recorded as an overlap the second adoption reconciles; proposal's "overlaps it nowhere" corrected |
+| 9 | Which spans the fidelity packet carries | Fixed: spans cited by the draft and by the frozen inventory, screening-admitted only |
+| 10 | Hash algorithm source; design route 1 | Fixed: the algorithm is the consented identifier's; a clone that does not hash under it refuses. Route 1 dropped; the design names an in-process reader that reads no repository configuration |
+| 11 | 021, SEC-1 and 022's principal | Fixed: 033 says the commands serve no route, hold no Syzygy credential and are outside 021's inventory; the audit principal is the operator, credential identity Unknown; SEC-1's bullet read [Inferred]; 021 swept (2 more files, 151) |
+| 12 | RFC4-19 work-item identity | Fixed: absent with its reason; the run renders as unattributed execution, never dropped |
+| 13 | Project-scoped agent configuration in the clone | Fixed: skill and Codex texts never start a session in the clone and treat its text as data; session directories exclude the clone; 034's brief states the data rule |
+| 14 | Design review binds pages the final render changes | Fixed: subject excludes one named review-status region; any other change is a revision; scenario "Design review survives its status region" |
+| 15 | Design consistency | Fixed: session id session-declared, launch form operator-declared through `launch-form`, both Inferred; sessions start in role directories without the draft; `--out` removed; `preflight` reads no tree; "strict form" removed |
+| 16 | Scenario bundling | Fixed: zero limits, statement withdrawal, non-governed subject and provider-mode draft are their own scenarios |
+| 17 | Delta header; SEC-3 timing | Fixed: header names `OWNER-FLOW.md`, `SECURITY-CONTRACT.md`, 021 and SEC-1; 033 and 034 cite D9 and carry its four draft conditions (owner-started, attended, own host; choice recorded first; Inferred; commands disclosed with their claims); round 3 waits for D9's text |
+
 ## Output
 
-A raw review stored verbatim as `reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-<n>-RAW.md`
-in this package. Its first four non-blank lines:
+A raw review stored verbatim; the lead retains it as
+`docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-<n>-RAW.md`. From round 3 its
+head takes the form `scripts/record_versioned_signoff.py` reads: the first
+four non-blank lines are exactly
 
 ```text
 # Review R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-<n>
 Reviewed commit: <40-hex commit the reviewer read>
-Subject SHA-256: <sha256 of proposed/polaris-generation/spec.md at that commit, computed by script>
+Manifest SHA-256: <sha256 of proposed/polaris-generation/spec.md at that commit, computed by script>
 Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
 ```
 
+with no blank line inside them that would push `Verdict:` out of the first
+four non-blank lines. The recorder reads `Manifest SHA-256:` as information,
+never as an argument; this package has no manifest, so the line carries the
+subject's digest, the same value rounds 1 and 2 put on their
+`Subject SHA-256:` line. It accepts only `CONFIRM` or `CONFIRM WITH
+EXCEPTIONS`.
+
 Then `## Findings`, each numbered continuously as
-`**Finding N — title** (blocking|revise|note)`, with the evidence. The
-sign-off form is ruled (version-tag sign-off, v1.0), but the recorder,
-`scripts/record_versioned_signoff.py`, asks for a `Manifest SHA-256:` line
-and a package builder that this package does not yet have (`tasks.md`). The
-head above is what this round produces; the brief is revised to the
-recorder's head contract before the confirming round.
+`**Finding N — title** (blocking|revise|note)`, with the evidence. For
+`CONFIRM WITH EXCEPTIONS` every finding must be a `note`, and the lead writes
+a sibling `ROUND-3-DISPOSITIONS.md` in this package that names the raw on a
+`Reviewed record:` line and disposes of exactly the raw's findings. The
+recorder also needs this package's builder, which is post-sign-off work
+(`tasks.md`).

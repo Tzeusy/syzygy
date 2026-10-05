@@ -12,8 +12,8 @@ population. Denominator (rule 9): 2,328 tracked paths, of which 4 do not
 decode as UTF-8 and were skipped, so 2,324 were searched. Python `re`, never
 `grep` (verification rule 1). The affected identifiers are
 REQ-polaris-generation-001, 005, 006, 017, 018, 030 and 031 (001 by the owner's RFC7-20 reading), written `NNN`
-below; 002, 003, 020 and 022 were added after the first review (see the
-extension section). The regexes, case-sensitive, with run form:
+below; 002, 003, 020 and 022 were added after the first review and 021
+after the second (see the two extension sections). The regexes, case-sensitive, with run form:
 
 | Sweep | Regex (Python) | Notes |
 |---|---|---|
@@ -103,7 +103,7 @@ Each file in classes 3, 4 and 7 was read at its hit:
 - `openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md` (022):
   its "Protected audit trail" section puts the trail outside the untrusted
   actor class's write reach. Its trail-location paragraph is quoted in the
-  semantic delta and read with 022 by 033; owner question R1.
+  semantic delta and read with 022 by 033; answered by the owner as R1.
 - `openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md` (020): the
   provider-mode start flow. Its "Resolve warranted work" and "Materialize
   once, then execute" sections are read with 020 by 033.
@@ -114,6 +114,23 @@ Each file in classes 3, 4 and 7 was read at its hit:
 - `docs/polaris-generation/LEARNING-LOG.md` (002): a live presentation note
   on the generator's argument job; true of both modes, updated in the
   adoption change only if the adoption changes what it says.
+
+## Second extension after the second review: 021
+
+The second review (finding 11) noted that the populations did not cover
+REQ-polaris-generation-021, which 033 now reads. [Observed] The same script,
+sweeps A, B, E, F and G, same commit and same 2,324 decodable paths, with the
+title `Scoped caller admission for generator operations`, after reproducing
+every figure above: 021: 18 files, of which **2 are new** beyond the 149, for
+**151** in all. Class 1 (raw) 1:
+`docs/reviews/R-POLARIS-GENERATOR-AUTHORITY-PAIRING-CONFIRMATION-2026-09-12-RAW.md`,
+never edited. Class 3 (adopted) 1:
+`openspec/changes/polaris-manifesto-generation/EFFECT-HOST-DESIGN.md`, the
+"Proposed implementation choice for requirements 021/022" for the served
+host; it stays true of the provider mode, and 033 reads the local
+`syzygy dossier` program as serving no route. `SECURITY-CONTRACT.md` also
+cites 021 and was already counted under 022. REQ-polaris-generation-016 is
+not named by the change, so it is not swept.
 
 ## RFC7-20, read by the owner's ruling
 

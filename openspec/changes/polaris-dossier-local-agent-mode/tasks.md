@@ -8,18 +8,25 @@ implement the proposed behavior.
 
 - [ ] Independent fresh-context review of the delta and its impact ledger
       (`.syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode/REVIEW-BRIEF.md`).
-- [ ] The owner's ruling on question R1 of the decision packet (where
-      Syzygy's records live, and the reading of REQ-polaris-generation-018,
-      020 and 022 for this mode).
+- [x] The owner's ruling on question R1 of the decision packet (where
+      Syzygy's records live): "Re-derive, label Inferred"
+      (`POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`). The 020 reading is
+      not covered by it and goes with the sign-off.
 - [ ] The owner's adoption of a SEC-3 amendment permitting the operator's
       agent session to build and run the observed project on the host,
-      drafted and reviewed as its own change
-      (`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`, item 1).
-      Sign-off may not precede it.
+      drafted as doctrine amendment D9 (draft PR #357) and reviewed as its
+      own change (`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`,
+      item 1). Sign-off may not precede it, and 033 and 034 follow its
+      adopted text.
+- [ ] Round 3, the confirming fresh-context review, dispatched after D9's
+      text is fixed by its own review. CONFIRM, or CONFIRM WITH EXCEPTIONS
+      with notes only, clears the bytes; a third REVISE goes to the owner
+      with all three raws.
 - [ ] The owner's sign-off by option selection naming v1.0, extending
       version-tag sign-off to Polaris generator specification deltas
       (`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`, item 3),
-      taken with the first review's findings 6, 7 and 8 in view.
+      taken in view of the findings the packet carries to it (review 1,
+      findings 6 to 8; review 2, findings 4, 5, 7 and 8).
 - [ ] After sign-off: a package builder that `scripts/record_versioned_signoff.py`
       accepts (installs `proposed/` into `specs/`, checks and recounts), so the
       recorder writes the sign-off record and the tag
@@ -53,6 +60,12 @@ implement the proposed behavior.
       loose object, an alternates file and a repository-local configuration
       that names a command: each must refuse or read the original bytes, and
       no configured command may run.
+- [ ] Recorded revision: alter the pinned revision in the state directory to
+      another commit in the clone, and withdraw the consent's naming of it;
+      every later check, review check and render must refuse. A clone whose
+      objects use another hash algorithm than the consented identifier must
+      refuse. Launch forms other than `terminal` and `bang` are refused, and
+      an inventory or verdict without one does not count.
 - [ ] Stored records: alter a recorded byte range, check result, packet
       digest and frozen subject between steps; no rendered Observed
       quotation, source page or counted verdict may change, and the cycle
