@@ -27,11 +27,17 @@ validates, in this order, and writes nothing until every step passes:
    refuses;
 4. for `CONFIRM WITH EXCEPTIONS`, the raw's `## Findings` section numbers its
    findings continuously as `**Finding N — title** (blocking|revise|note)`,
-   every finding is a `note`, and `--disposition <record>` names the raw on a
+   where the severity word may carry a qualifier after it ("(note, for the
+   owner)", "(note: reported for the owner, not resolved)"); the leading
+   word is the severity, and a `note` whose qualifier names "blocking" or
+   "revise" is refused as ambiguous rather than read either way; every
+   finding is a `note`, and `--disposition <record>` names the raw on a
    `Reviewed record:` line and numbers exactly the raw's findings;
-5. the candidate package directory at the working tree equals the package at
-   the commit the review read (sibling `ROUND-<n>-DISPOSITIONS.md` records and
-   the named disposition are not package bytes);
+5. the candidate package directory, and any further directory the package
+   declares (a specification change under `openspec/changes/`), at the
+   working tree equals the package at the commit the review read (sibling
+   `ROUND-<n>-DISPOSITIONS.md` records and the named disposition are not
+   package bytes);
 6. the package's own builder check passes on the unapplied package.
 
 Then the package's patches are applied through its builder, the dedicated
@@ -72,7 +78,10 @@ MANIFEST_LINE_RE = re.compile(r"^Manifest SHA-256: [0-9a-f]{64}$")
 VERDICT_LINE_RE = re.compile(r"^Verdict:\s*(.*?)\s*$")
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 SEVERITY_RE = re.compile(
-    r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)\)", re.MULTILINE)
+    r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?![A-Za-z])([^)\n]*)\)",
+    re.MULTILINE)
+#: A qualifier that names a stronger severity makes a `note` ambiguous.
+STRONGER_RE = re.compile(r"\b(blocking|revise)\b", re.IGNORECASE)
 SIBLING_RECORD_RE = re.compile(r"(^|/)ROUND-\d+-DISPOSITIONS\.md$")
 FINDINGS_HEADING = "## Findings"
 
@@ -88,6 +97,8 @@ class Package:
     check: Callable[[pathlib.Path], list[str]]
     apply: Callable[[pathlib.Path], int]
     applied: Callable[[pathlib.Path], bool]
+    #: Further directories whose bytes the review read (an OpenSpec change).
+    also: tuple[pathlib.Path, ...] = ()
 
 
 def _module(name: str):
@@ -121,6 +132,7 @@ def real_packages() -> dict[str, Package]:
     item_depth = lambda: _module("build_pwb_item_depth_amendment")  # noqa: E731
     readability = lambda: _module("build_pwb_readability_successor")  # noqa: E731
     tree_framing = lambda: _module("build_pwb_tree_framing_amendment")  # noqa: E731
+    dossier = lambda: _module("build_polaris_dossier_local_agent_mode")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -181,6 +193,17 @@ def real_packages() -> dict[str, Package]:
             lambda root: tree_framing().check()[0],
             lambda root: tree_framing().apply(True),
             lambda root: _rows_hash_tree(root, tree_framing().MANIFEST_OUT),
+        ),
+        "polaris-dossier-local-agent-mode": Package(
+            "polaris-dossier-local-agent-mode",
+            "Polaris dossier local-agent mode",
+            "specification delta",
+            CANDIDATES / "polaris-dossier-local-agent-mode",
+            "POLARIS-DOSSIER-LOCAL-AGENT-MODE",
+            lambda root: dossier().check(root),
+            lambda root: dossier().apply(root),
+            lambda root: dossier().applied(root),
+            also=(pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode"),),
         ),
     }
 
@@ -245,7 +268,12 @@ def review_findings(review: str) -> dict[int, str]:
     section = beh._raw_findings_section(review, FINDINGS_HEADING)
     numbers = beh._finding_number_set(
         section, label="review findings", forms=beh.RAW_FINDING_FORMS)
-    severities = {int(n): sev for n, sev in SEVERITY_RE.findall(section)}
+    severities = {}
+    for n, sev, qualifier in SEVERITY_RE.findall(section):
+        if sev == "note" and STRONGER_RE.search(qualifier):
+            raise ValueError(f"review finding {n} is tagged ({sev}{qualifier}); a note "
+                             "whose qualifier names a stronger severity is ambiguous")
+        severities[int(n)] = sev
     unclassified = sorted(numbers - set(severities))
     if unclassified:
         raise ValueError(f"review findings {unclassified} carry no "
@@ -300,10 +328,10 @@ def package_unchanged(root: pathlib.Path, pkg: Package, commit: str,
                       disposition_rel: str | None) -> None:
     if _git(root, "cat-file", "-e", f"{commit}^{{commit}}").returncode != 0:
         raise ValueError(f"reviewed commit {commit[:12]} is not in this repository")
-    directory = pkg.candidate.as_posix()
-    changed = _git(root, "diff", "--name-only", commit, "--", directory).stdout.split()
+    directories = [d.as_posix() for d in (pkg.candidate, *pkg.also)]
+    changed = _git(root, "diff", "--name-only", commit, "--", *directories).stdout.split()
     changed += _git(root, "ls-files", "--others", "--exclude-standard",
-                    "--", directory).stdout.split()
+                    "--", *directories).stdout.split()
     subject = [c for c in changed
                if not SIBLING_RECORD_RE.search(c) and c != disposition_rel]
     if subject:
@@ -499,6 +527,9 @@ STUB_DISPOSITION = "pkg/stub/ROUND-1-DISPOSITIONS.md"
 STUB_DIR = pathlib.Path("pkg/stub")
 
 
+STUB_ALSO = pathlib.Path("spec/stub")
+
+
 def stub_package() -> Package:
     def check_fn(root):
         return ["stub builder failure"] if (root / STUB_DIR / "BROKEN").exists() else []
@@ -508,7 +539,8 @@ def stub_package() -> Package:
         return 0
 
     return Package("stub-package", "Stub package", "behavior amendment", STUB_DIR,
-                   "STUB", check_fn, apply_fn, lambda root: (root / "applied.txt").exists())
+                   "STUB", check_fn, apply_fn, lambda root: (root / "applied.txt").exists(),
+                   also=(STUB_ALSO,))
 
 
 def stub_review(commit: str, verdict: str = "CONFIRM", findings: str = "No findings.",
@@ -536,6 +568,8 @@ def make_fixture(tmp: pathlib.Path, review_text=None, disposition_text=None,
     run("init", "-q")
     (tmp / STUB_DIR).mkdir(parents=True)
     (tmp / STUB_DIR / "manifest.txt").write_text("package bytes\n")
+    (tmp / STUB_ALSO).mkdir(parents=True)
+    (tmp / STUB_ALSO / "spec.md").write_text("specification bytes\n")
     for name, body in (package_files or {}).items():
         (tmp / STUB_DIR / name).write_text(body)
     (tmp / AGGREGATE_REL).parent.mkdir(parents=True)
@@ -689,6 +723,32 @@ def selftest() -> int:
                                          "**Finding 1 - first** (revise) evidence\n"),
             disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
             expect="non-note")
+    for qualified in ("(note, for the owner's view)", "(note, for the owner)",
+                      "(note: reported for the owner, not resolved)"):
+        with tempfile.TemporaryDirectory() as t:
+            tmp, commit = make_fixture(pathlib.Path(t), lambda c, q=qualified: stub_review(
+                c, "CONFIRM WITH EXCEPTIONS",
+                f"**Finding 1 — first** {q} evidence\n\n**Finding 2 — second** (note) evidence\n"),
+                stub_disposition())
+            code, _ = run_record(tmp, disposition_rel=STUB_DISPOSITION)
+            results.append((f"a qualified note {qualified} reads as a note and records",
+                            code == 0 and run_check(tmp, "1.0") == 0))
+    for qualified in ("(blocking, for the owner)", "(revise: before sign-off)", "(revise — owner)"):
+        refused(f"a qualified non-note {qualified} stays non-note",
+                review=lambda c, q=qualified: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                                          f"**Finding 1 — first** {q} evidence\n"),
+                disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+                expect="non-note")
+    refused("a note whose qualifier names a stronger severity",
+            review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                         "**Finding 1 — first** (note, but revise-level) evidence\n"),
+            disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+            expect="ambiguous")
+    refused("a severity word run into another word",
+            review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                         "**Finding 1 — first** (notes) evidence\n"),
+            disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+            expect="no (blocking|revise|note) severity")
     refused("a finding with no severity",
             review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS", "**Finding 1 — first** evidence\n"),
             disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
@@ -716,7 +776,12 @@ def selftest() -> int:
     def add_package_file(tmp, commit):
         (tmp / STUB_DIR / "new.txt").write_text("new\n")
 
+    def edit_also(tmp, commit):
+        (tmp / STUB_ALSO / "spec.md").write_text("edited after the review\n")
+
     refused("package edited after the review", mutate=edit_package, expect="package bytes changed")
+    refused("a declared further directory edited after the review", mutate=edit_also,
+            expect="package bytes changed")
     refused("a package file added after the review", mutate=add_package_file,
             expect="package bytes changed")
     with tempfile.TemporaryDirectory() as t:
