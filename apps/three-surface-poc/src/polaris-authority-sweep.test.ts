@@ -23,9 +23,13 @@ const POLARIS_SURFACE = /(^|[^A-Za-z0-9-])\/polaris\b|polaris\.ts\b|apps\/three-
 
 const GENERATOR_REQUIREMENT = /^REQ-polaris-generation-\d{3}$/;
 
+/** Owner decisions of the local-agent dossier mode; each must be declared by a `Decision ID:` line under decisions/. */
+const DOSSIER_DECISION = /^POLARIS-DOSSIER-LOCAL-AGENT-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{4}-\d{2}-\d{2}$/;
+
 /** Hand-typed warrant id families (a new family must be added here). */
 const WARRANT_FAMILIES = [
   GENERATOR_REQUIREMENT,
+  DOSSIER_DECISION,
   /^(VIS|SEC|SDR|RFC\d+|CC-[A-Z]+|POC-REQ|PWB-REQ|CAP1-REQ)-\d+[a-z]?(\([a-z]\))?$/,
   /^(POC|POLARIS|PWB-STATE1-AMENDMENT)-DIR-\d{4}-\d{2}-\d{2}$/,
   /^P-\d+-ruling-\d{4}-\d{2}-\d{2}( \(decisions\/[A-Z0-9-]+\.md\))?$/,
@@ -119,16 +123,33 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
     const unknownFamily = entries.filter((entry) => !WARRANT_FAMILIES.some((family) => family.test(entry.value)));
     expect(unknownFamily, 'warrant entries outside every hand-typed id family').toEqual([]);
     expect(entries.filter((entry) => POLARIS_SURFACE.test(entry.value))).toEqual([]);
+    const decisionsDirectory = join(REPO_ROOT, '.syzygy/governance/decisions');
+    const declaredDecisions = new Set<string>();
+    for (const file of walk(decisionsDirectory, isSpec)) {
+      for (const match of readFileSync(file, 'utf8').matchAll(/^Decision ID: `([A-Z0-9-]+)`$/gm)) declaredDecisions.add(match[1] as string);
+    }
     const polarisNamed = entries.filter((entry) => /polaris/i.test(entry.value));
     expect(polarisNamed.length).toBeGreaterThan(0);
     for (const entry of polarisNamed) {
       if (GENERATOR_REQUIREMENT.test(entry.value)) {
         expect(entry.key).toBe('parent_requirements');
         expect(declaredGeneratorRequirements.has(entry.value), 'parent requirement must have an owning declaration').toBe(true);
+      } else if (DOSSIER_DECISION.test(entry.value)) {
+        expect(entry.key).toBe('decisions');
+        expect(declaredDecisions.has(entry.value), `${entry.value} must have an owning Decision ID declaration`).toBe(true);
       } else {
         expect(entry.key).toBe('decisions');
         expect(entry.value).toMatch(/^POLARIS-DIR-\d{4}-\d{2}-\d{2}$/);
       }
+    }
+  });
+
+  it('recognizes dossier decision identity syntax without accepting presentation references', () => {
+    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05']) {
+      expect(DOSSIER_DECISION.test(value)).toBe(true);
+    }
+    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05/polaris', 'polaris-dossier-local-agent-mode-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05 (/polaris)']) {
+      expect(DOSSIER_DECISION.test(value)).toBe(false);
     }
   });
 
