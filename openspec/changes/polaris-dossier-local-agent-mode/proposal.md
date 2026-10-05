@@ -75,10 +75,12 @@ through one reviewed CC-REV-2 delta.
   the agent build and run the observed project on the host and directed a
   SEC-3 amendment to permit it (review-1 rulings, item 1), drafted as D9.
   The brief invites execution only when D9 is in force, the operator is the
-  owner attending sessions the owner started on the owner's host, the
-  owner's choice is recorded in the run record before the brief, and any
-  credential condition D9 carries is declared to hold; such a brief asks for
-  no process that outlives the session. Otherwise it quotes SEC-3 and
+  owner attending the authoring session the owner started on the owner's
+  host, the operator personally records the owner's choice for that one run
+  and revision before the brief (never a configuration value or standing
+  record), and any credential check D9 requires passes; only the authoring
+  brief carries it, and it asks for no process that outlives the session.
+  Otherwise it quotes SEC-3 and
   invites nothing outside an execution profile, and this change may not be
   signed before D9 is adopted. Claims the agent marks as resting on
   execution are Inferred and shown with the commands they name, every
