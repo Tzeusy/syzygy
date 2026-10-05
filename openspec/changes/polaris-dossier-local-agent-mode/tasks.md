@@ -52,6 +52,13 @@ implement the proposed behavior.
       force. Exercise every
       refusal arm of REQ-polaris-generation-033 with independently prepared
       fixtures.
+- [ ] Execution choice and credential check: `allow-execution` records one
+      run and revision and refuses otherwise; a choice in `run.json`, from an
+      earlier run or for another revision never yields a permitting brief;
+      only the authoring brief carries the permission; with D9's credential
+      condition, a fixture adapter credential readable by the operator's user
+      refuses the permitting brief and, made readable after it, yields a
+      finding at the next `check` and at `close`.
 - [ ] Prove no provider call and no transmission: an independent capture of
       the process's network activity over a full run, not the run record.
 - [ ] Object reads only: a fixture clone whose working tree differs from HEAD

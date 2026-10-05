@@ -38,8 +38,11 @@ references and the acceptance criteria.
   this brief was written). Read its `SEMANTIC-DELTA.md`, "Proposed meaning",
   at the commit the lead names when dispatching (its text as fixed by its
   own review). 033 and 034 must carry its conditions; the drafter aligned
-  them to arm A as frozen for D9's round 2 at `63e41968`, including the
-  optional credential condition (D9's Q3(b)) as conditional on adoption.
+  them to arm A as frozen after D9's round-2 repair at `62c29093`, including
+  the optional credential condition (D9's Q3(b)) as conditional on adoption,
+  and closed in 033 three points D9 leaves to the spec: who records the
+  per-run choice, which session may receive the permission, and how the
+  credential condition is checked.
 - `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
   and `SEMANTIC-DELTA-TEMPLATE.md`; CC-SPEC-1 to CC-SPEC-11 in
   `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` and CC-IMPACT-1 to

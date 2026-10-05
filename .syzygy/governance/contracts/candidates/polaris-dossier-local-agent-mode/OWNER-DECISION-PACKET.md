@@ -40,10 +40,15 @@ mode parked, not withdrawn.
 - **Running the project.** Not invited yet. The SEC-3 amendment your
   review-1 ruling directs is drafted as D9 and under review. The brief may
   say the agent may build and run the project only when D9 is in force, you
-  are the operator, attending sessions you started on your own machine, you
-  recorded your choice to allow it before the brief, and, if you adopt D9's
-  credential condition (its Q3(b)), you confirmed no Syzygy adapter
-  credential is readable by the session. Such a brief asks for nothing that
+  are the operator, attending the authoring session you started on your
+  own machine, and you typed the per-run choice yourself
+  (`syzygy dossier allow-execution`) before the brief; a saved setting or
+  an earlier run's choice never counts. Syzygy cannot see who typed it, so
+  it shows that the choice was yours as Inferred. If you adopt D9's
+  credential condition (its Q3(b)), Syzygy also checks that it cannot read
+  its own adapter credentials as your user, before the brief and at every
+  check. Only the authoring session gets the permission; it lapses if you
+  leave that session on auto-approve while away, asks for nothing that
   keeps running after the session, and has the agent stop what it started.
   Otherwise the brief quotes SEC-3 and invites nothing outside an execution
   profile. Either way, anything the agent marks as resting on execution is
