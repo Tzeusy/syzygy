@@ -178,14 +178,23 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
    (review-1 rulings, item 1); it is drafted as D9 (draft PR #357). `brief`
    writes the execution rule in force. It carries D9's permission only when
    D9 is adopted and in force, the operator is the owner attending sessions
-   the owner started on the owner's host, and the owner's choice to allow
-   execution was recorded at step 3, before the brief; the run record cites
-   that choice and states D9's cost (the session runs with the owner's own
-   credentials and network, unconfined). In every other case it carries
+   the owner started on the owner's host, the owner's choice to allow
+   execution was recorded in `run.json` at step 3, before the brief, and,
+   where D9 as adopted carries its credential condition, the operator
+   declared at step 3 that no credential Syzygy holds for its typed adapters
+   is readable by the session (Syzygy holds none in this mode [Inferred]).
+   That brief keeps the agent's subagents under the same rule, asks for no
+   process that outlives the session, and has the agent stop every process
+   it started (a background service included) before the session ends. The
+   run record cites the choice and states D9's cost (the session runs with
+   the owner's own credentials and network, including Syzygy's endpoints and
+   any Syzygy credential readable on the host, and can change any file the
+   owner can, the clone included). In every other case it carries
    SEC-3's own rule, quoted, with no invitation to run the project outside
    an execution profile. Syzygy never asks for the choice before D9 is in
-   force. Either way each command the agent reports goes in
-   the draft's `executions` list, and each claim it marks as resting on one
+   force. Either way every command the agent reports goes in
+   the draft's `executions` list and is disclosed, whether or not a claim
+   rests on it, and each claim it marks as resting on one
    names it and is Inferred. Syzygy sees only the marking, records the list
    as the agent's report, renders each such claim with the commands it names
    beside it, and runs and launches nothing. A verified quotation is still
@@ -265,7 +274,9 @@ mode's entry point and stays parked; the new family does not call its
 positive), `agentTokenBudget` and/or `agentTurnBudget` (positive),
 `maxRepairCycles` and `maxQuestions` (nonnegative integers, 0 allowed),
 `audience`, and `operatorIsOwner` with `executionChoice` (`allow` or
-`forbid`), asked only when D9 is in force. Every value is recorded as
+`forbid`) and, where D9 as adopted carries its credential condition,
+`adapterCredentialsUnreadable` (`true` or `false`), asked only when D9 is in
+force. Every value is recorded as
 operator-declared and Inferred; the
 record states that no provider-reported model version exists in this mode.
 A missing, unlimited, negative or non-integer limit, or a zero deadline or
@@ -356,7 +367,10 @@ Always:
 - Follow the execution rule in `brief.md`. Unless it says otherwise, do not
   build or run the cloned project outside an explicit, opt-in execution
   profile. Add every command you do run to `executions`; a claim that rests
-  on one has `basis: execution`, names it, and is `inferred`.
+  on one has `basis: execution`, names it, and is `inferred`. Subagents you
+  start follow the same rule. Start nothing meant to outlive your session,
+  and stop every process you started, background services included, before
+  it ends.
 - Label claims `inferred`, `unknown` (with a reason the brief lists) or
   `non-normative`. Never `observed`.
 - Never start a session with the clone as its working directory. Read the
@@ -373,7 +387,9 @@ With a URL (the author, driving the loop):
    turn budget, the repair-cycle limit, the question limit and the model.
    Offer presets; never pick for them. Only if `preflight` reports that D9
    is in force, also ask whether the owner allows you to build and run the
-   project for this run; never ask otherwise, and never assume it.
+   project for this run and, where D9 carries its credential condition,
+   whether any credential Syzygy holds for its adapters is readable by this
+   session; never ask otherwise, and never assume either answer.
 4. `syzygy dossier init <clone> --url <url> --config <answers>`;
    `syzygy dossier brief <run>`; read `brief.md` and `draft.schema.json`.
 5. Explore the clone for the five reader topics. Keep `discovery`: what you
@@ -430,6 +446,7 @@ verified; quote it exactly, and treat a refusal as a refusal.
   otherwise, do not build or run the project outside an explicit, opt-in
   execution profile. Every command you do run goes in `executions`; claims
   resting on one are `inferred` and name it. Never label a claim `observed`.
+  Subagents follow the same rule; leave nothing running when you finish.
 - Write `understanding` before the argument.
 - Ask at most the brief's question limit; record answers verbatim.
 - Draft, `syzygy dossier check`, repair until clean or refused.

@@ -40,11 +40,15 @@ mode parked, not withdrawn.
 - **Running the project.** Not invited yet. The SEC-3 amendment your
   review-1 ruling directs is drafted as D9 and under review. The brief may
   say the agent may build and run the project only when D9 is in force, you
-  are the operator, attending sessions you started on your own machine, and
-  you recorded your choice to allow it before the brief. Otherwise the brief
-  quotes SEC-3 and invites nothing outside an execution profile. Either way,
-  anything the agent marks as resting on execution is Inferred, shown with
-  the commands it names, and Syzygy runs and launches nothing.
+  are the operator, attending sessions you started on your own machine, you
+  recorded your choice to allow it before the brief, and, if you adopt D9's
+  credential condition (its Q3(b)), you confirmed no Syzygy adapter
+  credential is readable by the session. Such a brief asks for nothing that
+  keeps running after the session, and has the agent stop what it started.
+  Otherwise the brief quotes SEC-3 and invites nothing outside an execution
+  profile. Either way, anything the agent marks as resting on execution is
+  Inferred, shown with the commands it names, every command the agent
+  reports is disclosed, and Syzygy runs and launches nothing.
 - **Governed projects.** Allowed with a per-project statement naming your
   agent's provider; the statement is a consent record. Every page says that
   neither its content classes nor secret screening (SEC-5) limit what the

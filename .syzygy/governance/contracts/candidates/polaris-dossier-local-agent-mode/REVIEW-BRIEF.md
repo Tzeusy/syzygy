@@ -37,7 +37,9 @@ references and the acceptance criteria.
   doctrine-amendment-sec3-attended-agent-session-d9 (not on `main` when
   this brief was written). Read its `SEMANTIC-DELTA.md`, "Proposed meaning",
   at the commit the lead names when dispatching (its text as fixed by its
-  own review). 033 and 034 must carry its conditions.
+  own review). 033 and 034 must carry its conditions; the drafter aligned
+  them to arm A as frozen for D9's round 2 at `63e41968`, including the
+  optional credential condition (D9's Q3(b)) as conditional on adoption.
 - `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
   and `SEMANTIC-DELTA-TEMPLATE.md`; CC-SPEC-1 to CC-SPEC-11 in
   `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` and CC-IMPACT-1 to
