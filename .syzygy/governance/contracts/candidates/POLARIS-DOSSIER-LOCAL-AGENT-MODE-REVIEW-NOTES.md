@@ -129,11 +129,11 @@ record (plain text, so its quoted links are not followed):
   sign-off record (the reconciliation's R5 fails until it does); if the
   Redis sitting's install has already run, the lead paragraph is the file's
   block 2b rather than block 2;
-- mark the reconciliation record,
-  `docs/evidence/spec-readability-reconciliation-2026-10-02/README.md`,
-  whose Polaris and total figures `--regenerate` has just changed in the
-  `census.json` beside it: a dated mark at each stale sentence and a new
-  section 11 (block 7), with the figures re-derived from `census.json`;
+- add a dated section 11 to the reconciliation record,
+  `docs/evidence/spec-readability-reconciliation-2026-10-02/README.md`
+  (block 7). Its figures need no marks: each is dated where it stands and
+  points to the `census.json` that `--regenerate` has just rewritten, so the
+  section carries no figures either and reads the same in either order;
 - add the recorder's
   `--check polaris-dossier-local-agent-mode --version 1.0` line to the
   battery, the hosted workflow and the count sentence, together (CG-26).

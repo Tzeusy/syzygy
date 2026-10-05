@@ -1230,6 +1230,16 @@ def profile_route_selftests() -> list[tuple[str, bool]]:
                refused(lambda: profile_readme(f"Some other lead.\n{row}\n", "2026-10-07"))))
     ok.append(("readme: two profile rows are refused",
                refused(lambda: profile_readme(f"{list(README_LEADS)[0]}\n{row}\n{row}\n", "d"))))
+    ok.append(("lead-in: the amendment's lead-in twice is refused",
+               refused(lambda: profile_lead_in(status + status))))
+    with tempfile.TemporaryDirectory() as t0:
+        rec = pathlib.Path(t0) / PROFILE_RECORD
+        rec.parent.mkdir(parents=True)
+        rec.write_text("# Adoption\n\nDate: 2026-10-07\n\nBody.\n")
+        one = adoption_date(pathlib.Path(t0)) == "2026-10-07"
+        rec.write_text("# Adoption\n\nDate: 2026-10-07\n\nDate: 2026-10-08\n")
+        ok.append(("adoption date: one Date: line is read; two are refused",
+                   one and refused(lambda: adoption_date(pathlib.Path(t0)))))
     # The dossier sign-off's route edits quote two of these forms; they must agree.
     edits = (ROOT / CAND / "POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-ROUTE-EDITS.txt").read_text()
     blocks = re.findall(r"(?m)^----\n(.*?)\n----$", edits, re.S)
@@ -1237,6 +1247,35 @@ def profile_route_selftests() -> list[tuple[str, bool]]:
     ok.append(("the dossier route edits' block 2 writes the lead this step reads, and 2b is this step's",
                leads[1][0] in blocks and leads[2][0] in blocks
                and leads[1][1] in blocks and leads[2][1] in blocks))
+    ok.extend(reconcile_selftests())
+    return ok
+
+
+def reconcile_selftests() -> list[tuple[str, bool]]:
+    """The reconcile step runs last, and its check mode sees a stale census (R-365-3 N3)."""
+    global J
+    names = [name for name, _fn in STEPS]
+    ok = [("steps: reconcile is a step and runs last, after profile",
+           names[-2:] == ["profile", "reconcile"]
+           and dict(STEPS)["reconcile"] is step_reconcile)]
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import check_spec_reconciliation as recon
+    with tempfile.TemporaryDirectory() as t0:
+        tree = pathlib.Path(t0)
+        recon.scratch(ROOT, tree)
+        fresh = step_reconcile(tree, False)
+        census = tree / recon.CENSUS
+        census.write_text(census.read_text().replace("\n", "\n ", 1))
+        stale = step_reconcile(tree, False)
+        saved, J = J, Journal()
+        try:
+            wrote = step_reconcile(tree, True)
+        finally:
+            J = saved
+        ok.append(("reconcile: check mode reports nothing on a current tree, "
+                   "the stale census, and write mode regenerates it",
+                   fresh is False and stale is True and wrote is True
+                   and step_reconcile(tree, False) is False))
     return ok
 
 

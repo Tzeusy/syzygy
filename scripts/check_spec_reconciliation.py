@@ -30,8 +30,12 @@ Predicates, each printed with its denominator:
   sign-off binds it by the tag on the recording commit, so an edit after
   sign-off re-passes here once `--regenerate` is rerun. Such an edit is a new
   version, which the recorder and review discipline govern, not this
-  checker. An adopted addition's R2 row is its recorder's `SUBJECT_SHA`, the
-  digest its confirming review read: the installed `spec.md` must hash to it.
+  checker. An adopted addition's record must have its recorder's shape (one
+  `Date:` and one `Recorded at (UTC):` line) and name the installed path as
+  a code span. Its R2 row is its recorder's `SUBJECT_SHA`: the confirming
+  review raw the recorder names must carry that digest on a
+  `Subject SHA-256:` line in its first four non-blank lines, and the
+  installed `spec.md` must hash to it.
 - R2 exact subject bytes: a digest act's successor column equals its
   manifest rows, and every signed subject on disk hashes to its row. A
   versioned sign-off's manifest rows equal the subjects on disk. A child's
@@ -278,11 +282,20 @@ ADOPTED_ADDITIONS = {
 }
 
 
-def adopted_subject_sha(module):
-    """The digest an adoption recorder binds, read from the module itself."""
+def adopted_binding(module):
+    """(digest, confirming raw) an adoption recorder binds, from the module.
+
+    The digest is the recorder's `SUBJECT_SHA`; R2 also requires the raw's
+    own head to carry it, so the constant cannot move without the review.
+    """
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import importlib
-    return importlib.import_module(module).SUBJECT_SHA
+    mod = importlib.import_module(module)
+    return mod.SUBJECT_SHA, mod.REVIEW_REL.as_posix()
+
+
+SUBJECT_LINE = re.compile(r"^Subject SHA-256: ([0-9a-f]{64})\s*$")
+RECORDED_LINE = re.compile(r"^Recorded at \(UTC\): \S+$", re.M)
 
 
 def addition_terminals(root, change):
@@ -614,15 +627,30 @@ def check_outcomes(root, report):
                           f"installed but its declared adoption record `{rel}` "
                           "is missing; the outcome is Unknown")
                 continue
-            if spec_rel not in text:
+            # The recorder's rendered shape: one date, one instant, and the
+            # installed path as its own code span (a substring is not a name).
+            if (len(DATE_LINE.findall(text)) != 1
+                    or len(RECORDED_LINE.findall(text)) != 1):
+                r1.append(f"{tag}: adoption record `{rel}` is not in its "
+                          "recorder's shape (one `Date:` and one `Recorded "
+                          "at (UTC):` line)")
+            if f"`{spec_rel}`" not in text:
                 r1.append(f"{tag}: adoption record `{rel}` does not name the "
                           f"installed `{spec_rel}`")
             if addition_records(root, change):
                 r1.append(f"{tag}: a `{SIGNOFF_RECORD_GLOB}` record also names "
                           "an addition whose terminal record is its adoption")
             subjects_seen += 1
+            digest, review_rel = adopted_binding(module)
+            review = read_text(root, review_rel) or ""
+            head = [ln for ln in review.splitlines() if ln.strip()][:4]
+            bound = [m.group(1) for ln in head if (m := SUBJECT_LINE.match(ln))]
+            if bound != [digest]:
+                r2.append(f"{tag}: the confirming review `{review_rel}` does "
+                          f"not bind the digest `{module}` holds on a "
+                          "`Subject SHA-256:` head line")
             current = read_bytes(root, spec_rel) or b""
-            if sha(current) != adopted_subject_sha(module):
+            if sha(current) != digest:
                 r2.append(f"{tag}: stale digest — `{spec_rel}` is not the "
                           f"bytes `{module}` binds")
             continue
@@ -757,6 +785,61 @@ def _foreign_headings_manual(text):
     return out
 
 
+#: OpenSpec 1.9.0's requirement header, case-insensitive with `\s*` around
+#: the colon. A line it reads as a header must be exactly canonical here.
+OPENSPEC_HEADER = re.compile(r"^###\s*requirement:\s*(.+?)\s*$", re.I | re.M)
+CANONICAL_HEADER = re.compile(r"^### Requirement: \S(?:.*\S)?$")
+
+
+def _header_problems_regex(text):
+    """Method A: requirement headers OpenSpec and this checker read alike.
+
+    Refuses a header OpenSpec accepts that is not exactly
+    `### Requirement: <name>` (OpenSpec would add it; both methods here would
+    fold it into the block before), a second `## ADDED Requirements` (OpenSpec
+    keeps only the last section of a title), and a header inside a fence
+    (OpenSpec masks fences; both methods here would count it).
+    """
+    out = [f"non-canonical requirement header `{m.group(0).strip()}`"
+           for m in OPENSPEC_HEADER.finditer(text)
+           if not CANONICAL_HEADER.match(m.group(0))]
+    added = re.findall(rf"^{re.escape(ADDED_HEADING)}$", text, re.M)
+    if len(added) > 1:
+        out.append(f"{len(added)} `{ADDED_HEADING}` headings; OpenSpec keeps the last")
+    for fence in re.finditer(r"^(```|~~~)[^\n]*\n.*?^\1[ \t]*$", text, re.M | re.S):
+        if OPENSPEC_HEADER.search(fence.group(0)):
+            out.append("a requirement header inside a fence")
+    return out
+
+
+def _header_problems_manual(text):
+    """Method B: the same three refusals, by a line scan with no regular expressions."""
+    out, added, fence = [], 0, None
+    for line in text.split("\n"):
+        if fence is None and line[:3] in ("```", "~~~"):
+            fence = line[:3]
+            continue
+        if fence is not None and line.rstrip(" \t") == fence:
+            fence = None
+            continue
+        if line == ADDED_HEADING:
+            added += 1
+        rest = line[3:].lstrip() if line.startswith("###") else None
+        if rest is None or not rest[:12].casefold() == "requirement:":
+            continue
+        if not rest[12:].strip():
+            continue
+        if fence is not None:
+            out.append("a requirement header inside a fence")
+            continue
+        name = line[len("### Requirement: "):]
+        if not (line.startswith("### Requirement: ") and name and name == name.strip()):
+            out.append(f"non-canonical requirement header `{line.strip()}`")
+    if added > 1:
+        out.append(f"{added} `{ADDED_HEADING}` headings; OpenSpec keeps the last")
+    return out
+
+
 def compose_polaris_by_id(base, overlay, *additions):
     """Method A: compose base + overlay (+ signed additions) by ID line.
 
@@ -764,6 +847,7 @@ def compose_polaris_by_id(base, overlay, *additions):
     """
     comp, problems = {}, []
     for label, text in additions:
+        problems += [f"addition {label}: {p}" for p in _header_problems_regex(text)]
         problems += [f"addition {label}: carries {what}; refused, never "
                      "normalised" for what, pattern in (
                          ("U+FEFF", "\ufeff"), ("a carriage return", "\r"))
@@ -820,6 +904,7 @@ def compose_polaris_by_name(base, overlay, *additions):
         return " ".join(name.split()).casefold()
 
     for label, text in additions:
+        problems += [f"addition {label}: {p}" for p in _header_problems_manual(text)]
         if "\ufeff" in text:
             problems.append(f"addition {label}: carries U+FEFF; refused, never "
                             "normalised")
@@ -1276,6 +1361,8 @@ def inputs(root):
     for change, rel in polaris_additions(root):
         paths |= {rel} | {r for r, _t, _v in addition_records(root, change)}
         paths |= {r for r, _t, _v in addition_terminals(root, change)}
+        if change in ADOPTED_ADDITIONS:
+            paths.add(adopted_binding(ADOPTED_ADDITIONS[change][1])[1])
     return sorted(paths)
 
 
@@ -1551,6 +1638,28 @@ ADOPTED_SPEC = (ADDITION_SPEC.replace(ADDITION_ID, ADOPTED_ID)
                 .replace("Selftest addition", "Selftest adopted")
                 .replace("Selftest one", "Adopted one")
                 .replace("Selftest two", "Adopted two"))
+# Outside the change directory, as the profile's raw is, so only `inputs()`
+# carries it into a scratch copy.
+ADOPTED_REVIEW = f"{CANDIDATES}/{ADOPTED}/reviews/R-SELFTEST-ADOPTED-1-RAW.md"
+
+# A synthetic candidate under `proposed/`, always present in the selftest's
+# scratch copy, so the candidate mutants never depend on the live tree.
+CANDIDATE = "polaris-selftest-candidate"
+CANDIDATE_ID = f"{POLARIS_ID}095"
+CANDIDATE_SPEC = (ADDITION_SPEC.replace(ADDITION_ID, CANDIDATE_ID)
+                  .replace("Selftest addition", "Selftest candidate")
+                  .replace("Selftest one", "Candidate one")
+                  .replace("Selftest two", "Candidate two"))
+
+
+def _propose_candidate(tree):
+    """Write the synthetic candidate and its route row into `tree`."""
+    spec = tree / CHANGES / CANDIDATE / "proposed" / "polaris-generation" / "spec.md"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(CANDIDATE_SPEC, encoding="utf-8")
+    with open(tree / OPENSPEC_README, "a", encoding="utf-8") as fh:
+        fh.write(f"\n| [`{CANDIDATE}`](changes/{CANDIDATE}) | Selftest | "
+                 "Proposed | — |\n")
 
 
 def _install_addition(tree, change=ADDITION, ident=ADDITION_ID,
@@ -1564,11 +1673,10 @@ def _install_addition(tree, change=ADDITION, ident=ADDITION_ID,
     spec = tree / spec_rel
     spec.parent.mkdir(parents=True)
     spec.write_text(text, encoding="utf-8")
-    cited = _candidate_id(tree)
+    # The candidate exception: an addition may cite the synthetic candidate.
     (tree / CHANGES / change / "proposal.md").write_text(
-        f"# Selftest addition\n\nAdds {ident}.\n"
-        + (f"\nBeside the candidate {cited}.\n" if cited else ""),
-        encoding="utf-8")
+        f"# Selftest addition\n\nAdds {ident}.\n\n"
+        f"Beside the candidate {CANDIDATE_ID}.\n", encoding="utf-8")
     if change == ADDITION:
         marker = versioned_marker({"package": change, "version": "1.0"})
         (tree / record).write_text(
@@ -1578,8 +1686,17 @@ def _install_addition(tree, change=ADDITION, ident=ADDITION_ID,
             fh.write(f"\n{marker}\nSelftest block.\n"
                      f"{marker.replace('<!-- ', '<!-- /')}\n")
     else:
+        # The adoption recorder's rendered shape, and its confirming raw.
         (tree / record).write_text(
-            f"# Selftest adoption\n\nAdopts `{spec_rel}`.\n", encoding="utf-8")
+            f"# Selftest adoption\n\nDate: 2026-10-06\n\n"
+            f"Recorded at (UTC): 2026-10-06T10:00:00Z\n\n"
+            f"Adopted subject: `{spec_rel}`\n", encoding="utf-8")
+        raw = tree / ADOPTED_REVIEW
+        raw.parent.mkdir(parents=True)
+        raw.write_text(
+            f"# R-SELFTEST-ADOPTED-1\n\nReviewed commit: selftest\n"
+            f"Subject SHA-256: {sha(text.encode('utf-8'))}\n"
+            f"Verdict: CONFIRM\n\nBody.\n", encoding="utf-8")
     name = Path(record).name
     with open(tree / OPENSPEC_README, "a", encoding="utf-8") as fh:
         fh.write(f"\n| [`{change}`](changes/{change}) | Selftest | "
@@ -1591,17 +1708,6 @@ def _install_addition(tree, change=ADDITION, ident=ADDITION_ID,
               + status[m.end():] + f"\nSelftest addition: `{name}`.\n")
     (tree / STATUS).write_text(status, encoding="utf-8")
     regenerate(tree)
-
-
-def _candidate_id(root):
-    """The first candidate Polaris ID under any change's `proposed/`, if any."""
-    for spec in sorted((root / CHANGES).glob("*/proposed/polaris-generation/"
-                                             "spec.md")):
-        for kind, ids, _n, _s in _polaris_blocks_regex(
-                spec.read_text(encoding="utf-8")):
-            if kind == "ADDED" and ids:
-                return ids[0]
-    return None
 
 
 def _restates_base(text):
@@ -1709,9 +1815,22 @@ def addition_mutants():
         ("addition-dangling-mention", f"{CHANGES}/{ADDITION}/proposal.md",
          _replace(f"Adds {ADDITION_ID}.", f"Adds {POLARIS_ID}097."), "R4"),
         # A candidate ID resolves inside an addition only, never on a route.
-        *((("candidate-mention-on-route", "AGENTS.md",
-            lambda t: t + f"\n{_candidate_id(ROOT)}\n", "R4"),)
-          if _candidate_id(ROOT) else ()),
+        ("candidate-mention-on-route", "AGENTS.md",
+         lambda t: t + f"\n{CANDIDATE_ID}\n", "R4"),
+        # Headers OpenSpec reads differently from both methods here.
+        ("addition-lenient-header", spec,
+         _replace("### Requirement: Selftest addition",
+                  "###Requirement:Selftest addition"),
+         f"R3:method A: addition {ADDITION}: non-canonical requirement header"
+         f"&method B: addition {ADDITION}: non-canonical requirement header"),
+        ("addition-second-added", spec,
+         lambda t: t + f"\n{ADDED_HEADING}\n",
+         f"R3:method A: addition {ADDITION}: 2 `{ADDED_HEADING}`"
+         f"&method B: addition {ADDITION}: 2 `{ADDED_HEADING}`"),
+        ("addition-fenced-header", spec,
+         lambda t: t + "\n```\n### Requirement: Fenced\n```\n",
+         f"R3:method A: addition {ADDITION}: a requirement header inside a fence"
+         f"&method B: addition {ADDITION}: a requirement header inside a fence"),
         ("addition-route-row", OPENSPEC_README,
          _replace(f"Signed: `{Path(ADDITION_RECORD).name}`", "Signed"), "R5"),
         ("addition-status-figure", STATUS, _status_figure_moved, "R5"),
@@ -1728,6 +1847,24 @@ def adopted_mutants():
          "R1:declared adoption record"),
         ("adopted-record-not-naming-spec", ADOPTED_RECORD,
          _replace(f"`{spec}`", "`elsewhere`"), "R1:does not name the installed"),
+        # The path inside a longer span is not a name of the installed spec.
+        ("adopted-record-path-substring", ADOPTED_RECORD,
+         _replace(f"`{spec}`", f"`{spec}.orig`"),
+         "R1:does not name the installed"),
+        ("adopted-record-two-dates", ADOPTED_RECORD,
+         _replace("Date: 2026-10-06\n", "Date: 2026-10-06\n\nDate: 2026-10-07\n"),
+         "R1:recorder's shape"),
+        ("adopted-record-no-instant", ADOPTED_RECORD,
+         _replace("Recorded at (UTC): 2026-10-06T10:00:00Z\n", ""),
+         "R1:recorder's shape"),
+        # The constant moved without its review: the raw binds other bytes.
+        ("adopted-review-digest", ADOPTED_REVIEW,
+         lambda t: re.sub(r"(?m)^(Subject SHA-256: )[0-9a-f]{64}$",
+                          r"\g<1>" + "0" * 64, t),
+         "R2:does not bind"),
+        ("adopted-review-head-pushed", ADOPTED_REVIEW,
+         _replace("# R-SELFTEST-ADOPTED-1\n", "# R-SELFTEST-ADOPTED-1\n\nA\n\nB\n"),
+         "R2:does not bind"),
         # Prose only: census, union and figure unchanged, so only R2 sees it.
         ("adopted-spec-edited", spec, lambda t: t + "\nEdited prose.\n",
          "R2:stale digest"),
@@ -1748,6 +1885,7 @@ def selftest(witness_path=None):
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp) / "base"
         scratch(ROOT, base)
+        _propose_candidate(base)
         clean = run(base)
         if clean.failed:
             print("\n".join(clean.lines))
@@ -1769,18 +1907,19 @@ def selftest(witness_path=None):
         adopted = Path(tmp) / "with-adopted-addition"
         shutil.copytree(added, adopted)
         ADOPTED_ADDITIONS[ADOPTED] = (ADOPTED_RECORD, "<selftest>")
-        sha_of = adopted_subject_sha
-        globals()["adopted_subject_sha"] = lambda module: (
-            sha(ADOPTED_SPEC.encode("utf-8")) if module == "<selftest>"
-            else sha_of(module))
+        binding_of = adopted_binding
+        globals()["adopted_binding"] = lambda module: (
+            (sha(ADOPTED_SPEC.encode("utf-8")), ADOPTED_REVIEW)
+            if module == "<selftest>" else binding_of(module))
         try:
             _install_addition(adopted, ADOPTED, ADOPTED_ID, ADOPTED_SPEC,
                               ADOPTED_RECORD)
             with_adopted = run(adopted)
             # The scratch copy a later selftest makes of such a tree must
             # carry the adoption record (the post-sitting tree's own selftest).
-            if ADOPTED_RECORD not in inputs(adopted):
-                print("SELFTEST FAIL: the scratch inputs omit the adoption record")
+            if not {ADOPTED_RECORD, ADOPTED_REVIEW} <= set(inputs(adopted)):
+                print("SELFTEST FAIL: the scratch inputs omit the adoption "
+                      "record or its review")
                 return 1
             if with_adopted.failed:
                 print("\n".join(with_adopted.lines))
@@ -1792,13 +1931,14 @@ def selftest(witness_path=None):
                                    with_adopted)
         finally:
             del ADOPTED_ADDITIONS[ADOPTED]
-            globals()["adopted_subject_sha"] = sha_of
+            globals()["adopted_binding"] = binding_of
 
 
 def _selftest_cases(tmp, commit, witnesses, failures, witness_path, base, clean,
                     added, with_addition, adopted, with_adopted):
     cases = ([(base, clean, m) for m in mutants(ROOT)]
-             + [(added, with_addition, m) for m in addition_mutants()]
+             + [(added, with_addition, m)
+                for m in addition_mutants()]
              + [(adopted, with_adopted, m) for m in adopted_mutants()])
     for start, clean, (name, rel, mutate, expect) in cases:
         tree = Path(tmp) / name

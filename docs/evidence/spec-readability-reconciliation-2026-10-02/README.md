@@ -16,10 +16,11 @@
 > way.
 
 **All five readability successors ended in a terminal owner outcome, each
-still binds the exact bytes on disk, and the four requirement populations
-re-derive identically by two independent methods: 114 requirements and 297
-scenarios.** [Observed] [superseded 2026-10-03: 114 requirements and 304
-scenarios, PWB-REQ-014 having gained seven, §10] Two stale generated or pinned digests sit inside
+still binds the exact bytes on disk, and as of 2026-10-02 the four
+requirement populations re-derive identically by two independent methods:
+114 requirements and 297 scenarios.** [Observed] [superseded 2026-10-03: 114 requirements and 304
+scenarios, PWB-REQ-014 having gained seven, §10; the current figures are
+[`census.json`](census.json), regenerated at every addition install, §2] Two stale generated or pinned digests sit inside
 bound bytes and need their own owner acts; this pass names them and repairs
 neither.
 
@@ -47,7 +48,7 @@ candidate is counted.
     equal the subjects on disk. Checked once by hand as well: the same 11
     rows equal the bytes at the annotated tag `pwb-readability-successor-v1.0`,
     whose commit `bd47409` is an ancestor of `main`.
-  - 55 signed subjects in all (7 + 6 + 23 + 8 + 11).
+  - As of 2026-10-02, 55 signed subjects in all (7 + 6 + 23 + 8 + 11).
 - **How the owner gave the four digest acts** [Observed]: by selecting an
   option, not by typing the phrase. The act records' "by writing exactly"
   is template wording;
@@ -71,7 +72,15 @@ Each change is read from the act chain, never from a file's head.
 - **The Polaris composition** [Observed]: the base declares 29 requirements
   and 154 scenarios; the overlay MODIFIES seven (002, 004, 006, 009, 012,
   014, 019), replacing their 33 base scenarios with 54, and ADDS 030 and 031
-  with 7. The effective composition is 31 requirements and 182 scenarios.
+  with 7. As of 2026-10-02 the effective composition is 31 requirements and
+  182 scenarios; the current figure is `census.json`'s (next item).
+- **Current figures** [Observed: the checker's own `--regenerate`]: a later
+  Polaris addition, signed by a version-tagged sign-off or adopted by a
+  declared adoption record, joins the composition when it is installed, and
+  the install regenerates [`census.json`](census.json) and
+  `PROJECT-STATUS.md`'s figure. The figures on this page are each as of the
+  date they carry; `census.json` is the current population, and
+  `python3 scripts/check_spec_reconciliation.py --check` keeps it in step.
 - **The PWB chain** is the order `PWB_SUCCESSOR_CHAIN` in
   `scripts/check_governance.py` derives from the acts; this pass reads its
   last link only and changes nothing in it. [superseded 2026-10-03: the
@@ -80,13 +89,16 @@ Each change is read from the act chain, never from a file's head.
 
 ## 3. Populations, two methods and a third
 
+The populations as of 2026-10-02, with the dated changes since marked in
+their cells; the current populations are [`census.json`](census.json) (§2).
+
 | Family | Requirements | Scenarios | Identities |
 |---|---|---|---|
 | CAP1-REQ | 42 | 47 | 001–006, 010–016, 020–023, 030–038, 040–046, 050–053, 060–064 |
 | POC-REQ | 24 | 24 | 001–004, 010–013, 020–022, 030–032, 040–043, 050–053, 060–061 |
 | PWB-REQ | 17 | 44 [51 since 2026-10-03, §10] | 001–007, 010–016, 020–022 |
-| REQ-polaris-generation (effective) | 31 | 182 | 001–031 |
-| **Total** | **114** | **297** [304 since 2026-10-03, §10] | |
+| REQ-polaris-generation (effective) | 31 [as of 2026-10-02] | 182 [as of 2026-10-02] | 001–031 [as of 2026-10-02] |
+| **Total** | **114** [as of 2026-10-02] | **297** [as of 2026-10-02; 304 as of 2026-10-03, §10] | |
 
 - **Method A** parses headings with regular expressions; **method B** is a
   line state machine with no regular expressions. For Polaris, A composes
@@ -120,7 +132,8 @@ default-path pages were stale and are corrected here.
   each name the current `spec.md` digest and the census's requirement count.
 - **Coverage:** the CAP1 and PWB `CAPABILITY-COVERAGE.md` tables cover their
   whole population.
-- **Every identifier mention resolves:** 1,917 mentions in full and
+- **Every identifier mention resolves:** as of 2026-10-02, 1,917 mentions (the
+  current count is `--check`'s R4 line) in full and
   continuation forms (`PWB-REQ-005/022`, `001–004`, `…`, `and`) over 63
   files — every tracked file of the five change directories plus
   `PROJECT-STATUS.md`, `openspec/README.md`, `README.md` and `AGENTS.md`.
@@ -174,7 +187,7 @@ scope and revocation lines.]
 |---|---|---|---|
 | Capability 1 | 42 requirements, adopted 2026-08-20 | Authorized 2026-08-21, Capability 1 only (`.syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`); implemented | Proposal and design restyled; nothing to implement; no authority added |
 | Three-Surface POC | 24 requirements, signed 2026-08-30 | Bounded, non-release POC direction of 2026-08-29 and improvement cycles of 2026-08-30 | Requirement layout restyled, words, scenarios and warrants unchanged; dependencies regenerated; nothing to implement |
-| Polaris generator base + understanding | 31 requirements / 182 scenarios effective | Base implementation authorized 2026-09-12 with no provider or effect authority; the understanding adoption of 2026-09-13 added no implementation permission; the tree-form adoption of 2026-09-28 authorized its own generator slice (draft schema, prompts, validation, draft preview) | Proposals and designs restyled; nothing to implement |
+| Polaris generator base + understanding | 31 requirements / 182 scenarios effective, as of 2026-10-02 (current: `census.json`, §2) | Base implementation authorized 2026-09-12 with no provider or effect authority; the understanding adoption of 2026-09-13 added no implementation permission; the tree-form adoption of 2026-09-28 authorized its own generator slice (draft schema, prompts, validation, draft preview) | Proposals and designs restyled; nothing to implement |
 | PWB | 17 requirements / 44 scenarios at the v1.0 readability bytes | Tasks §2–§5 authorized 2026-09-02 and continued 2026-09-05 for that amendment's semantics; the 2026-09-30 read-gate direction re-points the registry act only | Restyle; "changes no requirement"; nothing to implement |
 
 Adopted PWB behaviour that **no implementation authority covers yet**
@@ -292,9 +305,11 @@ child, re-derived as §7 requires.
   now does.
 - **Census** [Observed]: re-derived by `--census`, never by hand.
   PWB-REQ-014 went from 1 to 8 scenarios, so PWB is 17 requirements and 51
-  scenarios and the four families total 114 and 304. The checker's
+  scenarios and, as of 2026-10-03, the four families total 114 and 304
+  (current: `census.json`, §2). The checker's
   hard-coded literal was updated to match (014: 8; PWB totals 17 / 51), and
-  [`census.json`](census.json) is the regeneration at this commit. Third
+  [`census.json`](census.json) was regenerated at that commit, as it is at
+  every addition install since (§2). Third
   method, run once here and not in the battery: OpenSpec 1.9.0
   `openspec show polaris-project-wide-butlers-model --json --deltas-only`
   reports 17 / 51, and `openspec validate polaris-project-wide-butlers-model
