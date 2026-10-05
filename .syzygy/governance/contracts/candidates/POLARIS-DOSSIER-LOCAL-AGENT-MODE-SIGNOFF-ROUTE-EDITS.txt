@@ -1,0 +1,63 @@
+Exact text for the recording commit of the polaris-dossier-local-agent-mode
+v1.0 sign-off. Companion to POLARIS-DOSSIER-LOCAL-AGENT-MODE-REVIEW-NOTES.md,
+"How to sign off". Plain text, so that the links below are quoted, not
+followed. Each OLD block must be present verbatim; if it is not, stop and
+re-read the page rather than adapting the NEW block. Replace <date> with the
+sign-off record's Date: line. Every line between a ---- marker and the next
+is part of the text, indentation included.
+
+== 1. PROJECT-STATUS.md: written by the builder, check only ==
+The builder's install leaves this text under the understanding amendment's
+bullet (figures from the scratch-clone dry run; the builder writes the
+recount). Do not edit it by hand.
+----
+  - Read the predecessor together with
+    [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
+    31 requirements and 182 scenarios without the signed-off
+    [dossier local-agent addition](openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md)
+    ([sign-off record](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md)), and
+    35 requirements and 227 scenarios in the effective composition with it.
+----
+
+== 2. openspec/README.md: the table's lead paragraph ==
+OLD
+----
+The sixth and seventh rows below are candidates that no act binds; they are
+listed so that the table stays one row per directory, and neither is one of
+the five.
+----
+NEW
+----
+The dossier local-agent row below is a signed addition to the Polaris
+generator composition, bound by a version-tagged sign-off rather than an
+act; the narrative-profile row is a candidate that no act binds, listed so
+that the table stays one row per directory. Neither is one of the five.
+----
+
+== 3. openspec/README.md: the change's row ==
+OLD
+----
+| [`polaris-dossier-local-agent-mode`](changes/polaris-dossier-local-agent-mode) | A candidate operator-agent authoring mode for the Polaris generator: the operator's own coding-agent session writes a dossier, Syzygy pins, checks and renders it | **Candidate — binds nothing; not one of the five in force.** Its delta sits in `proposed/`, not `specs/`; no owner act exists over it | None; review and owner packet: [`polaris-dossier-local-agent-mode`](../.syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode/) |
+----
+NEW
+----
+| [`polaris-dossier-local-agent-mode`](changes/polaris-dossier-local-agent-mode) | The operator-agent authoring mode for the Polaris generator: the operator's own coding-agent session writes a dossier, Syzygy pins, checks and renders it | **Signed off v1.0 <date>, version-tagged** (`polaris-dossier-local-agent-mode-v1.0`). Four requirements added to the generator composition; amend only through CC-REV-2 | [`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md) (<date>) |
+----
+
+== 4. PROJECT-STATUS.md battery: after the --check pwb-tree-framing-amendment line ==
+ADD
+----
+python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0   # dossier local-agent sign-off, v1.0 <date>: record, aggregate block and applied tree
+----
+
+== 5. .github/workflows/governance-docs.yml: after the pwb-tree-framing-amendment step ==
+ADD (a blank line, then the step, at the workflow's step indentation)
+----
+
+      - name: record_versioned_signoff --check polaris-dossier-local-agent-mode
+        run: python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0
+----
+
+== 6. PROJECT-STATUS.md: the count sentence below the battery ==
+Raise the number word by one in both places (seventy-nine to eighty, if
+#365's registration is the last change to the battery before it).

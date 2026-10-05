@@ -21,8 +21,12 @@ Predicates, each printed with its denominator:
   that superseded some of its subjects; each one is checked the same way and
   is equally a terminal record. A signed Polaris addition (below) is a
   child too: it needs a version-tagged sign-off record in `decisions/` whose
-  `Package:` line names its change, checked the same way; an installed
-  addition with no such record is a FAIL.
+  `Package:` line names its change, checked the same way, and one record per
+  version; an installed addition with no such record is a FAIL. An addition
+  has no R2 row: no manifest hashes its `spec.md`, and the sign-off binds it
+  by the tag on the recording commit, so an edit after sign-off re-passes
+  here once `--regenerate` is rerun. Such an edit is a new version, which the
+  recorder and review discipline govern, not this checker.
 - R2 exact subject bytes: a digest act's successor column equals its
   manifest rows, and every signed subject on disk hashes to its row. A
   versioned sign-off's manifest rows equal the subjects on disk. A child's
@@ -45,7 +49,11 @@ Predicates, each printed with its denominator:
   `census.json`. A signed Polaris addition is any other change whose
   `specs/polaris-generation/spec.md` a version-tagged sign-off's builder has
   installed; it may only ADD requirements and is composed after the overlay
-  by both methods. The expected Polaris totals and identities are derived,
+  by both methods. Each method also refuses, independent of requirement
+  blocks, every level-2 heading in an addition other than exactly
+  `## ADDED Requirements` and every heading of any level, case or spacing
+  that names a delta section (a RENAMED list or a name-only REMOVED list
+  carries no requirement block). The expected Polaris totals and identities are derived,
   never raised by hand: the base-and-overlay literal (31 / 182, IDs 001–031)
   plus what each signed addition ADDs, read by both block parsers from the
   addition alone. An unsigned addition adds nothing to the expected
@@ -53,18 +61,20 @@ Predicates, each printed with its denominator:
 - R4 generated rows: each generated dependency file's source digest and
   requirement count match the spec; every full or continuation-form
   identifier mention in the five change directories, each signed addition's
-  directory and the default route pages resolves to the population; the CAP1 and PWB capability coverage
-  tables carry the whole population.
+  directory and the default route pages resolves to the population; the CAP1
+  and PWB capability coverage tables carry the whole population; and each
+  signed addition's generated union equals its spec's warrants (a FAIL,
+  since that union is generated and never signed).
 - R5 default routes: `openspec/README.md` has one row per tracked change
   directory naming its terminal record; `PROJECT-STATUS.md` cites every
-  terminal record (a signed addition's sign-off record included) and states the Polaris composition the census computes.
+  terminal record (a signed addition's sign-off record included) and states
+  the Polaris composition the census computes.
 - R6 behaviour-contract pins (report only, never green): the observer
   registry entry and the secret-classification policy pin a PWB `spec.md`
   digest. A pin that differs from the current bytes is Unknown and needs its
   own owner act; this checker never repairs it.
 - R7 Polaris dependency unions (report only, never green): each of the two
-  generated Polaris unions, and each signed addition's, is recomputed from
-  its spec's warrants blocks.
+  generated Polaris unions is recomputed from its spec's warrants blocks.
   Both files are bound bytes, regenerated (never written) by
   `scripts/build_polaris_dependency_unions.py`, so a difference is Unknown
   and needs a signed successor.
@@ -553,6 +563,10 @@ def check_outcomes(root, report):
             r1.append(f"{tag}: unsigned addition — `{spec_rel}` is installed "
                       f"but no `{SIGNOFF_RECORD_GLOB}` record names `Package: "
                       f"{change}`; the outcome is Unknown")
+        versions = [v for _r, _t, v in found]
+        for version in sorted({v for v in versions if v and versions.count(v) > 1}):
+            r1.append(f"{tag}: {versions.count(version)} records sign version "
+                      f"{version}; expected one")
         for rel, text, version in found:
             if version is None:
                 r1.append(f"{tag}: `{rel}` carries no single `Version:` line")
@@ -638,12 +652,50 @@ def _polaris_blocks_regex(text):
     return out
 
 
+ADDED_HEADING = "## ADDED Requirements"
+DELTA_WORDS = ("added", "modified", "removed", "renamed")
+
+
+def _foreign_headings_regex(text):
+    """Method A: every heading a signed addition may not carry.
+
+    Fails closed, independent of requirement blocks: any level-2 heading
+    other than exactly `## ADDED Requirements`, and any heading of any level,
+    case or spacing that names a delta section, unless it is that line.
+    """
+    level2 = re.findall(r"^[ \t]*##(?!#)[^\n]*$", text, re.M)
+    delta = re.findall(r"^[ \t]*#+[ \t]*(?:added|modified|removed|renamed)[ \t]+"
+                       r"requirements?\b[^\n]*$", text, re.M | re.I)
+    return [h for h in dict.fromkeys(level2 + delta) if h != ADDED_HEADING]
+
+
+def _foreign_headings_manual(text):
+    """Method B: the same set, by a line scan with no regular expressions."""
+    out = []
+    for line in text.split("\n"):
+        if line == ADDED_HEADING:
+            continue
+        stripped = line.lstrip(" \t")
+        if not stripped.startswith("#"):
+            continue
+        hashes = len(stripped) - len(stripped.lstrip("#"))
+        words = stripped.lstrip("#").split()
+        names_delta = (len(words) >= 2 and words[0].casefold() in DELTA_WORDS
+                       and words[1].casefold().rstrip("s") == "requirement")
+        if (hashes == 2 or names_delta) and line not in out:
+            out.append(line)
+    return out
+
+
 def compose_polaris_by_id(base, overlay, *additions):
     """Method A: compose base + overlay (+ signed additions) by ID line.
 
     Each addition is a (label, text) pair and may only ADD requirements.
     """
     comp, problems = {}, []
+    for label, text in additions:
+        problems += [f"addition {label}: heading `{h.strip()}`; a signed addition "
+                     "is ADDED-only" for h in _foreign_headings_regex(text)]
     for label, text in (("base", base), ("overlay", overlay), *additions):
         for kind, ids, name, scen in _polaris_blocks_regex(text):
             if label not in ("base", "overlay") and kind != "ADDED":
@@ -693,6 +745,9 @@ def compose_polaris_by_name(base, overlay, *additions):
     def norm(name):
         return " ".join(name.split()).casefold()
 
+    for label, text in additions:
+        problems += [f"addition {label}: heading `{h.strip()}`; a signed addition "
+                     "is ADDED-only" for h in _foreign_headings_manual(text)]
     for label, text in (("base", base), ("overlay", overlay), *additions):
         for block in _polaris_blocks_manual(text):
             key = norm(block["name"])
@@ -924,6 +979,19 @@ def check_generated(root, pop, report):
                     findings.append(f"`{rel}`: {family} identifier {num} "
                                     f"resolves to no requirement "
                                     f"(in `{m.group(0)[:48]}`)")
+    # A signed addition's union is generated, never signed, so a difference
+    # is a FAIL here rather than R7's report-only Unknown.
+    for change, spec_rel in polaris_additions(root):
+        rel = f"{CHANGES}/{change}/GOVERNING-DEPENDENCIES.md"
+        spec, deps = read_text(root, spec_rel), read_text(root, rel)
+        examined += 1
+        if spec is None or deps is None:
+            findings.append(f"`{rel}` or its spec missing")
+            continue
+        computed, declared = warrant_union(spec), declared_union(deps)
+        if computed != declared:
+            findings.append(f"`{rel}`: differs from its spec's warrants; run "
+                            "`--regenerate`")
     report.add("R4", "generated dependency and coverage rows resolve",
                examined + mentions, findings,
                f"{examined} generated anchors, {mentions} identifier mentions "
@@ -1073,8 +1141,7 @@ def declared_union(text):
 def check_unions(root, report):
     findings, examined = [], 0
     for spec_rel, change in ((POLARIS_BASE_SPEC, BASE_CHANGE),
-                             (POLARIS_OVERLAY_SPEC, UNDERSTANDING_CHANGE),
-                             *((rel, c) for c, rel in polaris_additions(root))):
+                             (POLARIS_OVERLAY_SPEC, UNDERSTANDING_CHANGE)):
         rel = f"{CHANGES}/{change}/GOVERNING-DEPENDENCIES.md"
         spec, deps = read_text(root, spec_rel), read_text(root, rel)
         if spec is None or deps is None:
@@ -1456,8 +1523,33 @@ def addition_mutants():
     union = f"{CHANGES}/{ADDITION}/GOVERNING-DEPENDENCIES.md"
     spec = spec_path(ADDITION, "polaris-generation")
     marker = versioned_marker({"package": ADDITION, "version": "1.0"})
+    # Each guard is pinned in both methods: R3 must carry both findings.
+    heading_both = (f"R3:method A: addition {ADDITION}: heading"
+                    f"&method B: addition {ADDITION}: heading")
+    modified_both = (f"R3:method A: addition {ADDITION}: MODIFIED section"
+                     f"&method B: addition {ADDITION}: MODIFIED section")
     return (
         ("addition-unsigned", ADDITION_RECORD, None, "R1"),
+        ("addition-unsigned-not-expected", ADDITION_RECORD, None,
+         "R3:no versioned sign-off record"),
+        # Fail-closed headings: a delta with no requirement block still fails.
+        ("addition-renamed-section", spec,
+         lambda t: t + "\n## RENAMED Requirements\n\n- FROM: `### Requirement: "
+                       "Selftest addition`\n- TO: `### Requirement: Renamed`\n",
+         heading_both),
+        ("addition-removed-names-only", spec,
+         lambda t: t + "\n## REMOVED Requirements\n\n- Selftest addition\n",
+         heading_both),
+        ("addition-lower-case-delta-heading", spec,
+         lambda t: t + "\n## removed requirements\n", heading_both),
+        ("addition-level-3-delta-heading", spec,
+         lambda t: t + "\n### MODIFIED Requirements\n", heading_both),
+        ("addition-respaced-added-heading", spec,
+         _replace("## ADDED Requirements", "##  ADDED  Requirements"),
+         heading_both),
+        ("addition-other-level-2-heading", spec,
+         lambda t: t + "\n## Notes\n\nProse.\n", heading_both),
+
         # A record naming another package does not sign this addition.
         ("addition-record-names-another-package", ADDITION_RECORD,
          _replace(f"Package: {ADDITION}\n", "Package: some-other-package\n"),
@@ -1468,8 +1560,8 @@ def addition_mutants():
          "R1"),
         ("addition-not-added-only", spec,
          _replace("## ADDED Requirements", "## MODIFIED Requirements"),
-         "R3:ADDED-only"),
-        ("addition-restates-base", spec, _restates_base, "R3:ADDED-only"),
+         modified_both),
+        ("addition-restates-base", spec, _restates_base, modified_both),
         ("addition-re-adds-base-id", spec,
          _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}001"), "R3:re-adds"),
         # 030 is the overlay's own ADDED requirement, not the base's.
@@ -1491,7 +1583,8 @@ def addition_mutants():
          _replace(f"Signed: `{Path(ADDITION_RECORD).name}`", "Signed"), "R5"),
         ("addition-status-figure", STATUS, _status_figure_moved, "R5"),
         ("addition-union-stale", union,
-         _replace("## primary\n\nVIS-2\n", "## primary\n\nVIS-3\n"), "R7~"),
+         _replace("## primary\n\nVIS-2\n", "## primary\n\nVIS-3\n"),
+         "R4:differs from its spec's warrants"),
     )
 
 
@@ -1549,8 +1642,10 @@ def selftest(witness_path=None):
             got = run(tree)
             if ":" in expect:
                 # The predicate must fail with this finding, not another.
-                rid, _sep, needle = expect.partition(":")
-                caught = any(needle in f for f in got.findings.get(rid, []))
+                # `&` joins needles that must each be found (both methods).
+                rid, _sep, needles = expect.partition(":")
+                caught = all(any(n in f for f in got.findings.get(rid, []))
+                             for n in needles.split("&"))
             elif expect.endswith("~"):
                 rid = expect[:-1]
                 caught = got.findings.get(rid) != clean.findings.get(rid)
@@ -1580,6 +1675,41 @@ def selftest(witness_path=None):
             if not caught:
                 failures.append(f"{name}: expected {expect} to fail, got "
                                 f"{sorted(got.failed) or 'nothing'}")
+        # Two cases a one-file mutation cannot express. A second record of the
+        # same version fails R1 by its own finding; --regenerate refuses an
+        # unsigned addition and writes nothing.
+        for name, setup, expect in (
+                ("addition-duplicate-version-record",
+                 lambda tree: shutil.copyfile(
+                     tree / ADDITION_RECORD,
+                     tree / ADDITION_RECORD.replace("SELFTEST-ADDITION",
+                                                    "SELFTEST-ADDITION-COPY")),
+                 "R1:records sign version"),
+                ("regenerate-refuses-unsigned",
+                 lambda tree: (tree / ADDITION_RECORD).unlink(), "refused")):
+            tree = Path(tmp) / name
+            shutil.copytree(added, tree)
+            setup(tree)
+            if expect == "refused":
+                before = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
+                try:
+                    regenerate(tree)
+                    caught = False
+                except SystemExit as exc:
+                    caught = "census refused" in str(exc)
+                after = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
+                caught = caught and before == after
+                got_failed = []
+            else:
+                got = run(tree)
+                rid, _sep, needle = expect.partition(":")
+                caught = any(needle in f for f in got.findings.get(rid, []))
+                got_failed = sorted(got.failed)
+            witnesses.append({"mutant": name, "path": "<scripted case>", "old": "",
+                              "new": "", "expected": expect, "failed": got_failed,
+                              "outcome": "killed" if caught else "SURVIVED"})
+            if not caught:
+                failures.append(f"{name}: expected {expect}")
     doc = {"commit": commit, "script": "scripts/check_spec_reconciliation.py",
            "mutants": witnesses}
     if witness_path:

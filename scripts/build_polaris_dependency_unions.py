@@ -18,7 +18,11 @@ carries a generated union in the understanding section form under its own
 fixed header. It is not a signed subject: `--write-additions` writes it, and
 `scripts/check_spec_reconciliation.py --regenerate` calls that at the
 sign-off's recording commit. Until then the change's spec sits under
-`proposed/` and no addition exists.
+`proposed/` and no addition exists. This script treats every installed
+Polaris spec beyond the two as an addition and never reads a sign-off
+record: whether the addition is signed, and ADDED-only, is
+`check_spec_reconciliation.py`'s R1 and R3, and `--regenerate` refuses an
+unsigned one before it calls `--write-additions`.
 
 The base and understanding files are signed subjects, so this script never
 writes them. `--check`
@@ -92,7 +96,7 @@ UNIONS = {
 
 
 def additions(root: pathlib.Path) -> list[str]:
-    """Signed additions: every other change with an installed Polaris spec."""
+    """Installed additions: every other change with a Polaris spec in `specs/`."""
     base = root / CHANGES
     found = sorted(p.parent.parent.parent.name for p in
                    base.glob("*/specs/polaris-generation/spec.md")) if base.is_dir() else []
