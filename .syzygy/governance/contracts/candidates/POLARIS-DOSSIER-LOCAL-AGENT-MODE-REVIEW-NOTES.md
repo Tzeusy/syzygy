@@ -90,7 +90,9 @@ Before it writes anything, the recorder:
   stays fetchable from #353's pull-request ref after a rebase merge;
 - requires every finding to be a note, and this record to name the raw on
   its `Reviewed record:` line and to carry exactly the raw's finding numbers
-  (here, the `### <n> —` headings 1 to 11);
+  (here, the `### <n> —` headings 1 to 11). It counts every numbered line
+  (`1. `) in this record as a finding number too, so a numbered list here
+  makes it refuse: lists in a disposition record are bullets;
 - requires the candidate package at the working tree to equal the package at
   the reviewed commit, and the package's own builder check to pass.
 

@@ -877,6 +877,13 @@ def selftest() -> int:
     refused("a raw that does not name the package",
             review=lambda c: stub_review(c).replace("stub-package", "other-package"),
             expect="does not name the package")
+    refused("the reviewed subject missing",
+            mutate=lambda tmp, commit: (tmp / STUB_ALSO / "spec.md").unlink(),
+            expect="reviewed subject " + (STUB_ALSO / "spec.md").as_posix() + " is missing")
+    real = real_packages()["polaris-dossier-local-agent-mode"]
+    results.append(("the real dossier package binds its builder's proposed spec as the subject",
+                    real.subject is not None
+                    and real.subject == _module("build_polaris_dossier_local_agent_mode").PROPOSED_SPEC))
 
     refused("package edited after the review", mutate=edit_package, expect="package bytes changed")
     refused("a declared further directory edited after the review", mutate=edit_also,
