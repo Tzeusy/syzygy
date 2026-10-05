@@ -700,21 +700,27 @@ describe('round-3 review notes', () => {
   });
 });
 
-describe('tooling and package-directory names are not withdrawals (R-263-4 N-B)', () => {
+describe('citations of existing tooling are not withdrawals; everything else still is (R-263-4 N-B, R-355-1 B-1)', () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
   const v2Text = readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');
   const MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
   const moduleText = readFileSync(path.join(repoRoot, MODULE), 'utf8');
   const p1 = JSON.stringify({ policyVersion: '1', publicSourceScope: { rules: [] } }) + '\n';
-  /** Version 1 and 2 egress, the class act, and the policy under its version 1 act: every sweep runs on every read. */
+  const PKG = '.syzygy/governance/contracts/candidates';
+  /** Version 1 and 2 egress, the class act, the policy under its version 1 act, three scripts and two package files: every sweep runs
+   * on every read, and the citations that exist are these. */
   const full = (extra: Record<string, string>): Record<string, string> => world({
     [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'),
     [EGRESS_V2_INSTANCE]: v2Text, [`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text),
     [MODULE]: moduleText, [`${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`]: renderClassAct(sha(moduleText), '2026-10-03', '2026-10-03T09:30:00Z'),
     [POLICY_PATH]: p1, [`${DECISIONS_DIR}/${POLICY_ACT_FILE}`]: renderPolicyAct(sha(p1), '2026-10-03', '2026-10-03T09:30:00Z', 1),
+    'scripts/build_public_egress_v2.py': '', 'scripts/record_rfc5_project_documentation_act.py': '', 'scripts/record_public_repo_admission_acts.py': '',
+    [`${PKG}/public-egress-v2/REVIEW-BRIEF.md`]: '', [`${PKG}/public-repo-admission/templates/OBSERVATION-CONSENT-TEMPLATE.md`]: '',
+    // existing files whose names carry a record id: never a citation
+    'scripts/withdraw_public_obs_redis_2026_10_03.py': '', [`${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-WITHDRAWAL.md`]: '',
     ...extra,
   });
-  const direction = (line: string): Record<string, string> => ({ [`${DECISIONS_DIR}/OWNER-DIRECTION-SITTING-2026-10-06.md`]: `# Owner direction\n\n${line}\n` });
+  const NOTE = `${DECISIONS_DIR}/OWNER-DIRECTION-SITTING-2026-10-06.md`;
   const allReads = async (files: Record<string, string>): Promise<string[]> => {
     const fs = memoryFs(files), out: string[] = [];
     try { await createPackageAdmissionReader({ root: '/r', fs }).read(); } catch { out.push('admission'); }
@@ -723,28 +729,57 @@ describe('tooling and package-directory names are not withdrawals (R-263-4 N-B)'
     if ((await readInForceEgress({ root: '/r', fs, now: AT })).state === 'refused') out.push('egress');
     return out;
   };
-  it('a direction citing a recorder or builder script, or a package file outside instances/, refuses no read', async () => {
+  const AE = ['admission', 'egress'];
+
+  it('a direction citing an existing script or package file outside instances/, exactly as it exists, refuses no read', async () => {
     expect(await allReads(full({}))).toEqual([]);
     for (const line of [
       'Run `scripts/build_public_egress_v2.py --check` before the sitting.',
       'Then run python3 scripts/record_rfc5_project_documentation_act.py with the owner\'s phrase.',
-      'Record with scripts/record_public_repo_admission_acts.py and scripts/record_public_egress_v2_act.py.',
-      'The packet is `.syzygy/governance/contracts/candidates/public-egress-v2/OWNER-SIGNOFF-PACKET.md`.',
-      'See contracts/candidates/public-repo-admission/README.md and candidates/public-egress-v2/.',
-      'scripts/record_public_source_screening_scope_v2_act.py writes the version 2 policy act.',
-    ]) expect(await allReads(full(direction(line))), line).toEqual([]);
+      'Record with record_public_repo_admission_acts.py.',
+      `The brief is \`${PKG}/public-egress-v2/REVIEW-BRIEF.md\`.`,
+      'See contracts/candidates/public-repo-admission/templates/OBSERVATION-CONSENT-TEMPLATE.md and public-egress-v2/REVIEW-BRIEF.md.',
+      '[the brief](.syzygy/governance/contracts/candidates/public-egress-v2/REVIEW-BRIEF.md)',
+    ]) expect(await allReads(full({ [NOTE]: `# Owner direction\n\n${line}\n` })), line).toEqual([]);
+    // The one intended difference from the pre-#355 reader, which also refused admission and egress here for the script name alone:
+    // the policy withdrawal beside it still refuses the policy read.
+    expect(await allReads(full({ [NOTE]: 'Retracts the public source scope approval; see scripts/build_public_egress_v2.py.\n' }))).toEqual(['policy']);
   });
-  it('still refuses a withdrawal beside such a name: a record id, an act identity, an act record path or an instance path', async () => {
-    for (const [line, expected] of [
-      ['Run scripts/build_public_egress_v2.py; PUBLIC-EGRESS-anthropic is withdrawn.', ['admission', 'egress']],
-      ['Withdrawn: PUBLIC-OBS-REDIS-2026-10-03 (recorded by scripts/record_public_repo_admission_acts.py).', ['admission', 'egress']],
-      [`Withdrawn: \`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md\`.`, ['admission', 'egress']],
-      [`Withdrawn: \`${EGRESS_V2_INSTANCE}\`.`, ['admission', 'egress']],
-      [`Withdrawn: \`${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md\`.`, ['admission', 'egress']],
-      ['Revokes RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03 (scripts/record_rfc5_project_documentation_act.py).', ['admission', 'class', 'egress']],
-      ['Retracts the public source scope approval; see scripts/record_public_source_screening_scope_act.py.', ['policy']],
-      ['Withdrawn: public_obs_redis_2026_10_03', ['admission', 'egress']],
-    ] as Array<[string, string[]]>) expect(await allReads(full(direction(line))), line).toEqual(expected);
+
+  // Every row is a withdrawal the pre-#355 reader (b60e6cd2) refused, with the reads it refused there (the lists were taken by running
+  // this table against that reader): this reader must refuse the same reads. The first fourteen are R-355-1's B-1 table, in its order;
+  // the rest are the shapes beside them.
+  const STILL_REFUSED: Array<[string, Record<string, string>, string[]]> = [
+    ['A3 bare package directory', { [NOTE]: `I withdraw every consent under ${PKG}/public-repo-admission/ effective now.\n` }, AE],
+    ['A4 bare package directory, short', { [NOTE]: 'The public-egress-v2/ consent is withdrawn.\n' }, AE],
+    ['A5 instance file without instances/', { [NOTE]: 'Withdrawn: public-egress-v2/EGRESS-CONSENT-ANTHROPIC.md\n' }, AE],
+    ['A id-named package file that does not exist', { [NOTE]: `Withdrawn: see \`${PKG}/public-repo-admission/WITHDRAWAL-PUBLIC-OBS-REDIS-2026-10-03.md\`.\n` }, AE],
+    ['A2 id under the package directory', { [NOTE]: 'Withdrawn: public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03\n' }, AE],
+    ['F2 URL into the package', { [NOTE]: `Withdrawn: https://github.com/o/syzygy/blob/main/${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03.md\n` }, AE],
+    ['G2 link target carrying the id', { [NOTE]: `[the redis consent](${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03.md) is withdrawn.\n` }, AE],
+    ['B id as a directory before a script name', { [NOTE]: 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03/withdraw_note.py\n' }, AE],
+    ['B2 instance path ending in a script name', { [NOTE]: `Withdrawn: ${INSTANCES_DIR}/redis/withdraw_consent.py\n` }, AE],
+    ['H2 fullwidth slash', { [NOTE]: 'Withdrawn: public-repo-admission／PUBLIC-OBS-REDIS-2026-10-03\n' }, AE],
+    ['J decisions file under a package-named directory', { [`${DECISIONS_DIR}/public-repo-admission/WITHDRAW-PUBLIC-OBS-REDIS.md`]: 'Withdrawn.\n' }, AE],
+    ['K decisions file named as a script', { [`${DECISIONS_DIR}/withdraw_public_obs_redis.py`]: 'Withdrawn.\n' }, AE],
+    ['L policy stem as a script name', { [NOTE]: 'Retracts: public_source_scope_approval.py\n' }, ['policy']],
+    ['M class stem as a script name', { [NOTE]: 'Revokes rfc5_project_documentation_amend.py\n' }, ['admission', 'class', 'egress']],
+    ['the disclosed round-4 residual', { [NOTE]: 'Withdrawn: public_obs_redis_2026_10_03.py\n' }, AE],
+    ['a script name that does not exist in scripts/', { [NOTE]: 'Run scripts/build_public_egress_v3.py: PUBLIC-EGRESS-anthropic is withdrawn.\n' }, AE],
+    ['an existing script under another directory', { [NOTE]: 'Run tools/build_public_egress_v2.py.\n' }, AE],
+    ['an existing script in another case', { [NOTE]: 'Run scripts/BUILD_PUBLIC_EGRESS_V2.py.\n' }, AE],
+    ['an existing script glued to an id', { [NOTE]: 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03-build_public_egress_v2.py\n' }, AE],
+    ['a record id beside an existing script', { [NOTE]: 'Run scripts/build_public_egress_v2.py; PUBLIC-EGRESS-anthropic is withdrawn.\n' }, AE],
+    ['an act record path', { [NOTE]: `Withdrawn: \`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md\`.\n` }, AE],
+    ['an egress v2 instance path', { [NOTE]: `Withdrawn: \`${EGRESS_V2_INSTANCE}\`.\n` }, AE],
+    ['an observation instance path', { [NOTE]: `Withdrawn: \`${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md\`.\n` }, AE],
+    ['the class act id beside its recorder', { [NOTE]: 'Revokes RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03 (scripts/record_rfc5_project_documentation_act.py).\n' }, ['admission', 'class', 'egress']],
+    ['a snake_case record id', { [NOTE]: 'Withdrawn: public_obs_redis_2026_10_03\n' }, AE],
+    ['an existing script whose name carries a record id', { [NOTE]: 'Ran scripts/withdraw_public_obs_redis_2026_10_03.py.\n' }, AE],
+    ['an existing package file whose name carries a record id', { [NOTE]: `See ${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-WITHDRAWAL.md.\n` }, AE],
+  ];
+  it('refuses every withdrawal the pre-#355 reader refused, the same reads each time', async () => {
+    for (const [name, extra, expected] of STILL_REFUSED) expect(await allReads(full(extra)), name).toEqual(expected);
   });
 });
 
