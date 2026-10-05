@@ -33,6 +33,9 @@ the provider mode parked, not withdrawn.
   inventory; another reviews from a packet Syzygy builds. Syzygy proves what
   the reviewer was given; it cannot prove the reviewer saw nothing else, and
   the page says so.
+- **Running the project.** The agent may build and run it; anything it
+  concludes from that is Inferred, and the commands it reports are listed.
+  Syzygy runs nothing.
 - **Limits and usage.** You declare the deadline, the agent's token or turn
   budget, the repair and question limits. Syzygy enforces the ones that bind
   its own steps. The agent's usage is your declared figure, labelled Inferred,
@@ -45,25 +48,18 @@ the provider mode parked, not withdrawn.
 
 Each has a recommendation. None is decided by this packet.
 
-**O1. Does the draft-layer consent condition of RFC7-20 and
-REQ-polaris-generation-001 hold for a draft your own session computed?**
-RFC7-20 (accepted) says: "Computing a draft is inference: absent SEC-2
-named-provider consent it is **not computed** — the draft layer renders
-Unknown (`unconsented-source-or-provider`)". Your ruling of 2026-10-05 put
-your session's sends outside Syzygy's egress consent, with no egress record.
-Read literally together, every operator-agent draft would render Unknown,
-which makes the mode useless. This package does not resolve that; 033 makes
-the draft layer depend on your ruling and renders Unknown without one.
-*Recommended:* rule, with the sign-off, that RFC7-20's named-provider consent
-governs drafts Syzygy computes or dispatches, and that for an operator-agent
-run of a non-governed observed repository the condition is met by your own
-act under the 2026-10-05 direction, with the disclosure 033 requires
-[Inferred: this reads, and does not amend, an accepted clause]. *Alternative
-A:* amend RFC7-20 through its own accepted-contract act first, then sign
-this package; slower, and the escalation the direction did not ask for.
-*Alternative B:* record a per-project statement naming your agent's provider,
-which keeps RFC7-20 literal; but it is an egress-consent record in all but
-name, which your Q3 answer declined.
+**O1. RFC7-20 and an operator-computed draft — ruled 2026-10-05.** The owner
+chose "Rule it by interpretation" over the recommended "Name my provider per
+project" (`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 1, recorded in
+`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`).
+RFC7-20's condition is read as governing drafts Syzygy computes; an
+operator-computed draft is admitted with disclosure, a declared and recorded
+tool and provider, and byte-verified quotes. Requirement 033 applies exactly
+those three conditions and renders the draft layer Unknown when any fails or
+the reading is withdrawn. **The trade-off stays open in this package:** the
+option's own description said "a reviewer may call it a contract change". If
+the review finds that it is one, that finding comes back to you; the package
+neither concedes nor rebuts it. No question is put here.
 
 **O2. Is the mode limited to observed repositories that are not governed
 projects?** SEC-2 covers "governed-project content". Running the mode on a
@@ -72,20 +68,20 @@ no per-project consent recorded. *Recommended (as drafted):* yes; governed
 subjects stay in the provider mode. *Alternative:* allow a governed subject
 when its existing egress consent names your agent's provider.
 
-**O3. How is the agent kept from running code in the clone?** SEC-3 binds
-Syzygy's execution; your agent can run anything your account can. *Recommended
-(as drafted):* the brief forbids building, installing or running observed
-code, the skill text advises a permission setting that denies the shell except
-`syzygy` commands, and the run record discloses that Syzygy cannot observe
-compliance. *Alternative:* require the operator to declare a no-shell
-permission profile at `init`, and refuse the run without the declaration;
-still unobservable, but explicit.
+**O3. Code execution by the agent — ruled 2026-10-05.** The owner chose
+"Allow, disclose" over the recommended "Forbid, disclose" (rulings direction,
+item 2). The brief says the agent may build and run the observed project;
+claims resting on that are Inferred and name their commands; the run record
+lists the commands the agent reports, as its report; Syzygy executes none
+(SEC-3). No question is put here.
 
 **O4. How independent must the review contexts be?** *Recommended (as
 drafted):* separate top-level sessions for inventory and each review, same or
-different tool, with session identifiers declared and checked to differ; a
-subagent spawned inside the authoring session does not count, because the
-author writes its prompt. *Alternative:* allow subagents, cheaper and weaker,
+different tool, with session identifiers declared and checked to differ. In
+the one-line flow (`design.md`) the authoring session may launch them
+headless, but only with the fixed prompt Syzygy prints, so the author never
+writes the reviewer's instructions; a subagent whose prompt the author writes
+does not count. *Alternative:* allow subagents, cheaper and weaker,
 with the page saying so. *Stronger alternative:* require a different agent
 tool for the fidelity review (a Codex review of a Claude Code draft).
 

@@ -22,8 +22,9 @@ Five changes are in force; each row names the act that adopted it and the
 latest act or sign-off that binds its current bytes. Every change lives
 under `changes/`, and none of the directory names says which is which, so
 this table does — one row per directory, each act named, never quoted.
-A sixth row below is a candidate that no act binds; it is listed so that the
-table stays one row per directory, and it is not one of the five.
+The sixth and seventh rows below are candidates that no act binds; they are
+listed so that the table stays one row per directory, and neither is one of
+the five.
 
 | Directory | What it specifies | State | First act · latest binding outcome |
 |---|---|---|---|
@@ -33,6 +34,7 @@ table stays one row per directory, and it is not one of the five.
 | [`polaris-manifesto-generation`](changes/polaris-manifesto-generation) | The generalized Polaris manifesto generator (base requirements) | **Adopted 2026-09-12.** Read only together with the understanding amendment below | [`POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md) · [`POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) |
 | [`polaris-manifesto-understanding-amendment`](changes/polaris-manifesto-understanding-amendment) | The overlay that modifies seven generator requirements and adds two | **Adopted 2026-09-13; requirement 004 replaced 2026-09-28** by the tree-form amendment ([`POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md`](../.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)) | [`POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md) · [`POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) · [`POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md) (2026-10-02, `GOVERNING-DEPENDENCIES.md` only) |
 | [`polaris-non-governed-narrative-profile`](changes/polaris-non-governed-narrative-profile) | A candidate Polaris generator requirement for narrating an observed repository that has no Syzygy declarations | **Candidate — binds nothing; not one of the five in force.** Its delta sits in `proposed/`, not `specs/`; no owner act exists over it | None; review and owner packet: [`non-governed-narrative-profile`](../.syzygy/governance/contracts/candidates/non-governed-narrative-profile/) |
+| [`polaris-dossier-local-agent-mode`](changes/polaris-dossier-local-agent-mode) | A candidate operator-agent authoring mode for the Polaris generator: the operator's own coding-agent session writes a dossier, Syzygy pins, checks and renders it | **Candidate — binds nothing; not one of the five in force.** Its delta sits in `proposed/`, not `specs/`; no owner act exists over it | None; review and owner packet: [`polaris-dossier-local-agent-mode`](../.syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode/) |
 
 The PWB chain between its first and latest outcome, and every other bound
 digest, is listed in

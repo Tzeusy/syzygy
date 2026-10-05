@@ -1,10 +1,11 @@
 # Polaris dossier local-agent mode
 
 > **Candidate — binds nothing.** Drafted 2026-10-05 under the owner direction
-> `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`, recorded in
-> `POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md` in the decisions home (it
-> lands by PR #351 and is not on `main` at this change's base), which
-> authorizes drafting and review only. It is not adopted, performs no
+> `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`),
+> which authorizes drafting and review only, and relies on the owner's
+> rulings `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`). It is not adopted, performs no
 > act, and grants no read, egress, write or execution. Effect comes only from
 > the owner's sign-off of the exact reviewed bytes (VIS-4).
 
@@ -44,15 +45,21 @@ through one reviewed CC-REV-2 delta.
     can and cannot be shown.
   - 036 Self-reported discovery and in-session clarification.
 - **Modified in effect, not in bytes:** for an operator-agent run the new
-  requirements displace or read named text of REQ-polaris-generation-005,
-  006, 017, 018, 030 and 031, and of the base change's `INTERFACES.md`
+  requirements displace or read named text of REQ-polaris-generation-001,
+  005, 006, 017, 018, 030 and 031, and of the base change's `INTERFACES.md`
   (Provider bullet; "Budget and retry decisions"). Each displaced sentence is
   quoted in the semantic delta. For a provider-mode run nothing changes.
-- **Not displaced, and put to the owner:** the draft-layer consent sentence of
-  REQ-polaris-generation-001 and the consent condition of RFC7-20, an accepted
-  contract this change cannot amend. Until the owner rules (owner question
-  O1), an operator-agent draft layer renders Unknown
-  (`unconsented-source-or-provider`) exactly as 001 requires.
+- **RFC7-20, by the owner's reading, not by edit:** the owner ruled that
+  RFC7-20's consent condition governs drafts Syzygy computes, and that an
+  operator-computed draft is admitted with disclosure, a declared and
+  recorded tool and provider, and byte-verified quotes (rulings direction,
+  item 1). REQ-polaris-generation-001's draft-layer sentence is read
+  accordingly in 033. The owner chose this knowing a reviewer may call it a
+  contract change; the package keeps that question open for review rather
+  than settling it.
+- **The agent may build and run the observed project** (rulings direction,
+  item 2). Claims resting on that are Inferred and the reported commands are
+  listed; Syzygy itself still executes no observed code (SEC-3).
 - **Parked, not withdrawn:** the provider mode and its route, egress and
   adapter packages, per the direction's item 4.
 
@@ -94,6 +101,8 @@ through one reviewed CC-REV-2 delta.
   reads, checks and steps are Observed.
 - **Governed subjects stay in the provider mode** until the owner rules
   otherwise (owner question O2).
+- **What the agent ran is its report.** Commands the agent says it ran are
+  recorded as its report, labelled Inferred; Syzygy cannot observe them.
 - **No new permission.** This is not permission to read, egress, write,
   execute observed code, deploy, release or adopt intent.
 

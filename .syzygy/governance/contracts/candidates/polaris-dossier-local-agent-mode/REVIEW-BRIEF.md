@@ -20,7 +20,8 @@ references and the acceptance criteria.
 
 **Governing references.**
 
-- The warrant: `POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md` (in the decisions home; it lands by PR #351 and is not on `main` at this change's base).
+- The warrants: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`
+  and `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`.
 - `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
   and `SEMANTIC-DELTA-TEMPLATE.md`; CC-SPEC-1 to CC-SPEC-11 in
   `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` and CC-IMPACT-1 to
@@ -61,10 +62,15 @@ Each is a yes/no question with the evidence that settles it.
    change neither displaces nor reads (check 001, 004, 012, 019, 020, 025 and
    the base change's design files)? Is anything displaced for the provider
    mode?
-4. **Is any contract or doctrine changed in effect?** In particular RFC7-20
-   and REQ-polaris-generation-001 (owner question O1), RFC2-24's closed
-   Unknown reasons, RFC7-10's anchor form, SEC-2 and SEC-3. A spec that
-   contradicts an accepted clause is blocking.
+4. **Is any contract or doctrine changed in effect?** RFC2-24's closed
+   Unknown reasons, RFC7-10's anchor form, SEC-2 and SEC-3: a spec that
+   contradicts an accepted clause is blocking. RFC7-20 is different: the
+   owner ruled a reading of it (rulings direction, item 1), knowing a
+   reviewer may call that reading a contract change. Say whether you find it
+   one, with the clause quoted. Report it as a finding for the owner; do not
+   treat the ruling as settling it, and do not treat your finding as
+   overruling it. Separately, check that 033 applies the ruling's three
+   conditions exactly and no wider.
 5. **Is every Observed claim something Syzygy can observe?** Check each
    requirement's Observed / Inferred / operator-declared split against what a
    local process can actually see. An unobservable fact labelled Observed is

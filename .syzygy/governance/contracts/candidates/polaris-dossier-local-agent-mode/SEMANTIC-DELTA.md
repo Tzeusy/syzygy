@@ -5,7 +5,7 @@
 > drafted it; adoption belongs to the owner.
 
 **Artifact(s):**         `openspec/changes/polaris-dossier-local-agent-mode/proposed/polaris-generation/spec.md` (new); no existing file is edited
-**Stable IDs affected:**  REQ-polaris-generation-033, 034, 035 and 036 (new). For a run in the operator-agent mode only, named text of REQ-polaris-generation-005, 006, 017, 018, 030 and 031 and of the base change's `INTERFACES.md` is displaced or read as quoted under "Current meaning"; no byte of any is edited. REQ-polaris-generation-001's draft-layer consent sentence and RFC7-20 are read against and not displaced (owner question O1). Relied on, unchanged: REQ-polaris-generation-004, 012, 019, 020 and 025; RFC2-24, RFC4-2, RFC4-19, RFC7-2, RFC7-9, RFC7-10, RFC7-19, RFC7-25. No RFC, doctrine or adopted byte is edited.
+**Stable IDs affected:**  REQ-polaris-generation-033, 034, 035 and 036 (new). For a run in the operator-agent mode only, named text of REQ-polaris-generation-001, 005, 006, 017, 018, 030 and 031 and of the base change's `INTERFACES.md` is displaced or read as quoted under "Current meaning"; no byte of any is edited. RFC7-20 is affected by the owner's reading (`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 1), not by an edit; whether that reading is a contract change is preserved below as the owner's open trade-off. Relied on, unchanged: REQ-polaris-generation-004, 012, 019, 020 and 025; RFC2-24, RFC4-2, RFC4-19, RFC7-2, RFC7-9, RFC7-10, RFC7-19, RFC7-25. No RFC, doctrine or adopted byte is edited.
 **Change class:**         Normative
 **Author:**               lane-spec drafting agent (Claude Opus 5.5)
 **Date:**                 2026-10-05
@@ -20,7 +20,7 @@ change's `INTERFACES.md`, and RFC-0007. Each block is the whole sentence,
 scenario, bullet, paragraph or clause it names; none is an excerpt of a
 sentence.
 
-**REQ-polaris-generation-001 (base), the draft-layer consent sentence — not displaced, put to the owner as O1:**
+**REQ-polaris-generation-001 (base), the draft-layer consent sentence — read for an operator-computed draft under the owner's reading of RFC7-20 (rulings direction, item 1):**
 
 > For absent or withdrawn provider consent, the draft layer SHALL render Unknown (`unconsented-source-or-provider`) as a policy state in both channels, including when a prior draft remains retained.
 
@@ -102,7 +102,7 @@ sentence.
 > limits or re-granting still-effective consent. The policy maps provider limits to worst-case reservations;
 > unbounded or unknown required accounting refuses that provider dispatch.
 
-**RFC7-20, whole (`.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md`) — not displaced; an accepted contract this change cannot amend:**
+**RFC7-20, whole (`.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md`) — not edited; the owner reads its condition as governing drafts Syzygy computes (rulings direction, item 1):**
 
 > **RFC7-20 — The draft state.** Generated prose appears **only** in the
 > explicit **editorial-draft** state: machine-marked with its inference
@@ -136,26 +136,26 @@ their scenarios and verification forms are in the artifact.
 
 > A generation run SHALL record exactly one authoring mode, `provider` or `operator-agent`, before any draft is admitted, and the mode SHALL NOT change within the run. In the operator-agent mode the draft, the independent inventory and the reviews are authored by coding-agent sessions that the human operator runs with the operator's own tools and account over a local clone of the subject, and Syzygy SHALL make no model-provider call for the run, resolve no provider route and transmit no project content to any service. The agent sessions' transmissions to their own provider are the operator's own act under the owner direction `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`: they are outside Syzygy's egress consent, no egress record is made for them, and Syzygy SHALL NOT present them as consented by, routed through or observed by Syzygy. The operator-agent mode SHALL be selected only for a subject that the admitted project input (REQ-polaris-generation-001) records as an observed repository that is not a governed project; a governed subject, and a subject whose project input does not say which it is, SHALL NOT be run in this mode.
 >
-> Before it issues a brief, Syzygy SHALL verify that the clone's checked-out HEAD commit equals a revision that the in-force observation consent for the repository names, and SHALL record that commit as the run's pinned revision. A HEAD that differs from a named revision, a revision the consent does not name, or an absent, withdrawn or ineffective observation consent, observer registry entry, classification policy act or screening policy act SHALL refuse the run with its reason in human and machine form. Every read Syzygy makes for the run SHALL be a Git object read by object identifier at the pinned revision through the registered observer, never a read of the working tree, and every object SHALL be classified and screened under the observing project's effective policies (REQ-polaris-generation-025) before its content is used in a check or rendered. Syzygy SHALL execute no observed code. The brief SHALL instruct the agent not to build, install or run code from the clone; Syzygy cannot observe whether the agent complied, and the run record SHALL say so.
+> Before it issues a brief, Syzygy SHALL verify that the clone's checked-out HEAD commit equals a revision that the in-force observation consent for the repository names, and SHALL record that commit as the run's pinned revision. A HEAD that differs from a named revision, a revision the consent does not name, or an absent, withdrawn or ineffective observation consent, observer registry entry, classification policy act or screening policy act SHALL refuse the run with its reason in human and machine form. Every read Syzygy makes for the run SHALL be a Git object read by object identifier at the pinned revision through the registered observer, never a read of the working tree, and every object SHALL be classified and screened under the observing project's effective policies (REQ-polaris-generation-025) before its content is used in a check or rendered. Syzygy SHALL execute no observed code (SEC-3). Under the owner direction `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 2, the agent session MAY build and run the observed project in the clone. The brief SHALL say so and SHALL require that every claim resting on such execution be labelled Inferred and name the commands it rests on, and that the draft list every command the agent reports having run. Syzygy SHALL record that list in the run record as the agent's report, labelled Inferred; it cannot observe what the agent ran, and SHALL NOT present the list as complete or as Observed.
 >
 > The run configuration SHALL declare, before the brief is issued, the operator, the agent tool and its version, the agent's model provider, and positive finite limits: a wall-clock deadline, at least one of a token budget or a turn budget for the agent sessions, a finite nonnegative repair-cycle limit and a finite clarification-question limit. A configuration that lacks any of these, or that states an unlimited or non-positive value, SHALL be refused; there is no default. Syzygy SHALL record each declared value as operator-declared. Syzygy SHALL enforce the limits that bind its own steps: it SHALL refuse a check or review check beyond the repair-cycle limit and any step after the deadline, measured on its own clock from the issue of the brief, and SHALL record the instants of its own steps as Observed. Syzygy cannot observe or enforce the agent sessions' usage. Agent usage SHALL be recorded only as the figure the operator declares, labelled Inferred and attributed to the operator, and where no figure is declared the run record SHALL say that the usage was not recorded and that Syzygy cannot observe it; it SHALL NOT be presented as Observed, as a provider receipt, or as zero.
 >
-> The run record and every rendered page SHALL disclose, in human and machine form: the authoring mode; the agent tool, its version and its provider, as operator-declared; that the agent read the clone without restriction; that the agent's account of what it read is self-reported and Inferred; that Syzygy made no provider call; the pinned revision; and that every rendered quotation was verified by Syzygy against the Git objects at that revision.
+> The run record and every rendered page SHALL disclose, in human and machine form: the authoring mode; the agent tool, its version and its provider, as operator-declared; that the agent read the clone without restriction; that the agent's account of what it read is self-reported and Inferred; whether the agent reported building or running the observed project, with the commands it reported, labelled Inferred; that Syzygy made no provider call; the pinned revision; and that every rendered quotation was verified by Syzygy against the Git objects at that revision.
 >
-> For a run in the operator-agent mode this requirement displaces exactly this predecessor text, quoted in the semantic delta: in REQ-polaris-generation-005, the sentence "A generation request SHALL identify positive finite limits for provider calls, input/output volume, charged usage and elapsed time, plus a finite nonnegative repair-cycle limit before dispatch.", replaced by the declared limits above, and in its scenario "Invalid output or exhausted budget" the words "records actual usage", read as the Observed instants of Syzygy's steps and the operator-declared usage; in REQ-polaris-generation-017, the clause "External authorities SHALL be accessed through their single registered adapter per project, never a competing direct route" and the scenario "Interface tries to bypass its adapter", as they apply to a provider operation, because the run has no provider route and Syzygy makes no provider operation (both continue to apply to Syzygy's Git object reads); and in REQ-polaris-generation-018, the "final usage receipt" of the scenario "Interrupted run lacks optional evidence" and the "Captured usage" of the sentence on usage and cost, which in this mode are never captured and are replaced by the operator-declared figure above. The Provider bullet and the "Budget and retry decisions" section of the base change's `INTERFACES.md` are read the same way: there is no provider adapter, and the operator, never the agent, declares the limits. The draft-layer consent sentence of REQ-polaris-generation-001 and the consent condition of RFC7-20 are not displaced; how they read for a draft that the operator's own session computed is owner question O1. The draft layer of an operator-agent run SHALL render in the editorial-draft state only while an effective owner ruling holds that this consent condition is met for such a draft, and the run record SHALL cite that ruling; without one, or after its withdrawal, the draft layer SHALL render Unknown (`unconsented-source-or-provider`) as REQ-polaris-generation-001 requires, while the source pages of blobs Syzygy read and screened, and the disclosures, remain readable. Every other sentence and scenario of REQ-polaris-generation-001, 005, 017, 018 and 025 is unchanged, including the egress check for every transmission Syzygy itself makes, the screening of every ingest, and the rule that prompt and transcript bodies do not enter the Execution Record.
+> For a run in the operator-agent mode this requirement displaces exactly this predecessor text, quoted in the semantic delta: in REQ-polaris-generation-005, the sentence "A generation request SHALL identify positive finite limits for provider calls, input/output volume, charged usage and elapsed time, plus a finite nonnegative repair-cycle limit before dispatch.", replaced by the declared limits above, and in its scenario "Invalid output or exhausted budget" the words "records actual usage", read as the Observed instants of Syzygy's steps and the operator-declared usage; in REQ-polaris-generation-017, the clause "External authorities SHALL be accessed through their single registered adapter per project, never a competing direct route" and the scenario "Interface tries to bypass its adapter", as they apply to a provider operation, because the run has no provider route and Syzygy makes no provider operation (both continue to apply to Syzygy's Git object reads); and in REQ-polaris-generation-018, the "final usage receipt" of the scenario "Interrupted run lacks optional evidence" and the "Captured usage" of the sentence on usage and cost, which in this mode are never captured and are replaced by the operator-declared figure above. The Provider bullet and the "Budget and retry decisions" section of the base change's `INTERFACES.md` are read the same way: there is no provider adapter, and the operator, never the agent, declares the limits. In REQ-polaris-generation-001, the sentence "For absent or withdrawn provider consent, the draft layer SHALL render Unknown (`unconsented-source-or-provider`) as a policy state in both channels, including when a prior draft remains retained." is read under the owner direction `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 1, which reads RFC7-20's condition, "absent SEC-2 named-provider consent it is **not computed**", as governing drafts that Syzygy computes. A draft that the operator's own agent session computed SHALL be admitted to the draft layer, in the editorial-draft state, only when all three of that ruling's conditions hold: the run record and every page disclose how the draft was computed, as required above; the operator has declared the agent tool and provider and Syzygy has recorded them; and every rendered quotation is byte-verified against the pinned blobs (REQ-polaris-generation-034). The run record SHALL cite the ruling. Where a condition fails, or the ruling is withdrawn or ceases to be effective, the draft layer SHALL render Unknown (`unconsented-source-or-provider`) as a policy state in both channels, while the source pages of blobs Syzygy read and screened, and the disclosures, remain readable. A draft that Syzygy computes or dispatches, in either mode, remains governed by REQ-polaris-generation-001 and RFC7-20 without this reading. Every other sentence and scenario of REQ-polaris-generation-001, 005, 017, 018 and 025 is unchanged, including the egress check for every transmission Syzygy itself makes, the screening of every ingest, and the rule that prompt and transcript bodies do not enter the Execution Record.
 
 **REQ-polaris-generation-034 — Agent brief and mechanically checked draft (new), statement, whole:**
 
-> In the operator-agent mode Syzygy SHALL issue a versioned brief bound to the run and its pinned revision. The brief SHALL state: the reader topics the owner set for a dossier, which are core ideas, end-to-end workflows, mechanisms, maintainer-stated advantages and trade-offs; the labelling rules; the quotation rule; the clarification rule of REQ-polaris-generation-036; the run's declared limits; and the structured draft schema with its version. The brief SHALL carry no project content beyond the repository identity and the pinned revision.
+> In the operator-agent mode Syzygy SHALL issue a versioned brief bound to the run and its pinned revision. The brief SHALL state: the reader topics the owner set for a dossier, which are core ideas, end-to-end workflows, mechanisms, maintainer-stated advantages and trade-offs; the labelling rules; the quotation rule; the clarification rule of REQ-polaris-generation-036; the execution rule of REQ-polaris-generation-033, under which the agent may build and run the observed project; the run's declared limits; and the structured draft schema with its version. The brief SHALL carry no project content beyond the repository identity and the pinned revision.
 >
-> The labelling rules are: every claim block carries exactly one label, Inferred or Unknown, or is marked non-normative (RFC7-2 (b)); an Unknown block names its reason; an agent SHALL NOT label its own claim Observed; and Observed is reserved for a quotation that Syzygy has verified. The quotation rule is: a quotation is one contiguous span of one cited file at the pinned revision, without elision, joining or alteration other than the normalisation stated below. Every claim block SHALL cite at least one source as a repository path and an inclusive line range at the pinned revision, and every quotation SHALL name the citation it is taken from.
+> The labelling rules are: every claim block carries exactly one label, Inferred or Unknown, or is marked non-normative (RFC7-2 (b)); an Unknown block names its reason; an agent SHALL NOT label its own claim Observed; a claim that rests on the agent's building or running of the observed project is Inferred and names, from the draft's list of reported commands, the commands it rests on; and Observed is reserved for a quotation that Syzygy has verified. The quotation rule is: a quotation is one contiguous span of one cited file at the pinned revision, without elision, joining or alteration other than the normalisation stated below. Every claim block SHALL cite at least one source as a repository path and an inclusive line range at the pinned revision, and every quotation SHALL name the citation it is taken from.
 >
 > Syzygy SHALL check each submitted draft and SHALL report every failure as a repair finding that names the block, the citation, the kind of failure and the location to repair. The checks are:
 >
 > - the draft validates against its declared schema version, with unique identities and resolving internal references (REQ-polaris-generation-019);
 > - every cited path names a blob at the pinned revision, and every cited line range lies within that blob;
 > - every quotation, after the normalisation that the generator's existing quote check applies to both the quotation and the source, is one contiguous run of the cited blob's text, beginning and ending on word boundaries, that lies within the cited line range, and Syzygy records the span's byte range in the blob; that normalisation drops comment leaders at line starts and a closing comment marker at a line end, keeps only the text of markdown links and images, decodes character entities, removes markdown backslash escapes, drops backticks, drops paired emphasis marks at word edges, straightens curly quotes, turns an ellipsis character into three full stops, and collapses each whitespace run to one space; an ellipsis in a quotation that the source does not carry is an elision and fails;
-> - every label is one the labelling rules permit and every Unknown block names a reason from RFC2-24's closed list.
+> - every label is one the labelling rules permit, every Unknown block names a reason from RFC2-24's closed list, and every claim that rests on execution names at least one command present in the draft's list of reported commands.
 >
 > A blob that classification or screening excludes SHALL NOT be used to verify a quotation: the quotation is unverifiable, the block that relies on it SHALL render Unknown with `excluded-content` instead of the quotation, and its exclusion is not a repair finding. A repair finding SHALL carry no excluded bytes. Each resubmission is a new draft revision with its own identity; it counts against the repair-cycle limit, and it retires earlier check results and dependent review evidence (REQ-polaris-generation-006). A draft with an unresolved finding SHALL NOT proceed to review or become ready.
 >
@@ -198,9 +198,11 @@ provider mode nothing changes.
 - **Syzygy's own transmissions.** REQ-polaris-generation-025's single egress
   check still governs every transmission Syzygy makes; in this mode it makes
   none.
-- **REQ-polaris-generation-001's draft-layer consent sentence and RFC7-20.**
-  Not displaced. Until the owner rules on O1, the operator-agent draft layer
-  renders Unknown (`unconsented-source-or-provider`).
+- **RFC7-20's text and REQ-polaris-generation-001 for Syzygy-computed
+  drafts.** No byte changes. A draft Syzygy computes or dispatches, in either
+  mode, still renders Unknown (`unconsented-source-or-provider`) without
+  named-provider consent. Only an operator-computed draft meeting the three
+  conditions of the rulings direction, item 1, is admitted.
 - **REQ-polaris-generation-006's readiness rule, materiality floor and
   fresh-reader review (RFC7-25).** An unresolved material omission still
   prevents readiness; the generator still never classifies its own wording
@@ -222,14 +224,37 @@ provider mode nothing changes.
   usage is disclosed as a fact of the render.
 - **Doctrine.** SEC-2 is read, not changed (direction, "What this direction
   does not do"). SEC-3 binds Syzygy's execution, and Syzygy executes no
-  observed code; the agent's conduct in the clone is disclosed as unobserved.
+  observed code. The agent may build and run the observed project (rulings
+  direction, item 2); claims resting on that are Inferred and the commands
+  the agent reports are listed as its report.
+
+## The owner's trade-off, preserved
+
+The owner chose "Rule it by interpretation" over the recommended per-project
+provider record, with the description shown at the time: "it rests on an
+interpretation of an accepted contract and a reviewer may call it a contract
+change." This change relies on that reading in REQ-polaris-generation-033 and
+does not resolve the question it leaves open. If a reviewer finds the reading
+to be a contract change, the finding is reported to the owner as such; the
+drafter neither concedes it nor argues it away. The alternative the owner
+declined, a per-project consent record naming the operator's provider, is
+also the remedy if the owner later reverses the reading: 033 already renders
+the draft layer Unknown when the reading ceases to be effective.
+
+The owner also chose "Allow, disclose" over the recommended "Forbid,
+disclose" for the agent's code execution, accepting that claims may rest on
+behaviour the agent observed by running the project, which Syzygy cannot
+observe or reproduce; those claims stay Inferred.
 
 ## Warrant
 
 The owner direction `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`
-recorded in `POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md` in the decisions home (it lands by PR #351 and is not on `main` at this change's base),
+recorded in `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`,
 items 1 to 5. Item 5: "The affected requirements are amended through one
-reviewed CC-REV-2 delta, which binds only on the owner's sign-off."
+reviewed CC-REV-2 delta, which binds only on the owner's sign-off." And the
+owner direction `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, recorded in
+`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`,
+items 1 (the reading of RFC7-20) and 2 (code execution by the agent).
 
 ## Evidence or decision basis
 
