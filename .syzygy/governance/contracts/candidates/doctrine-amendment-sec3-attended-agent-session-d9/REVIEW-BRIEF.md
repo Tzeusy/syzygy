@@ -1,8 +1,13 @@
-# Review brief — D9 doctrine amendment packet (SEC-3), round 1
+# Review brief — D9 doctrine amendment packet (SEC-3), rounds 1 and 2
 
 > **Candidate — binds nothing.** The brief for one fresh-context review of
 > this package (CC-REV-1). A review is evidence for the owner. It adopts
 > nothing, and its verdict is not an owner act (VIS-4).
+>
+> **Round 2 (2026-10-06).** Round 1 returned `REVISE` (raw:
+> docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md, which the lead retains). Each
+> finding was repaired once (`ROUND-1-DISPOSITIONS.md`). Round 2 is the
+> confirming round, and the stopping rule below applies to it unchanged.
 
 ## Stopping rule, set before the round
 
@@ -24,8 +29,10 @@ A verdict is never re-labelled.
 The tracked files of
 `.syzygy/governance/contracts/candidates/doctrine-amendment-sec3-attended-agent-session-d9/`
 at the reviewed commit: `OWNER-DECISION-PACKET.md`, `SEMANTIC-DELTA.md`,
-`IMPACT-LEDGER.md`, `REVIEW-BRIEF.md`. The proposed doctrine text is in the
-two fenced blocks under the delta's "Proposed meaning".
+`IMPACT-LEDGER.md`, `REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`. The
+proposed doctrine text is in the fenced blocks under the delta's "Proposed
+meaning": arm A, arm W, their optional `v1.md` clauses, and the removable
+credential lines.
 
 ## Governing references
 
@@ -49,6 +56,12 @@ Read these, and nothing else is needed:
   and RFC4-13 (`contracts/rfcs/RFC-0004/named-adapters.md`), RFC9-33.
 - Craft: `policies/craft-and-care/security-and-secrets.md` (CC-SEC-3 and its
   preamble).
+- Added for round 2:
+  - RFC5-12 (`contracts/rfcs/RFC-0005/consent-egress-secrets.md`);
+  - `decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`;
+  - `apps/three-surface-poc/src/capture-test-artifact-main.ts` and
+    `docs/THREE-SURFACE-POC.md` ("Capturing test-run evidence");
+  - `docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-1-RAW.md` (finding 8).
 - `contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md` and
   `SEMANTIC-DELTA-TEMPLATE.md`.
 
@@ -96,13 +109,36 @@ Read these, and nothing else is needed:
 - Is the packet written so that the owner can decide without reading the
   delta?
 
+## Round 2: what to test, at least
+
+- Is each round-1 finding resolved, partly resolved, or not, by the repair
+  recorded for it? Re-derive rather than trust the dispositions.
+- **Arm A against criterion 1.** Does it permit the ruling and nothing
+  more? Test it against `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`
+  line 56, "In the local-agent mode the operator's agent session may
+  build and run the observed project". Does naming Syzygy as the actor
+  claim jurisdiction the current text lacks, or give some up silently?
+  Is Q2 put fairly?
+- **The violation sentence under each arm.** Is it exact (R1)?
+- **RFC5-12 and RFC5-24.** Are the quotations exact? Is each arm's effect
+  stated correctly? Does condition 4 keep RFC5-24 true, and is Q3's cost
+  honest? An effect change on an accepted contract is reported for the
+  owner, not resolved.
+- **The capture tool.** Is the reading "non-conforming today, independent
+  of D9" right? Is its effect under each arm stated correctly?
+- **The removable credential lines.** Does deleting them leave each arm
+  grammatical and exact?
+- Re-run the ledger's sweeps (§1, §2) and the arm A application probe (§4)
+  at the reviewed commit.
+
 ## Output
 
-Write the raw review to docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md, a
-file this round creates. Its first four non-blank lines must be exactly:
+Round 1 wrote docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md. Round 2 writes
+docs/reviews/R-DOCTRINE-AMENDMENT-D9-2-RAW.md, a file that round creates. Its
+first four non-blank lines must be exactly:
 
 ```text
-# Review - D9 doctrine amendment packet (SEC-3 attended agent session)
+# Review - D9 doctrine amendment packet, round 2 (SEC-3 attended agent session)
 Reviewed commit: <the full 40-hex commit you reviewed>
 Package digest: <sha256 by the method below>
 Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
