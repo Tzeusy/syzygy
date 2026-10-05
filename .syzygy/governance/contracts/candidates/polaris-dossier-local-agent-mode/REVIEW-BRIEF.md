@@ -135,7 +135,7 @@ The repair re-verified every quotation by script against its source.
 | 6 | RFC7-20 reading changes the clause's effect | For the owner: preserved in the delta and the packet, carried with the sign-off (review-1 rulings, item 3) |
 | 7 | SEC-2 and "Any repo" | For the owner, applied as ruled (item 2): (a) and (b) stated plainly in 033; (c) the egress-consent-class option removed, the statement is a consent record; (d) 032's four conditions adopted |
 | 8 | SEC-3 and agent execution | For the owner, applied as ruled (item 1): execution rule gated on an adopted SEC-3 amendment in 033 and 034; sign-off waits for it (spec head, packet, tasks) |
-| 9 | Headless and `!`-prefixed launch forms | Fixed: both dropped from `design.md`; 035 excludes any process the authoring session launches; no launch-form field |
+| 9 | Headless and `!`-prefixed launch forms | Fixed as the lead ruled on the updated finding: the headless form is dropped; a new terminal (default) and a `!` launch count as operator-started, stated in 035; 035 records the launch form as operator-declared and refuses any other; skill and Codex texts aligned |
 | 10 | Limit rules contradict at zero | Fixed: deadline and budgets positive; repair and question limits nonnegative integers, 0 allowed |
 | 11 | Independence readings | Fixed: inventory session-id refusal and scenario arm; extensions marked the drafter's choice (delta, packet O4); verdict schema noted as format |
 | 12 | Model identity missing | Fixed: model identity and version operator-declared, no provider-reported version stated; 003 relied on |
