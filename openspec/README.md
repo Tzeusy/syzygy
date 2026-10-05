@@ -18,7 +18,9 @@
 
 ## The five changes, and what state each is in
 
-Five changes are in force; each row names the act that adopted it and the
+Five changes are in force by act; a Polaris addition bound later by a
+sign-off or an owner direction is in force beside them and is not one of
+the five. Each row names the act or record that adopted it and the
 latest act or sign-off that binds its current bytes. Every change lives
 under `changes/`, and none of the directory names says which is which, so
 this table does — one row per directory, each act named, never quoted.

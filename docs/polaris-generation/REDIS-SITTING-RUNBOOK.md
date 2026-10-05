@@ -99,8 +99,26 @@ same arguments re-verifies a record afterwards.
      steps follow.
    - **profile** (F8, F11): the specification moves from `proposed/` to
      `specs/`; package prose naming the old path is rewritten; the status
-     figure follows the recount tool.
-11. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && npx vitest run`
+     figure follows the recount tool (both figures, once the dossier
+     local-agent addition is signed off), and its lead-in names the profile
+     and its adoption record; the `openspec/README.md` row names the record
+     and the table's lead paragraph says so.
+   - **reconcile** (PR 365): the profile is now a Polaris addition, adopted by
+     the record `check_spec_reconciliation.py` declares for it, so
+     `check_spec_reconciliation.py --regenerate` rewrites `census.json` and
+     the change's generated `GOVERNING-DEPENDENCIES.md`. The reconciliation
+     record beside `census.json`
+     (`docs/evidence/spec-readability-reconciliation-2026-10-02/README.md`)
+     needs no edit: its figures are dated in place and name `census.json` as
+     the current population.
+   - **By hand, in the same commit:** add the profile recorder's check to the
+     status battery, the hosted workflow and the count sentence together
+     (CG-26), with the owner's selection text from the record:
+     `python3 scripts/record_narrative_profile_adoption.py --check --date <date> --question-opening '<opening>' --selection-label '<label>' --selection-description '<description>'`.
+     It re-verifies the record against the owner's selection; the
+     reconciliation's R2 independently requires the installed specification
+     and the confirming review's head to carry the recorder's digest.
+11. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && python3 scripts/check_spec_reconciliation.py --check && python3 scripts/build_polaris_dependency_unions.py --check && npx vitest run`
 
 Row 8 (a second egress version) is not generatable before row 7 is performed
 and is out of this rehearsal.
