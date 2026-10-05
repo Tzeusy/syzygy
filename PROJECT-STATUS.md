@@ -379,6 +379,8 @@ python3 scripts/build_pwb_container_shape_profile_amendment.py --selftest   # co
 python3 scripts/build_pwb_item_depth_amendment.py --selftest   # item-depth builder fixtures, at its pre-adoption tree
 python3 scripts/build_pwb_readability_successor.py --selftest   # PWB readability successor builder fixtures, at its pre-adoption tree
 python3 scripts/build_pwb_tree_framing_amendment.py --selftest   # tree-framing builder fixtures, at its pre-adoption tree
+python3 scripts/build_polaris_dossier_local_agent_mode.py --check   # dossier local-agent package: absent, unapplied or applied, and its status figure
+python3 scripts/build_polaris_dossier_local_agent_mode.py --selftest   # dossier local-agent builder fixtures, before and after its sign-off
 python3 scripts/record_pwb_behavior_amendment_acts.py --check opening-band 7f80cb05f644dd1e4f49e7b212d6972ee4754e40682450e59a6c3245546d5c46 --date 2026-10-01   # opening-band act, performed 2026-10-01: record, aggregate block and applied subjects regenerate exactly
 python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check   # registry amendment, performed 2026-09-30, superseded 2026-10-02: the re-pinned subject reverses to its proposed bytes
 python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
@@ -405,7 +407,7 @@ python3 scripts/record_three_surface_poc_readability_successor.py --check  # POC
 python3 scripts/record_three_surface_poc_readability_successor.py --selftest
 python3 scripts/readability_successor.py --all --check   # readability successors (Capability 1, Polaris base and understanding) performed 2026-09-29, the understanding dependency-union successor 2026-10-02: installed bytes = rows, or a later act's row over them
 python3 scripts/readability_successor.py --selftest
-python3 scripts/build_polaris_dependency_unions.py --check   # both Polaris dependency unions = their regeneration from the warrants blocks
+python3 scripts/build_polaris_dependency_unions.py --check   # both Polaris dependency unions, and each signed addition's, = their regeneration from the warrants blocks
 python3 scripts/build_polaris_dependency_unions.py --selftest
 python3 scripts/check_spec_reconciliation.py --check   # five readability outcomes terminal and binding; populations by two methods; routes and generated rows
 python3 scripts/check_spec_reconciliation.py --selftest
@@ -420,7 +422,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The seventy-seven checks above are the same seventy-seven the hosted workflow runs
+The seventy-nine checks above are the same seventy-nine the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
