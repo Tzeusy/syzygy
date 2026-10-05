@@ -160,6 +160,7 @@ exists and what it is about, so that a reader can find it.
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md) | RFC7-20 read as governing Syzygy-computed drafts; the operator's agent may run the observed project, disclosed and Inferred |
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md) | Local-agent mode usable on any repo (SEC-2 reconciliation left to the amendment); review in a separate session; sign-off by option pick v1.0 |
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md) | After the first amendment review: draft a SEC-3 amendment (agent runs on host); governed projects kept, with disclosure; RFC7-20 reading kept |
+| 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md) | Dossier mode re-derives every Observed claim from re-hashed git objects; stored counts, timestamps and history labelled Inferred |
 
 Dates are each file's first-commit date, not a claim about when the owner
 acted; the act's own record states that. [Observed — enumerated 2026-09-05 over
