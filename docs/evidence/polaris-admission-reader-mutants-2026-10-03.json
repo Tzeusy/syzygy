@@ -1,0 +1,958 @@
+{
+ "subject": {
+  "commit": "a13d6c167baab227cc89b5595c27ed134fcc4fba",
+  "branch": "agent/dossier-consent",
+  "fileSha256": {
+   "packages/polaris-generation-consent/src/package-reader.ts": "7c727f6675feae04bc191aca14bb775c4a69a2838627720492cf1ebbfb08e996",
+   "packages/polaris-generation-consent/src/admission-record.ts": "3add1a3bb8d2fbd9633faaf44b1d1babf25b8b59008730c65044399c8c06d4f8",
+   "packages/polaris-generation-consent/src/consent-ports.ts": "3ce08f7fdebe45d0e1336b1ad45e4845092f0ab2ee773c0f2855c949a0c667d2"
+  }
+ },
+ "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project @syzygy/polaris-generation-consent` (every test file of the project); killed = at least one failed test; the file is restored after each run; one runner at a time",
+ "project": "@syzygy/polaris-generation-consent",
+ "ranAtCommit": "a13d6c167baab227cc89b5595c27ed134fcc4fba",
+ "ranAt": "2026-10-03T23:57:47Z",
+ "mutants": [
+  {
+   "id": "X-noop-control",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const refuse = (): never =>",
+   "new": "const refuse = (): never =>",
+   "outcome": "SURVIVED",
+   "failedTests": 0,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ],
+   "note": "control: the mutated source equals the original, so it must survive"
+  },
+  {
+   "id": "R1-stale-digest-still-in-force",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "sha256(artifact) === act.digest ? act.inForce : null",
+   "new": "act.inForce",
+   "outcome": "killed",
+   "failedTests": 5,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "R7-branch-name-revision-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "|| !revisions.every(id => COMMIT_OBJECT_ID.test(id))",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "R8-duplicate-field-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return all.length === 1 && prose.length === 1 ? prose[0]![1]! : refuse();",
+   "new": "return prose.length >= 1 ? prose[0]![1]! : refuse();",
+   "outcome": "killed",
+   "failedTests": 4,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B2-fenced-count-mismatch-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return all.length === 1 && prose.length === 1 ? prose[0]![1]! : refuse();",
+   "new": "return prose.length === 1 ? prose[0]![1]! : refuse();",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B2-fence-not-stripped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (open === null) { if (m !== null) { open = m[1]![0]!; return ''; } return line; }",
+   "new": "if (open === null) { return line; }",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "I2-repeated-or-loose-instant-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if ([...text.matchAll(loose)].length !== 1 || [...prose.matchAll(loose)].length !== 1) return refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "I3-instant-day-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "m[1] !== date || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "I4-instant-roundtrip-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || new Date(at).toISOString().slice(0, 19) + 'Z' !== value",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "R9-project-identity-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  return { type:",
+   "new": "  return { type:",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B1-supersession-follows-current-bytes",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "supersessionAt: act.version === 2 ? act.inForce : null",
+   "new": "supersessionAt: act.version === 2 ? inForceAt : null",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B1-ports-replace-from-inForceAt",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.supersedes === null || r.supersessionAt === null || r.supersessionAt > now ? []",
+   "new": "r.supersedes === null || r.inForceAt === null || r.inForceAt > now ? []",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B1-ports-ignore-supersessionAt-future",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "|| r.supersessionAt > now ? []",
+   "new": "? []",
+   "outcome": "killed",
+   "failedTests": 4,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B1-record-pairing-unchecked",
+   "file": "packages/polaris-generation-consent/src/admission-record.ts",
+   "old": "&& (r.supersedes !== null || r.supersessionAt === null)",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-instant-order-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (v2At !== null && v1At !== null && v2At <= v1At) return refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-instant-equal-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "v2At <= v1At",
+   "new": "v2At < v1At",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-act-type-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "type !== form.type || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ],
+   "note": "not equivalent: killed by the observation-typed act over observation bytes at the egress instance path"
+  },
+  {
+   "id": "V2-act-identity-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "one(text, /^Act identity: `([^`\\n]+)`$/gm) !== form.identity(date)",
+   "new": "false",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-act-artifact-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (artifact !== form.artifact) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-act-title-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (!text.startsWith(`${form.title}\\n`)) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-revocation-line-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (revocation !== (act.version === 2 ? V2_REVOCATION : 'Proposed revocation state: active; supersedes no earlier consent')) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-record-identity-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "recordId !== 'PUBLIC-EGRESS-anthropic' || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-supersedes-not-recorded",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "supersedes: act.version === 2 ? V2_SUPERSEDES : null",
+   "new": "supersedes: null",
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "V2-prefix-filter-skips-v2-files",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "ADMISSION_ACT_FORMS.some(f => f.file === rel) ? 'act' : 'other'",
+   "new": "ADMISSION_ACT_FORMS.some(f => f.file === rel && f.version === 1) ? 'act' : 'other'",
+   "outcome": "killed",
+   "failedTests": 10,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "A1-owner-answers-digest-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (known === 'pin') { if (sha256(text) !== OWNER_ANSWERS_SHA256) refuse(); continue; }",
+   "new": "if (known === 'pin') { continue; }",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "A2-owner-answers-any-name",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const known = rel === OWNER_ANSWERS_FILE ?",
+   "new": "const known = rel.startsWith('PUBLIC-REPO-ADMISSION-OWNER-ANSWERS') ?",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "D1-subdirectories-read-as-files",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (children !== null) await walk(fs, path.join(dir, name), `${prefix}${name}/`, depth + 1, found); else found.push(`${prefix}${name}`);",
+   "new": "found.push(`${prefix}${name}`);",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "D2-depth-unbounded",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (depth > 6) return refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-whole-text-scan-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (rel !== AGGREGATE_RECORD && (ADMISSION_STEMS.some(stem => folded.includes(stem)) || ADMISSION_PATHS.some(p => folded.includes(p)))) return true;",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-field-line-scan-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (ADMISSION_PATHS.some(p => value.includes(p)) || ADMISSION_STEMS.some(stem => value.includes(stem))) return true;",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-file-name-scan-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (ADMISSION_STEMS.some(stem => fold(rel).includes(stem))) return true;",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 8,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-aggregate-not-exempt",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "rel !== AGGREGATE_RECORD && (ADMISSION_STEMS",
+   "new": "(ADMISSION_STEMS",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-case-not-folded",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": ".toLowerCase();\n\nasync function walk",
+   "new": ";\n\nasync function walk",
+   "outcome": "killed",
+   "failedTests": 14,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-dashes-not-folded",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": ".replace(/[\\u2010-\\u2015\\u2212\\uFE58\\uFE63\\uFF0D]/gu, '-')",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B3-nfkc-not-applied",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "value.normalize('NFKC')",
+   "new": "value",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-scope-stem-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (fold(rel).includes(SCOPE_STEM) || (rel !== AGGREGATE_RECORD && folded.includes(SCOPE_STEM))) return true;",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-path-field-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "field !== null && (field[2]!.includes(path) ||",
+   "new": "field !== null && (false ||",
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-unknown-naming-record-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (namesPolicy(rel, text)) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-historical-act-not-pinned",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }",
+   "new": "if (pinned !== undefined) { continue; }",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-act-type-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "act.type !== 'approve-policy' || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-identity-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "|| act.identity !== form.identity(act.date)",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-digest-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "act.digest !== sha256(policy) || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 4,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-scope-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "|| scope === null || typeof scope !== 'object' || Array.isArray(scope)",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-future-act-counts",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "r.inForceAt <= now);",
+   "new": "true);",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-title-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (!text.startsWith(`${form.title}\\n`) || one(",
+   "new": "if (one(",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-v2-form-file-renamed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md',",
+   "new": "file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT-X.md',",
+   "outcome": "killed",
+   "failedTests": 4,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-v2-form-identity-is-v1",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-${date}",
+   "new": "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-${date}",
+   "outcome": "killed",
+   "failedTests": 5,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C1-class-act-not-required",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (v2At !== null) await checkClassAct(fs, options.root, top, v2At);",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C8-class-act-found-in-subdirectories",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const top = new Set(files.filter(f => !f.includes('/')));",
+   "new": "const top = new Set(files);",
+   "outcome": "SURVIVED",
+   "failedTests": 0,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ],
+   "note": "equivalent: the class act is looked up by its exact top-level file name, so a nested path never equals it whichever set is searched"
+  },
+  {
+   "id": "S1-repositories-from-whole-text",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "section(text, '## Scope').map(",
+   "new": "text.split('\\n').map(",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "S2-revision-rows-after-table-end-count",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (row === null) break;",
+   "new": "if (row === null) continue;",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "S3-duplicate-scope-heading-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (at.length !== 1 || source.split('\\n').filter(line => line === heading).length !== 1) return refuse();",
+   "new": "if (at.length < 1) return refuse();",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "S4-revision-header-unanchored-count",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "one(text, /^(\\| Label \\| Commit object id \\|)$/gm);\n",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "B2-instant-count-in-full-text-only",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if ([...text.matchAll(loose)].length !== 1 || [...prose.matchAll(loose)].length !== 1) return refuse();",
+   "new": "if ([...text.matchAll(loose)].length !== 1) return refuse();",
+   "outcome": "SURVIVED",
+   "failedTests": 0,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ],
+   "note": "equivalent: a sole loose-spelled instant line inside a fence leaves the strict field absent from the prose, and one() refuses that"
+  },
+  {
+   "id": "Q-policy-project-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const project = one(text, /^Project identity: `(project:syzygy)`$/gm);",
+   "new": "const project = 'project:syzygy';",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "Q-policy-provenance-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "  one(text, /^Provenance state: `(owner-adopted \\(bootstrap, uncorrelated\\))`/gm);\n  if (act.type",
+   "new": "  if (act.type",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C2-class-digest-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || digest !== sha256(module)) refuse();",
+   "new": ") refuse();",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C3-class-instant-order-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (hit === null || hit.act.recordedAt > v2At) refuse();",
+   "new": "if (hit === null) refuse();",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C4-class-act-type-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || type !== 'contract-amendment'",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C5-class-artifact-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || artifact !== CLASS_MODULE",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C6-class-identity-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C7-class-title-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (!text.startsWith(CLASS_TITLE + '\\n')) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "C9-class-naming-sweep-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (namesClassAct(rel, text)) refuse();",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K1-chain-version-2-without-version-1-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "{ if (v2 !== null && v2 !== undefined) refuse(); return { policy, scope, v1: v1 ?? null, v2: null }; }",
+   "new": "{ return { policy, scope, v1: v1 ?? null, v2: v2 ?? null }; }",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K2-chain-instant-order-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "v2.recordedAt <= v1.recordedAt || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K3-chain-equal-arguments-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || v2.digest === v1.digest",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K4-chain-supersession-argument-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || !v2.supersession.includes(`\\`${v1.digest}\\``)",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K5-chain-supersession-path-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || !v2.supersession.includes(`${DECISIONS_DIR}/${v1.file}`)",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K6-chain-final-digest-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (final.digest !== policyDigest) return { state: 'refused', why: 'the policy bytes differ from the final act\\'s argument' };",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K7-supersession-fenced-copy-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (at.length > 1 || [...text.matchAll(re)].length !== at.length) return refuse();",
+   "new": "if (at.length > 1) return refuse();",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "K8-html-comments-not-stripped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return unfenced.replace(/<!--[\\s\\S]*?(?:-->|$)/g, comment => comment.replace(/[^\\n]/g, ''));",
+   "new": "return unfenced;",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L1-duplicate-label-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "|| new Set(labels).size !== labels.length ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L2-one-commit-two-labels-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "|| new Set(revisions).size !== revisions.length) refuse();",
+   "new": ") refuse();",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L3-port-label-conflict-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "(byLabel.get(label) ?? commitId) !== commitId || ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L4-port-commit-conflict-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": " || (byCommit.get(commitId) ?? label) !== label",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L5-port-any-repository",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (r.class !== 'observation' || r.repositoryId !== repositoryId) continue;",
+   "new": "if (r.class !== 'observation') continue;",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L6-record-label-count-unchecked",
+   "file": "packages/polaris-generation-consent/src/admission-record.ts",
+   "old": "record.revisionLabels.length === record.admittedRevisions.length && ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  },
+  {
+   "id": "L7-record-duplicate-labels-unchecked",
+   "file": "packages/polaris-generation-consent/src/admission-record.ts",
+   "old": "new Set(record.revisionLabels).size === record.revisionLabels.length && ",
+   "new": "",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 112,
+   "tests": [
+    "polaris-generation-consent project, every test file"
+   ]
+  }
+ ],
+ "summary": "75 of 78 mutants killed at a13d6c167baab227cc89b5595c27ed134fcc4fba; not killed: ['X-noop-control', 'C8-class-act-found-in-subdirectories', 'B2-instant-count-in-full-text-only']. X-noop-control is the control; C8 and B2-instant-count-in-full-text-only are equivalent mutants (see their notes). V2-act-type-unchecked is killed: it is not equivalent, because an egress act typed as an observation over observation bytes at the egress instance path reads as an observation consent when the type check is absent. The earlier record named 17c62b0c and a digest but ran at 0c05efb5; this one names the commit the mutants ran at and the sha256 of each mutated file at that commit."
+}
