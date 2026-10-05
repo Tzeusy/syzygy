@@ -161,6 +161,7 @@ exists and what it is about, so that a reader can find it.
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md) | Local-agent mode usable on any repo (SEC-2 reconciliation left to the amendment); review in a separate session; sign-off by option pick v1.0 |
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md) | After the first amendment review: draft a SEC-3 amendment (agent runs on host); governed projects kept, with disclosure; RFC7-20 reading kept |
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md) | Dossier mode re-derives every Observed claim from re-hashed git objects; stored counts, timestamps and history labelled Inferred |
+| 2026-10-06 | [`POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md) | After D9's second REVISE: permission through any Syzygy instruction on a per-run recorded choice; credential condition reaches every process the session starts; one confirming round |
 
 Dates are each file's first-commit date, not a claim about when the owner
 acted; the act's own record states that. [Observed — enumerated 2026-09-05 over
