@@ -50,15 +50,24 @@ the usage figure at the end.
 At steps 9, 10 and 12 the authoring session stops and hands over: it runs
 `syzygy dossier session-prompt`, which prints the fixed prompt and a
 ready-to-paste command (`claude -p "<prompt>"` or `codex exec "<prompt>"`,
-with the run directory as working directory). The **operator** starts that
-session, in another terminal or with Claude Code's `!` prefix, so it is a
-separate top-level session the operator starts and the authoring session
-never writes the reviewer's instructions (owner direction
+with the run directory as working directory). By default the **operator**
+opens a new terminal and starts that session there with the exact prompt
+printed, so it is a separate top-level session the operator starts and the
+authoring session never writes the reviewer's instructions (owner direction
 `POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`, item 2). A
 subagent of the authoring session does not count. When the session finishes,
 the operator returns to the authoring session, which resumes at the next
 step. The loop is therefore attended at each hand-over, and no agent
 coordinates another.
+
+Optional convenience, the operator's choice and never required: the operator
+may launch the printed command from inside the authoring session (Claude
+Code's `!` prefix), or approve the authoring session running it headless.
+Either is still a top-level session with the Syzygy-printed prompt, but it is
+started from the authoring session's terminal, so a reviewer may judge it
+against "a second top-level ... session you start" and AGENTS.md's ban on
+unattended agent coordination. The run record notes which form ran, as
+operator-declared. The default path above needs neither.
 
 At step 3 the skill may offer presets, but the operator selects or types the
 values; Syzygy records them as operator-declared, conveyed by the agent
