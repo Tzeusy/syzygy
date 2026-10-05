@@ -98,6 +98,28 @@ POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md in `../../decisions/` (not
 written as a path until it exists), appends
 one block to `../../decisions/ACCEPTANCE-ACT-RECORD.md`, and prints the tag.
 
+**Then, in the same commit, the reconciliation is re-derived.** Run
+`python3 scripts/check_spec_reconciliation.py --regenerate`. It writes two
+generated files, and no signed subject:
+
+- the change's `GOVERNING-DEPENDENCIES.md`, which replaces the hand-held
+  union as `tasks.md` asks;
+- the reconciliation census, `census.json`.
+
+It refuses while an installed Polaris addition has no sign-off record. Three
+hand edits remain, because no script writes prose routes or the battery:
+
+- name the new record on the change's row in `openspec/README.md`, whose
+  status cell still says candidate;
+- name it beside the Polaris composition figure in `PROJECT-STATUS.md`;
+- add the recorder's `--check polaris-dossier-local-agent-mode --version 1.0`
+  line to the battery, the hosted workflow and the count sentence, together
+  (CG-26).
+
+The reconciliation's R5 fails until both routes cite the record. The
+canonical battery then runs clean [Inferred: from a scratch-clone dry run
+that recorded nothing real].
+
 **What it binds.** The git tag `polaris-dossier-local-agent-mode-v1.0`, on
 the commit that carries the package bytes you were shown, which must equal
 the bytes this review read. No phrase and no digest argument. A later edit is
