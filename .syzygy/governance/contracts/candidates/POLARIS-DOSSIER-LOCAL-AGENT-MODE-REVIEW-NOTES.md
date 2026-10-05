@@ -84,7 +84,10 @@ direction does not extend Scope A by itself.
 Before it writes anything, the recorder:
 
 - reads the raw's first four non-blank lines: the reviewed commit, the
-  subject digest (as information only) and the verdict;
+  subject digest and the verdict. Since PR #364 the digest binds: it must
+  equal the sha256 of the proposed spec as it stands, and the raw must name
+  this package. The reviewed commit is the base of the comparison below, and
+  stays fetchable from #353's pull-request ref after a rebase merge;
 - requires every finding to be a note, and this record to name the raw on
   its `Reviewed record:` line and to carry exactly the raw's finding numbers
   (here, the `### <n> —` headings 1 to 11);
@@ -106,18 +109,19 @@ generated files, and no signed subject:
   union as `tasks.md` asks;
 - the reconciliation census, `census.json`.
 
-It refuses while an installed Polaris addition has no sign-off record. Three
-hand edits remain, because no script writes prose routes or the battery:
+It refuses while an installed Polaris addition has no sign-off record. The
+builder has already rewritten the status page's figure so that it names the
+addition and the sign-off record. Two hand edits remain, because no script writes a
+route row or the battery:
 
 - name the new record on the change's row in `openspec/README.md`, whose
-  status cell still says candidate;
-- name it beside the Polaris composition figure in `PROJECT-STATUS.md`;
+  status cell still says candidate (the reconciliation's R5 fails until it
+  does);
 - add the recorder's `--check polaris-dossier-local-agent-mode --version 1.0`
   line to the battery, the hosted workflow and the count sentence, together
   (CG-26).
 
-The reconciliation's R5 fails until both routes cite the record. The
-canonical battery then runs clean [Inferred: from a scratch-clone dry run
+The canonical battery then runs clean [Inferred: from a scratch-clone dry run
 that recorded nothing real].
 
 **What it binds.** The git tag `polaris-dossier-local-agent-mode-v1.0`, on
