@@ -22,12 +22,25 @@ exists: the sign-off binds the tag ``polaris-dossier-local-agent-mode-v1.0``.
   page's figure equals the recount, which composes the four requirements;
   and no package file cites the proposed path in full.
 
-``--apply --at-sign-off`` is the one mode that writes. It refuses unless the
-unapplied package verifies; then it moves the spec, removes the emptied
-``proposed/`` directories, rewrites the full-path citations (a short
-``proposed/polaris-generation/spec.md`` mention is prose about the move and
-is left alone), and sets the status page's figure from the recount. A
+``--apply --review <raw> [--disposition <record>]`` is the one mode that
+writes. Run directly, it first verifies the reviewed bytes exactly as the
+sign-off recorder does (``record_versioned_signoff.verify_reviewed``: the
+raw's verdict and findings, its head digest against the subject, the raw
+naming this package, and both directories unchanged since the reviewed
+commit); the recorder runs that verification itself and then calls
+``apply()``. ``apply()`` refuses unless the unapplied package verifies; then
+it moves the spec, removes the emptied ``proposed/`` directories, rewrites
+the full-path citations, and rewrites the status page's figure as two
+figures: the composition without the addition, and the effective
+composition with it, naming the installed path and the v1.0 sign-off
+record. The review brief keeps the path its reviews read, unquoted and
+dated by the sign-off; a short ``proposed/polaris-generation/spec.md``
+mention is prose about the move and is left alone. Running ``apply()``
+without that verification is a convention the CLI does not offer. A
 candidate commit, review or merge performs no owner act.
+
+Before #353 merges the change directory is absent; ``--check`` then reports
+the package not present and passes, unless a sign-off record for it exists.
 
 ``--selftest`` runs a mutation fixture per predicate in temporary trees.
 """
@@ -49,9 +62,15 @@ CHANGE = pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode")
 CANDIDATE = pathlib.Path(
     ".syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode"
 )
+KEY = "polaris-dossier-local-agent-mode"
 PROPOSED_SPEC = CHANGE / "proposed/polaris-generation/spec.md"
 INSTALLED_SPEC = CHANGE / "specs/polaris-generation/spec.md"
 STATUS = pathlib.Path(counter.STATUS_PAGE_REL)
+DECISIONS = pathlib.Path(".syzygy/governance/decisions")
+SIGNOFF_RECORD = DECISIONS / "POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md"
+#: The review brief names the artifact its rounds read; the install keeps
+#: that path, unquoted, beside the installed one.
+BRIEF = CANDIDATE / "REVIEW-BRIEF.md"
 REQUIREMENTS = (
     "Operator-agent authoring mode",
     "Agent brief and mechanically checked draft",
@@ -69,6 +88,8 @@ class Refusal(RuntimeError):
 
 
 def state(root: pathlib.Path) -> str:
+    if not (root / CHANGE).is_dir():
+        return "absent"
     proposed = (root / PROPOSED_SPEC).is_file()
     installed = (root / INSTALLED_SPEC).is_file()
     if proposed and not installed:
@@ -123,8 +144,22 @@ def status_figure(root: pathlib.Path) -> tuple[int, int]:
     return int(found[0][0]), int(found[0][1])
 
 
+def figure_paragraph(text: str) -> str:
+    """The status page's paragraph or list item that carries the figure."""
+    m = FIGURE_RE.search(text)
+    if m is None:
+        return ""
+    start = max(text.rfind("\n\n", 0, m.start()),
+                *(text.rfind(f"\n{indent}- ", 0, m.start()) for indent in ("", "  ", "    ")))
+    return text[start + 1:m.end()]
+
+
 def check(root: pathlib.Path = ROOT) -> list[str]:
     current = state(root)
+    if current == "absent":
+        signed = sorted(p.name for p in (root / DECISIONS).glob(
+            "POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v*.md")) if (root / DECISIONS).is_dir() else []
+        return [f"the change directory is absent but {signed} records a sign-off"] if signed else []
     if current not in ("unapplied", "applied"):
         return [f"the spec is in {current} of proposed/ and specs/"]
     spec = PROPOSED_SPEC if current == "unapplied" else INSTALLED_SPEC
@@ -136,6 +171,10 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
         if status_figure(root) != (reqs, scenarios):
             findings.append(f"{STATUS} figure {status_figure(root)} differs from the recount "
                             f"{(reqs, scenarios)}")
+        if (current == "applied" and INSTALLED_SPEC.as_posix() not in figure_paragraph(
+                (root / STATUS).read_text(encoding="utf-8"))):
+            findings.append(f"{STATUS}: the figure's paragraph does not name "
+                            f"{INSTALLED_SPEC.as_posix()}, so it reads as the two-file composition")
         if current == "unapplied":
             _r, _s, names = recount_installed(root)
         else:
@@ -145,14 +184,21 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
             findings.append(f"the composition does not carry {sorted(missing)}")
     except (counter.ScenarioCountError, Refusal, OSError) as exc:
         findings.append(str(exc))
-    full = PROPOSED_SPEC.as_posix()
+    full = f"`{PROPOSED_SPEC.as_posix()}`"
     for citer in PATH_CITERS:
         text = (root / citer).read_text(encoding="utf-8")
         if current == "unapplied" and full not in text:
             findings.append(f"{citer}: does not cite {full}; the install would rewrite nothing")
         if current == "applied" and full in text:
             findings.append(f"{citer}: still cites {full}")
+    if current == "applied" and brief_note() not in (root / BRIEF).read_text(encoding="utf-8"):
+        findings.append(f"{BRIEF}: does not keep the path its reviews read")
     return findings
+
+
+def brief_note() -> str:
+    return (f" (installed there by the v1.0 sign-off, whose record gives the date; "
+            f"the reviews read it at {PROPOSED_SPEC.as_posix()})")
 
 
 def applied(root: pathlib.Path = ROOT) -> bool:
@@ -169,23 +215,28 @@ def apply(root: pathlib.Path = ROOT) -> int:
         for finding in findings:
             print(f"  - {finding}")
         return 2
+    before = recount(root)
     src, dst = root / PROPOSED_SPEC, root / INSTALLED_SPEC
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(str(src), str(dst))
     for leftover in (src.parent, src.parent.parent):
         if leftover.is_dir() and not any(leftover.iterdir()):
             leftover.rmdir()
-    full, installed = PROPOSED_SPEC.as_posix(), INSTALLED_SPEC.as_posix()
+    full, installed = f"`{PROPOSED_SPEC.as_posix()}`", f"`{INSTALLED_SPEC.as_posix()}`"
     for citer in PATH_CITERS:
         path = root / citer
-        path.write_text(path.read_text(encoding="utf-8").replace(full, installed), encoding="utf-8")
+        new = installed + (brief_note() if citer == BRIEF else "")
+        path.write_text(path.read_text(encoding="utf-8").replace(full, new), encoding="utf-8")
     reqs, scenarios, _names = recount(root)
     status = root / STATUS
     text = status.read_text(encoding="utf-8")
     figure = FIGURE_RE.search(text)
     assert figure is not None  # check() required exactly one
-    status.write_text(text.replace(
-        figure.group(0), f"{reqs} requirements and {scenarios} scenarios in the effective composition"),
+    status.write_text(text.replace(figure.group(0), (
+        f"{before[0]} requirements and {before[1]} scenarios without the signed-off\n"
+        f"    [dossier local-agent addition]({INSTALLED_SPEC.as_posix()})\n"
+        f"    ([sign-off record]({SIGNOFF_RECORD.as_posix()})), and\n"
+        f"    {reqs} requirements and {scenarios} scenarios in the effective composition with it")),
         encoding="utf-8")
     after = check(root)
     if after:
@@ -242,7 +293,8 @@ def selftest() -> int:
                         all(INSTALLED_SPEC.as_posix() in (root / c).read_text() for c in PATH_CITERS)))
         results.append(("second apply refuses", quiet(apply, root) == 2))
 
-    def refused(name: str, mutate=None, **fixture) -> None:
+    def refused(name: str, mutate=None, expect: str = "", **fixture) -> None:
+        """Refused, nothing written, and (when given) by the predicate whose finding says `expect`."""
         with tempfile.TemporaryDirectory() as t:
             root = pathlib.Path(t)
             _fixture(root, **fixture)
@@ -251,7 +303,9 @@ def selftest() -> int:
             before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
             code = quiet(apply, root)
             after = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
-            results.append((f"refused: {name}", bool(check(root)) and code == 2 and before == after))
+            found = check(root)
+            results.append((f"refused: {name}", bool(found) and code == 2 and before == after
+                            and any(expect in f for f in found)))
 
     refused("a fifth requirement",
             dossier="## ADDED Requirements\n\n" + "".join(_req(n, 1) for n in (*REQUIREMENTS, "Extra")))
@@ -259,7 +313,8 @@ def selftest() -> int:
             dossier="## ADDED Requirements\n\n" + "".join(_req(n, 1) for n in REQUIREMENTS[:3]))
     refused("a MODIFIED section in the candidate",
             dossier="## ADDED Requirements\n\n" + "".join(_req(n, 1) for n in REQUIREMENTS)
-            + "## MODIFIED Requirements\n\n" + _req("Beta", 1))
+            + "## MODIFIED Requirements\n\n" + _req("Beta", 1),
+            expect="expected exactly one ADDED section")
     def collide(root: pathlib.Path) -> None:
         base = root / "openspec/changes/base/specs/polaris-generation/spec.md"
         base.write_text(base.read_text() + _req(REQUIREMENTS[0], 1))
@@ -269,9 +324,55 @@ def selftest() -> int:
     refused("a citer no longer naming the proposed path", citers=False)
     refused("spec in both proposed/ and specs/", mutate=lambda root: (
         (root / INSTALLED_SPEC).parent.mkdir(parents=True),
-        shutil.copy(root / PROPOSED_SPEC, root / INSTALLED_SPEC)))
+        shutil.copy(root / PROPOSED_SPEC, root / INSTALLED_SPEC)), expect="in both of")
     refused("spec in neither", mutate=lambda root: (root / PROPOSED_SPEC).unlink())
 
+    # The parsers agree on every input the fixtures can build, so the
+    # agreement predicate is pinned by making one of them disagree.
+    real_manual = counter.parse_manual
+    def dropping_manual(text, label):
+        parsed = real_manual(text, label)
+        if parsed.added and label == PROPOSED_SPEC.as_posix():
+            parsed.added.pop()
+        return parsed
+    counter.parse_manual = dropping_manual
+    try:
+        refused("the recount tool's parsers disagree", expect="two parsers disagree")
+    finally:
+        counter.parse_manual = real_manual
+
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        quiet(apply, root)
+        status = (root / STATUS).read_text()
+        results.append(("applied: the status page gives both figures and names the addition",
+                        "2 requirements and 3 scenarios without the signed-off" in status
+                        and INSTALLED_SPEC.as_posix() in figure_paragraph(status)
+                        and SIGNOFF_RECORD.as_posix() in status))
+        (root / STATUS).write_text(status.replace(INSTALLED_SPEC.as_posix(), "elsewhere"))
+        results.append(("applied: a figure paragraph not naming the installed spec fails",
+                        any("does not name" in f for f in check(root))))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        quiet(apply, root)
+        brief = root / BRIEF
+        results.append(("applied: the brief keeps the path its reviews read, unquoted",
+                        brief_note() in brief.read_text()
+                        and f"`{PROPOSED_SPEC.as_posix()}`" not in brief.read_text()))
+        brief.write_text(brief.read_text().replace(brief_note(), ""))
+        results.append(("applied: a brief without that note fails",
+                        any("does not keep" in f for f in check(root))))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        shutil.rmtree(root / CHANGE)
+        results.append(("absent change directory: nothing to verify", check(root) == []))
+        (root / SIGNOFF_RECORD).parent.mkdir(parents=True)
+        (root / SIGNOFF_RECORD).write_text("record\n")
+        results.append(("absent change directory with a sign-off record fails",
+                        any("records a sign-off" in f for f in check(root))))
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t)
         _fixture(root)
@@ -301,14 +402,22 @@ def main(argv: list[str]) -> int:
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--apply", action="store_true")
     mode.add_argument("--selftest", action="store_true")
-    parser.add_argument("--at-sign-off", action="store_true",
-                        help="required with --apply: only the sign-off recorder installs")
+    parser.add_argument("--review", help="with --apply: the review raw whose bytes are verified first")
+    parser.add_argument("--disposition", help="with --apply: the notes record, for CONFIRM WITH EXCEPTIONS")
     args = parser.parse_args(argv)
     if args.selftest:
         return selftest()
     if args.apply:
-        if not args.at_sign_off:
-            parser.error("--apply writes signed subjects; pass --at-sign-off")
+        if not args.review:
+            parser.error("--apply writes signed subjects; pass --review <raw> so the reviewed "
+                         "bytes are verified first (the sign-off recorder does this itself)")
+        import record_versioned_signoff as recorder
+        try:
+            recorder.verify_reviewed(ROOT, recorder.real_packages()[KEY], args.review,
+                                     args.disposition)
+        except (ValueError, OSError) as exc:
+            print(f"REFUSED (nothing written): {exc}")
+            return 2
         return apply(ROOT)
     findings = check(ROOT)
     if findings:
@@ -316,7 +425,8 @@ def main(argv: list[str]) -> int:
         for finding in findings:
             print(f"  - {finding}")
         return 1
-    print(f"OK: the package verifies ({state(ROOT)})")
+    print("OK: the change directory is not present (PR #353 not merged); nothing to verify"
+          if state(ROOT) == "absent" else f"OK: the package verifies ({state(ROOT)})")
     return 0
 
 

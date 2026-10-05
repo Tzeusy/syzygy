@@ -21,23 +21,32 @@ validates, in this order, and writes nothing until every step passes:
    64-hex digest;
 2. the version is not already recorded for the package;
 3. the review raw's first four non-blank lines carry exactly one
-   `Reviewed commit: <40 hex>`, one `Manifest SHA-256: <64 hex>` (read as
-   information, never as an argument) and one `Verdict:` line, which is
-   `CONFIRM` or `CONFIRM WITH EXCEPTIONS`; REVISE or any other verdict
-   refuses;
+   `Reviewed commit: <40 hex>`, one `Manifest SHA-256: <64 hex>` and one
+   `Verdict:` line, which is `CONFIRM` or `CONFIRM WITH EXCEPTIONS`; REVISE or
+   any other verdict refuses. A package that declares its reviewed `subject`
+   is bound by that head digest: it must equal the sha256 of the subject's
+   bytes in the working tree, before anything is applied. The reviewed commit
+   is provenance and the base of step 5's comparison, never the binding; a
+   rebase-merged review commit stays fetchable from its pull request's ref.
+   The raw must also name the package's key, so a review of another package
+   cannot be offered for this one;
 4. for `CONFIRM WITH EXCEPTIONS`, the raw's `## Findings` section numbers its
    findings continuously as `**Finding N — title** (blocking|revise|note)`,
    where the severity word may carry a qualifier after it ("(note, for the
    owner)", "(note: reported for the owner, not resolved)"); the leading
    word is the severity, and a `note` whose qualifier names "blocking" or
    "revise" is refused as ambiguous rather than read either way; every
-   finding is a `note`, and `--disposition <record>` names the raw on a
+   finding is a `note`. A note's qualifier fails closed: it is read as a note
+   only when each comma-separated clause is one of `QUALIFIER_CLAUSES`
+   ("for the owner", "for the owner's view", "reported for the owner", "not
+   resolved", "editorial"), and any other wording refuses as ambiguous; and `--disposition <record>` names the raw on a
    `Reviewed record:` line and numbers exactly the raw's findings;
 5. the candidate package directory, and any further directory the package
    declares (a specification change under `openspec/changes/`), at the
    working tree equals the package at the commit the review read (sibling
-   `ROUND-<n>-DISPOSITIONS.md` records and the named disposition are not
-   package bytes);
+   `ROUND-<n>-DISPOSITIONS.md` records inside the candidate directory, and
+   the named disposition, are not package bytes; in a further directory
+   every file is);
 6. the package's own builder check passes on the unapplied package.
 
 Then the package's patches are applied through its builder, the dedicated
@@ -80,8 +89,11 @@ VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 SEVERITY_RE = re.compile(
     r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?![A-Za-z])([^)\n]*)\)",
     re.MULTILINE)
-#: A qualifier that names a stronger severity makes a `note` ambiguous.
-STRONGER_RE = re.compile(r"\b(blocking|revise)\b", re.IGNORECASE)
+#: The only clauses a `note` qualifier may carry; anything else, a stronger
+#: severity in any spelling included, makes the finding ambiguous.
+QUALIFIER_CLAUSES = ("for the owner", "for the owner's view", "reported for the owner",
+                     "not resolved", "editorial")
+MANIFEST_DIGEST_RE = re.compile(r"^Manifest SHA-256: ([0-9a-f]{64})$")
 SIBLING_RECORD_RE = re.compile(r"(^|/)ROUND-\d+-DISPOSITIONS\.md$")
 FINDINGS_HEADING = "## Findings"
 
@@ -99,6 +111,8 @@ class Package:
     applied: Callable[[pathlib.Path], bool]
     #: Further directories whose bytes the review read (an OpenSpec change).
     also: tuple[pathlib.Path, ...] = ()
+    #: The reviewed subject, pre-apply; the raw's head digest must hash it.
+    subject: pathlib.Path | None = None
 
 
 def _module(name: str):
@@ -204,6 +218,8 @@ def real_packages() -> dict[str, Package]:
             lambda root: dossier().apply(root),
             lambda root: dossier().applied(root),
             also=(pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode"),),
+            subject=pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode/"
+                                 "proposed/polaris-generation/spec.md"),
         ),
     }
 
@@ -264,15 +280,25 @@ def parse_head(review: str) -> tuple[str, str]:
     return commits[0], verdicts[0]
 
 
+def qualifier_allowed(qualifier: str) -> bool:
+    """True for no qualifier, or one whose every clause is an allowed one."""
+    if not qualifier.strip():
+        return True
+    if qualifier[0] not in ",:":
+        return False
+    clauses = [c.strip().replace("\u2019", "'") for c in qualifier[1:].split(",")]
+    return all(c in QUALIFIER_CLAUSES for c in clauses)
+
+
 def review_findings(review: str) -> dict[int, str]:
     section = beh._raw_findings_section(review, FINDINGS_HEADING)
     numbers = beh._finding_number_set(
         section, label="review findings", forms=beh.RAW_FINDING_FORMS)
     severities = {}
     for n, sev, qualifier in SEVERITY_RE.findall(section):
-        if sev == "note" and STRONGER_RE.search(qualifier):
+        if sev == "note" and not qualifier_allowed(qualifier):
             raise ValueError(f"review finding {n} is tagged ({sev}{qualifier}); a note "
-                             "whose qualifier names a stronger severity is ambiguous")
+                             f"qualifier other than {list(QUALIFIER_CLAUSES)} is ambiguous")
         severities[int(n)] = sev
     unclassified = sorted(numbers - set(severities))
     if unclassified:
@@ -320,6 +346,33 @@ def validate_review(root: pathlib.Path, review_rel: str, disposition_rel: str | 
     return commit, verdict
 
 
+def review_binds(root: pathlib.Path, pkg: Package, review_rel: str) -> None:
+    """The raw names this package and, when one is declared, its subject digest."""
+    review = (root / review_rel).read_text(encoding="utf-8")
+    if pkg.key not in review:
+        raise ValueError(f"review raw does not name the package `{pkg.key}`")
+    if pkg.subject is None:
+        return
+    head = [line for line in review.splitlines() if line.strip()][:4]
+    digests = [m.group(1) for line in head if (m := MANIFEST_DIGEST_RE.fullmatch(line))]
+    subject = root / pkg.subject
+    if not subject.is_file():
+        raise ValueError(f"reviewed subject {pkg.subject.as_posix()} is missing")
+    actual = beh.digest(subject.read_bytes())
+    if digests != [actual]:
+        raise ValueError(f"review head digest is not the sha256 of the reviewed subject "
+                         f"{pkg.subject.as_posix()}")
+
+
+def verify_reviewed(root: pathlib.Path, pkg: Package, review_rel: str,
+                    disposition_rel: str | None) -> tuple[str, str]:
+    """Every check that binds the bytes on disk to the review; writes nothing."""
+    commit, verdict = validate_review(root, review_rel, disposition_rel)
+    review_binds(root, pkg, review_rel)
+    package_unchanged(root, pkg, commit, disposition_rel)
+    return commit, verdict
+
+
 def _git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
 
@@ -327,13 +380,16 @@ def _git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
 def package_unchanged(root: pathlib.Path, pkg: Package, commit: str,
                       disposition_rel: str | None) -> None:
     if _git(root, "cat-file", "-e", f"{commit}^{{commit}}").returncode != 0:
-        raise ValueError(f"reviewed commit {commit[:12]} is not in this repository")
+        raise ValueError(f"reviewed commit {commit[:12]} is not in this repository; fetch "
+                         "it (a rebase-merged review commit stays on its pull request's ref)")
     directories = [d.as_posix() for d in (pkg.candidate, *pkg.also)]
     changed = _git(root, "diff", "--name-only", commit, "--", *directories).stdout.split()
     changed += _git(root, "ls-files", "--others", "--exclude-standard",
                     "--", *directories).stdout.split()
+    candidate = pkg.candidate.as_posix() + "/"
     subject = [c for c in changed
-               if not SIBLING_RECORD_RE.search(c) and c != disposition_rel]
+               if not (c.startswith(candidate) and SIBLING_RECORD_RE.search(c))
+               and c != disposition_rel]
     if subject:
         raise ValueError(f"package bytes changed since the commit the review read: "
                          f"{sorted(set(subject))}")
@@ -452,8 +508,7 @@ def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str
             raise ValueError(f"sign-off already recorded: {record_rel(pkg, version).as_posix()}")
         if aggregate_copies(root, pkg, version):
             raise ValueError("the aggregate record already carries this version's block")
-        commit, verdict = validate_review(root, review_rel, disposition_rel)
-        package_unchanged(root, pkg, commit, disposition_rel)
+        commit, verdict = verify_reviewed(root, pkg, review_rel, disposition_rel)
         findings = pkg.check(root)
         if findings:
             raise ValueError("package does not verify: " + " | ".join(findings))
@@ -540,13 +595,16 @@ def stub_package() -> Package:
 
     return Package("stub-package", "Stub package", "behavior amendment", STUB_DIR,
                    "STUB", check_fn, apply_fn, lambda root: (root / "applied.txt").exists(),
-                   also=(STUB_ALSO,))
+                   also=(STUB_ALSO,), subject=STUB_ALSO / "spec.md")
+
+
+STUB_SUBJECT_BYTES = b"specification bytes\n"
 
 
 def stub_review(commit: str, verdict: str = "CONFIRM", findings: str = "No findings.",
                 extra_head: str = "") -> str:
-    return (f"# Review — stub\nReviewed commit: {commit}\n"
-            f"Manifest SHA-256: {'ab' * 32}\nVerdict: {verdict}\n{extra_head}\n"
+    return (f"# Review — stub-package\nReviewed commit: {commit}\n"
+            f"Manifest SHA-256: {beh.digest(STUB_SUBJECT_BYTES)}\nVerdict: {verdict}\n{extra_head}\n"
             f"## Findings\n\n{findings}\n")
 
 
@@ -569,7 +627,8 @@ def make_fixture(tmp: pathlib.Path, review_text=None, disposition_text=None,
     (tmp / STUB_DIR).mkdir(parents=True)
     (tmp / STUB_DIR / "manifest.txt").write_text("package bytes\n")
     (tmp / STUB_ALSO).mkdir(parents=True)
-    (tmp / STUB_ALSO / "spec.md").write_text("specification bytes\n")
+    (tmp / STUB_ALSO / "spec.md").write_bytes(STUB_SUBJECT_BYTES)
+    (tmp / STUB_ALSO / "proposal.md").write_text("proposal bytes\n")
     for name, body in (package_files or {}).items():
         (tmp / STUB_DIR / name).write_text(body)
     (tmp / AGGREGATE_REL).parent.mkdir(parents=True)
@@ -739,6 +798,23 @@ def selftest() -> int:
                                                           f"**Finding 1 — first** {q} evidence\n"),
                 disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
                 expect="non-note")
+    for qualified in ("(note, editorial)", "(note: not resolved)",
+                      "(note, for the owner\u2019s view)"):
+        with tempfile.TemporaryDirectory() as t:
+            tmp, commit = make_fixture(pathlib.Path(t), lambda c, q=qualified: stub_review(
+                c, "CONFIRM WITH EXCEPTIONS",
+                f"**Finding 1 — first** {q} evidence\n\n**Finding 2 — second** (note) evidence\n"),
+                stub_disposition())
+            code, _ = run_record(tmp, disposition_rel=STUB_DISPOSITION)
+            results.append((f"an allowed qualifier {qualified} records", code == 0))
+    for qualified in ("(note_blocking)", "(note, blocker)", "(note, revises the clause)",
+                      "(note, REVISE)", "(note, Blocking)", "(note, non-blocking)",
+                      "(note — for the owner)", "(note, for the owner, blocking)"):
+        refused(f"a note qualifier outside the allow-list {qualified} is ambiguous",
+                review=lambda c, q=qualified: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                                          f"**Finding 1 — first** {q} evidence\n"),
+                disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+                expect="ambiguous")
     refused("a note whose qualifier names a stronger severity",
             review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS",
                                          "**Finding 1 — first** (note, but revise-level) evidence\n"),
@@ -777,7 +853,29 @@ def selftest() -> int:
         (tmp / STUB_DIR / "new.txt").write_text("new\n")
 
     def edit_also(tmp, commit):
+        (tmp / STUB_ALSO / "proposal.md").write_text("edited after the review\n")
+
+    def add_also_file(tmp, commit):
+        (tmp / STUB_ALSO / "new.md").write_text("untracked\n")
+
+    def add_also_sibling(tmp, commit):
+        (tmp / STUB_ALSO / "ROUND-9-DISPOSITIONS.md").write_text("not a candidate record\n")
+
+    def edit_subject(tmp, commit):
         (tmp / STUB_ALSO / "spec.md").write_text("edited after the review\n")
+
+    refused("a file added to a declared further directory", mutate=add_also_file,
+            expect="package bytes changed")
+    refused("a sibling-named record inside a further directory is package bytes",
+            mutate=add_also_sibling, expect="package bytes changed")
+    refused("the reviewed subject edited after the review", mutate=edit_subject,
+            expect="head digest is not the sha256")
+    refused("a head digest that is not the subject's",
+            review=lambda c: stub_review(c).replace(beh.digest(STUB_SUBJECT_BYTES), "f" * 64),
+            expect="head digest is not the sha256")
+    refused("a raw that does not name the package",
+            review=lambda c: stub_review(c).replace("stub-package", "other-package"),
+            expect="does not name the package")
 
     refused("package edited after the review", mutate=edit_package, expect="package bytes changed")
     refused("a declared further directory edited after the review", mutate=edit_also,
