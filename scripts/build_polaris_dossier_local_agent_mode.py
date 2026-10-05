@@ -20,24 +20,26 @@ exists: the sign-off binds the tag ``polaris-dossier-local-agent-mode-v1.0``.
   in full still does (the install rewrites exactly those citations);
 - applied: the spec is in ``specs/`` only, with the same shape; the status
   page's figure equals the recount, which composes the four requirements;
-  and no package file cites the proposed path in full.
+  its "without" figure equals the recount of the composition without the
+  installed spec; and no package file cites the proposed path in full.
 
-``--apply --review <raw> [--disposition <record>]`` is the one mode that
-writes. Run directly, it first verifies the reviewed bytes exactly as the
-sign-off recorder does (``record_versioned_signoff.verify_reviewed``: the
-raw's verdict and findings, its head digest against the subject, the raw
-naming this package, and both directories unchanged since the reviewed
-commit); the recorder runs that verification itself and then calls
-``apply()``. ``apply()`` refuses unless the unapplied package verifies; then
+The CLI writes nothing. The sign-off recorder
+(``record_versioned_signoff.py --record``) is the one writer: it verifies
+the reviewed bytes, calls ``apply()``, and writes the sign-off record the
+status sentence links to. An install without that record would leave a
+tree no tool can record (R-364-2 Finding 2), so ``--apply`` is not offered
+here. ``apply()`` refuses unless the unapplied package verifies; then
 it moves the spec, removes the emptied ``proposed/`` directories, rewrites
 the full-path citations, and rewrites the status page's figure as two
 figures: the composition without the addition, and the effective
 composition with it, naming the installed path and the v1.0 sign-off
 record. The review brief keeps the path its reviews read, unquoted and
 dated by the sign-off; a short ``proposed/polaris-generation/spec.md``
-mention is prose about the move and is left alone. Running ``apply()``
-without that verification is a convention the CLI does not offer. A
-candidate commit, review or merge performs no owner act.
+mention is prose about the move and is left alone. A later install that
+changes the composition (the narrative profile's, in
+``install_redis_sitting.py``) must rewrite both figures, which
+``refigure()`` does. A candidate commit, review or merge performs no owner
+act.
 
 Before #353 merges the change directory is absent; ``--check`` then reports
 the package not present and passes, unless a sign-off record for it exists.
@@ -81,6 +83,9 @@ REQUIREMENTS = (
 #: requires such a span to resolve, so the install rewrites them.
 PATH_CITERS = (CANDIDATE / "REVIEW-BRIEF.md", CANDIDATE / "SEMANTIC-DELTA.md")
 FIGURE_RE = re.compile(r"(\d+) requirements and (\d+) scenarios in the effective composition")
+#: The figure ``apply()`` writes for the composition without the addition.
+WITHOUT_RE = re.compile(
+    r"(\d+) requirements and (\d+) scenarios without the signed-off\s+\[dossier local-agent addition\]")
 
 
 class Refusal(RuntimeError):
@@ -123,18 +128,50 @@ def recount(root: pathlib.Path) -> tuple[int, int, set[str]]:
     return len(result.per_requirement), result.total, names
 
 
-def recount_installed(root: pathlib.Path) -> tuple[int, int, set[str]]:
-    """Recount a scratch copy of the composition with the proposed spec installed."""
-    files = counter.discover_composition_files(root)
-    with tempfile.TemporaryDirectory(prefix="dossier-install-") as tmp:
+def _recount_scratch(root: pathlib.Path, files: list[pathlib.Path],
+                     spec: bytes | None) -> tuple[int, int, set[str]]:
+    with tempfile.TemporaryDirectory(prefix="dossier-recount-") as tmp:
         scratch = pathlib.Path(tmp)
         for path in files:
             rel = path.relative_to(root)
             (scratch / rel).parent.mkdir(parents=True, exist_ok=True)
             (scratch / rel).write_bytes(path.read_bytes())
-        (scratch / INSTALLED_SPEC).parent.mkdir(parents=True, exist_ok=True)
-        (scratch / INSTALLED_SPEC).write_bytes((root / PROPOSED_SPEC).read_bytes())
+        if spec is not None:
+            (scratch / INSTALLED_SPEC).parent.mkdir(parents=True, exist_ok=True)
+            (scratch / INSTALLED_SPEC).write_bytes(spec)
         return recount(scratch)
+
+
+def recount_installed(root: pathlib.Path) -> tuple[int, int, set[str]]:
+    """Recount a scratch copy of the composition with the proposed spec installed."""
+    return _recount_scratch(root, counter.discover_composition_files(root),
+                            (root / PROPOSED_SPEC).read_bytes())
+
+
+def recount_without(root: pathlib.Path) -> tuple[int, int, set[str]]:
+    """Recount a scratch copy of the composition without the installed spec."""
+    files = [p for p in counter.discover_composition_files(root)
+             if p.relative_to(root) != INSTALLED_SPEC]
+    return _recount_scratch(root, files, None)
+
+
+def refigure(root: pathlib.Path, text: str) -> str:
+    """The status text with both figures following the recount of ``root``.
+
+    For an install that changes the composition after this one: rewriting
+    only the effective-composition digits leaves the "without" figure stale.
+    """
+    with_, without = FIGURE_RE.findall(text), WITHOUT_RE.findall(text)
+    if len(with_) != 1 or len(without) != 1:
+        raise Refusal(f"{STATUS}: expected one figure of each kind, found "
+                      f"{len(with_)} effective and {len(without)} without")
+    reqs, scenarios, _n = recount(root)
+    breqs, bscenarios, _n = recount_without(root)
+    text = FIGURE_RE.sub(f"{reqs} requirements and {scenarios} scenarios in the effective composition",
+                         text)
+    return WITHOUT_RE.sub(lambda m: m.group(0).replace(
+        f"{m.group(1)} requirements and {m.group(2)} scenarios",
+        f"{breqs} requirements and {bscenarios} scenarios", 1), text)
 
 
 def status_figure(root: pathlib.Path) -> tuple[int, int]:
@@ -175,6 +212,17 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
                 (root / STATUS).read_text(encoding="utf-8"))):
             findings.append(f"{STATUS}: the figure's paragraph does not name "
                             f"{INSTALLED_SPEC.as_posix()}, so it reads as the two-file composition")
+        without = WITHOUT_RE.findall((root / STATUS).read_text(encoding="utf-8"))
+        if current == "unapplied" and without:
+            findings.append(f"{STATUS}: a figure without the dossier addition before it is installed")
+        if current == "applied":
+            if len(without) != 1:
+                findings.append(f"{STATUS}: expected one figure without the dossier addition, "
+                                f"found {len(without)}")
+            elif (int(without[0][0]), int(without[0][1])) != recount_without(root)[:2]:
+                findings.append(f"{STATUS} figure without the addition "
+                                f"{(int(without[0][0]), int(without[0][1]))} differs from the recount "
+                                f"{recount_without(root)[:2]}")
         if current == "unapplied":
             _r, _s, names = recount_installed(root)
         else:
@@ -353,6 +401,68 @@ def selftest() -> int:
         (root / STATUS).write_text(status.replace(INSTALLED_SPEC.as_posix(), "elsewhere"))
         results.append(("applied: a figure paragraph not naming the installed spec fails",
                         any("does not name" in f for f in check(root))))
+        (root / STATUS).write_text(f"See {INSTALLED_SPEC.as_posix()}.\n\n"
+                                   + status.replace(INSTALLED_SPEC.as_posix(), "elsewhere"))
+        results.append(("applied: naming the installed spec outside the figure's paragraph fails",
+                        any("does not name" in f for f in check(root))))
+
+    profile = pathlib.Path("openspec/changes/profile/specs/polaris-generation/spec.md")
+
+    def add_profile(root: pathlib.Path) -> None:
+        (root / profile).parent.mkdir(parents=True, exist_ok=True)
+        (root / profile).write_text("## ADDED Requirements\n\n" + _req("Gamma", 2))
+
+    def digits_only(root: pathlib.Path) -> None:
+        """The narrative-profile installer's rewrite before R-364-2: the second figure only."""
+        reqs, scenarios, _n = recount(root)
+        text = (root / STATUS).read_text()
+        (root / STATUS).write_text(FIGURE_RE.sub(
+            f"{reqs} requirements and {scenarios} scenarios in the effective composition", text))
+
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        quiet(apply, root)
+        status = (root / STATUS).read_text()
+        (root / STATUS).write_text(status.replace("2 requirements and 3 scenarios without",
+                                                  "2 requirements and 4 scenarios without"))
+        results.append(("applied: a stale figure without the addition fails",
+                        any("without the addition (2, 4) differs" in f for f in check(root))))
+        (root / STATUS).write_text(status.replace(" without the signed-off", " without the signed off"))
+        results.append(("applied: no figure without the addition fails",
+                        any("found 0" in f for f in check(root))))
+        (root / STATUS).write_text(status)
+        add_profile(root)
+        digits_only(root)
+        results.append(("profile after dossier, digits only: the stale figure without the addition fails",
+                        status_figure(root) == (7, 9)
+                        and any("without the addition (2, 3) differs" in f for f in check(root))))
+        (root / STATUS).write_text(refigure(root, (root / STATUS).read_text()))
+        results.append(("profile after dossier, refigured: both figures follow the recount",
+                        check(root) == [] and "3 requirements and 5 scenarios without"
+                        in (root / STATUS).read_text()))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root, figure="3 requirements and 5 scenarios")
+        add_profile(root)
+        results.append(("profile before dossier: apply composes it into both figures",
+                        quiet(apply, root) == 0 and check(root) == []
+                        and status_figure(root) == (7, 9)
+                        and "3 requirements and 5 scenarios without" in (root / STATUS).read_text()))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        (root / STATUS).write_text((root / STATUS).read_text() + "2 requirements and 3 scenarios "
+                                   "without the signed-off\n[dossier local-agent addition](x)\n")
+        results.append(("unapplied: a figure without the addition fails",
+                        any("before it is installed" in f for f in check(root))))
+    with contextlib.redirect_stderr(io.StringIO()):
+        try:
+            main(["--apply"])
+            offered = True
+        except SystemExit:
+            offered = False
+    results.append(("the CLI offers no --apply; the sign-off recorder is the one writer", not offered))
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t)
         _fixture(root)
@@ -400,25 +510,10 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
-    mode.add_argument("--apply", action="store_true")
     mode.add_argument("--selftest", action="store_true")
-    parser.add_argument("--review", help="with --apply: the review raw whose bytes are verified first")
-    parser.add_argument("--disposition", help="with --apply: the notes record, for CONFIRM WITH EXCEPTIONS")
     args = parser.parse_args(argv)
     if args.selftest:
         return selftest()
-    if args.apply:
-        if not args.review:
-            parser.error("--apply writes signed subjects; pass --review <raw> so the reviewed "
-                         "bytes are verified first (the sign-off recorder does this itself)")
-        import record_versioned_signoff as recorder
-        try:
-            recorder.verify_reviewed(ROOT, recorder.real_packages()[KEY], args.review,
-                                     args.disposition)
-        except (ValueError, OSError) as exc:
-            print(f"REFUSED (nothing written): {exc}")
-            return 2
-        return apply(ROOT)
     findings = check(ROOT)
     if findings:
         print("FAILED")

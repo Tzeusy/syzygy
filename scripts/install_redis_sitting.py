@@ -34,7 +34,8 @@ Steps (finding numbers are the runbook's):
                        in the wrong order is refused)
   profile         F8,F11  the narrative-profile spec moves from proposed/ to
                        specs/; package prose naming the old path is rewritten;
-                       the status page figure follows the recount tool
+                       the status page figure follows the recount tool (both
+                       figures, once the dossier addition is signed off)
 """
 from __future__ import annotations
 
@@ -441,15 +442,32 @@ def step_profile(root: pathlib.Path, write: bool) -> bool:
                       f"(land the recount fix first): {r.stdout[-200:]}{r.stderr[-200:]}")
     status = root / STATUS
     text = status.read_text()
-    figure = re.search(r"(\d+) requirements and (\d+) scenarios in the effective composition", text)
-    want = f"{m.group(1)} requirements and {m.group(2)} scenarios in the effective composition"
-    if figure is None:
-        raise Refusal("PROJECT-STATUS.md has no effective-composition figure")
-    if figure.group(0) != want:
+    new = status_figures(root, text, f"{m.group(1)} requirements and {m.group(2)} scenarios")
+    if new != text:
         changed = True
         if write:
-            J.write(status, text.replace(figure.group(0), want))
+            J.write(status, new)
     return changed
+
+
+def status_figures(root: pathlib.Path, text: str, total: str) -> str:
+    """The status text with its figures following the recount.
+
+    Once the dossier local-agent addition is signed off the page gives two
+    figures, without it and with it; rewriting only the second leaves the
+    first false (R-364-2 Finding 1), so the dossier builder rewrites both.
+    """
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import build_polaris_dossier_local_agent_mode as dossier
+    if dossier.WITHOUT_RE.search(text):
+        try:
+            return dossier.refigure(root, text)
+        except dossier.Refusal as exc:
+            raise Refusal(str(exc)) from exc
+    figure = re.search(r"(\d+) requirements and (\d+) scenarios in the effective composition", text)
+    if figure is None:
+        raise Refusal("PROJECT-STATUS.md has no effective-composition figure")
+    return text.replace(figure.group(0), f"{total} in the effective composition")
 
 
 # ---- policy step (F4/F10) ------------------------------------------------------
@@ -1030,6 +1048,40 @@ def egress_selftests() -> list[tuple[str, bool]]:
     return ok
 
 
+def profile_figure_selftests() -> list[tuple[str, bool]]:
+    """The profile install after the dossier sign-off rewrites both figures."""
+    import contextlib
+    import io
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import build_polaris_dossier_local_agent_mode as dossier
+    ok: list[tuple[str, bool]] = []
+    profile = pathlib.Path(PROFILE_CHANGE) / "specs/polaris-generation/spec.md"
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        dossier._fixture(root)
+        ok.append(("before the dossier: one figure, digits rewritten",
+                   status_figures(root, "x 2 requirements and 3 scenarios in the effective composition.",
+                                  "9 requirements and 9 scenarios")
+                   == "x 9 requirements and 9 scenarios in the effective composition."))
+        with contextlib.redirect_stdout(io.StringIO()):
+            dossier.apply(root)
+        (root / profile).parent.mkdir(parents=True)
+        (root / profile).write_text("## ADDED Requirements\n\n" + dossier._req("Gamma", 2))
+        reqs, scenarios, _n = dossier.recount(root)
+        text = (root / STATUS).read_text()
+        (root / STATUS).write_text(status_figures(root, text, f"{reqs} requirements and {scenarios} scenarios"))
+        ok.append(("profile after dossier: both figures follow the recount and the dossier check passes",
+                   dossier.check(root) == []
+                   and "3 requirements and 5 scenarios without" in (root / STATUS).read_text()
+                   and "7 requirements and 9 scenarios in the effective" in (root / STATUS).read_text()))
+        try:
+            status_figures(root, text + text, "x")
+            ok.append(("profile after dossier: a doubled figure is refused", False))
+        except Refusal:
+            ok.append(("profile after dossier: a doubled figure is refused", True))
+    return ok
+
+
 def selftest() -> int:
     ok: list[tuple[str, bool]] = []
     both = {"a": PERFORMED_COMMON + (ROUTE_A, EGRESS_V2), "b": PERFORMED_COMMON + (ROUTE_B, EGRESS_V2, EGRESS_V1)}
@@ -1158,6 +1210,7 @@ def selftest() -> int:
         except Refusal:
             ok.append(("a missing mirror is refused", True))
     ok.extend(egress_selftests())
+    ok.extend(profile_figure_selftests())
     failed = [n for n, g in ok if not g]
     for n, g in ok:
         print(("ok   " if g else "FAIL ") + n)
