@@ -1,18 +1,26 @@
 # Impact ledger — D9, SEC-3 and the owner's attended agent session
 
 > **Candidate — binds nothing.** This is the blast radius of the amendment
-> drafted in `SEMANTIC-DELTA.md` (this directory), repaired once after round
-> 1. Every figure names the commit it was measured at. Re-run each one at the
-> reviewed commit; never copy it.
+> drafted in `SEMANTIC-DELTA.md` (this directory), repaired after rounds 1
+> and 2. Every figure names the commit it was measured at. Re-run each one at
+> the reviewed commit; never copy it.
 
 **Commits used below.**
 
-- `eb7be564605c98fcc7b5f2464b200382dd1bfe39` (`origin/main`, 2026-10-06):
-  the sweep population. It excludes this package's own branch commit, so
-  the package does not count itself.
-- The reviewed commit adds this package's five files and the P-103 register
-  row to that population. Each of them cites SEC-3, and that is the whole
-  difference [Inferred from the diff; a reviewer re-runs it].
+- `eb7be564605c98fcc7b5f2464b200382dd1bfe39` (`origin/main`, committed
+  2026-10-05 23:57 +0800): the classified sweep population. It excludes this
+  package's own branch commits, so the package does not count itself.
+- `5863d470931625e4fbbb012f8e79ef6eabb6411a` (`origin/main` on 2026-10-06):
+  the commit of the §4 application probe and of the §1 re-measurement. §1
+  gives the sweep's change from `eb7be564`.
+- `5126610b`, the next `origin/main` commit, is the round-2 repair's base. It
+  adds four files' changes only: the owner's round-2 direction, the round-2
+  raw, a `decisions/README.md` row and the `docs/README.md` campaign row. No
+  doctrine, contract or policy byte differs from `5863d470` [Observed:
+  `git diff --stat`].
+- The reviewed commit adds this package's six files and the P-103 register
+  row to the `5126610b` population [Inferred from the diff; a reviewer
+  re-runs it].
 
 ## 1. The identifier sweep
 
@@ -63,16 +71,49 @@ files. Lines in the doctrine, decisions, `openspec/`, craft-and-care,
 topology and root lanes, from files the identifier sweep did *not* match,
 were read one by one. Each is one of three things: a grant list ("grants no
 … observed-code execution"), a statement about Syzygy's pipeline, or a
-profile-contract row. The ones that bear on D9 are in §3. Neither sweep finds
-`capture-test-artifact-main.ts`. That file names no identifier and no term.
-Round 1 found it by reading the sibling `capture-test-artifact.ts`, which the
-identifier sweep does match (§3.6).
+profile-contract row. The ones that bear on D9 are in §3.
+
+Round 2's version of this paragraph said that neither sweep finds
+`capture-test-artifact-main.ts`. That was false: the term sweep matches it
+at line 16, "executing observed", in its usage text. The round-1 read of
+term hits covered only the lanes named above and skipped the code lane.
+The code-lane term hits have now been read, at `5863d470`: every file with a
+code extension (`.ts`, `.tsx`, `.js`, `.mjs`, `.py`, `.sh`, `.json`,
+`.yaml`, `.yml`) outside `docs/evidence/` and `docs/pursuits/`. That is 17
+files. Two are the capture tool, `capture-test-artifact.ts` (line 5,
+"executes observed") and `capture-test-artifact-main.ts` (line 16). Two are
+generators that name the `execution-profiles` module path
+(`05-CONTRACT-INDEX.yaml`, `build_task_router.py`), and one is
+`check_governance.py` line 2310, which names the same path. Five render or
+test the phrase "observed code structure" (`evaluation-footer.ts`,
+`orrery.ts`, `orrery.test.ts`, `polaris-copy.ts`, `test-model-fixture.ts`).
+`worker-change-observation.ts` line 167 states that the observer never
+executes observed code. The six remaining scripts either quote grants of
+"no … observed-code execution" or mutate an `executeObservedCode` authority
+flag in a fixture (`build_provider_route_messages_api_entry.py`,
+`build_public_admission_registry_entries.py`, `build_pwb_effect_acts_packet.py`,
+`polaris_generator_approval.py`, `record_pwb_behavior_amendment_acts.py`,
+`record_pwb_truth_amendment.py`). Only the capture tool executes observed
+code [Observed: each line read]. The round-2 review's spawn-call sweep
+reached the same result by a different method.
+
+**Re-measured at `5863d470`.** The same population rule gives **2,353**
+paths, of which **2,349** decode. **244** files match the identifier
+predicates (exact 205, ccsec 5, range 59, slash 5). The set at `eb7be564` is
+a subset, and the three additions are two retained raws on `main` since,
+`docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md` and
+`docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-2-RAW.md` (retained
+reviews), and `docs/README.md`, whose review-campaign table now names the D9
+campaign (a docs index; unchanged by D9) [Observed]. The term sweep matches
+**252** files. The lane classification above is kept at `eb7be564`.
 
 ## 2. Line-number citations of `security.md`
 
-Arm A adds 33 lines to `security.md`: SEC-4 moves from line 72 to 105, and
-SEC-5 from 85 to 118. Arm W adds 34 lines. Both figures are [Observed] for
-arm A in the application probe (§4) and computed from block length for arm W.
+Arm A adds 40 lines to `security.md`: SEC-4 moves from line 72 to 112, and
+SEC-5 from 85 to 125. Without the credential lines, it adds 37, and SEC-4
+lands at 109. Arm W adds 37 lines (34 without the credential lines). The
+arm A figures with the credential lines are [Observed] in the application
+probe (§4); the rest are computed from block length.
 
 The predicate
 `` security\.md`?(?::\s*|\s+lines?\s+|\s*L)\d+|security\.md#L\d+ ``
@@ -113,7 +154,7 @@ Each row therefore covers both copies.
 | Site | Quoted | After D9 |
 |---|---|---|
 | **RFC5-12** (`RFC-0005/consent-egress-secrets.md` 108–109) | "**Execution consent** — per project: the owner's approval Decision for a specific execution-profile version (RFC5-18). Absent: no observed code runs." | **Effect changes in the permitted case, under both arms [Inferred].** The owner's recorded choice is not an execution consent, and no profile is approved. Yet observed code runs: under arm A on Syzygy's instruction, under arm W with or without it. The clause could be read as limited to consent given *to Syzygy*, but unlike RFC5-18 it has no RFC5-19-style sentence to rest on. Packet Q3 |
-| **RFC5-24** (`RFC-0005/admission-and-boundary.md` 354–362) | adapter credentials are "… stored under SEC-5 discipline (never in any indexed store or surface); and" "never visible to observed-project code." | **Effect changes in the permitted case unless Q3(b) is adopted [Inferred].** The limb is not limited to profiles; the profile-only rule is the separate "injection prohibition" sentence after it. With Q3(b)'s condition ("No credential Syzygy holds for its typed adapters is readable by the session"), the limb stays true. [Inferred: a grep of `apps/` and `packages/` finds no adapter credential that Syzygy holds today. The dossier mode makes no provider call and holds no provider credential. The daemon holds a machine-client credential, which is not RFC5-24's population.] Packet Q3 |
+| **RFC5-24** (`RFC-0005/admission-and-boundary.md` 354–362) | adapter credentials are "… stored under SEC-5 discipline (never in any indexed store or surface); and" "never visible to observed-project code." | **Effect changes in the permitted case unless Q3(b) is adopted [Inferred].** The limb is not limited to profiles; the profile-only rule is the separate "injection prohibition" sentence after it. With Q3(b)'s condition, the limb stays true: Syzygy keeps its typed-adapter credentials where "neither the session nor any process it starts, directly or not, can read it at the operating-system level, for as long as any of them runs". That reaches a server or background job the session leaves running, which round 2 found the earlier wording did not (F2). An agent's own tool-permission rules do not satisfy the condition. [Inferred: a grep of `apps/` and `packages/` finds no adapter credential that Syzygy holds today. The dossier mode makes no provider call and holds no provider credential. The daemon holds a machine-client credential, which is not RFC5-24's population.] Packet Q3 |
 | RFC5-18 (`execution-profiles.md`) | "Observed-project code executes only when all of" (a)–(e) | Unchanged [Inferred]. RFC5-19's last bullet ("profiles govern only code Syzygy itself launches"), RFC5-18(d)'s "launching principal" and the module diagram all scope the gate to Syzygy's launches. Under arm A, a Syzygy instruction acted on by a session the owner started is not Syzygy launching. A session Syzygy starts is excluded by the text |
 | RFC5-19 | "untrusted everywhere, regardless of who owns the project"; reading outside evidence "is observation, not execution" | unchanged. Arm A's actor matches RFC5-19's "code Syzygy itself launches", extended to Syzygy's instructions. Arm W's actor-free exception list makes the CI runs RFC5-19 presupposes into doctrine violations [Inferred] |
 | RFC5-20; §4 case 8 | "no ambient credential is ever inherited (SEC-3's named violation)"; "A profile inheriting the host environment 'for convenience' (SEC-3's named violation)" | unchanged. The named violation keeps every byte and still governs every profile |
@@ -163,8 +204,9 @@ Each row therefore covers both copies.
 Syzygy-authored code. It spawns the real focused pytest suite on a Butlers
 checkout through `spawnSync`, with no profile and the caller's environment.
 `docs/THREE-SURFACE-POC.md` ("Capturing test-run evidence") calls it "a
-separate, manually invoked step". Verification then renders `Verified` from
-the artifact.
+separate, manually invoked step". Verification can then render `Verified`
+from the artifact, when the commit matches, the run exits 0 and the capture
+time is in range ("When verification renders `Verified`").
 
 - [Inferred] It is non-conforming **today, independent of D9**:
   - under the current actor-free SEC-3, it is observed code outside a
@@ -181,7 +223,7 @@ the artifact.
   Arm W's exception does not reach a process Syzygy spawns, even when an
   attended session invokes the tool.
 - So D9 neither cures it nor makes it worse. The repair, a profile or
-  retirement, is outside this package and is routed to the lead.
+  retirement, is outside this package. It is tracked as bead `syzygy-4mbu`.
 
 **`AGENTS.md` 89.** "The daemon never executes observed project code or test
 suites; separate operator commands do." Round 1's row said D9 gives those
@@ -190,18 +232,34 @@ commands "a doctrine footing". That was wrong, and the correction is:
 - the commands that sentence describes are typed by hand or are Syzygy's
   own capture tool, and neither is an attended agent session;
 - under arm A, a hand-typed command is outside SEC-3's execution rule
-  (packet Q2), and the capture tool stays forbidden, as above;
+  (packet Q1), and the capture tool stays forbidden, as above;
 - under arm W, both are SEC-3 violations [Inferred].
 
-**Is a repository instruction file "Syzygy instructing"?** `AGENTS.md` tells
-agent sessions in this repository how to run Butlers' tests ("Butlers'
-pytest needs its own `.venv/bin/python`"). Arm A's actor is "every
-instruction Syzygy's software issues", meaning a brief, prompt or work item
-Syzygy's running software emits. `AGENTS.md` is the owner's procedure for
-their own development sessions. Syzygy's software does not issue it, so it
-is not a Syzygy instruction [Inferred]. Under arm W, condition 1 reads
-"Syzygy never instructs …", which leaves the same question open. A reviewer
-who reads the file as Syzygy's instruction should report it to the owner.
+**Which instructions does arm A govern?** Arm A's text now defines the
+term in place: "every instruction a Syzygy feature gives an agent (a brief,
+prompt, skill or work item)".
+
+- **Shipped skills and prompt kits.** A skill Syzygy ships, such as the
+  `/polaris-dossier` skill named in PR #353's design, and the prompt kit
+  under `docs/polaris-generation/`, are instructions a Syzygy feature gives
+  an agent, whether or not Syzygy's software emits them at run time. Arm A
+  governs them: one that tells an agent to run observed code is lawful only
+  as the permitted case [Inferred].
+- **`AGENTS.md`.** It tells agent sessions in this repository how to run
+  Butlers' tests ("Butlers' pytest needs its own `.venv/bin/python`"). It is
+  the owner's procedure for their own development sessions on Syzygy, not
+  an instruction a Syzygy feature gives, so arm A does not govern it
+  [Inferred]. Under arm W, condition 1 reads "Syzygy never instructs …",
+  which leaves the same question open. A reviewer who reads the file as a
+  feature's instruction should report it to the owner.
+- **A typed CI adapter.** RFC5-24 lists CI among the external authorities
+  whose adapters Syzygy may hold. If Syzygy triggers a CI run of the
+  observed project through such an adapter, that run is a process Syzygy
+  schedules, or follows an instruction Syzygy gives, and arm A forbids it
+  outside a profile. It is not the permitted case, because CI is not the
+  owner's attended session [Inferred]. Reading the project's own CI
+  artifacts stays observation under RFC5-19. No such adapter exists today.
+  Routed (§5).
 
 **Other lanes, which are not authority.** A hit here can go stale but
 cannot change meaning:
@@ -222,13 +280,14 @@ cannot change meaning:
 
 ## 4. Derived artifacts: application probe
 
-**Method.** Two scratch clones were checked out at `eb7be564`. Arm A,
-clauses (a) and (b), was applied to one exactly as the delta's fenced blocks
-give them, with the credential lines kept, and committed. The applied block
-hashes to arm A's stated sha256. The other clone was left unapplied. The
-canonical battery (`PROJECT-STATUS.md` "How to verify this page", 78
-commands, unchanged since `eacb85d1`) ran in each [Observed, this session].
-The result speaks for `eb7be564` only (rule 7).
+**Method.** Two scratch clones were checked out at `5863d470`. Arm A,
+clauses (a) and (b), was applied to one exactly as the round-2 repair's
+fenced blocks give them, with the credential lines kept, and committed. The
+applied block hashes to arm A's stated sha256. The other clone was left
+unapplied. The canonical battery (`PROJECT-STATUS.md` "How to verify this
+page", 78 commands, unchanged since `eacb85d1`) ran in each [Observed, this
+session]. The result speaks for `5863d470` only (rule 7). The round-1 repair
+was probed the same way at `eb7be564`, with the same four failures.
 
 - unapplied: **78 commands, 0 nonzero**; `check_governance.py` "32 OK, 21
   WARN, 0 FAIL";
@@ -239,7 +298,7 @@ The result speaks for `eb7be564` only (rule 7).
 | `scripts/check_governance.py` | "31 OK, 21 WARN, 1 FAIL": CG-18, 8 findings (fixtures 2, 4, 6 and 9 each lose their packet digest and word count) | re-anchor the four fixtures |
 | `$CS/build_budget_report.py --check` | DRIFT in the same four fixtures and in `CONTEXT-BUDGET-REPORT.md` | regenerate |
 | `$CS/build_contract_index.py --check` | `05-CONTRACT-INDEX.yaml` differs from regeneration | regenerate |
-| `scripts/build_directive_register.py --check` | stale: SEC-4 72 → 105, SEC-5 85 → 118; SEC-3 stays at 61 | regenerate |
+| `scripts/build_directive_register.py --check` | stale: on regeneration, SEC-4 72 → 112, SEC-5 85 → 125; SEC-3 stays at 61 | regenerate |
 
 Two results matter:
 
@@ -247,20 +306,26 @@ Two results matter:
   green, because D9 does not touch `vision.md`, which that recorder binds.
 - Neither `security.md`'s digest nor `v1.md`'s occurs in any tracked file
   outside this package (`git grep -F` at `eb7be564`: 0 files each)
-  [Observed]. No act manifest binds either file.
+  [Observed]. No act manifest binds either file. The doctrine tree is
+  identical at `eb7be564` and `5863d470`.
 
 Arm W was probed at round 1 (`eacb85d1`, the round-1 bytes) with the same
 four failures. Its repaired bytes differ only inside SEC-3's block, so the
-same four commands are expected to fail [Inferred, not re-run].
+same four commands are expected to fail [Inferred, not re-run]. The
+no-credential variants were not probed; they move SEC-4 and SEC-5 by three
+lines fewer, which changes the same four outputs.
 
 ## 5. Observations routed, not repaired
 
 1. **Dispatched workers.** Under arm A, a work item Syzygy dispatches that
-   tells a worker to run tests is "an instruction Syzygy's software issues".
-   It is lawful only as the permitted case: an attended session the owner
-   started, on the owner's recorded choice. Dispatch is deferred today.
-   RFC5-19 treats a worker's retained gate artifact as produced "outside
-   Syzygy". Whatever act opens dispatch must square the two.
+   tells a worker to run tests is "an instruction a Syzygy feature gives an
+   agent". It is lawful only as the permitted case: an attended session the
+   owner started, on a choice recorded for that run naming what it covers.
+   By the owner's 2026-10-06 choice this needs no new doctrine act; it needs
+   a per-run choice. Dispatch is deferred today. RFC5-19 treats a worker's
+   retained gate artifact as produced "outside Syzygy". Whatever act opens
+   dispatch must square the two. A typed CI adapter (§3.6) raises the same
+   question for CI runs Syzygy triggers.
 2. **Consent-record wording.** The public-repo admission template and its
    instances (§3.6) name execution as excluded "(SEC-3)". Routed to the
    consent lane.
@@ -270,6 +335,15 @@ same four commands are expected to fail [Inferred, not re-run].
    defeats that. Q3(b) covers only RFC5-24's adapter population. The
    machine-client credential is disclosed as a cost and is not conditioned.
    Routed to the specification lane, as an operating step if wanted.
+6. **Who records the owner's choice.** Neither arm says how the record shows
+   that the choice is the owner's. In PR #353's design the agent records it,
+   in a state directory that the owner's records ruling treats as
+   agent-editable. Routed to the dossier specification.
+7. **Attendance is not observable.** Syzygy cannot see whether the owner is
+   present. The limit binds Syzygy's instruction, not the session (packet
+   §2). A session in an auto-approve mode with the owner away is not
+   attended; in PR #353 only the interactive authoring session receives the
+   execution rule.
 4. **Clone integrity.** Code the session runs can rewrite the clone's object
    store (dossier review 1, finding 1). The owner's records ruling handles
    Syzygy's own records by re-deriving them.

@@ -1,4 +1,4 @@
-# Review brief — D9 doctrine amendment packet (SEC-3), rounds 1 and 2
+# Review brief — D9 doctrine amendment packet (SEC-3), rounds 1 to 3
 
 > **Candidate — binds nothing.** The brief for one fresh-context review of
 > this package (CC-REV-1). A review is evidence for the owner. It adopts
@@ -6,8 +6,19 @@
 >
 > **Round 2 (2026-10-06).** Round 1 returned `REVISE` (raw:
 > docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md, which the lead retains). Each
-> finding was repaired once (`ROUND-1-DISPOSITIONS.md`). Round 2 is the
-> confirming round, and the stopping rule below applies to it unchanged.
+> finding was repaired once (`ROUND-1-DISPOSITIONS.md`). Round 2 was the
+> confirming round.
+>
+> **Round 3 (2026-10-06).** Round 2 returned `REVISE` (raw:
+> docs/reviews/R-DOCTRINE-AMENDMENT-D9-2-RAW.md). By the stopping rule it went
+> to the owner, who answered two questions the same day
+> (POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md): the recommended arm
+> may permit execution through any Syzygy instruction, in any feature, only
+> on a choice recorded for that one run, naming what it covers; and the
+> credential condition reaches every process the session starts, for as long
+> as any runs. The owner directed one repair and one confirming round 3. Each
+> finding was repaired once (`ROUND-2-DISPOSITIONS.md`). Criterion 1 below
+> carries the owner's new scope.
 
 ## Stopping rule, set before the round
 
@@ -21,6 +32,10 @@ Agreed before round 1 so it is not invented after a REVISE:
   and its repair in `ROUND-1-DISPOSITIONS.md`. Round 2 then confirms. A
   second `REVISE` goes to the owner with both raws; no round 3 is
   dispatched without the owner.
+- Applied: round 2 returned `REVISE` and went to the owner, who directed one
+  repair (`ROUND-2-DISPOSITIONS.md`) and one confirming round 3. Round 3 is
+  the last. A third `REVISE` returns to the owner with all three raws; no
+  round 4 is dispatched without the owner.
 
 A verdict is never re-labelled.
 
@@ -29,7 +44,8 @@ A verdict is never re-labelled.
 The tracked files of
 `.syzygy/governance/contracts/candidates/doctrine-amendment-sec3-attended-agent-session-d9/`
 at the reviewed commit: `OWNER-DECISION-PACKET.md`, `SEMANTIC-DELTA.md`,
-`IMPACT-LEDGER.md`, `REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`. The
+`IMPACT-LEDGER.md`, `REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`,
+`ROUND-2-DISPOSITIONS.md`. The
 proposed doctrine text is in the fenced blocks under the delta's "Proposed
 meaning": arm A, arm W, their optional `v1.md` clauses, and the removable
 credential lines.
@@ -62,6 +78,10 @@ Read these, and nothing else is needed:
   - `apps/three-surface-poc/src/capture-test-artifact-main.ts` and
     `docs/THREE-SURFACE-POC.md` ("Capturing test-run evidence");
   - `docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-1-RAW.md` (finding 8).
+- Added for round 3:
+  - POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md, in `decisions/`
+    once the lead's pull request lands (the owner's two answers);
+  - docs/reviews/R-DOCTRINE-AMENDMENT-D9-2-RAW.md (the round-2 findings).
 - `contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md` and
   `SEMANTIC-DELTA-TEMPLATE.md`.
 
@@ -71,6 +91,11 @@ Read these, and nothing else is needed:
    still never runs inside Syzygy, or under anything Syzygy launches or
    schedules, outside a profile. The owner's own attended agent session may
    run it on the owner's host when the owner chose that, provided that:
+   - *(round 3, by the owner's 2026-10-06 direction)* for the recommended
+     arm, the ruling's scope is any Syzygy instruction in any feature, only
+     on a choice the owner records for that one run, naming what it covers,
+     with no standing or per-project record; the packet must say plainly
+     that this is wider than the dossier ruling;
    - Syzygy never issues the instruction without the owner's recorded
      choice;
    - every claim resting on that execution is Inferred;
@@ -100,7 +125,8 @@ Read these, and nothing else is needed:
   map's "no observed-project code executes until …" create a conflict that
   only a contract amendment can resolve (packet Q3)?
 - **CC-SEC-3.** Is the packet right that the clause's own "Doctrine's text
-  prevails" line governs the gap until a policy amendment (packet Q2)?
+  prevails" line governs the gap until a policy amendment (packet Q4; it
+  was Q2 in round 1)?
 - Does any quotation differ from its source? Re-derive the anchors' sha256
   and line numbers at the reviewed commit.
 - Re-run the ledger's sweeps (§1, §2) and the application probe (§4). Do
@@ -118,7 +144,7 @@ Read these, and nothing else is needed:
   line 56, "In the local-agent mode the operator's agent session may
   build and run the observed project". Does naming Syzygy as the actor
   claim jurisdiction the current text lacks, or give some up silently?
-  Is Q2 put fairly?
+  Is Q2 put fairly? (Round 3's packet folds Q2 into Q1.)
 - **The violation sentence under each arm.** Is it exact (R1)?
 - **RFC5-12 and RFC5-24.** Are the quotations exact? Is each arm's effect
   stated correctly? Does condition 4 keep RFC5-24 true, and is Q3's cost
@@ -131,14 +157,37 @@ Read these, and nothing else is needed:
 - Re-run the ledger's sweeps (§1, §2) and the arm A application probe (§4)
   at the reviewed commit.
 
+## Round 3: what to test, at least
+
+- Is each round-2 finding (F1, F2, N1–N9) resolved, partly resolved, or
+  not, by the repair recorded for it? Re-derive rather than trust the
+  dispositions.
+- **Arm A against the owner's scope.** Does the permitted case require a
+  choice recorded for that one run, naming what the instruction covers, and
+  exclude a standing or per-project record, everywhere it is stated (text,
+  violation sentence, packet, delta, P-103 row)? Does the packet say plainly
+  that arm A is wider than the dossier ruling and that a future feature
+  needs no new doctrine act? Is anything still called minimal?
+- **Condition 4 against RFC5-24.** Does it now reach every process the
+  session starts, for as long as any runs, at the operating-system level?
+  Is Q3's cost honest?
+- **Whom the case binds (N2).** Is it clear, in the text and the packet, that
+  the case's limits bind Syzygy's instruction and not the session?
+- **Removability.** Does deleting the credential lines still leave each arm
+  grammatical, exact and equal to the stated no-credential digest?
+- **Arm W.** Is its per-run wording consistent with arm A's?
+- Re-run the ledger's sweeps (§1, §2) and the arm A application probe (§4)
+  at the reviewed commit.
+
 ## Output
 
-Round 1 wrote docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md. Round 2 writes
-docs/reviews/R-DOCTRINE-AMENDMENT-D9-2-RAW.md, a file that round creates. Its
+Round 1 wrote docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md, and round 2
+wrote docs/reviews/R-DOCTRINE-AMENDMENT-D9-2-RAW.md. Round 3 writes
+docs/reviews/R-DOCTRINE-AMENDMENT-D9-3-RAW.md, a file that round creates. Its
 first four non-blank lines must be exactly:
 
 ```text
-# Review - D9 doctrine amendment packet, round 2 (SEC-3 attended agent session)
+# Review - D9 doctrine amendment packet, round 3 (SEC-3 attended agent session)
 Reviewed commit: <the full 40-hex commit you reviewed>
 Package digest: <sha256 by the method below>
 Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
