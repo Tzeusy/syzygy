@@ -30,7 +30,7 @@ CC-SPEC-2, CC-SPEC-4
 
 ## decisions
 
-None declared in the requirement warrants.
+POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05, POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05, POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05
 
 ## topology
 
@@ -38,4 +38,4 @@ None declared in the requirement warrants.
 
 ## parent_requirements
 
-REQ-polaris-generation-001, REQ-polaris-generation-004, REQ-polaris-generation-005, REQ-polaris-generation-006, REQ-polaris-generation-012, REQ-polaris-generation-017, REQ-polaris-generation-018, REQ-polaris-generation-019, REQ-polaris-generation-025, REQ-polaris-generation-030, REQ-polaris-generation-031, REQ-polaris-generation-033, REQ-polaris-generation-034
+REQ-polaris-generation-001, REQ-polaris-generation-002, REQ-polaris-generation-003, REQ-polaris-generation-004, REQ-polaris-generation-005, REQ-polaris-generation-006, REQ-polaris-generation-012, REQ-polaris-generation-017, REQ-polaris-generation-018, REQ-polaris-generation-019, REQ-polaris-generation-020, REQ-polaris-generation-022, REQ-polaris-generation-025, REQ-polaris-generation-030, REQ-polaris-generation-031, REQ-polaris-generation-033, REQ-polaris-generation-034
