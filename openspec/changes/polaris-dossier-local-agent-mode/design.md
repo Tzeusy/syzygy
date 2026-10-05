@@ -28,8 +28,9 @@ question in-session: the run's limits, the consequential clarifications, and
 the usage figure at the end.
 
 ```text
- 1 agent:    syzygy dossier preflight <url>        consent, registry, policy acts; consented revisions
-             └─ none in force ─► stop: name the record the owner must make (Syzygy creates none)
+ 1 agent:    syzygy dossier preflight <url>        consent, registry, policy acts; consented revisions;
+                                                   for a governed project, the per-project provider statement
+             └─ missing ─► stop: name the record the owner must make (Syzygy creates none)
  2 agent:    git clone <url> <dir>; git checkout <consented revision>     the operator's session fetches; Syzygy fetches nothing
  3 operator: answers one structured question: deadline, token or turn budget, repair and question limits
  4 agent:    syzygy dossier init <dir> --url <url> --config <answers>   ─► run dir, pinned revision
@@ -37,24 +38,27 @@ the usage figure at the end.
  6 agent:    explores the clone; may build and run the project, listing every command it runs
  7 agent:    asks the operator ≤ maxQuestions consequential questions; records answers verbatim
  8 agent:    writes draft ─► syzygy dossier check ─► findings ─► repair ─► …   (≤ maxRepairCycles)
- 9 agent:    launches a fresh inventory session with `syzygy dossier session-prompt <run> inventory`
-10 agent:    launches a fresh fidelity-review session with `session-prompt <run> review --kind fidelity`
+ 9 operator: starts a fresh inventory session with the command `session-prompt <run> inventory` prints
+10 operator: starts a fresh fidelity-review session (`session-prompt <run> review --kind fidelity`)
 11 agent:    syzygy dossier render <run>
-12 agent:    launches a fresh design-review session with `session-prompt <run> review --kind design`
+12 operator: starts a fresh design-review session (`session-prompt <run> review --kind design`)
              └─ a blocking finding ─► back to 8 (a new revision retires the reviews)
 13 operator: declares the agents' usage; agent runs syzygy dossier close <run> --usage …
 14 agent:    reports the site path, `syzygy dossier status <run>` verbatim, and what is still Unknown
 ```
 
-Steps 9, 10 and 12 launch separate top-level sessions headless (`claude -p`
-or `codex exec`), with the working directory set to the run directory and the
-prompt **exactly** the text `session-prompt` prints, so the authoring session
-never writes the reviewer's instructions. The operator sees and approves each
-launch in the tool's own permission prompt, so the coordination is attended
-[Inferred: both tools prompt before running a shell command unless the
-operator has allowed it]. An operator who wants the stricter form runs steps
-4, 9, 10 and 12 by hand in their own shell; the record notes which form ran,
-as operator-declared.
+At steps 9, 10 and 12 the authoring session stops and hands over: it runs
+`syzygy dossier session-prompt`, which prints the fixed prompt and a
+ready-to-paste command (`claude -p "<prompt>"` or `codex exec "<prompt>"`,
+with the run directory as working directory). The **operator** starts that
+session, in another terminal or with Claude Code's `!` prefix, so it is a
+separate top-level session the operator starts and the authoring session
+never writes the reviewer's instructions (owner direction
+`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`, item 2). A
+subagent of the authoring session does not count. When the session finishes,
+the operator returns to the authoring session, which resumes at the next
+step. The loop is therefore attended at each hand-over, and no agent
+coordinates another.
 
 At step 3 the skill may offer presets, but the operator selects or types the
 values; Syzygy records them as operator-declared, conveyed by the agent
@@ -90,9 +94,13 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
    itself and binds the verdict to the packet digest, so what the reviewer
    was given is Observed. Whether the reviewer had nothing else is not
    observable, so session freshness stays Inferred and the page says so.
-   Separate top-level sessions are the default; a different agent tool for
-   review (a Codex review of a Claude Code draft, or the reverse) is allowed
-   and recorded.
+   Each inventory and review runs in a separate top-level session that the
+   operator starts, with a declared session identifier that must differ from
+   the author's; a subagent of the authoring session does not count (owner
+   ruling). A different agent tool for review (a Codex review of a Claude
+   Code draft, or the reverse) is allowed and recorded. The fidelity packet
+   carries the frozen inventory as part of its criteria, because
+   REQ-polaris-generation-006 measures coverage against it.
 6. **Excluded files make blocks Unknown, not findings.** A quotation from a
    file that screening excludes cannot be verified without using excluded
    content, so the block renders `excluded-content` (RFC2-24 #7) and no
@@ -116,6 +124,16 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
    change; the design takes no position on that.
 
 
+10. **Any repository, with SEC-2 kept whole.** The owner allowed the mode on
+    any repository, governed projects included, and left SEC-2 unchanged.
+    The amendment reads the two together: an observed, non-governed
+    repository needs no record (the operator's own act); a governed project,
+    or one whose project input is silent, needs an in-force per-project
+    statement naming the operator's agent provider and the content classes
+    it may receive, which `preflight` reports and `init` requires. This is
+    the amendment's reading, flagged for review; the owner's choice of "Any
+    repo" is preserved in the semantic delta.
+
 ## Command surface
 
 One binary, `syzygy`, with a `dossier` command family. Every command is
@@ -126,8 +144,8 @@ usage error.
 
 | Command | Who runs it | Does | Built from (existing code) | New |
 |---|---|---|---|---|
-| `syzygy dossier preflight <url>` | agent | Reports whether observation consent, the observer registry entry and the classification and screening policy acts are in force for the repository, and which revisions the consent names; prints the clone and checkout commands; refuses with the missing record named | consent reader of PR #263; `evaluateBodyReadAuthority`; `parseGithubUrl` | the report; no network access (the URL is parsed, not fetched) |
-| `syzygy dossier session-prompt <run> <inventory\|review> [--kind fidelity\|design]` | agent, to launch a fresh session | Prints the fixed prompt for a fresh session and records its digest, so the authoring session does not write it | — | the prompt texts |
+| `syzygy dossier preflight <url>` | agent | Reports whether observation consent, the observer registry entry and the classification and screening policy acts are in force for the repository, which revisions the consent names, and, for a governed project, whether a per-project statement names the operator's agent provider; prints the clone and checkout commands; refuses with the missing record named | consent reader of PR #263; `evaluateBodyReadAuthority`; `parseGithubUrl` | the report; no network access (the URL is parsed, not fetched) |
+| `syzygy dossier session-prompt <run> <inventory\|review> [--kind fidelity\|design]` | agent, at a hand-over | Prints the fixed prompt for a fresh session and a ready command for the operator to start it, and records the prompt's digest, so the authoring session does not write it | — | the prompt texts |
 | `syzygy dossier init <clone> --url <repo-url> --config <run.json> [--out <run-dir>]` | agent, on the operator's answer (or the operator, in the strict form) | Reads the observation consent, registry entry and policy acts; verifies HEAD is a consented revision; checks the config's declared tool, provider and limits; writes `run.json` | consent reader of PR #263 (`packages/polaris-generation-consent`: `inForceRecords`, `createConsentPorts`, `withConsent`; open, not on main); `evaluateBodyReadAuthority` (`packages/three-surface-poc-core/src/body-read-authority.ts`); `parseGithubUrl` (`dossier-trigger.ts`) | HEAD-to-consent comparison (the trigger's `pinRevision` reads `ls-remote`, not a local clone); config validation |
 | `syzygy dossier brief <run>` | agent | Writes `brief.md` and `draft.schema.json`; starts the deadline clock | `promptForStage(stage, 'dossier')` (`prompts.ts`); `OWNER_TOPICS` (`dossier-evaluation.ts`); `DOSSIER_READER_QUESTIONS` (`dossier-profile.ts`) | the local-agent schema (claims cite path + line range, not `sourceIds`); brief text for labels, quotation and clarification rules |
 | `syzygy dossier check <run> [--draft <file>]` | agent | Freezes the draft as revision N; runs schema, path, range, quotation and label checks; writes `<run>/checks/rev-N.json`; refuses past the repair limit or deadline | `checkBlockQuotes` / `inspectBlockQuotes` / `normaliseForQuote` (`quote-fidelity.ts`); `validateStage` / `validateDraftRecord` (`provider-draft.ts`); `readGitBlobsBatch`; screening from `public-source-screening.ts` and `classifySource` / `detectSecrets` / `scanActiveContent` | line-range restriction; a normalisation offset map so a normalised match yields a byte range; per-path citations; label rules; cycle counting |
@@ -197,10 +215,9 @@ built and measured.
 - **The non-governed profile.** A Redis dossier also needs requirement 032 for
   its composition. This change works with or without it; the renderer applies
   032 only where it is adopted and applies.
-- **Headless session identifiers and approval.** Whether `claude -p` and
-  `codex exec` report a session identifier the verdict can carry, and which
-  permission settings make each launch an attended, approved step, are
-  confirmed at implementation [Unknown].
+- **Session identifiers.** Whether `claude -p` and `codex exec` report a
+  session identifier the verdict can carry is confirmed at implementation
+  [Unknown]; either way the identifier is operator-declared.
 - **The consent precondition.** `preflight` can only report consent records
   that exist. Making one for a public repository is the owner's act under
   the observation-consent route that the direction keeps (item 4); this
@@ -253,9 +270,10 @@ With a URL (the author, driving the loop):
    finding and re-run until clean or refused.
 8. For each of inventory, review --kind fidelity, then (after
    `syzygy dossier render <run>`) review --kind design: run
-   `syzygy dossier session-prompt <run> <role> [--kind <kind>]` and launch a
-   new session with exactly that prompt (`claude -p "<prompt>"` with the run
-   directory as working directory). Never add to or edit the prompt.
+   `syzygy dossier session-prompt <run> <role> [--kind <kind>]`, show the
+   operator the command it prints, and wait. The operator starts that
+   session; never start it yourself and never use a subagent for it. Resume
+   when the operator says it has finished, and run `syzygy dossier status`.
 9. On a blocking finding, go back to 7.
 10. Ask the operator for the usage figure their tool shows (or none);
     `syzygy dossier close <run> --usage-…`. Report the site path and
@@ -290,8 +308,9 @@ verified; quote it exactly, and treat a refusal as a refusal.
 - Ask at most the brief's question limit; record answers verbatim.
 - Draft, `syzygy dossier check`, repair until clean or refused.
 - For inventory, fidelity review and (after `syzygy dossier render`) design
-  review: `syzygy dossier session-prompt <run> <role>`, then `codex exec`
-  with exactly that prompt and the run directory as working directory.
+  review: `syzygy dossier session-prompt <run> <role>`, show the operator the
+  command it prints, and wait; the operator starts that session. Never start
+  it yourself or delegate it to a sub-agent.
 - Ask the operator for usage; `syzygy dossier close`; report the site path
   and `syzygy dossier status` verbatim.
 - In a session started from a session-prompt, do only what that prompt says.
