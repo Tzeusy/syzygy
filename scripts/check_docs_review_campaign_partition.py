@@ -283,6 +283,11 @@ CAMPAIGNS = (
         "D8 doctrine amendment gate",
         r"R-DOCTRINE-AMENDMENT-D8-.*\.md",
     ),
+    campaign(
+        "polaris-dossier-local-agent",
+        "Polaris dossier local-agent amendment gate",
+        r"R-POLARIS-DOSSIER-LOCAL-AGENT-.*\.md",
+    ),
 )
 
 
