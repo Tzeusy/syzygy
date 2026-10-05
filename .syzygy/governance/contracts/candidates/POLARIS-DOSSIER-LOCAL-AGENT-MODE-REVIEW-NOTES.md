@@ -109,17 +109,23 @@ generated files, and no signed subject:
   union as `tasks.md` asks;
 - the reconciliation census, `census.json`.
 
-It refuses while an installed Polaris addition has no sign-off record. The
-builder has already rewritten the status page's figure so that it names the
-addition and the sign-off record. Two hand edits remain, because no script writes a
-route row or the battery:
+It refuses while an installed Polaris addition has no sign-off record.
 
-- name the new record on the change's row in `openspec/README.md`, whose
-  status cell still says candidate (the reconciliation's R5 fails until it
-  does);
-- add the recorder's `--check polaris-dossier-local-agent-mode --version 1.0`
-  line to the battery, the hosted workflow and the count sentence, together
-  (CG-26).
+Then, in the same commit, the route pages. No script writes route prose, so
+these are hand edits, each an exact replacement given in
+`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-ROUTE-EDITS.txt` beside this
+record (plain text, so its quoted links are not followed):
+
+- check, without editing, the status sentence the builder wrote in
+  `PROJECT-STATUS.md`: it names the addition, its installed spec and the
+  sign-off record, beside both figures;
+- replace the table's lead paragraph in `openspec/README.md`, which still
+  calls the change a candidate;
+- replace the change's row in `openspec/README.md` so that it names the
+  sign-off record (the reconciliation's R5 fails until it does);
+- add the recorder's
+  `--check polaris-dossier-local-agent-mode --version 1.0` line to the
+  battery, the hosted workflow and the count sentence, together (CG-26).
 
 The canonical battery then runs clean [Inferred: from a scratch-clone dry run
 that recorded nothing real].
