@@ -1,34 +1,40 @@
 # Doctrine amendment packet — D9 (proposed): your own agent session may run the project you are observing
 
-**Status: DRAFT — not applied, not adopted; binds nothing.** Doctrine
-amendment is an owner act (VIS-4). An agent session drafted this packet on
-2026-10-05, as the review-1 rulings direction asked. It edits no doctrine
-byte and authorizes no implementation. A commit, a merged pull request, a
-review, a closed bead or silence performs nothing; only your own words in
-your own session do.
+**Status: DRAFT. Not applied, not adopted; binds nothing.** Amending
+doctrine is an owner act (VIS-4). An agent session drafted this packet on
+2026-10-05, as the review-1 rulings direction asked, and repaired it once on
+2026-10-06. It edits no doctrine byte and authorizes no implementation. A
+commit, a merged pull request, a review, a closed bead or silence performs
+nothing. Only your own words, in your own session, do.
 
-**Review state.** Not yet reviewed. `REVIEW-BRIEF.md` (this directory) is
-the brief for a fresh-context review. This packet comes to you after that
-review, with its verdict.
+**Review state.** Round 1 returned `REVISE`
+(docs/reviews/R-DOCTRINE-AMENDMENT-D9-1-RAW.md). Every finding was repaired
+once, as recorded in `ROUND-1-DISPOSITIONS.md`. Round 2 is the confirming
+round. If it also returns `REVISE`, this packet comes to you with both raws.
 
-**Identifier.** `D9` is provisional. The amendment log holds D1, D5 and D6;
-D3, D7 and D8 are open packets. If another packet is adopted first and takes
-D9, this one takes the next free number.
+**Identifier.** `D9` is provisional. The amendment log holds D1, D5 and D6,
+and D3, D7 and D8 are open packets. If another packet is adopted first and
+takes D9, this one takes the next free number.
 
-**Companions in this directory:** `SEMANTIC-DELTA.md` (exact current and
-proposed text), `IMPACT-LEDGER.md` (everything that cites SEC-3, and what
-happens to it), `REVIEW-BRIEF.md`.
+**Companions in this directory:**
+
+- `SEMANTIC-DELTA.md`: the exact current and proposed text for both arms;
+- `IMPACT-LEDGER.md`: everything that cites SEC-3, and what happens to it;
+- `REVIEW-BRIEF.md`;
+- `ROUND-1-DISPOSITIONS.md`.
 
 ---
 
 ## 1. What you decided, and why this packet exists
 
-On 2026-10-05 you said that the Polaris dossier is to be written by your own
-Claude Code or Codex session over a local clone, and that this session may
-build and run the project it is reading. For example, it may start
-`redis-server` to see how it behaves. Claims that rest on such a run are
-labelled Inferred, and the run record lists the commands the agent says it
-ran.
+On 2026-10-05 you said three things:
+
+- the Polaris dossier is written by your own Claude Code or Codex session
+  over a local clone;
+- "in the local-agent mode" that session may build and run the project it is
+  reading, for example starting `redis-server` to see how it behaves;
+- claims resting on such a run are labelled Inferred, and the run record
+  lists the commands the agent says it ran.
 
 A fresh-context review then pointed out that SEC-3, as written, forbids
 this:
@@ -36,127 +42,152 @@ this:
 > **SEC-3 — Observed code is untrusted, everywhere.** Observed-project code
 > runs only inside an explicit, opt-in execution profile.
 
-The text says nothing about *who* runs the code. So a session you start, on
-your machine, running Redis because a Syzygy brief said it may, is observed
-code running outside a profile.
+The text does not say *who* runs the code. So a session you start on your
+machine, running Redis because a Syzygy brief said it may, is observed code
+running outside a profile.
 
 You were offered three options, with SEC-3 quoted to you:
 
-- **"Only in a sandbox" (recommended at the time):** the session may run
-  the project only inside a contained environment.
-- **"Forbid, disclose":** the session may not run the project.
-- **"Allow on host, amend SEC-3":** the option you chose.
+- **"Only in a sandbox"** (recommended at the time): the session may run the
+  project only inside a contained environment.
+- **"Forbid, disclose"**: the session may not run the project.
+- **"Allow on host, amend SEC-3"**: the option you chose.
 
 You also directed that this amendment be drafted, reviewed and adopted
 before the dossier mode can be signed. Until then, nothing in the dossier
 mode may tell an agent to run observed code outside a profile.
 
-## 2. What the amendment says, in plain words
+## 2. The recommended text (arm A), in plain words
 
-SEC-3 keeps its title, its "untrusted whoever owns the project" rule, its
-profile requirements, and its original violation example word for word. It
-gains one exception:
-
-- **Who:** an agent session that *you* start and *you* attend, on *your*
-  own machine. A session Syzygy starts, or one left running unattended, does
-  not count.
-- **When:** only when you have chosen to let it run the project.
-- **Three conditions:**
-  1. Syzygy never tells such a session to run the project unless your
-     choice is recorded first.
+- **SEC-3 says whose rule it is.** The rule binds Syzygy itself, anything
+  Syzygy launches or schedules, and any instruction Syzygy's software
+  issues, such as a dossier brief. None of them runs observed code outside a
+  profile, or tells anything else to, except in one case.
+- **The one case.** When you have chosen it, and your choice is recorded
+  first, Syzygy may issue an instruction that lets an agent session run the
+  project. The session must be on your own machine, and you must have
+  started it and be attending it.
+- **The conditions:**
+  1. Your choice is recorded before Syzygy issues the instruction.
   2. Anything learned by running the project is labelled Inferred, never
      Observed.
-  3. The commands the session says it ran are shown beside the claims they
-     support, as the session's own account.
-- **What does not change:** Syzygy itself, and anything Syzygy launches or
-  schedules, still runs observed code only inside a profile.
-- **The cost, written into the rule:** the session runs with your own
-  credentials and network, including any Syzygy credential or endpoint on
-  that machine. Code it runs can reach them, and can change any file you
-  can, the clone included. Nothing contains it. The rule records that you
-  accepted this risk instead of a sandbox-only rule or a ban.
-- **Why this is not the forbidden "ambient credentials for convenience"
-  profile:** that violation is a *profile*, Syzygy's own containment, that
-  quietly carries your credentials, so a run that looks contained is not.
-  The attended session claims no containment. It runs the project only on
-  your recorded choice, and nothing it produces is shown as more than
-  Inferred. The credential exposure is real either way, and the text says
-  so; it does not pretend otherwise.
+  3. Every command the session says it ran is disclosed, as the session's
+     own account. This matches your words: "the run record lists the
+     commands".
+  4. *(Optional, Q3)* No credential Syzygy holds for its adapters is
+     readable by the session.
+- **Where the case ends.** A session Syzygy starts, or one left running
+  unattended, does not count. Subagents of your session are part of it. A
+  process left running after the session ends is not, and Syzygy never asks
+  for one.
+- **The cost, written into the rule.** The session runs with your own
+  credentials and network, including Syzygy's endpoints and any Syzygy
+  credential readable on that machine. Code it runs can reach them, and can
+  change any file you can, the clone included. Nothing contains it. The rule
+  records that you accepted this risk instead of a sandbox-only rule or a
+  ban.
+- **Kept word for word.** "Untrusted, everywhere", "It is untrusted whoever
+  owns the project", the profile rules, and the original violation, "an
+  execution profile that inherits the host user's ambient credentials 'for
+  convenience.'"
+- **Why the case is not that violation.** The rule says so outright: the
+  exposure to your credentials is the same. What differs is that nothing
+  pretends otherwise. The case claims no containment, runs only on your
+  recorded choice, and nothing it produces is shown as more than Inferred.
 
-A second, smaller clause adds one sentence to `v1.md`. Its "Observed code"
-line says execution is "opt-in, profiled, and blocked until the
-execution-profile RFC is accepted". The added sentence reads: "SEC-3's one
-exception is the owner's own attended agent session."
+The optional second clause adds one sentence to `v1.md`'s "Observed code"
+line, naming this case. The line describes Syzygy's platform and stays true
+without it, so it is optional.
 
-**One thing to know before adopting.** The exception names no Syzygy
-feature, so it is general. It also covers your ordinary development
-sessions that run tests in a project Syzygy observes, which the current text
-arguably forbids. Its conditions bind only what Syzygy instructs and
-displays. [Inferred: the drafter's reading.] If you want it limited to the
-dossier mode, say so (Q1, arm C).
+## 3. What you should know before deciding
 
-## 3. What else this touches
+Round 1 found the first draft wrong in four ways, and each one bears on your
+choice:
 
-The full list is in `IMPACT-LEDGER.md`: 240 files cite SEC-3, and each is
-classified. Most are unaffected, because they describe Syzygy's own
-pipelines, which still never run observed code. Three are worth your
-attention:
+- **The first draft was wider than your ruling.** It let any session you
+  attend run observed code, whether or not Syzygy was involved. It called
+  itself "the smallest text", but it was only the smallest in words. That
+  text is still offered, as **arm W**, because you may want the general
+  form. It is a widening beyond what you ruled, not the carrier of your
+  ruling.
+- **"One exception" would have made ordinary things violations.** If SEC-3
+  stays actor-free and lists only this exception, then the observed
+  project's own CI and a test command you type by hand become explicit SEC-3
+  violations. That is arm W's cost. Arm A avoids it by naming Syzygy as the
+  rule's actor. Arm A does not *permit* CI or hand-typed commands; it simply
+  does not govern them. Whether SEC-3 should govern them is Q2.
+- **A Syzygy tool already runs observed code without a profile, today.**
+  `npm run poc:capture-test-artifact` is Syzygy code that runs Butlers'
+  focused pytest suite directly, with your environment. Verification then
+  shows `Verified`. This breaks SEC-3 as written today, independently of D9.
+  It also breaks RFC 0005's gate, and the POC coverage line "POC never
+  executes Butlers code". Neither arm cures it. It is reported here and
+  routed for a separate fix; no code is changed.
+- **Two accepted contract clauses change in effect.** RFC 0005 says
+  execution consent is required: "Absent: no observed code runs" (RFC5-12).
+  It also says Syzygy's adapter credentials are "never visible to
+  observed-project code" (RFC5-24). In the case D9 permits, observed code
+  runs without an execution consent. Unless condition 4 is adopted, Syzygy's
+  adapter credentials could be visible to it. That is Q3.
 
-- **CC-SEC-3**, the craft-and-care security clause, still says observed
-  code "never executes outside an accepted profile". It names "run the
-  project's own test command to get better evidence" as "exactly the
-  tempting violation". Its own preamble says doctrine prevails over its
-  wording, so after adoption doctrine wins where they differ. The sentence
-  would still stand, though, and it changes only by a policy amendment (Q2).
-- **RFC 0005**, the accepted execution-profile contract, says profiles
-  "govern only code Syzygy itself launches" (RFC5-19). That fits this
-  amendment. Two reader-map sentences in the same package say "no
-  observed-project code executes until this RFC is accepted and a
-  per-project profile exists". Read literally, they are wider (Q3).
-- **The dossier specification** (PR #353) waits on this act, and its
-  execution rule must match whatever text you adopt.
+There is one more thing you should know plainly. The craft-and-care security
+clause, CC-SEC-3, binds every Syzygy change. It names "run the project's
+own test command to get better evidence" as "exactly the tempting
+violation". A dossier brief that lets the agent run the project to observe
+it is that case, word for word (Q4).
 
-Applying the amendment regenerates seven derived files (four context
-fixtures, the budget report, the contract index, the directive register). None of
-them needs a decision from you.
+## 4. What else this touches
 
-## 4. Your questions
+The full list is in `IMPACT-LEDGER.md`: 241 files cite SEC-3 at
+`origin/main` `eb7be564`, and each is classified. Most are unaffected,
+because they describe Syzygy's own pipelines, which still never run observed
+code. The dossier specification (PR #353) waits on this act. Its execution
+rule must carry whatever conditions you adopt, word for word. Applying the
+amendment regenerates seven derived files, and none of them needs a decision
+from you.
+
+## 5. Your questions
 
 | # | Question | Options | Recommendation |
 |---|---|---|---|
-| Q1 | Adopt D9? | **A** adopt (a) and (b) as drafted; **B** adopt (a) only; **C** adopt with the exception limited to sessions working for a Syzygy mode (a redraft and a new review); **D** decline, so the dossier brief must forbid running the project | **A.** It is the smallest text that carries your ruling, and (b) keeps `v1.md` from reading as a flat "always profiled" |
-| Q2 | CC-SEC-3 now differs from doctrine. When should it be brought in line? | **A** a conforming policy amendment after D9, without holding up the dossier sign-off (doctrine prevails meanwhile, by CC-SEC-3's own preamble); **B** before the dossier sign-off | **A.** The clause defers to doctrine in its own text, and the edit is a separate category |
-| Q3 | RFC 0005: rely on RFC5-19's scope, or amend the contract? | **A** rely on RFC5-19 ("profiles govern only code Syzygy itself launches"), with no contract change; **B** commission a conforming RFC 0005 amendment, which is a digest-bound act | **A**, unless the review finds that RFC5-18 reaches the attended session. A reviewer who finds that should report it to you, not resolve it |
-| Q4 | Should "attended agent session" get a glossary entry in the doctrine README? | **A** no: it is defined where it is used; **B** yes | **A** |
+| Q1 | Which text? | **A** arm A: the rule binds Syzygy and what it launches, schedules or instructs, with one permitted case, Syzygy's instruction to your attended session on your recorded choice. **W** arm W: any session you attend may run observed code, with or without Syzygy; wider than your ruling, and it makes CI and hand-typed commands violations. **D** decline: the dossier brief must forbid running the project. The `v1.md` sentence is optional under A or W | **A**, with the `v1.md` sentence. A permits what you ruled and nothing more. W is offered only if you want the general form |
+| Q2 | Should SEC-3's execution rule bind anyone other than Syzygy, such as the observed project's own CI or a command you type by hand? | **No:** SEC-3's execution rule governs Syzygy, what it launches or schedules, and what its software instructs; the code stays "untrusted, everywhere" as a classification (arm A's text). **Yes:** it binds everyone, and a redraft must list which outside executions are lawful, or CI and hand-typed commands are violations | **No.** RFC5-19 already treats "the project's own CI artifacts" as lawful evidence produced "outside Syzygy", and doctrine governs what Syzygy does. A Yes needs a new draft and a new review |
+| Q3 | RFC5-12 ("Absent: no observed code runs") and RFC5-24 ("never visible to observed-project code") change in effect in the permitted case. How should that be handled? | **(a)** accept and record the effect change; the contract text stays literally untrue for this case until (c). **(b)** add condition 4: no credential Syzygy holds for its typed adapters is readable by the session. That keeps RFC5-24 true, and does nothing for RFC5-12. **(c)** later, a conforming RFC 0005 amendment (a digest-bound contract act with its own review) scoping both clauses and the three summary sentences to Syzygy | **(b) for RFC5-24, (a) for RFC5-12, and (c) queued, not blocking.** The real cost of (b): today it costs nothing, because Syzygy holds no adapter credential [Inferred, from a code search]; the dossier mode holds no provider credential, and the daemon's machine-client credential is not RFC5-24's population. Once Syzygy holds an adapter credential, it must be unreadable by your user during attended runs, which means a separate OS user or a protected store. That is the mechanism you declined for Syzygy's records on 2026-10-05 ("Separate OS user"). The cost of (a) alone: an accepted clause stays untrue in this case, recorded |
+| Q4 | CC-SEC-3 now differs from doctrine, and the dossier brief is its named "tempting violation". When should it be brought in line? | **A** a conforming policy amendment after D9, without holding up the dossier sign-off. Meanwhile doctrine prevails, by CC-SEC-3's own preamble: "Doctrine's text prevails over any paraphrase here". **B** before the dossier sign-off | **A.** The clause defers to doctrine in its own text, and the edit is a separate policy change |
+| Q5 | Are "attended" and "your own host" defined well enough? | **A** keep the definitions in place (started and attended by you; subagents included; processes left running excluded; a session Syzygy starts excluded); a cloud-hosted agent session is not your host; a remote VM you rent stays unsettled until you need it. **B** add a glossary entry | **A** |
 
-**Preserved trade-off.** You chose to allow execution on your host over a
-sandbox and over a ban, knowing that the session holds your credentials.
-This packet does not reopen that choice. It writes the choice, and its
-cost, into the rule.
+**Preserved trade-off.** You chose to allow execution on your own machine
+over a sandbox and over a ban, knowing the session holds your credentials.
+This packet does not reopen that choice. It writes the choice, and its cost,
+into the rule.
 
-## 5. What adoption would not do
+## 6. What adoption would not do
 
-- It does not sign the dossier specification. That remains your separate
+- It does not sign the dossier specification. That is your separate
   sign-off, which may follow adoption.
 - It creates no execution profile, approves none, and is not an execution
   consent under RFC 0005.
 - It changes nothing about what the session may *send* (SEC-2) or about
-  secret screening (SEC-5). Your egress rulings of 2026-10-05 stand on
-  their own.
-- It edits no contract, no policy and no specification.
+  secret screening (SEC-5). Your egress rulings of 2026-10-05 stand on their
+  own.
+- It edits no contract, no policy, no specification and no code. It does not
+  fix the capture tool.
 
-## 6. How adoption would be recorded
+## 7. How adoption would be recorded
 
-Doctrine amendments carry no magic phrase and bind no digest (D1, D5 and D6
-precedent). Say it plainly, for example "Adopt D9", or "Adopt D9 (a) only".
-Then, in one commit:
+Doctrine amendments carry no magic phrase and bind no digest; D1, D5 and D6
+set that precedent. Say it plainly, naming the arm and the Q3 choice. For
+example: "Adopt D9, arm A, with the v1 sentence and the credential
+condition". Then, in one commit:
 
 1. Re-check both anchors' sha256 (in `SEMANTIC-DELTA.md`). If either has
    moved, the change goes back for a fresh review.
-2. Replace the anchored lines with the delta's exact proposed bytes.
+2. Replace the anchored lines with the chosen arm's exact bytes. If Q3(b)
+   was declined, delete the credential lines.
 3. Regenerate the seven derived files (`IMPACT-LEDGER.md` §4) and run the
    canonical battery.
 4. Add a `D9` row to `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` with
-   your words, and close register row P-103 with the outcome.
+   your words, including the Q2–Q5 answers, and close register row P-103
+   with the outcome.
 
 A declined clause is recorded in the same row as declined.
