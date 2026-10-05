@@ -3,6 +3,7 @@ import { readFile as nodeReadFile, readdir as nodeReaddir } from 'node:fs/promis
 import path from 'node:path';
 import { AdmissionRecordError, COMMIT_OBJECT_ID, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
+import { CITATION_ALLOWLIST } from './citation-allowlist.js';
 
 /** Reads admission records from the public-repo-admission package layout.
  *
@@ -225,18 +226,20 @@ async function checkClassAct(fs: PackageReaderFs, root: string, v2At: number): P
  * text of the whole file, prose or not. The one exemption is the aggregate acceptance record the recorders append to: it names every
  * act in tables and headings by design, so only its field lines count. */
 const ADMISSION_STEMS = ['public-repo-admission', 'public-egress-v2', 'public-obs-', 'public-egress-anthropic', 'public-egress-'];
-const ADMISSION_PATHS = [INSTANCES_DIR, EGRESS_V2_INSTANCE];
+const ADMISSION_PATHS = [INSTANCES_DIR, EGRESS_V2_INSTANCE, '.syzygy/governance/contracts/candidates/public-repo-admission/', '.syzygy/governance/contracts/candidates/public-egress-v2/'];
 const AGGREGATE_RECORD = 'ACCEPTANCE-ACT-RECORD.md';
 
-/** Citations of existing tooling that a decisions file's text may carry without naming a record, exactly as written (case and all):
- * `scripts/<name>` or the bare `<name>` of a snake_case code file that is in `scripts/` now (`scripts/build_public_egress_v2.py`), and
- * the repository path, or a suffix of it from a directory up to the package directory, of a file that exists now in the
- * public-repo-admission or public-egress-v2 package outside `instances/` (`contracts/candidates/public-egress-v2/REVIEW-BRIEF.md`).
- * A name that carries a record-id or act-identity needle is never one. A bare directory, a path to nothing, an instance path, a URL
- * and a decisions file name are never one. Read through the reader's file system on each read; an unreadable directory gives none. */
+/** Citations of existing tooling, exactly as written (case and all): `scripts/<name>` or the bare `<name>` of a snake_case code file
+ * that is in `scripts/` now (`scripts/build_public_egress_v2.py`), and the repository path, or a suffix of it from a directory up to
+ * the package directory, of a file that exists now in the public-repo-admission or public-egress-v2 package outside `instances/`
+ * (`contracts/candidates/public-egress-v2/REVIEW-BRIEF.md`). A name that carries a record-id or act-identity needle or a provider stem
+ * other than version 2's (`public-egress-openai`) is never one, nor is a path with a segment at any depth that starts `instance` in
+ * any case (`Instances/`, `instances.md`, `instance/`). Read through the reader's file system; an unreadable directory gives none.
+ * Set aside only in an allowlisted file (`sweepText`). */
 const PACKAGE_DIRS = ['.syzygy/governance/contracts/candidates/public-repo-admission', '.syzygy/governance/contracts/candidates/public-egress-v2'];
 const ID_NEEDLES = ['public-obs-', 'public-egress-anthropic', 'rfc5-project-documentation-amend', 'public-source-scope', 'pwb-secret-classification-policy'];
-const carriesId = (name: string): boolean => ID_NEEDLES.some(needle => carries(name, needle));
+const carriesId = (name: string): boolean =>
+  ID_NEEDLES.some(needle => carries(name, needle)) || stemFolds(name).some(form => /public-egress-(?!v2(?![a-z0-9]))/u.test(form));
 async function toolingCitations(fs: PackageReaderFs, root: string): Promise<ReadonlySet<string>> {
   const out = new Set<string>();
   let scripts: readonly string[] = [];
@@ -246,7 +249,7 @@ async function toolingCitations(fs: PackageReaderFs, root: string): Promise<Read
     let files: readonly string[];
     try { files = await walk(fs, path.join(root, dir)); } catch { continue; }
     for (const rel of files) {
-      if (rel === 'instances' || rel.startsWith('instances/') || carriesId(rel)) continue;
+      if (fold(rel).split('/').some(segment => segment.startsWith('instance')) || carriesId(rel)) continue;
       const parts = `${dir}/${rel}`.split('/'), top = dir.split('/').length - 1;
       for (let i = 0; i <= top; i += 1) out.add(parts.slice(i).join('/'));
     }
@@ -257,9 +260,22 @@ async function toolingCitations(fs: PackageReaderFs, root: string): Promise<Read
  * is one of `citations` blanked; every other token, any part of a token, and any spelling the citation does not match exactly stays. */
 const withoutCitations = (text: string, citations: ReadonlySet<string>): string =>
   text.replace(/[A-Za-z0-9_./-]+/g, token => { const core = token.replace(/\.+$/, ''); return citations.has(core) ? ' ' + token.slice(core.length) : token; });
+/** The text a sweep reads from the decisions file at `rel`: the file's own text, every stem counting wherever it sits (in a script
+ * name or package path too), unless the file is in `CITATION_ALLOWLIST` at exactly that path with exactly those bytes. Then, and only
+ * then, its exact tooling citations are set aside. A new, edited, renamed or copied file gets the whole text. The citations are read
+ * once per sweep, on the first allowlisted file. */
+function sweepText(fs: PackageReaderFs, root: string): (rel: string, text: string) => Promise<string> {
+  let citations: Promise<ReadonlySet<string>> | null = null;
+  return async (rel, text) => {
+    const entry = CITATION_ALLOWLIST.get(rel);
+    if (entry === undefined || entry.sha256 !== sha256(text)) return text;
+    citations ??= toolingCitations(fs, root);
+    return withoutCitations(text, await citations);
+  };
+}
 
-function namesAdmission(rel: string, raw: string, citations: ReadonlySet<string>): boolean {
-  const text = withoutCitations(raw, citations), folded = fold(text);
+function namesAdmission(rel: string, text: string): boolean {
+  const folded = fold(text);
   if (ADMISSION_STEMS.some(stem => carries(rel, stem))) return true;
   if (rel !== AGGREGATE_RECORD && [...ADMISSION_STEMS, ...ADMISSION_PATHS].some(needle => carries(text, needle))) return true;
   for (const line of folded.split('\n')) {
@@ -274,7 +290,7 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
   const fs = options.fs ?? nodeFs;
   return {
     read: async () => {
-      const files = await walk(fs, path.join(options.root, DECISIONS_DIR)), citations = await toolingCitations(fs, options.root);
+      const files = await walk(fs, path.join(options.root, DECISIONS_DIR)), swept = sweepText(fs, options.root);
       const records: AdmissionRecord[] = [];
       let v2At: number | null = null, v1At: number | null = null;
       for (const rel of files) {
@@ -282,7 +298,7 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
         let text: string;
         try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, rel)); } catch { return refuse(); }
         if (known === 'pin') { if (sha256(text) !== OWNER_ANSWERS_SHA256) refuse(); continue; }
-        if (known === 'other') { if (namesAdmission(rel, text, citations)) refuse(); continue; }
+        if (known === 'other') { if (namesAdmission(rel, await swept(rel, text))) refuse(); continue; }
         const form = ADMISSION_ACT_FORMS.find(f => f.file === rel)!;
         let act: Act;
         try { act = parseAct(text, form); } catch { return refuse(); }
@@ -341,8 +357,8 @@ const POLICY_STEM = 'pwb-secret-classification-policy';
 const SCOPE_STEM = 'public-source-scope';
 /** A decisions file names the policy when a field line (any case, spacing, dash spelling) carries its path, or an act identity of its family,
  * or when its name or (outside the aggregate acceptance record) its text carries the public-source-scope stem of the acts' identities and file names. */
-function namesPolicy(rel: string, raw: string, citations: ReadonlySet<string>): boolean {
-  const text = withoutCitations(raw, citations);
+/* No allowlist here: every needle below is an id needle or the policy path, which no citation can carry (R-355-2 N-3c). */
+function namesPolicy(rel: string, text: string): boolean {
   if (carries(rel, SCOPE_STEM) || (rel !== AGGREGATE_RECORD && carries(text, SCOPE_STEM))) return true;
   for (const line of fold(text).split('\n')) {
     const field = /^\s*(?:[-*]\s*)?\**\s*(artifact\s+identity|act\s+identity)\s*\**\s*:\s*(.*)$/u.exec(line);
@@ -368,7 +384,7 @@ function parsePolicyAct(text: string, form: PolicyActForm): ParsedAct {
 async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ readonly policy: string; readonly scope: unknown; readonly v1: ParsedAct | null; readonly v2: ParsedAct | null }> {
   let policy: string;
   try { policy = await fs.readFile(path.join(root, POLICY_PATH)); } catch { return refuse(); }
-  const files = await walk(fs, path.join(root, DECISIONS_DIR)), citations = await toolingCitations(fs, root);
+  const files = await walk(fs, path.join(root, DECISIONS_DIR));
   let scope: unknown;
   try { scope = (JSON.parse(policy) as { publicSourceScope?: unknown }).publicSourceScope; } catch { return refuse(); }
   const parsed: Array<ParsedAct | null> = POLICY_ACT_FORMS.map(() => null);
@@ -380,7 +396,7 @@ async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ read
       // Another record that names the policy is a known historical act (by name and digest) or an unknown form: refuse the unknown.
       const pinned = HISTORICAL_POLICY_ACTS.get(rel);
       if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }
-      if (namesPolicy(rel, text, citations)) refuse();
+      if (namesPolicy(rel, text)) refuse();
       continue;
     }
     parsed[at] = parsePolicyAct(text, POLICY_ACT_FORMS[at]!);
@@ -439,21 +455,20 @@ export function readPolicyActChain(options: StrictReadOptions): Promise<ActState
 }
 
 const CLASS_STEM = 'rfc5-project-documentation';
-function namesClassAct(rel: string, raw: string, citations: ReadonlySet<string>): boolean {
-  const text = withoutCitations(raw, citations);
+function namesClassAct(rel: string, text: string): boolean {
   return carries(rel, CLASS_STEM) || (rel !== AGGREGATE_RECORD && (carries(text, CLASS_STEM) || carries(text, CLASS_MODULE))) || fold(text).split('\n').some(line => {
     const field = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity)\s*\**\s*:\s*(.*)$/u.exec(line);
     return field !== null && (carries(field[2]!, CLASS_MODULE) || carries(field[2]!, CLASS_STEM));
   });
 }
 async function readClassAct(fs: PackageReaderFs, root: string): Promise<{ readonly act: ParsedAct; readonly moduleDigest: string } | null> {
-  const files = await walk(fs, path.join(root, DECISIONS_DIR)), citations = await toolingCitations(fs, root);
+  const files = await walk(fs, path.join(root, DECISIONS_DIR)), swept = sweepText(fs, root);
   let found: string | null = null;
   for (const rel of files) {
     let text: string;
     try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
     if (rel === CLASS_ACT_FILE) { found = text; continue; }
-    if (namesClassAct(rel, text, citations)) refuse();
+    if (namesClassAct(rel, await swept(rel, text))) refuse();
   }
   if (found === null) return null;
   let module: string;
