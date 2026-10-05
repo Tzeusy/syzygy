@@ -61,12 +61,16 @@ the operator returns to the authoring session, which resumes at the next
 step. The loop is therefore attended at each hand-over, and no agent
 coordinates another.
 
-No other launch form is offered. The first review (finding 9) found that a
-session the authoring agent launches headless, and whose output it reads, is
-not "a separate top-level session that the operator starts" on the ruling's
-words, so the design drops it, and drops the in-session `!`-prefixed launch
-with it; 035 excludes any process the authoring session launches. The run
-record therefore carries no launch-form field.
+One other launch form counts: the operator may type the printed command
+behind Claude Code's `!` shell-escape prefix in the authoring session's
+terminal. The operator types it and the prompt is Syzygy's, so it is a
+session the operator starts (035); its output returns to the authoring
+session's context, which harms nothing in the review. A headless session
+that the authoring agent starts and reads is not offered: it is not a
+session the operator starts, and it brushes against "No unattended agent
+coordination" (first review, finding 9; the lead's ruling). The operator
+declares the launch form, `terminal` or `bang`, with each session's
+identifier; Syzygy records it as operator-declared and refuses any other.
 
 At step 3 the skill may offer presets, but the operator selects or types the
 values; Syzygy records them as operator-declared, conveyed by the agent
@@ -201,7 +205,7 @@ usage error.
 | `syzygy dossier check <run> [--draft <file>]` | agent | Freezes the draft as revision N; runs schema, path, range, quotation and label checks; writes `<run>/checks/rev-N.json`; refuses past the repair limit or deadline | `checkBlockQuotes` / `inspectBlockQuotes` / `normaliseForQuote` (`quote-fidelity.ts`); `validateStage` / `validateDraftRecord` (`provider-draft.ts`); `readGitBlobsBatch`; screening from `public-source-screening.ts` and `classifySource` / `detectSecrets` / `scanActiveContent` | line-range restriction; a normalisation offset map so a normalised match yields a byte range; per-path citations; label and citation rules by block kind; the understanding record; cycle counting |
 | `syzygy dossier inventory-brief <run>` / `inventory-check <run> --inventory <file>` | inventory session | Brief without the draft; checks and freezes the inventory like a draft; refuses an inventory declared under the authoring session's identifier | as `brief` / `check`; `ProviderInventory` types | inventory schema with path + line-range citations |
 | `syzygy dossier review-packet <run> --kind fidelity\|design` | operator or review session | Builds the packet (frozen subject, frozen inventory, cited spans as Syzygy read them, criteria, verdict schema) and prints its digest | `ProviderReview` shape (`inventoryCoverage`, `blockSupport`, `findings`) | packet assembly and digest; the design packet holds the rendered pages |
-| `syzygy dossier review-check <run> --verdict <file>` | review session | Rebuilds the packet and validates schema, packet digest, completeness, entry accuracy, quotations, consistency and session-identifier distinctness; records the verdict as counted or refused | `reviewVerdict` (`provider-draft.ts`) | digest binding; session-identifier rule; subject list from 006 |
+| `syzygy dossier review-check <run> --verdict <file>` | review session | Rebuilds the packet and validates schema, packet digest, completeness, entry accuracy, quotations, consistency, session-identifier distinctness and the declared launch form; records the verdict as counted or refused | `reviewVerdict` (`provider-draft.ts`) | digest binding; session-identifier rule; subject list from 006 |
 | `syzygy dossier render <run> [--out <dir>]` | agent or operator | Re-reads and re-hashes every object, re-locates every quotation, re-runs the checks and rebuilds the review packets, then renders the multi-page site from the latest checked revision; source pages only for screened blobs Syzygy read and verified; disclosure block on every page, including the reported commands and the Inferred integrity of stored records; draft layer only when the three conditions of the owner's RFC7-20 reading hold | `renderDossier` / `writeDossierRun` (`apps/three-surface-poc/src/polaris-generation/dossier-render.ts`, `dossier-render-main.ts`); `sourceRoute` | an adapter from the local draft to the renderer's input (today a `PipelineResult`); RFC7-10 anchors of class evidence artifact identifier with integrity digest, from the recomputed object id, byte range and revision; the disclosure block; the two discovery populations |
 | `syzygy dossier evaluate <run>` | operator | Optional measurement of the rendered dossier | `evaluateDossier`, `resolveQuote` (`dossier-evaluation.ts`); `poc:dossier-evaluation` | none beyond wiring |
 | `syzygy dossier close <run> [--usage-tokens N] [--usage-turns N]` | agent, on the operator's answer | Records operator-declared usage and closes the run record | — | the record |
@@ -331,8 +335,11 @@ With a URL (the author, driving the loop):
    `syzygy dossier render <run>`) review --kind design: run
    `syzygy dossier session-prompt <run> <role> [--kind <kind>]`, show the
    operator the command it prints, and wait. The operator starts that
-   session in a new terminal; never start it yourself, in any form, and
-   never use a subagent for it. Resume
+   session in a new terminal, or by typing `!` followed by the printed
+   command here. Never start it yourself, headless or otherwise, and never
+   use a subagent for it. Ask the operator which launch form they used and
+   pass it to `review-check` or `inventory-check` with the session
+   identifier. Resume
    when the operator says it has finished, and run `syzygy dossier status`.
 9. On a blocking finding, go back to 7.
 10. Ask the operator for the usage figure their tool shows (or none);
@@ -371,8 +378,10 @@ verified; quote it exactly, and treat a refusal as a refusal.
 - Draft, `syzygy dossier check`, repair until clean or refused.
 - For inventory, fidelity review and (after `syzygy dossier render`) design
   review: `syzygy dossier session-prompt <run> <role>`, show the operator the
-  command it prints, and wait; the operator starts that session. Never start
-  it yourself or delegate it to a sub-agent.
+  command it prints, and wait; the operator starts that session in a new
+  terminal. Never start it yourself, headless or otherwise, or delegate it
+  to a sub-agent. Record the launch form the operator reports (`terminal`)
+  with the session identifier.
 - Ask the operator for usage; `syzygy dossier close`; report the site path
   and `syzygy dossier status` verbatim.
 - In a session started from a session-prompt, do only what that prompt says.
