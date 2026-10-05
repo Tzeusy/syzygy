@@ -4,29 +4,61 @@
 > `proposed/polaris-generation/spec.md`; not adopted, and not an
 > implementation. It contains no code. The command surface below is a design
 > for implementation after the owner's sign-off (direction item 5); the
-> requirements are the controlling text, and doctrine, accepted contracts and
-> the adopted requirements remain controlling over both.
+> requirements are the controlling text, and doctrine, accepted contracts,
+> the adopted requirements and the owner's rulings
+> (`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`) remain controlling over
+> both.
 
 **The agent writes; Syzygy pins, checks, packages the review and renders.**
 Every step Syzygy takes is a local command over the run directory and the
 clone's Git objects. Syzygy holds no model credential and opens no network
-connection; the agent session does all the model work under the operator's
-own account.
+connection; the agent sessions do all the model work under the operator's
+own account. The owner has confirmed this tooling is the end goal, so the
+design aims at the whole path from one sentence typed by the operator to a
+rendered site.
 
-## The loop
+## The full loop, from one line to a site
+
+The operator types one line in Claude Code or Codex, for example
+`/polaris-dossier https://github.com/redis/redis` (Claude Code) or "write a
+Polaris dossier of https://github.com/redis/redis" (Codex, with the
+instructions below installed). Everything after that is driven by the skill
+and Syzygy's commands, with the operator answering at most three kinds of
+question in-session: the run's limits, the consequential clarifications, and
+the usage figure at the end.
 
 ```text
-operator: syzygy dossier init  ──► run dir: run.json (pinned revision, limits, declared tool)
-agent:    syzygy dossier brief ──► brief.md + draft schema
-agent:    explores the clone (read-only; no build or run), asks the operator ≤ N questions
-agent:    writes draft ─► syzygy dossier check ─► findings ─► repair ─► check …   (≤ repair limit)
-operator: new session ─► syzygy dossier inventory-brief ─► inventory ─► inventory-check
-syzygy:   dossier review-packet --kind fidelity  ──► packet + digest
-operator: new session ─► review from packet only ─► verdict ─► syzygy dossier review-check
-syzygy:   dossier render ──► site/ (editorial-draft pages, disclosures, source pages)
-operator: new session ─► review-packet --kind design ─► verdict ─► review-check
-operator: syzygy dossier close --usage … ──► record.json (operator-declared usage)
+ 1 agent:    syzygy dossier preflight <url>        consent, registry, policy acts; consented revisions
+             └─ none in force ─► stop: name the record the owner must make (Syzygy creates none)
+ 2 agent:    git clone <url> <dir>; git checkout <consented revision>     the operator's session fetches; Syzygy fetches nothing
+ 3 operator: answers one structured question: deadline, token or turn budget, repair and question limits
+ 4 agent:    syzygy dossier init <dir> --url <url> --config <answers>   ─► run dir, pinned revision
+ 5 agent:    syzygy dossier brief <run>
+ 6 agent:    explores the clone; may build and run the project, listing every command it runs
+ 7 agent:    asks the operator ≤ maxQuestions consequential questions; records answers verbatim
+ 8 agent:    writes draft ─► syzygy dossier check ─► findings ─► repair ─► …   (≤ maxRepairCycles)
+ 9 agent:    launches a fresh inventory session with `syzygy dossier session-prompt <run> inventory`
+10 agent:    launches a fresh fidelity-review session with `session-prompt <run> review --kind fidelity`
+11 agent:    syzygy dossier render <run>
+12 agent:    launches a fresh design-review session with `session-prompt <run> review --kind design`
+             └─ a blocking finding ─► back to 8 (a new revision retires the reviews)
+13 operator: declares the agents' usage; agent runs syzygy dossier close <run> --usage …
+14 agent:    reports the site path, `syzygy dossier status <run>` verbatim, and what is still Unknown
 ```
+
+Steps 9, 10 and 12 launch separate top-level sessions headless (`claude -p`
+or `codex exec`), with the working directory set to the run directory and the
+prompt **exactly** the text `session-prompt` prints, so the authoring session
+never writes the reviewer's instructions. The operator sees and approves each
+launch in the tool's own permission prompt, so the coordination is attended
+[Inferred: both tools prompt before running a shell command unless the
+operator has allowed it]. An operator who wants the stricter form runs steps
+4, 9, 10 and 12 by hand in their own shell; the record notes which form ran,
+as operator-declared.
+
+At step 3 the skill may offer presets, but the operator selects or types the
+values; Syzygy records them as operator-declared, conveyed by the agent
+session. Syzygy chooses no default (REQ-polaris-generation-033).
 
 ## Decisions in this change
 
@@ -69,6 +101,20 @@ operator: syzygy dossier close --usage … ──► record.json (operator-decla
 7. **No new Unknown reason.** RFC2-24's twelve are closed. Unobserved agent
    usage is "a fact of the render", stated in the disclosure, never a reason
    code and never zero.
+8. **The agent may run the project; Syzygy never does.** Under the owner's
+   ruling the agent may build and run the observed project to see how it
+   behaves. Each command it reports goes in the draft's `executions` list;
+   each claim that rests on one names it and is Inferred. Syzygy records the
+   list as the agent's report and runs nothing (SEC-3). A verified quotation
+   is still the only Observed content on the page.
+9. **The RFC7-20 reading is applied narrowly.** The draft layer renders as an
+   editorial draft only when the three conditions of the owner's reading hold
+   (disclosure, declared and recorded tool and provider, byte-verified
+   quotations); `render` checks all three and otherwise renders the draft
+   layer Unknown (`unconsented-source-or-provider`). The run record cites
+   the ruling. The owner knew a reviewer may call the reading a contract
+   change; the design takes no position on that.
+
 
 ## Command surface
 
@@ -80,15 +126,17 @@ usage error.
 
 | Command | Who runs it | Does | Built from (existing code) | New |
 |---|---|---|---|---|
-| `syzygy dossier init <clone> --url <repo-url> --config <run.json> [--out <run-dir>]` | the operator, in their own shell | Reads the observation consent, registry entry and policy acts; verifies HEAD is a consented revision; checks the config's declared tool, provider and limits; writes `run.json` | consent reader of PR #263 (`packages/polaris-generation-consent`: `inForceRecords`, `createConsentPorts`, `withConsent`; open, not on main); `evaluateBodyReadAuthority` (`packages/three-surface-poc-core/src/body-read-authority.ts`); `parseGithubUrl` (`dossier-trigger.ts`) | HEAD-to-consent comparison (the trigger's `pinRevision` reads `ls-remote`, not a local clone); config validation |
+| `syzygy dossier preflight <url>` | agent | Reports whether observation consent, the observer registry entry and the classification and screening policy acts are in force for the repository, and which revisions the consent names; prints the clone and checkout commands; refuses with the missing record named | consent reader of PR #263; `evaluateBodyReadAuthority`; `parseGithubUrl` | the report; no network access (the URL is parsed, not fetched) |
+| `syzygy dossier session-prompt <run> <inventory\|review> [--kind fidelity\|design]` | agent, to launch a fresh session | Prints the fixed prompt for a fresh session and records its digest, so the authoring session does not write it | — | the prompt texts |
+| `syzygy dossier init <clone> --url <repo-url> --config <run.json> [--out <run-dir>]` | agent, on the operator's answer (or the operator, in the strict form) | Reads the observation consent, registry entry and policy acts; verifies HEAD is a consented revision; checks the config's declared tool, provider and limits; writes `run.json` | consent reader of PR #263 (`packages/polaris-generation-consent`: `inForceRecords`, `createConsentPorts`, `withConsent`; open, not on main); `evaluateBodyReadAuthority` (`packages/three-surface-poc-core/src/body-read-authority.ts`); `parseGithubUrl` (`dossier-trigger.ts`) | HEAD-to-consent comparison (the trigger's `pinRevision` reads `ls-remote`, not a local clone); config validation |
 | `syzygy dossier brief <run>` | agent | Writes `brief.md` and `draft.schema.json`; starts the deadline clock | `promptForStage(stage, 'dossier')` (`prompts.ts`); `OWNER_TOPICS` (`dossier-evaluation.ts`); `DOSSIER_READER_QUESTIONS` (`dossier-profile.ts`) | the local-agent schema (claims cite path + line range, not `sourceIds`); brief text for labels, quotation and clarification rules |
 | `syzygy dossier check <run> [--draft <file>]` | agent | Freezes the draft as revision N; runs schema, path, range, quotation and label checks; writes `<run>/checks/rev-N.json`; refuses past the repair limit or deadline | `checkBlockQuotes` / `inspectBlockQuotes` / `normaliseForQuote` (`quote-fidelity.ts`); `validateStage` / `validateDraftRecord` (`provider-draft.ts`); `readGitBlobsBatch`; screening from `public-source-screening.ts` and `classifySource` / `detectSecrets` / `scanActiveContent` | line-range restriction; a normalisation offset map so a normalised match yields a byte range; per-path citations; label rules; cycle counting |
 | `syzygy dossier inventory-brief <run>` / `inventory-check <run> --inventory <file>` | inventory session | Brief without the draft; checks and freezes the inventory like a draft | as `brief` / `check`; `ProviderInventory` types | inventory schema with path + line-range citations |
 | `syzygy dossier review-packet <run> --kind fidelity\|design` | operator or review session | Builds the packet (frozen subject, frozen inventory, cited spans as Syzygy read them, criteria, verdict schema) and prints its digest | `ProviderReview` shape (`inventoryCoverage`, `blockSupport`, `findings`) | packet assembly and digest; the design packet holds the rendered pages |
 | `syzygy dossier review-check <run> --verdict <file>` | review session | Validates schema, packet digest, completeness, quotations, consistency and session-identifier distinctness; records the verdict as counted or refused | `reviewVerdict` (`provider-draft.ts`) | digest binding; session-identifier rule; subject list from 006 |
-| `syzygy dossier render <run> [--out <dir>]` | agent or operator | Renders the multi-page site from the latest checked revision; source pages only for screened blobs Syzygy read; disclosure block on every page | `renderDossier` / `writeDossierRun` (`apps/three-surface-poc/src/polaris-generation/dossier-render.ts`, `dossier-render-main.ts`); `sourceRoute` | an adapter from the local draft to the renderer's input (today a `PipelineResult`); RFC7-10 anchors from object id, byte range and revision; the disclosure block; the two discovery populations |
+| `syzygy dossier render <run> [--out <dir>]` | agent or operator | Renders the multi-page site from the latest checked revision; source pages only for screened blobs Syzygy read; disclosure block on every page, including the reported commands; draft layer only when the three conditions of the owner's RFC7-20 reading hold | `renderDossier` / `writeDossierRun` (`apps/three-surface-poc/src/polaris-generation/dossier-render.ts`, `dossier-render-main.ts`); `sourceRoute` | an adapter from the local draft to the renderer's input (today a `PipelineResult`); RFC7-10 anchors from object id, byte range and revision; the disclosure block; the two discovery populations |
 | `syzygy dossier evaluate <run>` | operator | Optional measurement of the rendered dossier | `evaluateDossier`, `resolveQuote` (`dossier-evaluation.ts`); `poc:dossier-evaluation` | none beyond wiring |
-| `syzygy dossier close <run> [--usage-tokens N] [--usage-turns N]` | the operator | Records operator-declared usage and closes the run record | — | the record |
+| `syzygy dossier close <run> [--usage-tokens N] [--usage-turns N]` | agent, on the operator's answer | Records operator-declared usage and closes the run record | — | the record |
 | `syzygy dossier status <run>` | anyone | Prints the run's state, limits spent, open findings and reviews still required | — | — |
 
 The existing `poc:dossier` command (`dossier-main.js`) stays as the provider
@@ -97,7 +145,7 @@ mode's entry point and stays parked; the new family does not call its
 
 ### The run configuration
 
-`run.json` as the operator writes it before `init`: `operator`, `agentTool`
+`run.json`, from the operator's answers at step 3: `operator`, `agentTool`
 (`claude-code` or `codex`), `agentToolVersion`, `agentProvider`,
 `deadline` (ISO-8601 duration), `agentTokenBudget` and/or `agentTurnBudget`,
 `maxRepairCycles`, `maxQuestions`, `audience`. Every value is recorded as
@@ -123,7 +171,9 @@ deepDives, unresolved) with three changes: each paragraph cites
 `reason` from RFC2-24; and two new top-level sections, `discovery`
 (inspected, selected, excluded, deferred, stoppingReason) and
 `clarifications` (question, evidence, consequence, options, answer, answerKind,
-attribution). Quotations keep the existing lead-in form
+attribution), and `executions` (each command the agent reports having run,
+with its working directory and purpose). A claim that rests on execution
+carries `basis: execution` and the identifiers of the executions it rests on. Quotations keep the existing lead-in form
 (`QUOTE_LEAD_IN`), and each names its citation.
 
 ## What remains open in the implementation
@@ -147,6 +197,14 @@ built and measured.
 - **The non-governed profile.** A Redis dossier also needs requirement 032 for
   its composition. This change works with or without it; the renderer applies
   032 only where it is adopted and applies.
+- **Headless session identifiers and approval.** Whether `claude -p` and
+  `codex exec` report a session identifier the verdict can carry, and which
+  permission settings make each launch an attended, approved step, are
+  confirmed at implementation [Unknown].
+- **The consent precondition.** `preflight` can only report consent records
+  that exist. Making one for a public repository is the owner's act under
+  the observation-consent route that the direction keeps (item 4); this
+  design does not make it.
 
 ## Agent-harness instructions (proposed text, not installed)
 
@@ -159,87 +217,88 @@ requirements and Syzygy's checks decide what counts.
 ```markdown
 ---
 name: polaris-dossier
-description: Write a Polaris dossier for a locally cloned repository with the syzygy binary. Use when the operator asks for a dossier of a repository they have cloned and run `syzygy dossier init` on. Roles - author, inventory, review.
+description: Write a Polaris dossier (a multi-page explanatory site) for a public repository with the syzygy binary. Use when the operator asks for a Polaris dossier of a repository URL, or invokes /polaris-dossier <url>. Also used, with a role, by the fresh inventory and review sessions the loop launches.
 ---
 
 # Polaris dossier
 
 You write; `syzygy dossier` pins, checks and renders. Its output, not yours,
-decides what is verified. Arguments: `<role> <run-dir>`; role is `author`,
-`inventory` or `review`.
+decides what is verified. Quote it exactly; a refusal is a refusal, never a
+success to summarise.
 
 Always:
-- Never run `syzygy dossier init` or edit `run.json`. If the run directory
-  has no `run.json`, ask the operator to run init in their own shell and stop.
-- Read the clone; never build, install, test or run anything in it.
-- Never edit the clone. Write only inside the run directory.
-- Label your claims `inferred`, `unknown` (with a reason from the brief) or
+- Write only inside the run directory and the clone. Never edit `run.json`
+  after `init`.
+- You may build and run the cloned project to see how it behaves. Add every
+  command you run to `executions`; a claim that rests on one has
+  `basis: execution`, names it, and is `inferred`.
+- Label claims `inferred`, `unknown` (with a reason the brief lists) or
   `non-normative`. Never `observed`.
 
-author:
-1. `syzygy dossier brief <run>`; read `brief.md` and `draft.schema.json`.
-2. Explore the clone for the five reader topics. Keep a list of what you
-   inspected and selected, and why you left material out; it goes in
-   `discovery`.
-3. Ask the operator the consequential questions, at most the brief's limit,
-   with AskUserQuestion; record each in `clarifications` with the operator's
-   exact answer.
-4. Write `<run>/drafts/next.json`; run `syzygy dossier check <run>`. Repair every
-   finding and re-run, until it is clean or Syzygy refuses the next cycle.
-   Never work around a refusal.
-5. Stop. Tell the operator to start a new session for the inventory. Do not
-   write the inventory or a review yourself.
+With a URL (the author, driving the loop):
+1. `syzygy dossier preflight <url>`. If it refuses, tell the operator which
+   record is missing and stop.
+2. Clone and check out a revision the preflight names, with the commands it
+   prints, into a directory the operator agrees.
+3. Ask the operator, in one AskUserQuestion, for the deadline, a token or
+   turn budget, the repair-cycle limit and the question limit. Offer presets;
+   never pick for them.
+4. `syzygy dossier init <clone> --url <url> --config <answers>`;
+   `syzygy dossier brief <run>`; read `brief.md` and `draft.schema.json`.
+5. Explore the clone for the five reader topics. Keep `discovery`: what you
+   inspected and selected, what you left out and why, and why you stopped.
+6. Ask the consequential questions, at most the brief's limit, with
+   AskUserQuestion; record each with the operator's exact answer.
+7. Write `<run>/drafts/next.json`; `syzygy dossier check <run>`; repair every
+   finding and re-run until clean or refused.
+8. For each of inventory, review --kind fidelity, then (after
+   `syzygy dossier render <run>`) review --kind design: run
+   `syzygy dossier session-prompt <run> <role> [--kind <kind>]` and launch a
+   new session with exactly that prompt (`claude -p "<prompt>"` with the run
+   directory as working directory). Never add to or edit the prompt.
+9. On a blocking finding, go back to 7.
+10. Ask the operator for the usage figure their tool shows (or none);
+    `syzygy dossier close <run> --usage-…`. Report the site path and
+    `syzygy dossier status <run>` verbatim.
 
-inventory (a new session that has not seen the draft):
-1. `syzygy dossier inventory-brief <run>`. Do not open `drafts/` or `checks/`.
-2. Write `<run>/inventory/next.json`; run `syzygy dossier inventory-check` until
-   clean.
-
-review (a new session):
-1. `syzygy dossier review-packet <run> --kind <fidelity|design>`. Read only
-   the packet directory it names. Do not open the clone, `drafts/` history,
-   or any other file.
-2. Write the verdict to the schema, naming the packet digest and your
-   session identifier; run `syzygy dossier review-check <run> --verdict <file>`.
-
-Report Syzygy's output verbatim. Do not summarise a refusal as success.
+With a role (a fresh session launched in step 8):
+- inventory: `syzygy dossier inventory-brief .`; never open `drafts/` or
+  `checks/`; write `<run>/inventory/next.json`; `syzygy dossier
+  inventory-check .` until clean.
+- review: `syzygy dossier review-packet . --kind <kind>`; read only the
+  packet directory it names; write the verdict with the packet digest and
+  your session identifier; `syzygy dossier review-check . --verdict <file>`.
 ```
 
-### Codex instructions (an `AGENTS.md` placed in the run directory)
+### Codex instructions (installed as an `AGENTS.md` the operator's Codex reads)
 
 ```markdown
-# Polaris dossier run
+# Polaris dossiers
 
-This directory is a `syzygy dossier` run. Launch Codex with this directory as
-the working directory and the clone readable. Your role is named by the
-operator when the session starts: author, inventory or review.
+When asked for a Polaris dossier of a repository URL, follow the loop
+below with the `syzygy dossier` commands. Their output decides what is
+verified; quote it exactly, and treat a refusal as a refusal.
 
-- `run.json` is the operator's. Do not create or edit it, and do not run
-  `syzygy dossier init`.
-- Read the clone only. Never build, install, test or run its code, and never
-  edit it.
-- Claims are `inferred`, `unknown` with a brief-listed reason, or
-  `non-normative`; never `observed`.
-- author: `syzygy dossier brief .`, explore, ask the operator at most the
-  brief's question limit and record answers verbatim, write
-  `<run>/drafts/next.json`, then `syzygy dossier check .` and repair until clean or
-  refused. Then stop.
-- inventory (fresh session, has not seen the draft): `syzygy dossier
-  inventory-brief .`, write `<run>/inventory/next.json`, `syzygy dossier
-  inventory-check .` until clean. Never open `drafts/`.
-- review (fresh session): `syzygy dossier review-packet . --kind <kind>`, read
-  only the packet, write the verdict with the packet digest and your session
-  identifier, `syzygy dossier review-check . --verdict <file>`.
-- Quote Syzygy's output exactly; a refusal is a refusal.
+- `syzygy dossier preflight <url>`; stop if it refuses, naming the missing
+  record. Clone and check out a revision it names.
+- Ask the operator for the deadline, a token or turn budget, the repair and
+  question limits; never choose them. `syzygy dossier init`, then
+  `syzygy dossier brief`.
+- Explore; you may build and run the project, and every command you run
+  goes in `executions`; claims resting on one are `inferred` and name it.
+  Never label a claim `observed`.
+- Ask at most the brief's question limit; record answers verbatim.
+- Draft, `syzygy dossier check`, repair until clean or refused.
+- For inventory, fidelity review and (after `syzygy dossier render`) design
+  review: `syzygy dossier session-prompt <run> <role>`, then `codex exec`
+  with exactly that prompt and the run directory as working directory.
+- Ask the operator for usage; `syzygy dossier close`; report the site path
+  and `syzygy dossier status` verbatim.
+- In a session started from a session-prompt, do only what that prompt says.
 ```
 
-Recommended operator setting for either tool (owner question O3): deny the
-shell except `syzygy dossier` commands, so the agent reads the clone with its
-file tools only. [Inferred] Claude Code's permission rules and Codex's
-sandbox modes can express this; the exact settings are confirmed at
-implementation. Syzygy cannot observe which setting was in force, so the run
-record carries it as operator-declared.
-
-[Inferred] Codex reads `AGENTS.md` from its working directory; the exact
-launch flags that make the clone readable from a different working directory
-are confirmed at implementation, not here.
+[Inferred] Codex reads `AGENTS.md` from its working directory and its home
+configuration, and `codex exec` starts a fresh non-interactive session; the
+exact flags are confirmed at implementation, not here. A review in the other
+tool (a Codex review of a Claude Code draft) needs only that tool installed
+and is recorded as such.

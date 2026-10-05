@@ -11,7 +11,7 @@ change was branched), so neither of this change's two directories is in the
 population. Denominator (rule 9): 2,328 tracked paths, of which 4 do not
 decode as UTF-8 and were skipped, so 2,324 were searched. Python `re`, never
 `grep` (verification rule 1). The affected identifiers are
-REQ-polaris-generation-001, 005, 006, 017, 018, 030 and 031, written `NNN`
+REQ-polaris-generation-001, 005, 006, 017, 018, 030 and 031 (001 by the owner's RFC7-20 reading), written `NNN`
 below. The regexes, case-sensitive, with run form:
 
 | Sweep | Regex (Python) | Notes |
@@ -78,6 +78,25 @@ operator-agent run would contradict should report it as a finding.
   item 4: not offered, not deleted, not edited. The observation-consent and
   public-source-acquisition parts that this mode still needs are named in
   `design.md` (`init`).
+
+## RFC7-20, read by the owner's ruling
+
+RFC7-20 is not edited; the owner's ruling
+(`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 1) reads it, and
+requirement 033 relies on the reading. [Observed] A sweep at the same commit
+and over the same 2,324 decodable paths, Python regex
+`RFC7-20\b|RFC7-(?:1\d|[1-9])\s*(?:…|\.\.\.?|to|–)\s*(?:RFC7-)?(?:2\d|[3-9]\d)\b`
+(the identifier, or a range whose start is RFC7-1 to RFC7-19 and whose end
+is 20 to 99; case-sensitive), hits 64
+files: 27 in `contracts/candidates/`, 14 retained raws, 10 under
+`openspec/`, 8 under `docs/`, 4 installed RFC files and
+`DIRECTIVE-REGISTER.md`. None is edited: the clause's bytes do not change,
+and every citer still reads the clause it cites. The reading changes what
+the clause means for an operator-computed draft only, and that is the
+trade-off the owner accepted and this package keeps open for review
+(`SEMANTIC-DELTA.md`, "The owner's trade-off, preserved"). If the review
+calls the reading a contract change, these 64 files are the starting
+population for the contract act's own impact sweep.
 
 ## Derived artifacts
 
