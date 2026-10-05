@@ -48,7 +48,8 @@ Predicates, each printed with its denominator:
   by both methods. The expected Polaris totals and identities are derived,
   never raised by hand: the base-and-overlay literal (31 / 182, IDs 001–031)
   plus what each signed addition ADDs, read by both block parsers from the
-  addition alone. An unsigned addition is never composed.
+  addition alone. An unsigned addition adds nothing to the expected
+  population, so it fails here as well as in R1, and `--regenerate` refuses.
 - R4 generated rows: each generated dependency file's source digest and
   requirement count match the spec; every full or continuation-form
   identifier mention in the five change directories, each signed addition's
@@ -745,8 +746,8 @@ def census(root):
     for change, _text in additions:
         if not addition_records(root, change):
             findings.append(f"POLARIS: addition `{change}` has no versioned "
-                            "sign-off record; it is not composed")
-    additions = [(c, x) for c, x in additions if addition_records(root, c)]
+                            "sign-off record, so its requirements are not "
+                            "expected")
     if base is None or overlay is None:
         findings.append("POLARIS: base or overlay spec missing")
     else:
@@ -1434,6 +1435,23 @@ def _candidate_id(root):
     return None
 
 
+def _restates_base(text):
+    """The addition replaced by a verbatim MODIFIED copy of base 001.
+
+    Composition, totals and census are then unchanged, so only the
+    ADDED-only guard can see it.
+    """
+    base = (ROOT / POLARIS_BASE_SPEC).read_text(encoding="utf-8")
+    heads = list(re.finditer(r"^#{2,3} ", base, re.M))
+    for i, head in enumerate(heads):
+        stop = heads[i + 1].start() if i + 1 < len(heads) else len(base)
+        block = base[head.start():stop]
+        if (block.startswith("### Requirement: ")
+                and f"\nID: {POLARIS_ID}001\n" in block):
+            return "## MODIFIED Requirements\n\n" + block
+    raise AssertionError("mutation target absent: base 001")
+
+
 def addition_mutants():
     union = f"{CHANGES}/{ADDITION}/GOVERNING-DEPENDENCIES.md"
     spec = spec_path(ADDITION, "polaris-generation")
@@ -1445,7 +1463,9 @@ def addition_mutants():
         ("addition-aggregate-block", AGGREGATE, _replace(marker, "<!-- x -->"),
          "R1"),
         ("addition-not-added-only", spec,
-         _replace("## ADDED Requirements", "## MODIFIED Requirements"), "R3"),
+         _replace("## ADDED Requirements", "## MODIFIED Requirements"),
+         "R3:ADDED-only"),
+        ("addition-restates-base", spec, _restates_base, "R3:ADDED-only"),
         ("addition-re-adds-base-id", spec,
          _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}001"), "R3"),
         ("addition-scenario-dropped", spec,
@@ -1520,7 +1540,11 @@ def selftest(witness_path=None):
                 continue
             rel = " + ".join(rels)
             got = run(tree)
-            if expect.endswith("~"):
+            if ":" in expect:
+                # The predicate must fail with this finding, not another.
+                rid, _sep, needle = expect.partition(":")
+                caught = any(needle in f for f in got.findings.get(rid, []))
+            elif expect.endswith("~"):
                 rid = expect[:-1]
                 caught = got.findings.get(rid) != clean.findings.get(rid)
             elif "=0" in expect:
