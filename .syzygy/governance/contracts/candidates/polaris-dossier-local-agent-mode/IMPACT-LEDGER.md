@@ -12,7 +12,8 @@ population. Denominator (rule 9): 2,328 tracked paths, of which 4 do not
 decode as UTF-8 and were skipped, so 2,324 were searched. Python `re`, never
 `grep` (verification rule 1). The affected identifiers are
 REQ-polaris-generation-001, 005, 006, 017, 018, 030 and 031 (001 by the owner's RFC7-20 reading), written `NNN`
-below. The regexes, case-sensitive, with run form:
+below; 002, 003, 020 and 022 were added after the first review (see the
+extension section). The regexes, case-sensitive, with run form:
 
 | Sweep | Regex (Python) | Notes |
 |---|---|---|
@@ -78,6 +79,41 @@ operator-agent run would contradict should report it as a finding.
   item 4: not offered, not deleted, not edited. The observation-consent and
   public-source-acquisition parts that this mode still needs are named in
   `design.md` (`init`).
+
+## Extension after the first review: 002, 003, 020 and 022
+
+The first review (finding 19) reproduced the 135-file ledger and noted that
+its populations did not include REQ-polaris-generation-002, 003, 020 or 022,
+which the repair now reads (002, 020, 022) or relies on by name (003).
+[Observed] Sweeps A, B, E, F and G above, unchanged, re-run by script at the
+same commit over the same 2,324 decodable paths for those four identifiers,
+with the titles `Project argument and voice`, `Bounded anchored assets`,
+`Guided start and materialization` and `Protected audit and prospective
+revocation` for sweep F. The same script reproduced the original figures
+first (001 48, 005 26, 006 52, 017 39, 018 17, 030 25, 031 19; A to G 104,
+I alone 31, 135 in all), so the path rules below are the ones applied above.
+
+Files per identifier: 002: 50; 003: 33; 020: 31; 022: 15. Union 63, of which
+**14 are new** beyond the 135, for **149** in all. The 14 by the same path
+rules: class 1 (raws) 3; class 2 (evidence or pursuit) 4; class 3 (adopted)
+3; class 4 (sibling candidate) 1; class 5 (implementation) 1; class 6 (design
+history) 1; class 7 (live presentation) 1. 3 + 4 + 3 + 1 + 1 + 1 + 1 = 14.
+Each file in classes 3, 4 and 7 was read at its hit:
+
+- `openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md` (022):
+  its "Protected audit trail" section puts the trail outside the untrusted
+  actor class's write reach. Its trail-location paragraph is quoted in the
+  semantic delta and read with 022 by 033; owner question R1.
+- `openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md` (020): the
+  provider-mode start flow. Its "Resolve warranted work" and "Materialize
+  once, then execute" sections are read with 020 by 033.
+- `openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md` (003):
+  asset detail for 003, 004, 012 and 014; relied on unchanged.
+- `.syzygy/governance/contracts/candidates/non-governed-narrative-profile/reviews/ROUND-1-DISPOSITIONS.md`
+  (020): the sibling profile's review dispositions; not edited.
+- `docs/polaris-generation/LEARNING-LOG.md` (002): a live presentation note
+  on the generator's argument job; true of both modes, updated in the
+  adoption change only if the adoption changes what it says.
 
 ## RFC7-20, read by the owner's ruling
 

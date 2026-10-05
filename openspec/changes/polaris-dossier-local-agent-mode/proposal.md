@@ -7,9 +7,13 @@
 > rulings `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`)
 > and `POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`
-> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`). It is not adopted, performs no
-> act, and grants no read, egress, write or execution. Effect comes only from
-> the owner's sign-off of the exact reviewed bytes (VIS-4).
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`)
+> and `POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`).
+> It is not adopted, performs no act, and grants no read, egress, write or
+> execution. Effect comes only from the owner's sign-off of the exact
+> reviewed bytes (VIS-4), which may not be given until the owner has adopted
+> the SEC-3 amendment that the review-1 rulings direct (item 1).
 
 **A Polaris dossier can be written by the operator's own Claude Code or Codex
 session over a local clone, while Syzygy checks every quotation against the
@@ -36,19 +40,24 @@ through one reviewed CC-REV-2 delta.
 
 - **Added:** four requirements, 033 to 036, in the existing
   `polaris-generation` capability:
-  - 033 Operator-agent authoring mode: mode selection, clone pinning to a
-    consented revision, Git-object reads only, no provider call, the
-    operator's declared limits, unobserved agent usage, and the disclosure.
-  - 034 Agent brief and mechanically checked draft: the brief, the labelling
-    and quotation rules, the draft schema, the quote, path and label checks
-    with repair findings, and rendering.
+  - 033 Operator-agent authoring mode: mode selection, the governed
+    predicate and per-project statement, clone pinning to a consented
+    revision, isolated and re-hashed Git-object reads, the SEC-3-gated
+    execution rule, no provider call, the operator's declared limits and
+    model, unobserved agent usage, records re-derived rather than trusted,
+    and the disclosure.
+  - 034 Agent brief and mechanically checked draft: the brief, the
+    self-reported understanding record, the labelling, citation and
+    quotation rules, the draft schema, the quote, path and label checks with
+    repair findings, and rendering with RFC7-10 evidence-artifact anchors.
   - 035 Fresh-context review in the operator-agent mode: inventory and review
     contexts, the review packet, verdict validation, and what independence
     can and cannot be shown.
   - 036 Self-reported discovery and in-session clarification.
 - **Modified in effect, not in bytes:** for an operator-agent run the new
   requirements displace or read named text of REQ-polaris-generation-001,
-  005, 006, 017, 018, 030 and 031, and of the base change's `INTERFACES.md`
+  002, 005, 006, 017, 018, 020, 022, 030 and 031, and of the base change's
+  `INTERFACES.md`
   (Provider bullet; "Budget and retry decisions"). Each displaced sentence is
   quoted in the semantic delta. For a provider-mode run nothing changes.
 - **RFC7-20, by the owner's reading, not by edit:** the owner ruled that
@@ -56,12 +65,16 @@ through one reviewed CC-REV-2 delta.
   operator-computed draft is admitted with disclosure, a declared and
   recorded tool and provider, and byte-verified quotes (rulings direction,
   item 1). REQ-polaris-generation-001's draft-layer sentence is read
-  accordingly in 033. The owner chose this knowing a reviewer may call it a
-  contract change; the package keeps that question open for review rather
-  than settling it.
-- **The agent may build and run the observed project** (rulings direction,
-  item 2). Claims resting on that are Inferred and the reported commands are
-  listed; Syzygy itself still executes no observed code (SEC-3).
+  accordingly in 033. The first review found the reading changes the
+  clause's effect; the owner kept the ruling and directed that the finding be
+  preserved for the owner, not resolved (review-1 rulings, item 3).
+- **Execution follows SEC-3 until it is amended.** The owner chose to let
+  the agent build and run the observed project on the host and directed a
+  SEC-3 amendment to permit it (review-1 rulings, item 1). Until that
+  amendment is adopted, the brief quotes SEC-3 and does not invite execution
+  outside an execution profile, and this change may not be signed. Claims
+  the agent marks as resting on execution are Inferred and the reported
+  commands are listed; Syzygy itself executes no observed code.
 - **Parked, not withdrawn:** the provider mode and its route, egress and
   adapter packages, per the direction's item 4.
 
@@ -102,13 +115,20 @@ through one reviewed CC-REV-2 delta.
   operator-declared or self-reported, and the page says so. Only Syzygy's own
   reads, checks and steps are Observed.
 - **Any repository, SEC-2 kept whole.** The owner allowed the mode on any
-  repository (scope record, item 1). An observed, non-governed repository
-  needs no record; a governed project needs an in-force per-project statement
-  naming the operator's agent provider, SEC-2's "explicit, recorded,
-  per-project consent". That reconciliation is the amendment's reading,
-  flagged for review.
-- **Reviews in sessions the operator starts.** Separate top-level sessions,
-  never a subagent of the author (scope record, item 2).
+  repository (scope record, item 1; review-1 rulings, item 2). A subject
+  governed under 032's four conditions, or silent about them, needs an
+  in-force per-project statement naming the operator's agent provider,
+  SEC-2's "explicit, recorded, per-project consent". The statement is a
+  consent record; neither its content classes nor SEC-5 screening bind what
+  the agent reads or sends, and every page says so.
+- **Syzygy's records within the agent's reach.** On a single-user host the
+  agent can write Syzygy's state directory, so nothing Observed rests on a
+  stored record and what cannot be re-derived is labelled Inferred. That
+  reads REQ-polaris-generation-018 and 022 for this mode and is put to the
+  owner (packet, question R1).
+- **Reviews in sessions the operator starts.** Separate top-level sessions
+  the operator starts in a new terminal, never a subagent or a process of
+  the author (scope record, item 2).
 - **What the agent ran is its report.** Commands the agent says it ran are
   recorded as its report, labelled Inferred; Syzygy cannot observe them.
 - **No new permission.** This is not permission to read, egress, write,
@@ -120,8 +140,8 @@ through one reviewed CC-REV-2 delta.
   existing quote check, schema validation, review validation and dossier
   evaluation.
 - **App:** a `syzygy dossier` command family (design only: `design.md`), the
-  consent reader of PR #263 (open, not on main), Git-object reads by
-  identifier, and the existing dossier renderer.
+  consent reader of PR #263 (on `main`), isolated, re-hashed Git-object
+  reads by identifier, and the existing dossier renderer.
 - **Agent harness:** a thin Claude Code skill and Codex instructions that
   drive the loop (text in `design.md`; not installed by this change).
 - **Authority unchanged.** The generator's authority remains what its
