@@ -2,11 +2,15 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
 import { renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
 import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, POLICY_ACT_FILE, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, type PackageReaderFs } from './package-reader.js';
+
+// The citation allowlist, replaced by a map the allowlist cases fill and clear: every other case reads with no file allowlisted.
+const ALLOWLIST = vi.hoisted(() => new Map<string, { readonly sha256: string; readonly reason: string }>());
+vi.mock('./citation-allowlist.js', () => ({ CITATION_ALLOWLIST: ALLOWLIST }));
 
 const REDIS_REV = '498ecd0d6d007db11ddb3aea9428552598a78622';
 const OTHER_REV = 'd2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7';
@@ -700,7 +704,7 @@ describe('round-3 review notes', () => {
   });
 });
 
-describe('citations of existing tooling are not withdrawals; everything else still is (R-263-4 N-B, R-355-1 B-1)', () => {
+describe('every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1)', () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
   const v2Text = readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');
   const MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
@@ -718,6 +722,10 @@ describe('citations of existing tooling are not withdrawals; everything else sti
     [`${PKG}/public-egress-v2/REVIEW-BRIEF.md`]: '', [`${PKG}/public-repo-admission/templates/OBSERVATION-CONSENT-TEMPLATE.md`]: '',
     // existing files whose names carry a record id: never a citation
     'scripts/withdraw_public_obs_redis_2026_10_03.py': '', [`${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-WITHDRAWAL.md`]: '',
+    // R-355-2: more tooling that exists, some of which is never a citation (a withdrawal word, another provider, an instances segment)
+    'scripts/record_public_egress_v2_act.py': '', 'scripts/withdraw_public_egress_openai.py': '', 'scripts/build_public_egress_openai.py': '',
+    [`${PKG}/public-repo-admission/WITHDRAWAL.md`]: '', [`${PKG}/public-repo-admission/templates/instances/x.md`]: '', [`${PKG}/public-egress-v2/PUBLIC-EGRESS-V2-MANIFEST.txt`]: '',
+    [`${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-NOTES.md`]: '',
     ...extra,
   });
   const NOTE = `${DECISIONS_DIR}/OWNER-DIRECTION-SITTING-2026-10-06.md`;
@@ -729,26 +737,8 @@ describe('citations of existing tooling are not withdrawals; everything else sti
     if ((await readInForceEgress({ root: '/r', fs, now: AT })).state === 'refused') out.push('egress');
     return out;
   };
-  const AE = ['admission', 'egress'];
+  const AE = ['admission', 'egress'], ACE = ['admission', 'class', 'egress'];
 
-  it('a direction citing an existing script or package file outside instances/, exactly as it exists, refuses no read', async () => {
-    expect(await allReads(full({}))).toEqual([]);
-    for (const line of [
-      'Run `scripts/build_public_egress_v2.py --check` before the sitting.',
-      'Then run python3 scripts/record_rfc5_project_documentation_act.py with the owner\'s phrase.',
-      'Record with record_public_repo_admission_acts.py.',
-      `The brief is \`${PKG}/public-egress-v2/REVIEW-BRIEF.md\`.`,
-      'See contracts/candidates/public-repo-admission/templates/OBSERVATION-CONSENT-TEMPLATE.md and public-egress-v2/REVIEW-BRIEF.md.',
-      '[the brief](.syzygy/governance/contracts/candidates/public-egress-v2/REVIEW-BRIEF.md)',
-    ]) expect(await allReads(full({ [NOTE]: `# Owner direction\n\n${line}\n` })), line).toEqual([]);
-    // The one intended difference from the pre-#355 reader, which also refused admission and egress here for the script name alone:
-    // the policy withdrawal beside it still refuses the policy read.
-    expect(await allReads(full({ [NOTE]: 'Retracts the public source scope approval; see scripts/build_public_egress_v2.py.\n' }))).toEqual(['policy']);
-  });
-
-  // Every row is a withdrawal the pre-#355 reader (b60e6cd2) refused, with the reads it refused there (the lists were taken by running
-  // this table against that reader): this reader must refuse the same reads. The first fourteen are R-355-1's B-1 table, in its order;
-  // the rest are the shapes beside them.
   const STILL_REFUSED: Array<[string, Record<string, string>, string[]]> = [
     ['A3 bare package directory', { [NOTE]: `I withdraw every consent under ${PKG}/public-repo-admission/ effective now.\n` }, AE],
     ['A4 bare package directory, short', { [NOTE]: 'The public-egress-v2/ consent is withdrawn.\n' }, AE],
@@ -777,9 +767,124 @@ describe('citations of existing tooling are not withdrawals; everything else sti
     ['a snake_case record id', { [NOTE]: 'Withdrawn: public_obs_redis_2026_10_03\n' }, AE],
     ['an existing script whose name carries a record id', { [NOTE]: 'Ran scripts/withdraw_public_obs_redis_2026_10_03.py.\n' }, AE],
     ['an existing package file whose name carries a record id', { [NOTE]: `See ${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-WITHDRAWAL.md.\n` }, AE],
+    // R-355-2 N-1
+    ['N-1 egress withdrawal citing its recorder', { [NOTE]: 'I withdraw the egress consent recorded by scripts/record_public_egress_v2_act.py, effective now.\n' }, AE],
+    ['N-1 withdrawal citing the builder', { [NOTE]: 'The consent built by build_public_egress_v2.py is withdrawn.\n' }, AE],
+    ['N-1 class revocation citing its recorder', { [NOTE]: 'Revoked: the amendment recorded by scripts/record_rfc5_project_documentation_act.py.\n' }, ['admission', 'class', 'egress']],
+    ['N-1 admission withdrawal citing its recorder', { [NOTE]: 'Every consent recorded by record_public_repo_admission_acts.py is withdrawn.\n' }, AE],
+    ['N-1 withdrawal citing a package file', { [NOTE]: 'Withdrawn per public-egress-v2/REVIEW-BRIEF.md.\n' }, AE],
+    ['N-1 the intended-difference row of #355', { [NOTE]: 'Retracts the public source scope approval; see scripts/build_public_egress_v2.py.\n' }, ['admission', 'policy', 'egress']],
+    // R-355-2 N-2
+    ['N-2 a package WITHDRAWAL.md (citing it puts the word in the text)', { [NOTE]: 'See public-repo-admission/WITHDRAWAL.md.\n' }, AE],
+    ['N-2 a nested instances file', { [NOTE]: `See ${PKG}/public-repo-admission/templates/instances/x.md.\n` }, AE],
+    ['N-2 a script for another provider', { [NOTE]: 'Run scripts/build_public_egress_openai.py.\n' }, AE],
+    ['N-2 a withdraw script for another provider', { [NOTE]: 'Ran scripts/withdraw_public_egress_openai.py.\n' }, AE],
+    // R-355-2 N-3, and rows with no withdrawal word
+    ['a bare package directory, no withdrawal word', { [NOTE]: 'Every consent under public-repo-admission/ ends today.\n' }, AE],
+    ['an existing id-named package file, no withdrawal word', { [NOTE]: `See ${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-NOTES.md.\n` }, AE],
+    ['N-3a bare package file name', { [NOTE]: 'See PUBLIC-EGRESS-V2-MANIFEST.txt.\n' }, AE],
+    ['N-3b decisions file named as an existing script', { [`${DECISIONS_DIR}/build_public_egress_v2.py`]: 'x\n' }, AE],
+    ['#355 citation: a script in a code span', { [NOTE]: 'Run `scripts/build_public_egress_v2.py --check` before the sitting.\n' }, AE],
+    ['#355 citation: the class recorder', { [NOTE]: 'Then run python3 scripts/record_rfc5_project_documentation_act.py with the owner\'s phrase.\n' }, ACE],
+    ['#355 citation: a bare script name', { [NOTE]: 'Record with record_public_repo_admission_acts.py.\n' }, AE],
+    ['#355 citation: a package file path', { [NOTE]: `The brief is \`${PKG}/public-egress-v2/REVIEW-BRIEF.md\`.\n` }, AE],
+    ['#355 citation: package path suffixes', { [NOTE]: 'See contracts/candidates/public-repo-admission/templates/OBSERVATION-CONSENT-TEMPLATE.md and public-egress-v2/REVIEW-BRIEF.md.\n' }, AE],
+    ['#355 citation: a link target', { [NOTE]: '[the brief](.syzygy/governance/contracts/candidates/public-egress-v2/REVIEW-BRIEF.md)\n' }, AE],
+    ['#361 unseen: a citation-only stem', { [NOTE]: 'The egress consent recorded by scripts/record_public_egress_v2_act.py ends today.\n' }, AE],
+    ['#361 unseen: a citation as act identity', { [NOTE]: 'Act identity: scripts/build_public_egress_v2.py\n' }, AE],
+    ['#361 unseen: a citation as artifact identity', { [NOTE]: 'Artifact identity: scripts/build_public_egress_v2.py\n' }, AE],
   ];
-  it('refuses every withdrawal the pre-#355 reader refused, the same reads each time', async () => {
-    for (const [name, extra, expected] of STILL_REFUSED) expect(await allReads(full(extra)), name).toEqual(expected);
+
+  // R-361-1's probe, all 148 rows: each withdrawal-word spelling and synonym before a citation of the egress recorder (E) and the class
+  // recorder (C), then the file-name, sibling-file, fence, comment, manifest, script-version and instances rows. Expected: the reads
+  // b60e6cd2 refused on each (R-361-1's probe-base.json, re-run against b60e6cd2 for this table).
+  const E = (w: string): string => `${w}: the egress consent recorded by scripts/record_public_egress_v2_act.py.\n`;
+  const C = (w: string): string => `${w}: the amendment recorded by scripts/record_rfc5_project_documentation_act.py.\n`;
+  const WORDS: Array<[string, string]> = [
+    ['withdraw', 'withdraw'], ['Withdrawn', 'Withdrawn'], ['WITHDRAWN', 'WITHDRAWN'], ['withdrawing', 'withdrawing'], ['withdrawal', 'withdrawal'],
+    ['withdrew', 'withdrew'], ['withdrawl-typo', 'withdrawl'], ['revoked', 'revoked'], ['revocation', 'revocation'], ['revoking', 'revoking'], ['retracted', 'retracted'],
+    ['retraction', 'retraction'], ['rescinded', 'rescinded'], ['rescission', 'rescission'], ['recission-typo', 'recission'], ['recinded-typo', 'recinded'],
+    ['with-drawn', 'with-drawn'], ['with drawn', 'with drawn'], ['with-NL-drawn', 'with-\ndrawn'], ['with NL drawn', 'with\ndrawn'], ['with**drawn**', 'with**drawn**'],
+    ['code span', '`withdrawn`'], ['heading', '# Withdrawn\n\nNote'], ['re-voked', 're-voked'], ['re U+2011 voked', 're\u2011voked'], ['soft hyphen', 'withdr\u00adawn'],
+    ['ZWSP', 'withdr\u200bawn'], ['fullwidth', '\uff57\uff49\uff54\uff48\uff44\uff52\uff41\uff57\uff4e'], ['Cyrillic a', 'withdr\u0430wn'], ['Greek omicron', 'rev\u03bfked'],
+    ['&shy; entity', 'with&shy;drawn'], ['&#119; entity', 'withdra&#119;n'], ['combining mark', 'withdra\u0301wn'], ['re-tract', 're-tract'], ['re-scind', 're-scind'],
+    ['w/drawn', 'w/drawn'], ['W-I-T-H', 'W I T H D R A W N'],
+    ['cancelled', 'Cancelled'], ['terminated', 'Terminated'], ['ends today', 'Ends today'], ['void', 'Void'], ['pulled', 'Pulled'], ['annulled', 'Annulled'],
+    ['repealed', 'Repealed'], ['retired', 'Retired'], ['superseded', 'Superseded'], ['suspended', 'Suspended'], ['lapsed', 'Lapsed'], ['expired', 'Expired'],
+    ['stopped', 'Stopped'], ['invalidated', 'Invalidated'], ['nullified', 'Nullified'], ['no longer consent', 'I no longer consent to'], ['no longer in force', 'No longer in force'],
+    ['abandoned', 'Abandoned'], ['reversed', 'Reversed'], ['removed', 'Removed'], ['opted out', 'Opted out of'], ['disabled', 'Disabled'], ['halted', 'Halted'],
+    ['do not use', 'Do not use'], ['end', 'End'], ['undone', 'Undone'], ['deauthorized', 'Deauthorized'], ['refused', 'Consent refused'],
+  ];
+  const D = DECISIONS_DIR, CITE = 'scripts/record_public_egress_v2_act.py';
+  const PROBE: Array<[string, Record<string, string>, string[]]> = [
+    ...WORDS.flatMap(([name, w]): Array<[string, Record<string, string>, string[]]> => [[`E ${name}`, { [NOTE]: E(w) }, AE], [`C ${name}`, { [NOTE]: C(w) }, ACE]]),
+    ['control stem outside citation, synonym', { [NOTE]: 'Cancelled: the public egress v2 consent.\n' }, AE],
+    ['name EGRESS-WITHDRAWAL.md', { [`${D}/EGRESS-WITHDRAWAL-2026-10-06.md`]: `The consent recorded by ${CITE} ends.\n` }, AE],
+    ['name REVOCATION.md', { [`${D}/REVOCATION-2026-10-06.md`]: `The consent recorded by ${CITE}.\n` }, AE],
+    ['split files word+cite', { [`${D}/A-WITHDRAWN.md`]: 'Withdrawn: see the note B.\n', [`${D}/B.md`]: `The consent recorded by ${CITE}.\n` }, AE],
+    ['split files, word file no word in name', { [`${D}/A.md`]: 'Withdrawn: see note B.\n', [`${D}/B.md`]: `The consent recorded by ${CITE}.\n` }, AE],
+    ['word in fence', { [NOTE]: `\`\`\`\nwithdraw\n\`\`\`\nThe consent recorded by ${CITE} ends.\n` }, AE],
+    ['word in html comment', { [NOTE]: `<!-- withdrawn -->\nThe consent recorded by ${CITE} ends.\n` }, AE],
+    ['benign: withdrawal process doc', { [NOTE]: 'A withdrawal would be recorded later. Run scripts/build_public_egress_v2.py --check.\n' }, AE],
+    ['bare manifest name withdrawn', { [NOTE]: 'Withdrawn: PUBLIC-EGRESS-V2-MANIFEST.txt\n' }, AE],
+    ['bare manifest name ends', { [NOTE]: 'Ends: PUBLIC-EGRESS-V2-MANIFEST.txt\n' }, AE],
+    ['v2 manifest pkg-relative ends', { [NOTE]: 'Ends: public-egress-v2/PUBLIC-EGRESS-V2-MANIFEST.txt\n' }, AE],
+    ['public_egress_v2x script', { 'scripts/build_public_egress_v2x.py': '', [NOTE]: 'Ends: scripts/build_public_egress_v2x.py\n' }, AE],
+    ['public_egress_v20 script', { 'scripts/build_public_egress_v20.py': '', [NOTE]: 'Ends: scripts/build_public_egress_v20.py\n' }, AE],
+    ['instances nested deep', { [`${PKG}/public-repo-admission/a/b/instances/c/x.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/a/b/instances/c/x.md\n` }, AE],
+    ['Instances capital segment', { [`${PKG}/public-repo-admission/Instances/x.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/Instances/x.md\n` }, AE],
+    ['instances.md file', { [`${PKG}/public-repo-admission/instances.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/instances.md\n` }, AE],
+    ['instance-x dir', { [`${PKG}/public-repo-admission/instance/x.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/instance/x.md\n` }, AE],
+  ];
+  it('with no file allowlisted, refuses every withdrawal the pre-#355 reader refused, the same reads each time', async () => {
+    expect(await allReads(full({}))).toEqual([]);
+    expect(STILL_REFUSED.length + PROBE.length).toBe(50 + 147);   // R-361-1's control row is the line above
+    for (const [name, extra, expected] of [...STILL_REFUSED, ...PROBE]) expect(await allReads(full(extra)), name).toEqual(expected);
+  });
+
+  // The allowlist (mocked above, empty everywhere else in this file): an entry is a path under the decisions directory and the
+  // sha256 of exact bytes.
+  const allow = (rel: string, text: string): void => { ALLOWLIST.set(rel, { sha256: sha(text), reason: 'test' }); };
+  afterEach(() => { ALLOWLIST.clear(); });
+  const REL = 'OWNER-DIRECTION-SITTING-2026-10-06.md';
+  const CITING = 'Run `scripts/build_public_egress_v2.py --check`, then record_public_repo_admission_acts.py; the brief is public-egress-v2/REVIEW-BRIEF.md.\n'
+    + 'The class recorder is scripts/record_rfc5_project_documentation_act.py.\n';
+  it('a file at its allowlisted path with its allowlisted bytes has its exact tooling citations set aside, and only those', async () => {
+    expect(await allReads(full({ [NOTE]: CITING }))).toEqual(ACE);
+    allow(REL, CITING);
+    expect(await allReads(full({ [NOTE]: CITING }))).toEqual([]);
+    for (const [line, expected] of [
+      ['PUBLIC-EGRESS-anthropic is withdrawn.', AE], ['The public egress v2 consent ends.', AE], ['RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03 is revoked.', ACE],
+      ['Run scripts/BUILD_PUBLIC_EGRESS_V2.py.', AE], ['Run tools/build_public_egress_v2.py.', AE], ['Run scripts/build_public_egress_v3.py.', AE],
+      ['Ran scripts/withdraw_public_obs_redis_2026_10_03.py.', AE], ['Run scripts/build_public_egress_openai.py.', AE],
+      [`See ${PKG}/public-repo-admission/PUBLIC-OBS-REDIS-2026-10-03-NOTES.md.`, AE], ['See PUBLIC-EGRESS-V2-MANIFEST.txt.', AE],
+      ['Every consent under public-repo-admission/ ends.', AE], [`See \`${EGRESS_V2_INSTANCE}\`.`, AE],
+      [`See ${PKG}/public-repo-admission/templates/instances/x.md.`, AE], [`See ${PKG}/public-repo-admission/Instances/x.md.`, AE],
+      [`See ${PKG}/public-repo-admission/instances.md.`, AE], [`See ${PKG}/public-repo-admission/instance/x.md.`, AE],
+    ] as Array<[string, string[]]>) {
+      const text = `${CITING}${line}\n`;
+      ALLOWLIST.clear(); allow(REL, text);
+      expect(await allReads(full({ [NOTE]: text, [`${PKG}/public-repo-admission/Instances/x.md`]: '', [`${PKG}/public-repo-admission/instances.md`]: '', [`${PKG}/public-repo-admission/instance/x.md`]: '' })), line).toEqual(expected);
+    }
+  });
+  it('one changed byte gives the file the whole-text sweep', async () => {
+    allow(REL, CITING);
+    for (const text of [CITING.replace('Run', 'Ran'), CITING + ' ', CITING.slice(0, -1), '\ufeff' + CITING, CITING.replace('\n', '\r\n')]) {
+      expect(text).not.toBe(CITING);
+      expect(await allReads(full({ [NOTE]: text })), JSON.stringify(text.slice(0, 8))).toEqual(ACE);
+    }
+  });
+  it('the same bytes at any other path are not allowlisted', async () => {
+    allow(REL, CITING);
+    for (const rel of ['OWNER-DIRECTION-SITTING-2026-10-07.md', 'owner-direction-sitting-2026-10-06.md', `sub/${REL}`, `${REL}.bak`]) {
+      expect(await allReads(full({ [`${D}/${rel}`]: CITING })), rel).toEqual(ACE);
+      expect(await allReads(full({ [NOTE]: CITING, [`${D}/${rel}`]: CITING })), `${rel} beside the allowlisted file`).toEqual(ACE);
+    }
+  });
+  it('an allowlisted file named for a stem still refuses: the allowlist sets aside citations in the text, never the name', async () => {
+    const rel = 'PUBLIC-EGRESS-V2-NOTES.md';
+    allow(rel, CITING);
+    expect(await allReads(full({ [`${D}/${rel}`]: CITING }))).toEqual(AE);
   });
 });
 

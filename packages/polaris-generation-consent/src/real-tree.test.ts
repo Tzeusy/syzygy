@@ -1,11 +1,15 @@
+import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { CITATION_ALLOWLIST } from './citation-allowlist.js';
 import { DECISIONS_DIR, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, type PackageReaderFs } from './package-reader.js';
 
 /** Every read the dossier relies on, over this checkout's real `.syzygy/governance/decisions/`. A decisions file whose prose trips a
- * withdrawal sweep refuses every admission; this fails CI on the commit that adds it, not at the owner's sitting. */
+ * withdrawal sweep refuses every admission; this fails CI on the commit that adds it, not at the owner's sitting. The remedy is to
+ * reword the file, or to add a reviewed `CITATION_ALLOWLIST` entry for its exact bytes when only exact tooling citations trip it;
+ * never to widen a filter. */
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const realFs: PackageReaderFs = { readdir: dir => readdir(dir), readFile: file => readFile(file, 'utf8') };
 /** The real tree with one extra decisions file, to show the reads do reach that directory. */
@@ -45,4 +49,12 @@ describe('the readers over this checkout\'s decisions directory', () => {
     const port = reads(withExtra('ZZ-PROBE.md', 'Withdrawn: PUBLIC-EGRESS-anthropic\n')).port;
     expect(await port.check({ kind: 'egress-consent', repositoryId: 'redis-redis', revision: '0'.repeat(40) })).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
   }, TIMEOUT);
+  it('the citation allowlist holds only entries that match a file here, byte for byte, each with a reason', async () => {
+    for (const [rel, entry] of CITATION_ALLOWLIST) {
+      let text: string | null = null;
+      try { text = await readFile(path.join(ROOT, DECISIONS_DIR, rel), 'utf8'); } catch { text = null; }
+      expect(text === null ? null : createHash('sha256').update(text, 'utf8').digest('hex'), `${rel}: stale entry; remove it or re-review the file`).toBe(entry.sha256);
+      expect(entry.reason.trim(), rel).not.toBe('');
+    }
+  });
 });
