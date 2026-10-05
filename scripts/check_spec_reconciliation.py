@@ -1458,6 +1458,10 @@ def addition_mutants():
     marker = versioned_marker({"package": ADDITION, "version": "1.0"})
     return (
         ("addition-unsigned", ADDITION_RECORD, None, "R1"),
+        # A record naming another package does not sign this addition.
+        ("addition-record-names-another-package", ADDITION_RECORD,
+         _replace(f"Package: {ADDITION}\n", "Package: some-other-package\n"),
+         "R1:unsigned addition"),
         ("addition-record-package", ADDITION_RECORD,
          _replace(f"Tag: {ADDITION}-v1.0", f"Tag: {ADDITION}-v0.9"), "R1"),
         ("addition-aggregate-block", AGGREGATE, _replace(marker, "<!-- x -->"),
@@ -1467,7 +1471,10 @@ def addition_mutants():
          "R3:ADDED-only"),
         ("addition-restates-base", spec, _restates_base, "R3:ADDED-only"),
         ("addition-re-adds-base-id", spec,
-         _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}001"), "R3"),
+         _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}001"), "R3:re-adds"),
+        # 030 is the overlay's own ADDED requirement, not the base's.
+        ("addition-re-adds-overlay-id", spec,
+         _replace(f"ID: {ADDITION_ID}", f"ID: {POLARIS_ID}030"), "R3:re-adds"),
         ("addition-scenario-dropped", spec,
          _replace("#### Scenario: Selftest two", "#### Scenery: Selftest two"),
          "R3"),
