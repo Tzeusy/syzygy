@@ -809,7 +809,8 @@ def selftest() -> int:
             results.append((f"an allowed qualifier {qualified} records", code == 0))
     for qualified in ("(note_blocking)", "(note, blocker)", "(note, revises the clause)",
                       "(note, REVISE)", "(note, Blocking)", "(note, non-blocking)",
-                      "(note — for the owner)", "(note, for the owner, blocking)"):
+                      "(note — for the owner)", "(note for the owner)",
+                      "(note, for the owner, blocking)"):
         refused(f"a note qualifier outside the allow-list {qualified} is ambiguous",
                 review=lambda c, q=qualified: stub_review(c, "CONFIRM WITH EXCEPTIONS",
                                                           f"**Finding 1 — first** {q} evidence\n"),
