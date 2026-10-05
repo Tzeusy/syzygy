@@ -22,8 +22,8 @@ Reviewed record: docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-3-RAW.md
   written as a code span here.
 - **Reviewed commit:** `b5ff7a3bf22dc6144e6d0161a2add410e8355a5c`, which is
   PR #353's head [Observed, `gh pr view 353`, 2026-10-06].
-- **Subject:** `proposed/polaris-generation/spec.md` in the change
-  directory, sha256
+- **Subject:** the change directory's proposed/polaris-generation/spec.md,
+  sha256
   `b39d103263d6667e8ab5e10abec70fc0a53ed9a22fad00e4bc7532f1ce18c40e`, 45
   scenarios [Observed: `git show b5ff7a3b:<path> | sha256sum`, and a count of
   `#### Scenario` lines, both re-run for this record].
@@ -111,7 +111,9 @@ generated files, and no signed subject:
   union as `tasks.md` asks;
 - the reconciliation census, `census.json`.
 
-It refuses while an installed Polaris addition has no sign-off record.
+It refuses while an installed Polaris addition has no terminal record: a
+sign-off record naming it, or the adoption record the checker declares for
+it (the narrative profile's).
 
 Then, in the same commit, the route pages. No script writes route prose, so
 these are hand edits, each an exact replacement given in
@@ -124,7 +126,14 @@ record (plain text, so its quoted links are not followed):
 - replace the table's lead paragraph in `openspec/README.md`, which still
   calls the change a candidate;
 - replace the change's row in `openspec/README.md` so that it names the
-  sign-off record (the reconciliation's R5 fails until it does);
+  sign-off record (the reconciliation's R5 fails until it does); if the
+  Redis sitting's install has already run, the lead paragraph is the file's
+  block 2b rather than block 2;
+- mark the reconciliation record,
+  `docs/evidence/spec-readability-reconciliation-2026-10-02/README.md`,
+  whose Polaris and total figures `--regenerate` has just changed in the
+  `census.json` beside it: a dated mark at each stale sentence and a new
+  section 11 (block 7), with the figures re-derived from `census.json`;
 - add the recorder's
   `--check polaris-dossier-local-agent-mode --version 1.0` line to the
   battery, the hosted workflow and the count sentence, together (CG-26).
@@ -133,20 +142,33 @@ The canonical battery then runs clean [Inferred: from a scratch-clone dry run
 that recorded nothing real].
 
 **What it binds.** The git tag `polaris-dossier-local-agent-mode-v1.0`, on
-the commit that carries the package bytes you were shown, which must equal
-the bytes this review read. No phrase and no digest argument. A later edit is
+the commit that carries the package bytes you were shown. The recorder
+requires both package directories to equal the bytes this review read
+before it applies anything (this record excepted). The tagged commit then
+differs from them in these anticipated ways and no other: the proposed spec
+moved to `specs/` with its bytes unchanged; the two full-path citations the
+builder rewrites (`REVIEW-BRIEF.md`, `SEMANTIC-DELTA.md`); the two short
+`proposed/…` code spans it unquotes, keeping their words
+(`OWNER-DECISION-PACKET.md`, the change's `design.md`); and the change's
+`GOVERNING-DEPENDENCIES.md`, which `--regenerate` replaces with the
+generated union, as the reviewed file itself says must happen before
+adoption. No phrase and no digest argument. A later edit is
 v1.1 and needs its own review; it does not retire v1.0. The recorded
 extension then lets later Polaris generator deltas (the narrative profile
 among them) be signed the same way.
 
 **Three things the recording commit needs that do not exist yet** [Observed
-on `main` at `4ab58f24`]:
+on `main` at `4ab58f24`; two of the three met since, marked at each item]:
 
 - PR #353 merged to `main` with its reviewed bytes unchanged.
 - A builder module for this package and its entry in the recorder's
   `real_packages()`. The packet calls the builder post-sign-off work; it
   must exist before the record is written, but not before you select.
-- **A recorder fix.** The recorder reads each finding's severity with a
+  [met 2026-10-05: PR #364 merged `scripts/build_polaris_dossier_local_agent_mode.py`
+  and the recorder's entry for this package]
+- **A recorder fix.** [met 2026-10-05: PR #364 merged the qualifier
+  allow-list, so findings 4, 8 and 10 read as notes; the text below is as
+  first written] The recorder reads each finding's severity with a
   pattern that accepts only a bare `(note)`. Three of this raw's findings
   are tagged `(note, for the owner's view)`, `(note, for the owner)` and
   `(note: reported for the owner, not resolved)` (findings 4, 8 and 10).

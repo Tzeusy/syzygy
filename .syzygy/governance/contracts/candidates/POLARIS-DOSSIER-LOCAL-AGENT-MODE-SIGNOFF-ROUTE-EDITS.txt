@@ -9,7 +9,10 @@ is part of the text, indentation included.
 == 1. PROJECT-STATUS.md: written by the builder, check only ==
 The builder's install leaves this text under the understanding amendment's
 bullet (figures from the scratch-clone dry run; the builder writes the
-recount). Do not edit it by hand.
+recount). Do not edit it by hand. If the narrative profile was installed
+first (the Redis sitting), its lead-in also names the profile and its
+adoption record, and both figures include the profile; the builder's check
+verifies both against the recount.
 ----
   - Read the predecessor together with
     [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
@@ -30,8 +33,31 @@ NEW
 ----
 The dossier local-agent row below is a signed addition to the Polaris
 generator composition, bound by a version-tagged sign-off rather than an
-act; the narrative-profile row is a candidate that no act binds, listed so
-that the table stays one row per directory. Neither is one of the five.
+act; the effective composition is the base read with the understanding
+amendment and each addition. The narrative-profile row is a candidate that
+no act binds, listed so that the table stays one row per directory. Neither
+is one of the five.
+----
+
+== 2b. openspec/README.md: the lead paragraph, if the profile was adopted first ==
+Use this block instead of block 2 only when the Redis sitting's install has
+already run (scripts/install_redis_sitting.py writes the OLD text below).
+OLD
+----
+The narrative-profile row below is an addition to the Polaris generator
+composition, adopted by an owner direction rather than an act; the effective
+composition is the base read with the understanding amendment and each
+addition. The dossier local-agent row is a candidate that no act binds,
+listed so that the table stays one row per directory. Neither is one of the
+five.
+----
+NEW
+----
+The dossier local-agent and narrative-profile rows below are additions to
+the Polaris generator composition, bound by a version-tagged sign-off and
+an owner direction respectively rather than by an act; the effective
+composition is the base read with the understanding amendment and each
+addition. Neither is one of the five.
 ----
 
 == 3. openspec/README.md: the change's row ==
@@ -61,3 +87,148 @@ ADD (a blank line, then the step, at the workflow's step indentation)
 == 6. PROJECT-STATUS.md: the count sentence below the battery ==
 Raise the number word by one in both places (seventy-nine to eighty, if
 #365's registration is the last change to the battery before it).
+
+== 7. docs/evidence/spec-readability-reconciliation-2026-10-02/README.md ==
+The reconciliation record states the Polaris and total figures that
+--regenerate has just changed in census.json beside it. Mark each stale
+sentence where it stands (blocks 7a to 7h) and add the dated section 11
+(block 7i). The figures are those the scratch-clone dry run computed with
+--regenerate on #353 plus #365, dossier first: Polaris 35 requirements and
+227 scenarios, all four families 118 and 349. Re-derive them at the
+recording commit from census.json; if they differ (the narrative profile
+installed first), stop and re-derive this block rather than adapting it.
+The sweep for 31, 182, 114 and 304 as whole numbers over that page finds
+nine lines; blocks 7b to 7g mark seven of them (7b marks the opening
+sentence, which spans two of the nine, on the line after the 2026-10-03
+mark it extends). Two are left unmarked: section 3's third
+method ("also reports 31/182") is a dated observation, run once at
+bd47409; section 5's "17 requirements, 31 scenarios" is a PWB example, not
+a Polaris figure. Block 7h marks the census file's own sentence.
+
+7a. The page head, after the 2026-10-03 note
+OLD
+----
+> **Re-derived again 2026-10-03** after the PWB tree-framing sign-off
+> v1.0; see §10. Sentences that re-derivation changed are marked the same
+> way.
+----
+NEW
+----
+> **Re-derived again 2026-10-03** after the PWB tree-framing sign-off
+> v1.0; see §10. Sentences that re-derivation changed are marked the same
+> way.
+>
+> **Re-derived at the dossier local-agent sign-off, <date>**, which
+> installed the first Polaris addition; see §11. Sentences it changed are
+> marked the same way, with the figures as at that commit.
+----
+
+7b. The opening summary
+OLD
+----
+scenarios, PWB-REQ-014 having gained seven, §10] Two stale generated or pinned digests sit inside
+----
+NEW
+----
+scenarios, PWB-REQ-014 having gained seven, §10] [superseded <date>: 118
+requirements and 349 scenarios at the dossier local-agent sign-off, §11] Two stale generated or pinned digests sit inside
+----
+
+7c. Section 2, the Polaris composition
+OLD
+----
+  with 7. The effective composition is 31 requirements and 182 scenarios.
+----
+NEW
+----
+  with 7. The effective composition is 31 requirements and 182 scenarios.
+  [superseded <date>: the signed dossier local-agent addition ADDS 033 to
+  036 with 45 scenarios, so 35 requirements and 227 scenarios at that
+  sign-off, §11]
+----
+
+7d. Section 3, the Polaris row
+OLD
+----
+| REQ-polaris-generation (effective) | 31 | 182 | 001–031 |
+----
+NEW
+----
+| REQ-polaris-generation (effective) | 31 [35 at the <date> sign-off, §11] | 182 [227 at the <date> sign-off, §11] | 001–031 [and 033–036 at the <date> sign-off, §11] |
+----
+
+7e. Section 3, the total row
+OLD
+----
+| **Total** | **114** | **297** [304 since 2026-10-03, §10] | |
+----
+NEW
+----
+| **Total** | **114** [118 at the <date> sign-off, §11] | **297** [304 since 2026-10-03, §10] [349 at the <date> sign-off, §11] | |
+----
+
+7f. Section 6, the Polaris row
+OLD
+----
+| Polaris generator base + understanding | 31 requirements / 182 scenarios effective |
+----
+NEW
+----
+| Polaris generator base + understanding | 31 requirements / 182 scenarios effective [35 / 227 with the dossier local-agent addition at its <date> sign-off, §11] |
+----
+
+7g. Section 10, the census figures
+OLD
+----
+  scenarios and the four families total 114 and 304. The checker's
+----
+NEW
+----
+  scenarios and the four families total 114 and 304 [superseded <date>:
+  118 and 349, §11]. The checker's
+----
+
+7h. Section 10, the census file
+OLD
+----
+  [`census.json`](census.json) is the regeneration at this commit. Third
+----
+NEW
+----
+  [`census.json`](census.json) is the regeneration at this commit
+  [superseded <date>: regenerated again at the dossier local-agent
+  sign-off, §11]. Third
+----
+
+7i. ADD at the end of the file, after one blank line
+ADD
+----
+## 11. Re-derivation at the dossier local-agent sign-off — <date>
+
+The first Polaris addition, re-derived in the sign-off's recording commit.
+The figures here are as at that commit. A later installed addition changes
+`census.json` and `PROJECT-STATUS.md`, which `--check` keeps in step, and
+not this section.
+
+- **The outcome** [Observed]: the owner signed off
+  `polaris-dossier-local-agent-mode` v1.0, a version-tagged sign-off.
+  Record: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md`.
+  Its builder moved the change's `spec.md` from `proposed/` to `specs/`,
+  which makes the change a signed Polaris addition: ADDED-only, and
+  composed after the overlay by both methods.
+- **What the checker does** [Observed]: R1 checks the sign-off record like
+  a child's own (package, version and tag lines; one aggregate block). The
+  addition has no R2 row. R3's expected Polaris population is derived: the
+  31 / 182 literal plus what the addition ADDs, read by both block parsers
+  from the addition alone. R4 requires the addition's generated
+  `GOVERNING-DEPENDENCIES.md` to equal its warrants, and R5 requires the
+  `openspec/README.md` row and `PROJECT-STATUS.md` to cite the record.
+- **Census** [Observed]: regenerated by `--regenerate`, never by hand. The
+  addition ADDS REQ-polaris-generation-033 to 036 with 45 scenarios, so
+  Polaris is 35 requirements and 227 scenarios and the four families total
+  118 and 349. CAP1, POC and PWB and the checker's literals are unchanged.
+  [`census.json`](census.json) is the regeneration at that commit. Third
+  method: not run [Unknown].
+- **Results** [Observed, `--check` at the recording commit]: R1 to R5 and
+  R7 pass; R6 reports the two PWB pins of §10, unchanged.
+----
