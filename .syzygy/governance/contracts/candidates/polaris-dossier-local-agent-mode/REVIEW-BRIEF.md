@@ -20,8 +20,11 @@ references and the acceptance criteria.
 
 **Governing references.**
 
-- The warrants: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`
-  and `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`.
+- The warrants:
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`,
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`
+  and
+  `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`.
 - `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
   and `SEMANTIC-DELTA-TEMPLATE.md`; CC-SPEC-1 to CC-SPEC-11 in
   `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` and CC-IMPACT-1 to
@@ -71,6 +74,16 @@ Each is a yes/no question with the evidence that settles it.
    treat the ruling as settling it, and do not treat your finding as
    overruling it. Separately, check that 033 applies the ruling's three
    conditions exactly and no wider.
+   The same holds for scope: the owner chose "Any repo" with SEC-2
+   unchanged, and 033 reconciles them by requiring a per-project provider
+   statement for governed projects only. That reconciliation is the
+   drafter's reading. Say whether it meets SEC-2's text, quoted, and
+   whether "Any repo" reaches doctrine; report, do not resolve.
+4a. **Is review independence as the owner ruled?** A separate top-level
+   session the operator starts, a declared session id different from the
+   author's, no subagent. The fidelity packet also carries the frozen
+   inventory, read as part of "the criteria"; say whether that reading is
+   faithful to the owner's option text.
 5. **Is every Observed claim something Syzygy can observe?** Check each
    requirement's Observed / Inferred / operator-declared split against what a
    local process can actually see. An unobservable fact labelled Observed is
@@ -81,9 +94,11 @@ Each is a yes/no question with the evidence that settles it.
 7. **Is the change class right?** The delta says Normative.
 8. **Is the impact ledger reproducible?** Re-run its published regexes at its
    commit and compare the counts and the 135-file classification.
-9. **Are the owner questions genuinely the owner's, each with a
-   recommendation and an honest alternative?** Is any question the drafter
-   should have settled, or any decision taken that belongs to the owner?
+9. **Are the owner's five rulings applied exactly?** Compare the packet's
+   table and the specification with the two rulings records. Is any ruling
+   widened, narrowed or restated as the drafter's choice, and is any
+   decision taken that belongs to the owner? The packet's only open
+   question should be the sign-off itself.
 10. **Does `design.md` stay design?** No implementation code in `openspec/**`;
     the skill and Codex texts are prose, and no command it names claims
     behavior the requirements do not require.
@@ -102,7 +117,8 @@ Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
 
 Then `## Findings`, each numbered continuously as
 `**Finding N — title** (blocking|revise|note)`, with the evidence. The
-recorder for the sign-off form is not yet chosen (owner question O5); if the
-owner chooses `scripts/record_versioned_signoff.py`, its head contract asks
-for a `Manifest SHA-256:` line instead, and this brief is revised before the
-confirming round.
+sign-off form is ruled (version-tag sign-off, v1.0), but the recorder,
+`scripts/record_versioned_signoff.py`, asks for a `Manifest SHA-256:` line
+and a package builder that this package does not yet have (`tasks.md`). The
+head above is what this round produces; the brief is revised to the
+recorder's head contract before the confirming round.

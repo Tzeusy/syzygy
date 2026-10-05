@@ -8,8 +8,15 @@ implement the proposed behavior.
 
 - [ ] Independent fresh-context review of the delta and its impact ledger
       (`.syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode/REVIEW-BRIEF.md`).
-- [ ] Owner rulings on the questions in that package's owner decision packet,
-      including the sign-off form (its O5).
+- [ ] The owner's sign-off by option selection naming v1.0, extending
+      version-tag sign-off to Polaris generator specification deltas
+      (`POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`, item 3).
+      The five drafting questions are already ruled.
+- [ ] After sign-off: a package builder that `scripts/record_versioned_signoff.py`
+      accepts (installs `proposed/` into `specs/`, checks and recounts), so the
+      recorder writes the sign-off record and the tag
+      `polaris-dossier-local-agent-mode-v1.0`; the profile change (032) can
+      reuse it.
 - [ ] On adoption, in one logical change (CC-REV-2): move the candidate spec
       from `proposed/` to `specs/polaris-generation/spec.md`; generalize
       `scripts/count_polaris_effective_scenarios.py` and the check that
@@ -23,7 +30,8 @@ implement the proposed behavior.
 ## Required implementation and proof after applicable authorization
 
 - [ ] `init`: consent, registry and policy evaluation; HEAD equals a consented
-      revision; config validation with no default limits. Exercise every
+      revision; config validation with no default limits; for a governed or
+      silent subject, the in-force per-project provider statement. Exercise every
       refusal arm of REQ-polaris-generation-033 with independently prepared
       fixtures.
 - [ ] Prove no provider call and no transmission: an independent capture of

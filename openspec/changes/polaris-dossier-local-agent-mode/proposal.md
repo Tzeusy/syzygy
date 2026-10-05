@@ -5,7 +5,9 @@
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`),
 > which authorizes drafting and review only, and relies on the owner's
 > rulings `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`
-> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`). It is not adopted, performs no
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`)
+> and `POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-2026-10-05`
+> (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-SCOPE-REVIEW-SIGNOFF-DIRECTION.md`). It is not adopted, performs no
 > act, and grants no read, egress, write or execution. Effect comes only from
 > the owner's sign-off of the exact reviewed bytes (VIS-4).
 
@@ -99,8 +101,14 @@ through one reviewed CC-REV-2 delta.
   how much it spent and whether its review contexts were fresh are
   operator-declared or self-reported, and the page says so. Only Syzygy's own
   reads, checks and steps are Observed.
-- **Governed subjects stay in the provider mode** until the owner rules
-  otherwise (owner question O2).
+- **Any repository, SEC-2 kept whole.** The owner allowed the mode on any
+  repository (scope record, item 1). An observed, non-governed repository
+  needs no record; a governed project needs an in-force per-project statement
+  naming the operator's agent provider, SEC-2's "explicit, recorded,
+  per-project consent". That reconciliation is the amendment's reading,
+  flagged for review.
+- **Reviews in sessions the operator starts.** Separate top-level sessions,
+  never a subagent of the author (scope record, item 2).
 - **What the agent ran is its report.** Commands the agent says it ran are
   recorded as its report, labelled Inferred; Syzygy cannot observe them.
 - **No new permission.** This is not permission to read, egress, write,
