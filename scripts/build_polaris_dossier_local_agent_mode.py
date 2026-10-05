@@ -17,11 +17,13 @@ exists: the sign-off binds the tag ``polaris-dossier-local-agent-mode-v1.0``.
   scratch copy of the composition with it installed composes under both of
   the recount tool's parsers; the status page's figure equals the recount of
   the tree as it stands; and each package file that cites the proposed path
-  in full still does (the install rewrites exactly those citations);
+  in full, or as the short ``proposed/…`` span, still does (the install
+  rewrites exactly those citations);
 - applied: the spec is in ``specs/`` only, with the same shape; the status
   page's figure equals the recount, which composes the four requirements;
   its "without" figure equals the recount of the composition without the
-  installed spec; and no package file cites the proposed path in full.
+  installed spec; and no file in either package directory cites the
+  proposed path, in full or as the short span.
 
 The CLI writes nothing. The sign-off recorder
 (``record_versioned_signoff.py --record``) is the one writer: it verifies
@@ -35,7 +37,9 @@ figures: the composition without the addition, and the effective
 composition with it, naming the installed path and the v1.0 sign-off
 record. The review brief keeps the path its reviews read, unquoted and
 dated by the sign-off; a short ``proposed/polaris-generation/spec.md``
-mention is prose about the move and is left alone. A later install that
+code span is prose about the move, so the install unquotes it and keeps the
+words (CG-1b resolves it only while another change still has a
+``proposed/`` spec, R-365-2 dry run). A later install that
 changes the composition (the narrative profile's, in
 ``install_redis_sitting.py``) must rewrite both figures, which
 ``refigure()`` does. A candidate commit, review or merge performs no owner
@@ -82,6 +86,13 @@ REQUIREMENTS = (
 #: Package files whose code spans name the proposed path in full. CG-1b
 #: requires such a span to resolve, so the install rewrites them.
 PATH_CITERS = (CANDIDATE / "REVIEW-BRIEF.md", CANDIDATE / "SEMANTIC-DELTA.md")
+#: Package files whose code spans name the short `proposed/…` path, prose about
+#: the move. CG-1b resolves a short span as a suffix of any tracked path, so it
+#: stays green only while some other change still has a `proposed/` spec (the
+#: narrative profile's, until the Redis sitting installs it); the install
+#: unquotes them, leaving the words.
+SHORT_CITERS = (CANDIDATE / "OWNER-DECISION-PACKET.md", CHANGE / "design.md")
+SHORT_SPAN = "`proposed/polaris-generation/spec.md`"
 FIGURE_RE = re.compile(r"(\d+) requirements and (\d+) scenarios in the effective composition")
 #: The figure ``apply()`` writes for the composition without the addition.
 WITHOUT_RE = re.compile(
@@ -237,8 +248,22 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
         text = (root / citer).read_text(encoding="utf-8")
         if current == "unapplied" and full not in text:
             findings.append(f"{citer}: does not cite {full}; the install would rewrite nothing")
-        if current == "applied" and full in text:
-            findings.append(f"{citer}: still cites {full}")
+    for citer in SHORT_CITERS:
+        if current == "unapplied" and SHORT_SPAN not in (root / citer).read_text(encoding="utf-8"):
+            findings.append(f"{citer}: does not cite {SHORT_SPAN}; the install would unquote nothing")
+    if current == "applied":
+        # Every package file, not only the listed citers: a span left anywhere
+        # resolves only while another change keeps a `proposed/` spec. The
+        # change's union is generated: `--regenerate` replaces it in the same
+        # commit, after the recorder's check, and R4 checks it.
+        for directory in (CANDIDATE, CHANGE):
+            for path in sorted((root / directory).rglob("*.md")):
+                if path == root / CHANGE / "GOVERNING-DEPENDENCIES.md":
+                    continue
+                text = path.read_text(encoding="utf-8")
+                for span in (full, SHORT_SPAN):
+                    if span in text:
+                        findings.append(f"{path.relative_to(root)}: still cites {span}")
     if current == "applied" and brief_note() not in (root / BRIEF).read_text(encoding="utf-8"):
         findings.append(f"{BRIEF}: does not keep the path its reviews read")
     return findings
@@ -275,6 +300,10 @@ def apply(root: pathlib.Path = ROOT) -> int:
         path = root / citer
         new = installed + (brief_note() if citer == BRIEF else "")
         path.write_text(path.read_text(encoding="utf-8").replace(full, new), encoding="utf-8")
+    for citer in SHORT_CITERS:
+        path = root / citer
+        path.write_text(path.read_text(encoding="utf-8").replace(SHORT_SPAN, SHORT_SPAN.strip("`")),
+                        encoding="utf-8")
     reqs, scenarios, _names = recount(root)
     status = root / STATUS
     text = status.read_text(encoding="utf-8")
@@ -315,6 +344,8 @@ def _fixture(root: pathlib.Path, *, dossier: str | None = None, figure: str = "2
           "## ADDED Requirements\n\n" + "".join(_req(n, 1) for n in REQUIREMENTS))
     for citer in PATH_CITERS:
         write(citer, f"Subject: `{PROPOSED_SPEC.as_posix()}`\n" if citers else "Subject: elsewhere\n")
+    for citer in SHORT_CITERS:
+        write(citer, f"It moves {SHORT_SPAN} to `specs/`.\n" if citers else "Moves it.\n")
 
 
 def selftest() -> int:
@@ -339,6 +370,9 @@ def selftest() -> int:
                         status_figure(root) == (6, 7)))
         results.append(("full-path citations rewritten",
                         all(INSTALLED_SPEC.as_posix() in (root / c).read_text() for c in PATH_CITERS)))
+        results.append(("short citations unquoted, words kept",
+                        all((root / c).read_text() == "It moves proposed/polaris-generation/spec.md to `specs/`.\n"
+                            for c in SHORT_CITERS)))
         results.append(("second apply refuses", quiet(apply, root) == 2))
 
     def refused(name: str, mutate=None, expect: str = "", **fixture) -> None:
@@ -497,6 +531,20 @@ def selftest() -> int:
         citer = root / PATH_CITERS[0]
         citer.write_text(citer.read_text() + f"`{PROPOSED_SPEC.as_posix()}`\n")
         results.append(("applied: a remaining full-path citation fails", not applied(root)))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        quiet(apply, root)
+        other = root / CHANGE / "tasks.md"
+        other.write_text(f"Then {SHORT_SPAN} moves.\n")
+        results.append(("applied: a short span in any package file fails",
+                        any("tasks.md: still cites" in f for f in check(root))))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        _fixture(root)
+        (root / SHORT_CITERS[1]).write_text("Moves it.\n")
+        results.append(("unapplied: a short citer without the span fails",
+                        any("would unquote nothing" in f for f in check(root))))
 
     failing = 0
     for name, ok in results:

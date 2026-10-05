@@ -12,12 +12,14 @@ Bead `syzygy-c51h`. Each Polaris change carries a generated
   values sorted and comma-joined, or `None declared in the requirement
   warrants.` when empty, and one trailing blank line.
 
-A signed addition (any other change whose requirements a version-tagged
-sign-off has installed at `specs/polaris-generation/spec.md`, ADDED-only)
+An addition (any other change whose requirements are installed at
+`specs/polaris-generation/spec.md`, ADDED-only: by a version-tagged
+sign-off's builder, or by the install step after an adoption record)
 carries a generated union in the understanding section form under its own
 fixed header. It is not a signed subject: `--write-additions` writes it, and
-`scripts/check_spec_reconciliation.py --regenerate` calls that at the
-sign-off's recording commit. Until then the change's spec sits under
+`scripts/check_spec_reconciliation.py --regenerate` calls that in the
+commit that installs it (a sign-off's recording commit, or
+`scripts/install_redis_sitting.py` after the profile's adoption). Until then the change's spec sits under
 `proposed/` and no addition exists. This script treats every installed
 Polaris spec beyond the two as an addition and never reads a sign-off
 record: whether the addition is signed, and ADDED-only, is
@@ -170,7 +172,7 @@ def regenerate(root: pathlib.Path, key: str) -> str:
 
 
 def write_additions(root: pathlib.Path = ROOT) -> list[str]:
-    """Write every signed addition's generated union; return the paths written."""
+    """Write every installed addition's generated union; return the paths written."""
     written = []
     for change in additions(root):
         target = root / union_file(change)
@@ -232,7 +234,7 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
             findings.append(f"{change}: missing {rel}")
         elif target.read_bytes() != expected:
             findings.append(f"{change}: {rel} differs from its regeneration "
-                            "(signed addition; run --write-additions)")
+                            "(installed addition; run --write-additions)")
     return findings
 
 
@@ -381,7 +383,7 @@ def selftest() -> int:
         _edit(union_spec(ADDITION_FIXTURE), "  decisions: []",
               "  decisions: [SDR-99]")(tree)
         results.append(("fails: an addition warrant added",
-                        any("signed addition" in f for f in check(tree))))
+                        any("installed addition" in f for f in check(tree))))
         results.append(("--write-additions is idempotent once current",
                         write_additions(tree) != [] and write_additions(tree) == []))
     failing = sum(0 if ok else 1 for _n, ok in results)

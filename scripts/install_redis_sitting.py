@@ -35,7 +35,11 @@ Steps (finding numbers are the runbook's):
   profile         F8,F11  the narrative-profile spec moves from proposed/ to
                        specs/; package prose naming the old path is rewritten;
                        the status page figure follows the recount tool (both
-                       figures, once the dossier addition is signed off)
+                       figures, once the dossier addition is signed off) and
+                       its lead-in names the profile and its adoption record;
+                       the openspec/README.md row names the record
+  reconcile       B3   `check_spec_reconciliation.py --regenerate`: the census
+                       and each installed addition's generated union
 """
 from __future__ import annotations
 
@@ -442,12 +446,125 @@ def step_profile(root: pathlib.Path, write: bool) -> bool:
                       f"(land the recount fix first): {r.stdout[-200:]}{r.stderr[-200:]}")
     status = root / STATUS
     text = status.read_text()
-    new = status_figures(root, text, f"{m.group(1)} requirements and {m.group(2)} scenarios")
+    new = status_figures(root, profile_lead_in(text),
+                         f"{m.group(1)} requirements and {m.group(2)} scenarios")
     if new != text:
         changed = True
         if write:
             J.write(status, new)
+    readme = root / OPENSPEC_README
+    text = readme.read_text()
+    new = profile_readme(text, adoption_date(root))
+    if new != text:
+        changed = True
+        if write:
+            J.write(readme, new)
     return changed
+
+
+OPENSPEC_README = "openspec/README.md"
+PROFILE_RECORD = f"{DECISIONS}/POLARIS-NON-GOVERNED-NARRATIVE-PROFILE-ADOPTION.md"
+#: The status page's Polaris figure follows this link; the profile joins it.
+AMENDMENT_LINK = ("[the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment"
+                  "/specs/polaris-generation/spec.md)")
+PROFILE_LEAD_IN = (
+    f"{AMENDMENT_LINK}\n"
+    "    and the adopted\n"
+    f"    [non-governed narrative profile]({PROFILE_CHANGE}/specs/polaris-generation/spec.md)\n"
+    f"    ([adoption record]({PROFILE_RECORD}))")
+#: The openspec/README.md table's lead paragraph, before the profile's adoption
+#: (main; #353 merged; the dossier signed off) -> after it. The third and the
+#: dossier sign-off's 2b block are pinned to that package's route-edits file.
+README_LEADS = {
+    "A sixth row below is a candidate that no act binds; it is listed so that the\n"
+    "table stays one row per directory, and it is not one of the five.":
+    "The narrative-profile row below is an addition to the Polaris generator\n"
+    "composition, adopted by an owner direction rather than an act; the effective\n"
+    "composition is the base read with the understanding amendment and each\n"
+    "addition. It is not one of the five.",
+    "The sixth and seventh rows below are candidates that no act binds; they are\n"
+    "listed so that the table stays one row per directory, and neither is one of\n"
+    "the five.":
+    "The narrative-profile row below is an addition to the Polaris generator\n"
+    "composition, adopted by an owner direction rather than an act; the effective\n"
+    "composition is the base read with the understanding amendment and each\n"
+    "addition. The dossier local-agent row is a candidate that no act binds,\n"
+    "listed so that the table stays one row per directory. Neither is one of the\n"
+    "five.",
+    "The dossier local-agent row below is a signed addition to the Polaris\n"
+    "generator composition, bound by a version-tagged sign-off rather than an\n"
+    "act; the effective composition is the base read with the understanding\n"
+    "amendment and each addition. The narrative-profile row is a candidate that\n"
+    "no act binds, listed so that the table stays one row per directory. Neither\n"
+    "is one of the five.":
+    "The dossier local-agent and narrative-profile rows below are additions to\n"
+    "the Polaris generator composition, bound by a version-tagged sign-off and\n"
+    "an owner direction respectively rather than by an act; the effective\n"
+    "composition is the base read with the understanding amendment and each\n"
+    "addition. Neither is one of the five.",
+}
+PROFILE_ROW_PREFIX = "| [`polaris-non-governed-narrative-profile`](changes/polaris-non-governed-narrative-profile) |"
+
+
+def profile_row(date: str) -> str:
+    name = pathlib.PurePosixPath(PROFILE_RECORD).name
+    return (f"{PROFILE_ROW_PREFIX} A Polaris generator requirement for narrating an observed repository "
+            f"that has no Syzygy declarations | **Adopted {date} by owner direction** (requirement 032). "
+            f"An addition to the generator composition; amend only through CC-REV-2 | "
+            f"[`{name}`](../{PROFILE_RECORD}) ({date}) |")
+
+
+def adoption_date(root: pathlib.Path) -> str:
+    dates = re.findall(r"^Date: (\d{4}-\d{2}-\d{2})$", (root / PROFILE_RECORD).read_text(), re.M)
+    if len(dates) != 1:
+        raise Refusal(f"{PROFILE_RECORD}: expected one Date: line, found {len(dates)}")
+    return dates[0]
+
+
+def profile_lead_in(text: str) -> str:
+    """The status page's Polaris figure names the profile beside the amendment (R-365-2 N2)."""
+    if PROFILE_LEAD_IN in text:
+        return text
+    if text.count(AMENDMENT_LINK + ":") != 1:
+        raise Refusal(f"{STATUS}: expected the understanding amendment's figure lead-in once")
+    return text.replace(AMENDMENT_LINK + ":", PROFILE_LEAD_IN + ":")
+
+
+def profile_readme(text: str, date: str) -> str:
+    """openspec/README.md: the profile row names its adoption record; the lead paragraph says so."""
+    rows = [ln for ln in text.split("\n") if ln.startswith(PROFILE_ROW_PREFIX)]
+    if len(rows) != 1:
+        raise Refusal(f"{OPENSPEC_README}: expected one narrative-profile row, found {len(rows)}")
+    text = text.replace(rows[0], profile_row(date))
+    if not any(new in text for new in README_LEADS.values()):
+        olds = [old for old in README_LEADS if old in text]
+        if len(olds) != 1:
+            raise Refusal(f"{OPENSPEC_README}: the table's lead paragraph is none of the known forms")
+        text = text.replace(olds[0], README_LEADS[olds[0]])
+    return text
+
+
+def step_reconcile(root: pathlib.Path, write: bool) -> bool:
+    """The reconciliation follows the profile install (R-365-2 B3): census and addition unions."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import build_polaris_dependency_unions as unions
+    import check_spec_reconciliation as recon
+    targets = [root / recon.CENSUS] + [root / unions.union_file(c) for c in unions.additions(root)]
+    if not write:
+        pop, findings = recon.census(root)
+        if findings:
+            return True
+        stale = [c for c in unions.additions(root) if (root / unions.union_file(c)).read_text()
+                 != unions.regenerate(root, c)]
+        return bool(stale) or (root / recon.CENSUS).read_text() != recon.census_json(pop)
+    before = {t: t.read_bytes() if t.is_file() else None for t in targets}
+    for t in targets:
+        J.save(t)
+    try:
+        recon.regenerate(root)
+    except SystemExit as exc:
+        raise Refusal(f"the reconciliation refuses the installed tree: {exc}") from exc
+    return any((t.read_bytes() if t.is_file() else None) != b for t, b in before.items())
 
 
 def status_figures(root: pathlib.Path, text: str, total: str) -> str:
@@ -841,7 +958,8 @@ def step_policy(root: pathlib.Path, write: bool) -> bool:
     return changed
 
 
-STEPS = (("registrations", step_registrations), ("rfc5", step_rfc5), ("policy", step_policy), ("profile", step_profile))
+STEPS = (("registrations", step_registrations), ("rfc5", step_rfc5), ("policy", step_policy), ("profile", step_profile),
+         ("reconcile", step_reconcile))
 
 
 def run(root: pathlib.Path, write: bool) -> int:
@@ -1079,6 +1197,46 @@ def profile_figure_selftests() -> list[tuple[str, bool]]:
             ok.append(("profile after dossier: a doubled figure is refused", False))
         except Refusal:
             ok.append(("profile after dossier: a doubled figure is refused", True))
+    ok.extend(profile_route_selftests())
+    return ok
+
+
+def profile_route_selftests() -> list[tuple[str, bool]]:
+    """The status lead-in and the openspec/README.md row and lead paragraph."""
+    ok: list[tuple[str, bool]] = []
+
+    def refused(fn) -> bool:
+        try:
+            fn()
+            return False
+        except Refusal:
+            return True
+
+    status = (f"  - Read the predecessor together with\n    {AMENDMENT_LINK}:\n"
+              "    31 requirements and 182 scenarios in the effective composition.\n")
+    once = profile_lead_in(status)
+    ok.append(("lead-in: the figure names the profile and its adoption record, once",
+               PROFILE_LEAD_IN + ":" in once and profile_lead_in(once) == once
+               and once.count(PROFILE_RECORD) == 1))
+    ok.append(("lead-in: a page without the amendment's lead-in is refused",
+               refused(lambda: profile_lead_in("no figure here\n"))))
+    row = PROFILE_ROW_PREFIX + " A candidate | **Candidate — binds nothing** | None |"
+    for i, (old, new) in enumerate(README_LEADS.items()):
+        got = profile_readme(f"intro\n{old}\n\n| h |\n{row}\n", "2026-10-07")
+        ok.append((f"readme lead form {i}: replaced, row names the record, idempotent",
+                   new in got and old not in got and profile_row("2026-10-07") in got
+                   and profile_readme(got, "2026-10-07") == got))
+    ok.append(("readme: an unknown lead paragraph is refused",
+               refused(lambda: profile_readme(f"Some other lead.\n{row}\n", "2026-10-07"))))
+    ok.append(("readme: two profile rows are refused",
+               refused(lambda: profile_readme(f"{list(README_LEADS)[0]}\n{row}\n{row}\n", "d"))))
+    # The dossier sign-off's route edits quote two of these forms; they must agree.
+    edits = (ROOT / CAND / "POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-ROUTE-EDITS.txt").read_text()
+    blocks = re.findall(r"(?m)^----\n(.*?)\n----$", edits, re.S)
+    leads = list(README_LEADS.items())
+    ok.append(("the dossier route edits' block 2 writes the lead this step reads, and 2b is this step's",
+               leads[1][0] in blocks and leads[2][0] in blocks
+               and leads[1][1] in blocks and leads[2][1] in blocks))
     return ok
 
 

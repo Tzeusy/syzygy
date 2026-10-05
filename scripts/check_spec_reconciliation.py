@@ -20,13 +20,18 @@ Predicates, each printed with its denominator:
   never a skipped row. A child may name later digest acts (`successors`)
   that superseded some of its subjects; each one is checked the same way and
   is equally a terminal record. A signed Polaris addition (below) is a
-  child too: it needs a version-tagged sign-off record in `decisions/` whose
-  `Package:` line names its change, checked the same way, and one record per
-  version; an installed addition with no such record is a FAIL. An addition
-  has no R2 row: no manifest hashes its `spec.md`, and the sign-off binds it
-  by the tag on the recording commit, so an edit after sign-off re-passes
-  here once `--regenerate` is rerun. Such an edit is a new version, which the
-  recorder and review discipline govern, not this checker.
+  child too. Its terminal outcome is either a version-tagged sign-off
+  record in `decisions/` whose `Package:` line is exactly its change, checked
+  the same way, one record per version; or, for an addition declared in
+  `ADOPTED_ADDITIONS`, that addition's dedicated adoption record, which must
+  name the installed `spec.md` (and no sign-off record may also name the
+  change). An installed addition matched by neither is unsigned: a FAIL. A
+  signed addition has no R2 row: no manifest hashes its `spec.md`, and the
+  sign-off binds it by the tag on the recording commit, so an edit after
+  sign-off re-passes here once `--regenerate` is rerun. Such an edit is a new
+  version, which the recorder and review discipline govern, not this
+  checker. An adopted addition's R2 row is its recorder's `SUBJECT_SHA`, the
+  digest its confirming review read: the installed `spec.md` must hash to it.
 - R2 exact subject bytes: a digest act's successor column equals its
   manifest rows, and every signed subject on disk hashes to its row. A
   versioned sign-off's manifest rows equal the subjects on disk. A child's
@@ -46,14 +51,19 @@ Predicates, each printed with its denominator:
   regular expressions; Polaris composes by ID line in one and by requirement
   name in the other). Both must agree, identifiers must be unique, and the
   result must equal the hard-coded literal census below and the committed
-  `census.json`. A signed Polaris addition is any other change whose
-  `specs/polaris-generation/spec.md` a version-tagged sign-off's builder has
-  installed; it may only ADD requirements and is composed after the overlay
-  by both methods. Each method also refuses, independent of requirement
+  `census.json`. A Polaris addition is any other change whose
+  `specs/polaris-generation/spec.md` is installed (by a version-tagged
+  sign-off's builder, or by the install step after an adoption record); it
+  is signed when R1 finds its terminal record. It may only ADD requirements
+  and is composed after the overlay by both methods. Each method also refuses, independent of requirement
   blocks, every level-2 heading in an addition other than exactly
   `## ADDED Requirements` and every heading of any level, case or spacing
   that names a delta section (a RENAMED list or a name-only REMOVED list
-  carries no requirement block). The expected Polaris totals and identities are derived,
+  carries no requirement block). Both methods also refuse an addition that
+  carries U+FEFF anywhere or any carriage return: OpenSpec strips a leading
+  byte-order mark and reads `\r` as a line break before it splits sections,
+  and both methods here split on `\n` only, so such bytes could hide a delta
+  heading. They are refused, never normalised. The expected Polaris totals and identities are derived,
   never raised by hand: the base-and-overlay literal (31 / 182, IDs 001–031)
   plus what each signed addition ADDs, read by both block parsers from the
   addition alone. An unsigned addition adds nothing to the expected
@@ -106,7 +116,14 @@ successor, so the case now requires every predicate to pass.
 `--selftest` also installs a synthetic signed addition into a scratch copy
 (spec, sign-off record, aggregate block, route row, status figure, then
 `--regenerate`), requires it to pass, and kills one mutant per addition
-predicate.
+predicate; then a synthetic adopted addition beside it (spec, adoption
+record declared in `ADOPTED_ADDITIONS` with its spec's digest, route row,
+status citation and figure), with its own mutants. Three code mutants
+survive by design (R-365-2 note 1): accepting a record with no single
+`Version:` line is near-equivalent, since `check_versioned` then wants the
+tag `…-vNone`; and the expected totals' skip of an unsigned addition and the
+two block parsers' agreement on what an addition adds are each redundant
+with the composition's own findings, kept as a second statement.
 
 A Polaris addition's recording commit runs one command after the recorder
 has applied the package through its builder:
@@ -248,6 +265,37 @@ def polaris_additions(root):
                    base.glob(POLARIS_ADDITION_GLOB)) if base.is_dir() else []
     return [(c, spec_path(c, "polaris-generation")) for c in found
             if c not in (BASE_CHANGE, UNDERSTANDING_CHANGE)]
+
+
+#: Polaris additions whose terminal outcome is a dedicated adoption record
+#: rather than a version-tagged sign-off: change -> (record, recorder module).
+#: The recorder's `SUBJECT_SHA` is the digest the confirming review read; the
+#: installed `spec.md` must hash to it (R2). Declared here, never inferred.
+ADOPTED_ADDITIONS = {
+    "polaris-non-governed-narrative-profile": (
+        f"{DECISIONS}/POLARIS-NON-GOVERNED-NARRATIVE-PROFILE-ADOPTION.md",
+        "record_narrative_profile_adoption"),
+}
+
+
+def adopted_subject_sha(module):
+    """The digest an adoption recorder binds, read from the module itself."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import importlib
+    return importlib.import_module(module).SUBJECT_SHA
+
+
+def addition_terminals(root, change):
+    """[(record path, text, version or None)] terminating `change`.
+
+    An addition declared in `ADOPTED_ADDITIONS` has its adoption record (with
+    no version); any other addition has its versioned sign-off records.
+    """
+    if change in ADOPTED_ADDITIONS:
+        rel = ADOPTED_ADDITIONS[change][0]
+        text = read_text(root, rel)
+        return [] if text is None else [(rel, text, None)]
+    return addition_records(root, change)
 
 
 def addition_records(root, change):
@@ -557,12 +605,34 @@ def check_outcomes(root, report):
     additions = polaris_additions(root)
     for change, spec_rel in additions:
         tag = f"polaris addition {change}"
+        if change in ADOPTED_ADDITIONS:
+            rel, module = ADOPTED_ADDITIONS[change]
+            records += 1
+            text = read_text(root, rel)
+            if text is None:
+                r1.append(f"{tag}: unsigned addition — `{spec_rel}` is "
+                          f"installed but its declared adoption record `{rel}` "
+                          "is missing; the outcome is Unknown")
+                continue
+            if spec_rel not in text:
+                r1.append(f"{tag}: adoption record `{rel}` does not name the "
+                          f"installed `{spec_rel}`")
+            if addition_records(root, change):
+                r1.append(f"{tag}: a `{SIGNOFF_RECORD_GLOB}` record also names "
+                          "an addition whose terminal record is its adoption")
+            subjects_seen += 1
+            current = read_bytes(root, spec_rel) or b""
+            if sha(current) != adopted_subject_sha(module):
+                r2.append(f"{tag}: stale digest — `{spec_rel}` is not the "
+                          f"bytes `{module}` binds")
+            continue
         found = addition_records(root, change)
         records += max(1, len(found))
         if not found:
             r1.append(f"{tag}: unsigned addition — `{spec_rel}` is installed "
                       f"but no `{SIGNOFF_RECORD_GLOB}` record names `Package: "
-                      f"{change}`; the outcome is Unknown")
+                      f"{change}`, and `ADOPTED_ADDITIONS` declares no adoption "
+                      "record for it; the outcome is Unknown")
         versions = [v for _r, _t, v in found]
         for version in sorted({v for v in versions if v and versions.count(v) > 1}):
             r1.append(f"{tag}: {versions.count(version)} records sign version "
@@ -574,10 +644,10 @@ def check_outcomes(root, report):
             check_versioned({"package": change, "version": version},
                             f"{tag} ({Path(rel).name})", aggregate, text, r1)
     report.add("R1", "terminal outcome for every child", records, r1,
-               f"{len(CHILDREN)} children and {len(additions)} signed Polaris "
+               f"{len(CHILDREN)} children and {len(additions)} installed Polaris "
                "additions; digest acts: phrase = manifest sha256 and in the "
                "aggregate; versioned: package/version/tag and one aggregate "
-               "block")
+               "block; adopted additions: the declared record names the spec")
     report.add("R2", "signed subjects hash to their rows", subjects_seen, r2)
 
 
@@ -694,6 +764,10 @@ def compose_polaris_by_id(base, overlay, *additions):
     """
     comp, problems = {}, []
     for label, text in additions:
+        problems += [f"addition {label}: carries {what}; refused, never "
+                     "normalised" for what, pattern in (
+                         ("U+FEFF", "\ufeff"), ("a carriage return", "\r"))
+                     if re.search(pattern, text)]
         problems += [f"addition {label}: heading `{h.strip()}`; a signed addition "
                      "is ADDED-only" for h in _foreign_headings_regex(text)]
     for label, text in (("base", base), ("overlay", overlay), *additions):
@@ -746,6 +820,12 @@ def compose_polaris_by_name(base, overlay, *additions):
         return " ".join(name.split()).casefold()
 
     for label, text in additions:
+        if "\ufeff" in text:
+            problems.append(f"addition {label}: carries U+FEFF; refused, never "
+                            "normalised")
+        if "\r" in text:
+            problems.append(f"addition {label}: carries a carriage return; "
+                            "refused, never normalised")
         problems += [f"addition {label}: heading `{h.strip()}`; a signed addition "
                      "is ADDED-only" for h in _foreign_headings_manual(text)]
     for label, text in (("base", base), ("overlay", overlay), *additions):
@@ -799,10 +879,10 @@ def census(root):
     additions = [(change, read_text(root, rel))
                  for change, rel in polaris_additions(root)]
     for change, _text in additions:
-        if not addition_records(root, change):
+        if not addition_terminals(root, change):
             findings.append(f"POLARIS: addition `{change}` has no versioned "
-                            "sign-off record, so its requirements are not "
-                            "expected")
+                            "sign-off record and no declared adoption record, "
+                            "so its requirements are not expected")
     if base is None or overlay is None:
         findings.append("POLARIS: base or overlay spec missing")
     else:
@@ -843,7 +923,7 @@ def polaris_expected(root, findings):
     n_req, n_scen = EXPECTED_TOTALS["POLARIS"]
     ids = {f"{POLARIS_ID}{i:03d}" for i in range(1, n_req + 1)}
     for change, rel in polaris_additions(root):
-        if not addition_records(root, change):
+        if not addition_terminals(root, change):
             continue
         text = read_text(root, rel) or ""
         by_regex = sorted((tuple(i), len(s)) for kind, i, _n, s in
@@ -1035,7 +1115,7 @@ def check_routes(root, pop, report):
             if record not in status and name not in status:
                 findings.append(f"`{STATUS}` cites no terminal record `{name}`")
     for change, _rel in polaris_additions(root):
-        for record, _text, _version in addition_records(root, change):
+        for record, _text, _version in addition_terminals(root, change):
             examined += 2
             name = Path(record).name
             if not any(name in line for line in rows.get(change, [])):
@@ -1195,6 +1275,7 @@ def inputs(root):
     paths |= set(tracked(root, CHANGES))
     for change, rel in polaris_additions(root):
         paths |= {rel} | {r for r, _t, _v in addition_records(root, change)}
+        paths |= {r for r, _t, _v in addition_terminals(root, change)}
     return sorted(paths)
 
 
@@ -1461,26 +1542,47 @@ ADDITION_SPEC = (
     "#### Scenario: Selftest two\n\n- **WHEN** x\n- **THEN** y\n")
 
 
-def _install_addition(tree):
-    """Sign, install and regenerate one synthetic addition in `tree`."""
-    spec = tree / spec_path(ADDITION, "polaris-generation")
+# A synthetic addition adopted by a dedicated record (`ADOPTED_ADDITIONS`),
+# as the narrative profile is, installed beside the signed one.
+ADOPTED = "polaris-selftest-adopted"
+ADOPTED_RECORD = f"{DECISIONS}/POLARIS-SELFTEST-ADOPTED-ADOPTION.md"
+ADOPTED_ID = f"{POLARIS_ID}096"
+ADOPTED_SPEC = (ADDITION_SPEC.replace(ADDITION_ID, ADOPTED_ID)
+                .replace("Selftest addition", "Selftest adopted")
+                .replace("Selftest one", "Adopted one")
+                .replace("Selftest two", "Adopted two"))
+
+
+def _install_addition(tree, change=ADDITION, ident=ADDITION_ID,
+                      text=ADDITION_SPEC, record=ADDITION_RECORD):
+    """Terminate, install and regenerate one synthetic addition in `tree`.
+
+    The signed one gets a sign-off record and aggregate block; the adopted
+    one only its adoption record naming the installed spec.
+    """
+    spec_rel = spec_path(change, "polaris-generation")
+    spec = tree / spec_rel
     spec.parent.mkdir(parents=True)
-    spec.write_text(ADDITION_SPEC, encoding="utf-8")
+    spec.write_text(text, encoding="utf-8")
     cited = _candidate_id(tree)
-    (tree / CHANGES / ADDITION / "proposal.md").write_text(
-        f"# Selftest addition\n\nAdds {ADDITION_ID}.\n"
+    (tree / CHANGES / change / "proposal.md").write_text(
+        f"# Selftest addition\n\nAdds {ident}.\n"
         + (f"\nBeside the candidate {cited}.\n" if cited else ""),
         encoding="utf-8")
-    marker = versioned_marker({"package": ADDITION, "version": "1.0"})
-    (tree / ADDITION_RECORD).write_text(
-        f"# Selftest\n\nDate: 2026-10-06\n\nPackage: {ADDITION}\n\n"
-        f"Version: 1.0\n\nTag: {ADDITION}-v1.0\n", encoding="utf-8")
-    with open(tree / AGGREGATE, "a", encoding="utf-8") as fh:
-        fh.write(f"\n{marker}\nSelftest block.\n"
-                 f"{marker.replace('<!-- ', '<!-- /')}\n")
-    name = Path(ADDITION_RECORD).name
+    if change == ADDITION:
+        marker = versioned_marker({"package": change, "version": "1.0"})
+        (tree / record).write_text(
+            f"# Selftest\n\nDate: 2026-10-06\n\nPackage: {change}\n\n"
+            f"Version: 1.0\n\nTag: {change}-v1.0\n", encoding="utf-8")
+        with open(tree / AGGREGATE, "a", encoding="utf-8") as fh:
+            fh.write(f"\n{marker}\nSelftest block.\n"
+                     f"{marker.replace('<!-- ', '<!-- /')}\n")
+    else:
+        (tree / record).write_text(
+            f"# Selftest adoption\n\nAdopts `{spec_rel}`.\n", encoding="utf-8")
+    name = Path(record).name
     with open(tree / OPENSPEC_README, "a", encoding="utf-8") as fh:
-        fh.write(f"\n| [`{ADDITION}`](changes/{ADDITION}) | Selftest | "
+        fh.write(f"\n| [`{change}`](changes/{change}) | Selftest | "
                  f"Signed: `{name}` | — |\n")
     status = (tree / STATUS).read_text(encoding="utf-8")
     m = STATUS_FIGURE.search(status)
@@ -1528,7 +1630,38 @@ def addition_mutants():
                     f"&method B: addition {ADDITION}: heading")
     modified_both = (f"R3:method A: addition {ADDITION}: MODIFIED section"
                      f"&method B: addition {ADDITION}: MODIFIED section")
+    bom_both = (f"R3:method A: addition {ADDITION}: carries U+FEFF"
+                f"&method B: addition {ADDITION}: carries U+FEFF")
+    cr_both = (f"R3:method A: addition {ADDITION}: carries a carriage return"
+               f"&method B: addition {ADDITION}: carries a carriage return")
+    removed = ("## REMOVED Requirements\n\n- `### Requirement: Admitted "
+               "project input`\n\n")
+    renamed = ("## RENAMED Requirements\n\n- FROM: `### Requirement: Admitted "
+               "project input`\n- TO: `### Requirement: Renamed input`\n\n")
     return (
+        # Bytes OpenSpec normalises and both methods here do not: refused.
+        ("addition-bom-removed-first", spec, lambda t: "\ufeff" + removed + t,
+         bom_both),
+        ("addition-bom-renamed-first", spec, lambda t: "\ufeff" + renamed + t,
+         bom_both),
+        ("addition-bom-modified-first", spec,
+         lambda t: "\ufeff" + _restates_base(t) + "\n" + t, bom_both),
+        ("addition-cr-removed", spec,
+         lambda t: t + "\nProse.\r" + removed.replace("\n", "\r"), cr_both),
+        ("addition-cr-renamed", spec,
+         lambda t: t + "\nProse.\r" + renamed.replace("\n", "\r"), cr_both),
+        ("addition-cr-modified", spec,
+         lambda t: t + "\nProse.\r" + _restates_base(t).replace("\n", "\r"),
+         cr_both),
+        # `Package:` is a whole line, never a prefix of another package's.
+        ("addition-record-package-prefix", ADDITION_RECORD,
+         _replace(f"Package: {ADDITION}\n", f"Package: {ADDITION}-extra\n"),
+         "R1:unsigned addition"),
+        # The status page must cite the addition's record, not only its figure.
+        ("addition-status-citation", STATUS,
+         _replace(f"\nSelftest addition: `{Path(ADDITION_RECORD).name}`.\n",
+                  "\n"),
+         "R5:cites no terminal record"),
         ("addition-unsigned", ADDITION_RECORD, None, "R1"),
         ("addition-unsigned-not-expected", ADDITION_RECORD, None,
          "R3:no versioned sign-off record"),
@@ -1588,6 +1721,26 @@ def addition_mutants():
     )
 
 
+def adopted_mutants():
+    spec = spec_path(ADOPTED, "polaris-generation")
+    return (
+        ("adopted-record-missing", ADOPTED_RECORD, None,
+         "R1:declared adoption record"),
+        ("adopted-record-not-naming-spec", ADOPTED_RECORD,
+         _replace(f"`{spec}`", "`elsewhere`"), "R1:does not name the installed"),
+        # Prose only: census, union and figure unchanged, so only R2 sees it.
+        ("adopted-spec-edited", spec, lambda t: t + "\nEdited prose.\n",
+         "R2:stale digest"),
+        ("adopted-also-signed", ADDITION_RECORD,
+         _replace(f"Package: {ADDITION}\n", f"Package: {ADOPTED}\n"),
+         "R1:also names"),
+        ("adopted-route-row", OPENSPEC_README,
+         _replace(f"Signed: `{Path(ADOPTED_RECORD).name}`", "Signed"), "R5"),
+        ("adopted-census-unexpected", ADOPTED_RECORD, None,
+         "R3:no declared adoption record"),
+    )
+
+
 def selftest(witness_path=None):
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                             capture_output=True, text=True).stdout.strip()
@@ -1611,105 +1764,139 @@ def selftest(witness_path=None):
             print("SELFTEST FAIL: the scratch copy with a signed addition "
                   "does not pass")
             return 1
-        cases = ([(base, clean, m) for m in mutants(ROOT)]
-                 + [(added, with_addition, m) for m in addition_mutants()])
-        for start, clean, (name, rel, mutate, expect) in cases:
-            tree = Path(tmp) / name
-            shutil.copytree(start, tree)
-            rels = rel if isinstance(rel, tuple) else (rel,)
-            unchanged, applied = False, False
-            for one in rels:
-                target = tree / one
-                before = target.read_text(encoding="utf-8")
-                if mutate is None:
-                    target.unlink()
-                    old, new = "<file present>", "<file deleted>"
-                    continue
-                after = mutate(before)
-                if after == before and "=0" in expect:
-                    old, new = "<already applied>", "<already applied>"
-                    continue
-                applied = True
-                if after == before:
-                    unchanged = True
-                    break
-                target.write_text(after, encoding="utf-8")
-                old, new = _fragment(before, after)
-            if unchanged:
-                failures.append(f"{name}: mutation changed nothing")
+        # An addition adopted by a dedicated record (the narrative profile's
+        # route): declared in ADOPTED_ADDITIONS with the digest of its spec.
+        adopted = Path(tmp) / "with-adopted-addition"
+        shutil.copytree(added, adopted)
+        ADOPTED_ADDITIONS[ADOPTED] = (ADOPTED_RECORD, "<selftest>")
+        sha_of = adopted_subject_sha
+        globals()["adopted_subject_sha"] = lambda module: (
+            sha(ADOPTED_SPEC.encode("utf-8")) if module == "<selftest>"
+            else sha_of(module))
+        try:
+            _install_addition(adopted, ADOPTED, ADOPTED_ID, ADOPTED_SPEC,
+                              ADOPTED_RECORD)
+            with_adopted = run(adopted)
+            # The scratch copy a later selftest makes of such a tree must
+            # carry the adoption record (the post-sitting tree's own selftest).
+            if ADOPTED_RECORD not in inputs(adopted):
+                print("SELFTEST FAIL: the scratch inputs omit the adoption record")
+                return 1
+            if with_adopted.failed:
+                print("\n".join(with_adopted.lines))
+                print("SELFTEST FAIL: the scratch copy with an adopted addition "
+                      "does not pass")
+                return 1
+            return _selftest_cases(tmp, commit, witnesses, failures, witness_path,
+                                   base, clean, added, with_addition, adopted,
+                                   with_adopted)
+        finally:
+            del ADOPTED_ADDITIONS[ADOPTED]
+            globals()["adopted_subject_sha"] = sha_of
+
+
+def _selftest_cases(tmp, commit, witnesses, failures, witness_path, base, clean,
+                    added, with_addition, adopted, with_adopted):
+    cases = ([(base, clean, m) for m in mutants(ROOT)]
+             + [(added, with_addition, m) for m in addition_mutants()]
+             + [(adopted, with_adopted, m) for m in adopted_mutants()])
+    for start, clean, (name, rel, mutate, expect) in cases:
+        tree = Path(tmp) / name
+        shutil.copytree(start, tree)
+        rels = rel if isinstance(rel, tuple) else (rel,)
+        unchanged, applied = False, False
+        for one in rels:
+            target = tree / one
+            before = target.read_text(encoding="utf-8")
+            if mutate is None:
+                target.unlink()
+                old, new = "<file present>", "<file deleted>"
                 continue
-            rel = " + ".join(rels)
+            after = mutate(before)
+            if after == before and "=0" in expect:
+                old, new = "<already applied>", "<already applied>"
+                continue
+            applied = True
+            if after == before:
+                unchanged = True
+                break
+            target.write_text(after, encoding="utf-8")
+            old, new = _fragment(before, after)
+        if unchanged:
+            failures.append(f"{name}: mutation changed nothing")
+            continue
+        rel = " + ".join(rels)
+        got = run(tree)
+        if ":" in expect:
+            # The predicate must fail with this finding, not another.
+            # `&` joins needles that must each be found (both methods).
+            rid, _sep, needles = expect.partition(":")
+            caught = all(any(n in f for f in got.findings.get(rid, []))
+                         for n in needles.split("&"))
+        elif expect.endswith("~"):
+            rid = expect[:-1]
+            caught = got.findings.get(rid) != clean.findings.get(rid)
+        elif "=0" in expect:
+            # Strict: the report-only predicate examined its population
+            # and reports exactly zero findings. Nothing else fails, except
+            # the predicates named after `|`, which must fail exactly when
+            # the mutant applied new bytes (a later act over a signed
+            # subject fails R2 by design until the reconciliation is
+            # re-derived); once the tree already carries the bytes they
+            # may only be a subset.
+            head, _sep, tail = expect.partition("|")
+            rid = head[:-2]
+            allowed = set(filter(None, tail.split(",")))
+            failed_ok = (got.failed == allowed if applied
+                         else got.failed <= allowed)
+            caught = (got.findings.get(rid) == [] and failed_ok
+                      and any(int(m.group(1)) > 0 for m in (
+                          re.match(rf"OK +{rid}  .* — (\d+) examined", line)
+                          for line in got.lines) if m))
+        else:
+            caught = expect in got.failed
+        witnesses.append({"mutant": name, "path": rel, "old": old,
+                          "new": new, "expected": expect,
+                          "failed": sorted(got.failed),
+                          "outcome": "killed" if caught else "SURVIVED"})
+        if not caught:
+            failures.append(f"{name}: expected {expect} to fail, got "
+                            f"{sorted(got.failed) or 'nothing'}")
+    # Two cases a one-file mutation cannot express. A second record of the
+    # same version fails R1 by its own finding; --regenerate refuses an
+    # unsigned addition and writes nothing.
+    for name, setup, expect in (
+            ("addition-duplicate-version-record",
+             lambda tree: shutil.copyfile(
+                 tree / ADDITION_RECORD,
+                 tree / ADDITION_RECORD.replace("SELFTEST-ADDITION",
+                                                "SELFTEST-ADDITION-COPY")),
+             "R1:records sign version"),
+            ("regenerate-refuses-unsigned",
+             lambda tree: (tree / ADDITION_RECORD).unlink(), "refused")):
+        tree = Path(tmp) / name
+        shutil.copytree(added, tree)
+        setup(tree)
+        if expect == "refused":
+            before = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
+            try:
+                regenerate(tree)
+                caught = False
+            except SystemExit as exc:
+                caught = "census refused" in str(exc)
+            after = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
+            caught = caught and before == after
+            got_failed = []
+        else:
             got = run(tree)
-            if ":" in expect:
-                # The predicate must fail with this finding, not another.
-                # `&` joins needles that must each be found (both methods).
-                rid, _sep, needles = expect.partition(":")
-                caught = all(any(n in f for f in got.findings.get(rid, []))
-                             for n in needles.split("&"))
-            elif expect.endswith("~"):
-                rid = expect[:-1]
-                caught = got.findings.get(rid) != clean.findings.get(rid)
-            elif "=0" in expect:
-                # Strict: the report-only predicate examined its population
-                # and reports exactly zero findings. Nothing else fails, except
-                # the predicates named after `|`, which must fail exactly when
-                # the mutant applied new bytes (a later act over a signed
-                # subject fails R2 by design until the reconciliation is
-                # re-derived); once the tree already carries the bytes they
-                # may only be a subset.
-                head, _sep, tail = expect.partition("|")
-                rid = head[:-2]
-                allowed = set(filter(None, tail.split(",")))
-                failed_ok = (got.failed == allowed if applied
-                             else got.failed <= allowed)
-                caught = (got.findings.get(rid) == [] and failed_ok
-                          and any(int(m.group(1)) > 0 for m in (
-                              re.match(rf"OK +{rid}  .* — (\d+) examined", line)
-                              for line in got.lines) if m))
-            else:
-                caught = expect in got.failed
-            witnesses.append({"mutant": name, "path": rel, "old": old,
-                              "new": new, "expected": expect,
-                              "failed": sorted(got.failed),
-                              "outcome": "killed" if caught else "SURVIVED"})
-            if not caught:
-                failures.append(f"{name}: expected {expect} to fail, got "
-                                f"{sorted(got.failed) or 'nothing'}")
-        # Two cases a one-file mutation cannot express. A second record of the
-        # same version fails R1 by its own finding; --regenerate refuses an
-        # unsigned addition and writes nothing.
-        for name, setup, expect in (
-                ("addition-duplicate-version-record",
-                 lambda tree: shutil.copyfile(
-                     tree / ADDITION_RECORD,
-                     tree / ADDITION_RECORD.replace("SELFTEST-ADDITION",
-                                                    "SELFTEST-ADDITION-COPY")),
-                 "R1:records sign version"),
-                ("regenerate-refuses-unsigned",
-                 lambda tree: (tree / ADDITION_RECORD).unlink(), "refused")):
-            tree = Path(tmp) / name
-            shutil.copytree(added, tree)
-            setup(tree)
-            if expect == "refused":
-                before = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
-                try:
-                    regenerate(tree)
-                    caught = False
-                except SystemExit as exc:
-                    caught = "census refused" in str(exc)
-                after = {p: p.read_bytes() for p in tree.rglob("*") if p.is_file()}
-                caught = caught and before == after
-                got_failed = []
-            else:
-                got = run(tree)
-                rid, _sep, needle = expect.partition(":")
-                caught = any(needle in f for f in got.findings.get(rid, []))
-                got_failed = sorted(got.failed)
-            witnesses.append({"mutant": name, "path": "<scripted case>", "old": "",
-                              "new": "", "expected": expect, "failed": got_failed,
-                              "outcome": "killed" if caught else "SURVIVED"})
-            if not caught:
-                failures.append(f"{name}: expected {expect}")
+            rid, _sep, needle = expect.partition(":")
+            caught = any(needle in f for f in got.findings.get(rid, []))
+            got_failed = sorted(got.failed)
+        witnesses.append({"mutant": name, "path": "<scripted case>", "old": "",
+                          "new": "", "expected": expect, "failed": got_failed,
+                          "outcome": "killed" if caught else "SURVIVED"})
+        if not caught:
+            failures.append(f"{name}: expected {expect}")
     doc = {"commit": commit, "script": "scripts/check_spec_reconciliation.py",
            "mutants": witnesses}
     if witness_path:
@@ -1722,8 +1909,8 @@ def selftest(witness_path=None):
     if failures:
         print("\n".join(f"SELFTEST FAIL: {f}" for f in failures))
         return 1
-    print(f"SELFTEST PASS: clean scratch copy and its signed-addition variant "
-          f"pass; {len(witnesses)} of "
+    print(f"SELFTEST PASS: clean scratch copy and its signed- and "
+          f"adopted-addition variants pass; {len(witnesses)} of "
           f"{len(witnesses)} mutants killed by their expected predicate "
           f"(commit {commit[:12]})")
     return 0

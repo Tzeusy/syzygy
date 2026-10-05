@@ -29,8 +29,10 @@ Steps, in the order of the sitting packet (PR 260):
              temporary test in the scratch has the consent reader read the one
              in-force egress record and the stage map authorise the narrative
              plus the two discovery stages
-  5 end      check_governance, the partition and (with `--vitest`) the full
-             test suite must all be green; the report says so in `green`
+  5 end      check_governance, the partition, the spec reconciliation and
+             the Polaris dependency unions (`--check` each) and (with
+             `--vitest`) the full test suite must all be green; the report
+             says so in `green`
 
 Each recorder is fed a synthetic owner argument, so a "performed" record here
 proves only that the recorder accepts the bytes, never that anyone consented.
@@ -637,6 +639,15 @@ describe('simulated sitting: the gate reads egress version 2', () => {
         if rec["partition_exit"] != 0:
             green = False
             self.finding("end", "not-green", f"partition: {rec['partition']}")
+        # The profile install makes it a Polaris addition (R-365-2 B3): the
+        # reconciliation and the generated unions must agree with it too.
+        for script in ("check_spec_reconciliation", "build_polaris_dependency_unions"):
+            p = self.run([sys.executable, f"scripts/{script}.py", "--check"])
+            tail = ((p.stdout + p.stderr).strip().splitlines() or [""])[-1][:200]
+            self.step(f"end:{script}", exit=p.returncode, tail=tail)
+            if p.returncode:
+                green = False
+                self.finding("end", "not-green", f"{script} --check: {(p.stdout + p.stderr)[-400:]}")
         if self.vitest:
             failing = self.vitest_run("end")
             flaky = {f for f in failing or [] if KNOWN_FLAKE in f}
