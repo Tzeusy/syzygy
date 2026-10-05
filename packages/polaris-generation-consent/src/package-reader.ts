@@ -82,8 +82,17 @@ const stemFolds = (value: string): readonly string[] => {
   const base = fold(value).replace(/[_\s]+/gu, '-');
   return [base.replace(/\p{Default_Ignorable_Code_Point}/gu, ''), base.replace(/\p{Default_Ignorable_Code_Point}/gu, '-')].map(form => form.replace(/-+/g, '-'));
 };
-/** Whether `text`, in any of its stem spellings, carries `needle` (a stem or path, in its one folded spelling). */
-const carries = (text: string, needle: string): boolean => { const n = stemFolds(needle)[0]!; return stemFolds(text).some(form => form.includes(n)); };
+/** Names that cite tooling or a package directory, never a record: a snake_case code file (`scripts/build_public_egress_v2.py`,
+ * `record_rfc5_project_documentation_act.py`), and a path into the public-repo-admission or public-egress-v2 package that does not
+ * go through its `instances/` directory (`contracts/candidates/public-egress-v2/OWNER-SIGNOFF-PACKET.md`). Matched on the folded
+ * text, before `_` is read as a dash; an identifier, an act file name or an instance path is never one of these. */
+const TOOLING_NAME = /(?:[\w.-]+\/)*[a-z0-9]+(?:_[a-z0-9]+)+\.(?:py|mjs|cjs|js|ts|sh)\b/gu;
+const PACKAGE_PATH = /(?:[\w.-]+\/)*(?:public-repo-admission|public-egress-v2)\/[\w./-]*/gu;
+const withoutToolingNames = (text: string): string =>
+  fold(text).replace(TOOLING_NAME, ' ').replace(PACKAGE_PATH, ref => (ref.includes('/instances/') || ref.endsWith('/instances') ? ref : ' '));
+/** Whether `text`, in any of its stem spellings and with tooling and package-directory names set aside, carries `needle` (a stem or
+ * path, in its one folded spelling). */
+const carries = (text: string, needle: string): boolean => { const n = stemFolds(needle)[0]!; return stemFolds(withoutToolingNames(text)).some(form => form.includes(n)); };
 
 async function walk(fs: PackageReaderFs, dir: string, prefix = '', depth = 0, found: string[] = []): Promise<string[]> {
   if (depth > 6) return refuse();
@@ -155,9 +164,12 @@ function bullets(source: string, heading: RegExp): string[] {
   return out;
 }
 
-/** The one bullet list of the section that starts at the one heading equal to `heading` and runs to the next heading of any level
- * (prose only): its item lines, from the first `- ` line through blank and indented continuation lines. A second list in the
- * section (a bullet after any other line, inside an HTML block, say) refuses, as does a section with no list. */
+/** The `- ` item lines of the section that starts at the one heading equal to `heading` and runs to the next ATX heading of any level
+ * (prose only). The list taken starts at the first line beginning `- ` and runs through `- `, blank and indented lines; it ends at the
+ * first other line. A section with no `- ` line refuses, and so does any `-`, `*` or `+` bullet (indented or not) after the list
+ * ends, as in `<details>` placed after it. Not refused, only ignored: an ordered list (`1.`) anywhere, and a `*` or `+` list before
+ * the first `- ` line. A setext heading does not end the section. An indented line inside the list (an indented `<details>`, say)
+ * does not end it, so a later `- ` item is still taken. */
 function sectionList(source: string, heading: string): string[] {
   const lines = outsideFences(source).split('\n');
   const at = lines.map((line, i) => (line === heading ? i : -1)).filter(i => i >= 0);
@@ -222,7 +234,7 @@ async function checkClassAct(fs: PackageReaderFs, root: string, v2At: number): P
  * text of the whole file, prose or not. The one exemption is the aggregate acceptance record the recorders append to: it names every
  * act in tables and headings by design, so only its field lines count. */
 const ADMISSION_STEMS = ['public-repo-admission', 'public-egress-v2', 'public-obs-', 'public-egress-anthropic', 'public-egress-'];
-const ADMISSION_PATHS = [INSTANCES_DIR, EGRESS_V2_INSTANCE, '.syzygy/governance/contracts/candidates/public-repo-admission/', '.syzygy/governance/contracts/candidates/public-egress-v2/'];
+const ADMISSION_PATHS = [INSTANCES_DIR, EGRESS_V2_INSTANCE];
 const AGGREGATE_RECORD = 'ACCEPTANCE-ACT-RECORD.md';
 function namesAdmission(rel: string, text: string): boolean {
   const folded = fold(text);

@@ -700,6 +700,54 @@ describe('round-3 review notes', () => {
   });
 });
 
+describe('tooling and package-directory names are not withdrawals (R-263-4 N-B)', () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+  const v2Text = readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');
+  const MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+  const moduleText = readFileSync(path.join(repoRoot, MODULE), 'utf8');
+  const p1 = JSON.stringify({ policyVersion: '1', publicSourceScope: { rules: [] } }) + '\n';
+  /** Version 1 and 2 egress, the class act, and the policy under its version 1 act: every sweep runs on every read. */
+  const full = (extra: Record<string, string>): Record<string, string> => world({
+    [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'),
+    [EGRESS_V2_INSTANCE]: v2Text, [`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text),
+    [MODULE]: moduleText, [`${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`]: renderClassAct(sha(moduleText), '2026-10-03', '2026-10-03T09:30:00Z'),
+    [POLICY_PATH]: p1, [`${DECISIONS_DIR}/${POLICY_ACT_FILE}`]: renderPolicyAct(sha(p1), '2026-10-03', '2026-10-03T09:30:00Z', 1),
+    ...extra,
+  });
+  const direction = (line: string): Record<string, string> => ({ [`${DECISIONS_DIR}/OWNER-DIRECTION-SITTING-2026-10-06.md`]: `# Owner direction\n\n${line}\n` });
+  const allReads = async (files: Record<string, string>): Promise<string[]> => {
+    const fs = memoryFs(files), out: string[] = [];
+    try { await createPackageAdmissionReader({ root: '/r', fs }).read(); } catch { out.push('admission'); }
+    try { await createPackagePolicyReader({ root: '/r', fs }).read(); } catch { out.push('policy'); }
+    if ((await readClassActState({ root: '/r', fs, now: AT })).state === 'refused') out.push('class');
+    if ((await readInForceEgress({ root: '/r', fs, now: AT })).state === 'refused') out.push('egress');
+    return out;
+  };
+  it('a direction citing a recorder or builder script, or a package file outside instances/, refuses no read', async () => {
+    expect(await allReads(full({}))).toEqual([]);
+    for (const line of [
+      'Run `scripts/build_public_egress_v2.py --check` before the sitting.',
+      'Then run python3 scripts/record_rfc5_project_documentation_act.py with the owner\'s phrase.',
+      'Record with scripts/record_public_repo_admission_acts.py and scripts/record_public_egress_v2_act.py.',
+      'The packet is `.syzygy/governance/contracts/candidates/public-egress-v2/OWNER-SIGNOFF-PACKET.md`.',
+      'See contracts/candidates/public-repo-admission/README.md and candidates/public-egress-v2/.',
+      'scripts/record_public_source_screening_scope_v2_act.py writes the version 2 policy act.',
+    ]) expect(await allReads(full(direction(line))), line).toEqual([]);
+  });
+  it('still refuses a withdrawal beside such a name: a record id, an act identity, an act record path or an instance path', async () => {
+    for (const [line, expected] of [
+      ['Run scripts/build_public_egress_v2.py; PUBLIC-EGRESS-anthropic is withdrawn.', ['admission', 'egress']],
+      ['Withdrawn: PUBLIC-OBS-REDIS-2026-10-03 (recorded by scripts/record_public_repo_admission_acts.py).', ['admission', 'egress']],
+      [`Withdrawn: \`${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md\`.`, ['admission', 'egress']],
+      [`Withdrawn: \`${EGRESS_V2_INSTANCE}\`.`, ['admission', 'egress']],
+      [`Withdrawn: \`${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md\`.`, ['admission', 'egress']],
+      ['Revokes RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03 (scripts/record_rfc5_project_documentation_act.py).', ['admission', 'class', 'egress']],
+      ['Retracts the public source scope approval; see scripts/record_public_source_screening_scope_act.py.', ['policy']],
+      ['Withdrawn: public_obs_redis_2026_10_03', ['admission', 'egress']],
+    ] as Array<[string, string[]]>) expect(await allReads(full(direction(line))), line).toEqual(expected);
+  });
+});
+
 // Runs last: every policy world read above, at instants around each act. The port's answer and the strict chain must agree.
 describe('the policy port and the strict policy chain agree', () => {
   const NOWS = [Date.UTC(2026, 9, 1), Date.UTC(2026, 9, 3, 9, 29, 59), Date.UTC(2026, 9, 3, 9, 30, 0), AT - 1, AT, AT + 1000, Date.UTC(2027, 0, 1, 9, 30, 0), Date.UTC(2027, 0, 2)];
