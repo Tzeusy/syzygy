@@ -1,0 +1,196 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S11 slice (syzygy-qkea.12): the /polaris-dossier skill, the Codex instructions and their lint, aligned to version 1.1 of the change (REQ-polaris-generation-033; D9-N5, N1 and N6 as signed; R3-F9). Text mutants: a granting sentence (T1), the agent told to run allow-execution (T2), a public-only description (T3), an unknown option (T4), a required option dropped (T6), no deferral to the brief (T5), deferral to the authoring brief alone (T7), the choice reused across runs (T8), no working directory for reported commands (T9), no scope statement (T10), no generous-deadline advice (T11), no close-before-deadline instruction (T12), the trigger phrase dropped from the description (T13). Lint mutants: the negation class matching everything (L1), required options unchecked (L2), positional words unchecked (L3), the public check off (L4), the N5 quotation paraphrased so the spec bytes no longer carry it (L5), the trigger check vacuous (L6), the deferral check accepting any brief (L7). Not authority.",
+  "measuredOn": {
+    "commit": "d82b09dbfb85bbfaed5992336f284b02057bd359",
+    "subjects": [
+      {
+        "path": ".claude/skills/polaris-dossier/SKILL.md",
+        "sha256": "50abb0e2bb089d9e3ca3b27519e449180a1ecd89367d3a369e2776fb758fbd7a"
+      },
+      {
+        "path": ".codex/skills/polaris-dossier/SKILL.md",
+        "sha256": "54a3ba39e1b3a33b70f2adfabd55ebeae9986247822955c6ca53ff3d2b41d044"
+      },
+      {
+        "path": "packages/polaris-dossier/src/agent-texts.test.ts",
+        "sha256": "f28a63fe58441305f7ca39ddd4be8f401b2fa4751a0fdcb84e4fec06a7b2589a"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "7b5850cf2605c8d69ec9fdb47ca1e6681a8999ca37b8e5e5e36c06ac3639004f"
+      },
+      {
+        "path": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+        "sha256": "6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S11 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero. The spec file is a subject, read by the lint, and never mutated.",
+  "command": "npx vitest run packages/polaris-dossier/src/agent-texts.test.ts",
+  "result": {
+    "killed": 20,
+    "total": 20
+  },
+  "mutants": [
+    {
+      "id": "T1-skill-grants-execution",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "- Label claims `inferred`",
+      "new": "- You may build and run the project to confirm a claim.\n- Label claims `inferred`",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T2-skill-agent-runs-allow-execution",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "before you continue. Never\n   run that command yourself,",
+      "new": "before you continue. Run\n   that command yourself if asked,",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T3-skill-description-public-only",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "for any repository the operator holds the consents for,",
+      "new": "for any public repository,",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T4-codex-unknown-option",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "`syzygy dossier close <run> --usage-tokens <n> --usage-turns <n>`",
+      "new": "`syzygy dossier close <run> --usage <n>`",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T5-codex-no-deferral",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "Follow the\n  execution rule in the brief or packet this session was given",
+      "new": "Use your\n  judgement about running things in this session",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T7-codex-authoring-brief-only",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "execution rule in the brief or packet this session was given: the run's\n  `brief.md` when you author, the inventory brief or review packet in a\n  session handed over to.",
+      "new": "execution rule in the run's `brief.md`.",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T8-skill-choice-reused",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "never\n   reuse one from an earlier run.",
+      "new": "an\n   earlier run's may be reused.",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T9-codex-no-working-directory",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "with the working directory you\n  ran it in,",
+      "new": "with what you\n  ran,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T10-skill-no-scope-statement",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "where the\n  brief asks, whether it falls within the scope the owner's choice names;",
+      "new": "where the\n  brief asks, why;",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T11-codex-no-generous-deadline",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "Advise a generous\n  deadline:",
+      "new": "Note the\n  deadline:",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T12-skill-no-close-before-deadline",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "10. Close before the deadline passes:",
+      "new": "10. Close when convenient:",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "T13-codex-no-trigger-phrase",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": ", for example \"generate me a Polaris dossier for <url>\"",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "L5-n5-quotation-paraphrased",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "they SHALL only defer to the execution rule in the run\\'s",
+      "new": "they SHALL defer to the execution rule in the run\\'s",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L6-trigger-unchecked",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "includes('\"generate me a Polaris dossier for <url>\"') ? [] :",
+      "new": "includes('') ? [] :",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "L7-deferral-to-authoring-brief-accepted",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "Follow the execution rule in the brief or packet this session was given: the run's `brief\\.md` when you author, the inventory brief or review packet in a session handed over to\\./u.test(flat)",
+      "new": "Follow the execution rule in the/u.test(flat)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T6-codex-missing-required-option",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "`syzygy dossier init <clone> --url <url> --config <file> --state-root <dir>`",
+      "new": "`syzygy dossier init <clone> --url <url> --state-root <dir>`",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L1-negation-swallows-everything",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "const negation = /\\b(?:not|never|no|nothing|unless|only)\\b|brief\\.md|execution rule/iu;",
+      "new": "const negation = /./u;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L2-required-options-unchecked",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "for (const flag of synopsis.required) if (!used.has(flag))",
+      "new": "for (const flag of synopsis.required) if (false && !used.has(flag))",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L3-positional-words-unchecked",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "if (!word.split('|').every((part) => expected.split('|').includes(part)))",
+      "new": "if (false)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L4-public-description-unchecked",
+      "file": "packages/polaris-dossier/src/agent-texts.test.ts",
+      "old": "if (/\\bpublic\\b/iu.test(description))",
+      "new": "if (false)",
+      "outcome": "killed",
+      "failedTests": 1
+    }
+  ]
+}
