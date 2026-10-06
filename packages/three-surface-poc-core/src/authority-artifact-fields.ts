@@ -103,7 +103,7 @@ function parseJson(bytes: Uint8Array): { readonly ok: true; readonly value: unkn
 }
 
 function jsonField(object: Record<string, unknown>, key: string): ArtifactField {
-  return Object.prototype.hasOwnProperty.call(object, key) ? present(object[key]) : MISSING;
+  return Object.hasOwn(object, key) ? present(object[key]) : MISSING;
 }
 
 export function parsePolicyArtifact(bytes: Uint8Array): ArtifactParse<PolicyArtifactFields> {
@@ -136,7 +136,7 @@ export function parseRegistryArtifact(bytes: Uint8Array): ArtifactParse<Registry
   let repository: ArtifactField = MISSING;
   let readOnlyAuthority: ArtifactField = MISSING;
   let writeSurface: ArtifactField = MISSING;
-  if (Object.prototype.hasOwnProperty.call(root, 'entries')) {
+  if (Object.hasOwn(root, 'entries')) {
     const entries = root['entries'];
     const entry = Array.isArray(entries) ? entries[0] : undefined;
     if (!Array.isArray(entries) || entry === undefined || !isRecord(entry)) {
@@ -144,8 +144,8 @@ export function parseRegistryArtifact(bytes: Uint8Array): ArtifactParse<Registry
     } else {
       const subject = entry['subject'];
       if (isRecord(subject)) repository = jsonField(subject, 'observedRepository');
-      else if (Object.prototype.hasOwnProperty.call(entry, 'subject')) repository = present(subject);
-      if (Object.prototype.hasOwnProperty.call(entry, 'typedAuthority')) {
+      else if (Object.hasOwn(entry, 'subject')) repository = present(subject);
+      if (Object.hasOwn(entry, 'typedAuthority')) {
         const authority = entry['typedAuthority'];
         readOnlyAuthority = present(authority);
         if (isRecord(authority)) writeSurface = jsonField(authority, 'writeSurface');

@@ -64,12 +64,12 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
     // A run reported at one commit is never ingested against another.
     expect(repositoryCommit, 'HEAD at ingest against the operator-reported commit (SYZYGY_POC_BUTLERS_JUNIT_COMMIT)').toBe(JUNIT_COMMIT);
 
-    const rawJUnitXml = readBoundedRegularFile(JUNIT);
+    const rawJUnit = readBoundedRegularFile(JUNIT);
     {
       // Refuses a status 0 beside failing, erroring or zero tests, and any
       // count that is not a non-negative integer.
       const built = buildOperatorReportedTestArtifactRecord({
-        rawJUnitXml,
+        rawJUnit,
         command: [PYTHON, '-m', 'pytest', SCOPE, '-q'],
         reportedExitCode: Number(JUNIT_EXIT),
         ingestedAt: new Date().toISOString(),
