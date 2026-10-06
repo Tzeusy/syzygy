@@ -713,11 +713,11 @@ describe('rendered-design review (S9b)', () => {
     const { renderer, inputs } = capturing();
     const result = await renderRun(run, renderDeps({ renderer }));
     if (!result.ok) throw new Error(result.refusal.reason);
-    const excluded = inputs[0].sources.filter((source) => source.exclusion.excluded);
+    const excluded = inputs[0]!.sources.filter((source) => source.exclusion.excluded);
     expect(excluded.map((source) => source.path)).toEqual(['docs/deploy.md']);
     const key = createHash('sha256').update(`polaris-dossier excluded-source key\u0000${RUN_ID}\u0000${commit}`).digest();
-    expect(excluded[0].sourceId).toBe(excludedSourceId(key, 'docs/deploy.md'));
-    expect(excluded[0].sourceId).not.toBe(excludedSourceId(key, `docs/deploy.md\u0000${objectIds['docs/deploy.md']}`));
+    expect(excluded[0]!.sourceId).toBe(excludedSourceId(key, 'docs/deploy.md'));
+    expect(excluded[0]!.sourceId).not.toBe(excludedSourceId(key, `docs/deploy.md\u0000${objectIds['docs/deploy.md']}`));
   });
 
   it('drives the design review through the CLI', async () => {
