@@ -1,0 +1,930 @@
+{
+  "subject": {
+    "commit": "740cb0bf1a0ab986ff066db33060555e922bd313",
+    "branch": "agent/dossier-s2-object-reader",
+    "fileSha256": {
+      "packages/polaris-dossier/src/git-object-reader.ts": "bd9973b3473a079b6589108d3d360ca32cc9bcfc582a0d6c91f6a38ba8913f19"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/git-object-reader.test.ts": "e1b3b859dec306f06fc39147770e64aa96412f47c4ef5984f2f6bac049d609f0"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-06T04:12:21+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "const HEX = { sha1: 40, sha256: 64 } as const;",
+      "new": "const HEX = { sha1: 40, sha256: 64 } as const;",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 50,
+      "note": "control: unchanged source, must survive"
+    },
+    {
+      "id": "H1-identifier-not-compared",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (actual !== id) refuse('identifier-mismatch'",
+      "new": "if (false) refuse('identifier-mismatch'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 50,
+      "note": "re-hash computed but never compared"
+    },
+    {
+      "id": "H2-header-excluded-from-hash",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "update(`${object.type} ${object.body.length}\\0`).update(object.body)",
+      "new": "update(object.body)",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 43,
+      "totalTests": 50,
+      "note": "hash over the body alone"
+    },
+    {
+      "id": "H3-algorithm-fixed-sha1",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "createHash(this.algorithm)",
+      "new": "createHash('sha1')",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "hash always SHA-1, whatever the identifier"
+    },
+    {
+      "id": "A1-64-digits-read-as-sha1",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (/^[0-9a-f]{64}$/.test(identifier)) return 'sha256';",
+      "new": "if (/^[0-9a-f]{64}$/.test(identifier)) return 'sha1';",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 50,
+      "note": "algorithm not taken from the identifier length"
+    },
+    {
+      "id": "A2-identifier-case-folded",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (/^[0-9a-f]{40}$/.test(identifier)) return 'sha1';",
+      "new": "if (/^[0-9a-fA-F]{40}$/.test(identifier)) return 'sha1';",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "uppercase identifier accepted"
+    },
+    {
+      "id": "A3-identifier-unanchored",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (/^[0-9a-f]{40}$/.test(identifier)) return 'sha1';",
+      "new": "if (/[0-9a-f]{40}/.test(identifier)) return 'sha1';",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 50,
+      "note": "identifier with extra characters accepted"
+    },
+    {
+      "id": "T1-type-not-checked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (object.type !== type) refuse('type-mismatch'",
+      "new": "if (false) refuse('type-mismatch'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a hash-correct object of the wrong type accepted"
+    },
+    {
+      "id": "G1-gitdir-file-followed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (!isDir) refuse('not-a-git-directory'",
+      "new": "if (false) refuse('not-a-git-directory'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a .git file not refused"
+    },
+    {
+      "id": "L1-loose-header-size-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (header === null || Number(header[2]) !== inflated.length - nul - 1)",
+      "new": "if (header === null)",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "loose header size not checked"
+    },
+    {
+      "id": "L2-loose-skipped",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "    if (stored !== null) return this.loose(stored, id, at);\n    for (const pack of this.packs) {\n      const offset = lookup(pack, id, this.algorithm);\n      if (offset !== null) return this.packed(pack, offset, id, at, 0);\n    }\n",
+      "new": "    for (const pack of this.packs) {\n      const offset = lookup(pack, id, this.algorithm);\n      if (offset !== null) return this.packed(pack, offset, id, at, 0);\n    }\n",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 40,
+      "totalTests": 50,
+      "note": "loose objects never read"
+    },
+    {
+      "id": "L3-loose-corruption-swallowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }",
+      "new": "catch { inflated = Buffer.from('blob 0\\0'); }",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "an undecodable loose object read as empty"
+    },
+    {
+      "id": "P1-pack-size-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (out.length !== size) refuse('corrupt-object'",
+      "new": "if (false) refuse('corrupt-object'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "pack entry declared size not checked"
+    },
+    {
+      "id": "P2-pack-inflate-error-swallowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if ((e as { code?: string }).code !== 'Z_BUF_ERROR' || start + window >= end) refuse('corrupt-object', `${id}: pack entry does not inflate`, id, at);",
+      "new": "return Buffer.alloc(size);",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "an undecodable pack entry read as zeros"
+    },
+    {
+      "id": "P3-index-size-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (idx.length !== largeAt + large * 8 + 2 * width) bad(",
+      "new": "if (false) bad(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "an index of another hash width accepted"
+    },
+    {
+      "id": "P4-ofs-base-range-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (back <= 0 || back > offset - 12) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a delta base offset out of range accepted"
+    },
+    {
+      "id": "D1-delta-source-size-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (sourceSize !== base.length) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a delta over a base of another size accepted"
+    },
+    {
+      "id": "D2-delta-target-size-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (o !== targetSize) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a delta yielding fewer bytes than declared accepted"
+    },
+    {
+      "id": "W1-parent-dir-segment-allowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "s === '.' || s === '..' ||",
+      "new": "s === '.' ||",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a .. segment walked"
+    },
+    {
+      "id": "W2-empty-segment-allowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "segments.some(s => s === '' ||",
+      "new": "segments.some(s => ",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "an empty segment walked"
+    },
+    {
+      "id": "W3-gitlink-read-as-blob",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (entry.mode === '40000' || entry.mode === '160000') return refuse('not-a-blob'",
+      "new": "if (entry.mode === '40000') return refuse('not-a-blob'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a submodule entry read"
+    },
+    {
+      "id": "W4-file-walked-as-directory",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (entry.mode !== '40000') return refuse('path-not-found', `${at} is not a directory",
+      "new": "if (false) return refuse('path-not-found', `${at} is not a directory",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a file walked as a directory"
+    },
+    {
+      "id": "W5-commit-tree-line-any-width",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "`^tree ([0-9a-f]{${HEX[this.store.algorithm]}})\\n`",
+      "new": "`^tree ([0-9a-f]{40,64})\\n`",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a tree line in another hash width accepted"
+    },
+    {
+      "id": "W6-tree-entry-name-slash",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "name === '' || name.includes('/')",
+      "new": "name === ''",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "a tree entry name with a slash accepted"
+    },
+    {
+      "id": "C1-catch-all-rethrows",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "      if (e instanceof GitObjectReadRefusal) throw e;\n      const code",
+      "new": "      throw e;\n      const code",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 1: an unexpected error escapes untyped"
+    },
+    {
+      "id": "O1-pack-offset-range-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (offset < 12 || offset >= end) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 1: index offset not checked against its pack"
+    },
+    {
+      "id": "O2-offset-inside-header-allowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (offset < 12 || offset >= end)",
+      "new": "if (offset >= end)",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 1: an offset inside the pack header is read"
+    },
+    {
+      "id": "O3-large-offset-table-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (small.some(o => o & 0x80000000 && (o & 0x7fffffff) >= large)) bad(",
+      "new": "if (false) bad(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 1: a large-offset index past its table is read"
+    },
+    {
+      "id": "S1-nofollow-dropped",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK",
+      "new": "constants.O_RDONLY | constants.O_NONBLOCK",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "finding 2: a linked file is followed"
+    },
+    {
+      "id": "S2-nonblock-dropped",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK",
+      "new": "constants.O_RDONLY | constants.O_NOFOLLOW",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 2: opening a FIFO blocks (the test releases it after its 2 s bound)"
+    },
+    {
+      "id": "S3-regular-file-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "try { regular = (await fh.stat()).isFile(); }",
+      "new": "try { regular = true; }",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "finding 2: a directory or special file is read"
+    },
+    {
+      "id": "S4-directory-link-followed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (!stat.isDirectory()) refuse('unsafe-store-entry'",
+      "new": "if (!stat.isDirectory() && !stat.isSymbolicLink()) refuse('unsafe-store-entry'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 2: a linked objects, pack or fan-out directory is followed"
+    },
+    {
+      "id": "S5-fanout-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (!(await realDirectory(this.gitDir, dir))) return null;",
+      "new": "if (false) return null;",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 2: the fan-out directory is not lstat-checked"
+    },
+    {
+      "id": "N1-dot-names-allowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (name === '.' || name === '..' || name.toLowerCase() === '.git') refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 3"
+    },
+    {
+      "id": "N2-dotgit-case-sensitive",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "name.toLowerCase() === '.git'",
+      "new": "name === '.git'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 3: .GiT passes"
+    },
+    {
+      "id": "N3-duplicate-names-allowed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (names.has(name)) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 3"
+    },
+    {
+      "id": "N4-names-decoded-lossily",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "fatal: true, ignoreBOM",
+      "new": "fatal: false, ignoreBOM",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 3: invalid UTF-8 decodes to U+FFFD"
+    },
+    {
+      "id": "N5-any-mode",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (!MODES.has(mode)) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "note 11 and finding 5 (the mode predicate)"
+    },
+    {
+      "id": "N6-legacy-mode-refused",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "'160000', '100664'",
+      "new": "'160000'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "note 11: the group-writable file mode git once wrote"
+    },
+    {
+      "id": "N7-truncated-tree-entry",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (space < 0 || nul < 0 || nul + 1 + width > buf.length) refuse('malformed-tree'",
+      "new": "if (space < 0 || nul < 0) refuse('malformed-tree'",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5: truncated tree entry"
+    },
+    {
+      "id": "B1-call-bytes-unbounded",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (this.inflatedBytes > this.limits.callBytes) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 50,
+      "note": "finding 4"
+    },
+    {
+      "id": "B2-delta-output-uncharged",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "  charge(targetSize);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "finding 4: delta output not counted"
+    },
+    {
+      "id": "B3-pack-inflate-uncharged",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "    this.charge(size, id, at);\n    for (let window",
+      "new": "    for (let window",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4: pack inflate not counted"
+    },
+    {
+      "id": "B4-loose-inflate-uncharged",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "    this.charge(inflated.length, id, at);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4: loose inflate not counted"
+    },
+    {
+      "id": "B5-chain-cap-off-by-one",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (depth > this.limits.chainDepth) refuse(",
+      "new": "if (depth > this.limits.chainDepth + 1) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4 and finding 5 (chain cap)"
+    },
+    {
+      "id": "B6-default-chain-depth",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "chainDepth: options.maxDeltaChainDepth ?? 1_000",
+      "new": "chainDepth: options.maxDeltaChainDepth ?? 10_000",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4: the previous 10,000 default"
+    },
+    {
+      "id": "B7-default-call-bytes",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "callBytes: options.maxInflatedBytesPerCall ?? 2 ** 32",
+      "new": "callBytes: options.maxInflatedBytesPerCall ?? 2 ** 34",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4"
+    },
+    {
+      "id": "B8-objects-unbounded",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (this.objectsVisited > this.limits.callObjects) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4"
+    },
+    {
+      "id": "B9-list-entries-uncounted",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "      this.store.count(e.id, p);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4 and note 10: re-listed subtrees not counted"
+    },
+    {
+      "id": "B10-default-objects",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "callObjects: options.maxObjectsPerCall ?? 1_000_000",
+      "new": "callObjects: options.maxObjectsPerCall ?? 50_000",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4: the default admits a 69,904-entry listing"
+    },
+    {
+      "id": "B11-loose-stored-bound",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if ((await fh.stat()).size > storedBound(this.limits.objectBytes)) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 4: a huge loose file read whole"
+    },
+    {
+      "id": "F1-entry-header-overrun",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i >= head.length) refuse('corrupt-object', `${id}: pack entry header too long",
+      "new": "if (false) refuse('corrupt-object', `${id}: pack entry header too long",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 242)"
+    },
+    {
+      "id": "F2-ofs-offset-overrun",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i >= head.length) refuse('corrupt-object', `${id}: delta offset too long",
+      "new": "if (false) refuse('corrupt-object', `${id}: delta offset too long",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 252)"
+    },
+    {
+      "id": "F3-pack-size-cap",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (size > this.limits.objectBytes) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 245)"
+    },
+    {
+      "id": "F4-delta-target-cap",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (targetSize > maxObjectBytes) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 347)"
+    },
+    {
+      "id": "F5-loose-output-cap",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "maxOutputLength: this.limits.objectBytes + 64",
+      "new": "maxOutputLength: 2 ** 30",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 228)"
+    },
+    {
+      "id": "F6-unknown-type-read",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "      return refuse('corrupt-object', `${id}: pack entry of unknown type ${kind} in ${pack.name}`, id, at);",
+      "new": "      base = { type: 'blob', body: Buffer.alloc(0) };",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 262)"
+    },
+    {
+      "id": "F7-ref-base-missing-read-empty",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "return refuse('object-missing', `${id}: delta base ${baseId} is not in this clone`, id, at);",
+      "new": "return { type: 'blob', body: Buffer.alloc(0) };",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 275)"
+    },
+    {
+      "id": "F8-pack-missing-reason",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "return refuse('invalid-pack-index', `${pack.name}.idx has no readable pack`);",
+      "new": "return refuse('object-missing', `${pack.name}.idx has no readable pack`);",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 296)"
+    },
+    {
+      "id": "F9-idx-version-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "idx.readUInt32BE(4) !== 2) bad('bad header')",
+      "new": "idx.readUInt32BE(4) < 2) bad('bad header')",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 314)"
+    },
+    {
+      "id": "F10-idx-length-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (idx.length < 8 + 1024 || idx.readUInt32BE(0)",
+      "new": "if (idx.readUInt32BE(0)",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 314)"
+    },
+    {
+      "id": "F11-idx-truncation-unchecked",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "  if (largeAt > idx.length) bad('truncated');\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "finding 5 (line 316)"
+    },
+    {
+      "id": "F12-delta-header-overrun",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i >= delta.length) refuse('corrupt-object', `${id}: truncated delta header`",
+      "new": "if (false) refuse('corrupt-object', `${id}: truncated delta header`",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 340)"
+    },
+    {
+      "id": "F13-copy-operand-overrun",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i > delta.length || from + n > base.length",
+      "new": "if (from + n > base.length",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 357)"
+    },
+    {
+      "id": "F14-copy-past-base",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "|| from + n > base.length || o + n > targetSize",
+      "new": "|| o + n > targetSize",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 357)"
+    },
+    {
+      "id": "F15-copy-past-target",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "from + n > base.length || o + n > targetSize) refuse(",
+      "new": "from + n > base.length) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 357)"
+    },
+    {
+      "id": "F16-insert-past-delta",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i + op > delta.length || o + op > targetSize) refuse(",
+      "new": "if (o + op > targetSize) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 360)"
+    },
+    {
+      "id": "F17-insert-past-target",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (i + op > delta.length || o + op > targetSize) refuse(",
+      "new": "if (i + op > delta.length) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 360)"
+    },
+    {
+      "id": "F18-opcode-0-skipped",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "      refuse('corrupt-object', `${id}: delta opcode 0 is reserved`, id, at);",
+      "new": "      i += 0;",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 50,
+      "note": "finding 5 (line 363)"
+    },
+    {
+      "id": "M1-message-carries-digest",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "hashes to another identifier`",
+      "new": "hashes to ${actual}`",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "note 8"
+    }
+  ],
+  "summary": "69 of 70 mutants killed at 740cb0bf1a0ab986ff066db33060555e922bd313, the repair of R-POLARIS-DOSSIER-S2-READER-1 (REVISE over 3a84d4a4); not killed: ['X-noop-control'] (the control). The first 24 are the pre-repair record's mutants (polaris-dossier-git-object-reader-mutants-2026-10-06.json, at 87eb26f9), every fragment still present once; 46 are new, one or more per predicate the review's findings 1-5 and notes 8 and 11 name (ids C, O, S, N, B, F, M). A first run at 436b2039 left two alive beside the control: P3-index-size-unchecked (the new offset checks refused the same index under the same reason, and its tests asserted only the reason) and F10-idx-length-unchecked (the 4-byte junk index fails the magic check first); 740cb0bf pins both messages and adds a short index with valid magic and version, and both are killed here. S2-nonblock-dropped makes a FIFO open block: its test fails at its 2 s bound and then opens the FIFO's write end to release the reader, so the run ends."
+}
