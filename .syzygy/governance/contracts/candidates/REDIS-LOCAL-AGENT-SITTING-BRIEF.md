@@ -10,6 +10,19 @@
 > only. PR #370's package was cleared at `d19ec98b` by its round 3
 > (CONFIRM WITH EXCEPTIONS, notes only; its `ROUND-3-DISPOSITIONS.md` carries
 > the notes); this page routes to those bytes.
+>
+> **Answered 2026-10-07.** The owner accepted every recommendation, in the
+> words of "If you accept every recommendation" below. Where that answer is
+> recorded:
+>
+> - **K and L:** the sign-off `decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`.
+> - **J and M:** the direction `decisions/REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`.
+> - **A to I:** the selections are stated in that direction's last section.
+>   They are not acts. Each still has to be recorded from its structured
+>   question at the sitting, which is what the rest of this page is now for.
+>
+> Sentences below that describe the state before that answer are kept and
+> marked at the sentence.
 
 ## What one sitting can and cannot do
 
@@ -24,7 +37,9 @@ run work by itself:
 - [Observed, 2026-10-07] Most of the `syzygy dossier` implementation is not
   written. Of the epic `syzygy-qkea`, slice S1 is closed; S2 (the reader, PR
   #367, open), S4 and S5 are in progress; S3 and S6 to S12 are open. The
-  dossier gate that reads your act records is S3.
+  dossier gate that reads your act records is S3. *(Update, 2026-10-07: PR
+  #367 has merged, and S3's preflight and init gates landed on `main` in
+  `db510842`; the beads own the slices' states.)*
 - [Observed] The post-sitting installer on `main`,
   `scripts/install_redis_sitting.py`, is written for the provider-mode
   sitting of PR #260: it refuses unless records for the psf/requests
@@ -32,10 +47,13 @@ run work by itself:
   consent exist (`REQUIRED_RECORDS` and `missing_records()`). A local-agent
   sitting gives none of those, so that installer refuses as it stands. A
   local-agent variant is engineering work, not an act, tracked as
-  `syzygy-qkea.16`.
+  `syzygy-qkea.16`. *(Update, 2026-10-07: written as
+  `scripts/install_redis_local_agent_sitting.py` in PR #376, open; see
+  "After the sitting".)*
 - [Observed, 2026-10-07] PR #370 (the local-agent acts) cleared review round
   3 over its package at `d19ec98b`, notes only, and is not yet merged; its
   rows are offered from those bytes, in its table order, consent first.
+  *(Update, 2026-10-07: PR #370 has merged.)*
 
 Everything provider-mode stays parked and is not asked: PR #260 rows 2a and
 2b (route and API key), 3a and 3b (the fetching Git adapter, replaced by
@@ -109,6 +127,14 @@ at all, and what it withholds. The local-agent mode refuses a run without it
     2026-10-03).
   - Q8, the run-profile carrier: defer. [Inferred] In the local-agent mode
     Syzygy sends no request, so the carrier is not on this run's path.
+- **To know:** signing B and D stales P-95 act A, which must then be
+  re-derived over the v2 policy bytes before it can be performed. [Observed
+  in the 2026-10-07 rehearsal] B supersedes the 2026-10-02 policy re-pin act
+  that the P-95 tree-framing re-pin package
+  (`pwb-behavior-contract-repin-tree-framing/`) re-pins from, so that
+  package's policy half no longer builds against the policy on disk. P-95's
+  act B, the registry, is not affected. The re-derivation is tracked on
+  `syzygy-2g0d`.
 - **Your words:** option "Sign it, with Q2 to Q8 as recommended" on the
   question naming the policy at its manifest row.
 
@@ -145,10 +171,14 @@ refused while the amendment is not in force.
 - **Its state** (PR #260 row 12; [Observed] at `main`): round 6 returned
   REVISE on one generated sentence; the repair (commit `e7ad7934`) is
   unreviewed, and there is no round 7 without you. The recorder records only
-  a confirming review.
+  a confirming review. *(Update, 2026-10-07: round 7 returned CONFIRM WITH
+  EXCEPTIONS, notes only. Its raw and `ROUND-7-DISPOSITIONS.md` are in the
+  package, and the recorder is frozen on it, so D can be offered.)*
 - **Recommended:** ask for round 7 now, before the sitting, so that D can be
   signed in it; then sign variant "none" (Q1), with Q3 to Q5 at the packet's
   defaults. Order is fact: B, then C, then D.
+- **To know:** signing B and D stales P-95 act A, which must then be
+  re-derived over the v2 policy bytes before it can be performed (see B).
 - **Your words now:** "Run round 7 on screening scope version 2." **At the
   sitting:** option "Sign it, variant none" on the question naming that
   variant's manifest row.
@@ -174,6 +204,11 @@ configuration honoured, no process started, every object re-hashed.
   before merge. Signing before the merge would approve a version whose code
   is still moving. If PR #367 has not merged by the sitting, this row waits;
   nothing else in this brief depends on its timing except step 7 below.
+  *(Update, 2026-10-07: PR #367 has merged. [Observed] The reader changed
+  once more on `main` after the merge, in `8422119c`, which caps reader paths
+  at git's tree-depth limit and answers note 1 of the reader's third review.
+  The entry is still bound to no reader bytes, so a later reader repair is
+  approved by the same sign-off.)*
 - **Recommended:** sign, once PR #367 has merged.
 - **Your words:** option "Extend Scope A to this entry and sign v1.0". The
   recorder refuses a label that does not contain "Extend Scope A".
@@ -277,6 +312,11 @@ Plain directions; no review needed; each has a lawful default.
 
 ### K. Local-agent mode version 1.1 (questions 1, 3, 4)
 
+*(Settled 2026-10-07: K and L are recorded in
+`decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`, and J and M in
+`decisions/REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`. Items J to M are not asked
+again; the text below is the brief as you answered it.)*
+
 Version 1.1 writes the 1.0 review notes and D9's dossier note into the
 specification so a build that skips them no longer conforms. It adds no
 permission. Review round 2 returned CONFIRM WITH EXCEPTIONS, notes only; the
@@ -349,6 +389,9 @@ bead waits on your direction and no code may change before it.
 
 ## If you accept every recommendation
 
+*(Given 2026-10-07, as quoted in
+`decisions/REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`.)*
+
 "Accept every recommendation in the Redis local-agent sitting brief: run
 round 7 on screening scope version 2 now; at the sitting sign A, B with Q2 to
 Q8 as recommended, C at the manifest row with the SOURCE-POLICY.md successor,
@@ -369,9 +412,11 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
    `scripts/record_versioned_signoff.py --record polaris-dossier-local-agent-mode --version 1.1`
    with `--option n6`, then `scripts/check_spec_reconciliation.py --regenerate`,
    then blocks 2 to 6 of `POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-SIGNOFF-ROUTE-EDITS.txt`.
+   *(Done 2026-10-07, PR #372.)*
 2. **Preconditions, no act:** round 7 of D confirms; PR #370 merges after
    its review clears; PR #367 merges; the local-agent installer exists (see
-   "What one sitting can and cannot do").
+   "What one sitting can and cannot do"). *(Update, 2026-10-07: the first
+   three are met; the installer is PR #376, open.)*
 3. **Screening scope v1** (B):
    `scripts/record_public_source_screening_scope_act.py --record <row>`.
 4. **RFC5-14 class** (C):
@@ -396,13 +441,37 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
     local-agent installer (to be written), doing what the existing
     installer's `registrations`, `rfc5`, `policy`, `profile` and `reconcile`
     steps do for the records a local-agent sitting produces, plus the CG-26
-    lines for each new `--check`.
+    lines for each new `--check`. *(Update, 2026-10-07: this is
+    `scripts/install_redis_local_agent_sitting.py` (PR #376). It reads your
+    answers from one JSON file, runs the recorders of steps 3 to 9 in this
+    order, then installs, and `--check` re-runs every recorder's check.)*
 11. **Verify:** the battery of `PROJECT-STATUS.md` §"How to verify this page"
     and the full Vitest suite.
 
-[Unknown] Steps 3 to 10 have not been rehearsed together, and the existing
-rehearsal (`scripts/simulate_redis_sitting.py`) covers neither PR #370's
-recorders nor version 1.1. Rehearse in a scratch clone before the sitting.
+[Observed, 2026-10-07] Steps 3 to 11 were rehearsed together in a scratch
+clone by `scripts/simulate_redis_local_agent_sitting.py` (PR #376).
+
+- **What was rehearsed:** PR #376's head `8c556f08`, which is `main` with
+  PR #370, PR #367 and version 1.1 already on it. It used the real round-7
+  review of D and this brief's accept-all answer.
+- **Install:** every recorder of steps 3 to 9 recorded, the installer
+  installed, and its `--check` found no recorder failing and nothing left
+  uninstalled.
+- **Battery:** every `python3` line of the status battery ran, 91 commands
+  with 0 failing, and `check_governance.py` reported 0 FAIL.
+- **What it does not cover:** the full Vitest suite (step 11's second half)
+  was not run. The result holds only for that commit (rule 7). It also
+  performs no act: the records it wrote were the scratch's own and were
+  discarded.
+
+An earlier run found six failing battery lines. Their causes were in the
+base installer, two builders and the reconciliation checker, and each was
+fixed in PR #376 before this run. One of them is the P-95 consequence under B.
+
+The superseded sentence, kept as written before the rehearsal: "[Unknown]
+Steps 3 to 10 have not been rehearsed together, and the existing rehearsal
+(`scripts/simulate_redis_sitting.py`) covers neither PR #370's recorders nor
+version 1.1. Rehearse in a scratch clone before the sitting."
 The order of steps 1 and 9 matters for the status page's composition figure:
 the installer's profile step already handles a profile installed after a
 signed dossier addition, which is why version 1.1 goes first.
