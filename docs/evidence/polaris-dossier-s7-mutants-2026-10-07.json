@@ -1,0 +1,476 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S7 slice (syzygy-qkea.8), the session hand-over and the inventory (REQ-polaris-generation-035): an inventory under the authoring session's identifier; failing closed when no draft is frozen or none declares an identifier; an inventory before any hand-over; an inventory counting without a launch form, under another form, under a launch record bound to another prompt, after its frozen bytes change, with findings, or under an identifier a draft declares; a launch form other than terminal or bang, recorded twice, or a refusal logged outside a run; the session directory under the run directory, a sessions root resolving inside the run directory or the clone, and either arm of that refusal alone (the lead's ruling 1: sessions in the sibling root `<state root>/<run id>.sessions/`); the interactive launch `claude '<prompt>'` / `codex '<prompt>'` against headless `-p` and `exec`, a shell-escape form for Codex, and a prompt carrying a single quote (ruling 2, a design deviation tracked in syzygy-qkea.18); the inventory brief's execution rule decided as the authoring session's, its prompt without SEC-3's rule, and its brief asking for executions; shell quoting of the printed command; the coverage account checked at the pinned revision; the deadline; quotations only in inferred entries; review sessions refused until S8; the stored brief compared with Syzygy's rendering; the draft's session identifier required by the schema and asked for by the brief; the shared check's rule on quotations in blocks that may not carry them; and the lead's conditions of 2026-10-07: every self-declared session identifier and launch form, and the inventory's independence and completeness, labelled Inferred wherever shown or recorded (never Observed), and an overridden tool, version or model recorded beside the run's declared values. Not authority.",
+  "measuredOn": {
+    "commit": "2bf10b3bf99fa56efee119d22cdfd02bc661dad8",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/brief.ts",
+        "sha256": "5c73c82248651f87802929ab37cf91a33494eb0022bc33eb4c58ca7f8c5dc860"
+      },
+      {
+        "path": "packages/polaris-dossier/src/check.ts",
+        "sha256": "0f6b16b1771d30752c120e863a6480d7818d971b45b626b20665a85dc4ec0c80"
+      },
+      {
+        "path": "packages/polaris-dossier/src/draft-schema.ts",
+        "sha256": "ea38f5d56974b5a189d3a187984b1f58c44d1395bff0a39aaeb9cab9a0f9b7fe"
+      },
+      {
+        "path": "packages/polaris-dossier/src/inventory.ts",
+        "sha256": "7ac1375cd65a7151f24de28efa7326d663bdfbe6dcbd31e894d9d93f827b6a54"
+      },
+      {
+        "path": "packages/polaris-dossier/src/session-handover.ts",
+        "sha256": "6f1882550a307e503712b53d62a51f4f090cd636e5580c5092d6c11745bac0d2"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S7 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "A first run at the pre-amend commit stopped at M23, whose fragment matched nothing, after M2 (no frozen draft) survived: with no draft frozen the next clause (no declared identifier) refuses at the same stage, and the test asserted only the stage. The test now asserts each refusal's own reason, the M23 fragment was corrected, the commit was amended and all 26 re-run and killed. The labelling conditions from the lead then added M27-M33 and changed the `form` of the launch record to a labelled value, so the fragment of M6 was updated; the commit was amended again and all 33 re-run and killed. The S7 rulings 1 and 2 of the lead then moved the session directory to the sibling sessions root and switched the printed launch to the interactive form: M12 was rewritten to move the directory back under `inventory/`, M34-M40 were added, the commit was amended a third time and all 40 re-run at `commit`. M21 was first written to add an `observed` label to an entry's allowed labels, an equivalent mutant because the label rule refuses Observed before it consults that list; it was replaced before any run.",
+  "result": {
+    "killed": 40,
+    "total": 40
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "predicate": "an inventory under the authoring session's identifier is checked",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    if (declared !== null && authoring.ids.has(declared)) {",
+      "new": "    if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "predicate": "an inventory is checked when no draft revision is frozen",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    if (authoring.frozen === 0) return",
+      "new": "    if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "predicate": "an inventory is checked when no frozen draft declares a session identifier",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    if (authoring.ids.size === 0) return",
+      "new": "    if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "predicate": "an inventory is checked though no inventory session was handed over",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    if (session === 0) return { ok: false, stage: 'session'",
+      "new": "    if (false) return { ok: false, stage: 'session'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "predicate": "an inventory without a launch form counts",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (launch === undefined) return no(",
+      "new": "  if (launch === undefined) return { counts: true, revision, file: frozen, sha256: inventory['sha256'] as string, session: number, sessionId, launchForm: 'terminal', label: 'Inferred' };\n  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "predicate": "an inventory counts under a launch record of another form",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (!(LAUNCH_FORMS as readonly unknown[]).includes(form['value']) ||",
+      "new": "  if (",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "predicate": "an inventory counts under a launch record bound to another prompt",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": " || launch['promptSha256'] !== promptSha) {",
+      "new": ") {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "predicate": "an inventory counts after its frozen bytes change",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (inventory['file'] !== frozen || inventory['sha256'] !== sha256(bytes)) return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "predicate": "an inventory with findings counts",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (check['outcome'] !== 'passed') return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "predicate": "an inventory whose identifier a draft declares counts",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (authoringSessionIds(run).ids.has(sessionId)) return no(",
+      "new": "  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "predicate": "a launch form other than terminal or bang is recorded",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!(LAUNCH_FORMS as readonly string[]).includes(request.form)) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "6 failed | 538 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "predicate": "the inventory session directory sits under the run directory, so .. from it reaches drafts/",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  const directory = sessionDirectory(run, session);",
+      "new": "  const directory = path.join(inventoryDir, `session-${session}`);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "14 failed | 530 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "predicate": "the inventory brief's execution rule is decided as the authoring session's",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    role: 'inventory', runDir: opened.run,",
+      "new": "    role: 'authoring', runDir: opened.run,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "predicate": "the printed prompt omits SEC-3's rule",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " Execution rule, SEC-3: observed-project code runs only inside an explicit, opt-in execution profile; this session has none, so build, test and run nothing from the clone.",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 542 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M15",
+      "predicate": "the inventory brief tells the session to report executions",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    executionRuleSection(input.executionRule, 'none'),",
+      "new": "    executionRuleSection(input.executionRule),",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M16",
+      "predicate": "a refused launch form writes a step log into a directory that is not a run",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (isRun) logStep(target,",
+      "new": "    logStep(target,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M17",
+      "predicate": "a launch form is recorded again over the first",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    fs.writeFileSync(path.join(run, file), `${JSON.stringify(record, null, 2)}\\n`, { mode: 0o600, flag: 'wx' });",
+      "new": "    fs.writeFileSync(path.join(run, file), `${JSON.stringify(record, null, 2)}\\n`, { mode: 0o600, flag: 'w' });",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M18",
+      "predicate": "a single quote in the prompt or path ends the shell word",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`'${text.replace(/'/gu, `'\\\\''`)}'`",
+      "new": "`'${text}'`",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M19",
+      "predicate": "the inventory's coverage paths are not checked at the pinned revision",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    account: { key: 'coverage', parts: ['excluded', 'deferred'] },",
+      "new": "    account: { key: 'discovery', parts: ['excluded', 'deferred'] },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M20",
+      "predicate": "a hand-over step runs after the deadline",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "  if (now >= deadlineEnds) return { ok: false, stage: 'deadline'",
+      "new": "  if (false) return { ok: false, stage: 'deadline'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M21",
+      "predicate": "an unknown inventory entry's quotations are verified as quotations, and an inferred entry's refused",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "      at: `$.entries[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: 'inferred',",
+      "new": "      at: `$.entries[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: 'unknown',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "7 failed | 537 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M22",
+      "predicate": "a review session prompt is issued before review packets exist",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (request.role === 'review') return refuse('not-in-build', REVIEW_NOT_IN_BUILD);\n  if (request.kind !== undefined)",
+      "new": "  if (request.kind !== undefined)",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M23",
+      "predicate": "an altered stored inventory brief is reported as matching Syzygy's rendering",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "storedCopy: stored === undefined ? 'absent' : stored === built.text ? 'matches' : 'differs',",
+      "new": "storedCopy: stored === undefined ? 'absent' : 'matches',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M24",
+      "predicate": "the draft schema no longer requires the authoring session's identifier",
+      "file": "packages/polaris-dossier/src/draft-schema.ts",
+      "old": "    sessionId,\n    title: text,",
+      "new": "    title: text,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "12 failed | 532 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M25",
+      "predicate": "the authoring brief does not ask for the session identifier",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "    SESSION_ID_RULE('draft'),",
+      "new": "    '',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M26",
+      "predicate": "a quotation in an entry or block that may not carry one is checked as a quotation",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (label !== block.quotable) {",
+      "new": "    if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 542 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M27",
+      "predicate": "the counted inventory's session identifier is shown as Observed",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    sessionId: { value: sessionId, declaredBy: 'the inventory session', label: 'Inferred' },",
+      "new": "    sessionId: { value: sessionId, declaredBy: 'the inventory session', label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 542 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M28",
+      "predicate": "the launch form is recorded as Observed",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  const form: Declared<LaunchForm> = { value: request.form as LaunchForm, declaredBy: 'operator', label: 'Inferred' };",
+      "new": "  const form: Declared<LaunchForm> = { value: request.form as LaunchForm, declaredBy: 'operator', label: 'Observed' };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "4 failed | 540 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M29",
+      "predicate": "an inventory counts under a launch form recorded as Observed",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": " || form['label'] !== 'Inferred'",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M30",
+      "predicate": "an override replaces the run's declared values instead of sitting beside them",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    runDeclared: { agentTool: declared.agentTool, agentToolVersion: declared.agentToolVersion, model: declared.model,",
+      "new": "    runDeclared: { agentTool: tool as AgentTool, agentToolVersion: toolVersion, model,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M31",
+      "predicate": "the inventory's independence is shown as Observed",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    independence: { label: 'Inferred',",
+      "new": "    independence: { label: 'Observed',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M32",
+      "predicate": "the authoring session's identifier is recorded as Observed",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "session: { sessionId: declaredSessionId(checked.doc), declaredBy: 'the authoring session', label: 'Inferred' },",
+      "new": "session: { sessionId: declaredSessionId(checked.doc), declaredBy: 'the authoring session', label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M33",
+      "predicate": "the inventory check records its completeness as Observed",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "    completeness: { label: 'Inferred', basis: INVENTORY_INFERRED.completeness },\n    label: 'Inferred',\n  }),",
+      "new": "    completeness: { label: 'Observed', basis: INVENTORY_INFERRED.completeness },\n    label: 'Inferred',\n  }),",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M34",
+      "predicate": "a sessions root that resolves inside the run directory or the clone is used",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (outside !== null) return refuse('sessions-root', outside);",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 542 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M35",
+      "predicate": "a sessions root that resolves inside the run directory is used",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "[['run directory', realRun], ['clone', realClone]] as const",
+      "new": "[['clone', realClone]] as const",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M36",
+      "predicate": "a sessions root that resolves inside the clone is used",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "[['run directory', realRun], ['clone', realClone]] as const",
+      "new": "[['run directory', realRun]] as const",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M37",
+      "predicate": "the Claude Code session starts headless with -p instead of interactive",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "tool === 'claude-code' ? `claude ${shellQuote(prompt)}`",
+      "new": "tool === 'claude-code' ? `claude -p ${shellQuote(prompt)}`",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M38",
+      "predicate": "the Codex session starts headless with exec instead of interactive",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": ": `codex ${shellQuote(prompt)}`;",
+      "new": ": `codex exec ${shellQuote(prompt)}`;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M39",
+      "predicate": "a shell-escape form is offered for Codex",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    : { terminal, bang: null,",
+      "new": "    : { terminal, bang: `! ${terminal}`,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 543 passed (544)",
+      "killed": true
+    },
+    {
+      "id": "M40",
+      "predicate": "the prompt carries a single quote that the shell word must escape",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "Never open the drafts or checks of the run.",
+      "new": "Never open the run's drafts or checks.",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 542 passed (544)",
+      "killed": true
+    }
+  ]
+}
