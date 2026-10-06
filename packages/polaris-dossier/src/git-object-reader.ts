@@ -212,9 +212,9 @@ class ObjectStore {
   }
 
   private async raw(id: string, at: string | null): Promise<{ readonly type: GitObjectType; readonly body: Uint8Array }> {
-    let deflated: Buffer | null = null;
-    try { deflated = await readFile(path.join(this.objects, id.slice(0, 2), id.slice(2))); } catch { deflated = null; }
-    if (deflated !== null) return this.loose(deflated, id, at);
+    let stored: Buffer | null = null;
+    try { stored = await readFile(path.join(this.objects, id.slice(0, 2), id.slice(2))); } catch { stored = null; }
+    if (stored !== null) return this.loose(stored, id, at);
     for (const pack of this.packs) {
       const offset = lookup(pack, id, this.algorithm);
       if (offset !== null) return this.packed(pack, offset, id, at, 0);
@@ -223,9 +223,9 @@ class ObjectStore {
     return refuse('object-missing', `${id} is in neither a loose object nor a pack of this clone${why}`, id, at);
   }
 
-  private loose(deflated: Buffer, id: string, at: string | null): { readonly type: GitObjectType; readonly body: Uint8Array } {
+  private loose(stored: Buffer, id: string, at: string | null): { readonly type: GitObjectType; readonly body: Uint8Array } {
     let inflated: Buffer;
-    try { inflated = inflateSync(deflated, { maxOutputLength: this.maxObjectBytes + 64 }); } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
+    try { inflated = inflateSync(stored, { maxOutputLength: this.maxObjectBytes + 64 }); } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
     const nul = inflated.indexOf(0);
     const header = /^(commit|tree|blob|tag) (0|[1-9][0-9]*)$/.exec(nul < 0 ? '' : inflated.toString('latin1', 0, nul));
     if (header === null || Number(header[2]) !== inflated.length - nul - 1) return refuse('corrupt-object', `loose object ${id} has a malformed header`, id, at);
@@ -269,9 +269,9 @@ class ObjectStore {
       const offset = lookup(pack, baseId, this.algorithm);
       if (offset !== null) return this.packed(pack, offset, id, at, depth + 1);
     }
-    let deflated: Buffer | null = null;
-    try { deflated = await readFile(path.join(this.objects, baseId.slice(0, 2), baseId.slice(2))); } catch { deflated = null; }
-    if (deflated !== null) return this.loose(deflated, baseId, at);
+    let stored: Buffer | null = null;
+    try { stored = await readFile(path.join(this.objects, baseId.slice(0, 2), baseId.slice(2))); } catch { stored = null; }
+    if (stored !== null) return this.loose(stored, baseId, at);
     return refuse('object-missing', `${id}: delta base ${baseId} is not in this clone`, id, at);
   }
 
