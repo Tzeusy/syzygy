@@ -239,9 +239,9 @@ keeps its exact-table link as well.
      "Verification: Not verified".
 5. Test-run evidence is not captured automatically.
    - Run
-     `npm run poc:capture-test-artifact -- --repo <butlers> --scope <path> --state-dir <dir>`
-     separately (see "Capturing test-run evidence" below) to ingest a real
-     JUnit artifact.
+     `npm run poc:capture-test-artifact -- print --repo <butlers> --scope <path> --junit <file> --state-dir <dir>`,
+     run the pytest command it prints yourself, then hand the JUnit file
+     back with its `ingest` step (see "Capturing test-run evidence" below).
    - Trajectory and the machine endpoint then reflect it.
 6. In Orrery, follow the selected capability to its intent, manually mapped
    code region, and test definition.
@@ -255,21 +255,28 @@ keeps its exact-table link as well.
 
 ## Capturing test-run evidence
 
-Test-run capture is a separate, manually invoked step — the running daemon
-never shells the observed test suite itself:
+Test-run capture is a separate, manually invoked step, and Syzygy never runs
+the observed test suite itself — neither the daemon nor this tool (SEC-3,
+RFC5-18; owner direction `REDIS-LOCAL-AGENT-SITTING-2026-10-07` item 4,
+`syzygy-4mbu`). The tool prints the command; you run it; the tool ingests
+the result:
 
 ```sh
-npm run poc:capture-test-artifact -- \
+npm run poc:capture-test-artifact -- print \
   --repo /home/tze/GitHub/butlers \
   --scope <path-under-test> \
-  --state-dir <dir> [--python <bin>]
+  --junit <file> --state-dir <dir> [--python <bin>]
 ```
 
-- **What it runs:** the real focused pytest suite against the configured
-  Butlers checkout.
-- **What it ingests:** the resulting JUnit artifact — command, exit status,
-  capture time, commit, scope, digest, and a safe summary only, never raw
-  test output.
+- **What it prints:** the `git rev-parse HEAD` to note the commit, the exact
+  focused pytest command to run in your own shell (Butlers needs its own
+  `.venv/bin/python`), and the `ingest` command to run afterwards with that
+  commit and the exit status. `print` starts no process.
+- **What it ingests:** only the JUnit file you hand back — command, exit
+  status, ingest time, commit, scope, digest, and a safe summary only,
+  never raw test output. Its one process is `git rev-parse HEAD`: it refuses
+  if the checkout has moved from the commit you report, if the exit status
+  is not 0–255, or if you report 0 beside failing tests.
 - **When verification renders `Verified`:** only when all three hold:
   - the captured commit exactly matches the git-observed worker-change commit
     for the same seam;
