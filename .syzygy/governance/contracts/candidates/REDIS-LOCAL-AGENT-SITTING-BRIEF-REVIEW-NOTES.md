@@ -52,3 +52,24 @@ condition is spent, since PR #367 has merged. It was also false under the
 installer as merged: the installer requires an E answer, so **every act at
 the sitting waited on PR #367**, not only step 7. *(Marked here 2026-10-07,
 since the brief's bytes are cleared and not edited.)*
+
+## Lead's notes, added 2026-10-07 after the bytes cleared
+
+These two are not from the review. The lead added them as dispositions
+within the notes-only rule. They correct facts and change no
+recommendation.
+
+### Note 4 — G and H wait on PR #377
+
+[Observed] On main, `packages/polaris-dossier/src/gate-sources.ts` has
+`D9_ACT_FORM` and `RFC7_20_RULING_ACT_FORM` set to null. G and H take
+effect at the gate only after #377 (`syzygy-qkea.21`) merges, and the
+sitting is not put until then.
+
+### Note 5 — the P-95 re-derivation bead is `syzygy-fxro`
+
+Under B, the brief's "Tracking" line names `syzygy-qggu`. That bead was
+closed as a duplicate of `syzygy-fxro` (P1, open). Its scope was widened
+to cover the tree-framing package as one unit, both acts' review binding,
+and direction C's policy-role wording. Read `syzygy-fxro` wherever the
+brief says `syzygy-qggu`.
