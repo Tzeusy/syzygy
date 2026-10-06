@@ -191,16 +191,106 @@ describe('the sitting\'s acts fail closed', () => {
     expect(await s.d9()).toEqual({ state: 'refused', why: named });
     expect(await s.rfc720Ruling()).toEqual({ state: 'refused', why: named });
     expect(await s.projectInput.drawerFor('redis-redis')).toEqual({ stated: false, why: `the project-input statement for this subject is not in force: ${named}` });
-    expect((await s.providerStatements.statementsFor('redis-redis')).map(r => [r.recordId, r.act === null])).toEqual([['AGENT-PROVIDER-redis-redis-anthropic', false], ['AGENT-PROVIDER-redis-redis-openai', true]]);
+    expect((await s.providerStatements.statementsFor('redis-redis')).map(r => [r.recordId, r.act === null, r.withdrawn])).toEqual([['AGENT-PROVIDER-redis-redis-anthropic', false, false], ['AGENT-PROVIDER-redis-redis-openai', true, true]]);
+    expect(await s.registryEntry()).toEqual({ state: 'refused', why: named });
+    fs.rmSync(path.join(root, DECISIONS_DIR, 'WITHDRAW.md'));
     expect((await s.registryEntry()).state).toBe('ok');
     write(root, `${DECISIONS_DIR}/WITHDRAW-ENTRY.md`, `Withdrawn: \`${INSTALLED_ENTRY}\`.\n`);
     expect(await s.registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/WITHDRAW-ENTRY.md names the act without being its record: a withdrawal or a form this reader does not define` });
+  });
+  // R-POLARIS-DOSSIER-GATE-SOURCES-1 finding 1: a statement says it is withdrawn by "a later owner act naming this record".
+  it.each([
+    ['its Record ID', (id: string) => `The owner withdraws the agent-provider statement \`${id}\`.\n`],
+    ['its Record ID, in another case and spelling', (id: string) => `Withdrawn: ${id.toUpperCase().replaceAll('-', '_')}\n`],
+    ['its Subject', (_id: string, provider: string) => `Subject: \`(project:syzygy, repository:redis-redis, agent-provider:${provider})\` withdrawn.\n`],
+    ['its Subject in prose', (_id: string, provider: string) => `The owner withdraws consent for (project:syzygy, repository:redis-redis, agent-provider:${provider}).\n`],
+  ])('withdraw a statement another decisions file names by %s, and only that statement', async (_name, withdrawal) => {
+    for (const [id, provider, tool, other] of [['AGENT-PROVIDER-redis-redis-anthropic', 'anthropic', 'claude-code', 'AGENT-PROVIDER-redis-redis-openai'], ['AGENT-PROVIDER-redis-redis-openai', 'openai', 'codex', 'AGENT-PROVIDER-redis-redis-anthropic']] as const) {
+      const root = world(KEYS);
+      write(root, `${DECISIONS_DIR}/WITHDRAW.md`, withdrawal(id, provider));
+      const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+      expect(statements.filter(r => r.withdrawn).map(r => r.recordId)).toEqual([id]);
+      expect(statements.find(r => r.recordId === other)!.act).not.toBeNull();
+      expect(providerStatementGate(statements, tool, provider, NOW)).toEqual({ state: 'absent', why: `no per-project statement naming the agent tool ${tool} with the provider ${provider} is in force: ${id}@unestablished is withdrawn` });
+    }
+  });
+  it('withdraw a statement the aggregate acceptance record names on a Record ID or Subject field line, though not in its prose', async () => {
+    const root = world(KEYS);
+    const aggregate = `${DECISIONS_DIR}/ACCEPTANCE-ACT-RECORD.md`;
+    write(root, aggregate, '# Acceptance\n\n| Record | Act |\n|---|---|\n| `AGENT-PROVIDER-redis-redis-anthropic` | (project:syzygy, repository:redis-redis, agent-provider:openai) |\n');
+    expect((await sources(root).providerStatements.statementsFor('redis-redis')).map(r => r.withdrawn)).toEqual([false, false]);
+    write(root, aggregate, '# Acceptance\n\nRecord ID: `AGENT-PROVIDER-redis-redis-anthropic` withdrawn\n');
+    expect((await sources(root).providerStatements.statementsFor('redis-redis')).map(r => r.withdrawn)).toEqual([true, false]);
+    write(root, aggregate, '# Acceptance\n\n- **Subject**: `(project:syzygy, repository:redis-redis, agent-provider:openai)` withdrawn\n');
+    expect((await sources(root).providerStatements.statementsFor('redis-redis')).map(r => r.withdrawn)).toEqual([false, true]);
+  });
+  // Finding 2: the sign-off's act identity is its tag; the P-104 register row cites it before it exists and is read past, alone.
+  it.each([
+    ['its tag', 'The owner withdraws the sign-off tagged public-git-source-acquisition-local-agent-v1.0.\n'],
+    ['its tag, in another case', 'Withdrawn: PUBLIC_GIT_SOURCE_ACQUISITION_LOCAL_AGENT_V1.0\n'],
+    ['the package as signed off, spelled sign-off', 'The public-git-source-acquisition-local-agent sign-off is withdrawn.\n'],
+    ['the package as signed off, spelled signoff', 'The public-git-source-acquisition-local-agent signoff is withdrawn.\n'],
+  ])('refuse the registry sign-off another decisions file names by %s', async (_name, withdrawal) => {
+    const root = world([], true);
+    write(root, `${DECISIONS_DIR}/WITHDRAW.md`, withdrawal);
+    expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/WITHDRAW.md names the act without being its record: a withdrawal or a form this reader does not define` });
+  });
+  it('read past the P-104 register row that cites the sign-off\'s tag, and that row only', async () => {
+    const register = `${DECISIONS_DIR}/PENDING-OWNER-DECISIONS.md`;
+    const row = real(register).split('\n').find(line => line.startsWith('| P-104 |'))!;
+    expect(row).toContain('public-git-source-acquisition-local-agent-v1.0');
+    const root = world([], true);
+    write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n`);
+    expect((await sources(root).registryEntry()).state).toBe('ok');
+    write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n| P-105 | Withdraw public-git-source-acquisition-local-agent-v1.0 |\n`);
+    expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${register} names the act without being its record: a withdrawal or a form this reader does not define` });
+    write(root, register, `# Register\n\n${row.replace('| P-104 |', '| P-1040 |')}\n`);
+    expect((await sources(root).registryEntry()).state).toBe('refused');
+    write(root, `${DECISIONS_DIR}/OTHER.md`, `${row}\n`);
+    write(root, register, '# Register\n');
+    expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/OTHER.md names the act without being its record: a withdrawal or a form this reader does not define` });
+  });
+  // Note 4: the lines every recorder writes for RFC3-16(b) items 7 and 9.
+  it.each([
+    ['no owner', (t: string) => t.replace(/^Owner: Tzeusy\n/m, '')],
+    ['another owner', (t: string) => t.replace(/^Owner: Tzeusy$/m, 'Owner: someone')],
+    ['no provenance state', (t: string) => t.replace(/^Provenance state: .*\n/m, '')],
+    ['another provenance state', (t: string) => t.replace('`owner-adopted (bootstrap, uncorrelated)`', '`agent-asserted`')],
+    ['no A1 line', (t: string) => t.replace(/^A1 audit-record identity .*\n/m, '')],
+    ['an A1 identity', (t: string) => t.replace('**explicitly absent**', '`a1:0001`')],
+    ['no scope', (t: string) => t.replace(/^Scope: .*\n/m, '')],
+    ['a wider scope', (t: string) => t.replace(/^Scope: .*$/m, 'Scope: every operator-agent run')],
+    ['a second scope', (t: string) => t.replace(/^(Scope: .*)$/m, '$1\n\nScope: every operator-agent run')],
+  ])('refuse an act record, and the registry sign-off, with %s', async (_name, mutate) => {
+    const root = world(KEYS, true);
+    for (const key of KEYS) write(root, ACTS[key].file, mutate(fs.readFileSync(path.join(root, ACTS[key].file), 'utf8')));
+    write(root, SIGNOFF, mutate(fs.readFileSync(path.join(root, SIGNOFF), 'utf8')));
+    const s = sources(root);
+    expect((await s.d9()).state).toBe('refused');
+    expect((await s.rfc720Ruling()).state).toBe('refused');
+    expect((await s.projectInput.drawerFor('redis-redis')).stated).toBe(false);
+    expect((await s.providerStatements.statementsFor('redis-redis')).map(r => r.act)).toEqual([null, null]);
+    expect((await s.registryEntry()).state).toBe('refused');
+  });
+  // Note 5: the bound-files table, predicate by predicate.
+  it.each([
+    ['a second table inside a fence', (t: string) => `${t}\n\`\`\`\n| File | SHA-256 |\n|---|---|\n\`\`\`\n`, 'the act\'s artifact does not carry exactly one bound-files table'],
+    ['another separator row', (t: string) => t.replace('| File | SHA-256 |\n|---|---|', '| File | SHA-256 |\n|:--|:--|'), 'the act\'s artifact does not carry exactly one bound-files table'],
+    ['a third row', (t: string) => t.replace(/^(\| `\.syzygy\/governance\/doctrine\/v1\.md` \|.*)$/m, `$1\n| \`${SECURITY}\` | \`${'0'.repeat(64)}\` |`), `the act's artifact binds ${SECURITY}, ${V1}, ${SECURITY}, not exactly ${SECURITY}, ${V1}`],
+  ])('refuse D9 when its record carries %s', async (_name, mutate, why) => {
+    const root = world([]);
+    const record = mutate(real(ACTS['d9-in-force'].record));
+    write(root, ACTS['d9-in-force'].record, record);
+    write(root, ACTS['d9-in-force'].file, renderDossierLocalAgentAct('d9-in-force', sha(record), DATE, INSTANT));
+    expect(await sources(root).d9()).toEqual({ state: 'refused', why });
   });
   it.each([
     ['another subject', (t: string) => t.replace('repository:redis-redis)`', 'repository:redis-redis-fork)`')],
     ['another statement', (t: string) => t.replace('Statement: no kernel evidence drawer', 'Statement: a kernel evidence drawer')],
     ['no record id', (t: string) => t.replace(/^Record ID: .*\n/m, '')],
     ['no record version', (t: string) => t.replace(/^Record version: .*\n/m, '')],
+    ['a second Record ID line', (t: string) => t.replace(/^(Record ID: .*)$/m, '$1\n\n$1')],
+    ['a second Subject line', (t: string) => t.replace(/^(Subject: .*)$/m, '$1\n\n$1')],
   ])('leave the drawer unstated for a record with %s, even under an act', async (_name, mutate) => {
     const root = world([]);
     const record = mutate(real(ACTS['redis-no-evidence-drawer'].record));
@@ -215,6 +305,8 @@ describe('the sitting\'s acts fail closed', () => {
     ['another agent tool', (t: string) => t.replace('Agent tool: Claude Code, run by', 'Agent tool: Codex, run by')],
     ['a second agent tool line', (t: string) => t.replace('Agent tool: Claude Code, run by', 'Agent tool: Claude Code, run by the operator\n\nAgent tool: Codex, run by')],
     ['no record version', (t: string) => t.replace(/^Record version: .*\n/m, '')],
+    ['a second Record ID line', (t: string) => t.replace(/^(Record ID: .*)$/m, '$1\n\n$1')],
+    ['a second Subject line', (t: string) => t.replace(/^(Subject: .*)$/m, '$1\n\n$1')],
   ])('carry no act for a statement whose record names %s, even under an act', async (_name, mutate) => {
     const root = world([]);
     const record = mutate(real(ACTS['redis-agent-anthropic'].record));
