@@ -1473,6 +1473,30 @@ def _chain_predecessor_moved(text):
     return out
 
 
+#: The first act that superseded the 2026-10-02 policy re-pin act. Once it is
+#: recorded, the syzygy-2g0d package (which re-pins from that act's bytes)
+#: is stale for the policy until it is re-derived.
+POLICY_SCOPE_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md"
+
+
+def _tree_framing_mutant(root):
+    """The syzygy-2g0d package's proposed bytes, pinned to the current
+    (tree-framing) spec.md: R6 reads zero and nothing else fails. None, said
+    aloud, when the package refuses because a later policy act superseded the
+    act it re-pins from; any other refusal still fails the selftest."""
+    try:
+        package = _repin_package(root, "build_pwb_behavior_contract_repin_tree_framing")
+    except ValueError as error:
+        if not (Path(root) / POLICY_SCOPE_ACT).is_file():
+            raise
+        print("note: pins-after-tree-framing-repin-acts not run: the package does "
+              f"not build over this tree ({error}); {POLICY_SCOPE_ACT} superseded "
+              "the policy act it re-pins from, so it must be re-derived first")
+        return None
+    return ("pins-after-tree-framing-repin-acts",
+            (REGISTRY, POLICY, FAMILY_SPECS["PWB"]), package, "R6=0")
+
+
 def mutants(root):
     cap1, poc, base, und, pwb = CHILDREN
     union_act = und["successors"][0]
@@ -1545,12 +1569,7 @@ def mutants(root):
         # reversed); once a later sign-off moved it, R2-R4 fail by design.
         ("pins-after-repin-acts", (REGISTRY, POLICY, FAMILY_SPECS["PWB"]),
          _repin_package(root), "R6=0|R2,R3,R4"),
-        # The syzygy-2g0d package's proposed bytes, pinned to the current
-        # (tree-framing) spec.md: R6 reads zero and nothing else fails.
-        ("pins-after-tree-framing-repin-acts",
-         (REGISTRY, POLICY, FAMILY_SPECS["PWB"]),
-         _repin_package(root, "build_pwb_behavior_contract_repin_tree_framing"),
-         "R6=0"),
+        *filter(None, [_tree_framing_mutant(root)]),
         # The syzygy-c51h successor package's proposed union, as
         # readability_successor.py installs it at the act: R7 must then
         # report exactly zero. Before the re-derivation R2 failed by design

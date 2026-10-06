@@ -110,6 +110,8 @@ def performed(root: pathlib.Path) -> tuple[tuple[str, str, str], ...]:
 
 RFC5_PKG = f"{CAND}/rfc5-project-documentation-class"
 RFC5_MODULE = "rfcs/RFC-0005/consent-egress-secrets.md"
+BUDGET_SCRIPT = f"{CAND}/scripts/build_budget_report.py"
+BUDGET_REPORT = f"{CAND}/CONTEXT-BUDGET-REPORT.md"
 RFC5_ACT = f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
 SCOPE_PKG = f"{CAND}/public-source-screening-scope"
 SCOPE_MANIFEST = f"{SCOPE_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt"
@@ -212,6 +214,11 @@ CHAIN_EDITS = (
      "                link_digest = rows_[0] if len(rows_) == 1 else None\n        else:"),
     ("        if body_digest != link_digest:",
      "        if label not in ROW_ARGUMENT_LINK_LABELS and body_digest != link_digest:"),
+    # the selftest pins the chain's link paths; it gains the RFC5-14 link too
+    # (found by the local-agent rehearsal: CG-7h "closed link tuples" failed)
+    ("                  == [POLARIS_NO_SIGNAL_PATHS, CONTRACT_RESTYLE_PATHS]))",
+     "                  == [POLARIS_NO_SIGNAL_PATHS, CONTRACT_RESTYLE_PATHS,\n"
+     "                      RFC5_CLASS_PATHS]))"),
 )
 
 
@@ -402,6 +409,20 @@ def step_rfc5(root: pathlib.Path, write: bool) -> bool:
         J.save(root / "DIRECTIVE-REGISTER.md")
         subprocess.run([sys.executable, "scripts/build_directive_register.py"], cwd=root,
                        capture_output=True, check=True)
+    # the context-budget report counts every module's words, RFC-0005 included
+    if (root / BUDGET_SCRIPT).is_file() and subprocess.run(
+            [sys.executable, BUDGET_SCRIPT, "--check"], cwd=root, capture_output=True).returncode:
+        changed = True
+        if write:
+            fixtures = sorted((root / CAND / "fixtures").glob("context-selection-*.md"))
+            before = {p: p.read_bytes() for p in fixtures}
+            for p in [root / BUDGET_REPORT, *fixtures]:
+                J.save(p)
+            subprocess.run([sys.executable, BUDGET_SCRIPT], cwd=root, capture_output=True, check=True)
+            moved = [p.name for p, body in before.items() if p.read_bytes() != body]
+            if moved:
+                raise Refusal(f"regenerating the budget report rewrote fixture anchors in {moved}; "
+                              "only the report may move with the rfc5 module")
     return changed
 
 
