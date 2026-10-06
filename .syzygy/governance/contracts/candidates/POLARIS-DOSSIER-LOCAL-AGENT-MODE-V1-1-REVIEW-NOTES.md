@@ -40,10 +40,44 @@ Reviewed record: docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-2-RAW.md
 None changes what 1.1 requires. Each is carried here, not repaired in the
 reviewed bytes.
 
-| # | Note | Disposition |
-|---|---|---|
-| 1 | The N5 sentence defers the skill to "the run's `brief.md`", the authoring brief, though the same skill serves inventory and review sessions | Implementation obligation: the skill and Codex texts defer each session to the brief or packet it was given (the run's `brief.md` only for the authoring session), as 033's "Only the authoring session's brief may carry the permission" already requires. Wording for a later version: "defer to the execution rule in the brief or packet the session was given" |
-| 2 | `design.md` keeps "its configuration holds" where the spec now reads "Syzygy holds" | Later version, editorial; the requirements control |
-| 3 | The packet quotes D9 as "names what the instruction covers"; SEC-3 as adopted reads "naming what the instruction covers" | The owner should read SEC-3's words: "the owner has recorded a choice for that one run, naming what the instruction covers". The lead's batch to the owner carries the correction beside question 2 |
-| 4 | The packet's prerequisite line omits the selftests | Immaterial to the owner; the delta and ledger name them |
-| 5 | "Consent or policy record without its owner act" asserts a standing page disclosure in its AND | Later version: move the AND to "Mode disclosed on every page"; the scenario is falsifiable as written |
+### 1 — The N5 sentence defers the skill to "the run's `brief.md`", the authoring brief, though the same skill serves inventory and review sessions
+
+Implementation obligation: the skill and Codex texts defer each session to the brief or packet it was given (the run's `brief.md` only for the authoring session), as 033's "Only the authoring session's brief may carry the permission" already requires. Wording for a later version: "defer to the execution rule in the brief or packet the session was given".
+
+### 2 — `design.md` keeps "its configuration holds" where the spec now reads "Syzygy holds"
+
+Later version, editorial; the requirements control.
+
+### 3 — The packet quotes D9 as "names what the instruction covers"; SEC-3 as adopted reads "naming what the instruction covers"
+
+The owner should read SEC-3's words: "the owner has recorded a choice for that one run, naming what the instruction covers". The lead's batch to the owner carries the correction beside question 2.
+
+### 4 — The packet's prerequisite line omits the selftests
+
+Immaterial to the owner; the delta and ledger name them.
+
+### 5 — "Consent or policy record without its owner act" asserts a standing page disclosure in its AND
+
+Later version: move the AND to "Mode disclosed on every page"; the scenario is falsifiable as written.
+
+## After round 2 — the recording tooling (2026-10-07)
+
+The package's ledger, delta and packet describe a builder that did not yet
+exist when round 2 read them. It now does, in the same pull request, outside
+the reviewed bytes:
+
+- `scripts/build_polaris_dossier_local_agent_mode_v1_1.py` applies the
+  patches (and the `n6` option when the owner takes it) to the signed v1.0
+  bytes, refigures `PROJECT-STATUS.md` and names the v1.1 record beside
+  v1.0's; `--check` and `--selftest`, one fixture per predicate.
+- `scripts/record_versioned_signoff.py` carries a v1.1 entry under the same
+  key, record stem and tag series (`--version 1.1`, `--option n6`); its
+  record names the options taken, and `--check` holds them to the tree.
+- The check that tells signed from unsigned bytes runs in the v1.0
+  builder's `--check`, already in the battery: v1.1 bytes with no v1.1
+  record fail it. So the packet's sentence that "no check in the battery
+  can tell 1.0's signed bytes from 1.1's" is true only until this tooling
+  merges.
+- The recording's exact steps and route edits:
+  `POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-SIGNOFF-ROUTE-EDITS.txt`, beside
+  this record.

@@ -1,0 +1,82 @@
+Exact text for the recording commit of the polaris-dossier-local-agent-mode
+v1.1 sign-off. Companion to the v1.1 package's OWNER-DECISION-PACKET.md and
+POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-REVIEW-NOTES.md. Plain text, so that the
+links below are quoted, not followed. Each OLD block must be present verbatim;
+if it is not, stop and re-read the page rather than adapting the NEW block.
+Replace <date> with the v1.1 sign-off record's Date: line, and <figure> with
+the effective-composition scenario count the builder wrote (231, or 232 with
+the n6 option, if no other addition was installed in between). Every line
+between a ---- marker and the next is part of the text, indentation included.
+
+== 0. The recording, in order ==
+----
+python3 scripts/record_versioned_signoff.py --record polaris-dossier-local-agent-mode --version 1.1 --date <date> --review docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-2-RAW.md --disposition .syzygy/governance/contracts/candidates/POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-REVIEW-NOTES.md --owner-selection-quote "<the owner's words and the option they select>" [--option n6]
+python3 scripts/check_spec_reconciliation.py --regenerate
+----
+Pass --option n6 only if the owner took question 2's hunk. The recorder
+applies the patches through the builder, which rewrites the status page's
+figures and names the v1.1 record beside v1.0's (block 1); --regenerate
+rewrites the change's GOVERNING-DEPENDENCIES.md (RFC5-12 added) and
+census.json. Then apply blocks 2 to 6, run the battery, commit, and tag the
+merged commit `polaris-dossier-local-agent-mode-v1.1`.
+
+== 1. PROJECT-STATUS.md: written by the builder, check only ==
+----
+    ([v1.0 sign-off](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md);
+    [v1.1 sign-off](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md)), and
+    35 requirements and <figure> scenarios in the effective composition with it.
+----
+
+== 2. openspec/README.md: the change's row ==
+OLD
+----
+| [`polaris-dossier-local-agent-mode`](changes/polaris-dossier-local-agent-mode) | The operator-agent authoring mode for the Polaris generator: the operator's own coding-agent session writes a dossier, Syzygy pins, checks and renders it | **Signed off v1.0 2026-10-06, version-tagged** (`polaris-dossier-local-agent-mode-v1.0`). Four requirements added to the generator composition; amend only through CC-REV-2 | [`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md) (2026-10-06) |
+----
+NEW
+----
+| [`polaris-dossier-local-agent-mode`](changes/polaris-dossier-local-agent-mode) | The operator-agent authoring mode for the Polaris generator: the operator's own coding-agent session writes a dossier, Syzygy pins, checks and renders it | **Signed off v1.1 <date>, version-tagged** (`polaris-dossier-local-agent-mode-v1.1`), amending v1.0 of 2026-10-06 (`polaris-dossier-local-agent-mode-v1.0`). Four requirements added to the generator composition; amend only through CC-REV-2 | [`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`](../.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md) (<date>); v1.0: [`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md) (2026-10-06) |
+----
+
+== 3. PROJECT-STATUS.md battery: after the --check polaris-dossier-local-agent-mode --version 1.0 line ==
+ADD
+----
+python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.1   # dossier local-agent sign-off, v1.1 <date>: record, options, aggregate block and applied tree
+----
+
+== 4. .github/workflows/governance-docs.yml: after the polaris-dossier-local-agent-mode --version 1.0 step ==
+ADD (a blank line, then the step, at the workflow's step indentation)
+----
+
+      - name: record_versioned_signoff --check polaris-dossier-local-agent-mode v1.1
+        run: python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.1
+----
+
+== 5. PROJECT-STATUS.md: the count sentence below the battery ==
+Raise the number word by one in both places (eighty-two to eighty-three, if
+#368's registration is the last change to the battery before it).
+
+== 6. docs/evidence/spec-readability-reconciliation-2026-10-02/README.md ==
+ADD at the end of the file, after one blank line
+----
+## 12. The dossier local-agent v1.1 sign-off — <date>
+
+The first signed successor of a Polaris addition, re-derived in the
+sign-off's recording commit by `--regenerate`, never by hand.
+
+- **The outcome** [Observed]: the owner signed off
+  `polaris-dossier-local-agent-mode` v1.1, a version-tagged sign-off.
+  Record: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`.
+  Its builder applied the v1.1 patches to the signed v1.0 bytes of the
+  change's `spec.md`, `design.md` and `proposal.md`, with the options the
+  record names. REQ-polaris-generation-033 and 034 are amended in place;
+  no identifier is added or retired.
+- **What the checker does** [Observed]: as §11. R1 checks the v1.1 record
+  beside v1.0's; R4 requires the regenerated `GOVERNING-DEPENDENCIES.md`
+  (RFC5-12 added to 033's warrants) to equal its warrants; R5 requires the
+  `openspec/README.md` row to cite the v1.1 record.
+- **Figures**: 033 gains scenarios; the populations at that commit and
+  since are [`census.json`](census.json) (§2). CAP1, POC and PWB are
+  unchanged. Third method: not run [Unknown].
+- **Results** [Observed, `--check` at the recording commit]: R1 to R5 and
+  R7 pass; R6 reports the two PWB pins of §10, unchanged.
+----
