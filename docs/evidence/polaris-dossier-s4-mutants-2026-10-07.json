@@ -1,7 +1,7 @@
 {
-  "record": "Rule-6 mutants for the polaris-dossier S4 slice (syzygy-qkea.5): allow-execution's refusals (revision, brief, D9, owner, declarations, re-verification, a second choice), the stored choice's strict read and its not-a-consent type (R3-F7), the credential read classification, the fail-closed list rules, the step hook's breach finding and log, and the CLI keeping the permitting arm off. Not authority.",
+  "record": "Rule-6 mutants for the polaris-dossier S4 slice (syzygy-qkea.5): allow-execution's refusals (revision, brief, D9, owner, declarations, re-verification, a second choice), the stored choice's strict read and its not-a-consent type (R3-F7), the credential read classification, the credential list rules (fail closed on an unset or unreadable source; a declared empty list passes with its operator-declared disclosure; configured adapter paths join the list), the step hook's breach finding and log, and the CLI keeping the permitting arm off. Not authority.",
   "measuredOn": {
-    "commit": "7a1f683640080600a7717c0dfce74a69127b4ce8",
+    "commit": "608a52bb377f3b7a5ce13eb26bc404f06f3f48a3",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/cli.ts",
@@ -9,7 +9,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/credential-probe.ts",
-        "sha256": "eef94ecff708f9a9d780b5dd925d7d080eae0b63bcef7c04c48ffbeb5689f944"
+        "sha256": "833fed3d21ebe2886d374245f6fb7ebeb4697d851b592e1c40b19b6e769ac6e9"
       },
       {
         "path": "packages/polaris-dossier/src/execution-choice.ts",
@@ -18,10 +18,10 @@
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S4 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
-  "history": "A first run at 43b52ca6 left two survivors. One was an equivalent mutant (the record naming the requested rather than the pinned revision, which the revision check above makes identical); it was replaced by M11, the record naming another run. The other was M20, the CLI switching the permitting arm on, which the tests did not see; the CLI brief test now asserts the disabled-arm reason (commit recorded here), and M20 is killed.",
+  "history": "A first run before the credential-list ruling left two survivors: an equivalent mutant (the record naming the requested rather than the pinned revision, which the revision check makes identical), replaced by M11 (the record naming another run); and M20 (the CLI switching the permitting arm on), killed after the CLI brief test began asserting the disabled-arm reason. The lead's ruling of 2026-10-07 made a declared empty list valid, so the earlier M14 (an empty list passing) no longer describes a fault; M14 now drops the configured adapter paths from the probe, and M21 drops the empty list's operator-declared disclosure.",
   "result": {
-    "killed": 20,
-    "total": 20
+    "killed": 21,
+    "total": 21
   },
   "mutants": [
     {
@@ -32,7 +32,7 @@
       "new": "  if (false) return refuse('revision',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -43,7 +43,7 @@
       "new": "  if (false) return refuse('briefed',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -54,7 +54,7 @@
       "new": "  if (false) return refuse('d9',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 379 passed (381)",
+      "tests": "2 failed | 404 passed (406)",
       "killed": true
     },
     {
@@ -65,7 +65,7 @@
       "new": "  if (false) return refuse('owner',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -76,7 +76,7 @@
       "new": "  const missing: string[] = [];",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 378 passed (381)",
+      "tests": "3 failed | 403 passed (406)",
       "killed": true
     },
     {
@@ -87,7 +87,7 @@
       "new": "  if (false) return refuse('reverify',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -98,7 +98,7 @@
       "new": "{ mode: 0o600, flag: 'w' });\n  } catch (cause) {\n    const code",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -109,7 +109,7 @@
       "new": "export const EXECUTION_CHOICE_FORMAT = 'polaris-dossier-execution-consent/1';",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -120,7 +120,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -131,7 +131,7 @@
       "new": "  const wrong: string[] = [];",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 378 passed (381)",
+      "tests": "3 failed | 403 passed (406)",
       "killed": true
     },
     {
@@ -142,7 +142,7 @@
       "new": "    runId: `run-${'0'.repeat(32)}`,\n    revision: pinned,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "4 failed | 377 passed (381)",
+      "tests": "4 failed | 402 passed (406)",
       "killed": true
     },
     {
@@ -153,7 +153,7 @@
       "new": "  if (attempt.opened) return attempt.regularFile ? 'not-readable' : 'unknown';",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 378 passed (381)",
+      "tests": "4 failed | 402 passed (406)",
       "killed": true
     },
     {
@@ -164,18 +164,29 @@
       "new": "  if (attempt.code === 'ENOENT') return 'absent';\n  return 'not-readable';",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 379 passed (381)",
+      "tests": "2 failed | 404 passed (406)",
       "killed": true
     },
     {
       "id": "M14",
-      "predicate": "an empty list passes vacuously",
+      "predicate": "paths configured by typed adapters are left out of the probe",
       "file": "packages/polaris-dossier/src/credential-probe.ts",
-      "old": "      if (list.paths.length === 0) {",
-      "new": "      if (false) {",
+      "old": "      const paths = [...new Set([...list.paths, ...configured])];",
+      "new": "      const paths = [...list.paths];",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
+      "killed": true
+    },
+    {
+      "id": "M21",
+      "predicate": "an empty declared list passes without saying it is operator-declared",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "        return { passed: true, checked: 0, source: `${NO_ADAPTER_CREDENTIAL_DECLARED} (${described})` };",
+      "new": "        return { passed: true, checked: 0, source: described };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 404 passed (406)",
       "killed": true
     },
     {
@@ -186,7 +197,7 @@
       "new": "      if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -197,7 +208,7 @@
       "new": "  if (briefArm(run) !== 'permitting') return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -208,7 +219,7 @@
       "new": "  void (path.join(run, RUN_LAYOUT.credentialBreaches),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -219,7 +230,7 @@
       "new": "    return { describe: `no credential list (${CREDENTIAL_LIST_ENV} is not set)`, list: () => ({ ok: true, paths: [] as string[], _: false,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -230,7 +241,7 @@
       "new": "    instruction: 'Repair the finding and continue.',\n  } as CredentialBreachFinding;",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     },
     {
@@ -241,7 +252,7 @@
       "new": "      enabled: true, choices: RUN_DIRECTORY_CHOICES,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 380 passed (381)",
+      "tests": "1 failed | 405 passed (406)",
       "killed": true
     }
   ]
