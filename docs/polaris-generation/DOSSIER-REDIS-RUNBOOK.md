@@ -111,9 +111,11 @@ entry and the screening policy. `consentedRevisions` lists the revisions you
 may pin. For prose, `rfc720Ruling` must be `ok`. If anything is absent or
 refused, stop. Do not work around it.
 
-Do not use preflight's `cloneCommands`. They run a full `git clone`, which
-gives the agent every commit the clone holds. The consent's stated form is
-one commit fetched alone (step 1 below; `syzygy-qkea.24`).
+Check `git -C <syzygy checkout> log --oneline --grep=syzygy-qkea.24`. If it
+prints nothing, do not use preflight's `cloneCommands`: before that fix they
+run a full `git clone`, which gives the agent every commit the clone holds.
+Either way, make the clone as in A1. The consent's stated form is one commit
+fetched alone.
 
 Below, `syzygy` stands for `node <syzygy checkout>/apps/syzygy/dist/main.js`.
 
