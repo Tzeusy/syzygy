@@ -347,3 +347,28 @@ child, re-derived as §7 requires.
   battery; after sign-off each package is checked by
   `scripts/record_versioned_signoff.py --check`, whose `VERSIONED_LATER`
   history already names the tree-framing manifest.
+
+## 11. The dossier local-agent sign-off — 2026-10-06
+
+The first signed Polaris addition, re-derived in the sign-off's recording
+commit by `--regenerate`, never by hand.
+
+- **The outcome** [Observed]: the owner signed off
+  `polaris-dossier-local-agent-mode` v1.0, a version-tagged sign-off.
+  Record: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md`.
+  Its builder moved the change's `spec.md` from `proposed/` to `specs/`,
+  which makes the change a signed Polaris addition: ADDED-only, and
+  composed after the overlay by both methods.
+- **What the checker does** [Observed]: R1 checks the sign-off record like
+  a child's own (package, version and tag lines; one aggregate block). The
+  addition has no R2 row. R3's expected Polaris population is derived: the
+  base-and-overlay literal plus what the addition ADDs, read by both block
+  parsers from the addition alone. R4 requires the addition's generated
+  `GOVERNING-DEPENDENCIES.md` to equal its warrants, and R5 requires the
+  `openspec/README.md` row and `PROJECT-STATUS.md` to cite the record.
+- **Figures**: the addition ADDS REQ-polaris-generation-033 to 036. The
+  populations at that commit and since are [`census.json`](census.json)
+  (§2); CAP1, POC and PWB and the checker's literals are unchanged. Third
+  method: not run [Unknown].
+- **Results** [Observed, `--check` at the recording commit]: R1 to R5 and
+  R7 pass; R6 reports the two PWB pins of §10, unchanged.

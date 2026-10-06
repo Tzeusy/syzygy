@@ -45,7 +45,10 @@ authority and no model yet called on the current path.
     clarification as 030/031.
   - Read the predecessor together with
     [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
-    31 requirements and 182 scenarios in the effective composition.
+    31 requirements and 182 scenarios without the signed-off
+    [dossier local-agent addition](openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md)
+    ([sign-off record](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md)), and
+    35 requirements and 227 scenarios in the effective composition with it.
   - Its `spec.md` keeps its reviewed candidate-era banner; its proposal and
     design carry present-tense status since the 2026-09-29
     [readability successor](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md).
@@ -368,6 +371,7 @@ python3 scripts/record_versioned_signoff.py --check pwb-container-shape-profile-
 python3 scripts/record_versioned_signoff.py --check pwb-item-depth-amendment --version 1.0   # item-depth sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --check pwb-readability-successor --version 1.0   # PWB readability sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --check pwb-tree-framing-amendment --version 1.0   # tree-framing sign-off, v1.0 2026-10-03: record, aggregate block and applied tree
+python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0   # dossier local-agent sign-off, v1.0 2026-10-06: record, aggregate block and applied tree
 # Lane B and its RFC-0007 successor are declined (decisions/POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md); their checks left the battery.
 python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02   # render-mode act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02   # machine-view act, performed 2026-10-02: record, aggregate block and applied tree
@@ -422,7 +426,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The seventy-nine checks above are the same seventy-nine the hosted workflow runs
+The eighty checks above are the same eighty the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

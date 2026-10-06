@@ -557,8 +557,8 @@
       }
     },
     "POLARIS": {
-      "requirements": 31,
-      "scenarios": 182,
+      "requirements": 35,
+      "scenarios": 227,
       "members": {
         "REQ-polaris-generation-001": {
           "name": "Admitted project input",
@@ -895,6 +895,71 @@
             "Owner declines to establish purpose",
             "Owner supplies new purpose input",
             "Questions cannot become an endless interview"
+          ]
+        },
+        "REQ-polaris-generation-033": {
+          "name": "Operator-agent authoring mode",
+          "scenarios": [
+            "Clone pinned to a consented revision",
+            "Clone at an unconsented revision",
+            "Recorded revision altered",
+            "Object store altered after pinning",
+            "No provider call and no egress record",
+            "Limits declared by the operator",
+            "Zero repair and question limits accepted",
+            "Agent usage is not observed",
+            "Syzygy's own limits enforced",
+            "Stored record altered within the agent's reach",
+            "Governed subject without a per-project provider statement",
+            "Governed subject with a per-project provider statement",
+            "Per-project statement withdrawn mid-run",
+            "Non-governed subject needs no statement",
+            "Execution rule follows SEC-3",
+            "Execution permission stays with the authoring session",
+            "Adapter credential readable",
+            "Execution permitted under the amendment",
+            "Every reported command disclosed",
+            "Mode disclosed on every page",
+            "Operator-computed draft admitted under the owner's reading",
+            "Provider-mode draft keeps the adopted rule",
+            "A condition of the owner's reading fails",
+            "Agent reports running the observed project"
+          ]
+        },
+        "REQ-polaris-generation-034": {
+          "name": "Agent brief and mechanically checked draft",
+          "scenarios": [
+            "Brief carries topics, rules and schema",
+            "Understanding record self-reported",
+            "Quotation verified against the pinned blob",
+            "Quotation altered, elided or outside its range",
+            "Cited path absent at the pinned revision",
+            "Quotation from an excluded file",
+            "Agent labels its own claim Observed",
+            "Repair loop counted"
+          ]
+        },
+        "REQ-polaris-generation-035": {
+          "name": "Fresh-context review in the operator-agent mode",
+          "scenarios": [
+            "Review packet without the authoring exchange",
+            "Verdict bound to a stale packet",
+            "Reviewer or inventory declared as the author",
+            "Verdict incomplete or inconsistent",
+            "Independence and completeness disclosed as Inferred",
+            "Design review survives its status region",
+            "Inventory omission blocks readiness"
+          ]
+        },
+        "REQ-polaris-generation-036": {
+          "name": "Self-reported discovery and in-session clarification",
+          "scenarios": [
+            "Two read populations shown apart",
+            "Self-reported path absent at the pinned revision",
+            "No Observed not-read claim",
+            "Syzygy's reads wait for its start gates",
+            "Consequential question asked in-session",
+            "Question limit reached"
           ]
         }
       }
