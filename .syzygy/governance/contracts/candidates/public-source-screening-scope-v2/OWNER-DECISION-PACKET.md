@@ -4,14 +4,11 @@
 > decision, and no act is performed by reading it. It is offered only after a
 > confirming review.
 
-> **Review state.** Round 6 found one false sentence in the generated list,
-> which overstated what is sendable; the policy bytes were confirmed correct.
-> The repair (commit e7ad7934, 3 files, +20/-13 over the round-6 reviewed
-> commit 8a0bb2a1: this packet, the semantic delta and the builder; it excludes
-> the retained round-6 raw, the round-6 dispositions and this statement) is
-> unreviewed. The recorder records only a confirming review, so to sign this row
-> the owner either asks for one more narrow review (about 5 minutes) or leaves
-> row 12 for a later sitting.
+> **Review state, 2026-10-07.** Round 7
+> (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-7-RAW.md`) returned CONFIRM WITH
+> EXCEPTIONS with five notes only, which clears these bytes; the notes are in
+> `ROUND-7-DISPOSITIONS.md`. This statement was written after round 7 and is
+> the one passage no review read (round 7, note 5).
 
 ## What this is, in plain words
 
