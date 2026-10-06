@@ -35,7 +35,7 @@ that run.
 export interface CaptureCliIo {
   readonly stdout: (text: string) => void;
   readonly stderr: (text: string) => void;
-  readonly readFile: (path: string) => string;
+  readonly readFile: (path: string) => Uint8Array;
   readonly resolveCommit: (repoRoot: string) => string;
   readonly writeRecord: (stateDir: string, record: TestArtifactRecord) => void;
   readonly now: () => string;
@@ -59,11 +59,11 @@ export const REAL_IO: CaptureCliIo = {
 function parseFlags(argv: readonly string[]): Map<string, string> {
   const values = new Map<string, string>();
   for (let index = 0; index < argv.length; index++) {
-    const flag = argv[index];
+    const flag = argv.at(index);
     if (flag === undefined || !flag.startsWith('--')) {
       throw new Error(`unexpected argument ${JSON.stringify(flag)}`);
     }
-    const value = argv[index + 1];
+    const value = argv.at(index + 1);
     if (value === undefined || value.startsWith('--')) {
       throw new Error(`${flag} requires a value`);
     }
@@ -74,10 +74,10 @@ function parseFlags(argv: readonly string[]): Map<string, string> {
 }
 
 const COMMON = ['--repo', '--scope', '--junit', '--state-dir'] as const;
-const REQUIRED: Readonly<Record<string, readonly string[]>> = {
-  print: COMMON,
-  ingest: [...COMMON, '--commit', '--exit-code'],
-};
+const REQUIRED: ReadonlyMap<string, readonly string[]> = new Map<string, readonly string[]>([
+  ['print', COMMON],
+  ['ingest', [...COMMON, '--commit', '--exit-code']],
+]);
 
 /** Returns the process exit code. */
 export function runCaptureTestArtifactCli(argv: readonly string[], io: CaptureCliIo): number {
@@ -86,7 +86,7 @@ export function runCaptureTestArtifactCli(argv: readonly string[], io: CaptureCl
     return 0;
   }
   const [mode, ...rest] = argv;
-  const required = mode === undefined ? undefined : REQUIRED[mode];
+  const required = mode === undefined ? undefined : REQUIRED.get(mode);
   if (required === undefined) {
     io.stderr(`capture-test-artifact: the first argument must be "print" or "ingest"\n\n${USAGE}`);
     return 1;

@@ -15,6 +15,16 @@ import { REAL_IO, runCaptureTestArtifactCli, type CaptureCliIo } from './capture
 // checks hold that: a source check over both files and the core module they
 // call, and a run of the real CLI whose "python" is a trap that leaves a
 // file behind if anything runs it.
+//
+// The two checks are not equal. The run check decides whether the shipped
+// code starts the observed project: the trap sentinel stays absent only if
+// nothing ran the operator's python. The source check is a guard against
+// future edits, and a static guard against a determined edit cannot be
+// complete: JavaScript reaches the global object and the module table by
+// too many routes (round 2 found `.constructor.constructor`). It refuses
+// every route found so far and every computed member access whose key it
+// cannot read, so a new route has to be spelled out where a reviewer sees
+// it; it does not prove no route exists.
 
 const SRC = fileURLToPath(new URL('.', import.meta.url));
 const MAIN_SOURCE = 'capture-test-artifact-main.ts';
@@ -86,6 +96,21 @@ const PROCESS_MEMBERS = new Set(['stdout', 'stderr', 'argv', 'exitCode']);
  * object, and evaluation of a string. */
 const FORBIDDEN_IDENTIFIERS = new Set(['getBuiltinModule', 'dlopen', 'binding', 'globalThis', 'global', 'eval', 'Function', 'require', 'Worker', 'Reflect']);
 
+/** Round-2 finding 1: every object's `.constructor.constructor` is
+ * `Function`, so `process.stdout.constructor.constructor('return this')()`
+ * reached the global object with no forbidden word in it. These names may
+ * not appear as an identifier, a member name or a literal key, and the
+ * reflection calls that fetch a member by a computed name are refused too. */
+const FORBIDDEN_MEMBER_NAMES = new Set([
+  'constructor', 'prototype', '__proto__',
+  'getPrototypeOf', 'setPrototypeOf', 'getOwnPropertyDescriptor', 'getOwnPropertyDescriptors', 'getOwnPropertyNames', 'defineProperty', 'Proxy',
+]);
+
+/** A computed key the check can read: a plain string or number literal. */
+function isLiteralKey(node: ts.Expression): boolean {
+  return ts.isStringLiteral(node) || ts.isNumericLiteral(node);
+}
+
 /** Reasons the source cannot be trusted to start nothing, read off the
  * TypeScript syntax tree so a comment or a string never counts and a
  * bracket or alias does not slip past a word match. */
@@ -102,6 +127,15 @@ function sourceViolations(fileName: string, text: string): string[] {
     }
     if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
       violations.push('dynamic import()');
+    }
+    if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+      if (FORBIDDEN_MEMBER_NAMES.has(node.text)) violations.push(`reaches ${node.text}`);
+    }
+    if (ts.isElementAccessExpression(node) && !isLiteralKey(node.argumentExpression)) {
+      violations.push('computed access with a non-literal key');
+    }
+    if (ts.isComputedPropertyName(node) && !isLiteralKey(node.expression)) {
+      violations.push('computed property name with a non-literal key');
     }
     if (ts.isIdentifier(node)) {
       if (FORBIDDEN_IDENTIFIERS.has(node.text)) violations.push(`names ${node.text}`);
@@ -167,7 +201,7 @@ describe('capture-test-artifact never starts the observed project (source check)
 
   it('names no other way to start a process, in the tool or the core module it calls', () => {
     const starters = new RegExp(String.raw`\b(?:spawn|spawnSync|execSync|exec|execFile|fork)\s*\(`);
-    const indirect = /getBuiltinModule|\bdlopen\b|process\s*\[|globalThis|\beval\s*\(|\bFunction\s*\(|\bimport\s*\(|\brequire\s*\(|\bprocess\.binding\b|\bWorker\b|node:worker_threads|node:vm|node:module/;
+    const indirect = /getBuiltinModule|\bdlopen\b|process\s*\[|globalThis|\beval\s*\(|\bFunction\s*\(|\bimport\s*\(|\brequire\s*\(|\bprocess\.binding\b|\bWorker\b|node:worker_threads|node:vm|node:module|\bconstructor\b|\bprototype\b|__proto__|PrototypeOf|getOwnProperty|defineProperty/;
     for (const name of [MAIN_SOURCE, MODULE_SOURCE, CORE_SOURCE]) {
       expect(text(name), name).not.toMatch(starters);
       expect(text(name), name).not.toMatch(indirect);
@@ -187,6 +221,17 @@ describe('capture-test-artifact never starts the observed project (source check)
     ["process.dlopen({}, 'x');", 'names dlopen'],
     ["void import('node:fs');", 'dynamic import()'],
     ["import { Worker } from 'node:worker_threads';", 'imports node:worker_threads'],
+    // Round-2 finding 1: the reviewer's evasion and its respellings.
+    ["const g = (process.stdout.constructor as unknown as { constructor: (s: string) => () => Record<string, unknown> }).constructor('return this.process')();", 'reaches constructor'],
+    ["const g: Record<string, unknown> = {}; g[['get', 'Builtin', 'Module'].join('')];", 'computed access with a non-literal key'],
+    ["const k = 'x'; const o: Record<string, unknown> = {}; o[k];", 'computed access with a non-literal key'],
+    ["process.stdout['constructor'];", 'reaches constructor'],
+    ["const { constructor: c } = process.stdout;", 'reaches constructor'],
+    ["const k = 'x'; const { [k]: c } = process.stdout as unknown as Record<string, unknown>;", 'computed property name with a non-literal key'],
+    ["Object.getPrototypeOf(process.stdout);", 'reaches getPrototypeOf'],
+    ["Object.getOwnPropertyDescriptor(process.stdout, 'x');", 'reaches getOwnPropertyDescriptor'],
+    ["({}).__proto__;", 'reaches __proto__'],
+    ["(() => 0).prototype;", 'reaches prototype'],
   ])('the tree check refuses %s', (fragment, violation) => {
     const violations = sourceViolations(MODULE_SOURCE, `${text(MODULE_SOURCE)}\n${fragment}\n`);
     expect(violations.some((entry) => entry.startsWith(violation)), violations.join('; ')).toBe(true);

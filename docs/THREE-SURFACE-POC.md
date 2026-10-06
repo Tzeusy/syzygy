@@ -278,11 +278,12 @@ npm run poc:capture-test-artifact -- print \
 - **What it ingests:** only the JUnit file you hand back, which must be a
   regular file (no symlink, FIFO or device) of at most 4 MiB. It stores the
   command, the exit status you report, the ingest time, the commit, the
-  scope, the file's digest and a safe summary, marked `operator-reported`,
-  never raw test output. Its one process is `git rev-parse HEAD`. It refuses
-  if the checkout has moved from the commit you report, if the exit status
-  is not 0–255, if any count in the file is not a non-negative integer, or
-  if you report 0 beside failing tests or beside zero tests.
+  scope, the SHA-256 of the file's bytes (what `sha256sum` prints) and a
+  safe summary, marked `operator-reported`, never raw test output. Its one
+  process is `git rev-parse HEAD`. It refuses if the checkout has moved from
+  the commit you report, if the exit status is not 0–255, if any count in
+  the file is not a non-negative integer or any attribute on the root tag is
+  repeated, or if you report 0 beside failing tests or beside zero tests.
 - **What it does not check:** that the tests ran at all, or at that commit,
   or with that exit status — those are your report. It sees only that HEAD
   is the reported commit when it ingests the file, so a checkout switched
@@ -301,9 +302,15 @@ npm run poc:capture-test-artifact -- print \
   - the ingest time is neither after the evaluation nor earlier than the
     commit itself. Passing this says nothing about when the tests ran.
   Otherwise it stays "Verification: Not verified" with the reason.
-- **When verification renders `Verified`:** only for a record whose exit
-  status and capture time the capturing process observed itself, which this
-  tool no longer produces.
+- **Machine reason for a reported run:** `execution-blocked` (RFC2-24 #12),
+  not `missing-evidence`. The evidence is present but not believed, and
+  what would make it count is a run Syzygy launches under an approved
+  execution profile (RFC5-18).
+- **When verification renders `Verified`:** never. No record Syzygy reads
+  comes from a run it launched or observed. A record with no `provenance`
+  (the shape the retired spawning capture wrote, or a hand-written file)
+  renders "Verification: Not verified", naming the missing provenance, even
+  when it passes and binds. Ingesting a run again replaces it.
 - **Scope:** the worker-change seam (`whatsapp_user_client.py`) — a different
   code path than the identity normalization capability Polaris and Orrery
   describe.

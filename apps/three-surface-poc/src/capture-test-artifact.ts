@@ -70,7 +70,8 @@ export interface IngestTestArtifactInput extends FocusedTestCommandInput {
   readonly junitPath: string;
   readonly reportedCommit: string;
   readonly reportedExitCode: string;
-  readonly readFile: (path: string) => string;
+  /** The file's bytes, undecoded: the record's digest is taken over them. */
+  readonly readFile: (path: string) => Uint8Array;
   readonly resolveCommit: (repoRoot: string) => string;
   readonly now: () => string;
 }
@@ -120,15 +121,15 @@ export function ingestTestArtifact(input: IngestTestArtifactInput): IngestTestAr
     };
   }
 
-  let rawJUnitXml: string;
+  let rawJUnit: Uint8Array;
   try {
-    rawJUnitXml = input.readFile(input.junitPath);
+    rawJUnit = input.readFile(input.junitPath);
   } catch (cause) {
     return { kind: 'failed', reason: describeFailure(cause, `the JUnit artifact at ${input.junitPath} could not be read`) };
   }
 
   const built = buildOperatorReportedTestArtifactRecord({
-    rawJUnitXml,
+    rawJUnit,
     command: focusedTestCommand(input),
     reportedExitCode: exitCode,
     ingestedAt: input.now(),

@@ -12,7 +12,7 @@ import {
 } from './model.js';
 import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
-import type { TestArtifactRecord } from './test-artifact-verification.js';
+import type { OperatorReportedTestArtifactRecord } from './test-artifact-verification.js';
 import { walkthroughEvaluationIdentity } from './walkthrough-readiness.js';
 import { removeFixtureDirectory } from './test-cleanup.js';
 
@@ -168,13 +168,14 @@ const MATERIALIZATION_RECORD_FIXTURE = {
 
 function passingTestArtifactRecord(
   commit: string,
-  capturedAt: string,
-  overrides: Partial<TestArtifactRecord> = {},
-): TestArtifactRecord {
+  ingestedAt: string,
+  overrides: Partial<OperatorReportedTestArtifactRecord> = {},
+): OperatorReportedTestArtifactRecord {
   return {
+    provenance: 'operator-reported',
     command: ['python3', '-m', 'pytest', WORKER_CHANGE_TEST_PATH, '-q'],
     exitCode: 0,
-    capturedAt,
+    ingestedAt,
     repositoryCommit: commit,
     scope: WORKER_CHANGE_TEST_PATH,
     digest: 'sha256:' + '1'.repeat(64),
@@ -660,7 +661,7 @@ describe('three-surface Butlers POC model', () => {
     }
   });
 
-  it('shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)', () => {
+  it('caps an ingested, binding operator-reported artifact at report-fact and never shows Verified (AC3/AC4, syzygy-0r9, syzygy-4mbu)', () => {
     const { repoRoot, changedCommit, changedCommitAuthoredAt } = butlersGitFixture();
     const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
     const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
@@ -694,8 +695,9 @@ describe('three-surface Butlers POC model', () => {
       ...baseInput,
       testArtifactRecord: passingTestArtifactRecord(changedCommit, capturedAt),
     });
-    expect(verified.testArtifactVerification.kind).toBe('verified');
-    if (verified.testArtifactVerification.kind !== 'verified') throw new Error('unreachable');
+    expect(verified.testArtifactVerification.kind).toBe('reported');
+    if (verified.testArtifactVerification.kind !== 'reported') throw new Error('unreachable');
+    expect(verified.testArtifactVerification.tier).toBe('report-fact');
     expect(verified.testArtifactVerification.record.repositoryCommit).toBe(changedCommit);
     // still untouched — this is the honest boundary between the two
     // capabilities sharing this bounded POC model.

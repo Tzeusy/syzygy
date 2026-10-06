@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -5,14 +6,15 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   buildOperatorReportedTestArtifactRecord,
-  buildTestArtifactRecordFromJUnit,
   clearTestArtifactRecordFile,
   MAX_JUNIT_ARTIFACT_BYTES,
   parseJUnitRootTotals,
+  readBoundedRegularFile,
   readTestArtifactRecordFile,
   resolveTestArtifactVerification,
+  UNMARKED_RECORD_REASON,
   writeTestArtifactRecordFile,
-  type ObservedRunTestArtifactRecord,
+  type UnmarkedTestArtifactRecord,
   type OperatorReportedTestArtifactRecord,
 } from './test-artifact-verification.js';
 
@@ -98,45 +100,25 @@ describe('parseJUnitRootTotals', () => {
     expect(parseJUnitRootTotals(crafted)).toEqual({ tests: 1, failures: 0, errors: 0, skipped: 0, time: null });
     expect(performance.now() - started).toBeLessThan(2_000);
   });
-});
 
-describe('buildTestArtifactRecordFromJUnit', () => {
-  it('produces a safe record that never contains the raw artifact body (AC5)', () => {
-    const result = buildTestArtifactRecordFromJUnit({
-      rawJUnitXml: PASSING_JUNIT,
-      command: ['python3', '-m', 'pytest', 'tests/connectors/test_whatsapp_user_client.py', '-q'],
-      exitCode: 0,
-      capturedAt: '2026-08-30T08:00:00Z',
-      repositoryCommit: 'c13894238989d3bebb24094730992970b31fe546',
-      scope: 'tests/connectors/test_whatsapp_user_client.py',
-    });
-    expect(result.kind).toBe('built');
-    if (result.kind !== 'built') throw new Error('unreachable');
-    expect(result.record.summary).toBe('3 passed, 0 failed, 0 errored, 0 skipped in 0.421s');
-    expect(result.record.digest).toMatch(/^sha256:[0-9a-f]{64}$/);
-
-    const serialized = JSON.stringify(result.record);
-    expect(serialized).not.toContain('SECRET-abc123');
-    expect(serialized).not.toContain('system-out');
+  // Round-2 note 6: last-wins let `failures="1" … failures="0"` read as 0.
+  it.each([
+    ['a repeated count', '<testsuite tests="2" failures="1" failures="0">'],
+    ['a repeated total', '<testsuite tests="0" tests="2">'],
+    ['a repeated attribute on the wrapper', '<testsuites tests="2" tests="2">'],
+  ])('refuses %s rather than reading either value', (_label, xml) => {
+    expect(parseJUnitRootTotals(xml)).toBeNull();
   });
 
-  it('rejects an artifact with no recognizable JUnit root', () => {
-    const result = buildTestArtifactRecordFromJUnit({
-      rawJUnitXml: 'not xml at all',
-      command: ['pytest'],
-      exitCode: 0,
-      capturedAt: '2026-08-30T08:00:00Z',
-      repositoryCommit: 'abc',
-      scope: 'tests/x.py',
-    });
-    expect(result.kind).toBe('unparseable');
+  it('refuses a repeated attribute on the nested suite even when the wrapper carries totals', () => {
+    expect(parseJUnitRootTotals('<testsuites tests="2"><testsuite tests="2" failures="1" failures="0">')).toBeNull();
   });
 });
 
 const OBSERVED_COMMIT = 'c13894238989d3bebb24094730992970b31fe546';
 const SCOPE = 'tests/connectors/test_whatsapp_user_client.py';
 
-function passingRecord(overrides: Partial<ObservedRunTestArtifactRecord> = {}): ObservedRunTestArtifactRecord {
+function passingRecord(overrides: Partial<UnmarkedTestArtifactRecord> = {}): UnmarkedTestArtifactRecord {
   return {
     command: ['python3', '-m', 'pytest', SCOPE, '-q'],
     exitCode: 0,
@@ -172,25 +154,58 @@ describe('buildOperatorReportedTestArtifactRecord', () => {
     scope: SCOPE,
   };
 
-  it('marks the record operator-reported, with an ingest time and no capture time', () => {
-    const result = buildOperatorReportedTestArtifactRecord({ ...input, rawJUnitXml: PASSING_JUNIT });
+  const bytes = (text: string): Buffer => Buffer.from(text, 'utf8');
+
+  it('marks the record operator-reported, with an ingest time and no capture time, and never stores the body (AC5)', () => {
+    const result = buildOperatorReportedTestArtifactRecord({ ...input, rawJUnit: bytes(PASSING_JUNIT) });
     expect(result.kind).toBe('built');
     if (result.kind !== 'built') throw new Error('unreachable');
     expect(result.record.provenance).toBe('operator-reported');
     expect(result.record.ingestedAt).toBe('2026-08-30T08:00:00Z');
+    expect(result.record.summary).toBe('3 passed, 0 failed, 0 errored, 0 skipped in 0.421s');
     expect('capturedAt' in result.record).toBe(false);
-    expect(JSON.stringify(result.record)).not.toContain('SECRET-abc123');
+    const serialized = JSON.stringify(result.record);
+    expect(serialized).not.toContain('SECRET-abc123');
+    expect(serialized).not.toContain('system-out');
+  });
+
+  it('rejects an artifact with no recognizable JUnit root, or a repeated count attribute', () => {
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnit: bytes('not xml at all') }).kind).toBe('unparseable');
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnit: bytes('<testsuite tests="2" failures="1" failures="0">') }).kind).toBe('unparseable');
   });
 
   it('refuses status 0 beside a failure, and beside zero tests', () => {
-    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnitXml: FAILING_JUNIT }).kind).toBe('inconsistent');
-    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnitXml: '<testsuite tests="0">' }).kind).toBe('inconsistent');
-    expect(buildOperatorReportedTestArtifactRecord({ ...input, reportedExitCode: 5, rawJUnitXml: '<testsuite tests="0">' }).kind).toBe('built');
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnit: bytes(FAILING_JUNIT) }).kind).toBe('inconsistent');
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, rawJUnit: bytes('<testsuite tests="0">') }).kind).toBe('inconsistent');
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, reportedExitCode: 5, rawJUnit: bytes('<testsuite tests="0">') }).kind).toBe('built');
+  });
+
+  // Round-2 note 5: the digest was taken over the UTF-8-decoded text, so a
+  // file that is not valid UTF-8 recorded a digest `sha256sum` never gives.
+  it('digests the file\'s own bytes, which equal sha256sum even when they are not valid UTF-8', () => {
+    const dir = stateDir();
+    const path = join(dir, 'a.xml');
+    const raw = Buffer.concat([bytes('<testsuite tests="1" name="'), Buffer.from([0xff, 0xfe, 0xc3]), bytes('">')]);
+    writeFileSync(path, raw);
+    const result = buildOperatorReportedTestArtifactRecord({ ...input, reportedExitCode: 1, rawJUnit: readBoundedRegularFile(path) });
+    expect(result.kind).toBe('built');
+    if (result.kind !== 'built') throw new Error('unreachable');
+    expect(result.record.digest).toBe(`sha256:${createHash('sha256').update(raw).digest('hex')}`);
+    expect(result.record.digest).not.toBe(`sha256:${createHash('sha256').update(raw.toString('utf8'), 'utf8').digest('hex')}`);
+  });
+
+  it('measures the ceiling in bytes, not decoded characters', () => {
+    // Two bytes per character: over the ceiling in bytes, half of it in text.
+    const oversized = bytes(`<testsuite tests="1">${'é'.repeat(MAX_JUNIT_ARTIFACT_BYTES / 2)}`);
+    expect(oversized.byteLength).toBeGreaterThan(MAX_JUNIT_ARTIFACT_BYTES);
+    expect(buildOperatorReportedTestArtifactRecord({ ...input, reportedExitCode: 1, rawJUnit: oversized }).kind).toBe('unparseable');
   });
 });
 
 describe('resolveTestArtifactVerification', () => {
-  it('renders Verified when the artifact passes and binds to the observed commit (AC3)', () => {
+  // Round-2 note 2: a record with no provenance was written by the retired
+  // spawning capture or by hand, and Syzygy cannot tell which.
+  it('fails closed on a record with no provenance: Unknown, never Verified, even when it passes and binds', () => {
     const result = resolveTestArtifactVerification({
       record: passingRecord(),
       expectedScope: SCOPE,
@@ -198,7 +213,20 @@ describe('resolveTestArtifactVerification', () => {
       commitAuthoredAt: '2026-08-30T07:00:00Z',
       evaluationAsOf: '2026-08-30T12:00:00Z',
     });
-    expect(result.kind).toBe('verified');
+    expect(result).toEqual({ kind: 'unknown', reason: UNMARKED_RECORD_REASON });
+  });
+
+  it('fails closed on an unmarked record read back from the state file', () => {
+    const dir = stateDir();
+    writeTestArtifactRecordFile(dir, passingRecord());
+    const result = resolveTestArtifactVerification({
+      record: readTestArtifactRecordFile(dir),
+      expectedScope: SCOPE,
+      observedCommit: OBSERVED_COMMIT,
+      commitAuthoredAt: '2026-08-30T07:00:00Z',
+      evaluationAsOf: '2026-08-30T12:00:00Z',
+    });
+    expect(result).toEqual({ kind: 'unknown', reason: UNMARKED_RECORD_REASON });
   });
 
   it('renders Unknown when no artifact has been ingested (AC4)', () => {
@@ -214,7 +242,7 @@ describe('resolveTestArtifactVerification', () => {
 
   it('renders Unknown when there is no observed commit to bind against', () => {
     const result = resolveTestArtifactVerification({
-      record: passingRecord(),
+      record: reportedRecord(),
       expectedScope: SCOPE,
       observedCommit: null,
       commitAuthoredAt: null,
@@ -238,7 +266,7 @@ describe('resolveTestArtifactVerification', () => {
 
   it('renders Unknown on a scope mismatch', () => {
     const result = resolveTestArtifactVerification({
-      record: passingRecord({ scope: 'tests/unrelated/test_x.py' }),
+      record: reportedRecord({ scope: 'tests/unrelated/test_x.py' }),
       expectedScope: SCOPE,
       observedCommit: OBSERVED_COMMIT,
       commitAuthoredAt: null,
@@ -248,11 +276,11 @@ describe('resolveTestArtifactVerification', () => {
   });
 
   it('renders Unknown on a failing artifact — a fix must never be shown verified by a failing run (AC4)', () => {
-    const failing = buildTestArtifactRecordFromJUnit({
-      rawJUnitXml: FAILING_JUNIT,
+    const failing = buildOperatorReportedTestArtifactRecord({
+      rawJUnit: Buffer.from(FAILING_JUNIT, 'utf8'),
       command: ['python3', '-m', 'pytest', SCOPE, '-q'],
-      exitCode: 1,
-      capturedAt: '2026-08-30T08:00:00Z',
+      reportedExitCode: 1,
+      ingestedAt: '2026-08-30T08:00:00Z',
       repositoryCommit: OBSERVED_COMMIT,
       scope: SCOPE,
     });
@@ -339,11 +367,7 @@ describe('resolveTestArtifactVerification', () => {
     expect(result.kind).toBe('unknown');
   });
 
-  it('mutation check: a falsified verification would be caught', () => {
-    // Prove the assertion is load-bearing (rule 6): a broken resolver that
-    // always says "verified" would pass none of the negative cases above,
-    // but this positive-path assertion alone must fail if verification is
-    // computed against the wrong commit.
+  it('names the commit mismatch, not the missing provenance, when an unmarked record also mismatches', () => {
     const result = resolveTestArtifactVerification({
       record: passingRecord({ repositoryCommit: OBSERVED_COMMIT }),
       expectedScope: SCOPE,
@@ -351,7 +375,9 @@ describe('resolveTestArtifactVerification', () => {
       commitAuthoredAt: null,
       evaluationAsOf: '2026-08-30T12:00:00Z',
     });
-    expect(result.kind).not.toBe('verified');
+    expect(result.kind).toBe('unknown');
+    if (result.kind !== 'unknown') throw new Error('unreachable');
+    expect(result.reason).toContain('does not match the observed change commit');
   });
 });
 

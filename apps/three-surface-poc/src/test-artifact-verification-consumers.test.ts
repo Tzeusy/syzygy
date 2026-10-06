@@ -4,11 +4,26 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 // syzygy-4mbu round 1, finding 1: an operator-reported run resolves to the
-// `reported` kind, capped at report-fact (RFC5-19). Every consumer of the
-// verification kind must treat it as not verified. This sweep fixes the
-// consumer population, so a new reader of the kind fails here until it is
-// added below with the reason it is safe; the behaviour of each listed
-// consumer is asserted in its own test file (named beside it).
+// `reported` kind, capped at report-fact (RFC5-19), and since round 2 (note
+// 2) there is no `verified` kind at all. Every consumer of the verification
+// must treat `reported` as not verified. This sweep fixes the consumer
+// population, so a new reader fails here until it is added below with the
+// reason it is safe; the behaviour of each listed consumer is asserted in
+// its own test file (named beside it).
+//
+// What the sweep finds, and what it cannot (round-2 note 3):
+// - any mention of the field name `testArtifactVerification`, so member
+//   access, a destructuring reader (`const { testArtifactVerification } =
+//   model`, with or without a rename) and a re-declaration are all found;
+// - any mention of the result type's name;
+// - a whole-model serializer written `JSON.stringify(model)`, the machine
+//   channel at `/api/poc`, which carries the verification verbatim.
+// It cannot find a reader that never spells the field name: a computed key
+// (`model[key]`), `Object.values(model)`, a spread into another object, or
+// a whole-model serializer over a variable with another name. Those are
+// a reviewer's to catch; the wire value is self-describing (`kind:
+// 'reported'`, `tier: 'report-fact'`, `disclosure`), so a verbatim copy
+// cannot read as verified.
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const TREES = ['apps', 'packages'];
@@ -28,54 +43,57 @@ function sources(): Map<string, string> {
   return found;
 }
 
-const CONSUMER = /\.testArtifactVerification\b|\bTestArtifactVerificationResult\b/;
+const CONSUMER = /\btestArtifactVerification\b|\bTestArtifactVerificationResult\b/;
+const WHOLE_MODEL = /\bJSON\.stringify\(\s*model\s*\)/;
 const VERIFIED_COMPARISON = /\bkind\s*[!=]==?\s*['"]verified['"]/g;
 const VERIFIED_ARM = /\bcase\s+['"]verified['"]\s*:/g;
 
-/** The consumers of the kind, each with why `reported` cannot read as
- * verified there and the test that holds it. */
+/** The consumers, each with why `reported` cannot read as verified there
+ * and the test that holds it. */
 const EXPECTED_CONSUMERS: Readonly<Record<string, string>> = {
   'apps/three-surface-poc/src/trajectory.ts':
     'renders `reported` in the Unknown encoding with its disclosure, never "Verified" (trajectory.test.ts)',
   'packages/three-surface-poc-core/src/model.ts':
-    'adds `reported` to the Unknown subjects with its disclosure (trajectory.test.ts reads it back)',
+    'adds `reported` to the Unknown subjects as `execution-blocked` with its disclosure (trajectory.test.ts reads it back)',
   'apps/three-surface-poc/src/fresh-checkout-demo-main.ts':
     'copies the kind string into its evidence record; it gates nothing on it',
 };
 
-/** Every `kind === 'verified'` comparison and `case 'verified':` arm. */
-const EXPECTED_VERIFIED_SITES: Readonly<Record<string, number>> = {
-  'apps/three-surface-poc/src/trajectory.ts': 2,
-  [DEFINITION]: 0,
+/** The whole-model channels: they carry the verification without naming it. */
+const EXPECTED_WHOLE_MODEL: Readonly<Record<string, string>> = {
+  'apps/three-surface-poc/src/routes.ts':
+    'serves the model verbatim at /api/poc; the value names its own kind, tier and disclosure, and no `verified` kind exists to serve',
 };
 
-describe('every consumer of the test-artifact verification kind treats `reported` as not verified', () => {
-  it('finds exactly the listed consumers', () => {
+describe('every consumer of the test-artifact verification treats `reported` as not verified', () => {
+  it('finds exactly the listed consumers, by name and by whole-model serialization', () => {
     const all = sources();
     expect(all.size).toBeGreaterThan(100);
     const consumers = [...all].filter(([path, text]) => path !== DEFINITION && CONSUMER.test(text)).map(([path]) => path);
     expect(consumers.sort()).toEqual(Object.keys(EXPECTED_CONSUMERS).sort());
+    const wholeModel = [...all].filter(([, text]) => WHOLE_MODEL.test(text)).map(([path]) => path);
+    expect(wholeModel.sort()).toEqual(Object.keys(EXPECTED_WHOLE_MODEL).sort());
   });
 
-  it('finds exactly the listed `verified` comparisons and switch arms, and none of them admits `reported`', () => {
-    const sites = new Map<string, number>();
+  it('finds a destructuring reader, with or without a rename', () => {
+    expect(CONSUMER.test('const { testArtifactVerification } = model;')).toBe(true);
+    expect(CONSUMER.test('const { testArtifactVerification: v } = model;')).toBe(true);
+  });
+
+  it('finds no `verified` comparison or switch arm anywhere, since no such kind exists', () => {
+    const sites: string[] = [];
     for (const [path, text] of sources()) {
-      const count = [...text.matchAll(VERIFIED_COMPARISON)].length + [...text.matchAll(VERIFIED_ARM)].length;
-      if (count > 0) sites.set(path, count);
+      if ([...text.matchAll(VERIFIED_COMPARISON)].length + [...text.matchAll(VERIFIED_ARM)].length > 0) sites.push(path);
     }
-    const expected = Object.entries(EXPECTED_VERIFIED_SITES).filter(([, count]) => count > 0);
-    expect([...sites].sort()).toEqual(expected.sort());
-    // The two Trajectory comparisons: the Observed badge requires `verified`
-    // exactly, and the no-intent branch names `reported` beside it.
+    expect(sites).toEqual([]);
     const trajectory = sources().get('apps/three-surface-poc/src/trajectory.ts') ?? '';
-    expect(trajectory).toContain("if (verification.kind === 'verified' && governingIntentId !== null) {");
-    expect(trajectory).toContain("if (verification.kind === 'verified' || verification.kind === 'reported') {");
     const observedBadge = trajectory.split('\n').filter((line) => line.includes('epistemic-observed') && line.includes('worker-change-verification'));
-    expect(observedBadge).toHaveLength(1);
+    expect(observedBadge).toEqual([]);
   });
 
-  it('keeps `reported` out of the Observed record type', () => {
+  it('defines no `verified` result kind', () => {
     const definition = sources().get(DEFINITION) ?? '';
-    expect(definition).toContain("| { readonly kind: 'verified'; readonly record: ObservedRunTestArtifactRecord }");
+    expect(definition).toContain('export type TestArtifactVerificationResult =');
+    expect(definition).not.toMatch(/kind:\s*'verified'/);
   });
 });
