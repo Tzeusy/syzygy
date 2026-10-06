@@ -38,7 +38,7 @@ export type ExecutionFlags =
   | { readonly applies: false; readonly why: string }
   | { readonly applies: true; readonly clone: string; readonly flagged: number; readonly commands: readonly FlaggedCommand[]; readonly label: 'Inferred'; readonly basis: string };
 
-export const EXECUTION_FLAGS_BASIS = 'the agent\'s own report of each command\'s working directory and scope; Syzygy compares the reported directory with the clone\'s path as text and cannot observe where or what the agent ran. A flag refuses no step and hides no command.';
+export const EXECUTION_FLAGS_BASIS = 'the agent\'s own report of each command\'s working directory and scope. Whether a command falls within the scope of the owner\'s execution choice is the agent\'s own statement, labelled Inferred; Syzygy does not judge it. Syzygy compares the reported directory with the clone\'s path as text, after resolving `..`, by path component and never by shared string prefix, and cannot observe where or what the agent ran. A flag refuses no step and hides no command.';
 
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
