@@ -81,15 +81,34 @@ describe('the sitting\'s acts as gate sources, with no act recorded', () => {
     expect(await s.providerStatements.statementsFor('redis-redis')).toEqual([]);
     expect(await s.registryEntry()).toEqual({ state: 'absent', why: `no owner-act record ${SIGNOFF} exists` });
   });
-  it('establish nothing on this checkout, whose sitting records are drafted and unsigned', async () => {
-    const s = sources(REAL_ROOT, Date.now());
-    expect(await s.d9()).toEqual(notEstablished(D9_WHAT));
-    expect(await s.rfc720Ruling()).toEqual(notEstablished(RFC720_WHAT));
-    expect(await s.projectInput.drawerFor('redis-redis')).toEqual(UNSTATED);
-    expect(await s.providerStatements.statementsFor('redis-redis')).toEqual([]);
-    expect(await s.registryEntry()).toEqual({ state: 'absent', why: `no owner-act record ${SIGNOFF} exists` });
+  it('follow this checkout\'s tree: each source absent while its act record is, and established once the sitting records it', async () => {
+    await expectFollowsTree(REAL_ROOT, Date.now());
+  });
+  it('follow the tree in either state: no records, every record, and each act alone', async () => {
+    await expectFollowsTree(world([]), NOW);
+    await expectFollowsTree(world(KEYS, true), NOW);
+    for (const key of KEYS) await expectFollowsTree(world([key]), NOW);
+    await expectFollowsTree(world([], true), NOW);
   });
 });
+
+/** The real-tree pin, per source: the expected state is decided by whether that source's act record exists under `root`, so the
+ * commit that records the sitting needs no edit here, and a record that exists yet does not establish its source still fails. */
+async function expectFollowsTree(root: string, now: number): Promise<void> {
+  const has = (rel: string): boolean => fs.existsSync(path.join(root, rel));
+  const s = sources(root, now);
+  if (has(ACTS['d9-in-force'].file)) expect(await s.d9()).toEqual({ state: 'ok', record: expect.stringMatching(/^D9-IN-FORCE-OPERATOR-AGENT-\d{4}-\d{2}-\d{2}$/) });
+  else expect(await s.d9()).toEqual(notEstablished(D9_WHAT));
+  if (has(ACTS['rfc7-20-reading-in-force'].file)) expect(await s.rfc720Ruling()).toEqual({ state: 'ok', record: expect.stringMatching(/^RFC7-20-READING-IN-FORCE-OPERATOR-AGENT-\d{4}-\d{2}-\d{2}$/) });
+  else expect(await s.rfc720Ruling()).toEqual(notEstablished(RFC720_WHAT));
+  if (has(ACTS['redis-no-evidence-drawer'].file)) expect(await s.projectInput.drawerFor('redis-redis')).toEqual({ stated: true, drawer: 'absent', record: expect.stringMatching(/^NO-EVIDENCE-DRAWER-redis-redis@/) });
+  else expect(await s.projectInput.drawerFor('redis-redis')).toEqual(UNSTATED);
+  const statements = await s.providerStatements.statementsFor('redis-redis');
+  const recorded = (['redis-agent-anthropic', 'redis-agent-openai'] as const).filter(key => has(ACTS[key].file));
+  expect(statements.map(r => [r.recordId, r.withdrawn, r.act === null])).toEqual(recorded.map(key => [key === 'redis-agent-anthropic' ? 'AGENT-PROVIDER-redis-redis-anthropic' : 'AGENT-PROVIDER-redis-redis-openai', false, false]));
+  if (has(SIGNOFF)) expect(await s.registryEntry()).toEqual({ state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' });
+  else expect(await s.registryEntry()).toEqual({ state: 'absent', why: `no owner-act record ${SIGNOFF} exists` });
+}
 
 describe('the sitting\'s acts as gate sources, once recorded', () => {
   it('establish every source when every act is recorded, none hiding another', async () => {

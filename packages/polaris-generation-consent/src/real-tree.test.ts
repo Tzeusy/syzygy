@@ -26,7 +26,8 @@ const reads = (fs: PackageReaderFs, now = Date.now()) => ({
   signoff: () => readVersionedSignoffState({ root: ROOT, fs, now, form: LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM }),
   port: createPackageAdmissionRecordsPort({ root: ROOT, now: () => now, fs }),
 });
-const KINDS = ['observation-consent', 'egress-consent', 'public-source-policy'] as const;
+const exists = async (rel: string): Promise<boolean> => { try { await readFile(path.join(ROOT, rel)); return true; } catch { return false; } };
+const KINDS =['observation-consent', 'egress-consent', 'public-source-policy'] as const;
 const TIMEOUT = 120_000;   // each read walks the whole decisions tree
 
 describe('the readers over this checkout\'s decisions directory', () => {
@@ -34,10 +35,14 @@ describe('the readers over this checkout\'s decisions directory', () => {
     const r = reads(realFs);
     await expect(r.admission(), 'admission read').resolves.toBeDefined();
     await expect(r.policy(), 'policy read').resolves.toBeDefined();
-    for (const [name, read] of [['policy chain', r.chain], ['class act', r.classAct], ['egress', r.egress], ['registry sign-off', r.signoff]] as const) {
+    for (const [name, read] of [['policy chain', r.chain], ['class act', r.classAct], ['egress', r.egress]] as const) {
       const got = await read();
       expect(got.state, `${name}: ${got.state === 'ok' ? '' : got.why}`).not.toBe('refused');
     }
+    // The registry sign-off follows the tree: absent while its record is, in force once the sitting records it.
+    const signoff = await r.signoff(), record = `${DECISIONS_DIR}/${LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.file}`;
+    if (await exists(record)) expect(signoff, 'registry sign-off').toMatchObject({ state: 'ok', act: { identity: 'public-git-source-acquisition-local-agent-v1.0' } });
+    else expect(signoff, 'registry sign-off').toEqual({ state: 'absent', why: `no owner-act record ${record} exists` });
     for (const kind of KINDS) {
       const answer = await r.port.check({ kind, repositoryId: 'redis-redis', revision: '0'.repeat(40) });
       expect(answer.satisfied ? '' : answer.why, kind).not.toContain('could not be read');
@@ -47,6 +52,7 @@ describe('the readers over this checkout\'s decisions directory', () => {
     await expect(reads(withExtra('ZZ-PROBE.md', 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03\n')).admission()).rejects.toThrow();
     await expect(reads(withExtra('ZZ-PROBE.md', 'Revokes the public source scope approval.\n')).policy()).rejects.toThrow();
     expect((await reads(withExtra('ZZ-PROBE.md', 'Revokes RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03.\n')).classAct()).state).toBe('refused');
+    expect((await reads(withExtra('ZZ-PROBE.md', 'Withdrawn: public-git-source-acquisition-local-agent-v1.0\n')).signoff()).state).toBe('refused');
     const port = reads(withExtra('ZZ-PROBE.md', 'Withdrawn: PUBLIC-EGRESS-anthropic\n')).port;
     expect(await port.check({ kind: 'egress-consent', repositoryId: 'redis-redis', revision: '0'.repeat(40) })).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
   }, TIMEOUT);

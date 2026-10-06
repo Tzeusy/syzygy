@@ -637,11 +637,12 @@ describe('preflight', () => {
     expect(result.ok && result.report.d9).toEqual({ state: 'absent', why: why('the D9 text (SEC-3 amendment)') });
     expect(result.ok && result.report.rfc720Ruling).toEqual({ state: 'absent', why: why('the RFC7-20 reading (POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, item 1)') });
   });
-  it('reports D9 not established on this checkout, though the doctrine amendment log records its adoption', async () => {
+  it('reports D9 established on this checkout only once an act record binds it, though the doctrine amendment log records its adoption', async () => {
     expect(fs.readFileSync(path.join(REAL_ROOT, DECISIONS_DIR, 'DOCTRINE-AMENDMENT-LOG.md'), 'utf8')).toMatch(/^\| D9 \|/m);
     const result = await preflight(URL_, createPackageGateSources({ root: REAL_ROOT, now: () => Date.now() }), Date.now());
-    expect(result.ok && result.report.d9.state).toBe('absent');
-    expect(result.ok && result.report.rfc720Ruling.state).toBe('absent');
+    const recorded = (stem: string): 'ok' | 'absent' => (fs.existsSync(path.join(REAL_ROOT, DECISIONS_DIR, `DOSSIER-LOCAL-AGENT-${stem}-ACT.md`)) ? 'ok' : 'absent');
+    expect(result.ok && result.report.d9.state).toBe(recorded('D9-IN-FORCE'));
+    expect(result.ok && result.report.rfc720Ruling.state).toBe(recorded('RFC7-20-READING-IN-FORCE'));
   });
   it('reports D9 and the RFC7-20 reading established once the sitting\'s acts bind their records, and only while the bound bytes hold', async () => {
     const sitting = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force';
