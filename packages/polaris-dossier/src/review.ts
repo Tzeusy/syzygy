@@ -103,7 +103,7 @@ export interface ReviewDeps {
 }
 
 /** The latest frozen draft revision whose check passed and whose frozen bytes are the ones its check recorded, or why there is none. */
-function latestPassedDraft(run: string): { readonly ok: true; readonly revision: number; readonly bytes: Uint8Array } | { readonly ok: false; readonly reason: string } {
+export function latestPassedDraft(run: string): { readonly ok: true; readonly revision: number; readonly bytes: Uint8Array } | { readonly ok: false; readonly reason: string } {
   const revision = nextRevision(path.join(run, RUN_LAYOUT.checks)) - 1;
   if (revision < 0) return { ok: false, reason: 'no draft revision has been checked' };
   let check: unknown;
@@ -521,7 +521,12 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
 export type ReviewOfRecord =
   | {
     readonly counts: true; readonly kind: 'fidelity'; readonly number: number; readonly session: number; readonly packetSha256: string;
-    readonly verdict: { readonly readiness: 'ready' | 'not-ready'; readonly blocking: boolean; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
+    /** The verdict's content: its readiness, whether it blocks, and its support judgement of each claim block, by block id. */
+    readonly verdict: {
+      readonly readiness: 'ready' | 'not-ready'; readonly blocking: boolean;
+      readonly blockSupport: Readonly<Record<string, 'supported' | 'anchor-does-not-support' | 'unresolved'>>;
+      readonly declaredBy: 'the review session'; readonly label: 'Inferred';
+    };
     readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
     readonly launchForm: { readonly value: 'terminal' | 'bang'; readonly declaredBy: 'operator'; readonly label: 'Inferred' };
     readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
@@ -564,7 +569,11 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
   }
   return {
     counts: true, kind: 'fidelity', number, session, packetSha256: built.sha256,
-    verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict), declaredBy: 'the review session', label: 'Inferred' },
+    verdict: {
+      readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict),
+      blockSupport: Object.fromEntries(list(verdict['blockSupport']).filter(isObj).map((row) => [row['blockId'] as string, row['verdict'] as 'supported' | 'anchor-does-not-support' | 'unresolved'])),
+      declaredBy: 'the review session', label: 'Inferred',
+    },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
     launchForm: { value: form['value'], declaredBy: 'operator', label: 'Inferred' },
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },

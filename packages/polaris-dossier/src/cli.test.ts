@@ -56,7 +56,7 @@ describe('syzygy dossier', () => {
     expect(result.stderr.startsWith('syzygy dossier: a command is required\n\nsyzygy dossier — operator-agent dossier runs\n')).toBe(true);
   });
 
-  it.each([[['render', 'r']], [['frobnicate']]])('exits 2 for a command this build does not have (%j)', async (argv) => {
+  it.each([[['publish', 'r']], [['frobnicate']]])('exits 2 for a command this build does not have (%j)', async (argv) => {
     const result = await run(argv);
     expect(result.code).toBe(2);
     expect(result.stderr.startsWith(`syzygy dossier: unknown dossier command: ${argv[0]}\n`)).toBe(true);
@@ -117,7 +117,7 @@ describe('no route and no credential', () => {
   const sources = fs.readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
 
   it('sweeps a non-empty population of source files', async () => {
-    expect(sources).toEqual(['brief.ts', 'check.ts', 'cli.ts', 'clone-head.ts', 'credential-probe.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-rule.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'preflight.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'state-directory.ts', 'status.ts']);
+    expect(sources).toEqual(['brief.ts', 'check.ts', 'cli.ts', 'clone-head.ts', 'credential-probe.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-rule.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'preflight.ts', 'render.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'state-directory.ts', 'status.ts']);
   });
 
   it.each(sources.map((name) => [name]))('%s imports no network module', (name) => {

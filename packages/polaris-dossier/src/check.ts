@@ -406,14 +406,17 @@ function readSubject(file: string, noun: string): Uint8Array | string {
   }
 }
 
-interface Derived {
+/** What one derivation found. `admitted` holds the text of every cited blob this step read, re-hashed and screening admitted, by path:
+ * the only bytes a render may quote or put on a source page. */
+export interface Derived {
   readonly findings: CheckFinding[];
   readonly quotations: VerifiedQuotation[];
   readonly excludedContent: ExcludedQuotation[];
   readonly citedBlobs: CitedBlob[];
+  readonly admitted: ReadonlyMap<string, { readonly objectId: string; readonly raw: string }>;
 }
 
-interface DeriveInputs {
+export interface DeriveInputs {
   readonly pinned: string;
   readonly screen: DossierScreen;
   readonly reader: PinnedObjectReader;
@@ -453,8 +456,9 @@ type BlobState =
   | { readonly state: 'admitted'; readonly entry: TreeEntry; readonly raw: string; readonly lines: number; tracked: TrackedText | null };
 
 /** Every check over a parsed subject. Each walker tolerates a subject of the wrong shape, so one submission reports every finding it
- * carries, not only its schema faults. */
-async function deriveFindings(subject: unknown, inputs: DeriveInputs, rules: SubjectRules): Promise<Derived> {
+ * carries, not only its schema faults. It freezes and writes nothing: `checkSubject` freezes, and `render` derives again from a frozen
+ * revision with it. */
+export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rules: SubjectRules): Promise<Derived> {
   const findings: CheckFinding[] = [];
   const add = (finding: CheckFinding): void => { findings.push(finding); };
   const { noun } = rules;
@@ -620,7 +624,8 @@ async function deriveFindings(subject: unknown, inputs: DeriveInputs, rules: Sub
     });
   }
 
-  return { findings, quotations, excludedContent, citedBlobs };
+  const admitted = new Map([...blobs].flatMap(([cited, state]) => (state.state === 'admitted' ? [[cited, { objectId: state.entry.id, raw: state.raw }] as const] : [])));
+  return { findings, quotations, excludedContent, citedBlobs, admitted };
 }
 
 const CLAIM_UNQUOTABLE = 'only an inferred claim block carries quotations; give this one its own inferred block with a citation';

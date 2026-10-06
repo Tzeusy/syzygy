@@ -11,6 +11,7 @@ import { checkInventory, inventoryBrief } from './inventory.js';
 import { preflight } from './preflight.js';
 import type { ReverifyOptions } from './reverify.js';
 import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
+import { renderRun, type DossierRenderer } from './render.js';
 import { reviewCheck, reviewPacket } from './review.js';
 import type { ScreenLoad } from './screen.js';
 import { launchForm, sessionPrompt } from './session-handover.js';
@@ -97,6 +98,12 @@ Commands:
                       pinned revision, session identifiers, completeness, quotations
                       and consistency; freeze it as reviews/fidelity-verdict-N.json
                       and record the result in reviews/checks/; exit 1 when refused
+  render <run>        verify the pinned revision again, re-derive every check of the
+                      latest passed draft revision from objects read now, rebuild the
+                      fidelity review of record, and render the dossier into a new
+                      site/<n>/ with the run disclosure on every page and in
+                      machine.json; the draft layer is Unknown unless the owner's
+                      reading of RFC7-20 is in force; exit 1 when refused
   status <run>       report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -122,6 +129,8 @@ export interface CliPorts {
   readonly openReader?: ReverifyOptions['openReader'];
   /** The screen `check` applies; by default the policy the act chain puts in force in this checkout. */
   readonly loadScreen?: () => Promise<ScreenLoad>;
+  /** The multi-page dossier renderer `render` draws through; the `syzygy` composition root injects it. Without it `render` refuses. */
+  readonly renderer?: DossierRenderer;
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
@@ -220,6 +229,17 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const result = await reviewCheck(options.positional[0]!, verdictFile === undefined ? {} : { verdictFile }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     if (!result.ok) return refused(result.refusal);
     return report(result.report, result.report.outcome === 'validated' ? EXIT.clean : EXIT.refused);
+  }
+  if (command === 'render') {
+    const flag = rest.find((arg) => arg.startsWith('-'));
+    if (flag !== undefined) return usageError(`unknown option for render: ${flag}`);
+    if (rest.length !== 1) return usageError('render takes exactly one argument, the run directory');
+    const env = ports.env ?? process.env;
+    const result = await renderRun(rest[0]!, {
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)),
+      ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}), ...(ports.renderer ? { renderer: ports.renderer } : {}),
+    });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'launch-form') {
     const options = parseOptions(rest, ['--kind']);
