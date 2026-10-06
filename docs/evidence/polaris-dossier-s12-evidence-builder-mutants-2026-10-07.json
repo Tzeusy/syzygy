@@ -1,0 +1,124 @@
+{
+  "record": "Rule-6 mutants for the S12 run-evidence builder (syzygy-qkea.13): a digest of the length instead of the bytes (E1), links followed (E2), a body copied (E3), the sessions directory skipped (E4), an open run reported closed (E5), the first site taken for the latest (E6), an extra argument accepted (E7), the pinned revision dropped (E8), the run record digested in place of the Execution Record (E9), links and special files dropped silently (E10), another Syzygy commit named (E11), an operator-declared field guessed (E12). Not authority.",
+  "measuredOn": {
+    "commit": "11439417103aaa7daf43fa7d01d800c2f5170b4d",
+    "subjects": [
+      {
+        "path": "scripts/dossier_run_evidence.mjs",
+        "sha256": "848a2e57c1da337be427d94fbfe3ad7bfa12257de9ea93597cdf463ca4cecf3d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-evidence.test.ts",
+        "sha256": "4ddf713fed4fe2e7adf1fa00c9283f004575a8c5937d56d04b93d6ef363e7b15"
+      },
+      {
+        "path": "packages/polaris-dossier/src/full-run.testkit.ts",
+        "sha256": "0fb56d9f8c5134a50563efb1ad87b2b67b9e53e0f35e6dede657a505b5be5ed4"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in the script at `commit`, runs `command` from the worktree root over a full fixture run, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/run-evidence.test.ts",
+  "result": {
+    "killed": 12,
+    "total": 12
+  },
+  "mutants": [
+    {
+      "id": "E1-digest-of-length-not-bytes",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "createHash('sha256').update(bytes).digest('hex')",
+      "new": "createHash('sha256').update(String(bytes.length)).digest('hex')",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E2-links-followed",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "else if (entry.isFile()) {",
+      "new": "else if (entry.isFile() || entry.isSymbolicLink()) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E3-body-copied",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "files.push({ path: relative, bytes: bytes.length, sha256: sha256(bytes) });",
+      "new": "files.push({ path: relative, bytes: bytes.length, sha256: sha256(bytes), body: bytes.toString('utf8') });",
+      "outcome": "killed",
+      "failedTests": 4
+    },
+    {
+      "id": "E4-sessions-skipped",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "fs.existsSync(sessions) ? inventory(sessions)",
+      "new": "false ? inventory(sessions)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E5-always-closed",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "closed: record !== undefined,",
+      "new": "closed: true,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E6-first-site-not-latest",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "sites[sites.length - 1]",
+      "new": "sites[0]",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E7-extra-argument-accepted",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "if (runArg === undefined || process.argv.length !== 3)",
+      "new": "if (runArg === undefined)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E8-pinned-revision-dropped",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "pinnedRevision: runRecord.subject?.pinnedRevision ?? null,",
+      "new": "pinnedRevision: null,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E9-record-digest-of-run-json",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "sha256(fs.readFileSync(path.join(run, 'record.json')))",
+      "new": "sha256(fs.readFileSync(path.join(run, 'run.json')))",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E10-other-entries-dropped",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "} else others.push({ path: relative, kind: entry.isSymbolicLink() ? 'symbolic link, not followed' : 'not a regular file' });",
+      "new": "}",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E11-wrong-commit",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "syzygyCommit: git('rev-parse', 'HEAD'),",
+      "new": "syzygyCommit: git('rev-parse', 'HEAD~1'),",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E12-operator-fields-guessed",
+      "file": "scripts/dossier_run_evidence.mjs",
+      "old": "ownerAttendedEverySession: null,",
+      "new": "ownerAttendedEverySession: true,",
+      "outcome": "killed",
+      "failedTests": 1
+    }
+  ]
+}
