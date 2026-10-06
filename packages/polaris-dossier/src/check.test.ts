@@ -476,12 +476,25 @@ describe('check: the command', () => {
     expect(read(run, 'drafts/rev-1.json')).toBe(read(run, 'drafts/other.json'));
   });
 
-  it('loads the policy in force from the records root by default, and refuses when it declares no public-source scope', async () => {
+  // syzygy-s6xo: the records root is this checkout, so which arm holds is read from its decisions/: refused at the screen while no
+  // screening-scope act is in force at LATER, past the screen once every one recorded is.
+  it('loads the policy in force from the records root by default, and refuses at the screen while no screening act is in force there', async () => {
+    const acts = ['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md']
+      .map(file => path.join(REAL_ROOT, '.syzygy/governance/decisions', file)).filter(file => fs.existsSync(file));
+    const instant = (file: string): number => Date.parse(/^Recorded at \(UTC\): (\S+)$/m.exec(fs.readFileSync(file, 'utf8'))?.[1] ?? '');
+    const inForce = acts.length > 0 && acts.every(file => instant(file) <= LATER);
     const run = await briefedRun();
     writeDraft(run, valid());
     const a = io();
-    expect(await runDossierCli(['check', run, '--json'], a.io, { sources: sources(), now: () => LATER })).toBe(1);
-    expect(JSON.parse(a.out.join(''))).toMatchObject({ command: 'check', outcome: 'refused', stage: 'screen' });
+    const exit = await runDossierCli(['check', run, '--json'], a.io, { sources: sources(), now: () => LATER });
+    const out = JSON.parse(a.out.join(''));
+    if (!inForce) {
+      expect(exit).toBe(1);
+      expect(out).toMatchObject({ command: 'check', outcome: 'refused', stage: 'screen' });
+    } else {
+      expect(out).toMatchObject({ command: 'check' });
+      expect(out.stage).not.toBe('screen');
+    }
   });
 
   it.each<[string[], string]>([
