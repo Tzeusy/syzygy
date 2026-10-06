@@ -17,7 +17,9 @@ import { inflateSync } from 'node:zlib';
  * - takes the hash algorithm from the consented identifier (40 hex digits SHA-1, 64 SHA-256), never `extensions.objectFormat`.
  *   SHA-1 is plain SHA-1, without git's collision detection (sha1dc): a chosen-prefix collision needs both colliding objects
  *   prepared before the upstream publishes one;
- * - walks down from the pinned commit to its tree and from there to each entry, never to a parent;
+ * - walks down from the pinned commit to its tree and from there to each entry, never to a parent, and never more than
+ *   `MAX_TREE_DEPTH` (4,096, git's `core.maxTreeDepth` default) segments deep: a longer path refuses (`malformed-path`) and a tree
+ *   nested deeper refuses (`malformed-tree`), so a path's cost is linear in its length and bounded;
  * - on every call, re-reads and recomputes the identifier of every commit, tree and blob on the way down, and refuses
  *   (`GitObjectReadRefusal`) when one differs from the identifier it was reached by, is missing (an object only an alternate or a
  *   replacement could supply is missing), cannot be decoded, or has the wrong type. Nothing verified is kept between calls;
@@ -145,6 +147,8 @@ export function openPinnedObjectReader(options: PinnedObjectReaderOptions): Pinn
 }
 
 const HEX = { sha1: 40, sha256: 64 } as const;
+/** The most path segments the reader walks: git's own `core.maxTreeDepth` default, past which git refuses a tree. */
+const MAX_TREE_DEPTH = 4096;
 
 /** One call's walk from the pinned commit. The commit and trees verified during the call are reused within it, never across calls. */
 class Walk {
@@ -169,9 +173,10 @@ class Walk {
     if (target === '' || segments.some(s => s === '' || s === '.' || s === '..' || s.includes('\0'))) {
       refuse('malformed-path', `"${target}" is not a relative path of non-empty segments`, null, target);
     }
-    let tree = await this.rootTree();
+    if (segments.length > MAX_TREE_DEPTH) refuse('malformed-path', `a path of ${segments.length} segments is deeper than git's core.maxTreeDepth (${MAX_TREE_DEPTH})`, null, target);
+    let tree = await this.rootTree(), at = '';
     for (const [i, name] of segments.entries()) {
-      const at = segments.slice(0, i + 1).join('/');
+      at = i === 0 ? name : `${at}/${name}`;   // built once per segment: linear in the path's length
       const entry = (await this.tree(tree, at)).find(e => e.name === name);
       if (entry === undefined) return refuse('path-not-found', `${at} is not in the tree at ${this.revision}`, tree, target);
       const last = i === segments.length - 1;
@@ -187,11 +192,12 @@ class Walk {
   }
 
   /** Appends every non-tree entry under `tree` to `out`, one at a time: a subtree's entries are never spread as call arguments. */
-  async list(tree: string, prefix: string, out: TreeEntry[] = []): Promise<TreeEntry[]> {
+  async list(tree: string, prefix: string, out: TreeEntry[] = [], depth = 1): Promise<TreeEntry[]> {
     for (const e of await this.tree(tree, prefix === '' ? null : prefix)) {
       const p = prefix === '' ? e.name : `${prefix}/${e.name}`;
       this.store.count(e.id, p);
-      if (e.mode === '40000') await this.list(e.id, p, out);
+      if (e.mode === '40000' && depth >= MAX_TREE_DEPTH) refuse('malformed-tree', `tree ${tree} nests trees deeper than git's core.maxTreeDepth (${MAX_TREE_DEPTH})`, tree);
+      if (e.mode === '40000') await this.list(e.id, p, out, depth + 1);
       else out.push({ path: p, mode: e.mode, id: e.id });
     }
     return out;
