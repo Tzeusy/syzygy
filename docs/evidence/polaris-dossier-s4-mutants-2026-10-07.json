@@ -1,0 +1,248 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S4 slice (syzygy-qkea.5): allow-execution's refusals (revision, brief, D9, owner, declarations, re-verification, a second choice), the stored choice's strict read and its not-a-consent type (R3-F7), the credential read classification, the fail-closed list rules, the step hook's breach finding and log, and the CLI keeping the permitting arm off. Not authority.",
+  "measuredOn": {
+    "commit": "7a1f683640080600a7717c0dfce74a69127b4ce8",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "3d765fd114b56f5b11be691d9c0527ab65a2d26859288f1ed1f988c4fa810a00"
+      },
+      {
+        "path": "packages/polaris-dossier/src/credential-probe.ts",
+        "sha256": "eef94ecff708f9a9d780b5dd925d7d080eae0b63bcef7c04c48ffbeb5689f944"
+      },
+      {
+        "path": "packages/polaris-dossier/src/execution-choice.ts",
+        "sha256": "3124c3e02797d2854f31e9423ccf772df23c52465928b18d647d6d82a391cd9d"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S4 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "A first run at 43b52ca6 left two survivors. One was an equivalent mutant (the record naming the requested rather than the pinned revision, which the revision check above makes identical); it was replaced by M11, the record naming another run. The other was M20, the CLI switching the permitting arm on, which the tests did not see; the CLI brief test now asserts the disabled-arm reason (commit recorded here), and M20 is killed.",
+  "result": {
+    "killed": 20,
+    "total": 20
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "predicate": "a choice for another revision is recorded",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (request.revision !== pinned) return refuse('revision',",
+      "new": "  if (false) return refuse('revision',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "predicate": "a choice after the brief is recorded",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (briefed.length > 0) return refuse('briefed',",
+      "new": "  if (false) return refuse('briefed',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "predicate": "the choice is taken while D9 is not in force",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (d9.state !== 'ok') return refuse('d9',",
+      "new": "  if (false) return refuse('d9',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 379 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "predicate": "an operator not declared the owner may record a choice",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (checked.record.declared.operatorIsOwner !== true) return refuse('owner',",
+      "new": "  if (false) return refuse('owner',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "predicate": "a missing declaration is not refused (R3-F2)",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  const missing = known.filter((name) => !request.declarations.includes(name));",
+      "new": "  const missing: string[] = [];",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 378 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "predicate": "the choice skips re-verifying the pinned revision",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (!checked.ok) return refuse('reverify',",
+      "new": "  if (false) return refuse('reverify',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "predicate": "a second choice overwrites the first",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "{ mode: 0o600, flag: 'wx' });\n  } catch (cause) {\n    const code",
+      "new": "{ mode: 0o600, flag: 'w' });\n  } catch (cause) {\n    const code",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "predicate": "the record type is named an execution consent (R3-F7)",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "export const EXECUTION_CHOICE_FORMAT = 'polaris-dossier-execution-choice/1';",
+      "new": "export const EXECUTION_CHOICE_FORMAT = 'polaris-dossier-execution-consent/1';",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "predicate": "a stored choice with extra fields is read",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  if (Object.keys(record).sort().join(',') !== CHOICE_KEYS.join(',')) return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "predicate": "a stored choice with altered fixed texts is read",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "  const wrong = fixed.filter(([key, expected]) => record[key] !== expected).map(([key]) => key);",
+      "new": "  const wrong: string[] = [];",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 378 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "predicate": "the record names another run",
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "old": "    runId,\n    revision: pinned,",
+      "new": "    runId: `run-${'0'.repeat(32)}`,\n    revision: pinned,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "4 failed | 377 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "predicate": "a readable credential passes",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "  if (attempt.opened) return attempt.regularFile ? 'readable' : 'unknown';",
+      "new": "  if (attempt.opened) return attempt.regularFile ? 'not-readable' : 'unknown';",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 378 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "predicate": "an unclassifiable error passes",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "  if (attempt.code === 'ENOENT') return 'absent';\n  return 'unknown';",
+      "new": "  if (attempt.code === 'ENOENT') return 'absent';\n  return 'not-readable';",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 379 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "predicate": "an empty list passes vacuously",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "      if (list.paths.length === 0) {",
+      "new": "      if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M15",
+      "predicate": "an undecided path passes",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "      if (unknown.length > 0) return",
+      "new": "      if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M16",
+      "predicate": "an unreadable brief record skips the probe",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "  if (briefArm(run) === 'sec-3') return",
+      "new": "  if (briefArm(run) !== 'permitting') return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M17",
+      "predicate": "a breach is not recorded",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "  fs.appendFileSync(path.join(run, RUN_LAYOUT.credentialBreaches),",
+      "new": "  void (path.join(run, RUN_LAYOUT.credentialBreaches),",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M18",
+      "predicate": "no list source configured is treated as a list",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "    return { describe: `no credential list (${CREDENTIAL_LIST_ENV} is not set)`, list: () => ({ ok: false,",
+      "new": "    return { describe: `no credential list (${CREDENTIAL_LIST_ENV} is not set)`, list: () => ({ ok: true, paths: [] as string[], _: false,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M19",
+      "predicate": "the breach finding does not tell the agent to stop",
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "old": "    instruction: 'Run no further observed code: the permission to build and run the observed project has lapsed for this run.',\n  };",
+      "new": "    instruction: 'Repair the finding and continue.',\n  } as CredentialBreachFinding;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    },
+    {
+      "id": "M20",
+      "predicate": "the CLI switches the permitting arm on",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "      enabled: PERMITTING_ARM_ENABLED, choices: RUN_DIRECTORY_CHOICES,",
+      "new": "      enabled: true, choices: RUN_DIRECTORY_CHOICES,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 380 passed (381)",
+      "killed": true
+    }
+  ]
+}
