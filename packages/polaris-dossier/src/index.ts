@@ -5,8 +5,17 @@ export {
 export {
   CHECK_RECORD_FORMAT, DEFAULT_DRAFT, DRAFT_MAX_BYTES, STEP_LOG_FORMAT, checkDraft,
   type CheckDeps, type CheckFinding, type CheckFindingKind, type CheckRecord, type CheckRefusal, type CheckReport, type CheckRequest,
-  type CheckResult, type CheckStage, type CitedBlob, type ExcludedQuotation, type VerifiedQuotation,
+  type CheckCommand, type CheckResult, type CheckStage, type CitedBlob, type ExcludedQuotation, type VerifiedQuotation,
 } from './check.js';
+export {
+  INVENTORY_BRIEF_FILE, INVENTORY_BRIEF_VERSION, INVENTORY_CHECK_FORMAT, INVENTORY_FILE, LAUNCH_FORMS, checkInventory, inventoryBrief,
+  inventoryOfRecord, renderInventoryBrief,
+  type InventoryBriefResult, type InventoryCheckRecord, type InventoryCheckResult, type InventoryOfRecord, type LaunchForm,
+} from './inventory.js';
+export {
+  LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, inventoryPrompt, launchForm, sessionCommands, sessionPrompt, shellQuote,
+  type LaunchFormResult, type SessionPromptResult,
+} from './session-handover.js';
 export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';

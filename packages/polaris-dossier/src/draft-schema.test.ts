@@ -15,6 +15,7 @@ const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 
 const valid = (): Record<string, unknown> => ({
   schemaVersion: 'polaris-dossier-local-draft-v1',
   pinnedRevision: REV,
+  sessionId: 'authoring-session-1',
   title: 'A tool',
   introduction: inferred('intro'),
   understanding: Object.fromEntries(UNDERSTANDING.map((key) => [key, [item(`u-${key}`)]])),

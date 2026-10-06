@@ -127,6 +127,7 @@ describe('brief: issued', () => {
       '## Limits', '- Deadline: PT1H from the issue of this brief, so 2026-10-07T13:00:00.000Z on Syzygy\'s clock.', '- Repair cycles: 3.',
       '- Agent budget: 100000 tokens; no turn budget declared.',
       '## Writing guidance from the dossier profile (`polaris-author-dossier-v2`)', '2. Workflow traces.', 'Dossier draft: open with',
+      'Put this session\'s own identifier in `sessionId`', 'The inventory and review sessions declare theirs, and Syzygy refuses one that equals yours',
     ]) expect(brief).toContain(text);
     expect(brief).not.toContain('You may build and run');
     expect(brief).not.toContain('Shape illustration for a fictional project');

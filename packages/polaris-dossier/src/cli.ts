@@ -7,10 +7,12 @@ import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution
 import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
 import { createPackageGateSources, type GateSources } from './gate-sources.js';
 import { initRun } from './init.js';
+import { checkInventory, inventoryBrief } from './inventory.js';
 import { preflight } from './preflight.js';
 import type { ReverifyOptions } from './reverify.js';
 import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
 import type { ScreenLoad } from './screen.js';
+import { launchForm, sessionPrompt } from './session-handover.js';
 import { runStatus } from './status.js';
 
 /** The `syzygy dossier` command family (design "Command surface").
@@ -57,6 +59,25 @@ Commands:
                       the object store of the clone init recorded and re-hashed,
                       freeze it as revision N
                       and write checks/rev-N.json; exit 1 on any finding
+  session-prompt <run> inventory|review [--kind <kind>] [--tool <tool>] [--tool-version <v>] [--model <m>]
+                      at a hand-over: make the inventory session's directory under
+                      inventory/, holding only the inventory brief, print the fixed
+                      prompt and the command the operator starts it with, and record
+                      the prompt's digest; Syzygy starts nothing. The tool, version and
+                      model default to the run's declared values. Review sessions are
+                      refused until review packets exist (S8)
+  launch-form <run> inventory terminal|bang
+                      record, once, how the operator declares the latest inventory
+                      session was started; any other form is refused. An inventory
+                      counts only once its launch form is recorded
+  inventory-brief <run>
+                      print Syzygy's own rendering of the latest inventory session's
+                      brief, and whether the stored copy matches it
+  inventory-check <run> [--inventory <file>]
+                      check the inventory (the latest session's inventory.json by
+                      default) as check checks a draft, refuse one declared under the
+                      authoring session's identifier, freeze it as inventory/rev-N.json
+                      and write inventory/checks/rev-N.json; exit 1 on any finding
   status <run>        report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -147,6 +168,49 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const env = ports.env ?? process.env;
     const result = await checkDraft(options.positional[0]!, draftFile === undefined ? {} : { draftFile }, {
       sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
+    });
+    if (!result.ok) return refused(result.refusal);
+    return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
+  }
+  if (command === 'session-prompt') {
+    const options = parseOptions(rest, ['--kind', '--tool', '--tool-version', '--model']);
+    if (typeof options === 'string') return usageError(options);
+    const [run, role, ...extra] = options.positional;
+    if (run === undefined || (role !== 'inventory' && role !== 'review') || extra.length > 0) return usageError('session-prompt takes the run directory and a role, inventory or review');
+    const v = options.values;
+    const result = await sessionPrompt(run, {
+      role, ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
+      ...(v.has('--tool-version') ? { toolVersion: v.get('--tool-version')! } : {}), ...(v.has('--model') ? { model: v.get('--model')! } : {}),
+    }, { sources: sources(), now });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'launch-form') {
+    const options = parseOptions(rest, ['--kind']);
+    if (typeof options === 'string') return usageError(options);
+    const [run, role, form, ...extra] = options.positional;
+    if (run === undefined || role === undefined || form === undefined || extra.length > 0) return usageError('launch-form takes the run directory, a role and the launch form the operator declares');
+    const result = await launchForm(run, { role, form }, { sources: sources(), now });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'inventory-brief') {
+    const flag = rest.find((arg) => arg.startsWith('-'));
+    if (flag !== undefined) return usageError(`unknown option for inventory-brief: ${flag}`);
+    if (rest.length !== 1) return usageError('inventory-brief takes exactly one argument, the run directory');
+    const result = await inventoryBrief(rest[0]!, { sources: sources(), now });
+    if (!result.ok) return refused(result.refusal);
+    if (json) return report(result.report, EXIT.clean);
+    const { brief, ...summary } = result.report;
+    io.stdout(`${brief}\n${renderHuman(summary)}`);
+    return EXIT.clean;
+  }
+  if (command === 'inventory-check') {
+    const options = parseOptions(rest, ['--inventory']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('inventory-check takes exactly one positional argument, the run directory');
+    const inventoryFile = options.values.get('--inventory');
+    const env = ports.env ?? process.env;
+    const result = await checkInventory(options.positional[0]!, inventoryFile === undefined ? {} : { inventoryFile }, {
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
     });
     if (!result.ok) return refused(result.refusal);
     return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
