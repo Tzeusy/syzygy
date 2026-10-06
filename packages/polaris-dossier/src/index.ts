@@ -1,3 +1,7 @@
+export {
+  BRIEF_RECORD_FORMAT, BRIEF_VERSION, DOSSIER_GUIDANCE, DOSSIER_GUIDANCE_VERSION, issueBrief, renderBrief,
+  type BriefDeps, type BriefInput, type BriefRefusal, type BriefReport, type BriefResult, type BriefStage,
+} from './brief.js';
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';
 export {
@@ -11,6 +15,16 @@ export {
   type GitObjectReadRefusalReason, type GitObjectType, type HashAlgorithm, type PinnedObjectReader, type PinnedObjectReaderOptions,
   type TreeEntry, type VerifiedBlob,
 } from './git-object-reader.js';
+export { SECURITY_DOCTRINE_PATH, cutSec3, readSec3, type DoctrineSpan, type Sec3Read, type Sec3Text } from './doctrine-quote.js';
+export {
+  CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, checkDraftShape, draftSchemaDocument, localDraftSchema,
+  type DraftSchema, type DraftSchemaError, type DraftSchemaParameters,
+} from './draft-schema.js';
+export {
+  PERMITTING_ARM_DISABLED_REASON, PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection,
+  type BriefRole, type CredentialProbe, type ExecutionChoice, type ExecutionChoiceSource, type ExecutionInputs, type ExecutionRule,
+  type PermittingArm,
+} from './execution-rule.js';
 export { dossierRepositoryUrl, parseGithubUrl, type GithubTarget } from './github-url.js';
 export { governedSubject, type DrawerStatement, type GovernedDecision, type GovernedKind } from './governed.js';
 export { initRun, type InitPorts, type InitRefusal, type InitReport, type InitRequest, type InitResult, type InitStage } from './init.js';
