@@ -100,5 +100,9 @@ The sitting resolves P-104 [Observed: its rows 1 to 5 are this brief's
 acts A, E, F, G and H], so its row is resolved in place, in the form P-53
 took (`| P-104 | [Observed] **Resolved <date>:** …`), naming the acts by
 item letter. It is never moved to `DECISION-HISTORY.md`, where the registry
-gate refuses it. The installer refuses, before installing and in `--check`,
-unless the register carries exactly one P-104 row and the history none.
+gate refuses it. The installer writes that row from the answers, and refuses
+to overwrite a row in any other form. Before installing and in `--check`, it
+refuses unless the register carries exactly one P-104 row and the history
+none. Its gate sweep proves the new row names no swept stem. It never
+re-pins the gate's P-104 exemption, which then matches no line; removing it
+is `syzygy-kgv5`.
