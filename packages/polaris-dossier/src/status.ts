@@ -1,5 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { USAGE_NOT_RECORDED } from './close.js';
 import { readRunRecord, type RecordedRunConfig } from './run-record.js';
 import { REVIEW_PACKET_DIR, REVIEW_VERDICT_FILE, REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
 
@@ -59,6 +61,27 @@ export type StatusResult =
   | { readonly ok: false; readonly reason: string; readonly refusals?: readonly { readonly field?: string; readonly kind: string; readonly detail: string }[] };
 
 const KNOWN_ENTRIES: ReadonlySet<string> = new Set(Object.values(RUN_LAYOUT));
+
+/** The agent usage the Execution Record carries, in words: the operator's declared figure, or not recorded. Never zero. */
+function closedUsage(file: string): string {
+  let usage: unknown;
+  try {
+    const record = parseBoundedJson(fs.readFileSync(file, 'utf8'), { maxBytes: 16 * 1024 * 1024, maxNodes: 1_000_000, maxDepth: 16 }) as { agentUsage?: unknown };
+    usage = record.agentUsage;
+  } catch {
+    return `${NOT_RECORDED}; the Execution Record cannot be read`;
+  }
+  const figure = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+  if (usage !== null && typeof usage === 'object') {
+    const { state, tokens, turns } = usage as Record<string, unknown>;
+    if (state === 'not-recorded') return USAGE_NOT_RECORDED;
+    if (state === 'declared' && (figure(tokens) || tokens === null) && (figure(turns) || turns === null) && (tokens !== null || turns !== null)) {
+      const parts = [...(tokens === null ? [] : [`${tokens} tokens`]), ...(turns === null ? [] : [`${turns} turns`])];
+      return `${parts.join(' and ')}, as the operator declared at close; not observed by Syzygy and not a provider receipt`;
+    }
+  }
+  return `${NOT_RECORDED}; the Execution Record carries no usage in the form close writes`;
+}
 
 export function runStatus(runDir: string): StatusResult {
   const run = path.resolve(runDir);
@@ -134,7 +157,7 @@ export function runStatus(runDir: string): StatusResult {
         repairCycles: `${checkedRevisions} checked revisions recorded of ${declared.maxRepairCycles} repair cycles declared`,
         questions: `${NOT_RECORDED} of ${declared.maxQuestions} declared`,
         deadline: steps.brief === 'recorded' ? `${declared.deadline.declared} from the brief; elapsed time ${NOT_RECORDED}` : `${declared.deadline.declared}; not started (no brief recorded)`,
-        agentUsage: 'not recorded; Syzygy cannot observe the agent sessions\' usage',
+        agentUsage: steps.closed ? closedUsage(path.join(run, RUN_LAYOUT.record)) : 'not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed',
       },
       openFindings: NOT_RECORDED,
       reviewsStillRequired: ['inventory', 'fidelity review', 'rendered-design review'],

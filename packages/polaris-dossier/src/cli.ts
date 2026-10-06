@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { issueBrief } from './brief.js';
 import { checkDraft } from './check.js';
+import { closeRun } from './close.js';
 import { createCredentialProbe, credentialListFromEnv } from './credential-probe.js';
 import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution-choice.js';
 import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
@@ -107,7 +108,15 @@ Commands:
                       outside the review-status region, are the pages it reviewed;
                       the draft layer is Unknown unless the owner's reading of
                       RFC7-20 is in force; exit 1 when refused
-  status <run>       report a run's state, limits spent, open findings and
+  close <run> [--usage-tokens <n>] [--usage-turns <n>]
+                      verify the pinned revision again and write the run's
+                      Execution Record (record.json), once, with the usage the
+                      operator declares (a positive integer each, Inferred and
+                      attributed to the operator, never a receipt) or, with none
+                      declared, usage not recorded; it copies no prompt or
+                      transcript body. Exit 1 when refused or on a
+                      credential finding
+  status <run>      report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
 
@@ -244,6 +253,18 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
       ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}), ...(ports.renderer ? { renderer: ports.renderer } : {}),
     });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'close') {
+    const options = parseOptions(rest, ['--usage-tokens', '--usage-turns']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('close takes exactly one positional argument, the run directory');
+    const v = options.values;
+    const env = ports.env ?? process.env;
+    const result = await closeRun(options.positional[0]!, {
+      ...(v.has('--usage-tokens') ? { usageTokens: v.get('--usage-tokens')! } : {}), ...(v.has('--usage-turns') ? { usageTurns: v.get('--usage-turns')! } : {}),
+    }, { sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    if (!result.ok) return refused(result.refusal);
+    return report(result.report, result.report.outcome === 'closed' ? EXIT.clean : EXIT.refused);
   }
   if (command === 'launch-form') {
     const options = parseOptions(rest, ['--kind']);
