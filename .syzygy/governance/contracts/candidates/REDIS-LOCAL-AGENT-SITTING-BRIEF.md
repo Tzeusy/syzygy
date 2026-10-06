@@ -48,7 +48,7 @@ run work by itself:
   sitting gives none of those, so that installer refuses as it stands. A
   local-agent variant is engineering work, not an act, tracked as
   `syzygy-qkea.16`. *(Update, 2026-10-07: written as
-  `scripts/install_redis_local_agent_sitting.py` in PR #376, open; see
+  `scripts/install_redis_local_agent_sitting.py`, merged in PR #376; see
   "After the sitting".)*
 - [Observed, 2026-10-07] PR #370 (the local-agent acts) cleared review round
   3 over its package at `d19ec98b`, notes only, and is not yet merged; its
@@ -416,7 +416,7 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
 2. **Preconditions, no act:** round 7 of D confirms; PR #370 merges after
    its review clears; PR #367 merges; the local-agent installer exists (see
    "What one sitting can and cannot do"). *(Update, 2026-10-07: the first
-   three are met; the installer is PR #376, open.)*
+   four are met; the installer merged in PR #376.)*
 3. **Screening scope v1** (B):
    `scripts/record_public_source_screening_scope_act.py --record <row>`.
 4. **RFC5-14 class** (C):
@@ -451,7 +451,8 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
 [Observed, 2026-10-07] Steps 3 to 11 were rehearsed together in a scratch
 clone by `scripts/simulate_redis_local_agent_sitting.py` (PR #376).
 
-- **What was rehearsed:** PR #376's head `8c556f08`, which is `main` with
+- **What was rehearsed:** PR #376's head `8c556f08` (its six scripts are
+  byte-identical on `main` after the merge), which is `main` with
   PR #370, PR #367 and version 1.1 already on it. It used the real round-7
   review of D and this brief's accept-all answer.
 - **Install:** every recorder of steps 3 to 9 recorded, the installer
