@@ -6,6 +6,7 @@ import {
   INVENTORY_BRIEF_FILE, LAUNCH_FORMS, buildInventoryBrief, errno, latestInventorySession, launchRecordName, logStep, openRun, promptRecordName,
   readRecord, sessionDirectory, sessionsRoot, sessionsRootViolation, type Declared, type LaunchForm,
 } from './inventory.js';
+import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
 import { AGENT_TOOLS, type AgentTool } from './run-config.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 
@@ -76,6 +77,8 @@ export interface SessionPromptRequest {
 export interface HandoverDeps {
   readonly sources: GateSources;
   readonly now: () => number;
+  /** The object reader the step guard lists the pinned tree with; by default the re-hashing in-process reader. */
+  readonly openReader?: ReverifyOptions['openReader'];
 }
 
 export interface HandoverRefusal {
@@ -84,6 +87,7 @@ export interface HandoverRefusal {
   readonly stage: string;
   readonly reason: string;
   readonly reasons?: readonly string[];
+  readonly refusals?: readonly ReverifyRefusal[];
   readonly disclosures: readonly string[];
 }
 
@@ -115,12 +119,12 @@ const PROMPT_DISCLOSURES = [
 /** `syzygy dossier session-prompt <run> inventory|review [--kind <kind>] [--tool <tool>] [--tool-version <v>] [--model <m>]`. */
 export async function sessionPrompt(runDir: string, request: SessionPromptRequest, deps: HandoverDeps): Promise<SessionPromptResult> {
   const now = deps.now();
-  const refuse = (stage: string, reason: string, reasons?: readonly string[]): SessionPromptResult =>
-    ({ ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: PROMPT_DISCLOSURES } });
+  const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): SessionPromptResult =>
+    ({ ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: PROMPT_DISCLOSURES } });
   if (request.role === 'review') return refuse('not-in-build', REVIEW_NOT_IN_BUILD);
   if (request.kind !== undefined) return refuse('role', '--kind applies to a review session only');
-  const opened = await openRun(runDir, deps.sources, now, 'no session is handed over');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons);
+  const opened = await openRun(runDir, deps.sources, now, 'no session is handed over', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const { run, runId, declared } = opened;
 
   const tool = request.tool ?? declared.agentTool;
@@ -215,17 +219,17 @@ export async function launchForm(runDir: string, request: LaunchFormRequest, dep
   const now = deps.now();
   const target = path.resolve(runDir);
   const isRun = RUN_ID.test(path.basename(target)) && fs.existsSync(path.join(target, RUN_LAYOUT.config));
-  const refuse = (stage: string, reason: string, reasons?: readonly string[]): LaunchFormResult => {
+  const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): LaunchFormResult => {
     if (isRun) logStep(target, 'launch-form', now, { outcome: 'refused', stage, reason });
-    return { ok: false, refusal: { command: 'launch-form', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: LAUNCH_DISCLOSURES } };
+    return { ok: false, refusal: { command: 'launch-form', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: LAUNCH_DISCLOSURES } };
   };
   if (request.role === 'review') return refuse('not-in-build', REVIEW_NOT_IN_BUILD);
   if (request.role !== 'inventory') return refuse('role', `the role ${JSON.stringify(request.role)} is not inventory or review`);
   if (!(LAUNCH_FORMS as readonly string[]).includes(request.form)) {
     return refuse('form', `the launch form ${JSON.stringify(request.form)} is neither terminal (a new terminal) nor bang (the shell-escape prefix in the authoring session's terminal); a session started any other way, including one the authoring session starts, does not count`);
   }
-  const opened = await openRun(runDir, deps.sources, now, 'no launch form is recorded');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons);
+  const opened = await openRun(runDir, deps.sources, now, 'no launch form is recorded', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const { run } = opened;
   const session = latestInventorySession(run);
   if (session === 0) return refuse('session', `no inventory session has been handed over: run \`syzygy dossier session-prompt ${run} inventory\` first`);

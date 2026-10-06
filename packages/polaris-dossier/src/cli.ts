@@ -183,7 +183,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const result = await sessionPrompt(run, {
       role, ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
       ...(v.has('--tool-version') ? { toolVersion: v.get('--tool-version')! } : {}), ...(v.has('--model') ? { model: v.get('--model')! } : {}),
-    }, { sources: sources(), now });
+    }, { sources: sources(), now, ...openReader });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'launch-form') {
@@ -191,14 +191,14 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (typeof options === 'string') return usageError(options);
     const [run, role, form, ...extra] = options.positional;
     if (run === undefined || role === undefined || form === undefined || extra.length > 0) return usageError('launch-form takes the run directory, a role and the launch form the operator declares');
-    const result = await launchForm(run, { role, form }, { sources: sources(), now });
+    const result = await launchForm(run, { role, form }, { sources: sources(), now, ...openReader });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'inventory-brief') {
     const flag = rest.find((arg) => arg.startsWith('-'));
     if (flag !== undefined) return usageError(`unknown option for inventory-brief: ${flag}`);
     if (rest.length !== 1) return usageError('inventory-brief takes exactly one argument, the run directory');
-    const result = await inventoryBrief(rest[0]!, { sources: sources(), now });
+    const result = await inventoryBrief(rest[0]!, { sources: sources(), now, ...openReader });
     if (!result.ok) return refused(result.refusal);
     if (json) return report(result.report, EXIT.clean);
     const { brief, ...summary } = result.report;
@@ -212,7 +212,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const inventoryFile = options.values.get('--inventory');
     const env = ports.env ?? process.env;
     const result = await checkInventory(options.positional[0]!, inventoryFile === undefined ? {} : { inventoryFile }, {
-      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
     });
     if (!result.ok) return refused(result.refusal);
     return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);

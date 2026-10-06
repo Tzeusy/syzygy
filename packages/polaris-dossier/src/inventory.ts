@@ -15,7 +15,7 @@ import {
 } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
-import { reverifyPinnedRevision } from './reverify.js';
+import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
 import { REVISION_FILE, RUN_ID, RUN_LAYOUT, resolvePathIntent, within } from './state-directory.js';
@@ -77,14 +77,14 @@ export const errno = (cause: unknown): string => (cause as NodeJS.ErrnoException
 /** A run step's common opening: the run directory, the pinned revision verified again, a brief issued and its deadline not passed. */
 export type OpenedRun =
   | { readonly ok: true; readonly run: string; readonly runId: string; readonly subject: RunSubject; readonly declared: RunConfig; readonly deadlineEnds: number }
-  | { readonly ok: false; readonly stage: 'run' | 'reverify' | 'not-briefed' | 'deadline'; readonly reason: string; readonly reasons?: readonly string[] };
+  | { readonly ok: false; readonly stage: 'run' | 'reverify' | 'not-briefed' | 'deadline'; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[] };
 
-export async function openRun(runDir: string, sources: GateSources, now: number, what: string): Promise<OpenedRun> {
+export async function openRun(runDir: string, sources: GateSources, now: number, what: string, options: ReverifyOptions = {}): Promise<OpenedRun> {
   const run = path.resolve(runDir);
   const runId = path.basename(run);
   if (!RUN_ID.test(runId) || !fs.existsSync(path.join(run, RUN_LAYOUT.config))) return { ok: false, stage: 'run', reason: `${run} is not a run directory` };
-  const checked = await reverifyPinnedRevision(run, sources, now);
-  if (!checked.ok) return { ok: false, stage: 'reverify', reason: `the pinned revision could not be verified again, so ${what}`, reasons: checked.reasons };
+  const checked = await reverifyPinnedRevision(run, sources, now, options);
+  if (!checked.ok) return { ok: false, stage: 'reverify', reason: `the pinned revision could not be verified again, so ${what}`, reasons: checked.reasons, refusals: checked.refusals };
   const { subject, declared } = checked.record;
   const issued = briefIssuedAt(run, subject.pinnedRevision.commit);
   if (typeof issued === 'string') return { ok: false, stage: 'not-briefed', reason: issued };
@@ -243,15 +243,15 @@ const BRIEF_DISCLOSURES = [
 
 export type InventoryBriefResult =
   | { readonly ok: true; readonly report: { readonly command: 'inventory-brief'; readonly outcome: 'rendered'; readonly run: string; readonly session: number; readonly sha256: string; readonly storedCopy: 'matches' | 'differs' | 'absent'; readonly brief: string; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'inventory-brief'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly disclosures: readonly string[] } };
+  | { readonly ok: false; readonly refusal: { readonly command: 'inventory-brief'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
 
 /** `syzygy dossier inventory-brief <run>`: print Syzygy's rendering of the latest inventory session's brief. Writes nothing. */
-export async function inventoryBrief(runDir: string, deps: { readonly sources: GateSources; readonly now: () => number }): Promise<InventoryBriefResult> {
+export async function inventoryBrief(runDir: string, deps: { readonly sources: GateSources; readonly now: () => number; readonly openReader?: ReverifyOptions['openReader'] }): Promise<InventoryBriefResult> {
   const now = deps.now();
-  const refuse = (stage: string, reason: string, reasons?: readonly string[]): InventoryBriefResult =>
-    ({ ok: false, refusal: { command: 'inventory-brief', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: BRIEF_DISCLOSURES } });
-  const opened = await openRun(runDir, deps.sources, now, 'no inventory brief is rendered');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons);
+  const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): InventoryBriefResult =>
+    ({ ok: false, refusal: { command: 'inventory-brief', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: BRIEF_DISCLOSURES } });
+  const opened = await openRun(runDir, deps.sources, now, 'no inventory brief is rendered', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const session = latestInventorySession(opened.run);
   if (session === 0) return refuse('session', `no inventory session has been handed over: run \`syzygy dossier session-prompt ${opened.run} inventory\` first`);
   const built = await buildInventoryBrief(opened, session, deps.sources, now);

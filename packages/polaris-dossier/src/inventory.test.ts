@@ -8,7 +8,8 @@ import { issueBrief } from './brief.js';
 import type { CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
-import { NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { checkInventory, inventoryBrief, inventoryOfRecord, type InventoryCheckResult } from './inventory.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
@@ -72,13 +73,14 @@ const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
 const sources = (): GateSources => ({
   recordsRoot: REAL_ROOT,
   repositoryIdsFor: async () => ['redis-redis'],
-  consentedRevisionsFor: async () => [],
+  consentedRevisionsFor: async () => [{ label: 'fixture', commitId: commit }],
   observationConsentFor: async (_id, revision) => (revision === commit ? { satisfied: true, record: 'PUBLIC-OBS-FIXTURE@1' } : { satisfied: false, why: 'the consent does not name it' }),
   registryEntry: async () => OK,
   screeningPolicy: async () => OK,
   d9: async () => OK,
   rfc720Ruling: async () => OK,
-  projectInput: NO_PROJECT_INPUT,
+  // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: NO_PROVIDER_STATEMENTS,
 });
 
@@ -506,6 +508,35 @@ describe('inventory-brief', () => {
   });
 });
 
+describe('the step guard runs before every inventory step (syzygy-qkea.23)', () => {
+  const withdrawn: Partial<GateSources> = { observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }) };
+  const drawer: Partial<GateSources> = { projectInput: { drawerFor: async () => ({ stated: true, drawer: 'present', record: 'PROJECT-INPUT-FIXTURE@2' }) } };
+  const stepsUnder = (over: Partial<GateSources>) => {
+    const changed = { sources: { ...sources(), ...over }, now: () => LATER };
+    return [
+      ['session-prompt', (run: string) => sessionPrompt(run, { role: 'inventory' }, changed)],
+      ['launch-form', (run: string) => launchForm(run, { role: 'inventory', form: 'terminal' }, changed)],
+      ['inventory-brief', (run: string) => inventoryBrief(run, changed)],
+      ['inventory-check', (run: string) => checkInventory(run, {}, { ...deps(), sources: changed.sources })],
+    ] as const;
+  };
+  it.each([
+    ['the consent stops naming the pinned revision', withdrawn, ['revision-unnamed']],
+    ['the project input now records a drawer', drawer, ['governed-changed', 'statement']],
+  ])('refuses each step when %s, with the guard\'s codes, and freezes nothing', async (_name, over, codes) => {
+    const run = await runWithDrafts();
+    const dir = await handedOver(run);
+    writeInventory(dir, validInventory());
+    for (const [command, step] of stepsUnder(over)) {
+      const result = await step(run);
+      expect(result, command).toMatchObject({ ok: false, refusal: { command, stage: 'reverify' } });
+      expect(!result.ok && result.refusal.refusals?.map((r) => r.code), command).toEqual(codes);
+    }
+    expect(fs.existsSync(path.join(run, 'inventory', 'rev-0.json'))).toBe(false);
+    expect(fs.existsSync(path.join(run, 'inventory', 'session-1.launch.json'))).toBe(false);
+  });
+});
+
 describe('the commands', () => {
   const io = () => { const out: string[] = [], err: string[] = []; return { out, err, io: { stdout: (t: string) => { out.push(t); }, stderr: (t: string) => { err.push(t); } } }; };
   const ports = { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, env: {} };
@@ -525,6 +556,24 @@ describe('the commands', () => {
     expect(await runDossierCli(['session-prompt', run, 'review', '--kind', 'fidelity'], io().io, ports)).toBe(1);
     expect(await runDossierCli(['session-prompt', run], io().io, ports)).toBe(2);
     expect(await runDossierCli(['inventory-check', run, '--draft', 'x'], io().io, ports)).toBe(2);
+  });
+
+  it('lists the pinned tree with the object reader it is given, on every inventory command', async () => {
+    const run = await runWithDrafts();
+    const dir = await handedOver(run);
+    writeInventory(dir, validInventory());
+    // A reader whose pinned tree carries openspec/: the guard must use it, so the subject reads as governed and every command refuses.
+    const opened: string[] = [];
+    const openReader = (options: PinnedObjectReaderOptions) => {
+      opened.push(options.gitDir);
+      return { listTree: async () => [{ path: 'openspec/specs/x.md' }] } as unknown as PinnedObjectReader;
+    };
+    for (const argv of [['session-prompt', run, 'inventory'], ['launch-form', run, 'inventory', 'terminal'], ['inventory-brief', run], ['inventory-check', run]]) {
+      const out = io();
+      expect(await runDossierCli([...argv, '--json'], out.io, { ...ports, openReader }), argv[0]).toBe(1);
+      expect(JSON.parse(out.out.join('')), argv[0]).toMatchObject({ command: argv[0], stage: 'reverify', refusals: [{ code: 'governed-changed' }, { code: 'statement' }] });
+    }
+    expect(opened).toEqual(Array(4).fill(path.join(cloneOf(run), '.git')));
   });
 });
 
