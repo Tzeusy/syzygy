@@ -113,6 +113,17 @@ class Package:
     also: tuple[pathlib.Path, ...] = ()
     #: The reviewed subject, pre-apply; the raw's head digest must hash it.
     subject: pathlib.Path | None = None
+    #: The subject's reviewed bytes when they are not the file on disk (a
+    #: successor carried as patches to an installed version): computed
+    #: pre-apply from the tree, and hashed in place of ``subject``.
+    subject_bytes: Callable[[pathlib.Path], bytes] | None = None
+    #: Owner-selectable options (``--option``); the record names those taken.
+    options: tuple[str, ...] = ()
+    #: For a package with options: apply with the options taken.
+    apply_with: Callable[[pathlib.Path, frozenset[str]], int] | None = None
+    #: For a package with options: the options the applied tree carries, so
+    #: ``--check`` holds the record's options line to the tree.
+    applied_options: Callable[[pathlib.Path], frozenset[str]] | None = None
 
 
 def _module(name: str):
@@ -147,6 +158,7 @@ def real_packages() -> dict[str, Package]:
     readability = lambda: _module("build_pwb_readability_successor")  # noqa: E731
     tree_framing = lambda: _module("build_pwb_tree_framing_amendment")  # noqa: E731
     dossier = lambda: _module("build_polaris_dossier_local_agent_mode")  # noqa: E731
+    dossier11 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_1")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -221,7 +233,32 @@ def real_packages() -> dict[str, Package]:
             subject=pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode/"
                                  "proposed/polaris-generation/spec.md"),
         ),
+        # Version 1.1 patches the installed v1.0: its own candidate directory,
+        # builder and reviewed bytes, under the same key, record stem and tag
+        # series. ``package_for`` selects it for ``--version 1.1``.
+        "polaris-dossier-local-agent-mode@1.1": Package(
+            "polaris-dossier-local-agent-mode",
+            "Polaris dossier local-agent mode",
+            "specification delta",
+            CANDIDATES / "polaris-dossier-local-agent-mode-v1-1",
+            "POLARIS-DOSSIER-LOCAL-AGENT-MODE",
+            lambda root: dossier11().check(root),
+            lambda root: dossier11().apply(root),
+            lambda root: dossier11().applied(root),
+            also=(pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode"),),
+            subject=pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode/"
+                                 "specs/polaris-generation/spec.md"),
+            subject_bytes=lambda root: dossier11().subject_bytes(root),
+            options=("n6",),
+            apply_with=lambda root, options: dossier11().apply(root, options),
+            applied_options=lambda root: dossier11().state(root)[1],
+        ),
     }
+
+
+def package_for(packages: dict[str, Package], key: str, version: str) -> Package | None:
+    """The entry for ``key`` at ``version``: a ``key@version`` entry, else ``key``."""
+    return packages.get(f"{key}@{version}") or packages.get(key)
 
 
 # --- names ------------------------------------------------------------------
@@ -358,7 +395,7 @@ def review_binds(root: pathlib.Path, pkg: Package, review_rel: str) -> None:
     subject = root / pkg.subject
     if not subject.is_file():
         raise ValueError(f"reviewed subject {pkg.subject.as_posix()} is missing")
-    actual = beh.digest(subject.read_bytes())
+    actual = beh.digest(pkg.subject_bytes(root) if pkg.subject_bytes else subject.read_bytes())
     if digests != [actual]:
         raise ValueError(f"review head digest is not the sha256 of the reviewed subject "
                          f"{pkg.subject.as_posix()}")
@@ -403,8 +440,16 @@ DIRECTION_NOTE = (
     "digest argument exists.")
 
 
+def options_line(pkg: Package, options: frozenset[str]) -> str:
+    """The record's options line; empty for a package that declares none."""
+    if not pkg.options:
+        return ""
+    return f"Options: {', '.join(sorted(options)) or 'none'}\n\n"
+
+
 def render_record(pkg: Package, version: str, date: str, quote: str, review: str,
-                  commit: str, verdict: str, disposition: str | None) -> str:
+                  commit: str, verdict: str, disposition: str | None,
+                  options: frozenset[str] = frozenset()) -> str:
     return f"""# {pkg.title} — version-tagged sign-off v{version}
 
 Date: {date}
@@ -429,7 +474,7 @@ Review verdict: {verdict}
 
 Disposition: {disposition or "none"}
 
-{DIRECTION_NOTE}
+{options_line(pkg, options)}{DIRECTION_NOTE}
 
 ## What this records
 
@@ -500,10 +545,24 @@ def parse_record(text: str) -> dict[str, str]:
 
 # --- commands ---------------------------------------------------------------
 
+def parse_options(pkg: Package, text: str) -> frozenset[str]:
+    if not pkg.options:
+        return frozenset()
+    m = re.search(r"^Options: (.+)$", text, re.MULTILINE)
+    if not m:
+        raise ValueError("record carries no `Options:` line")
+    return frozenset() if m.group(1) == "none" else frozenset(m.group(1).split(", "))
+
+
 def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
-           review_rel: str, disposition_rel: str | None) -> int:
+           review_rel: str, disposition_rel: str | None,
+           options: frozenset[str] = frozenset()) -> int:
     try:
         validate_inputs(version, date, quote)
+        unknown = sorted(set(options) - set(pkg.options))
+        if unknown:
+            raise ValueError(f"options {unknown} are not this package's; "
+                             f"it offers {list(pkg.options) or 'none'}")
         if (root / record_rel(pkg, version)).exists():
             raise ValueError(f"sign-off already recorded: {record_rel(pkg, version).as_posix()}")
         if aggregate_copies(root, pkg, version):
@@ -515,7 +574,7 @@ def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str
     except (ValueError, OSError) as exc:
         print(f"FAILED (before applying anything): {exc}")
         return 1
-    code = pkg.apply(root)
+    code = pkg.apply_with(root, options) if pkg.apply_with else pkg.apply(root)
     if code != 0:
         print(f"FAILED: the builder's apply returned {code}; nothing recorded")
         return 1
@@ -525,7 +584,8 @@ def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str
         return 1
     disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
     (root / record_rel(pkg, version)).write_text(
-        render_record(pkg, version, date, quote, review_rel, commit, verdict, disposition),
+        render_record(pkg, version, date, quote, review_rel, commit, verdict, disposition,
+                      options),
         encoding="utf-8")
     block = render_aggregate(pkg, version, date, review_rel, verdict, disposition)
     aggregate = root / AGGREGATE_REL
@@ -558,7 +618,7 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         if (commit, verdict) != (f["Reviewed commit"], f["Review verdict"]):
             raise ValueError("record's reviewed commit or verdict differs from the review")
         if text != render_record(pkg, version, f["Date"], f["Owner selection"], f["Review"],
-                                 commit, verdict, disposition):
+                                 commit, verdict, disposition, parse_options(pkg, text)):
             raise ValueError("dedicated record differs from its regeneration")
         block = render_aggregate(pkg, version, f["Date"], f["Review"], verdict, disposition)
         if aggregate_text(root).count(block) != 1:
@@ -567,6 +627,10 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         latest = versions[-1] == tuple(int(x) for x in version.split("."))
         if latest and not pkg.applied(root):
             raise ValueError("the latest signed version is not applied to the tree")
+        if latest and pkg.applied_options and (
+                pkg.applied_options(root) != parse_options(pkg, text)):
+            raise ValueError(f"the tree carries options {sorted(pkg.applied_options(root))}, "
+                             f"the record names {sorted(parse_options(pkg, text))}")
     except (ValueError, OSError) as exc:
         print(f"FAILED: {exc}")
         return 1
@@ -885,6 +949,100 @@ def selftest() -> int:
                     real.subject is not None
                     and real.subject == _module("build_polaris_dossier_local_agent_mode").PROPOSED_SPEC))
 
+    # Versioned entries, options and a computed subject (dossier v1.1).
+    import contextlib
+    import dataclasses
+    import io
+    packages = real_packages()
+    results.append(("package_for selects a key@version entry and falls back to the key",
+                    package_for(packages, "polaris-dossier-local-agent-mode", "1.1")
+                    is packages["polaris-dossier-local-agent-mode@1.1"]
+                    and package_for(packages, "polaris-dossier-local-agent-mode", "1.0")
+                    is packages["polaris-dossier-local-agent-mode"]))
+    real11 = packages["polaris-dossier-local-agent-mode@1.1"]
+    v11 = _module("build_polaris_dossier_local_agent_mode_v1_1")
+    results.append(("the real v1.1 entry shares v1.0's key and record stem, binds the computed "
+                    "subject and offers n6",
+                    real11.key == real.key and real11.record_stem == real.record_stem
+                    and real11.subject == v11.SPEC and real11.subject_bytes is not None
+                    and real11.options == tuple(v11.OPTIONS) and real11.apply_with is not None
+                    and real11.applied_options is not None))
+    taken: list[frozenset[str]] = []
+
+    def apply_with(root, options):
+        taken.append(options)
+        (root / "applied.txt").write_text(f"applied {sorted(options)}\n")
+        return 0
+
+    def applied_options(root):
+        text = (root / "applied.txt").read_text()
+        return frozenset(["n6"]) if "n6" in text else frozenset()
+
+    optioned = dataclasses.replace(pkg, options=("n6",), apply_with=apply_with,
+                                   applied_options=applied_options)
+
+    def run(package, tmp, *, options=frozenset(), version="1.0"):
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            code = record(tmp, package, version, args["date"], args["quote"], STUB_REVIEW,
+                          None, options)
+        return code, out.getvalue()
+
+    def checked(package, tmp, version="1.0"):
+        with contextlib.redirect_stdout(io.StringIO()):
+            return check(tmp, package, version)
+
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, _ = run(optioned, tmp, options=frozenset({"n6"}))
+        rec = tmp / record_rel(optioned, "1.0")
+        results.append(("an option taken is applied and named in the record",
+                        code == 0 and taken[-1] == frozenset({"n6"})
+                        and "\nOptions: n6\n" in rec.read_text()
+                        and checked(optioned, tmp) == 0))
+        rec.write_text(rec.read_text().replace("Options: n6", "Options: none"))
+        results.append(("an edited options line fails --check", checked(optioned, tmp) == 1))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, _ = run(optioned, tmp)
+        results.append(("no option taken: the record says none",
+                        code == 0 and taken[-1] == frozenset()
+                        and "\nOptions: none\n" in (tmp / record_rel(optioned, "1.0")).read_text()))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, out = run(optioned, tmp, options=frozenset({"n7"}))
+        results.append(("refused: an option the package does not offer",
+                        code == 1 and "not this package's" in out and not (tmp / "applied.txt").exists()))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, out = run(pkg, tmp, options=frozenset({"n6"}))
+        results.append(("refused: an option for a package that offers none",
+                        code == 1 and "offers none" in out))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, _ = run(pkg, tmp)
+        results.append(("a package without options writes no options line",
+                        code == 0 and "Options:" not in (tmp / record_rel(pkg, "1.0")).read_text()))
+    # The subject file holds other bytes than the reviewed ones (the installed
+    # predecessor); only the computed bytes match the review head.
+    on_disk = dataclasses.replace(pkg, subject=STUB_DIR / "manifest.txt")
+    computed = dataclasses.replace(on_disk, subject_bytes=lambda root: STUB_SUBJECT_BYTES)
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, _ = run(computed, tmp)
+        results.append(("a computed subject equal to the reviewed bytes records", code == 0))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, _commit = make_fixture(pathlib.Path(t))
+        code, out = run(on_disk, tmp)
+        results.append(("refused: the same subject hashed from disk, not computed",
+                        code == 1 and "head digest is not the sha256" in out))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t))
+        wrong = dataclasses.replace(pkg, subject_bytes=lambda root: b"other bytes\n")
+        code, out = run(wrong, tmp)
+        results.append(("refused: a computed subject that is not the reviewed bytes",
+                        code == 1 and "head digest is not the sha256" in out
+                        and not (tmp / "applied.txt").exists()))
+
     refused("package edited after the review", mutate=edit_package, expect="package bytes changed")
     refused("a declared further directory edited after the review", mutate=edit_also,
             expect="package bytes changed")
@@ -921,24 +1079,27 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--review", help="the retained raw review, repo-relative")
     parser.add_argument("--disposition", help="the record beside the package (notes-only)")
     parser.add_argument("--owner-selection-quote", dest="quote")
+    parser.add_argument("--option", action="append", default=[],
+                        help="an option the owner took (repeatable; the package declares them)")
     args = parser.parse_args(argv)
     if args.selftest:
         return selftest()
     packages = real_packages()
     key = args.record or args.check
     if key not in packages:
-        print(f"unknown package {key!r}; covered: {sorted(packages)}")
+        print(f"unknown package {key!r}; covered: {sorted(k for k in packages if '@' not in k)}")
         return 2
     if not args.version:
         parser.error("--version is required")
+    pkg = package_for(packages, key, args.version)
     if args.check:
-        return check(ROOT, packages[key], args.version)
+        return check(ROOT, pkg, args.version)
     for needed in ("date", "review", "quote"):
         if not getattr(args, needed):
             parser.error(f"--{ 'owner-selection-quote' if needed == 'quote' else needed} "
                          "is required with --record")
-    return record(ROOT, packages[key], args.version, args.date, args.quote,
-                  args.review, args.disposition)
+    return record(ROOT, pkg, args.version, args.date, args.quote,
+                  args.review, args.disposition, frozenset(args.option))
 
 
 if __name__ == "__main__":

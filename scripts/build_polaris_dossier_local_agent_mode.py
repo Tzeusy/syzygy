@@ -202,7 +202,7 @@ def figure_paragraph(text: str) -> str:
     return text[start + 1:m.end()]
 
 
-def check(root: pathlib.Path = ROOT) -> list[str]:
+def check(root: pathlib.Path = ROOT, signed: bool = True) -> list[str]:
     current = state(root)
     if current == "absent":
         signed = sorted(p.name for p in (root / DECISIONS).glob(
@@ -266,6 +266,13 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
                         findings.append(f"{path.relative_to(root)}: still cites {span}")
     if current == "applied" and brief_note() not in (root / BRIEF).read_text(encoding="utf-8"):
         findings.append(f"{BRIEF}: does not keep the path its reviews read")
+    if current == "applied" and signed:
+        # Signed or unsigned: the installed bytes must be the latest recorded
+        # sign-off's (v1.0's alone, or v1.0 plus the v1.1 patches as recorded).
+        # The v1.1 builder skips this (``signed=False``) while it applies,
+        # before the recorder writes the v1.1 record.
+        import build_polaris_dossier_local_agent_mode_v1_1 as v11
+        findings += v11.signed_findings(root)
     return findings
 
 
