@@ -1,0 +1,88 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S9a slice (syzygy-qkea.10), render (REQ-polaris-generation-033, 034, 036): a block rendered Inferred without the counted review judging it supported; a quotation rendered from the agent's copy rather than the located blob bytes; the check that every page and the machine view carry the run disclosure removed; a block resting on an excluded quotation not rendered Unknown; the RFC7-20 ruling ignored for the draft layer; an anchor whose target state is not the pinned revision; a render written over an earlier site directory; and render proceeding with no renderer wired. Not authority.",
+  "measuredOn": {
+    "commit": "c18f1ceedbbde974b78b868f5039b861e7ad137c",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/render.ts",
+        "sha256": "d29525ef9bbc16f02f80009934a0e3907fd0a39ea08b9e2a51b33909294be4bf"
+      },
+      {
+        "path": "packages/polaris-dossier/src/render.test.ts",
+        "sha256": "d03ceeada4208829d01b5100951c4e5b11df2032b76c6bae22d30f6255a3bb3b"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S9 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "command": "npx vitest run packages/polaris-dossier/src/render.test.ts",
+  "result": {
+    "killed": 8,
+    "total": 8
+  },
+  "mutants": [
+    {
+      "id": "M1-review-ignored",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "else if (support[id] === 'supported') {",
+      "new": "else if (true) {",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "M2-agent-quote-text",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "text: Buffer.from(blob.raw, 'utf8').subarray(start, end).toString('utf8'), anchor",
+      "new": "text: prose.slice(span.open + 1, span.close), anchor",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M3-disclosure-check-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (pagesMissing.length > 0 || !files.has('machine.json'))",
+      "new": "if (false)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M4-excluded-not-unknown",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "else if (withheld || secret) blocks.set",
+      "new": "else if (secret) blocks.set",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "M5-ruling-ignored",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (ruling.state !== 'ok') why.push(",
+      "new": "if (false) why.push(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M6-anchor-target-state",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "fragment: { start, end }, targetState: pinned,",
+      "new": "fragment: { start, end }, targetState: 'HEAD',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M7-site-overwrite",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "String(taken.length === 0 ? 0 : Math.max(...taken) + 1)",
+      "new": "String(0)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M8-no-renderer-check",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (deps.renderer === undefined) return refuse('renderer', NO_RENDERER);",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2
+    }
+  ]
+}
