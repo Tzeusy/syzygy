@@ -13,11 +13,15 @@ export {
   type InventoryBriefResult, type InventoryCheckRecord, type InventoryCheckResult, type InventoryOfRecord, type LaunchForm,
 } from './inventory.js';
 export {
-  DESIGN_NOT_IN_BUILD, FIDELITY_PACKET_FORMAT, PACKET_DIGEST_FILE, PACKET_FILE, REVIEW_CHECK_FORMAT, REVIEW_INFERRED, VERDICT_FILE,
-  buildFidelityPacket, fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, validateVerdict,
-  type PacketBuild, type PacketSpan, type ReviewCheckRecord, type ReviewCheckResult, type ReviewDeps, type ReviewOfRecord,
-  type ReviewPacketResult, type ReviewProblem, type ReviewProblemKind,
+  DESIGN_REVIEW_INFERRED, FIDELITY_PACKET_FORMAT, PACKET_DIGEST_FILE, PACKET_FILE, REVIEW_CHECK_FORMAT, REVIEW_INFERRED, REVIEW_KINDS, VERDICT_FILE,
+  buildFidelityPacket, buildStoredDesignPacket, designReviewOfRecord, fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, validateVerdict,
+  type DesignReviewOfRecord, type PacketBuild, type PacketSpan, type ReviewCheckRecord, type ReviewCheckResult, type ReviewDeps, type ReviewKind,
+  type ReviewOfRecord, type ReviewPacketResult, type ReviewProblem, type ReviewProblemKind,
 } from './review.js';
+export {
+  DESIGN_PACKET_FORMAT, MACHINE_VIEW_FILE, MACHINE_VIEW_REGION_MEMBER, buildDesignPacket, designBlocking, designCriteria, outsideRegion,
+  readLatestSite, validateDesignVerdict, type DesignPacketBuild, type SiteRead,
+} from './design-review.js';
 export {
   NO_RENDERER, RENDER_REPORT_FORMAT, buildLocalInput, renderRun,
   type DossierRenderer, type DossierRendererInput, type RenderDeps, type RenderRefusal, type RenderReport, type RenderResult, type RenderStage,
@@ -48,7 +52,8 @@ export {
 } from './credential-probe.js';
 export { SECURITY_DOCTRINE_PATH, cutSec3, readSec3, type DoctrineSpan, type Sec3Read, type Sec3Text } from './doctrine-quote.js';
 export {
-  CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, checkDraftShape, draftSchemaDocument, localDraftSchema,
+  CLARIFICATION_ANSWER_KINDS, DESIGN_PAGE_VERDICTS, LOCAL_DESIGN_VERDICT_SCHEMA_VERSION, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS,
+  checkDraftShape, designVerdictSchemaDocument, draftSchemaDocument, localDesignVerdictSchema, localDraftSchema,
   type DraftSchema, type DraftSchemaError, type DraftSchemaParameters,
 } from './draft-schema.js';
 export {

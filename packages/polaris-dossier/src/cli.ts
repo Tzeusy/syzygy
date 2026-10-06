@@ -69,14 +69,13 @@ Commands:
                       (claude '<prompt>', also behind !, or codex '<prompt>'), and
                       record the prompt's digest; Syzygy starts nothing. The tool, version and
                       model default to the run's declared values. review --kind
-                      fidelity builds the fidelity packet and copies it, with its
-                      digest, into the review session's directory there;
-                      --kind design is refused until render exists (S9)
-  launch-form <run> inventory|review terminal|bang
+                      fidelity|design builds that review's packet and copies it,
+                      with its digest, into the review session's directory there
+  launch-form <run> inventory|review terminal|bang [--kind fidelity|design]
                       record, once, how the operator declares the latest inventory
-                      or fidelity review session was started; any other form is
-                      refused. An inventory or verdict counts only once its launch
-                      form is recorded
+                      or review session (of the kind, fidelity by default) was
+                      started; any other form is refused. An inventory or verdict
+                      counts only once its launch form is recorded
   inventory-brief <run>
                       print Syzygy's own rendering of the latest inventory session's
                       brief, and whether the stored copy matches it
@@ -89,21 +88,25 @@ Commands:
                       build the fidelity packet from the latest passed draft revision
                       and the inventory of record (the draft without its discovery
                       account, the frozen inventory, every cited span as Syzygy reads
-                      it now, the criteria and the verdict schema), write it under
-                      reviews/ with its digest and print the digest; design is
-                      refused until render exists (S9)
-  review-check <run> [--verdict <file>]
-                      rebuild the packet and validate the verdict (the latest fidelity
-                      session's verdict.json by default): schema, packet digest,
-                      pinned revision, session identifiers, completeness, quotations
-                      and consistency; freeze it as reviews/fidelity-verdict-N.json
-                      and record the result in reviews/checks/; exit 1 when refused
+                      it now, the criteria and the verdict schema), or the design
+                      packet from the latest site/<n>/ (every page without its
+                      review-status region), write it under reviews/ with its digest
+                      and print the digest
+  review-check <run> [--kind fidelity|design] [--verdict <file>]
+                      rebuild the packet and validate the verdict (the latest
+                      session's verdict.json of the kind, fidelity by default):
+                      schema, packet digest, pinned revision, session identifiers,
+                      completeness, quotations and consistency; freeze it as
+                      reviews/<kind>-verdict-N.json and record the result in
+                      reviews/checks/; exit 1 when refused
   render <run>        verify the pinned revision again, re-derive every check of the
                       latest passed draft revision from objects read now, rebuild the
                       fidelity review of record, and render the dossier into a new
                       site/<n>/ with the run disclosure on every page and in
-                      machine.json; the draft layer is Unknown unless the owner's
-                      reading of RFC7-20 is in force; exit 1 when refused
+                      machine.json; a design review counts only while these pages,
+                      outside the review-status region, are the pages it reviewed;
+                      the draft layer is Unknown unless the owner's reading of
+                      RFC7-20 is in force; exit 1 when refused
   status <run>       report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -222,11 +225,12 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'review-check') {
-    const options = parseOptions(rest, ['--verdict']);
+    const options = parseOptions(rest, ['--verdict', '--kind']);
     if (typeof options === 'string') return usageError(options);
     if (options.positional.length !== 1) return usageError('review-check takes exactly one positional argument, the run directory');
     const verdictFile = options.values.get('--verdict');
-    const result = await reviewCheck(options.positional[0]!, verdictFile === undefined ? {} : { verdictFile }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    const kind = options.values.get('--kind');
+    const result = await reviewCheck(options.positional[0]!, { ...(verdictFile === undefined ? {} : { verdictFile }), ...(kind === undefined ? {} : { kind }) }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     if (!result.ok) return refused(result.refusal);
     return report(result.report, result.report.outcome === 'validated' ? EXIT.clean : EXIT.refused);
   }
@@ -246,7 +250,8 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (typeof options === 'string') return usageError(options);
     const [run, role, form, ...extra] = options.positional;
     if (run === undefined || role === undefined || form === undefined || extra.length > 0) return usageError('launch-form takes the run directory, a role and the launch form the operator declares');
-    const result = await launchForm(run, { role, form }, { sources: sources(), now, ...openReader });
+    const kind = options.values.get('--kind');
+    const result = await launchForm(run, { role, form, ...(kind === undefined ? {} : { kind }) }, { sources: sources(), now, ...openReader });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'inventory-brief') {

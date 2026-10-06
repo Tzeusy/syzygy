@@ -240,6 +240,36 @@ export function verdictSchemaDocument(parameters: { readonly pinnedRevision: str
   };
 }
 
+/** The local-agent rendered-design verdict schema (REQ-polaris-generation-035, 006). The design review session writes it from its packet
+ * alone: the packet's digest, its own session identifier, a judgement of every HTML page of the render, and every finding with its
+ * severity, its deficient subject and the page it concerns. It quotes nothing: no span of the design packet verifies a quotation. */
+export const LOCAL_DESIGN_VERDICT_SCHEMA_VERSION = 'polaris-dossier-local-design-verdict-v1';
+export const DESIGN_PAGE_VERDICTS = Object.freeze(['acceptable', 'deficient', 'unresolved'] as const);
+
+export function localDesignVerdictSchema(parameters: { readonly pinnedRevision: string }): DraftSchemaWithDefs {
+  if (!/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(parameters.pinnedRevision)) throw new Error('draft-schema: the pinned revision is not a commit identifier');
+  return { defs: {}, root: object({
+    schemaVersion: one(LOCAL_DESIGN_VERDICT_SCHEMA_VERSION),
+    pinnedRevision: one(parameters.pinnedRevision),
+    packetSha256: { type: 'string', minLength: 64, maxLength: 64, pattern: '^[0-9a-f]{64}$' },
+    sessionId,
+    pageReview: list(object({ page: repoPath, verdict: choice(DESIGN_PAGE_VERDICTS), reason: text }), 1, 20_000),
+    findings: list(object({ severity: choice(['blocking', 'advisory']), subject: choice(DEFICIENT_SUBJECTS), page: repoPath, message: text }), 0, 1000),
+    readiness: choice(['ready', 'not-ready']),
+  }) };
+}
+
+/** The design verdict schema as the JSON Schema document the design packet carries. */
+export function designVerdictSchemaDocument(parameters: { readonly pinnedRevision: string }): Record<string, unknown> {
+  const { root } = localDesignVerdictSchema(parameters);
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: `urn:syzygy:polaris-dossier:${LOCAL_DESIGN_VERDICT_SCHEMA_VERSION}`,
+    title: `Polaris dossier local-agent rendered-design verdict (${LOCAL_DESIGN_VERDICT_SCHEMA_VERSION})`,
+    ...root,
+  };
+}
+
 export interface DraftSchemaError { readonly path: string; readonly detail: string }
 
 const MAX_ERRORS = 50;

@@ -1,4 +1,4 @@
-import type { EvidenceAnchor, LocalDisclosureItem } from '@syzygy/polaris-generation-core';
+import { REVIEW_STATUS_REGION, REVIEW_STATUS_REGION_OPEN, type EvidenceAnchor, type LocalDisclosureItem } from '@syzygy/polaris-generation-core';
 
 /**
  * Markup the multi-page dossier renderer adds for an operator-agent run
@@ -9,8 +9,7 @@ import type { EvidenceAnchor, LocalDisclosureItem } from '@syzygy/polaris-genera
 /** The machine view of an operator-agent render, written beside `dossier.json`; not a manifest page. */
 export const LOCAL_MACHINE_VIEW = 'machine.json';
 
-/** The one named region of every page that a later render may change without retiring a rendered-design review. */
-export const REVIEW_STATUS_REGION = 'review-status';
+export { REVIEW_STATUS_REGION };
 
 export const LOCAL_CSS = '.run-disclosure{border-block:1px solid var(--line);padding:.5rem 1rem;font-size:.9rem}.run-disclosure ul{margin:.5rem 0}.review-status{border-top:1px solid var(--line);margin-top:2rem;font-size:.9rem}.verified-quote{font-style:normal}.anchor-link,.evidence-anchor{font:.8rem/1.5 var(--font-mono);overflow-wrap:anywhere}.evidence-anchor dt{font-weight:600}.non-normative{color:var(--muted)}.quote-withheld,.unknown-reason,.executions,.group-note,.read-note{color:var(--muted);font-size:.9rem}';
 
@@ -26,7 +25,7 @@ export function disclosureMarkup(items: readonly LocalDisclosureItem[], escape: 
 
 /** The named review-status region. It holds no claim and no fragment target, so stripping it changes nothing else on the page. */
 export function regionMarkup(items: readonly LocalDisclosureItem[], escape: Escape): string {
-  return `<aside class="review-status" data-review-status-region="${REVIEW_STATUS_REGION}" aria-label="Review status"><h2>Review status</h2><ul>${items.map(item => labelled(item, escape)).join('')}</ul></aside>`;
+  return `${REVIEW_STATUS_REGION_OPEN}<h2>Review status</h2><ul>${items.map(item => labelled(item, escape)).join('')}</ul></aside>`;
 }
 
 /** The anchor as data attributes, for the inline link beside a quotation. */

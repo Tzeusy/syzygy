@@ -266,7 +266,7 @@ describe('session-prompt inventory', () => {
   });
 
   it.each<[string, Parameters<typeof sessionPrompt>[1], string]>([
-    ['a design review session, until render (S9)', { role: 'review', kind: 'design' }, 'not-in-build'],
+    ['a design review session before any site is rendered', { role: 'review', kind: 'design' }, 'site'],
     ['--kind on an inventory session', { role: 'inventory', kind: 'fidelity' }, 'role'],
     ['an unknown tool', { role: 'inventory', tool: 'aider' }, 'context'],
     ['a model with a control character', { role: 'inventory', model: 'gpt\u0007' }, 'context'],
