@@ -783,3 +783,29 @@ describe('a large valid store lists, and a reader defect is not blamed on the st
     expect(await refusal(r.tree())).toEqual({ reason: 'reader-fault', objectId: null, path: null, message: 'the reader failed (TypeError), a defect of the reader and not of the store' });
   });
 });
+
+describe('paths are at most git\'s core.maxTreeDepth (4,096) segments deep (R-POLARIS-DOSSIER-S2-READER-3 note 1)', () => {
+  /** A file `f` under `levels` nested trees each named `a`: one path of `levels + 1` segments. `trees[0]` holds `f`. */
+  const chain = (name: string, levels: number): { repo: string; commit: string; path: string; trees: ReturnType<typeof raw>[]; leaf: ReturnType<typeof raw> } => {
+    const leaf = raw('blob', Buffer.from('deep')), trees = [treeOf([['100644', 'f', leaf.id]])];
+    for (let k = 0; k < levels; k += 1) trees.push(treeOf([['40000', 'a', trees[trees.length - 1]!.id]]));
+    const { repo, commit } = onTree(name, trees[trees.length - 1]!, [leaf, ...trees.slice(0, -1)]);
+    return { repo, commit, path: `${'a/'.repeat(levels)}f`, trees, leaf };
+  };
+  it('a path of 4,096 segments reads and lists; a missing path below names its full prefix', async () => {
+    const { repo, commit, path: deep, leaf } = chain('depth-4096', 4095);
+    expect(deep.split('/')).toHaveLength(4096);
+    expect(text((await reader(repo, commit).readBlobs([deep]))[0]!.bytes)).toBe('deep');
+    expect(await reader(repo, commit).listTree()).toEqual([{ path: deep, mode: '100644', id: leaf.id }]);
+    expect(await refusal(reader(repo, commit).readBlobs(['a/a/x']))).toMatchObject({ reason: 'path-not-found', message: `a/a/x is not in the tree at ${commit}` });
+  }, 30_000);
+  it('a path of 4,097 segments refuses before any read, and listTree refuses the tree nested past the cap', async () => {
+    const { repo, commit, path: deep, trees } = chain('depth-4097', 4096);
+    expect(await refusal(reader(repo, commit).readBlobs([deep]))).toEqual({
+      reason: 'malformed-path', objectId: null, path: deep, message: 'a path of 4097 segments is deeper than git\'s core.maxTreeDepth (4096)',
+    });
+    expect(await refusal(reader(repo, commit).listTree())).toEqual({
+      reason: 'malformed-tree', objectId: trees[1]!.id, path: null, message: `tree ${trees[1]!.id} nests trees deeper than git's core.maxTreeDepth (4096)`,
+    });
+  }, 30_000);
+});
