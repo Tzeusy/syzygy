@@ -3,10 +3,10 @@
 
 Candidate tooling; it performs no owner act, writes no real record and binds
 nothing. It clones this repository (`git clone --shared`, so the real object
-store is only read), merges the named heads (by default the local-agent acts,
-PR #370, and the reader, PR #367), gives the scratch what the sitting itself
-cannot (a synthetic confirming round 7 for screening scope v2, which only the
-owner can order, then that recorder's own `--freeze`), and runs
+store is only read), merges any named heads (none by default: the local-agent
+acts, PR #370, and the reader, PR #367, are on `main`), gives the scratch what
+the sitting itself cannot (a synthetic confirming round 7 for screening scope
+v2, unless the recorder is already frozen on the real one), and runs
 `scripts/install_redis_local_agent_sitting.py` on the accept-all answer of
 `REDIS-LOCAL-AGENT-SITTING-BRIEF.md`: every recorder in the brief's order, the
 v1.1 route edits, the install steps. Then it requires the end state to be
@@ -50,7 +50,10 @@ OVERLAY = (INSTALLER, "scripts/install_redis_sitting.py",
            "scripts/check_spec_reconciliation.py")
 V11_RECORD = ".syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md"
 DATE = "2026-10-07"
-DEFAULT_MERGES = ("refs/remotes/pr/370", "refs/remotes/pr/367")
+#: Heads to merge by default. PR #370 (the local-agent acts) and PR #367 (the
+#: reader) merged on 2026-10-07, so `main` carries both; pass `--merge` to
+#: rehearse a base that lacks them.
+DEFAULT_MERGES: tuple[str, ...] = ()
 
 DESCRIPTION = "Perform the act at the manifest row, as the sitting brief recommends."
 #: The accept-all answer of the sitting brief, as the owner's words. The
@@ -213,7 +216,7 @@ def sim_battery(block):
 
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--merge", action="append", help="a ref to merge (repeatable); default PR #370 and #367")
+    ap.add_argument("--merge", action="append", help="a ref to merge (repeatable); default none")
     ap.add_argument("--base", default="refs/remotes/origin/main")
     ap.add_argument("--report", default="redis-local-agent-sitting-rehearsal.json")
     ap.add_argument("--scratch")
