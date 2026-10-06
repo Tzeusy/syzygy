@@ -446,7 +446,7 @@ export interface SubjectRules {
 }
 
 type Block = SubjectBlock;
-type Citation = { readonly at: string; readonly value: Readonly<Record<string, unknown>> };
+export type Citation = { readonly at: string; readonly value: Readonly<Record<string, unknown>> };
 type BlobState =
   | { readonly state: 'absent' }
   | { readonly state: 'excluded'; readonly outcome: ScreenExclusion }
@@ -694,7 +694,7 @@ function walk(value: unknown, at: string, visit: (value: Readonly<Record<string,
 }
 
 /** The claim blocks (introduction, section and deep-dive paragraphs and their children) and the understanding record's items. */
-function collectBlocks(doc: Readonly<Record<string, unknown>>): Block[] {
+export function collectBlocks(doc: Readonly<Record<string, unknown>>): Block[] {
   const out: Block[] = [];
   const claim = (at: string, value: Readonly<Record<string, unknown>>): Block =>
     ({ at, value, textKey: 'text', allowed: ['inferred', 'unknown', 'non-normative'], quotable: 'inferred', unquotable: CLAIM_UNQUOTABLE });
@@ -718,7 +718,7 @@ function collectBlocks(doc: Readonly<Record<string, unknown>>): Block[] {
 }
 
 /** Every citation in the draft: each object in a `citations` or `evidence` list. */
-function collectCitations(doc: Readonly<Record<string, unknown>>): Citation[] {
+export function collectCitations(doc: Readonly<Record<string, unknown>>): Citation[] {
   const out: Citation[] = [];
   walk(doc, '$', (value, at) => {
     for (const key of ['citations', 'evidence'] as const) {

@@ -13,7 +13,13 @@ export {
   type InventoryBriefResult, type InventoryCheckRecord, type InventoryCheckResult, type InventoryOfRecord, type LaunchForm,
 } from './inventory.js';
 export {
-  LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, inventoryPrompt, launchForm, sessionCommands, sessionPrompt, shellQuote,
+  DESIGN_NOT_IN_BUILD, FIDELITY_PACKET_FORMAT, PACKET_DIGEST_FILE, PACKET_FILE, REVIEW_CHECK_FORMAT, REVIEW_INFERRED, VERDICT_FILE,
+  buildFidelityPacket, fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, validateVerdict,
+  type PacketBuild, type PacketSpan, type ReviewCheckRecord, type ReviewCheckResult, type ReviewDeps, type ReviewOfRecord,
+  type ReviewPacketResult, type ReviewProblem, type ReviewProblemKind,
+} from './review.js';
+export {
+  LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, inventoryPrompt, launchForm, reviewPrompt, sessionCommands, sessionPrompt, shellQuote,
   type LaunchFormResult, type SessionPromptResult,
 } from './session-handover.js';
 export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
