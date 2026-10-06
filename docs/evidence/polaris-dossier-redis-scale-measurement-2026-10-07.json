@@ -1,0 +1,307 @@
+{
+  "record": "Redis-scale measurement of the local-agent dossier flow over a synthetic repository (syzygy-qkea.13, the runbook's Unknown on budgets and limits). Measured, not authority; the subject is synthetic and labelled Inferred as a stand-in for Redis.",
+  "measuredOn": {
+    "syzygyCommit": "9b6a678c3452c81b14ebca088fe5a40db4554cf7",
+    "trackedTreeClean": true,
+    "node": "v24.6.0",
+    "platform": "linux x64",
+    "script": {
+      "path": "scripts/dossier_scale_measure.mjs",
+      "sha256": "967312b9851ff4cb39226cc27caa816e50e93ead2c8c441801b91e4430f3e6cf"
+    }
+  },
+  "subject": {
+    "generator": "scripts/dossier_scale_measure.mjs",
+    "seed": "0x5eed1234",
+    "commit": "6b467b1f7df9ed09a0d2768f610c9dca0c5673d5",
+    "trackedFiles": 1751,
+    "blobBytes": 29637133,
+    "filesOver1MB": 3,
+    "largestBytes": 2900029,
+    "maxPathSegments": 7,
+    "byTop": {
+      "src": 762,
+      "docs": 1,
+      "README.md": 1,
+      "deps": 505,
+      "tests": 380,
+      "utils": 100,
+      "redis.conf": 1,
+      "Makefile": 1
+    },
+    "cloneObjectsDirBytes": 9623019,
+    "cloneStore": {
+      "count": 0,
+      "size": 0,
+      "in-pack": 1783,
+      "packs": 1,
+      "size-pack": 9390,
+      "prune-packable": 0,
+      "garbage": 0,
+      "size-garbage": 0
+    },
+    "label": "Inferred: a synthetic stand-in shaped from general knowledge of Redis, not Redis"
+  },
+  "initProbe": {
+    "initReads": {
+      "outcome": "initialized",
+      "ms": 19,
+      "reader": {
+        "inventoryCalls": 1,
+        "storedNamed": 1783,
+        "listTreeCalls": 1,
+        "entriesListed": 1751
+      }
+    },
+    "refShape": {
+      "ms": 0,
+      "result": {
+        "ok": true
+      }
+    },
+    "inventory": {
+      "ms": 8,
+      "stored": 1783,
+      "reachable": 1783,
+      "beyondCount": 0,
+      "note": "inventory names identifiers from loose file names and pack .idx entries; it reads no object body beyond the walk from the commit"
+    },
+    "storeShape": {
+      "ms": 0,
+      "result": {
+        "ok": true
+      }
+    },
+    "listTree": {
+      "ms": 6,
+      "entries": 1751
+    },
+    "readEveryBlobOnce": {
+      "ms": 340,
+      "blobs": 1751,
+      "bytes": 29637133,
+      "rssMiBBefore": 254,
+      "peakRssMiBAfter": 321,
+      "note": "not a step of the flow: one call reading the whole tree, an upper bound against the per-call budgets"
+    },
+    "budgets": {
+      "maxObjectsPerCall": 1000000,
+      "maxInflatedBytesPerCall": 4294967296,
+      "maxObjectBytes": 1073741824,
+      "maxDeltaChainDepth": 1000,
+      "source": "packages/polaris-dossier/src/git-object-reader.ts defaults (PinnedObjectReaderOptions)"
+    }
+  },
+  "flow": {
+    "completed": true,
+    "failedAt": null,
+    "totalMs": 449,
+    "peakRssBeforeFlowMiB": 212,
+    "peakRssMiB": 321,
+    "steps": [
+      {
+        "step": "preflight",
+        "exit": 0,
+        "ms": 2,
+        "peakRssMiB": 212,
+        "rssMiB": 212,
+        "reader": {}
+      },
+      {
+        "step": "init",
+        "exit": 0,
+        "ms": 62,
+        "peakRssMiB": 213,
+        "rssMiB": 208,
+        "reader": "the CLI passes init no reader port; see initProbe.initReads"
+      },
+      {
+        "step": "brief",
+        "exit": 0,
+        "ms": 18,
+        "peakRssMiB": 213,
+        "rssMiB": 209,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "check",
+        "exit": 0,
+        "ms": 37,
+        "peakRssMiB": 213,
+        "rssMiB": 212,
+        "reader": {
+          "listTreeCalls": 2,
+          "entriesListed": 3502,
+          "readBlobsCalls": 1,
+          "blobsRead": 14,
+          "blobBytes": 1856
+        }
+      },
+      {
+        "step": "session-prompt inventory",
+        "exit": 0,
+        "ms": 16,
+        "peakRssMiB": 213,
+        "rssMiB": 213,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "inventory-check",
+        "exit": 0,
+        "ms": 28,
+        "peakRssMiB": 220,
+        "rssMiB": 220,
+        "reader": {
+          "listTreeCalls": 2,
+          "entriesListed": 3502,
+          "readBlobsCalls": 1,
+          "blobsRead": 2,
+          "blobBytes": 176
+        }
+      },
+      {
+        "step": "launch-form inventory terminal",
+        "exit": 0,
+        "ms": 15,
+        "peakRssMiB": 225,
+        "rssMiB": 225,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "session-prompt review --kind fidelity",
+        "exit": 0,
+        "ms": 31,
+        "peakRssMiB": 235,
+        "rssMiB": 235,
+        "reader": {
+          "listTreeCalls": 2,
+          "entriesListed": 3502,
+          "readBlobsCalls": 1,
+          "blobsRead": 2,
+          "blobBytes": 176
+        }
+      },
+      {
+        "step": "review-check --kind fidelity",
+        "exit": 0,
+        "ms": 30,
+        "peakRssMiB": 241,
+        "rssMiB": 241,
+        "reader": {
+          "listTreeCalls": 2,
+          "entriesListed": 3502,
+          "readBlobsCalls": 1,
+          "blobsRead": 2,
+          "blobBytes": 176
+        }
+      },
+      {
+        "step": "launch-form review terminal --kind fidelity",
+        "exit": 0,
+        "ms": 12,
+        "peakRssMiB": 241,
+        "rssMiB": 241,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "render",
+        "exit": 0,
+        "ms": 66,
+        "peakRssMiB": 244,
+        "rssMiB": 244,
+        "reader": {
+          "listTreeCalls": 3,
+          "entriesListed": 5253,
+          "readBlobsCalls": 2,
+          "blobsRead": 16,
+          "blobBytes": 2032
+        }
+      },
+      {
+        "step": "session-prompt review --kind design",
+        "exit": 0,
+        "ms": 19,
+        "peakRssMiB": 246,
+        "rssMiB": 246,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "review-check --kind design",
+        "exit": 0,
+        "ms": 17,
+        "peakRssMiB": 247,
+        "rssMiB": 247,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "launch-form review terminal --kind design",
+        "exit": 0,
+        "ms": 14,
+        "peakRssMiB": 251,
+        "rssMiB": 251,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "render",
+        "exit": 0,
+        "ms": 63,
+        "peakRssMiB": 256,
+        "rssMiB": 253,
+        "reader": {
+          "listTreeCalls": 3,
+          "entriesListed": 5253,
+          "readBlobsCalls": 2,
+          "blobsRead": 16,
+          "blobBytes": 2032
+        }
+      },
+      {
+        "step": "close",
+        "exit": 0,
+        "ms": 15,
+        "peakRssMiB": 256,
+        "rssMiB": 254,
+        "reader": {
+          "listTreeCalls": 1,
+          "entriesListed": 1751
+        }
+      },
+      {
+        "step": "status",
+        "exit": 0,
+        "ms": 1,
+        "peakRssMiB": 256,
+        "rssMiB": 254,
+        "reader": {}
+      }
+    ]
+  },
+  "notes": [
+    "Wall times are one run on one host, with the fixture sources injected; the gate records are not read from the checkout.",
+    "peakRssMiB is the process high-water mark after each step (monotonic across steps), not that step alone; peakRssBeforeFlowMiB is the mark after generating, committing and cloning the synthetic repository in the same process, so a step raised the mark only where its value exceeds that.",
+    "The fixture screen classifies only .c and .txt as readable content (FIXTURE_SCREEN); other extensions are listed but excluded as content, as an untuned policy might.",
+    "The draft cites three short spans; a real draft cites more, so check and the fidelity packet read more blobs than here.",
+    "The synthetic repository was deleted after the run."
+  ]
+}
