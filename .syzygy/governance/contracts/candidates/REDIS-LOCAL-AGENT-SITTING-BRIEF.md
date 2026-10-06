@@ -37,9 +37,10 @@ run work by itself:
 - [Observed, 2026-10-07] Most of the `syzygy dossier` implementation is not
   written. Of the epic `syzygy-qkea`, slice S1 is closed; S2 (the reader, PR
   #367, open), S4 and S5 are in progress; S3 and S6 to S12 are open. The
-  dossier gate that reads your act records is S3. *(Update, 2026-10-07: PR
-  #367 has merged, and S3's preflight and init gates landed on `main` in
-  `db510842`; the beads own the slices' states.)*
+  dossier gate that reads your act records is S3. *(Update, 2026-10-07: every
+  slice state in this sentence is stale. PR #367 has merged, and S3's
+  preflight and init gates landed on `main` in `db510842`. Read the slices'
+  states from the beads under `syzygy-qkea`, not from this page.)*
 - [Observed] The post-sitting installer on `main`,
   `scripts/install_redis_sitting.py`, is written for the provider-mode
   sitting of PR #260: it refuses unless records for the psf/requests
@@ -74,10 +75,10 @@ Syzygy's (mode direction, item 2).
 | G | D9 bound to exact bytes | PR #370 row 4 | Only if the agent may build and run Redis |
 | H | Your RFC7-20 reading bound to exact bytes | PR #370 row 5 | Yes, or the dossier has no narrative |
 | I | The non-governed narrative profile (requirement 032) | `non-governed-narrative-profile/OWNER-DECISION-PACKET.md`; PR #260 rows 9a to 9d | Yes |
-| J | Rulings: altitude order, advantages, page budget | PR #260 rows 10a to 10c | No; defaults apply |
-| K | Local-agent mode version 1.1, its questions 1, 3 and 4 | `polaris-dossier-local-agent-mode-v1-1/OWNER-DECISION-PACKET.md` (merged in PR #368) | No; 1.0 stays in force |
-| L | D9 note N6 (version 1.1 question 2) | the same packet; `DOCTRINE-AMENDMENT-D9-REVIEW-NOTES.md` | No |
-| M | `syzygy-4mbu`, the test-capture tool that runs a project's tests itself | bead `syzygy-4mbu` | No; a standing nonconformance |
+| J | Rulings: altitude order, advantages, page budget | PR #260 rows 10a to 10c | No; defaults apply. *(Settled 2026-10-07 by direction; not asked again.)* |
+| K | Local-agent mode version 1.1, its questions 1, 3 and 4 | `polaris-dossier-local-agent-mode-v1-1/OWNER-DECISION-PACKET.md` (merged in PR #368) | No; 1.0 stays in force. *(Settled 2026-10-07: 1.1 is signed off; not asked again.)* |
+| L | D9 note N6 (version 1.1 question 2) | the same packet; `DOCTRINE-AMENDMENT-D9-REVIEW-NOTES.md` | No. *(Settled 2026-10-07 with K; not asked again.)* |
+| M | `syzygy-4mbu`, the test-capture tool that runs a project's tests itself | bead `syzygy-4mbu` | No; a standing nonconformance. *(Settled 2026-10-07 by direction; not asked again.)* |
 
 Paths without a directory are under `.syzygy/governance/contracts/candidates/`.
 Each act is separate and separately revocable; none implies another.
@@ -87,6 +88,15 @@ names the record at its row of the package manifest; selecting it is the act
 and you type no phrase or digest. The recorder writes your question opening,
 option label and description verbatim, so the words given below are the
 words that would be recorded.
+
+*(Added 2026-10-07: "Your words" below gives only the option label for A to
+H. The asker composes each question's opening and the option's description
+when the question is put, and the recorder writes those as offered. Every
+opening, label and description must be one line with no digest. For every
+item except E, the installer
+(`scripts/install_redis_local_agent_sitting.py`) also refuses any that
+contains ": ", " #" or an apostrophe, because a battery line cannot carry
+it. E is recorded from your quoted words instead.)*
 
 ### A. Redis observation consent
 
@@ -128,13 +138,25 @@ at all, and what it withholds. The local-agent mode refuses a run without it
   - Q8, the run-profile carrier: defer. [Inferred] In the local-agent mode
     Syzygy sends no request, so the carrier is not on this run's path.
 - **To know:** signing B and D stales P-95 act A, which must then be
-  re-derived over the v2 policy bytes before it can be performed. [Observed
-  in the 2026-10-07 rehearsal] B supersedes the 2026-10-02 policy re-pin act
-  that the P-95 tree-framing re-pin package
-  (`pwb-behavior-contract-repin-tree-framing/`) re-pins from, so that
-  package's policy half no longer builds against the policy on disk. P-95's
-  act B, the registry, is not affected. The re-derivation is tracked on
-  `syzygy-2g0d`.
+  re-derived over the v2 policy bytes before it can be performed.
+  - **Why** [Observed in the 2026-10-07 rehearsal]: B supersedes the
+    2026-10-02 policy re-pin act that the P-95 tree-framing re-pin package
+    (`pwb-behavior-contract-repin-tree-framing/`) re-pins its policy from. D
+    then moves the policy again. After the sitting, that package's builder
+    refuses against the policy on disk.
+  - **What else it touches** [Observed in the builder]: the package verifies,
+    applies and is reviewed as one unit. Its `--apply` refuses either subject
+    while any finding stands, and one manifest carries both rows. So P-95's
+    act B, the registry, cannot be recorded through it either until the
+    package is regenerated and reviewed again. That retires the review
+    binding of both acts. P-95's direction C names the 2026-10-02 policy
+    re-pin record as the policy role's supersession target. After the
+    sitting, the installer has re-pointed that role to the screening acts,
+    so C must be redrafted too.
+  - **What it does not touch** [Inferred]: the registry entry's own bytes,
+    since no step of this sitting writes them.
+  - **Tracking:** the re-derivation is `syzygy-qggu`, to be done after B and
+    D are recorded.
 - **Your words:** option "Sign it, with Q2 to Q8 as recommended" on the
   question naming the policy at its manifest row.
 
@@ -176,12 +198,15 @@ refused while the amendment is not in force.
   package, and the recorder is frozen on it, so D can be offered.)*
 - **Recommended:** ask for round 7 now, before the sitting, so that D can be
   signed in it; then sign variant "none" (Q1), with Q3 to Q5 at the packet's
-  defaults. Order is fact: B, then C, then D.
+  defaults. Order is fact: B, then C, then D. *(Update, 2026-10-07: the
+  round-7 half is spent, since you asked for it and it ran. What remains is
+  variant "none", Q3 to Q5 at the defaults, after B and C.)*
 - **To know:** signing B and D stales P-95 act A, which must then be
   re-derived over the v2 policy bytes before it can be performed (see B).
 - **Your words now:** "Run round 7 on screening scope version 2." **At the
   sitting:** option "Sign it, variant none" on the question naming that
-  variant's manifest row.
+  variant's manifest row. *(Update, 2026-10-07: the "now" words were given
+  and are spent; only the sitting option remains.)*
 
 ### E. The source-acquisition entry, signed as package v1.0
 
@@ -197,7 +222,11 @@ configuration honoured, no process started, every object re-hashed.
   gate, which is not written yet. No read happens without the gate, so
   signing now is safe in that sense, but any change the gate forces into the
   entry needs a new version and a new sign-off. The install refuses until PR
-  #367 merges.
+  #367 merges. *(Update, 2026-10-07: "the gate, which is not written yet" is
+  stale in part. [Observed] S3's preflight and init gates landed in
+  `db510842` and refuse an entry that does not name the reader. [Unknown]
+  Whether they are all of the gate the entry's `awaitingGate` declarations
+  belong to; the entry still says "not yet implemented".)*
 - **Offered only after PR #367 merges.** Round 3 of PR #370's review (note
   4) found that the entry's implementation version names the reader "as
   merged" but is bound to no reader bytes, and the reader changed under it
@@ -207,8 +236,23 @@ configuration honoured, no process started, every object re-hashed.
   *(Update, 2026-10-07: PR #367 has merged. [Observed] The reader changed
   once more on `main` after the merge, in `8422119c`, which caps reader paths
   at git's tree-depth limit and answers note 1 of the reader's third review.
-  The entry is still bound to no reader bytes, so a later reader repair is
-  approved by the same sign-off.)*
+  The entry's own clause reads: "implementationVersion 1.0.0 names that file
+  as merged, and any change to it is a new implementation version and a new
+  version of this entry." By that clause, a change to the reader after the
+  merge is a new implementation version and a new entry version, and v1.0 does
+  not cover it. [Unknown] Whether `8422119c` already counts against 1.0.0
+  depends on what "as merged" names: PR #367's merge, or the reader on `main`
+  when you sign. The entry does not say, and it is your question, not this
+  page's.)*
+- **Your question before E** *(added 2026-10-07)*: "as merged" means either
+  (a) the reader as PR #367 merged it, so `8422119c` needs a new
+  implementation version and a v1.1 of the entry before E describes the
+  reader on `main`; or (b) the reader on `main` when you sign, which
+  includes `8422119c`. [Inferred] (b) matches what the entry is for, a
+  registration of the reader Syzygy actually runs. (a) is the stricter
+  reading of the clause. Either way, any reader change after your sign-off is
+  a new version. The recommendation below is unchanged; this question is
+  asked first.
 - **Recommended:** sign, once PR #367 has merged.
 - **Your words:** option "Extend Scope A to this entry and sign v1.0". The
   recorder refuses a label that does not contain "Extend Scope A".
@@ -415,8 +459,8 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
    *(Done 2026-10-07, PR #372.)*
 2. **Preconditions, no act:** round 7 of D confirms; PR #370 merges after
    its review clears; PR #367 merges; the local-agent installer exists (see
-   "What one sitting can and cannot do"). *(Update, 2026-10-07: the first
-   four are met; the installer merged in PR #376.)*
+   "What one sitting can and cannot do"). *(Update, 2026-10-07: all four are
+   met; the installer merged in PR #376.)*
 3. **Screening scope v1** (B):
    `scripts/record_public_source_screening_scope_act.py --record <row>`.
 4. **RFC5-14 class** (C):
@@ -430,7 +474,8 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
 7. **Source-acquisition entry** (E):
    `scripts/record_versioned_signoff.py --record public-git-source-acquisition-local-agent --version 1.0`.
 8. **Local-agent records** (F, G, H): the recorder
-   record_dossier_local_agent_acts.py, which lands with PR #370, with keys
+   record_dossier_local_agent_acts.py, which lands with PR #370 *(merged;
+   it is `scripts/record_dossier_local_agent_acts.py` on `main`)*, with keys
    `redis-no-evidence-drawer`, `d9-in-force` and `rfc7-20-reading-in-force`.
    Never run that package's builder with `--write` once any of its acts is
    recorded (round 3, note 1). The recorder's printed "add the
@@ -448,13 +493,18 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
 11. **Verify:** the battery of `PROJECT-STATUS.md` §"How to verify this page"
     and the full Vitest suite.
 
-[Observed, 2026-10-07] Steps 3 to 11 were rehearsed together in a scratch
-clone by `scripts/simulate_redis_local_agent_sitting.py` (PR #376).
+[Observed, 2026-10-07] Steps 3 to 10, and the `python3` lines of step 11,
+were rehearsed together in a scratch clone by
+`scripts/simulate_redis_local_agent_sitting.py` (PR #376). Its report is
+retained as `docs/evidence/redis-local-agent-sitting-rehearsal-2026-10-07.json`.
 
-- **What was rehearsed:** PR #376's head `8c556f08` (its six scripts are
-  byte-identical on `main` after the merge), which is `main` with
-  PR #370, PR #367 and version 1.1 already on it. It used the real round-7
-  review of D and this brief's accept-all answer.
+- **What was rehearsed:** the scratch was cloned from PR #376's head
+  `8c556f08` (the report's `baseHead`), with nothing merged into it. That
+  commit is `main` with PR #370, PR #367 and version 1.1 already on it. Its
+  six scripts are byte-identical on `main` after the merge. The run used the
+  real round-7 review of D and this brief's accept-all answer, with a
+  synthetic question opening and description for each item (see the note
+  before A).
 - **Install:** every recorder of steps 3 to 9 recorded, the installer
   installed, and its `--check` found no recorder failing and nothing left
   uninstalled.
@@ -463,11 +513,21 @@ clone by `scripts/simulate_redis_local_agent_sitting.py` (PR #376).
 - **What it does not cover:** the full Vitest suite (step 11's second half)
   was not run. The result holds only for that commit (rule 7). It also
   performs no act: the records it wrote were the scratch's own and were
-  discarded.
+  discarded. One case in the 0 is skipped, not passed: once B is recorded,
+  the reconciliation selftest no longer builds the P-95 package, and says so
+  in its output (see B).
 
-An earlier run found six failing battery lines. Their causes were in the
-base installer, two builders and the reconciliation checker, and each was
-fixed in PR #376 before this run. One of them is the P-95 consequence under B.
+An earlier run found six failing battery lines with four causes. PR #376
+repaired three of them before this run:
+
+- the context-budget report was not regenerated after RFC-0005 changed (the
+  base installer);
+- the restyle package did not know a later act amends RFC-0005 (its builder);
+- the 2026-10-02 re-pin package could not see past the screening acts (its
+  builder).
+
+The fourth cause is the P-95 consequence under B. It was not repaired, only
+made to report itself, because the repair is P-95's re-derivation.
 
 The superseded sentence, kept as written before the rehearsal: "[Unknown]
 Steps 3 to 10 have not been rehearsed together, and the existing rehearsal
