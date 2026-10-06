@@ -288,11 +288,17 @@ describe('the policy act gate fails closed', () => {
   it('refuses a short run key', async () => {
     await expect(loadPublicSourceScreen(goodPort, new Uint8Array(16))).rejects.toThrow('run key shorter than 32 bytes');
   });
-  it('the default port reads this checkout: no act record refuses, a performed one loads the policy it names', async () => {
+  it('the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses', async () => {
+    // A later act (the scope V2 act) re-approves new policy bytes; this port reads only the first scope act, so it then refuses.
+    const fs = await import('node:fs');
     const repo = new URL('../../../../', import.meta.url);
-    const record = await import('node:fs').then(fs => fs.existsSync(new URL('.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', repo)));
-    if (!record) await expect(loadPublicSourceScreen(checkoutPolicyActPort())).rejects.toThrow(/^Corpus read refused: public-source-policy: no act record/u);
-    else expect((await loadPublicSourceScreen(checkoutPolicyActPort())).policyId).toBe('polaris-butlers-project-shape-secrets');
+    const recordUrl = new URL('.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', repo);
+    const port = checkoutPolicyActPort();
+    if (!fs.existsSync(recordUrl)) { await expect(loadPublicSourceScreen(port)).rejects.toThrow(/^Corpus read refused: public-source-policy: no act record/u); return; }
+    const argument = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/mu.exec(fs.readFileSync(recordUrl, 'utf8'))?.[1];
+    const policy = fs.readFileSync(new URL('.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json', repo));
+    if (argument === createHash('sha256').update(policy).digest('hex')) expect((await loadPublicSourceScreen(port)).policyId).toBe('polaris-butlers-project-shape-secrets');
+    else await expect(loadPublicSourceScreen(port)).rejects.toThrow('Corpus read refused: public-source-policy: policy bytes do not hash to the act argument');
   });
 });
 
