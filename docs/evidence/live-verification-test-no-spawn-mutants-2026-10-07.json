@@ -1,6 +1,13 @@
 {
-  "subject": "syzygy-hjuz live test runs no observed code",
-  "commit": "f00ab9120837239a586bba18f5d49ee2289e6872",
+  "subject": "syzygy-hjuz live test runs no observed code, reads bounded, expects report-fact",
+  "commit": "31bb1995804e680ebac836b9a412a5c9209888e5",
+  "subjectDigests": {
+    "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts": "sha256:c67956f7de4ab19a4fea2701f1b66ee70d72e01e46e790aa859b9fc177448053",
+    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": "sha256:d5b95475c5d0ea2826d86a7d828146cc591b88a3f65eb49e34747791af10a0a6",
+    "apps/three-surface-poc/src/sync-child-process-guard.test.ts": "sha256:a0774fc807a836c0693829b183b11a3ec37616d2388ad9ef049a0e6b4cff4062",
+    "packages/three-surface-poc-core/src/worker-change-observation.ts": "sha256:cb66a5ff0ddcb16ded19fdb3212f79906de036ea4aeb8340f591f4cfe4e585a7",
+    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:f0ee4eb0f5312e2dbd82cd85c919f048d5118f6f64ee92f3861713acb410599f"
+  },
   "command": "npx vitest run packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts apps/three-surface-poc/src/sync-child-process-guard.test.ts",
   "mutants": [
     {
@@ -13,18 +20,18 @@
         },
         {
           "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
-          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
-          "new": "    expect(JUNIT_EXIT).toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code imports the process module once, binding only the git runner",
-        "the live verification test runs no observed code names no other way to start a process",
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
     },
     {
       "id": "H2-original-file-restored",
@@ -36,14 +43,15 @@
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code imports the process module once, binding only the git runner",
-        "the live verification test runs no observed code names no other way to start a process",
-        "the live verification test runs no observed code reads the operator-produced result named by the environment",
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
+        "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
+        "the live verification test, and every module it imports, runs no observed code builds an operator-reported record and expects report-fact, never Verified",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
     },
     {
       "id": "H3-original-file-and-exemption-restored",
@@ -60,47 +68,49 @@
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code imports the process module once, binding only the git runner",
-        "the live verification test runs no observed code names no other way to start a process",
-        "the live verification test runs no observed code reads the operator-produced result named by the environment"
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
+        "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
+        "the live verification test, and every module it imports, runs no observed code builds an operator-reported record and expects report-fact, never Verified"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
     },
     {
       "id": "H4-execFileSync-python",
       "edits": [
         {
           "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
-          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
-          "new": "    expect(JUNIT_EXIT).toBe('0');\n    execFileSync(PYTHON, ['-m', 'pytest', SCOPE, '-q'], { cwd: repoRoot });\n"
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    execFileSync(PYTHON, ['-m', 'pytest', SCOPE, '-q'], { cwd: repoRoot });\n"
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code runs only git",
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
     },
     {
-      "id": "H5-builtin-module",
+      "id": "H5-builtin-module-with-type-import",
       "edits": [
         {
           "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
-          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
-          "new": "    expect(JUNIT_EXIT).toBe('0');\n    (process.getBuiltinModule(['child', 'process'].join('_')) as typeof import('node:child_process')).spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    (process.getBuiltinModule(['child', 'process'].join('_')) as typeof import('node:child_process')).spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code imports the process module once, binding only the git runner",
-        "the live verification test runs no observed code names no other way to start a process"
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
     },
     {
       "id": "H6-exemption-reopened-for-a-new-spawn",
@@ -112,8 +122,8 @@
         },
         {
           "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
-          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
-          "new": "    expect(JUNIT_EXIT).toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
         },
         {
           "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
@@ -122,13 +132,104 @@
         }
       ],
       "exit": 1,
-      "tests": 9,
+      "tests": 19,
       "failed": [
-        "the live verification test runs no observed code imports the process module once, binding only the git runner",
-        "the live verification test runs no observed code names no other way to start a process",
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
       ],
-      "killed": true
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H7-builtin-module-no-cast-runs-sh",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    (process as unknown as { getBuiltinModule(n: string): Record<string, (...a: unknown[]) => unknown> }).getBuiltinModule(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED-HJUZ']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 19,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H8-bracket-builtin-module-runs-sh",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    const p = process as unknown as Record<string, (n: string) => Record<string, (...a: unknown[]) => unknown>>;\n    p[['get', 'Builtin', 'Module'].join('')]?.(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED-HJUZ']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 19,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H9-imported-observer-starts-python",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/worker-change-observation.ts",
+          "old": "  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {",
+          "new": "  return execFileSync('python3', ['--no-optional-locks', '-C', repoRoot, ...args], {"
+        }
+      ],
+      "exit": 1,
+      "tests": 19,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H10-unbounded-read",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "import { describe, expect, it } from 'vitest';\n",
+          "new": "import { readFileSync } from 'node:fs';\nimport { describe, expect, it } from 'vitest';\n"
+        },
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    const rawJUnitXml = readBoundedRegularFile(JUNIT);\n",
+          "new": "    const rawJUnitXml = readFileSync(JUNIT, 'utf8');\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 19,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H11-expects-verified",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "      expect(model.testArtifactVerification).toEqual({\n        kind: 'reported',\n        tier: 'report-fact',",
+          "new": "      expect(model.testArtifactVerification.kind).toBe('verified');\n      expect(model.testArtifactVerification).toEqual({\n        kind: 'reported',\n        tier: 'report-fact',"
+        }
+      ],
+      "exit": 1,
+      "tests": 19,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code builds an operator-reported record and expects report-fact, never Verified"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
     }
   ]
 }
