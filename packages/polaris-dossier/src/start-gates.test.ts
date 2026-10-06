@@ -356,11 +356,20 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     edit(record.subject);
     fs.writeFileSync(file, JSON.stringify(record, null, 2));
   };
+  const editDeclared = (runDir: string, edit: (declared: Record<string, any>) => void): void => {
+    const file = path.join(runDir, 'run.json');
+    const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { declared: Record<string, any> };
+    edit(record.declared);
+    fs.writeFileSync(file, JSON.stringify(record, null, 2));
+  };
+  const writeBriefRecord = (runDir: string, agent: unknown): void =>
+    fs.writeFileSync(path.join(runDir, 'brief.json'), JSON.stringify({ format: 'polaris-dossier-brief/1', ...(agent === undefined ? {} : { agent }), label: 'Inferred' }));
   const rewritePin = (runDir: string, commit: string): void => editSubject(runDir, (subject) => { subject['pinnedRevision']['commit'] = commit; });
   const codes = (result: Awaited<ReturnType<typeof guard>>) => (result.ok ? [] : result.refusals.map(r => r.code));
   const DISCLOSED = [
     'the consent, registry, policy and statement records the gates read lie in Syzygy\'s checkout, which the agent sessions can write; Syzygy re-reads and re-checks them at every step, and cannot rule out that a session changed them',
-    'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and which statement covers it were decided again at this step from the records in force now and the pinned tree listed now',
+    'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and whether a per-project statement is in force were decided again at this step from the records in force now and the pinned tree listed now',
+    'which per-project statement applies is selected by the agent provider the run record declares: that provider, the statement citation it selects and the clone location are Inferred and lie within the agent sessions\' write reach; a tool or provider that differs from the one the brief record states refuses, but the brief record lies within the same reach, so an edit of both records together is not detected',
   ];
   const CONSENT_RECORD = 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7';
 
@@ -454,6 +463,58 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     expect(await guard(runDir, root, { providerStatements: statements(STATEMENT) })).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-ANTHROPIC@1', governed: { kind: 'governed' } });
     const result = await guard(runDir, root, { providerStatements: statements({ ...STATEMENT, withdrawn: true }) });
     expect(!result.ok && result.refusals).toEqual([{ code: 'statement', reason: 'the subject is governed now and has no per-project statement in force: no per-project statement naming anthropic is in force: STATEMENT-REDIS-ANTHROPIC@1 is withdrawn' }]);
+  });
+
+  // R-POLARIS-DOSSIER-S3-GATES-2 finding 6: the provider is the operator's declaration, read from the run record; it selects the statement.
+  const OPENAI: ProviderStatementRecord = { ...STATEMENT, recordId: 'STATEMENT-REDIS-OPENAI', provider: 'openai', act: { identity: 'STATEMENT-REDIS-OPENAI-ACT-2026-10-06', inForceAt: Date.UTC(2026, 9, 6) } };
+  const rebound = async () => {
+    const run = await started({ clone: cloneAt(commits.B), providerStatements: statements(STATEMENT) });
+    editDeclared(run.runDir, (declared) => { declared['agentProvider'] = 'openai'; });
+    editSubject(run.runDir, (subject) => { subject['providerStatement'] = 'STATEMENT-REDIS-OPENAI@1'; });
+    return run;
+  };
+  const afterWithdrawal = statements({ ...STATEMENT, withdrawn: true }, OPENAI);
+
+  it('before the brief, selects the statement by the provider the run record declares, and discloses that the provider is Inferred', async () => {
+    const { runDir, root } = await rebound();
+    const result = await guard(runDir, root, { providerStatements: afterWithdrawal });
+    expect(result).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-OPENAI@1', disclosures: DISCLOSED });
+  });
+
+  it('after the brief, refuses a provider or tool that differs from the one the brief record states, reading no object', async () => {
+    const { runDir, root } = await rebound();
+    writeBriefRecord(runDir, { tool: 'claude-code', provider: 'anthropic', declaredBy: 'operator', label: 'Inferred' });
+    const opened: string[] = [];
+    const result = await guard(runDir, root, { providerStatements: afterWithdrawal, opened });
+    expect(!result.ok && result.refusals).toEqual([{ code: 'declared-changed', reason: 'the run record declares agent tool claude-code and provider openai, not the tool claude-code and provider anthropic the brief record states the run was briefed for; the provider selects the per-project statement' }]);
+    expect(opened).toEqual([]);
+    editDeclared(runDir, (declared) => { declared['agentProvider'] = 'anthropic'; declared['agentTool'] = 'codex'; });
+    expect(codes(await guard(runDir, root, { providerStatements: afterWithdrawal }))).toEqual(['declared-changed']);
+  });
+
+  it('passes when the brief record states the tool and provider the run record declares; a coordinated edit of both is the disclosed residual', async () => {
+    const { runDir, root } = await started({ clone: cloneAt(commits.B), providerStatements: statements(STATEMENT) });
+    writeBriefRecord(runDir, { tool: 'claude-code', provider: 'anthropic', declaredBy: 'operator', label: 'Inferred' });
+    expect(await guard(runDir, root, { providerStatements: statements(STATEMENT) })).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-ANTHROPIC@1' });
+    const both = await rebound();
+    writeBriefRecord(both.runDir, { tool: 'claude-code', provider: 'openai', declaredBy: 'operator', label: 'Inferred' });
+    expect(await guard(both.runDir, both.root, { providerStatements: afterWithdrawal })).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-OPENAI@1', disclosures: DISCLOSED });
+  });
+
+  it.each([
+    ['states no agent', undefined, 'it states no agent tool and provider'],
+    ['states a provider that is not a string', { tool: 'claude-code', provider: 7 }, 'it states no agent tool and provider'],
+  ])('refuses when the brief record exists but %s', async (_name, agent, why) => {
+    const { runDir, root } = await started();
+    writeBriefRecord(runDir, agent);
+    const result = await guard(runDir, root);
+    expect(!result.ok && result.refusals).toEqual([{ code: 'declared-changed', reason: `the brief record brief.json exists but ${why}, so whether the agent tool and provider changed since the brief cannot be decided` }]);
+  });
+
+  it('refuses when the brief record exists but is not JSON', async () => {
+    const { runDir, root } = await started();
+    fs.writeFileSync(path.join(runDir, 'brief.json'), '{not json');
+    expect(codes(await guard(runDir, root))).toEqual(['declared-changed']);
   });
 
   it('refuses a run record altered into an invalid shape', async () => {

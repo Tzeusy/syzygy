@@ -9,7 +9,7 @@ import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
 import { decideExecutionRule, type ExecutionChoice } from './execution-rule.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
-import type { PinnedObjectReader } from './git-object-reader.js';
+import { GitObjectReadRefusal, type PinnedObjectReader } from './git-object-reader.js';
 import { parseRunConfig, type RunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 
@@ -93,6 +93,7 @@ describe('brief: issued', () => {
       deadline: { declared: 'PT1H', seconds: 3600, endsAt: '2026-10-07T13:00:00.000Z' },
       files: { brief: { name: 'brief.md', sha256: sha(brief) }, draftSchema: { name: 'draft.schema.json', sha256: sha(schema) } },
       executionRule: { arm: 'sec-3', cites: 'SEC-3', sec3Head: { text: lines(61, 62), startLine: 61, endLine: 62 } },
+      agent: { tool: 'claude-code', provider: 'anthropic', declaredBy: 'operator', label: 'Inferred' },
       label: 'Inferred',
     });
     for (const name of ['brief.md', 'draft.schema.json', 'brief.json']) expect(fs.statSync(path.join(run, name)).mode & 0o777).toBe(0o600);
@@ -205,6 +206,20 @@ describe('brief: refused', () => {
       command: 'brief', outcome: 'refused', stage: 'reverify', reason: 'the pinned revision could not be verified again, so no brief is issued',
       reasons: [`the recorded pinned revision ${REV} is not a revision the in-force observation consent for redis-redis names: withdrawn`, 'the classification and screening policy is no longer in force: no act'],
     }) });
+    nothingWritten(run);
+  });
+
+  it('carries the guard\'s object-read refusal and its disclosures when the pinned tree cannot be listed (R-POLARIS-DOSSIER-S3-GATES-2 note 10)', async () => {
+    const run = runDirectory();
+    const failing = () => ({ listTree: async () => { throw new GitObjectReadRefusal('object-missing', `object ${REV} is in neither a loose object nor a pack of this clone`); } }) as unknown as PinnedObjectReader;
+    const result = await issueBrief(run, { sources: sources(), openReader: failing, now: () => NOW });
+    expect(result).toMatchObject({ ok: false, refusal: { stage: 'reverify', refusals: [{ code: 'listing' }], objectRead: { reason: 'object-missing' } } });
+    expect(!result.ok && result.refusal.disclosures).toEqual([
+      'the consent, registry, policy and statement records the gates read lie in Syzygy\'s checkout, which the agent sessions can write; Syzygy re-reads and re-checks them at every step, and cannot rule out that a session changed them',
+      'The brief, the draft schema and the brief record are stored in the run directory, which the agent sessions can write; read back, each is Inferred.',
+      'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and whether a per-project statement is in force were decided again at this step from the records in force now and the pinned tree listed now',
+      'which per-project statement applies is selected by the agent provider the run record declares: that provider, the statement citation it selects and the clone location are Inferred and lie within the agent sessions\' write reach; a tool or provider that differs from the one the brief record states refuses, but the brief record lies within the same reach, so an edit of both records together is not detected',
+    ]);
     nothingWritten(run);
   });
 
