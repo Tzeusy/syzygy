@@ -1,0 +1,134 @@
+{
+  "subject": "syzygy-4mbu no-spawn property",
+  "commit": "d7d8244dd9e4e9d7aaebbf3ad7c537dc5cc666ca",
+  "command": "npx vitest run apps/three-surface-poc/src/capture-test-artifact",
+  "mutants": [
+    {
+      "id": "M1-print-spawnSync",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "import { execFileSync } from 'node:child_process';\n",
+          "new": "import { execFileSync, spawnSync } from 'node:child_process';\n"
+        },
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    spawnSync(python, ['-m', 'pytest', scope, '-q', `--junitxml=${junitPath}`], { cwd: repoRoot });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process",
+        "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
+      ],
+      "killed": true
+    },
+    {
+      "id": "M2-ingest-spawnSync",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "import { execFileSync } from 'node:child_process';\n",
+          "new": "import { execFileSync, spawnSync } from 'node:child_process';\n"
+        },
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  const result = ingestTestArtifact({\n",
+          "new": "  spawnSync(python, ['-m', 'pytest', scope, '-q', `--junitxml=${junitPath}`], { cwd: repoRoot });\n  const result = ingestTestArtifact({\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process",
+        "capture-test-artifact never starts the observed project (run check) ingest reads back the handed-in file, binds the current commit, and runs nothing",
+        "capture-test-artifact never starts the observed project (run check) ingest refuses, writes nothing and runs nothing when the junit file was never produced"
+      ],
+      "killed": true
+    },
+    {
+      "id": "M3-aliased-spawn",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "import { execFileSync } from 'node:child_process';\n",
+          "new": "import { execFileSync, spawnSync as runIt } from 'node:child_process';\n"
+        },
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    runIt(python, ['-m', 'pytest', scope, '-q', `--junitxml=${junitPath}`], { cwd: repoRoot });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
+        "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
+      ],
+      "killed": true
+    },
+    {
+      "id": "M4-execFileSync-python",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    try { execFileSync(python, ['-m', 'pytest', scope, '-q', `--junitxml=${junitPath}`], { cwd: repoRoot }); } catch { /* exit status */ }\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) runs exactly one command, the literal git",
+        "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
+      ],
+      "killed": true
+    },
+    {
+      "id": "M5-module-runs-it",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact.ts",
+          "old": "import {\n  buildTestArtifactRecordFromJUnit,",
+          "new": "import { spawnSync } from 'node:child_process';\nimport {\n  buildTestArtifactRecordFromJUnit,"
+        },
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact.ts",
+          "old": "  const totals = parseJUnitRootTotals(rawJUnitXml);\n",
+          "new": "  spawnSync(input.python, ['-m', 'pytest', input.scope, '-q'], { cwd: input.repoRoot });\n  const totals = parseJUnitRootTotals(rawJUnitXml);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process",
+        "capture-test-artifact never starts the observed project (run check) ingest reads back the handed-in file, binds the current commit, and runs nothing"
+      ],
+      "killed": true
+    },
+    {
+      "id": "M6-builtin-module-evades-source-check",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    (process.getBuiltinModule(['child', 'process'].join('_')) as typeof import('node:child_process')).spawnSync(python, ['-m', 'pytest', scope, '-q', `--junitxml=${junitPath}`], { cwd: repoRoot });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process",
+        "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
+      ],
+      "killed": true
+    }
+  ]
+}
