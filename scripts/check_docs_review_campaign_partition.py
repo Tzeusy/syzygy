@@ -318,6 +318,11 @@ CAMPAIGNS = (
         "Polaris dossier gate sources",
         r"R-POLARIS-DOSSIER-GATE-SOURCES-.*\.md",
     ),
+    campaign(
+        "live-test-no-spawn",
+        "Live test no-spawn",
+        r"R-LIVE-TEST-NO-SPAWN-.*\.md",
+    ),
 )
 
 
