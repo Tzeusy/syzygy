@@ -1,2 +1,2 @@
 /** Test support, imported by tests and testkits only. */
-export { renderClassAct, renderPolicyAct, renderRecorderAct, renderRegistryAct, type RecorderActKey } from './recorder-fixtures.testkit.js';
+export { renderClassAct, renderDossierLocalAgentAct, renderLocalAgentSignoff, renderPolicyAct, renderRecorderAct, renderRegistryAct, type DossierLocalAgentActKey, type RecorderActKey } from './recorder-fixtures.testkit.js';

@@ -34,7 +34,7 @@ export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenE
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';
 export {
-  D9_ACT_FORM, DOSSIER_READER_IMPLEMENTATION_ID, NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, RECORDS_WITHIN_REACH, RFC7_20_RULING_ACT_FORM,
+  D9_ACT_FORM, DOSSIER_READER_IMPLEMENTATION_ID, DRAWER_FORMS, NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, RECORDS_WITHIN_REACH, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS,
   createPackageGateSources, providerStatementGate, registryEntryUsable,
   type ConsentAnswer, type GateSources, type GateState, type PackageGateSourceOptions, type ProjectInputSource, type ProviderStatementRecord,
   type ProviderStatementSource,

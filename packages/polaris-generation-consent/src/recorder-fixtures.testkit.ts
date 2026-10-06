@@ -52,6 +52,32 @@ sys.stdout.write(m.render_act('${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM
   return run.stdout;
 }
 
+export type DossierLocalAgentActKey = 'redis-no-evidence-drawer' | 'redis-agent-anthropic' | 'redis-agent-openai' | 'd9-in-force' | 'rfc7-20-reading-in-force';
+
+/** One act of the local-agent dossier sitting as scripts/record_dossier_local_agent_acts.py renders it. */
+export function renderDossierLocalAgentAct(key: DossierLocalAgentActKey, argument: string, date: string, instant: string): string {
+  const id = ['dossier-local-agent', key, argument, date, instant].join('|');
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const py = `import sys; sys.path.insert(0, 'scripts'); import record_dossier_local_agent_acts as m
+sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*40, '${instant}'))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  cache.set(id, run.stdout);
+  return run.stdout;
+}
+
+/** The version-tagged sign-off record of the local-agent source-acquisition entry, v1.0, as scripts/record_versioned_signoff.py renders
+ * it over the entry installed under `root` (the record carries the SHA-256 of those bytes). Not cached: it reads `root`. */
+export function renderLocalAgentSignoff(root: string, date: string, instant: string): string {
+  const py = `import pathlib, sys; sys.path.insert(0, 'scripts'); import record_versioned_signoff as m
+pkg = m.real_packages()['public-git-source-acquisition-local-agent']
+sys.stdout.write(m.render_record(pkg, '1.0', '${date}', 'Extend Scope A and sign off v1.0', 'docs/reviews/R-STUB-RAW.md', 'c'*40, 'CONFIRM', None, root=pathlib.Path(sys.argv[1]), instant='${instant}'))`;
+  const run = spawnSync('python3', ['-c', py, root], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  return run.stdout;
+}
+
 /** The public Git-hosting source-acquisition registry entry act as scripts/record_public_admission_registry_entries_acts.py renders it
  * (key `git-source-acquisition`). */
 export function renderRegistryAct(argument: string, date: string, instant: string): string {

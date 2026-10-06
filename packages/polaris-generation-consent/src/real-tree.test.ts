@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { CITATION_ALLOWLIST } from './citation-allowlist.js';
-import { DECISIONS_DIR, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, type PackageReaderFs } from './package-reader.js';
+import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, readVersionedSignoffState, type PackageReaderFs } from './package-reader.js';
 
 /** Every read the dossier relies on, over this checkout's real `.syzygy/governance/decisions/`. A decisions file whose prose trips a
  * withdrawal sweep refuses every admission; this fails CI on the commit that adds it, not at the owner's sitting. The remedy is to
@@ -23,6 +23,7 @@ const reads = (fs: PackageReaderFs, now = Date.now()) => ({
   chain: () => readPolicyActChain({ root: ROOT, fs, now }),
   classAct: () => readClassActState({ root: ROOT, fs, now }),
   egress: () => readInForceEgress({ root: ROOT, fs, now }),
+  signoff: () => readVersionedSignoffState({ root: ROOT, fs, now, form: LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM }),
   port: createPackageAdmissionRecordsPort({ root: ROOT, now: () => now, fs }),
 });
 const KINDS = ['observation-consent', 'egress-consent', 'public-source-policy'] as const;
@@ -33,7 +34,7 @@ describe('the readers over this checkout\'s decisions directory', () => {
     const r = reads(realFs);
     await expect(r.admission(), 'admission read').resolves.toBeDefined();
     await expect(r.policy(), 'policy read').resolves.toBeDefined();
-    for (const [name, read] of [['policy chain', r.chain], ['class act', r.classAct], ['egress', r.egress]] as const) {
+    for (const [name, read] of [['policy chain', r.chain], ['class act', r.classAct], ['egress', r.egress], ['registry sign-off', r.signoff]] as const) {
       const got = await read();
       expect(got.state, `${name}: ${got.state === 'ok' ? '' : got.why}`).not.toBe('refused');
     }
