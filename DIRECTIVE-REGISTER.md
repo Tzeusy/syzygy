@@ -47,8 +47,8 @@ defining its identifiers renders an empty table rather than a stale one.
 | `SEC-1` | Authenticated by default | `.syzygy/governance/doctrine/security.md`:15 |
 | `SEC-2` | Portfolio data leaves owner-controlled infrastructure only through explicit, scoped consent | `.syzygy/governance/doctrine/security.md`:42 |
 | `SEC-3` | Observed code is untrusted, everywhere | `.syzygy/governance/doctrine/security.md`:61 |
-| `SEC-4` | Writes are consented, attributed, and revertable | `.syzygy/governance/doctrine/security.md`:72 |
-| `SEC-5` | Secrets are never indexed | `.syzygy/governance/doctrine/security.md`:85 |
+| `SEC-4` | Writes are consented, attributed, and revertable | `.syzygy/governance/doctrine/security.md`:112 |
+| `SEC-5` | Secrets are never indexed | `.syzygy/governance/doctrine/security.md`:125 |
 
 ## Craft-and-care policy — `CC`
 
