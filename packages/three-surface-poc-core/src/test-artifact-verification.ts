@@ -1,5 +1,17 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  closeSync,
+  constants,
+  existsSync,
+  fstatSync,
+  lstatSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  readSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { join } from 'node:path';
 
 // A real, durable focused-pytest artifact, captured outside Syzygy by an
@@ -153,6 +165,45 @@ function firstOpeningTagBody(rawXml: string, lowerXml: string, name: string): st
     if (end === -1) return null;
     const body = rawXml.slice(after, end);
     return body.endsWith('/') ? body.slice(0, -1) : body;
+  }
+}
+
+/**
+ * Reads a handed-in JUnit file only when it is a regular file no larger than
+ * `maxBytes`. The bytes come from running observed code, so they are
+ * untrusted: a FIFO would block forever and a device or huge file would
+ * read until memory fails. `lstat` refuses a symlink, FIFO or device before
+ * anything is opened; the open never follows a link and never blocks; and
+ * the opened file must be the one `lstat` saw. At most `maxBytes + 1`
+ * bytes are ever read, so a file that grows after the check is refused too.
+ */
+export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNIT_ARTIFACT_BYTES): string {
+  const seen = lstatSync(path);
+  if (!seen.isFile()) {
+    throw new Error('it is not a regular file (a symlink, FIFO, device or directory is refused)');
+  }
+  if (seen.size > maxBytes) {
+    throw new Error(`it is ${seen.size} bytes, over the ${maxBytes}-byte ceiling`);
+  }
+  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+  try {
+    const opened = fstatSync(fd);
+    if (!opened.isFile() || opened.dev !== seen.dev || opened.ino !== seen.ino) {
+      throw new Error('it changed between the check and the read');
+    }
+    const buffer = Buffer.alloc(maxBytes + 1);
+    let length = 0;
+    for (;;) {
+      const read = readSync(fd, buffer, length, buffer.length - length, null);
+      if (read === 0) break;
+      length += read;
+      if (length > maxBytes) {
+        throw new Error(`it grew past the ${maxBytes}-byte ceiling while being read`);
+      }
+    }
+    return buffer.subarray(0, length).toString('utf8');
+  } finally {
+    closeSync(fd);
   }
 }
 
