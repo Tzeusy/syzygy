@@ -33,9 +33,10 @@ const tempDir = (prefix: string): string => {
   return dir;
 };
 
-// The clone: commit A (plain), commit B (adds a .syzygy/ path), commit C (adds an openspec/ path), commit U (never consented).
+// The clone: commit A (plain), commit B (adds a .syzygy/ path), commit C (adds an openspec/ path), commit U (never consented by the
+// default records), and off A, commits S (a symlink entry named .syzygy), G (a gitlink entry named openspec) and A2 (plain).
 let origin: string;
-const commits: Record<'A' | 'B' | 'C' | 'U', string> = { A: '', B: '', C: '', U: '' };
+const commits: Record<'A' | 'B' | 'C' | 'U' | 'S' | 'G' | 'A2', string> = { A: '', B: '', C: '', U: '', S: '', G: '', A2: '' };
 beforeAll(() => {
   origin = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-origin-')));
   const git = (...args: string[]): string => execFileSync('git', ['-C', origin, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
@@ -51,6 +52,18 @@ beforeAll(() => {
   commits.B = commit('.syzygy/notes/draft.md', '# not adopted\n');
   commits.C = commit('openspec/specs/x/spec.md', '# spec\n');
   commits.U = commit('README.md', '# later\n');
+  // Off commit A, each on its own branch so a clone carries it: S adds a symlink entry named .syzygy, G a gitlink entry named openspec.
+  const entryCommit = (branch: string, add: () => void, message: string): string => {
+    git('checkout', '-q', '-b', branch, commits.A);
+    add();
+    git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-m', message);
+    const id = git('rev-parse', 'HEAD');
+    git('checkout', '-q', 'main');
+    return id;
+  };
+  commits.S = entryCommit('symlink', () => { fs.symlinkSync('src', path.join(origin, '.syzygy')); git('add', '.syzygy'); }, 'symlink .syzygy');
+  commits.G = entryCommit('gitlink', () => git('update-index', '--add', '--cacheinfo', `160000,${commits.U},openspec`), 'gitlink openspec');
+  commits.A2 = entryCommit('plain', () => { fs.writeFileSync(path.join(origin, 'src', 'util.c'), 'int util(void) { return 1; }\n'); git('add', 'src/util.c'); }, 'src/util.c');
 });
 afterAll(() => fs.rmSync(origin, { recursive: true, force: true }));
 
@@ -85,9 +98,9 @@ const CONSENT_ACT = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-AC
 const REGISTRY_ACT = `${DECISIONS_DIR}/${REGISTRY_GIT_SOURCE_ACT_FORM.file}`;
 const POLICY_ACT = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`;
 
-/** The records every gate needs, in force at NOW; `over` replaces or (with null) removes a file. */
-const records = (over: Record<string, string | null> = {}): string => {
-  const consent = consentText([['fixture-a', commits.A], ['fixture-b', commits.B], ['fixture-c', commits.C]]);
+/** The records every gate needs, in force at NOW; `over` replaces or (with null) removes a file, `rows` replaces the consented revisions. */
+const records = (over: Record<string, string | null> = {}, rows?: readonly [string, string][]): string => {
+  const consent = consentText(rows ?? [['fixture-a', commits.A], ['fixture-b', commits.B], ['fixture-c', commits.C]]);
   const files: Record<string, string | null> = {
     [CONSENT_PATH]: consent,
     [CONSENT_ACT]: renderRecorderAct('redis-observation', sha(consent), '2026-10-04', '2026-10-04T09:30:00Z'),
@@ -143,6 +156,7 @@ describe('init: a run that passes every start gate', () => {
     expect(result.report.run).toBe(path.join(stateRoot, 'run-0123456789abcdef0123456789abcdef'));
     expect(result.report.subject).toEqual({
       repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
+      clone: { path: clone, declaredBy: 'operator', label: 'Inferred', use: 'read' },
       pinnedRevision: { commit: commits.A, label: 'fixture-a', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T12:00:00.000Z' },
       startGates: { registryEntry: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05', screeningPolicy: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' },
       governed: { kind: 'non-governed', because: ['the project input PROJECT-INPUT-REDIS@1 states that no kernel evidence drawer exists, and the pinned tree lists no openspec/ or .syzygy/ path'] },
@@ -185,16 +199,20 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
     expect(fs.existsSync(run.stateRoot)).toBe(false);
   };
 
+  const NO_RECORD = 'no observation record names https://github.com/redis/redis as its Upstream';
+  // The admission reader defines no withdrawal form: a decisions file naming the record refuses the whole read rather than be parsed.
+  const UNREADABLE = 'the admission act records could not be read (invalid-records), so no consent can be established';
+  const recordIs = (text: string): string => `the observation record(s) naming https://github.com/redis/redis are not in force: PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7 ${text}`;
   it.each([
-    ['absent: no act record', { [CONSENT_ACT]: null }],
-    ['ineffective: the consent bytes changed after the act', { [CONSENT_PATH]: `${consentText([['fixture-a', '0'.repeat(40)]])}` }],
-    ['not in force yet', {}],
-    ['withdrawn: another decisions file names the record', { [`${DECISIONS_DIR}/PUBLIC-OBS-REDIS-WITHDRAWAL.md`]: 'The owner withdraws PUBLIC-OBS-REDIS-2026-10-03.\n' }],
-    ['present only as status words in the record, no act (F8)', { [CONSENT_ACT]: null, [CONSENT_PATH]: consentText([['fixture-a', '0'.repeat(40)]], '\nStatus: accepted; in force; adopted by the owner\n') }],
-  ])('refuses before any object read when the observation consent is %s', async (name, over) => {
+    ['absent: no act record', { [CONSENT_ACT]: null }, NO_RECORD],
+    ['ineffective: the consent bytes changed after the act', { [CONSENT_PATH]: `${consentText([['fixture-a', '0'.repeat(40)]])}` }, recordIs('has no owner act in force over its current bytes')],
+    ['not in force yet', {}, recordIs('is not in force yet')],
+    ['withdrawn: another decisions file names the record', { [`${DECISIONS_DIR}/PUBLIC-OBS-REDIS-WITHDRAWAL.md`]: 'The owner withdraws PUBLIC-OBS-REDIS-2026-10-03.\n' }, UNREADABLE],
+    ['present only as status words in the record, no act (F8)', { [CONSENT_ACT]: null, [CONSENT_PATH]: consentText([['fixture-a', '0'.repeat(40)]], '\nStatus: accepted; in force; adopted by the owner\n') }, NO_RECORD],
+  ])('refuses before any object read when the observation consent is %s, naming why', async (name, over, why) => {
     // An ineffective consent's act names other bytes, so it keeps the original act over the original text.
     const root = name.startsWith('ineffective') ? (() => { const r = records(); fs.writeFileSync(path.join(r, CONSENT_PATH), consentText([['fixture-a', commits.A]], '\n<!-- edited -->\n')); return r; })() : records(over);
-    await expectRefused({ root, ...(name === 'not in force yet' ? { now: Date.UTC(2026, 9, 4, 9, 29, 59) } : {}) }, 'repository', 'no observation consent in force names https://github.com/redis/redis as its Upstream', false);
+    await expectRefused({ root, ...(name === 'not in force yet' ? { now: Date.UTC(2026, 9, 4, 9, 29, 59) } : {}) }, 'repository', `no observation consent in force names https://github.com/redis/redis as its Upstream: ${why}`, false);
   });
 
   it.each([
@@ -222,7 +240,8 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
     await expectRefused({ root: records(over) }, 'start-gates', reason, false);
   });
 
-  it('names every failed start gate, not only the first', async () => {
+  // The consent arm refuses first, at stage repository, before the registry and policy are read; preflight reports all three.
+  it('names both the registry entry and the policy when both fail, not only the first', async () => {
     const run = await init({ root: records({ [REGISTRY_ACT]: null, [POLICY_ACT]: null }) });
     expect(refusal(run.result)?.startGates).toMatchObject({ registryEntry: { state: 'absent' }, screeningPolicy: { state: 'absent' } });
   });
@@ -260,6 +279,17 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
     ['a project input that does not say', 'A' as const, { drawerFor: async () => ({ stated: false, why: 'no admitted project input record (REQ-polaris-generation-001) for this subject exists, so whether a kernel evidence drawer exists is not stated' }) } as ProjectInputSource, 'unstated'],
   ])('refuses a subject with %s and no per-project statement, after listing the pinned tree', async (_name, commit, projectInput, kind) => {
     await expectRefused({ clone: cloneAt(commits[commit]), projectInput }, 'statement', `the subject is ${kind} and the per-project statement is missing: no per-project statement names the operator's agent provider anthropic`, true);
+  });
+
+  it.each([
+    ['a symlink entry named .syzygy', 'S' as const, 'the pinned tree lists 1 path(s) under a .syzygy/ directory, counted adopted or not'],
+    ['a gitlink entry named openspec', 'G' as const, 'the pinned tree lists 1 path(s) under an openspec/ directory'],
+  ])('counts %s in the pinned tree as governing', async (_name, commit, because) => {
+    const root = records({}, [['fixture-a', commits.A], [`fixture-${commit.toLowerCase()}`, commits[commit]]]);
+    const run = await init({ root, clone: cloneAt(commits[commit]) });
+    expect(refusal(run.result)).toMatchObject({ stage: 'statement', governed: { kind: 'governed', because: [because] } });
+    const started = await init({ root, clone: cloneAt(commits[commit]), providerStatements: statements(STATEMENT) });
+    expect(started.result.ok && started.result.report.subject.governed).toEqual({ kind: 'governed', because: [because] });
   });
 
   it('treats the production project input as silent: with no statement every subject is refused', async () => {
@@ -311,18 +341,68 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     if (!run.result.ok) throw new Error(`fixture run refused: ${JSON.stringify(run.result.refusal)}`);
     return { ...run, runDir: run.result.report.run };
   };
-  const guard = (runDir: string, root: string, over: { providerStatements?: ProviderStatementSource; now?: number } = {}) =>
-    reverifyPinnedRevision(runDir, createPackageGateSources({ root, now: () => over.now ?? NOW, ...(over.providerStatements ? { providerStatements: over.providerStatements } : {}) }), over.now ?? NOW);
-  const rewritePin = (runDir: string, commit: string): void => {
+  interface GuardOver { projectInput?: ProjectInputSource; providerStatements?: ProviderStatementSource; now?: number; opened?: string[] }
+  /** The guard with the project input the fixture run started under (NO_DRAWER) unless `over` names another. */
+  const guard = (runDir: string, root: string, over: GuardOver = {}) =>
+    reverifyPinnedRevision(
+      runDir,
+      createPackageGateSources({ root, now: () => over.now ?? NOW, projectInput: over.projectInput ?? NO_DRAWER, ...(over.providerStatements ? { providerStatements: over.providerStatements } : {}) }),
+      over.now ?? NOW,
+      { openReader: (o: PinnedObjectReaderOptions) => { over.opened?.push(o.revision); return openPinnedObjectReader(o); } },
+    );
+  const editSubject = (runDir: string, edit: (subject: Record<string, any>) => void): void => {
     const file = path.join(runDir, 'run.json');
-    const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { subject: { pinnedRevision: { commit: string } } };
-    record.subject.pinnedRevision.commit = commit;
+    const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { subject: Record<string, any> };
+    edit(record.subject);
     fs.writeFileSync(file, JSON.stringify(record, null, 2));
   };
+  const rewritePin = (runDir: string, commit: string): void => editSubject(runDir, (subject) => { subject['pinnedRevision']['commit'] = commit; });
+  const codes = (result: Awaited<ReturnType<typeof guard>>) => (result.ok ? [] : result.refusals.map(r => r.code));
+  const DISCLOSED = [
+    'the consent, registry, policy and statement records the gates read lie in Syzygy\'s checkout, which the agent sessions can write; Syzygy re-reads and re-checks them at every step, and cannot rule out that a session changed them',
+    'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and which statement covers it were decided again at this step from the records in force now and the pinned tree listed now',
+  ];
+  const CONSENT_RECORD = 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7';
 
-  it('passes while every gate stays in force', async () => {
+  it('passes while every gate stays in force, listing the pinned tree from the recorded clone and deciding the subject again', async () => {
     const { runDir, root } = await started();
-    expect(await guard(runDir, root)).toMatchObject({ ok: true, consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' });
+    const opened: string[] = [];
+    const result = await guard(runDir, root, { opened });
+    expect(result).toMatchObject({
+      ok: true,
+      consentRecord: CONSENT_RECORD,
+      revision: { commit: commits.A, label: 'fixture-a', consentRecord: CONSENT_RECORD },
+      governed: { kind: 'non-governed', statementRequired: false },
+      providerStatement: null,
+      disclosures: DISCLOSED,
+    });
+    expect(opened).toEqual([commits.A]);
+  });
+
+  it('reads no object when a gate fails', async () => {
+    const { runDir, root } = await started();
+    fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md'), 'Revoked.\n');
+    const opened: string[] = [];
+    expect(codes(await guard(runDir, root, { opened }))).toEqual(['registry']);
+    expect(opened).toEqual([]);
+  });
+
+  it('shows the label and consent record the live consent gives, never the run record\'s (R-POLARIS-DOSSIER-S3-GATES-1 finding 2)', async () => {
+    const { runDir, root } = await started();
+    editSubject(runDir, (subject) => { subject['pinnedRevision']['label'] = 'forged'; subject['pinnedRevision']['consentRecord'] = 'FORGED@1'; });
+    expect(await guard(runDir, root)).toMatchObject({ ok: true, consentRecord: CONSENT_RECORD, revision: { commit: commits.A, label: 'fixture-a', consentRecord: CONSENT_RECORD } });
+    const relabelled = consentText([['fixture-a-renamed', commits.A]]);
+    fs.writeFileSync(path.join(root, CONSENT_PATH), relabelled);
+    fs.writeFileSync(path.join(root, CONSENT_ACT), renderRecorderAct('redis-observation', sha(relabelled), '2026-10-06', '2026-10-06T09:30:00Z'));
+    expect(await guard(runDir, root)).toMatchObject({ ok: true, revision: { label: 'fixture-a-renamed' } });
+  });
+
+  it('refuses when the pinned tree cannot be listed from the recorded clone', async () => {
+    const { runDir, root, clone } = await started();
+    fs.rmSync(path.join(clone, '.git', 'objects'), { recursive: true, force: true });
+    const result = await guard(runDir, root);
+    expect(codes(result)).toEqual(['listing']);
+    expect(!result.ok && result.objectRead).toBeDefined();
   });
 
   it('refuses when the recorded pin is changed to a commit in the clone the consent does not name', async () => {
@@ -330,7 +410,7 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     rewritePin(runDir, commits.U);
     const result = await guard(runDir, root);
     expect(result.ok).toBe(false);
-    expect(!result.ok && result.reasons).toEqual([`the recorded pinned revision ${commits.U} is not a revision the in-force observation consent for redis-redis names: no record found: no owner act puts a observation-consent for redis-redis in force at revision ${commits.U}`]);
+    expect(!result.ok && result.refusals).toEqual([{ code: 'revision-unnamed', reason: `the recorded pinned revision ${commits.U} is not a revision the in-force observation consent for redis-redis names: no record found: no owner act puts a observation-consent for redis-redis in force at revision ${commits.U}` }]);
   });
 
   it('refuses when the consent stops naming the recorded revision', async () => {
@@ -339,39 +419,82 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     fs.writeFileSync(path.join(root, CONSENT_PATH), narrowed);
     fs.writeFileSync(path.join(root, CONSENT_ACT), renderRecorderAct('redis-observation', sha(narrowed), '2026-10-06', '2026-10-06T09:30:00Z'));
     const result = await guard(runDir, root);
-    expect(!result.ok && result.reasons.length).toBe(1);
+    expect(codes(result)).toEqual(['revision-unnamed']);
     expect(!result.ok && result.reasons[0]).toContain(`the recorded pinned revision ${commits.A} is not a revision the in-force observation consent for redis-redis names`);
   });
 
   it.each([
-    ['the observation consent is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-OBS-REDIS-WITHDRAWAL.md'), 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03.\n'), 2],
-    ['the registry entry is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md'), 'Revoked.\n'), 1],
-    ['the policy changes after its act', (root: string) => fs.writeFileSync(path.join(root, POLICY_PATH), POLICY.replace('fixture', 'edited')), 1],
-  ])('refuses every later step when %s', async (_name, mutate, count) => {
+    ['the observation consent is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-OBS-REDIS-WITHDRAWAL.md'), 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03.\n'), ['consent-ids', 'revision-unnamed']],
+    ['the registry entry is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md'), 'Revoked.\n'), ['registry']],
+    ['the policy changes after its act', (root: string) => fs.writeFileSync(path.join(root, POLICY_PATH), POLICY.replace('fixture', 'edited')), ['policy']],
+  ])('refuses every later step when %s', async (_name, mutate, expected) => {
     const { runDir, root } = await started();
     mutate(root);
     const result = await guard(runDir, root);
     expect(result.ok).toBe(false);
-    expect(!result.ok && result.reasons.length).toBe(count);
+    expect(codes(result)).toEqual(expected);
+    expect(!result.ok && result.reasons).toEqual(!result.ok && result.refusals.map(r => r.reason));
+  });
+
+  it.each([
+    ['a withdrawal in a form the reader does not define refuses the whole read', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-OBS-REDIS-WITHDRAWAL.md'), 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03.\n'),
+      'the admission act records could not be read (invalid-records), so no consent can be established'],
+    ['the consent bytes changed after the act', (root: string) => fs.appendFileSync(path.join(root, CONSENT_PATH), '\n<!-- edited -->\n'),
+      `the observation record(s) naming ${URL_} are not in force: ${CONSENT_RECORD} has no owner act in force over its current bytes`],
+    ['the act record removed', (root: string) => fs.rmSync(path.join(root, CONSENT_ACT)), `no observation record names ${URL_} as its Upstream`],
+  ])('names why the consent is gone when %s', async (_name, mutate, why) => {
+    const { runDir, root } = await started();
+    mutate(root);
+    const result = await guard(runDir, root);
+    expect(!result.ok && result.refusals[0]).toEqual({ code: 'consent-ids', reason: `the observation consents in force for ${URL_} are [], not exactly the recorded redis-redis: ${why}` });
   });
 
   it('refuses when the statement a governed run relies on is withdrawn mid-run', async () => {
     const { runDir, root } = await started({ clone: cloneAt(commits.B), providerStatements: statements(STATEMENT) });
-    expect((await guard(runDir, root, { providerStatements: statements(STATEMENT) })).ok).toBe(true);
+    expect(await guard(runDir, root, { providerStatements: statements(STATEMENT) })).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-ANTHROPIC@1', governed: { kind: 'governed' } });
     const result = await guard(runDir, root, { providerStatements: statements({ ...STATEMENT, withdrawn: true }) });
-    expect(!result.ok && result.reasons).toEqual(['the per-project statement STATEMENT-REDIS-ANTHROPIC@1 the run relies on is no longer in force: no per-project statement naming anthropic is in force: STATEMENT-REDIS-ANTHROPIC@1 is withdrawn']);
+    expect(!result.ok && result.refusals).toEqual([{ code: 'statement', reason: 'the subject is governed now and has no per-project statement in force: no per-project statement naming anthropic is in force: STATEMENT-REDIS-ANTHROPIC@1 is withdrawn' }]);
   });
 
   it('refuses a run record altered into an invalid shape', async () => {
     const { runDir, root } = await started();
     rewritePin(runDir, 'not-a-commit');
-    expect(await guard(runDir, root)).toEqual({ ok: false, reasons: ['run.json subject is invalid: the pinned commit is not a full commit identifier'] });
+    const reason = 'run.json subject is invalid: the pinned commit is not a full commit identifier';
+    expect(await guard(runDir, root)).toEqual({ ok: false, reasons: [reason], refusals: [{ code: 'record-invalid', reason }], disclosures: DISCLOSED });
   });
 
-  it('accepts a pin moved to another consented revision: that the draft, inventory and verdict name the pinned revision is the later steps\' check', async () => {
+  // R-POLARIS-DOSSIER-S3-GATES-1 finding 1(a): the pin moved, with no other edit, from non-governed A to governed, consented C.
+  it('refuses a pin moved from a non-governed to a governed consented revision', async () => {
     const { runDir, root } = await started();
     rewritePin(runDir, commits.C);
-    expect((await guard(runDir, root)).ok).toBe(true);
+    const opened: string[] = [];
+    const result = await guard(runDir, root, { opened });
+    expect(opened).toEqual([commits.C]);
+    expect(codes(result)).toEqual(['governed-changed', 'statement']);
+    expect(!result.ok && result.reasons[0]).toBe('the subject at the pinned revision is governed now (the pinned tree lists 1 path(s) under an openspec/ directory; the pinned tree lists 1 path(s) under a .syzygy/ directory, counted adopted or not), not the non-governed the run record states');
+    // A statement in force does not rescue it: the run record still states another kind and relies on none.
+    expect(codes(await guard(runDir, root, { providerStatements: statements(STATEMENT) }))).toEqual(['governed-changed', 'statement-changed']);
+  });
+
+  // Finding 1(b): a governed run's record edited down to non-governed with no statement, then the statement withdrawn.
+  it('refuses a governed run whose record was downgraded to non-governed, before and after the statement is withdrawn', async () => {
+    const { runDir, root } = await started({ clone: cloneAt(commits.B), providerStatements: statements(STATEMENT) });
+    editSubject(runDir, (subject) => { subject['governed'] = { kind: 'non-governed', because: ['edited'] }; subject['providerStatement'] = null; });
+    expect(runStatus(runDir).ok).toBe(true);
+    expect(codes(await guard(runDir, root, { providerStatements: statements(STATEMENT) }))).toEqual(['governed-changed', 'statement-changed']);
+    expect(codes(await guard(runDir, root, { providerStatements: statements({ ...STATEMENT, withdrawn: true }) }))).toEqual(['governed-changed', 'statement']);
+  });
+
+  it('refuses when the project input in force now records a drawer the run did not start under', async () => {
+    const { runDir, root } = await started();
+    expect(codes(await guard(runDir, root, { projectInput: DRAWER }))).toEqual(['governed-changed', 'statement']);
+  });
+
+  it('passes a pin moved between non-governed consented revisions, and shows the live label of the revision now pinned', async () => {
+    const root = records({}, [['fixture-a', commits.A], ['fixture-a2', commits.A2]]);
+    const { runDir } = await started({ root });
+    rewritePin(runDir, commits.A2);
+    expect(await guard(runDir, root)).toMatchObject({ ok: true, revision: { commit: commits.A2, label: 'fixture-a2' }, governed: { kind: 'non-governed' } });
   });
 });
 
@@ -395,7 +518,7 @@ describe('preflight', () => {
     const result = await run(records({ [CONSENT_ACT]: null, [POLICY_ACT]: null }));
     expect(result.ok && result.report.outcome).toBe('not-ready');
     expect(result.ok && result.report.missing).toEqual([
-      'observation consent: no observation consent in force names https://github.com/redis/redis as its Upstream',
+      'observation consent: no observation consent in force names https://github.com/redis/redis as its Upstream: no observation record names https://github.com/redis/redis as its Upstream',
       'classification and screening policy: no screening-scope policy act is recorded',
     ]);
   });

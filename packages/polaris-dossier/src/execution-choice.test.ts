@@ -7,7 +7,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
 import { runDossierCli } from './cli.js';
 import { allowExecution, readExecutionChoice, RUN_DIRECTORY_CHOICES } from './execution-choice.js';
-import { NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import type { PinnedObjectReader } from './git-object-reader.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 
@@ -21,6 +22,7 @@ const RUN_ID = `run-${'a'.repeat(32)}`;
 const ALL = ['owner-started-session', 'owners-own-host', 'owner-attends'];
 const SUBJECT: RunSubject = {
   repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
+  clone: { path: '/srv/clones/redis', declaredBy: 'operator', label: 'Inferred', use: 'read' },
   pinnedRevision: { commit: REV, label: '8.10.2', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },
   startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },
   governed: { kind: 'non-governed', because: ['fixture'] },
@@ -50,17 +52,19 @@ const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
 const sources = (over: Partial<GateSources> = {}): GateSources => ({
   recordsRoot: REAL_ROOT,
   repositoryIdsFor: async () => ['redis-redis'],
-  consentedRevisionsFor: async () => [],
+  consentedRevisionsFor: async () => [{ label: '8.10.2', commitId: REV }],
   observationConsentFor: async () => ({ satisfied: true, record: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' }),
   registryEntry: async () => OK,
   screeningPolicy: async () => OK,
   d9: async () => OK,
   rfc720Ruling: async () => OK,
-  projectInput: NO_PROJECT_INPUT,
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: NO_PROVIDER_STATEMENTS,
   ...over,
 });
-const deps = (over: Partial<GateSources> = {}) => ({ sources: sources(over), now: () => NOW, recordId: () => 'choice-0123456789abcdef' });
+/** The step guard lists the pinned tree; this fixture tree holds no openspec/ or .syzygy/ path, so the subject stays non-governed. */
+const openReader = () => ({ listTree: async () => [{ path: 'src/server.c' }] }) as unknown as PinnedObjectReader;
+const deps = (over: Partial<GateSources> = {}) => ({ sources: sources(over), now: () => NOW, recordId: () => 'choice-0123456789abcdef', openReader });
 const allow = (run: string, revision = REV, declarations = ALL, over: Partial<GateSources> = {}) => allowExecution(run, { revision, declarations }, deps(over));
 
 describe('allow-execution: recorded', () => {
@@ -93,7 +97,7 @@ describe('allow-execution: recorded', () => {
   it('is what a permitting brief cites, when the arm is switched on and the probe passes', async () => {
     const run = runDirectory();
     await allow(run);
-    const brief = await issueBrief(run, { sources: sources(), now: () => NOW + 1000, permitting: {
+    const brief = await issueBrief(run, { sources: sources(), openReader, now: () => NOW + 1000, permitting: {
       enabled: true, choices: RUN_DIRECTORY_CHOICES, probe: { probe: async () => ({ passed: true, checked: 1, source: 'fixture' }) },
     } });
     expect(brief).toMatchObject({ ok: true, report: { executionRule: { arm: 'permitting' } } });
@@ -105,7 +109,7 @@ describe('allow-execution: recorded', () => {
     await allow(earlier);
     const run = runDirectory();
     fs.copyFileSync(path.join(earlier, 'execution-choice.json'), path.join(run, 'execution-choice.json'));
-    await issueBrief(run, { sources: sources(), now: () => NOW + 1000, permitting: {
+    await issueBrief(run, { sources: sources(), openReader, now: () => NOW + 1000, permitting: {
       enabled: true, choices: RUN_DIRECTORY_CHOICES, probe: { probe: async () => ({ passed: true, checked: 1, source: 'fixture' }) },
     } });
     expect(JSON.parse(fs.readFileSync(path.join(run, 'brief.json'), 'utf8')).executionRule).toMatchObject({
@@ -137,7 +141,7 @@ describe('allow-execution: refused', () => {
 
   it('refuses after the brief', async () => {
     const run = runDirectory();
-    await issueBrief(run, { sources: sources(), now: () => NOW });
+    await issueBrief(run, { sources: sources(), openReader, now: () => NOW });
     expect(await allow(run)).toMatchObject({ ok: false, refusal: { stage: 'briefed', reason: 'the run already holds brief.md, brief.json: the choice must be recorded before the brief is issued' } });
     nothingWritten(run);
   });
@@ -164,7 +168,16 @@ describe('allow-execution: refused', () => {
 
   it('refuses when the pinned revision is no longer consented', async () => {
     const run = runDirectory();
-    expect(await allow(run, REV, ALL, { observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }) })).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
+    expect(await allow(run, REV, ALL, { observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }) })).toMatchObject({
+      ok: false, refusal: { stage: 'reverify', refusals: [{ code: 'revision-unnamed', reason: `the recorded pinned revision ${REV} is not a revision the in-force observation consent for redis-redis names: withdrawn` }] },
+    });
+    nothingWritten(run);
+  });
+
+  it('refuses when the project input now records a drawer: the subject is decided again, never read from run.json', async () => {
+    const run = runDirectory();
+    const result = await allow(run, REV, ALL, { projectInput: { drawerFor: async () => ({ stated: true, drawer: 'present', record: 'PROJECT-INPUT-FIXTURE@2' }) } });
+    expect(!result.ok && result.refusal.refusals?.map(r => r.code)).toEqual(['governed-changed', 'statement']);
     nothingWritten(run);
   });
 
@@ -215,7 +228,7 @@ describe('the stored choice is read strictly and never as a consent (R3-F7)', ()
 describe('syzygy dossier allow-execution', () => {
   const cli = async (argv: readonly string[], over: Partial<GateSources> = {}) => {
     let stdout = '', stderr = '';
-    const code = await runDossierCli(argv, { stdout: (t) => { stdout += t; }, stderr: (t) => { stderr += t; } }, { sources: sources(over), now: () => NOW });
+    const code = await runDossierCli(argv, { stdout: (t) => { stdout += t; }, stderr: (t) => { stderr += t; } }, { sources: sources(over), now: () => NOW, openReader });
     return { code, stdout, stderr };
   };
 

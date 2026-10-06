@@ -4,8 +4,10 @@
  * Governed when any one holds: the project input records a kernel evidence drawer; or the listing holds an `openspec/**`
  * specification, a capability declaration or declared topology. A path listing cannot tell whether a declaration is adopted, so every
  * path under a `.syzygy/` tree counts, adopted or not (R3-F9: "the scenario wording 'an adopted capability declaration' is not the
- * test"). This reading counts a path segment `openspec` or `.syzygy` at any depth and in any letter case, which is never less strict
- * than a root-only, exact-case match. Non-governed only when the project input states that no drawer exists and no such path is
+ * test"). This reading counts a path segment `openspec` or `.syzygy` at any depth, after NFKC and case folding and with trailing
+ * dots and spaces dropped, which is never less strict than a root-only, exact-case match. Every listed entry counts, symlinks and
+ * gitlinks included; a submodule's own contents are not in the pinned tree and are not counted, and an empty tree lists no path.
+ * Non-governed only when the project input states that no drawer exists and no such path is
  * listed. When the project input does not state it, the subject is `unstated` and needs the per-project statement as a governed one
  * does. */
 
@@ -28,7 +30,8 @@ export interface GovernedDecision {
 const FIRST_PATHS = 5;
 
 export function governedSubject(drawer: DrawerStatement, paths: readonly string[]): GovernedDecision {
-  const segmentsOf = (p: string): readonly string[] => p.toLowerCase().split('/');
+  // NFKC, then upper and lower case (so `ſ` and the Kelvin sign fold too), then trailing dots and spaces dropped as NTFS does.
+  const segmentsOf = (p: string): readonly string[] => p.split('/').map(s => s.normalize('NFKC').toUpperCase().toLowerCase().replace(/[. ]+$/u, ''));
   const openspec = paths.filter(p => segmentsOf(p).includes('openspec'));
   const syzygy = paths.filter(p => segmentsOf(p).includes('.syzygy'));
   const governing = [...new Set([...openspec, ...syzygy])];

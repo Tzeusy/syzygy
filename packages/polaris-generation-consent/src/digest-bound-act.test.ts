@@ -104,6 +104,30 @@ describe('records port: repositoryIdsFor', () => {
   });
 });
 
+// Why no consent is in force for a URL (R-POLARIS-DOSSIER-S3-GATES-1 note 4): reporting only, never a grant.
+describe('records port: consentAbsenceFor', () => {
+  const URL_ = 'https://github.com/redis/redis';
+  const why = (files: Record<string, string>, now = AT) =>
+    createAdmissionRecordsPort({ reader: createPackageAdmissionReader({ root: '/r', fs: memoryFs(files) }), now: () => now }).consentAbsenceFor!(URL_);
+  it('says when no record names the URL as its Upstream', async () => {
+    expect(await why(obsWorld(obsText(null)))).toBe('no observation record names https://github.com/redis/redis as its Upstream');
+  });
+  it('says when the record is not in force yet', async () => {
+    expect(await why(obsWorld(obsText(UPSTREAM)), AT - 1)).toBe('the observation record(s) naming https://github.com/redis/redis are not in force: PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7 is not in force yet');
+  });
+  it('says when the record\'s bytes are not the act\'s argument', async () => {
+    const files = obsWorld(obsText(UPSTREAM));
+    files[REDIS_PATH] = obsText(UPSTREAM, 'redis-redis', '\n<!-- edited -->\n');
+    expect(await why(files)).toBe('the observation record(s) naming https://github.com/redis/redis are not in force: PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7 has no owner act in force over its current bytes');
+  });
+  it('says when the records cannot be read at all', async () => {
+    expect(await why(obsWorld(obsText(UPSTREAM, 'redis-redis', `\n${UPSTREAM}\n`)))).toBe('the admission act records could not be read (invalid-records), so no consent can be established');
+  });
+  it('names a record in force as such, never as absent', async () => {
+    expect(await why(obsWorld(obsText(UPSTREAM)))).toBe('the observation record(s) naming https://github.com/redis/redis: PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7 is in force');
+  });
+});
+
 describe('digest-bound act cross-check (RFC3-16(a))', () => {
   const ENTRY = '{"entries":[{"observerId":"x"}]}\n';
   const ACT_FILE = `${DECISIONS_DIR}/PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md`;

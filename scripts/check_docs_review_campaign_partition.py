@@ -298,6 +298,11 @@ CAMPAIGNS = (
         "Polaris dossier S2 object reader",
         r"R-POLARIS-DOSSIER-S2-READER-.*\.md",
     ),
+    campaign(
+        "polaris-dossier-s3-gates",
+        "Polaris dossier S3 start gates",
+        r"R-POLARIS-DOSSIER-S3-GATES-.*\.md",
+    ),
 )
 
 

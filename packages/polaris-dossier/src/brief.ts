@@ -7,7 +7,7 @@ import { readSec3 } from './doctrine-quote.js';
 import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
-import { reverifyPinnedRevision } from './reverify.js';
+import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
@@ -49,6 +49,9 @@ export interface BriefInput {
   readonly issuedAt: number;
   readonly schemaSha256: string;
   readonly executionRule: ExecutionRule;
+  /** The revision's label as the in-force consent gives it at this step (`reverifyPinnedRevision`), never the run record's copy; null
+   * when it gives the commit more than one label. */
+  readonly revisionLabel: string | null;
 }
 
 /** The brief's text. Pure: everything in it is Syzygy-authored or comes from the run record and the doctrine file. */
@@ -65,7 +68,7 @@ export function renderBrief(input: BriefInput): string {
     `- Brief version: \`${BRIEF_VERSION}\``,
     `- Run: \`${input.runId}\``,
     `- Repository: ${subject.repository.url} (\`${subject.repository.repositoryId}\`)`,
-    `- Pinned revision: \`${commit}\` (${subject.pinnedRevision.label})`,
+    `- Pinned revision: \`${commit}\` (${input.revisionLabel ?? 'the in-force consent gives it no single label'})`,
     `- Draft schema: \`${LOCAL_DRAFT_SCHEMA_VERSION}\`, in \`${RUN_LAYOUT.draftSchema}\` beside this brief (sha256 \`${input.schemaSha256}\`)`,
     `- Issued: ${isoOf(input.issuedAt)}, on Syzygy's clock`,
     '',
@@ -142,6 +145,8 @@ export interface BriefRefusal {
   readonly stage: BriefStage;
   readonly reason: string;
   readonly reasons?: readonly string[];
+  /** The step guard's refusals with their machine codes, when the guard refused. */
+  readonly refusals?: readonly ReverifyRefusal[];
   readonly disclosures: readonly string[];
 }
 
@@ -167,6 +172,8 @@ export interface BriefDeps {
   readonly now: () => number;
   /** The permitting arm; off unless a caller (today only a test) enables it with S4's ports. */
   readonly permitting?: PermittingArm;
+  /** The object reader the step guard lists the pinned tree with; the default is the re-hashing in-process reader. */
+  readonly openReader?: ReverifyOptions['openReader'];
 }
 
 const DISCLOSURES = [
@@ -178,13 +185,13 @@ const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8
 
 export async function issueBrief(runDir: string, deps: BriefDeps): Promise<BriefResult> {
   const run = path.resolve(runDir);
-  const refuse = (stage: BriefStage, reason: string, reasons?: readonly string[]): BriefResult =>
-    ({ ok: false, refusal: { command: 'brief', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: DISCLOSURES } });
+  const refuse = (stage: BriefStage, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): BriefResult =>
+    ({ ok: false, refusal: { command: 'brief', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: DISCLOSURES } });
   const runId = path.basename(run);
   if (!RUN_ID.test(runId)) return refuse('run', `${run} is not a run directory: its name is not of the form run-<32 hex>`);
 
-  const checked = await reverifyPinnedRevision(run, deps.sources, deps.now());
-  if (!checked.ok) return refuse('reverify', 'the pinned revision could not be verified again, so no brief is issued', checked.reasons);
+  const checked = await reverifyPinnedRevision(run, deps.sources, deps.now(), deps.openReader === undefined ? {} : { openReader: deps.openReader });
+  if (!checked.ok) return refuse('reverify', 'the pinned revision could not be verified again, so no brief is issued', checked.reasons, checked.refusals);
   const { subject, declared } = checked.record;
 
   const issued = [RUN_LAYOUT.brief, RUN_LAYOUT.draftSchema, RUN_LAYOUT.briefRecord].filter((name) => fs.existsSync(path.join(run, name)));
@@ -200,7 +207,7 @@ export async function issueBrief(runDir: string, deps: BriefDeps): Promise<Brief
   });
   const schemaText = `${JSON.stringify(draftSchemaDocument({ pinnedRevision: subject.pinnedRevision.commit, maxQuestions: declared.maxQuestions }), null, 2)}\n`;
   const schemaSha256 = sha256(schemaText);
-  const briefText = renderBrief({ runId, subject, declared, issuedAt, schemaSha256, executionRule });
+  const briefText = renderBrief({ runId, subject, declared, issuedAt, schemaSha256, executionRule, revisionLabel: checked.revision.label });
   const deadlineEnds = issuedAt + declared.deadline.seconds * 1000;
   const record = {
     format: BRIEF_RECORD_FORMAT,

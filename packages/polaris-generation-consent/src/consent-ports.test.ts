@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generationAnchorId, gitBlobObjectId, runGenerationPipeline, type AdmissionDecision, type AttemptInput, type GenerationSource, type PipelinePorts, type PipelineRequest } from '@syzygy/polaris-generation-core';
 import { AdmissionRecordError, parseAdmissionRecords, type AdmissionRecord } from './admission-record.js';
-import { UNCONSENTED, createConsentPorts, withConsent, type ConsentAudit, type ConsentPortsOptions, type ConsentReason } from './consent-ports.js';
+import { UNCONSENTED, createConsentPorts, notInForceRecords, withConsent, type ConsentAudit, type ConsentPortsOptions, type ConsentReason } from './consent-ports.js';
 
 const NOW = 1_800_000_000_000;
 const REDIS_REV = 'a'.repeat(40);
@@ -370,5 +370,28 @@ describe('withConsent', () => {
     expect(h.ports.permissionIdentity).not.toBe(h.base.permissionIdentity);
     expect(h.ports.admit).not.toBe(h.base.admit);
     expect(h.ports.permitted).not.toBe(h.base.permitted);
+  });
+});
+
+// Why each record is not in force, for a refusal's reason only (R-POLARIS-DOSSIER-S3-GATES-1 note 4); never a grant.
+describe('notInForceRecords', () => {
+  it.each([
+    ['withdrawn', () => [obs({ withdrawnAt: NOW - 5 })], 'withdrawn'],
+    ['future-dated', () => [obs({ inForceAt: NOW + 5 })], 'future-dated'],
+    ['bound by no act over its bytes', () => [obs({ inForceAt: null })], 'not-in-force'],
+    ['voided by a byte-different twin', () => [obs(), obs({ digest: hex('3') })], 'ambiguous-records'],
+  ])('names a record that is %s', (_name, make, reason) => {
+    const records = make();
+    expect([...notInForceRecords(records, NOW).values()]).toEqual(records.map(() => reason));
+  });
+  it('names a version its in-force successor supersedes, and leaves the successor out', () => {
+    const old = obs();
+    const next = obs({ version: '2', supersedes: 'PUBLIC-OBS-REDIS-2026-10-03@1', digest: hex('4') });
+    const why = notInForceRecords([old, next], NOW);
+    expect(why.get(old)).toBe('superseded');
+    expect(why.has(next)).toBe(false);
+  });
+  it('is empty when every record is in force', () => {
+    expect(notInForceRecords([obs(), egress()], NOW).size).toBe(0);
   });
 });

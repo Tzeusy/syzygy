@@ -101,6 +101,17 @@ export function inForceRecords(records: readonly AdmissionRecord[], now: number)
   return effective(records, now).live;
 }
 
+export type NotInForce = Dead | 'superseded';
+
+/** Why each record that is not in force at `now` is not, by the same rules as `inForceRecords`: for reporting only, never a grant. */
+export function notInForceRecords(records: readonly AdmissionRecord[], now: number): ReadonlyMap<AdmissionRecord, NotInForce> {
+  const { live, dead } = effective(records, now);
+  const out = new Map<AdmissionRecord, NotInForce>(dead);
+  const kept = new Set(live);
+  for (const r of records) if (!kept.has(r) && !out.has(r)) out.set(r, 'superseded');
+  return out;
+}
+
 function evaluate(records: readonly AdmissionRecord[], now: number, o: ConsentPortsOptions, providerId: string | null): Evaluation {
   if (providerId === null) return { ok: false, reasons: ['provider-unmapped'], relied: [] };
   const scoped = records.filter(r => r.project === o.consentingProject);

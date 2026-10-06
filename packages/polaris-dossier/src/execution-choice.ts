@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core';
 import type { ExecutionChoice, ExecutionChoiceSource } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
-import { reverifyPinnedRevision } from './reverify.js';
+import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 
 /** `syzygy dossier allow-execution <run> --revision <pinned> --declare <declarations>` (REQ-polaris-generation-033).
@@ -55,6 +55,8 @@ export interface AllowExecutionRefusal {
   readonly stage: AllowExecutionStage;
   readonly reason: string;
   readonly reasons?: readonly string[];
+  /** The step guard's refusals in machine form, beside `reasons`. */
+  readonly refusals?: readonly ReverifyRefusal[];
   readonly disclosures: readonly string[];
 }
 
@@ -72,6 +74,8 @@ export interface AllowExecutionDeps {
   readonly sources: GateSources;
   readonly now: () => number;
   readonly recordId?: () => string;
+  /** The object reader the step guard lists the pinned tree with; by default the re-hashing in-process reader. */
+  readonly openReader?: ReverifyOptions['openReader'];
 }
 
 const DISCLOSURES = [CHOICE_ATTRIBUTION, NOT_AN_EXECUTION_CONSENT, RECORDS_WITHIN_REACH,
@@ -79,13 +83,13 @@ const DISCLOSURES = [CHOICE_ATTRIBUTION, NOT_AN_EXECUTION_CONSENT, RECORDS_WITHI
 
 export async function allowExecution(runDir: string, request: AllowExecutionRequest, deps: AllowExecutionDeps): Promise<AllowExecutionResult> {
   const run = path.resolve(runDir);
-  const refuse = (stage: AllowExecutionStage, reason: string, reasons?: readonly string[]): AllowExecutionResult =>
-    ({ ok: false, refusal: { command: 'allow-execution', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: DISCLOSURES } });
+  const refuse = (stage: AllowExecutionStage, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): AllowExecutionResult =>
+    ({ ok: false, refusal: { command: 'allow-execution', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: DISCLOSURES } });
   const runId = path.basename(run);
   if (!RUN_ID.test(runId)) return refuse('run', `${run} is not a run directory: its name is not of the form run-<32 hex>`);
 
-  const checked = await reverifyPinnedRevision(run, deps.sources, deps.now());
-  if (!checked.ok) return refuse('reverify', 'the pinned revision could not be verified again, so no choice is recorded', checked.reasons);
+  const checked = await reverifyPinnedRevision(run, deps.sources, deps.now(), deps.openReader ? { openReader: deps.openReader } : {});
+  if (!checked.ok) return refuse('reverify', 'the pinned revision could not be verified again, so no choice is recorded', checked.reasons, checked.refusals);
   const pinned = checked.record.subject.pinnedRevision.commit;
   if (request.revision !== pinned) return refuse('revision', `--revision ${request.revision} is not this run's pinned revision ${pinned}; a choice covers one run and its pinned revision only`);
   const briefed = [RUN_LAYOUT.brief, RUN_LAYOUT.briefRecord].filter((name) => fs.existsSync(path.join(run, name)));
