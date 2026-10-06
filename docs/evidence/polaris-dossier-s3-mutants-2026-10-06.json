@@ -1,0 +1,247 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S3 slice (syzygy-qkea.4): the start-gate order, the HEAD-to-consent check, the governed predicate, the per-project statement gate, the reverification guard, the registry entry usability check, the D9 cross-check, the gitdir refusal, the state-root rule, and the consent package's digest-bound act cross-check and Upstream match. Not authority.",
+  "measuredOn": {
+    "commit": "8130eb4e3206f06d8f65069a559a2aa3bd08244a",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "fdaead1e2238be968bbae9a3a8d820ba1bdeb50dcf8f59197934b57393908e01"
+      },
+      {
+        "path": "packages/polaris-dossier/src/clone-head.ts",
+        "sha256": "ea3095465fed53ea8c85c2a62a5beeae4d4d16b57ce0a45f6322acaa9707af5b"
+      },
+      {
+        "path": "packages/polaris-dossier/src/gate-sources.ts",
+        "sha256": "67ad5715ee3b8d7a5bf7649e92d5b067d6054c65ab5baa8d2e56a4b735f87db2"
+      },
+      {
+        "path": "packages/polaris-dossier/src/governed.ts",
+        "sha256": "5006338d8a91de5e2fa85a8d082d3f5c891d415cd900130788a4cb866cfb92f4"
+      },
+      {
+        "path": "packages/polaris-dossier/src/init.ts",
+        "sha256": "dea915341461ed222836bfb2c58e7ca6fe856553b5ea477833274051df951e6d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/reverify.ts",
+        "sha256": "2fe41c65d653bcf4800298fe720670ae58331e025a7245c2e600bcc266c9deb3"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-record.ts",
+        "sha256": "3884247659b182107b15f5937232089ce98fbb424d796f1b8a8ebb0588a6b5a8"
+      },
+      {
+        "path": "packages/polaris-generation-consent/src/package-reader.ts",
+        "sha256": "54f6aa1fc2e0bc0418b87252ae69ce0ca038bf95a14a3db9ed23e49249491333"
+      },
+      {
+        "path": "packages/polaris-dossier/src/start-gates.test.ts",
+        "sha256": "48bffbad71458a3576058ba2d13760fdfac91e2e5e22747148a64d8c6054b357"
+      },
+      {
+        "path": "packages/polaris-dossier/src/gate-parts.test.ts",
+        "sha256": "673e1050004fa9ad2dba1da357a5663f91e9a8acf65d22ecfdb069a1553ecdad"
+      },
+      {
+        "path": "packages/polaris-dossier/src/status.test.ts",
+        "sha256": "ef0a23ee7e87c9459e0ebef10b011847efa26c655bcaea12d218e1c1ba1f112d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.test.ts",
+        "sha256": "b4c1ddf7562dc99ab4e82c8efb0298f56efd625a37ef3d72123eec4ae090919a"
+      },
+      {
+        "path": "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "sha256": "1b4923322af693e43526938e1971609a7875ac7563ad4002aba62fa27fbfd998"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S3 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "result": {
+    "killed": 18,
+    "total": 18
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  if (registryEntry.state !== 'ok' || screeningPolicy.state !== 'ok') {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "8 failed | 256 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  if (!consent.satisfied || pinned === undefined) {",
+      "new": "  if (pinned === undefined && false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 263 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "file": "packages/polaris-dossier/src/governed.ts",
+      "old": "  const syzygy = paths.filter(p => segmentsOf(p).includes('.syzygy'));",
+      "new": "  const syzygy = paths.filter(p => p.startsWith('.syzygy/'));",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "file": "packages/polaris-dossier/src/governed.ts",
+      "old": "    statementRequired: kind !== 'non-governed',",
+      "new": "    statementRequired: kind === 'governed',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 261 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  if (governed.statementRequired) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "10 failed | 254 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "  const live = named.filter(r => !r.withdrawn && r.act !== null",
+      "new": "  const live = named.filter(r => r.act !== null",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 261 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "  if (!consent.satisfied) reasons.push(",
+      "new": "  if (false) reasons.push(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 261 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "  if (subject.providerStatement !== null) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 263 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "  if (typeof entry.implementationVersion !== 'string' || entry.implementationVersion.trim() === '') {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "    if (form === null || form === undefined) return notEstablished(what);",
+      "new": "    if (form === null || form === undefined) return { state: 'ok', record: what };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "file": "packages/polaris-dossier/src/clone-head.ts",
+      "old": "  if (!stats.isDirectory()) return { ok: false, reason: `${gitDir} is not a directory (a gitdir pointer is refused, never followed); use a plain clone` };",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "    const stateRoot = options.values.get('--state-root') ?? env[STATE_ROOT_ENV];",
+      "new": "    const stateRoot = options.values.get('--state-root') ?? env[STATE_ROOT_ENV] ?? `${options.positional[0]}.dossier-state`;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 263 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.artifact} differ from the act's argument` };",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 421 passed (424)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (act.recordedAt > options.now) return { state: 'absent', why: `the act ${identity} is not in force yet` };",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 423 passed (424)",
+      "killed": true
+    },
+    {
+      "id": "M15",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "      if (namesDigestBoundAct(form, rel, await swept(rel, text))) return { state: 'refused',",
+      "new": "      if (false) return { state: 'refused',",
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "5 failed | 419 passed (424)",
+      "killed": true
+    },
+    {
+      "id": "M16",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "live.filter(r => r.class === 'observation' && r.upstream === url)",
+      "new": "live.filter(r => r.class === 'observation' && r.upstream?.toLowerCase() === url.toLowerCase())",
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 423 passed (424)",
+      "killed": true
+    },
+    {
+      "id": "M17",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": "  if (kind !== 'non-governed' && providerStatement === null) return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    },
+    {
+      "id": "M18",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "    paths = (await (ports.openReader ?? openPinnedObjectReader)({ gitDir: head.gitDir, revision: head.commit }).listTree()).map(entry => entry.path);",
+      "new": "    (ports.openReader ?? openPinnedObjectReader)({ gitDir: head.gitDir, revision: head.commit }); paths = (await import('node:fs')).readdirSync(request.clone, { recursive: true }).map(String).filter(p => !p.startsWith('.git'));",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 262 passed (264)",
+      "killed": true
+    }
+  ]
+}
