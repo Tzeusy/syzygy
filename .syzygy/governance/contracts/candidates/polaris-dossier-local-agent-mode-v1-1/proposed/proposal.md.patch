@@ -1,0 +1,44 @@
+diff --git a/openspec/changes/polaris-dossier-local-agent-mode/proposal.md b/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
+index 85380fc0..72368b8f 100644
+--- a/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
++++ b/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
+@@ -1,6 +1,6 @@
+ # Polaris dossier local-agent mode
+ 
+-> **Candidate — binds nothing.** Drafted 2026-10-05 under the owner direction
++> **Version 1.1.** Drafted 2026-10-05 under the owner direction
+ > `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`
+ > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`),
+ > which authorizes drafting and review only, and relies on the owner's
+@@ -12,11 +12,11 @@
+ > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`)
+ > and `POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`
+ > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`).
+-> It is not adopted, performs no act, and grants no read, egress, write or
+-> execution. Effect comes only from the owner's sign-off of the exact
+-> reviewed bytes (VIS-4), which may not be given until the owner has adopted
+-> the SEC-3 amendment that the review-1 rulings direct (item 1), drafted as
+-> doctrine amendment D9.
++> The owner signed off version 1.0 on 2026-10-06, after adopting the SEC-3
++> amendment that the review-1 rulings direct (item 1) as doctrine amendment
++> D9 the same day; these bytes bind only by the owner's sign-off of version
++> 1.1 (VIS-4). It grants no read, egress, write or execution beyond what
++> its requirements state.
+ 
+ **A Polaris dossier can be written by the operator's own Claude Code or Codex
+ session over a local clone, while Syzygy checks every quotation against the
+@@ -59,9 +59,11 @@ through one reviewed CC-REV-2 delta.
+   - 036 Self-reported discovery and in-session clarification.
+ - **Modified in effect, not in bytes:** for an operator-agent run the new
+   requirements displace or read named text of REQ-polaris-generation-001,
+-  002, 005, 006, 017, 018, 020, 022, 030 and 031, and of the base change's
+-  `INTERFACES.md`
+-  (Provider bullet; "Budget and retry decisions"). Each displaced sentence is
++  002, 005, 006, 017, 018, 020, 021, 022, 030 and 031, and of the base
++  change's `INTERFACES.md` (Provider bullet; "Budget and retry
++  decisions"), `OWNER-FLOW.md` ("Resolve warranted work"; "Materialize
++  once, then execute") and `SECURITY-CONTRACT.md` (the paragraph that
++  begins "The trail resides outside the governed plane"). Each displaced sentence is
+   quoted in the semantic delta. For a provider-mode run nothing changes.
+ - **RFC7-20, by the owner's reading, not by edit:** the owner ruled that
+   RFC7-20's consent condition governs drafts Syzygy computes, and that an
