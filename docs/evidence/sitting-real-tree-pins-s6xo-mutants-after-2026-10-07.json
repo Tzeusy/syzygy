@@ -1,0 +1,247 @@
+{
+  "subject": "syzygy-s6xo tree-conditional real-tree pins in screen.test.ts, check.test.ts and public-source-screening.test.ts",
+  "tree": "/tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/sim377b",
+  "commit": "4e503a56ef4d1e8539cea2fa59b3d2ea5919293a",
+  "arm": "after",
+  "subjectDigests": {
+    "packages/polaris-dossier/src/screen.ts": "sha256:fcc93959b4f47376362de39c0fea814e105d88888c4fade3e6b3680a789b05e0",
+    "packages/polaris-dossier/src/check.ts": "sha256:e1aee4cd941468909f97f0564b6055ebbac8d558347aa8e81416854ccd791598",
+    "packages/polaris-dossier/src/screen.test.ts": "sha256:da9c9f96ece715c2beea045e409756f3d8868dea4b1d4d6ba0c1df323ac97a94",
+    "packages/polaris-dossier/src/check.test.ts": "sha256:4638b5a3ecee55c68dc6360e1bdcacdf2327c96913d06e5b261518e68ce74acb",
+    "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "sha256:a2005a6e4e9448d11c98a8321ab98b89f6ed007adf2a1e80e622c9c07a834d03",
+    "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "sha256:821ed9a1c36a624e0ddc784840b66da6f49d58e4322d7fcabb53c62f9bed2d29"
+  },
+  "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts packages/polaris-dossier/src/check.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+  "mutants": [
+    {
+      "id": "S1-screen-ignores-the-act-chain",
+      "arm": "before",
+      "expectedKilledOnThisTree": false,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "old": "  if (chain.state !== 'ok') return { ok: false, why: `no screening policy is in force: ${chain.why}` };\n",
+          "new": "  if (chain.state !== 'ok') return buildDossierScreen(new Uint8Array(readBytes(path.join(root, POLICY_PATH))));\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the screen of the policy in force refuses a policy whose bytes are not the act's argument",
+        "the screen of the policy in force refuses before the act takes effect"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S2-screen-refuses-the-policy-in-force",
+      "arm": "after",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "old": "  return buildDossierScreen(new Uint8Array(bytes));\n",
+          "new": "  return { ok: false, why: 'mutant' };\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "check: the command loads the policy in force from the records root by default, and refuses at the screen while no screening act is in force there",
+        "the screen of the policy in force loads the policy the act chain puts in force, naming its digest",
+        "the screen of the policy in force builds the screen on this checkout exactly when a screening-scope act is recorded and the policy declares the scope"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S3-check-refuses-elsewhere",
+      "arm": "before",
+      "expectedKilledOnThisTree": false,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/check.ts",
+          "old": "  if (!screenLoad.ok) return refuse('screen', screenLoad.why);\n",
+          "new": "  if (!screenLoad.ok) return refuse('object-read', screenLoad.why);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "check: nothing Observed rests on a stored record refuses the step when no screening policy can be applied"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S4-check-always-refuses-at-screen",
+      "arm": "after",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/check.ts",
+          "old": "  if (!screenLoad.ok) return refuse('screen', screenLoad.why);\n",
+          "new": "  return refuse('screen', 'mutant');\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "check: a draft that follows every rule freezes revision 0, verifies every quotation against the committed blob and records its byte range",
+        "check: a draft that follows every rule never reads the working tree: a quotation of the uncommitted text fails",
+        "check: each rule refuses its own violation reports an altered quotation",
+        "check: each rule refuses its own violation reports an elided quotation",
+        "check: each rule refuses its own violation reports a joined quotation",
+        "check: each rule refuses its own violation reports a quotation outside its cited range",
+        "check: each rule refuses its own violation reports a cited path absent at the pinned revision",
+        "check: each rule refuses its own violation reports a directory cited as a file",
+        "check: each rule refuses its own violation reports a range beyond the blob",
+        "check: each rule refuses its own violation reports a range that runs backwards",
+        "check: each rule refuses its own violation reports a claim the agent labels Observed",
+        "check: each rule refuses its own violation reports a claim with no label",
+        "check: each rule refuses its own violation reports an understanding item labelled non-normative",
+        "check: each rule refuses its own violation reports an inferred claim with no citation",
+        "check: each rule refuses its own violation reports a non-normative block with a citation",
+        "check: each rule refuses its own violation reports an Unknown block with no reason from the closed list",
+        "check: each rule refuses its own violation reports a claim resting on execution with no reported command",
+        "check: each rule refuses its own violation reports a claim resting on execution that names none",
+        "check: each rule refuses its own violation reports an understanding record missing an item",
+        "check: each rule refuses its own violation reports more clarifications than the declared limit",
+        "check: each rule refuses its own violation reports a draft naming another revision",
+        "check: each rule refuses its own violation reports a repeated identity",
+        "check: each rule refuses its own violation reports a disposition naming another asset",
+        "check: each rule refuses its own violation reports a quotation naming a citation of another block",
+        "check: each rule refuses its own violation reports more quotations than named citations",
+        "check: each rule refuses its own violation reports a quotation in a non-normative block",
+        "check: each rule refuses its own violation reports a lead-in with no quotation",
+        "check: each rule refuses its own violation reports a self-reported path absent at the pinned revision",
+        "check: each rule refuses its own violation reports a self-reported selection absent at the pinned revision",
+        "check: each rule refuses its own violation reports a draft that is not JSON, and still freezes it as a revision",
+        "check: each rule refuses its own violation reports schema faults beside every other finding in one submission",
+        "check: a quotation from an excluded file renders its block Unknown (excluded-content) for a file outside the code-content extensions, with no finding and none of its bytes",
+        "check: a quotation from an excluded file renders its block Unknown (excluded-content) for a file whose body holds active content, with no finding and none of its bytes",
+        "check: a quotation from an excluded file renders its block Unknown (excluded-content) for a file whose body a secret detector matches, with no finding and none of its bytes",
+        "check: a quotation from an excluded file renders its block Unknown (excluded-content) for a denied path, with no finding and none of its bytes",
+        "check: a quotation from an excluded file records each cited blob with its screening outcome, and reads no blob a path rule excludes",
+        "check: a quotation from an excluded file names a path a secret detector matches by neither path nor object identifier, in the record or a finding",
+        "check: limits Syzygy enforces counts each resubmission against the repair-cycle limit and refuses past it, writing nothing",
+        "check: limits Syzygy enforces accepts a zero repair-cycle limit and refuses the first resubmission",
+        "check: limits Syzygy enforces accepts a zero question limit and reports the first recorded question",
+        "check: nothing Observed rests on a stored record re-derives every result: an altered stored range, check result or frozen draft changes nothing the next check reports",
+        "check: nothing Observed rests on a stored record reads objects only from the clone the run record names, and refuses a record that names none",
+        "check: nothing Observed rests on a stored record refuses the step when an object cannot be read and verified, freezing nothing",
+        "check: nothing Observed rests on a stored record refuses the step when no screening policy can be applied",
+        "check: the adapter-credential check after a permitting brief reports a readable credential as a finding of the step, telling the agent to run nothing further, and logs it",
+        "check: the command exits 0 on a passing draft and 1 on findings, printing the same document with --json",
+        "check: the command loads the policy in force from the records root by default, and refuses at the screen while no screening act is in force there"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S5-screen-pin-reads-the-tree-inverted",
+      "arm": "both",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/screen.test.ts",
+          "old": "    if (!recorded) expect(load)",
+          "new": "    if (recorded) expect(load)"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the screen of the policy in force builds the screen on this checkout exactly when a screening-scope act is recorded and the policy declares the scope"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S6-check-pin-reads-the-tree-inverted",
+      "arm": "both",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/check.test.ts",
+          "old": "    if (!inForce) {\n",
+          "new": "    if (inForce) {\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "check: the command loads the policy in force from the records root by default, and refuses at the screen while no screening act is in force there"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S7-port-reads-the-policy-as-the-act-record",
+      "arm": "before",
+      "expectedKilledOnThisTree": false,
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "old": "readOrAbsent(join(syzygyRoot, PUBLIC_SOURCE_ACT_RECORD_PATH))",
+          "new": "readOrAbsent(join(syzygyRoot, PUBLIC_SOURCE_POLICY_PATH))"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the policy act gate fails closed the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S8-port-skips-the-digest-check",
+      "arm": "after",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "old": "  if (policySha256 !== digests[0]) refuse(",
+          "new": "  if (policySha256 === 'mutant') refuse("
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the policy act gate fails closed refuses when the policy does not hash to the act argument",
+        "the policy act gate fails closed the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S9-port-pin-reads-the-digest-inverted",
+      "arm": "after",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "old": "    if (argument === createHash(",
+          "new": "    if (argument !== createHash("
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the policy act gate fails closed the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses"
+      ],
+      "killed": true
+    },
+    {
+      "id": "S10-port-pin-reads-the-record-inverted",
+      "arm": "both",
+      "expectedKilledOnThisTree": true,
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "old": "    if (!fs.existsSync(recordUrl)) {",
+          "new": "    if (fs.existsSync(recordUrl)) {"
+        }
+      ],
+      "exit": 1,
+      "tests": 114,
+      "failed": [
+        "the policy act gate fails closed the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses"
+      ],
+      "killed": true
+    }
+  ]
+}
