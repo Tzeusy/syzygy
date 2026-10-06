@@ -3,7 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, workerChangeVerificationId, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
 
 import { renderTrajectoryPage } from './trajectory.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -277,6 +277,7 @@ describe('Trajectory', () => {
     // encoding and its disclosure, never Observed and never "Verified".
     const reportedModel = build(alternateSeeds, { ...passing, provenance: 'operator-reported', ingestedAt: capturedAt });
     expect(reportedModel.testArtifactVerification.kind).toBe('reported');
+    expect(reportedModel.unknownSubjects.find((subject) => subject.id === workerChangeVerificationId('bu-verified-1'))?.epistemic.label).toBe('Unknown');
     const reportedCard = cardBody(renderTrajectoryPage(reportedModel), 'bu-verified-1');
     const badge = /<span class="epistemic [^"]*" data-parity-field="worker-change-verification"[^>]*>/.exec(reportedCard)?.[0] ?? '';
     expect(badge).toContain('class="epistemic epistemic-unknown"');
