@@ -1,6 +1,9 @@
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { issueBrief } from './brief.js';
+import { createCredentialProbe, credentialListFromEnv } from './credential-probe.js';
+import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution-choice.js';
+import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
 import { createPackageGateSources, type GateSources } from './gate-sources.js';
 import { initRun } from './init.js';
 import { preflight } from './preflight.js';
@@ -38,6 +41,12 @@ Commands:
                       directory, starting the deadline clock; a run is briefed once.
                       The brief carries SEC-3's execution rule, quoted from the
                       adopted security.md
+  allow-execution <run> --revision <pinned> --declare owner-started-session,owners-own-host,owner-attends
+                      record the owner's execution choice for this one run and its
+                      pinned revision, with the operator's three declarations; run it
+                      personally, never through an agent. Refused while D9 is not in
+                      force, after the brief, or for another run or revision. It is
+                      not an execution consent and approves no execution profile
   status <run>        report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -108,7 +117,20 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const flag = rest.find((arg) => arg.startsWith('-'));
     if (flag !== undefined) return usageError(`unknown option for brief: ${flag}`);
     if (rest.length !== 1) return usageError('brief takes exactly one argument, the run directory');
-    const result = await issueBrief(rest[0]!, { sources: sources(), now });
+    const env = ports.env ?? process.env;
+    const result = await issueBrief(rest[0]!, { sources: sources(), now, permitting: {
+      enabled: PERMITTING_ARM_ENABLED, choices: RUN_DIRECTORY_CHOICES, probe: createCredentialProbe(credentialListFromEnv(env)),
+    } });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'allow-execution') {
+    const options = parseOptions(rest, ['--revision', '--declare']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('allow-execution takes exactly one positional argument, the run directory');
+    const revision = options.values.get('--revision'), declare = options.values.get('--declare');
+    if (revision === undefined) return usageError('allow-execution requires --revision <pinned revision>');
+    if (declare === undefined) return usageError(`allow-execution requires --declare ${Object.keys(DECLARATIONS).join(',')}`);
+    const result = await allowExecution(options.positional[0]!, { revision, declarations: declare.split(',') }, { sources: sources(), now });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'init') {

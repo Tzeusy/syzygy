@@ -56,7 +56,7 @@ describe('the permitting arm is off in this build', () => {
   it('gives SEC-3\'s rule with the reason, and never consults a choice or the probe', async () => {
     const source = choices(CHOICE), port = probe(true);
     const rule = await decideExecutionRule(inputs({ permitting: { enabled: false, choices: source, probe: port } }));
-    expect(rule).toMatchObject({ arm: 'sec-3', notPermittedBecause: ['the permitting arm is not enabled in this build: the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe are not built yet (syzygy-qkea.5), so no brief may permit execution'] });
+    expect(rule).toMatchObject({ arm: 'sec-3', notPermittedBecause: ['the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution'] });
     expect([source.calls, port.calls]).toEqual([0, 0]);
   });
 
