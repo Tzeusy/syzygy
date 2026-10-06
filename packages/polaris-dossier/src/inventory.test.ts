@@ -266,7 +266,7 @@ describe('session-prompt inventory', () => {
   });
 
   it.each<[string, Parameters<typeof sessionPrompt>[1], string]>([
-    ['a review session, until S8', { role: 'review', kind: 'fidelity' }, 'not-in-build'],
+    ['a design review session, until render (S9)', { role: 'review', kind: 'design' }, 'not-in-build'],
     ['--kind on an inventory session', { role: 'inventory', kind: 'fidelity' }, 'role'],
     ['an unknown tool', { role: 'inventory', tool: 'aider' }, 'context'],
     ['a model with a control character', { role: 'inventory', model: 'gpt\u0007' }, 'context'],
@@ -313,7 +313,7 @@ describe('launch-form', () => {
   it('refuses before any hand-over, for a review session and for an unknown role', async () => {
     const run = await runWithDrafts();
     expect(await launchForm(run, { role: 'inventory', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'session' } });
-    expect(await launchForm(run, { role: 'review', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'not-in-build' } });
+    expect(await launchForm(run, { role: 'review', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'session' } });
     expect(await launchForm(run, { role: 'author', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'role' } });
   });
 
@@ -582,6 +582,6 @@ describe('Syzygy starts no session', () => {
     const SRC = path.dirname(fileURLToPath(import.meta.url));
     const PROCESS = /from\s+['"](?:node:)?(?:child_process|worker_threads|cluster)['"]|import\(\s*['"](?:node:)?(?:child_process|worker_threads|cluster)['"]\s*\)/;
     expect(PROCESS.test("import { spawn } from 'node:child_process';")).toBe(true);
-    for (const name of ['session-handover.ts', 'inventory.ts']) expect(PROCESS.test(fs.readFileSync(path.join(SRC, name), 'utf8'))).toBe(false);
+    for (const name of ['session-handover.ts', 'inventory.ts', 'review.ts']) expect(PROCESS.test(fs.readFileSync(path.join(SRC, name), 'utf8'))).toBe(false);
   });
 });

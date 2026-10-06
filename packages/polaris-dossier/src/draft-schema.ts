@@ -201,6 +201,45 @@ export function inventorySchemaDocument(parameters: { readonly pinnedRevision: s
   };
 }
 
+/** The local-agent fidelity verdict schema (REQ-polaris-generation-035, 006). The review session writes it from its packet alone: the
+ * packet's digest, its own session identifier, coverage of every inventory entry by the draft, support of every claim block by the
+ * packet's spans, the accuracy of every inventory entry against those spans, and every finding with its severity and its deficient
+ * subject. A quotation in a `reason` or `message` takes the lead-in form and names, in `quotations`, the packet span it is taken from. */
+export const LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION = 'polaris-dossier-local-fidelity-verdict-v1';
+export const DEFICIENT_SUBJECTS = Object.freeze(['discovery', 'understanding', 'clarification', 'argument', 'prose', 'asset', 'rendering'] as const);
+export const VERDICT_QUOTATION_FORM = `Write each quotation in a \`reason\` or \`message\` with the lead-in and straight double quotes, exactly: ${QUOTE_LEAD_IN} "Each command runs to completion before the next one starts." The row's \`quotations\` names, in order, the packet span each such quotation is taken from. Quoted text without the lead-in is your prose, not a quotation.`;
+
+export function localVerdictSchema(parameters: { readonly pinnedRevision: string }): DraftSchemaWithDefs {
+  if (!/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(parameters.pinnedRevision)) throw new Error('draft-schema: the pinned revision is not a commit identifier');
+  const quotations: DraftSchema = { type: 'array', items: handle, minItems: 0, maxItems: 20, uniqueItems: true, description: VERDICT_QUOTATION_FORM };
+  return { defs: {}, root: object({
+    schemaVersion: one(LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION),
+    pinnedRevision: one(parameters.pinnedRevision),
+    packetSha256: { type: 'string', minLength: 64, maxLength: 64, pattern: '^[0-9a-f]{64}$' },
+    sessionId,
+    inventoryCoverage: list(object({
+      entryId: handle, disposition: choice(['represented', 'justified-omission', 'unsupported', 'unresolved']), blockIds: refs(0, 5000), reason: text, quotations,
+    }), 1, 5000),
+    inventoryAccuracy: list(object({ entryId: handle, accuracy: choice(['accurate', 'inaccurate', 'unresolved']), spanIds: refs(0, 200), reason: text, quotations }), 1, 5000),
+    blockSupport: list(object({
+      blockId: handle, verdict: choice(['supported', 'anchor-does-not-support', 'unresolved']), spanIds: refs(0, 200), reason: text, quotations,
+    }), 1, 5000),
+    findings: list(object({ severity: choice(['blocking', 'advisory']), subject: choice(DEFICIENT_SUBJECTS), target: handle, message: text, quotations }), 0, 1000),
+    readiness: choice(['ready', 'not-ready']),
+  }) };
+}
+
+/** The verdict schema as the JSON Schema document the fidelity packet carries. */
+export function verdictSchemaDocument(parameters: { readonly pinnedRevision: string }): Record<string, unknown> {
+  const { root } = localVerdictSchema(parameters);
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: `urn:syzygy:polaris-dossier:${LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION}`,
+    title: `Polaris dossier local-agent fidelity verdict (${LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION})`,
+    ...root,
+  };
+}
+
 export interface DraftSchemaError { readonly path: string; readonly detail: string }
 
 const MAX_ERRORS = 50;

@@ -11,6 +11,7 @@ import { checkInventory, inventoryBrief } from './inventory.js';
 import { preflight } from './preflight.js';
 import type { ReverifyOptions } from './reverify.js';
 import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
+import { reviewCheck, reviewPacket } from './review.js';
 import type { ScreenLoad } from './screen.js';
 import { launchForm, sessionPrompt } from './session-handover.js';
 import { runStatus } from './status.js';
@@ -66,12 +67,15 @@ Commands:
                       the command that starts an interactive session there
                       (claude '<prompt>', also behind !, or codex '<prompt>'), and
                       record the prompt's digest; Syzygy starts nothing. The tool, version and
-                      model default to the run's declared values. Review sessions are
-                      refused until review packets exist (S8)
-  launch-form <run> inventory terminal|bang
+                      model default to the run's declared values. review --kind
+                      fidelity builds the fidelity packet and copies it, with its
+                      digest, into the review session's directory there;
+                      --kind design is refused until render exists (S9)
+  launch-form <run> inventory|review terminal|bang
                       record, once, how the operator declares the latest inventory
-                      session was started; any other form is refused. An inventory
-                      counts only once its launch form is recorded
+                      or fidelity review session was started; any other form is
+                      refused. An inventory or verdict counts only once its launch
+                      form is recorded
   inventory-brief <run>
                       print Syzygy's own rendering of the latest inventory session's
                       brief, and whether the stored copy matches it
@@ -80,7 +84,20 @@ Commands:
                       default) as check checks a draft, refuse one declared under the
                       authoring session's identifier, freeze it as inventory/rev-N.json
                       and write inventory/checks/rev-N.json; exit 1 on any finding
-  status <run>        report a run's state, limits spent, open findings and
+  review-packet <run> --kind fidelity|design
+                      build the fidelity packet from the latest passed draft revision
+                      and the inventory of record (the draft without its discovery
+                      account, the frozen inventory, every cited span as Syzygy reads
+                      it now, the criteria and the verdict schema), write it under
+                      reviews/ with its digest and print the digest; design is
+                      refused until render exists (S9)
+  review-check <run> [--verdict <file>]
+                      rebuild the packet and validate the verdict (the latest fidelity
+                      session's verdict.json by default): schema, packet digest,
+                      pinned revision, session identifiers, completeness, quotations
+                      and consistency; freeze it as reviews/fidelity-verdict-N.json
+                      and record the result in reviews/checks/; exit 1 when refused
+  status <run>       report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
 
@@ -183,8 +200,26 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const result = await sessionPrompt(run, {
       role, ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
       ...(v.has('--tool-version') ? { toolVersion: v.get('--tool-version')! } : {}), ...(v.has('--model') ? { model: v.get('--model')! } : {}),
-    }, { sources: sources(), now, ...openReader });
+    }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'review-packet') {
+    const options = parseOptions(rest, ['--kind']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('review-packet takes exactly one positional argument, the run directory');
+    const kind = options.values.get('--kind');
+    if (kind === undefined) return usageError('review-packet requires --kind fidelity|design');
+    const result = await reviewPacket(options.positional[0]!, { kind }, { sources: sources(), now, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'review-check') {
+    const options = parseOptions(rest, ['--verdict']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('review-check takes exactly one positional argument, the run directory');
+    const verdictFile = options.values.get('--verdict');
+    const result = await reviewCheck(options.positional[0]!, verdictFile === undefined ? {} : { verdictFile }, { sources: sources(), now, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    if (!result.ok) return refused(result.refusal);
+    return report(result.report, result.report.outcome === 'validated' ? EXIT.clean : EXIT.refused);
   }
   if (command === 'launch-form') {
     const options = parseOptions(rest, ['--kind']);
