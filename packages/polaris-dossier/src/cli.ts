@@ -61,9 +61,11 @@ Commands:
                       and write checks/rev-N.json; exit 1 on any finding
   session-prompt <run> inventory|review [--kind <kind>] [--tool <tool>] [--tool-version <v>] [--model <m>]
                       at a hand-over: make the inventory session's directory under
-                      inventory/, holding only the inventory brief, print the fixed
-                      prompt and the command the operator starts it with, and record
-                      the prompt's digest; Syzygy starts nothing. The tool, version and
+                      <state root>/<run id>.sessions/, beside the run directory and
+                      holding only the inventory brief, print the fixed prompt and
+                      the command that starts an interactive session there
+                      (claude '<prompt>', also behind !, or codex '<prompt>'), and
+                      record the prompt's digest; Syzygy starts nothing. The tool, version and
                       model default to the run's declared values. Review sessions are
                       refused until review packets exist (S8)
   launch-form <run> inventory terminal|bang
