@@ -88,16 +88,26 @@ V1_ACT_REL = DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-A
 #: Row 7's performed record: until it exists the class is outside RFC5-14's vocabulary.
 CLASS_ACT_REL = DECISIONS / "RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
 #: Provisional until a round returns: the confirming raw and its notes record.
-CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md"
-DISPOSITION_REL = PKG / "ROUND-6-DISPOSITIONS.md"
+CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-7-RAW.md"
+DISPOSITION_REL = PKG / "ROUND-7-DISPOSITIONS.md"
 #: The commit the confirming review read. None until a round returns CONFIRM or
 #: notes-only CONFIRM WITH EXCEPTIONS; then set (with the table below, by
 #: `--freeze-table`) and never hand-edited again. While None every `--record` is
 #: refused: an unreviewed package cannot be recorded.
-FROZEN_SUBJECT: str | None = None
+FROZEN_SUBJECT: str | None = "7327259c293263e64599988b9785e6c3ecd058a3"
 #: SHA-256 of each file the confirming review read, taken by script. Keys: the
 #: manifest, the four patches, the packet, the delta, the brief and the ledger.
-FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}
+FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"): "7757e70c4d0e8e65c19c77f4970853967456cdd7f225077feac1f91e16200e1e",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.none.patch"): "72a8070e230d6e5de4653ace17c9bd56a99ce18bd32f5900d93dfd330c93f723",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.manifesto.patch"): "1c047a5c332bc2bdb6058ad6d045a931b0b2f8f692f2db1a4c83d6d3a70f0ffb",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.architecture.patch"): "3126fdcfc759e689c5a65bcd881afbf0df21164285e84519508f94d848dcdd62",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.both.patch"): "d2fdafdc66c3747cfdf92344eb1096866eb10a1dfb6ac22292f90a4c49dd97e9",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/OWNER-DECISION-PACKET.md"): "6bc0970c3358d0a076d69d5f81d88aeef67d7d393769178ebcd699ef3350f8cc",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/SEMANTIC-DELTA.md"): "be3332d3ce83f3037f3efcac2ff65335c87ee394ab74b770828c60adf12e3ad1",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/REVIEW-BRIEF.md"): "5e7e3f1ed5389fdb2edc199af9da14ca3c42523a2e8e979c2ab4b47bcc9c69a7",
+    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/IMPACT-LEDGER.md"): "436bea1f75893094b63a1ec3cacce399161fe98365b3d3ddad6d005efcf7c3bc",
+}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 INSTANT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
