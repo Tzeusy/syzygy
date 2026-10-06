@@ -1,0 +1,547 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S6 slice (syzygy-qkea.7), `syzygy dossier check`: altered, elided, joined, out-of-range and excluded-file quotations (body and path screens); a claim the agent labels Observed; the execution marking; the repair-cycle, deadline and question limits; re-derivation (a previous stored check result reused); cited paths and ranges; citation by block kind; Unknown reasons; the understanding record; the pinned revision named by the draft and re-verified; self-reported discovery paths; a path a secret detector matches kept out of findings; the credential finding; duplicate identities; quotations outside an inferred claim; UTF-8 byte ranges; word boundaries; the frozen bytes; the secret body screen; the policy bytes re-hashed against the act; the lead's rulings of 2026-10-07: (a) the clone read only from the run record, which must name an absolute, normalised, NUL-free path of at most 4096 characters, operator-declared, Inferred and for reading, recorded by its real path; (b) the dossier screen in parity with the app's public-source screen, each side mutated alone; (c) the one quotation form in the brief and the schema, and the brief's check command naming no clone; (d) the one normalisation in polaris-generation-core, on text and with raw origins. Not authority.",
+  "measuredOn": {
+    "commit": "9a6312b7ef3d4a883f7916eea02313171ab10e87",
+    "subjects": [
+      {
+        "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+        "sha256": "a2005a6e4e9448d11c98a8321ab98b89f6ed007adf2a1e80e622c9c07a834d03"
+      },
+      {
+        "path": "packages/polaris-dossier/src/brief.ts",
+        "sha256": "94b005c77989f4f248d2ef0cc5c2dd671c1ae57c9f6ff46fccfede675e0b30b6"
+      },
+      {
+        "path": "packages/polaris-dossier/src/check.ts",
+        "sha256": "d607052ef43f7e13c1d241fdbe552059f425d37bf3e450ddff42342caf41680c"
+      },
+      {
+        "path": "packages/polaris-dossier/src/draft-schema.ts",
+        "sha256": "981ad4f7cd5203ff6ebb45bf41e3361a957b1e58735f331321f50859cb1de85e"
+      },
+      {
+        "path": "packages/polaris-dossier/src/init.ts",
+        "sha256": "bfebd95ee4d65d647ed381bbf48628b207bd29c7b0e0a6df1c506195a7458568"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-record.ts",
+        "sha256": "7ea6fe080a20a963ffb561ead72afd9fd045b4c01f4abec1f79f3cab86819e0d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/screen.ts",
+        "sha256": "fcc93959b4f47376362de39c0fea814e105d88888c4fade3e6b3680a789b05e0"
+      },
+      {
+        "path": "packages/polaris-generation-core/src/quote-fidelity.ts",
+        "sha256": "6ee58eb572c8cdeb493d729262373e2903bd0da25775296c312528c265ee3dd1"
+      },
+      {
+        "path": "packages/polaris-generation-core/src/quote-locate.ts",
+        "sha256": "bc43ad45d495bc5f764171673355ed530717a3b845e6fe1fa05ca7024baac5a3"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S6 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "A first run at the pre-amend commit left M30 (the policy bytes read for the screen not compared with the act) surviving: the act chain already compares the bytes it reads, so no test changed the policy between that read and the screen's own. loadDossierScreen took an injectable byte reader and a test that changes the bytes between the two reads; the commit was amended and all 30 re-run. After the rulings (a)-(d), a run of 44 at the next pre-amend commit (e347db7d) left two surviving: M32, which then removed an `isAbsolute` clause made redundant by the `path.resolve(p) !== p` clause beside it (an equivalent mutant; the redundant clause was removed and M32 now removes the resolve clause), and M44, because no test located a quotation inside text a normalisation step carries over (the text of a link, an escaped character). Tests for that origin and for a clone path with a NUL or past 4096 characters were added, M45 (the NUL clause) was added, the commit was amended and all 45 re-run. S6 was then rebased onto the step-guard repair (syzygy-qkea.23, PR #379): its clone-recording hunk merged into the identical one in #379, `check` passes its object reader and the guard's machine refusals through, and M26's `old` fragment follows the new refusal block; all 45 were re-run at `commit`.",
+  "result": {
+    "killed": 45,
+    "total": 45
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "predicate": "an altered quotation passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (!located.found) {\n",
+      "new": "    if (!located.found && located.kind !== 'quotation-not-in-cited-file') {\n",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "predicate": "an elided quotation is not reported as an elision",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "kind: ELLIPSIS.test(quote) ? 'quotation-elided' : 'quotation-not-in-cited-file' }",
+      "new": "kind: 'quotation-not-in-cited-file' }",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "predicate": "a joined quotation passes when its first part occurs",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "  const hits = occurrences(tracked.text, wanted);",
+      "new": "  const hits = occurrences(tracked.text, wanted.slice(0, Math.ceil(wanted.length / 2)));",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "48 failed | 1014 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "predicate": "a quotation outside its cited range passes",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "      if (rawStart >= low && rawEnd <= high) {",
+      "new": "      if (true) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "4 failed | 1058 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "predicate": "a blob whose body screening excludes is used to verify a quotation",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    const outcome = inputs.screen.screenBody(raw);",
+      "new": "    const outcome = undefined;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "predicate": "a blob a path rule excludes is read and used",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    const outcome = inputs.screen.screenPath(cited);\n    if (outcome !== undefined) { blobs.set(cited, { state: 'excluded', outcome }); continue; }",
+      "new": "    const outcome = undefined;\n    if (outcome !== undefined) { blobs.set(cited, { state: 'excluded', outcome }); continue; }",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "4 failed | 1058 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "predicate": "a claim the agent labels Observed passes the label check",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    const allowed = block.kind === 'claim' ? ['inferred', 'unknown', 'non-normative'] : ['inferred', 'unknown'];\n    if (typeof label === 'string' && label.toLowerCase() === 'observed') {",
+      "new": "    const allowed = block.kind === 'claim' ? ['inferred', 'unknown', 'non-normative', 'observed'] : ['inferred', 'unknown'];\n    if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "predicate": "a claim resting on execution may name an unreported command",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "      if (typeof executionId !== 'string' || !executionIds.has(executionId)) add(",
+      "new": "      if (typeof executionId !== 'string') add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "predicate": "one check beyond the repair-cycle limit is allowed",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (revision > declared.maxRepairCycles) {",
+      "new": "  if (revision > declared.maxRepairCycles + 1) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "predicate": "a check at the deadline instant is allowed",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (started >= deadlineEnds) return refuse('deadline',",
+      "new": "  if (started > deadlineEnds) return refuse('deadline',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "predicate": "one question beyond the limit passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (asked > inputs.maxQuestions) add(",
+      "new": "  if (asked > inputs.maxQuestions + 1) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "predicate": "the previous stored check result is reused instead of re-derived",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    ({ quotations, excludedContent, citedBlobs } = derived);",
+      "new": "    ({ quotations, excludedContent, citedBlobs } = revision > 0 && fs.existsSync(path.join(run, RUN_LAYOUT.checks, `rev-${revision - 1}.json`)) ? JSON.parse(fs.readFileSync(path.join(run, RUN_LAYOUT.checks, `rev-${revision - 1}.json`), 'utf8')) : derived);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "predicate": "a cited path absent at the pinned revision passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (state.state === 'absent') { add({ kind: 'path-absent',",
+      "new": "    if (state.state === 'absent') { void ({ kind: 'path-absent',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "predicate": "a range one line past the blob passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (end > state.lines) {",
+      "new": "    if (end > state.lines + 1) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M15",
+      "predicate": "an inferred claim with no citation passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (label === 'inferred' && (citations === null || citations.length === 0)) add(",
+      "new": "    if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M16",
+      "predicate": "a non-normative block with a citation passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (label === 'non-normative' && (Object.hasOwn(value, 'citations')",
+      "new": "    if (false && (Object.hasOwn(value, 'citations')",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M17",
+      "predicate": "an Unknown block with a reason outside RFC2-24 passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (label === 'unknown' && !UNKNOWN_REASONS.includes(",
+      "new": "    if (false && !UNKNOWN_REASONS.includes(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M18",
+      "predicate": "an understanding record missing an item passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (list(understanding[item]).length === 0) add(",
+      "new": "    if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M19",
+      "predicate": "a draft naming another revision passes the revision check",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (doc['pinnedRevision'] !== inputs.pinned) add(",
+      "new": "  if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M20",
+      "predicate": "a self-reported path absent at the pinned revision passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (typeof entry === 'string' && !tree.has(entry)) add(",
+      "new": "    if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M21",
+      "predicate": "a finding names a path a secret detector matches",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  const pathLabel = (cited: string): string => (inputs.screen.screenPath(cited) === 'secret-detector-match' ? 'the cited path' : JSON.stringify(cited));",
+      "new": "  const pathLabel = (cited: string): string => JSON.stringify(cited);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M22",
+      "predicate": "a readable adapter credential is not a finding of the check",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (credential.required && !credential.passed) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M23",
+      "predicate": "a repeated identity passes",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    else add({ kind: 'duplicate-id',",
+      "new": "    else void ({ kind: 'duplicate-id',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M24",
+      "predicate": "a quotation in a non-normative block is treated as a quotation",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    if (block.kind !== 'claim' || label !== 'inferred') {",
+      "new": "    if (block.kind !== 'claim') {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M25",
+      "predicate": "the byte range counts characters, not bytes",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "byteEnd: encoder.encode(raw.slice(0, rawEnd)).byteLength };",
+      "new": "byteEnd: rawEnd };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M26",
+      "predicate": "the check skips re-verifying the pinned revision",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "  if (!checked.ok) {\n    return refuse('reverify',",
+      "new": "  if (false) {\n    return refuse('reverify',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "4 failed | 1058 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M27",
+      "predicate": "the frozen revision is not the bytes checked",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "    fs.writeFileSync(frozen, bytes, { mode: 0o600, flag: 'wx' });",
+      "new": "    fs.writeFileSync(frozen, '{}', { mode: 0o600, flag: 'wx' });",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "3 failed | 1059 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M28",
+      "predicate": "a quotation may start inside a word",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "    if (startsWord && at > 0 && WORD.test(source[at - 1]!)) continue;",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M29",
+      "predicate": "a body a secret detector matches is admitted",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "      screenBody: (body) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match' :",
+      "new": "      screenBody: (body) => false ? 'secret-detector-match' :",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "5 failed | 1057 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M30",
+      "predicate": "the policy bytes read for the screen are not compared with the act",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "  if (createHash('sha256').update(bytes).digest('hex') !== chain.final.digest) return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M31",
+      "predicate": "check reads objects from a clone the run record does not name",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "({ gitDir: path.join(subject.clone.path, '.git'), revision: pinned });",
+      "new": "({ gitDir: path.join(process.cwd(), '.git'), revision: pinned });",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "44 failed | 1018 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M32",
+      "predicate": "a run record naming a relative or non-normalised clone path is accepted",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": " || path.resolve(clone['path']) !== clone['path'] ||",
+      "new": " ||",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M45",
+      "predicate": "a run record naming a clone path with a NUL is accepted",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": " || clone['path'].includes('\\0')) return",
+      "new": ") return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M33",
+      "predicate": "a run record labelling the clone Observed or for writing is accepted",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": "  if (!isObject(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use']) || clone['declaredBy'] !== 'operator' || clone['label'] !== 'Inferred' || clone['use'] !== 'read') return",
+      "new": "  if (!isObject(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use'])) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M34",
+      "predicate": "init records the clone by the path the operator typed, not its real path",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  try { clonePath = fs.realpathSync(path.resolve(request.clone)); } catch (cause) {",
+      "new": "  try { clonePath = path.resolve(request.clone); } catch (cause) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M35",
+      "predicate": "the app's path screen drops the secret detector and the dossier's does not",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "      : detectSecrets(detectors, path) !== undefined ? 'secret-detector-match'",
+      "new": "      : false ? 'secret-detector-match'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M36",
+      "predicate": "the dossier's path screen drops the secret detector and the app's does not",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "        : detectSecrets(detectors, repositoryPath) !== undefined ? 'secret-detector-match'",
+      "new": "        : false ? 'secret-detector-match'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "4 failed | 1058 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M37",
+      "predicate": "the dossier accepts a policy with two code-content rules, which the app refuses",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "  if (codeContent.length !== 1 || !stringList(extensions)",
+      "new": "  if (!stringList(extensions)",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M38",
+      "predicate": "the brief and schema stop saying quoted text without the lead-in is prose",
+      "file": "packages/polaris-dossier/src/draft-schema.ts",
+      "old": " Quoted text without the lead-in is your prose, not a quotation: Syzygy does not verify it and never renders it as Observed.`;",
+      "new": "`;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M39",
+      "predicate": "the schema's quotations field states no form",
+      "file": "packages/polaris-dossier/src/draft-schema.ts",
+      "old": "uniqueItems: true, description: QUOTATION_FORM };",
+      "new": "uniqueItems: true };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M40",
+      "predicate": "the brief tells the agent to pass a clone",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "run \\`syzygy dossier check <run>\\`; repair",
+      "new": "run \\`syzygy dossier check <run> --clone <clone>\\`; repair",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M41",
+      "predicate": "the ellipsis character is no longer normalised",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "  { pattern: /\\u2026/gu, replace: () => [{ text: '...' }] },\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M42",
+      "predicate": "normaliseForQuote keeps a leading space",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "  const from = out.startsWith(' ') ? 1 : 0;",
+      "new": "  const from = 0;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "2 failed | 1060 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M43",
+      "predicate": "the tracked text keeps a leading space normaliseForQuote trims",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "  const a = current.text.startsWith(' ') ? 1 : 0;",
+      "new": "  const a = 0;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    },
+    {
+      "id": "M44",
+      "predicate": "kept text takes the whole match as its origin",
+      "file": "packages/polaris-generation-core/src/quote-locate.ts",
+      "old": "        if (piece.keep !== undefined) { copy(piece.keep, piece.keep + piece.text.length); continue; }\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
+      "exit": 1,
+      "tests": "1 failed | 1061 passed (1062)",
+      "killed": true
+    }
+  ]
+}
