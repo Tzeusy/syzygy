@@ -285,7 +285,10 @@ describe('Trajectory', () => {
     const reportedCard = cardBody(renderTrajectoryPage(reportedModel), 'bu-verified-1');
     const badge = /<span class="epistemic [^"]*" data-parity-field="worker-change-verification"[^>]*>/.exec(reportedCard)?.[0] ?? '';
     expect(badge).toContain('class="epistemic epistemic-unknown"');
-    expect(badge).toContain('data-evidence-tier="report-fact"');
+    // #383 round 3, note 4: report-fact is a tier of Observed (RFC2-25), so
+    // the Unknown element never carries it as its own tier.
+    expect(badge).not.toContain('data-evidence-tier');
+    expect(reportedCard).not.toContain('data-evidence-tier');
     expect(reportedCard).toContain('Verification: Not verified by Syzygy — operator-reported (report-fact): 4 passed, 0 failed, 0 errored, 0 skipped in 0.5s.');
     expect(reportedCard).toContain('That the tests ran, at this commit, on a clean working tree, with exit status 0, is the operator&#39;s report');
     expect(reportedCard).not.toContain('Verification: Verified');

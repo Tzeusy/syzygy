@@ -310,7 +310,14 @@ npm run poc:capture-test-artifact -- print \
   comes from a run it launched or observed. A record with no `provenance`
   (the shape the retired spawning capture wrote, or a hand-written file)
   renders "Verification: Not verified", naming the missing provenance, even
-  when it passes and binds. Ingesting a run again replaces it.
+  when it passes and binds. Ingesting a run again replaces it. So the
+  2026-08-29 POC direction's demonstration item "verification against the
+  named intent revision" (`THREE-SURFACE-POC-MODE-DIRECTION.md`) now renders
+  Unknown (`execution-blocked`) and cannot render Verified until an
+  execution profile lets Syzygy launch the run itself: RFC5-18 keeps an
+  unlaunched run's claims Unknown, and RFC5-19 caps an operator-reported
+  result at `report-fact`. No spec requirement obliges a Verified state
+  (POC-REQ-043 is a prohibition), so this is a fail-closed narrowing.
 - **Scope:** the worker-change seam (`whatsapp_user_client.py`) — a different
   code path than the identity normalization capability Polaris and Orrery
   describe.
