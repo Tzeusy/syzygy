@@ -74,7 +74,7 @@ export function resolvePathIntent(absolutePath: string): PathIntent {
   }
 }
 
-const within = (inner: string, outer: string): boolean => inner === outer || inner.startsWith(outer + path.sep);
+export const within = (inner: string, outer: string): boolean => inner === outer || inner.startsWith(outer + path.sep);
 
 /** Why a state root may not hold a run for this clone, or null when it may. Judged on real paths:
  * the state root may not lie inside the clone, nor contain it, and neither may resolve unreadably. */

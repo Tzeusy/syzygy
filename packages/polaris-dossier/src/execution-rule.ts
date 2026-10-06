@@ -128,8 +128,8 @@ const fence = (span: DoctrineSpan): string => {
 };
 
 /** The brief's execution-rule section. The doctrine spans sit in a fenced block so the quoted bytes are exactly the file's. */
-export function executionRuleSection(rule: ExecutionRule): string {
-  const reporting = 'Under either rule: list in `executions` every command you run, with its working directory and purpose, whether or not a claim rests on it. A claim that rests on your building or running of the observed project has `label: inferred`, `basis: execution` and names, in `executionIds`, the executions it rests on. Syzygy runs and launches nothing; it records the list as your report, labelled Inferred, and shows each such claim with the commands it names.';
+export function executionRuleSection(rule: ExecutionRule, report: 'executions' | 'none' = 'executions'): string {
+  const reporting = report === 'none' ? 'You run nothing from the clone, so you report no executions, and no entry rests on building or running the observed project.' : 'Under either rule: list in `executions` every command you run, with its working directory and purpose, whether or not a claim rests on it. A claim that rests on your building or running of the observed project has `label: inferred`, `basis: execution` and names, in `executionIds`, the executions it rests on. Syzygy runs and launches nothing; it records the list as your report, labelled Inferred, and shows each such claim with the commands it names.';
   if (rule.arm === 'sec-3') {
     return [
       '## Execution rule: SEC-3',

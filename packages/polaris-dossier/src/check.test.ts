@@ -140,6 +140,7 @@ const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 
 const valid = (): Draft => ({
   schemaVersion: 'polaris-dossier-local-draft-v1',
   pinnedRevision: commit,
+  sessionId: 'authoring-session-1',
   title: 'Kestrel',
   introduction: { id: 'intro', label: 'inferred', basis: 'source', text: 'The project states: "Kestrel keeps every key in memory." So it is fast.', citations: [cite('c-intro', 'src/kestrel.c', 1, 1)], quotations: ['c-intro'] },
   understanding: Object.fromEntries(UNDERSTANDING.map((key) => [key, [{ id: `u-${key}`, label: 'inferred', statement: 'A statement.', scope: 'The server.', citations: [cite(`u-${key}-c`)] }]])),
@@ -182,6 +183,7 @@ describe('check: a draft that follows every rule', () => {
     const result = report(await checkDraft(run, {}, deps()));
     expect(result.findings).toEqual([]);
     expect(result).toMatchObject({ command: 'check', outcome: 'passed', revision: 0, supersedes: null, pinnedRevision: commit, checkedAt: '2026-10-07T12:01:00.000Z', label: 'Inferred' });
+    expect(result.session).toEqual({ sessionId: 'authoring-session-1', declaredBy: 'the authoring session', label: 'Inferred' });
     expect(result.quotations.map((q) => [q.blockId, q.citationId, q.path, q.byteRange])).toEqual([
       ['intro', 'c-intro', 'src/kestrel.c', [bytesOf(KESTREL, 'Kestrel')[0], bytesOf(KESTREL, 'memory.')[1]]],
       ['p1', 'c-p1', 'src/kestrel.c', [bytesOf(KESTREL, 'Each command')[0], bytesOf(KESTREL, 'one starts.')[1]]],

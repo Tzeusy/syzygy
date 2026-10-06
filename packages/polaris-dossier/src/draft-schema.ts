@@ -53,9 +53,18 @@ const line: DraftSchema = { type: 'integer', minimum: 1, maximum: 10_000_000 };
 const citations = (minItems: number): DraftSchema => list(ref('citation'), minItems, 50);
 const reason = ref('unknownReason');
 
-/** The one form a quotation takes, stated in the brief and in the schema's `quotations` description alike. `check` counts only this
- * form; quoted text without the lead-in is the agent's prose. */
-export const QUOTATION_FORM = `Write each quotation in a block's \`text\` with the lead-in and straight double quotes, exactly: ${QUOTE_LEAD_IN} "Each command runs to completion before the next one starts." The block's \`quotations\` names, in order, the citation each such quotation is taken from. Quoted text without the lead-in is your prose, not a quotation: Syzygy does not verify it and never renders it as Observed.`;
+/** The one form a quotation takes, stated in a brief and in its schema's `quotations` description alike. `check` and `inventory-check`
+ * count only this form; quoted text without the lead-in is the agent's prose. */
+const quotationForm = (field: string, holder: string): string => `Write each quotation in ${holder}'s \`${field}\` with the lead-in and straight double quotes, exactly: ${QUOTE_LEAD_IN} "Each command runs to completion before the next one starts." The ${holder.replace(/^an? /u, '')}'s \`quotations\` names, in order, the citation each such quotation is taken from. Quoted text without the lead-in is your prose, not a quotation: Syzygy does not verify it and never renders it as Observed.`;
+export const QUOTATION_FORM = quotationForm('text', 'a block');
+export const INVENTORY_QUOTATION_FORM = quotationForm('statement', 'an entry');
+
+/** A session's identifier, as that session declares it (REQ-polaris-generation-035): the draft, the inventory and each verdict carry
+ * their own, and Syzygy compares them, never trusting any as observed. */
+export const SESSION_ID_PATTERN = '^[A-Za-z0-9][A-Za-z0-9._:-]*$';
+const sessionId: DraftSchema = { type: 'string', minLength: 1, maxLength: 200, pattern: SESSION_ID_PATTERN };
+/** The brief's sentence on `sessionId`, for the draft and the inventory alike. */
+export const SESSION_ID_RULE = (subject: 'draft' | 'inventory'): string => `Put this session's own identifier in \`sessionId\` (letters, digits and \`._:-\`, starting with a letter or digit): the identifier your agent tool gives this session, or, where it shows none, one you choose now and keep for every revision. ${subject === 'draft' ? 'The inventory and review sessions declare theirs, and Syzygy refuses one that equals yours' : 'Syzygy refuses an inventory whose identifier equals the authoring session\'s'}; every identifier is a session's own declaration, labelled Inferred.`;
 
 /** The four claim forms. `quotations` lists, in order, the citation each `The project states: "…"` span in `text` is taken from. */
 function claimForms(extra: Record<string, DraftSchema>): DraftSchema {
@@ -104,6 +113,7 @@ export function localDraftSchema(parameters: DraftSchemaParameters): DraftSchema
   return { defs: DEFS, root: object({
     schemaVersion: one(LOCAL_DRAFT_SCHEMA_VERSION),
     pinnedRevision: one(parameters.pinnedRevision),
+    sessionId,
     title: text,
     introduction: ref('paragraph'),
     understanding: object(Object.fromEntries(UNDERSTANDING_ITEMS.map((item) => [item, list(ref('understandingItem'), 1, 100)]))),
@@ -140,6 +150,52 @@ export function draftSchemaDocument(parameters: DraftSchemaParameters): Record<s
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     $id: `urn:syzygy:polaris-dossier:${LOCAL_DRAFT_SCHEMA_VERSION}`,
     title: `Polaris dossier local-agent draft (${LOCAL_DRAFT_SCHEMA_VERSION})`,
+    ...root,
+    $defs: defs,
+  };
+}
+
+/** The local-agent inventory schema (REQ-polaris-generation-035, 006). The inventory session prepares it from the clone without the
+ * draft: entries of what the project states, in REQ-polaris-generation-006's kinds, each `inferred` with path and line-range citations
+ * or `unknown` with an RFC2-24 reason, quotations in the one lead-in form, and its own account of what it covered. Syzygy checks its
+ * quotations and citations as `check` checks a draft's; its completeness over the clone stays the session's self-report, Inferred. */
+export const LOCAL_INVENTORY_SCHEMA_VERSION = 'polaris-dossier-local-inventory-v1';
+export const INVENTORY_ENTRY_KINDS = Object.freeze(['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] as const);
+
+const INVENTORY_DEFS: Readonly<Record<string, DraftSchema>> = Object.freeze({
+  citation: DEFS['citation']!,
+  unknownReason: DEFS['unknownReason']!,
+  pathReason,
+  entry: { oneOf: [
+    object({ id: handle, kind: choice(INVENTORY_ENTRY_KINDS), label: one('inferred'), statement: text, citations: citations(1),
+      quotations: { type: 'array', items: handle, minItems: 0, maxItems: 20, uniqueItems: true, description: INVENTORY_QUOTATION_FORM } }),
+    object({ id: handle, kind: choice(INVENTORY_ENTRY_KINDS), label: one('unknown'), reason, statement: text, citations: citations(0) }),
+  ] },
+});
+
+export function localInventorySchema(parameters: { readonly pinnedRevision: string }): DraftSchemaWithDefs {
+  if (!/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(parameters.pinnedRevision)) throw new Error('draft-schema: the pinned revision is not a commit identifier');
+  return { defs: INVENTORY_DEFS, root: object({
+    schemaVersion: one(LOCAL_INVENTORY_SCHEMA_VERSION),
+    pinnedRevision: one(parameters.pinnedRevision),
+    sessionId,
+    entries: list(ref('entry'), 1, 2000),
+    coverage: object({
+      inspected: list(repoPath, 0, 10_000),
+      excluded: list(ref('pathReason'), 0, 5_000),
+      deferred: list(ref('pathReason'), 0, 5_000),
+      stoppingReason: text,
+    }),
+  }) };
+}
+
+/** The inventory schema as the JSON Schema document the inventory brief carries. */
+export function inventorySchemaDocument(parameters: { readonly pinnedRevision: string }): Record<string, unknown> {
+  const { root, defs } = localInventorySchema(parameters);
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: `urn:syzygy:polaris-dossier:${LOCAL_INVENTORY_SCHEMA_VERSION}`,
+    title: `Polaris dossier local-agent inventory (${LOCAL_INVENTORY_SCHEMA_VERSION})`,
     ...root,
     $defs: defs,
   };

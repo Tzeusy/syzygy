@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, ILLUSTRATION_HEADING, OWNER_TOPICS, promptForStage } from '@syzygy/polaris-generation-core';
 import { readSec3 } from './doctrine-quote.js';
-import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
+import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, SESSION_ID_RULE, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
@@ -45,6 +45,9 @@ export const DOSSIER_GUIDANCE = ((): string => {
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
 
+/** What a quotation is and how Syzygy compares it, after the form; the authoring and inventory briefs state it alike. */
+export const QUOTATION_RULE = 'A quotation is one contiguous span of one cited file at the pinned revision, inside the cited line range, beginning and ending on word boundaries, without elision, joining or alteration. Syzygy compares it after this normalisation, applied to the quotation and the file alike: comment leaders at line starts and a closing comment marker at a line end are dropped; markdown links and images keep only their text; character entities are decoded; markdown backslash escapes are removed; backticks are dropped; paired emphasis marks at word edges are dropped; curly quotes are straightened; an ellipsis character becomes three full stops; and each whitespace run becomes one space. Nothing else is forgiven: an ellipsis the file does not carry at that spot is an elision and fails. A quotation from a file that classification or screening excludes is not verified or rendered, and its block renders Unknown (`excluded-content`). Syzygy renders every verified quotation from its own read of the file, never from your copy.';
+
 export interface BriefInput {
   readonly runId: string;
   readonly subject: RunSubject;
@@ -78,6 +81,8 @@ export function renderBrief(input: BriefInput): string {
     '',
     `Write one dossier of this repository at the pinned revision. Your draft names that revision in \`pinnedRevision\` and the schema version in \`schemaVersion\`; a draft naming another revision is refused. Write it to \`${RUN_LAYOUT.drafts}/next.json\` in the run directory and run \`syzygy dossier check <run>\`; repair every finding and check again. Write nothing else of Syzygy's: Syzygy re-checks everything it relies on.`,
     '',
+    SESSION_ID_RULE('draft'),
+    '',
     '## What the dossier answers',
     '',
     'The owner set five reader topics for a dossier. A reader of the finished dossier must be able to answer each question:',
@@ -109,7 +114,7 @@ export function renderBrief(input: BriefInput): string {
     '',
     '## Quotation rule',
     '',
-    `${QUOTATION_FORM} A quotation is one contiguous span of one cited file at the pinned revision, inside the cited line range, beginning and ending on word boundaries, without elision, joining or alteration. Syzygy compares it after this normalisation, applied to the quotation and the file alike: comment leaders at line starts and a closing comment marker at a line end are dropped; markdown links and images keep only their text; character entities are decoded; markdown backslash escapes are removed; backticks are dropped; paired emphasis marks at word edges are dropped; curly quotes are straightened; an ellipsis character becomes three full stops; and each whitespace run becomes one space. Nothing else is forgiven: an ellipsis the file does not carry at that spot is an elision and fails. A quotation from a file that classification or screening excludes is not verified or rendered, and its block renders Unknown (\`excluded-content\`). Syzygy renders every verified quotation from its own read of the file, never from your copy.`,
+    `${QUOTATION_FORM} ${QUOTATION_RULE}`,
     '',
     '## Discovery',
     '',
