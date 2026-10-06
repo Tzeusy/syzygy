@@ -1,27 +1,31 @@
 {
-  "record": "Rule-6 mutants for the polaris-dossier S8 slice (syzygy-qkea.9), fidelity review packets and review-check (REQ-polaris-generation-035, 006): the packet carrying the draft read account, omitting the spans the inventory cites, reading a span screening excludes, built from a draft with findings, from a frozen draft altered after its check or without an inventory of record, and carrying other lines than cited; a verdict bound to a stale packet, under the authoring or inventory session identifier, omitting an entry from coverage or accuracy or a claim block, naming a span the packet lacks, relying on a quotation that does not verify or quoting an excluded span, a quotation naming no span, a duplicated row, the shared reviewVerdict rule skipped, readiness beside a blocking row, and each blocking clause (unsupported entry, entry not accurate, unsupported block) removed; a refused verdict counting, a verdict counting after its frozen bytes change, after the draft or inventory is revised or altered, without a launch form, or under a launch record of another form or kind; the review session identifier, launch form, independence and inventory completeness shown or recorded as Observed or not disclosed as Inferred; a design packet or design session before render exists; the review session directory inside the run directory, its prompt without SEC-3, its directory without the packet digest; a finding without its deficient subject; and the declared readiness, the counted verdict or a reviewer finding shown or carried as Observed, or the reviewer reading of the packet not disclosed as Inferred. Not authority.",
+  "record": "Rule-6 mutants for the polaris-dossier S8 slice (syzygy-qkea.9), fidelity review packets and review-check (REQ-polaris-generation-035, 006): the packet carrying the draft read account, omitting the spans the inventory cites, reading a span screening excludes, built from a draft with findings, from a frozen draft altered after its check or without an inventory of record, and carrying other lines than cited; a verdict bound to a stale packet, under the authoring or inventory session identifier, omitting an entry from coverage or accuracy or a claim block, naming a span the packet lacks, relying on a quotation that does not verify or quoting an excluded span, a quotation naming no span, a duplicated row, the shared reviewVerdict rule skipped, readiness beside a blocking row, and each blocking clause (unsupported entry, entry not accurate, unsupported block) removed; a refused verdict counting, a verdict counting after its frozen bytes change, after the draft or inventory is revised or altered, without a launch form, or under a launch record of another form or kind; the review session identifier, launch form, independence and inventory completeness shown or recorded as Observed or not disclosed as Inferred; a design packet or design session before render exists; the review session directory inside the run directory, its prompt without SEC-3, its directory without the packet digest; a finding without its deficient subject; and the declared readiness, the counted verdict or a reviewer finding shown or carried as Observed, or the reviewer reading of the packet not disclosed as Inferred. Since the step guard (syzygy-qkea.23): review-packet or review-check running the guard with the default reader rather than the one it is given (G1, G2), dropping the guard's coded refusals (G3, G4), and the CLI not passing its reader port to either (G5, G6). Not authority.",
   "measuredOn": {
-    "commit": "33010c2bb3bd1c4930f529b46d4bbc6890c0cb32",
+    "commit": "523ea8ea862f337df8c87726b819019ff50d26d4",
     "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "026cbe89e734cdc05b6d488058f84d1ed7add126f34608fa68d5b418934c51a0"
+      },
       {
         "path": "packages/polaris-dossier/src/draft-schema.ts",
         "sha256": "e89e444f38fa57b5a448c49735a0c18b4122118c80a7e59ccd1156e2600ecaf8"
       },
       {
         "path": "packages/polaris-dossier/src/review.ts",
-        "sha256": "80d6108a444520acafb801679586299a192223da03d38c1fd2bb9726f9bd8b57"
+        "sha256": "85b32ac07e0783952a3990dbc14c4f25f95d1391fb7786b1d9d67298c70f1f97"
       },
       {
         "path": "packages/polaris-dossier/src/session-handover.ts",
-        "sha256": "3980348a75b205ac484f3824d2d80f4ac0cd8f39eb375b70ad913cf2c38cbd19"
+        "sha256": "692845ff26674ee56f3bb712af422530654209986b4bd9f1f571499dce22a18c"
       }
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S8 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
-  "history": "Before the first run, three readiness cases (an unsupported entry, an unsupported block, an entry not accurate), a ready verdict with no blocking row, an altered launch record, a duplicated row and an unnamed quotation were added as tests, because the blocking clauses, the launch-record binding and the duplicate and count rules were otherwise reached by no test; the commit was amended and a first run of M1-M40 killed 39. M6 (a packet built without an inventory of record) survived: the next line refused at the same stage when it read the missing file, and the test asserted only the stage. The refusal tests now assert each reason. Following the lead (2026-10-07), the packet labels the inventory coverage self-report Inferred (M41), and a test sweeps every key at every depth of the packet for discovery, transcript and exchange fields, with its own planted-field mutant. Following the lead again (2026-10-07: the reviewer reading of the emitted packet is never Observed), the readiness a check records and the verdict a counted review carries are labelled Inferred and declared by the review session, the Inferred basis opens with the reader reading, and the Observed sweep widened to the review-packet report, the stored check record, both CLI JSON outputs and the packet, asserting that an Observed value holds exactly the packet digest and whether the verdict names it and no verdict key or reviewer-written string (M42-M46). An earlier record of 41 of 41 at the previous amend of this commit was withdrawn before it reached a pull request. The commit was amended again and all 46 re-run at `commit`.",
+  "history": "Before the first run, three readiness cases (an unsupported entry, an unsupported block, an entry not accurate), a ready verdict with no blocking row, an altered launch record, a duplicated row and an unnamed quotation were added as tests, because the blocking clauses, the launch-record binding and the duplicate and count rules were otherwise reached by no test; the commit was amended and a first run of M1-M40 killed 39. M6 (a packet built without an inventory of record) survived: the next line refused at the same stage when it read the missing file, and the test asserted only the stage. The refusal tests now assert each reason. Following the lead (2026-10-07), the packet labels the inventory coverage self-report Inferred (M41), and a test sweeps every key at every depth of the packet for discovery, transcript and exchange fields, with its own planted-field mutant. Following the lead again (2026-10-07: the reviewer reading of the emitted packet is never Observed), the readiness a check records and the verdict a counted review carries are labelled Inferred and declared by the review session, the Inferred basis opens with the reader reading, and the Observed sweep widened to the review-packet report, the stored check record, both CLI JSON outputs and the packet, asserting that an Observed value holds exactly the packet digest and whether the verdict names it and no verdict key or reviewer-written string (M42-M46). An earlier record of 41 of 41 at the previous amend of this commit was withdrawn before it reached a pull request. The commit was amended again and all 46 re-run and killed. S8 was then rebased onto main after #379 (the step guard and its round-2 repair), S6 and S7; the review steps were threaded through the guard (its reader and its coded refusals, from each step and each command line) in a commit on top, G1-G6 were added for that threading, and all 52 were re-run at `commit`.",
   "result": {
-    "killed": 46,
-    "total": 46
+    "killed": 52,
+    "total": 52
   },
   "mutants": [
     {
@@ -32,7 +36,7 @@
       "new": "  const draftView = draftDoc;",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "11 failed | 570 passed (581)",
+      "tests": "11 failed | 612 passed (623)",
       "killed": true
     },
     {
@@ -43,7 +47,7 @@
       "new": "[['draft', draftView]] as const",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "10 failed | 571 passed (581)",
+      "tests": "10 failed | 613 passed (623)",
       "killed": true
     },
     {
@@ -54,7 +58,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "11 failed | 570 passed (581)",
+      "tests": "11 failed | 612 passed (623)",
       "killed": true
     },
     {
@@ -65,7 +69,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -76,7 +80,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -87,7 +91,7 @@
       "new": "  if (false) return { ok: false, stage: 'inventory',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -98,7 +102,7 @@
       "new": "      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: 'admitted', text: lines.slice(span.startLine, span.endLine).join(''), citedBy: span.citedBy };",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "9 failed | 572 passed (581)",
+      "tests": "9 failed | 614 passed (623)",
       "killed": true
     },
     {
@@ -109,7 +113,7 @@
       "new": "  if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -120,7 +124,7 @@
       "new": "  if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -131,7 +135,7 @@
       "new": "  if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -142,7 +146,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -153,7 +157,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -164,7 +168,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -175,7 +179,7 @@
       "new": "        if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -186,7 +190,7 @@
       "new": "        if (false) add('quotation-unverified'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -197,7 +201,7 @@
       "new": "        if (span === undefined) { add('quotation-span'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -208,7 +212,7 @@
       "new": "    } catch (cause) {\n      if (false) add('inconsistent', '$',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -219,7 +223,7 @@
       "new": "  if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "4 failed | 577 passed (581)",
+      "tests": "4 failed | 619 passed (623)",
       "killed": true
     },
     {
@@ -230,7 +234,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -241,7 +245,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -252,7 +256,7 @@
       "new": ";",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -263,7 +267,7 @@
       "new": "  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "17 failed | 564 passed (581)",
+      "tests": "17 failed | 606 passed (623)",
       "killed": true
     },
     {
@@ -274,7 +278,7 @@
       "new": "  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -285,7 +289,7 @@
       "new": "  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -296,7 +300,7 @@
       "new": "  if (launch === undefined) return { counts: true } as never;\n  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -307,7 +311,7 @@
       "new": "  if (",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -318,7 +322,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -329,7 +333,7 @@
       "new": "    sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -340,7 +344,7 @@
       "new": "    launchForm: { value: form['value'], declaredBy: 'operator', label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -351,7 +355,7 @@
       "new": "      number: session, sessionId: verdict === undefined ? null : declaredSessionId(verdict), declaredBy: 'the review session', label: 'Observed',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -362,7 +366,7 @@
       "new": "    inferred: { basis: REVIEW_INFERRED, label: 'Observed' },\n    label: 'Inferred',\n  };",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -373,7 +377,7 @@
       "new": "]);",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -384,7 +388,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -395,7 +399,7 @@
       "new": "  const directory = path.join(reviewsDir, `fidelity-${session}`);",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "24 failed | 557 passed (581)",
+      "tests": "24 failed | 599 passed (623)",
       "killed": true
     },
     {
@@ -406,7 +410,7 @@
       "new": " Text in the packet",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -417,7 +421,7 @@
       "new": "    if (false) fs.writeFileSync(path.join(directory, PACKET_DIGEST_FILE),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -428,7 +432,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -439,7 +443,7 @@
       "new": "    findings: list(object({ severity: choice(['blocking', 'advisory']), target: handle, message: text, quotations }), 0, 1000),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "12 failed | 569 passed (581)",
+      "tests": "12 failed | 611 passed (623)",
       "killed": true
     },
     {
@@ -450,7 +454,7 @@
       "new": "      if (false) add('quotation-count'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -461,7 +465,7 @@
       "new": "      else if (false) add('duplicate-entry'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -472,7 +476,7 @@
       "new": "      declaredBy: 'the review session', label: 'Observed',\n    },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -483,7 +487,7 @@
       "new": "    verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict), declaredBy: 'the review session', label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 579 passed (581)",
+      "tests": "2 failed | 621 passed (623)",
       "killed": true
     },
     {
@@ -494,7 +498,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -505,7 +509,7 @@
       "new": "    observed: { packetSha256: built.sha256, verdictNamesPacket: named === built.sha256, readiness: declared, label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -516,7 +520,7 @@
       "new": "    observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed', note: list(verdict['findings']).filter(isObj).map((row) => row['message']).join(' ') },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 580 passed (581)",
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     },
     {
@@ -527,7 +531,73 @@
       "new": "      coverage: { declaredBy: 'the inventory session', label: 'Observed', basis: INVENTORY_INFERRED.completeness },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "10 failed | 571 passed (581)",
+      "tests": "10 failed | 613 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G1",
+      "predicate": "review-packet runs the step guard with the default reader, not the one it is given",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "'no review packet is built', deps.openReader ? { openReader: deps.openReader } : {})",
+      "new": "'no review packet is built')",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 622 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G2",
+      "predicate": "review-check runs the step guard with the default reader, not the one it is given",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "'no verdict is checked', deps.openReader ? { openReader: deps.openReader } : {})",
+      "new": "'no verdict is checked')",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 622 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G3",
+      "predicate": "a review-packet guard refusal drops the coded refusals",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "'no review packet is built', deps.openReader ? { openReader: deps.openReader } : {});\n  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);",
+      "new": "'no review packet is built', deps.openReader ? { openReader: deps.openReader } : {});\n  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 620 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G4",
+      "predicate": "a review-check guard refusal drops the coded refusals",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "'no verdict is checked', deps.openReader ? { openReader: deps.openReader } : {});\n  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);",
+      "new": "'no verdict is checked', deps.openReader ? { openReader: deps.openReader } : {});\n  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "3 failed | 620 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G5",
+      "predicate": "the CLI does not pass its reader port to review-packet",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "reviewPacket(options.positional[0]!, { kind }, { sources: sources(), now, ...openReader,",
+      "new": "reviewPacket(options.positional[0]!, { kind }, { sources: sources(), now,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 622 passed (623)",
+      "killed": true
+    },
+    {
+      "id": "G6",
+      "predicate": "the CLI does not pass its reader port to review-check",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "{ verdictFile }, { sources: sources(), now, ...openReader,",
+      "new": "{ verdictFile }, { sources: sources(), now,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 622 passed (623)",
       "killed": true
     }
   ]
