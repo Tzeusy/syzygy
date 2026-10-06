@@ -1,0 +1,193 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S9b slice (syzygy-qkea.10), the rendered-design review (REQ-polaris-generation-035, scenario \"Design review survives its status region\"; design decision 5): the region not removed from a page (D1) or a page with two regions accepted (D2); the machine view keeping its reviewStatus member (D3) or re-serialized so a layout change outside it passes unseen (D4); a design verdict naming another packet (D5), omitting a page (D6), carrying a quotation (D7), declaring ready beside a deficient page (D8) or declared under the authoring session's identifier (D9) accepted; render not checking that its second drawing equals the first outside the region (R1), not stating its decision in the region (R2), keying excluded sources afresh per render (R3), or labelling the design verdict it states Observed (R4); the size report measuring the region (V1); a design session handed the fidelity packet (H1); a design launch form recorded as the fidelity session's (H2); review-check ignoring --kind (C1); design and fidelity verdicts numbered together (C2). Not authority.",
+  "measuredOn": {
+    "commit": "a1a339814cf729d9899a7947a2a414b8c95ff198",
+    "subjects": [
+      {
+        "path": "packages/polaris-generation-core/src/local-render.ts",
+        "sha256": "04667c37d159bbfa2928ad92ffb7d9bf6bccaab7b50de438f59525e5c02167fb"
+      },
+      {
+        "path": "packages/polaris-dossier/src/design-review.ts",
+        "sha256": "f1d0065a57847141e1e398c35eb7606eaa78f87e5ca62815a7eb21c52896aecc"
+      },
+      {
+        "path": "packages/polaris-dossier/src/review.ts",
+        "sha256": "8a8518d10be59d919548e6c94ff15aef11bae3338dfec938e26f5e29cab8fbff"
+      },
+      {
+        "path": "packages/polaris-dossier/src/render.ts",
+        "sha256": "da1e42d0b61cc8f98d20da48ccf94b64f579b527f8134158afc053f3d8556045"
+      },
+      {
+        "path": "packages/polaris-dossier/src/session-handover.ts",
+        "sha256": "29ad39c575032b3eeb81c81b19f2d50c6f11d73699c6ba9dc00e3f6ec0a305e1"
+      },
+      {
+        "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+        "sha256": "c8aa3d6a58630d59702737da96a811d89ce15c11b212c561b26adac52b94fef2"
+      },
+      {
+        "path": "packages/polaris-dossier/src/render.test.ts",
+        "sha256": "04737d66f25c432ede0b46eb4a67f5c56878b4d060ac9b12ccfdf344e566123b"
+      },
+      {
+        "path": "packages/polaris-dossier/src/design-review.test.ts",
+        "sha256": "ed41faa00f79f70e7c73f66a7fb7fd594de466a3103b0f5bb2d965d488027379"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S9b worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "A first run at `commit` had, as R4, a mutant making the review page's design group depend on the design decision; it survived because it is equivalent by construction: render applies the decision to the review-status region only, after the page builder ran, so the builder never sees it. It was replaced by the R4 below, and the whole set re-run at `commit`.",
+  "command": "npx vitest run packages/polaris-dossier/src/render.test.ts packages/polaris-dossier/src/design-review.test.ts",
+  "result": {
+    "killed": 18,
+    "total": 18
+  },
+  "mutants": [
+    {
+      "id": "D1-region-not-removed",
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "old": "return html.slice(0, start) + html.slice(close + '</aside>'.length);",
+      "new": "return html;",
+      "outcome": "killed",
+      "failedTests": 31
+    },
+    {
+      "id": "D2-second-region-allowed",
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "old": "if (start === -1 || html.indexOf(REVIEW_STATUS_REGION_OPEN, start + 1) !== -1) return undefined;",
+      "new": "if (start === -1) return undefined;",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "D3-machine-review-status-kept",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "const { [MACHINE_VIEW_REGION_MEMBER]: _region, ...rest } = view;",
+      "new": "const rest = view;",
+      "outcome": "killed",
+      "failedTests": 30
+    },
+    {
+      "id": "D4-machine-reserialized",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "if (content !== `${JSON.stringify(view, null, 2)}\\n`) return",
+      "new": "if (false) return",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "D5-stale-packet-accepted",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "if (verdict['packetSha256'] !== built.sha256) {",
+      "new": "if (false) {",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "D6-page-rows-not-required",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "for (const page of built.pages) if (!seen.has(page))",
+      "new": "for (const page of built.pages.slice(0, 0)) if (!seen.has(page))",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "D7-quotation-allowed",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "if (isObj(row) && leadInQuotations(text(row[field]) ?? '').length > 0) {",
+      "new": "if (false) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "D8-deficient-page-not-blocking",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": " || rows('pageReview').some((row) => row['verdict'] !== 'acceptable')",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "D9-authoring-reviewer-allowed",
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "old": "if (sessionId !== null && authoringIds.has(sessionId)) add('session-identity'",
+      "new": "if (false) add('session-identity'",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R1-second-drawing-unchecked",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (!published.ok || published.sha256 !== reviewed.sha256) {",
+      "new": "if (!published.ok) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R2-decision-not-stated",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "(item.id === 'review-status/design' ? designStatusItem(design) : item)",
+      "new": "(item)",
+      "outcome": "killed",
+      "failedTests": 5
+    },
+    {
+      "id": "R3-random-excluded-key",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "const runKey = createHash('sha256')",
+      "new": "const runKey = randomBytes(32); void createHash('sha256')",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R4-design-verdict-shown-observed",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's.`, label: 'Inferred' }",
+      "new": "${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's.`, label: 'Observed' }",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "V1-size-report-counts-region",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "const measured = (html: string): string => (local === undefined ? html : withoutReviewStatusRegion(html) ?? html);",
+      "new": "const measured = (html: string): string => html;",
+      "outcome": "killed",
+      "failedTests": 29
+    },
+    {
+      "id": "H1-design-session-gets-fidelity-packet",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (kind === 'design') {\n    const design = buildStoredDesignPacket(opened);",
+      "new": "if (false) {\n    const design = buildStoredDesignPacket(opened);",
+      "outcome": "killed",
+      "failedTests": 16
+    },
+    {
+      "id": "H2-launch-form-kind-ignored",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "reviewLaunchRecordName(kind, session));",
+      "new": "reviewLaunchRecordName('fidelity', session));",
+      "outcome": "killed",
+      "failedTests": 5
+    },
+    {
+      "id": "C1-review-check-kind-ignored",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "const kind = request.kind ?? 'fidelity';",
+      "new": "const kind = 'fidelity';",
+      "outcome": "killed",
+      "failedTests": 17
+    },
+    {
+      "id": "C2-verdict-numbers-shared",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "new RegExp(`^${kind}-verdict-(0|[1-9][0-9]*)",
+      "new": "new RegExp(`^fidelity-verdict-(0|[1-9][0-9]*)",
+      "outcome": "killed",
+      "failedTests": 17
+    }
+  ]
+}
