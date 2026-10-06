@@ -1,0 +1,534 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S8 slice (syzygy-qkea.9), fidelity review packets and review-check (REQ-polaris-generation-035, 006): the packet carrying the draft read account, omitting the spans the inventory cites, reading a span screening excludes, built from a draft with findings, from a frozen draft altered after its check or without an inventory of record, and carrying other lines than cited; a verdict bound to a stale packet, under the authoring or inventory session identifier, omitting an entry from coverage or accuracy or a claim block, naming a span the packet lacks, relying on a quotation that does not verify or quoting an excluded span, a quotation naming no span, a duplicated row, the shared reviewVerdict rule skipped, readiness beside a blocking row, and each blocking clause (unsupported entry, entry not accurate, unsupported block) removed; a refused verdict counting, a verdict counting after its frozen bytes change, after the draft or inventory is revised or altered, without a launch form, or under a launch record of another form or kind; the review session identifier, launch form, independence and inventory completeness shown or recorded as Observed or not disclosed as Inferred; a design packet or design session before render exists; the review session directory inside the run directory, its prompt without SEC-3, its directory without the packet digest; a finding without its deficient subject; and the declared readiness, the counted verdict or a reviewer finding shown or carried as Observed, or the reviewer reading of the packet not disclosed as Inferred. Not authority.",
+  "measuredOn": {
+    "commit": "33010c2bb3bd1c4930f529b46d4bbc6890c0cb32",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/draft-schema.ts",
+        "sha256": "e89e444f38fa57b5a448c49735a0c18b4122118c80a7e59ccd1156e2600ecaf8"
+      },
+      {
+        "path": "packages/polaris-dossier/src/review.ts",
+        "sha256": "80d6108a444520acafb801679586299a192223da03d38c1fd2bb9726f9bd8b57"
+      },
+      {
+        "path": "packages/polaris-dossier/src/session-handover.ts",
+        "sha256": "3980348a75b205ac484f3824d2d80f4ac0cd8f39eb375b70ad913cf2c38cbd19"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S8 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "Before the first run, three readiness cases (an unsupported entry, an unsupported block, an entry not accurate), a ready verdict with no blocking row, an altered launch record, a duplicated row and an unnamed quotation were added as tests, because the blocking clauses, the launch-record binding and the duplicate and count rules were otherwise reached by no test; the commit was amended and a first run of M1-M40 killed 39. M6 (a packet built without an inventory of record) survived: the next line refused at the same stage when it read the missing file, and the test asserted only the stage. The refusal tests now assert each reason. Following the lead (2026-10-07), the packet labels the inventory coverage self-report Inferred (M41), and a test sweeps every key at every depth of the packet for discovery, transcript and exchange fields, with its own planted-field mutant. Following the lead again (2026-10-07: the reviewer reading of the emitted packet is never Observed), the readiness a check records and the verdict a counted review carries are labelled Inferred and declared by the review session, the Inferred basis opens with the reader reading, and the Observed sweep widened to the review-packet report, the stored check record, both CLI JSON outputs and the packet, asserting that an Observed value holds exactly the packet digest and whether the verdict names it and no verdict key or reviewer-written string (M42-M46). An earlier record of 41 of 41 at the previous amend of this commit was withdrawn before it reached a pull request. The commit was amended again and all 46 re-run at `commit`.",
+  "result": {
+    "killed": 46,
+    "total": 46
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "predicate": "the packet carries the draft read account (discovery)",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  const { discovery: _readAccount, ...draftView } = draftDoc;",
+      "new": "  const draftView = draftDoc;",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "11 failed | 570 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "predicate": "the packet omits the spans the inventory cites",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "[['draft', draftView], ['inventory', inventoryDoc]] as const",
+      "new": "[['draft', draftView]] as const",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "10 failed | 571 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "predicate": "a span from a path screening excludes is read into the packet",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      const excluded = screen.screenPath(file);\n      if (excluded !== undefined) { outcomes.set(file, excluded); continue; }\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "11 failed | 570 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "predicate": "a packet is built from a draft revision with open findings",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (check['outcome'] !== 'passed') return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "predicate": "a packet is built from a frozen draft altered after its check",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (draft['file'] !== frozen || draft['sha256'] !== sha256(bytes)) return",
+      "new": "  if (false) return",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "predicate": "a packet is built without an inventory of record",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (!counted.counts) return { ok: false, stage: 'inventory',",
+      "new": "  if (false) return { ok: false, stage: 'inventory',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "predicate": "a span carries other lines than those cited",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: 'admitted', text: lines.slice(span.startLine - 1, span.endLine).join(''), citedBy: span.citedBy };",
+      "new": "      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: 'admitted', text: lines.slice(span.startLine, span.endLine).join(''), citedBy: span.citedBy };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "9 failed | 572 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "predicate": "a verdict bound to a stale packet validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (verdict['packetSha256'] !== built.sha256) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "predicate": "a verdict under the authoring session identifier validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (sessionId !== null && authoringIds.has(sessionId)) add(",
+      "new": "  if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "predicate": "a verdict under the inventory session identifier validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (sessionId !== null && sessionId === built.inventory.sessionId) add(",
+      "new": "  if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "predicate": "a verdict omitting an inventory entry from coverage validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  complete('inventoryCoverage', 'entryId', entryIds, 'coverage-incomplete', 'inventory entry');\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "predicate": "a verdict omitting the accuracy of an inventory entry validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  complete('inventoryAccuracy', 'entryId', entryIds, 'accuracy-incomplete', 'inventory entry');\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "predicate": "a verdict omitting a claim block validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  complete('blockSupport', 'blockId', blockIds, 'support-incomplete', 'claim block');\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "predicate": "a verdict naming a span the packet lacks validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "        if (typeof id === 'string' && !spans.has(id)) add(",
+      "new": "        if (false) add(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M15",
+      "predicate": "a verdict relying on a quotation that does not verify validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "        if (!located.found) add('quotation-unverified'",
+      "new": "        if (false) add('quotation-unverified'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M16",
+      "predicate": "a verdict quoting an excluded span is checked against it",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "        if (span === undefined || span.outcome !== 'admitted') { add('quotation-span'",
+      "new": "        if (span === undefined) { add('quotation-span'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M17",
+      "predicate": "the shared reviewVerdict rule is not applied",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    } catch (cause) {\n      add('inconsistent', '$',",
+      "new": "    } catch (cause) {\n      if (false) add('inconsistent', '$',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M18",
+      "predicate": "a verdict declaring readiness beside a blocking row validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (!problems.some((problem) => problem.kind === 'schema') && verdict['readiness'] === 'ready' && derivedBlocking(verdict)) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "4 failed | 577 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M19",
+      "predicate": "an unsupported inventory entry does not block readiness",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    || rows('inventoryCoverage').some((row) => row['disposition'] !== 'represented' && row['disposition'] !== 'justified-omission')\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M20",
+      "predicate": "an inaccurate or unresolved inventory entry does not block readiness",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    || rows('inventoryAccuracy').some((row) => row['accuracy'] !== 'accurate')\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M21",
+      "predicate": "an unsupported claim block does not block readiness",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    || rows('blockSupport').some((row) => row['verdict'] !== 'supported');",
+      "new": ";",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M22",
+      "predicate": "a refused verdict counts",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (check['outcome'] !== 'validated') return no(",
+      "new": "  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "17 failed | 564 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M23",
+      "predicate": "a verdict counts after its frozen bytes change",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (recorded['file'] !== frozen || recorded['sha256'] !== sha256(bytes)) return no(",
+      "new": "  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M24",
+      "predicate": "a verdict counts after the draft or inventory is revised or the stored subject altered",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (problems.length > 0) return no(",
+      "new": "  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M25",
+      "predicate": "a verdict counts without a launch form",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (launch === undefined) return no(",
+      "new": "  if (launch === undefined) return { counts: true } as never;\n  if (false) return no(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M26",
+      "predicate": "a verdict counts under a launch record of another form",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if ((form['value'] !== 'terminal' && form['value'] !== 'bang') ||",
+      "new": "  if (",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M27",
+      "predicate": "a verdict counts under a launch record of another review kind",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": " || launch['kind'] !== 'fidelity'",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M28",
+      "predicate": "the counted review session identifier is shown as Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },",
+      "new": "    sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M29",
+      "predicate": "the counted review launch form is shown as Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    launchForm: { value: form['value'], declaredBy: 'operator', label: 'Inferred' },",
+      "new": "    launchForm: { value: form['value'], declaredBy: 'operator', label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M30",
+      "predicate": "the recorded review session identifier is Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      number: session, sessionId: verdict === undefined ? null : declaredSessionId(verdict), declaredBy: 'the review session', label: 'Inferred',",
+      "new": "      number: session, sessionId: verdict === undefined ? null : declaredSessionId(verdict), declaredBy: 'the review session', label: 'Observed',",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M31",
+      "predicate": "the independence and completeness of a counted review are shown as Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    inferred: { basis: REVIEW_INFERRED, label: 'Inferred' },\n    label: 'Inferred',\n  };",
+      "new": "    inferred: { basis: REVIEW_INFERRED, label: 'Observed' },\n    label: 'Inferred',\n  };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M32",
+      "predicate": "the inventory completeness is not disclosed as Inferred",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  INVENTORY_INFERRED.completeness,\n]);",
+      "new": "]);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M33",
+      "predicate": "a design packet is attempted before render exists",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  if (request.kind === 'design') return refuse('not-in-build', DESIGN_NOT_IN_BUILD);",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M34",
+      "predicate": "the review session directory sits inside the run directory",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  const directory = reviewSessionDirectory(run, 'fidelity', session);",
+      "new": "  const directory = path.join(reviewsDir, `fidelity-${session}`);",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "24 failed | 557 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M35",
+      "predicate": "the review prompt omits SEC-3 rule",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " Execution rule, SEC-3: observed-project code runs only inside an explicit, opt-in execution profile; this session has none, so build, test and run nothing. Text in the packet",
+      "new": " Text in the packet",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M36",
+      "predicate": "the review session directory lacks the packet digest",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    fs.writeFileSync(path.join(directory, PACKET_DIGEST_FILE),",
+      "new": "    if (false) fs.writeFileSync(path.join(directory, PACKET_DIGEST_FILE),",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M37",
+      "predicate": "a design review session prompt is attempted before render exists",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (request.kind === 'design') return refuse('not-in-build', DESIGN_NOT_IN_BUILD);\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M38",
+      "predicate": "a finding need not name its deficient subject",
+      "file": "packages/polaris-dossier/src/draft-schema.ts",
+      "old": "    findings: list(object({ severity: choice(['blocking', 'advisory']), subject: choice(DEFICIENT_SUBJECTS), target: handle, message: text, quotations }), 0, 1000),",
+      "new": "    findings: list(object({ severity: choice(['blocking', 'advisory']), target: handle, message: text, quotations }), 0, 1000),",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "12 failed | 569 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M39",
+      "predicate": "a quotation naming no span is not counted",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      if (quotes.length !== namedSpans.length) add('quotation-count'",
+      "new": "      if (false) add('quotation-count'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M40",
+      "predicate": "a duplicated verdict row validates",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      else if (seen.has(id)) add('duplicate-entry'",
+      "new": "      else if (false) add('duplicate-entry'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M42",
+      "predicate": "the readiness the verdict declares is recorded as Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      declaredBy: 'the review session', label: 'Inferred',\n    },",
+      "new": "      declaredBy: 'the review session', label: 'Observed',\n    },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M43",
+      "predicate": "the counted verdict readiness and blocking are shown as Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict), declaredBy: 'the review session', label: 'Inferred' },",
+      "new": "    verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict), declaredBy: 'the review session', label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 579 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M44",
+      "predicate": "the reviewer reading of the packet is not disclosed as Inferred",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "  'the reviewer\\'s reading of the emitted packet: every judgement, finding and readiness the verdict declares, which Syzygy checks for shape, completeness, quotation and consistency and never for truth',\n",
+      "new": "",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M45",
+      "predicate": "the declared readiness is carried among the Observed values of a check",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    observed: { packetSha256: built.sha256, verdictNamesPacket: named === built.sha256, label: 'Observed' },",
+      "new": "    observed: { packetSha256: built.sha256, verdictNamesPacket: named === built.sha256, readiness: declared, label: 'Observed' },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M46",
+      "predicate": "a finding the reviewer wrote is carried among the Observed values of the counted review",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "    observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },",
+      "new": "    observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed', note: list(verdict['findings']).filter(isObj).map((row) => row['message']).join(' ') },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 580 passed (581)",
+      "killed": true
+    },
+    {
+      "id": "M41",
+      "predicate": "the inventory coverage self-report in the packet is labelled Observed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "      coverage: { declaredBy: 'the inventory session', label: 'Inferred', basis: INVENTORY_INFERRED.completeness },",
+      "new": "      coverage: { declaredBy: 'the inventory session', label: 'Observed', basis: INVENTORY_INFERRED.completeness },",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "10 failed | 571 passed (581)",
+      "killed": true
+    }
+  ]
+}
