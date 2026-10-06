@@ -1,0 +1,134 @@
+{
+  "subject": "syzygy-hjuz live test runs no observed code",
+  "commit": "f00ab9120837239a586bba18f5d49ee2289e6872",
+  "command": "npx vitest run packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+  "mutants": [
+    {
+      "id": "H1-spawnSync-restored",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "import { execFileSync } from 'node:child_process';\n",
+          "new": "import { execFileSync, spawnSync } from 'node:child_process';\n"
+        },
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT).toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code imports the process module once, binding only the git runner",
+        "the live verification test runs no observed code names no other way to start a process",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true
+    },
+    {
+      "id": "H2-original-file-restored",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "<whole file>",
+          "new": "<origin/main:packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts>"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code imports the process module once, binding only the git runner",
+        "the live verification test runs no observed code names no other way to start a process",
+        "the live verification test runs no observed code reads the operator-produced result named by the environment",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true
+    },
+    {
+      "id": "H3-original-file-and-exemption-restored",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "<whole file>",
+          "new": "<origin/main:packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts>"
+        },
+        {
+          "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+          "old": "const EXEMPT = new Set<string>();",
+          "new": "const EXEMPT = new Set(['packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:31']);"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code imports the process module once, binding only the git runner",
+        "the live verification test runs no observed code names no other way to start a process",
+        "the live verification test runs no observed code reads the operator-produced result named by the environment"
+      ],
+      "killed": true
+    },
+    {
+      "id": "H4-execFileSync-python",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT).toBe('0');\n    execFileSync(PYTHON, ['-m', 'pytest', SCOPE, '-q'], { cwd: repoRoot });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code runs only git",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true
+    },
+    {
+      "id": "H5-builtin-module",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT).toBe('0');\n    (process.getBuiltinModule(['child', 'process'].join('_')) as typeof import('node:child_process')).spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code imports the process module once, binding only the git runner",
+        "the live verification test runs no observed code names no other way to start a process"
+      ],
+      "killed": true
+    },
+    {
+      "id": "H6-exemption-reopened-for-a-new-spawn",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "import { execFileSync } from 'node:child_process';\n",
+          "new": "import { execFileSync, spawnSync } from 'node:child_process';\n"
+        },
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT).toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT).toBe('0');\n    spawnSync(PYTHON, ['-m', 'pytest', SCOPE, '-q', `--junitxml=${JUNIT}`], { cwd: repoRoot, encoding: 'utf8' });\n"
+        },
+        {
+          "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+          "old": "const EXEMPT = new Set<string>();",
+          "new": "const EXEMPT = new Set(['packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:52']);"
+        }
+      ],
+      "exit": 1,
+      "tests": 9,
+      "failed": [
+        "the live verification test runs no observed code imports the process module once, binding only the git runner",
+        "the live verification test runs no observed code names no other way to start a process",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true
+    }
+  ]
+}
