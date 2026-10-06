@@ -150,7 +150,7 @@ describe('brief: issued', () => {
     };
     const first = runDirectory(), second = runDirectory(other);
     await issueBrief(first, { sources: sources(), openReader: tree(), now: () => NOW });
-    await issueBrief(second, { sources: sources({ repositoryIdsFor: async () => ['example-other'], consentedRevisionsFor: async () => [{ label: 'v9', commitId: 'c'.repeat(40) }], observationConsentFor: async () => ({ satisfied: true, record: 'OTHER-CONSENT@1' }), providerStatements: { statementsFor: async () => [{ recordId: 'STATEMENT', version: '1', digest: 'd', provider: 'anthropic', contentClasses: ['source'], withdrawn: false, act: { identity: 'A', inForceAt: 0 } }] } }), openReader: tree(['openspec/specs/secret-name.md']), now: () => NOW });
+    await issueBrief(second, { sources: sources({ repositoryIdsFor: async () => ['example-other'], consentedRevisionsFor: async () => [{ label: 'v9', commitId: 'c'.repeat(40) }], observationConsentFor: async () => ({ satisfied: true, record: 'OTHER-CONSENT@1' }), providerStatements: { statementsFor: async () => [{ recordId: 'STATEMENT', version: '1', digest: 'd', agentTool: 'claude-code', provider: 'anthropic', contentClasses: ['source'], withdrawn: false, act: { identity: 'A', inForceAt: 0 } }] } }), openReader: tree(['openspec/specs/secret-name.md']), now: () => NOW });
     // The label shown is the live consent's for the commit, not the run record's.
     const blank = (text: string, subject: RunSubject, liveLabel: string): string => [subject.repository.url, subject.repository.repositoryId, subject.pinnedRevision.commit, `(${liveLabel})`]
       .reduce((acc, value) => acc.split(value).join('<identity>'), text).replace(/sha256 `[0-9a-f]{64}`\)/, 'sha256 `<schema>`)');

@@ -134,25 +134,34 @@ describe('governed predicate (R3-F9: any .syzygy/ path counts, adopted or not)',
 describe('per-project statement gate', () => {
   const NOW = Date.UTC(2026, 9, 7, 12);
   const statement = (over: Partial<ProviderStatementRecord> = {}): ProviderStatementRecord => ({
-    recordId: 'STMT-REDIS', version: '1', digest: 'a'.repeat(64), provider: 'anthropic', contentClasses: ['code-content'], withdrawn: false,
+    recordId: 'STMT-REDIS', version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: ['code-content'], withdrawn: false,
     act: { identity: 'STMT-REDIS-ACT-2026-10-06', inForceAt: NOW - 1 }, ...over,
   });
-  it('is ok for exactly one in-force statement naming the provider', () => {
-    expect(providerStatementGate([statement(), statement({ recordId: 'OTHER', provider: 'openai' })], 'anthropic', NOW)).toEqual({ state: 'ok', record: 'STMT-REDIS@1' });
+  const NONE = 'no per-project statement names the operator\'s agent tool claude-code with the provider anthropic';
+  const NOT_IN_FORCE = 'no per-project statement naming the agent tool claude-code with the provider anthropic is in force: STMT-REDIS@1';
+  it('is ok for exactly one in-force statement naming the declared tool with the provider', () => {
+    expect(providerStatementGate([statement(), statement({ recordId: 'OTHER', agentTool: 'codex', provider: 'openai' })], 'claude-code', 'anthropic', NOW)).toEqual({ state: 'ok', record: 'STMT-REDIS@1' });
   });
   it.each([
-    ['none at all', [], 'no per-project statement names the operator\'s agent provider anthropic'],
-    ['one naming another provider', [statement({ provider: 'openai' })], 'no per-project statement names the operator\'s agent provider anthropic'],
-    ['a provider spelled in another case', [statement({ provider: 'Anthropic' })], 'no per-project statement names the operator\'s agent provider anthropic'],
-    ['a withdrawn one', [statement({ withdrawn: true })], 'no per-project statement naming anthropic is in force: STMT-REDIS@1 is withdrawn'],
-    ['one no act binds', [statement({ act: null })], 'no per-project statement naming anthropic is in force: STMT-REDIS@1 has no owner act binding its bytes'],
-    ['one not in force yet', [statement({ act: { identity: 'x', inForceAt: NOW + 1 } })], 'no per-project statement naming anthropic is in force: STMT-REDIS@1 is not in force yet'],
-    ['one naming no content class', [statement({ contentClasses: [] })], 'no per-project statement naming anthropic is in force: STMT-REDIS@1 names no content class'],
+    ['none at all', [], NONE],
+    ['one naming another provider', [statement({ provider: 'openai' })], `${NONE} (STMT-REDIS@1 names claude-code with openai)`],
+    ['one naming the provider for another tool (Codex with Anthropic against the Claude Code statement)', [statement({ agentTool: 'codex' })], `${NONE} (STMT-REDIS@1 names codex with anthropic)`],
+    ['one naming neither', [statement({ agentTool: 'codex', provider: 'openai' })], NONE],
+    ['a provider spelled in another case', [statement({ provider: 'Anthropic' })], `${NONE} (STMT-REDIS@1 names claude-code with Anthropic)`],
+    ['a tool spelled in another case', [statement({ agentTool: 'Claude-Code' })], `${NONE} (STMT-REDIS@1 names Claude-Code with anthropic)`],
+    ['a withdrawn one', [statement({ withdrawn: true })], `${NOT_IN_FORCE} is withdrawn`],
+    ['one no act binds', [statement({ act: null })], `${NOT_IN_FORCE} has no owner act binding its bytes`],
+    ['one not in force yet', [statement({ act: { identity: 'x', inForceAt: NOW + 1 } })], `${NOT_IN_FORCE} is not in force yet`],
+    ['one naming no content class', [statement({ contentClasses: [] })], `${NOT_IN_FORCE} names no content class`],
   ])('is absent for %s', (_name, records, why) => {
-    expect(providerStatementGate(records, 'anthropic', NOW)).toEqual({ state: 'absent', why });
+    expect(providerStatementGate(records, 'claude-code', 'anthropic', NOW)).toEqual({ state: 'absent', why });
+  });
+  it('is absent for the Claude Code run against the Codex statement for the same provider (the reverse pairing)', () => {
+    expect(providerStatementGate([statement({ agentTool: 'codex' })], 'claude-code', 'anthropic', NOW).state).toBe('absent');
+    expect(providerStatementGate([statement()], 'codex', 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement names the operator\'s agent tool codex with the provider anthropic (STMT-REDIS@1 names claude-code with anthropic)' });
   });
   it('is refused when two in-force statements name the provider', () => {
-    expect(providerStatementGate([statement(), statement({ version: '2' })], 'anthropic', NOW).state).toBe('refused');
+    expect(providerStatementGate([statement(), statement({ version: '2' })], 'claude-code', 'anthropic', NOW).state).toBe('refused');
   });
 });
 

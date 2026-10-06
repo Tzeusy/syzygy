@@ -37,7 +37,7 @@ export {
   D9_ACT_FORM, DOSSIER_READER_IMPLEMENTATION_ID, DRAWER_FORMS, NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, RECORDS_WITHIN_REACH, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS,
   createPackageGateSources, providerStatementGate, registryEntryUsable,
   type ConsentAnswer, type GateSources, type GateState, type PackageGateSourceOptions, type ProjectInputSource, type ProviderStatementRecord,
-  type ProviderStatementSource,
+  type ProviderStatementSource, type StatementForm,
 } from './gate-sources.js';
 export {
   GitObjectReadRefusal, hashAlgorithmOf, openPinnedObjectReader,
