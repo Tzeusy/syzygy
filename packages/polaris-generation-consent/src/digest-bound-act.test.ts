@@ -167,8 +167,15 @@ describe('digest-bound act cross-check (RFC3-16(a))', () => {
     ['no recording instant', (t: string) => t.replace(/^Recorded at \(UTC\): .*\n/m, '')],
     ['an instant on another day', (t: string) => t.replace('Recorded at (UTC): 2026-10-07T09:30:00Z', 'Recorded at (UTC): 2026-10-06T09:30:00Z')],
     ['its digest only inside a fence', (t: string) => t.replace(/^(Exact digest \(SHA-256\): `[0-9a-f]{64}`)$/m, '```\n$1\n```')],
+    // The recorder's RFC3-16(b) lines, read for a form with no template (R-POLARIS-DOSSIER-GATE-SOURCES-1 note 4).
+    ['no owner line', (t: string) => t.replace(/^Owner: Tzeusy\n/m, '')],
+    ['another owner', (t: string) => t.replace(/^Owner: Tzeusy$/m, 'Owner: an agent')],
+    ['no provenance state', (t: string) => t.replace(/^Provenance state: .*\n/m, '')],
+    ['no A1 line', (t: string) => t.replace(/^A1 audit-record identity .*\n/m, '')],
   ])('is refused for %s', async (_name, mutate) => {
-    expect((await read(world({ [ACT_FILE]: mutate(act()) }))).state).toBe('refused');
+    const mutated = mutate(act());
+    expect(mutated).not.toBe(act());
+    expect((await read(world({ [ACT_FILE]: mutated }))).state).toBe('refused');
   });
   it.each([
     ['a file named for the act', 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-WITHDRAWAL.md', 'The owner withdraws it.\n'],

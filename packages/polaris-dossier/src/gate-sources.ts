@@ -180,7 +180,6 @@ const sittingForm = (a: SittingAct, more: { readonly bound?: readonly string[]; 
   artifact: `${SITTING_INSTANCES}/${a.artifact}`,
   stems: Object.freeze([`dossier-local-agent-${a.stem.toLowerCase()}`, a.identityStem.toLowerCase(), a.artifact.split('/').pop()!, a.label, a.title, ...(more.stems ?? [])]),
   ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
-  scope: a.scope,
   template: sittingTemplate(a),
   ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
 });

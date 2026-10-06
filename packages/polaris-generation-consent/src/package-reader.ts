@@ -536,14 +536,12 @@ export interface DigestBoundActForm {
   /** For an artifact that binds other files' bytes in turn (an in-force record): the files its one `| File | SHA-256 |` table must
    * list, exactly and in order. The act then counts only while each listed file still hashes to its row. */
   readonly bound?: readonly string[];
-  /** The record's one `Scope:` line, exactly, for a recorder that writes one. */
-  readonly scope?: string;
   /** Lines the sweep reads past: in the decisions file `file`, one line whose bytes (without its newline) hash to `sha256`, such as a
    * register row that cites the act by name before it exists. Every other line of that file, a second copy of the same line included,
    * is swept as any other; an edited line no longer matches and is swept too. */
   readonly citedRows?: readonly CitedRow[];
   /** The record as its recorder renders it: the record counts only when the slots read out of it render the template back to the
-   * record, byte for byte. */
+   * record, byte for byte. The template fixes every literal line, the scope included. */
   readonly template?: RecorderTemplate;
 }
 export interface CitedRow { readonly file: string; readonly sha256: string }
@@ -611,13 +609,12 @@ function fromTemplate(template: RecorderTemplate, text: string): Readonly<Record
   return fields;
 }
 
-/** The lines every recorder of these acts writes for RFC3-16(b) items 7 and 9 (owner, provenance state, the explicit A1 absence), and
- * the scope when the form names one; a record without one of them, or with another, is not the recorder's form. */
-function recorderLines(text: string, scope: string | undefined): void {
+/** The lines every recorder of these acts writes for RFC3-16(b) items 7 and 9 (owner, provenance state, the explicit A1 absence), for a
+ * form with no template; a record without one of them, or with another, is not the recorder's form. */
+function recorderLines(text: string): void {
   one(text, /^(Owner: Tzeusy)$/gm);
   one(text, /^(Provenance state: `owner-adopted \(bootstrap, uncorrelated\)` — state \(1\),)$/gm);
   one(text, /^(A1 audit-record identity \(RFC3-16\(b\) item 9\): \*\*explicitly absent\*\*)$/gm);
-  if (scope !== undefined && one(text, /^Scope: (.+)$/gm) !== scope) refuse();
 }
 
 /** Why the artifact's bound-files table does not hold for `bound`, or null when every listed file still hashes to its row. */
@@ -651,8 +648,8 @@ export function readDigestBoundActState(options: StrictReadOptions & { readonly 
     if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
     const text = found.text;
     if (!text.startsWith(`${form.title}\n`)) refuse();
-    recorderLines(text, form.scope);
-    if (form.template !== undefined) fromTemplate(form.template, text);
+    if (form.template === undefined) recorderLines(text);
+    else fromTemplate(form.template, text);
     const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), identity = one(text, /^Act identity: `([^`\n]+)`$/gm), type = one(text, /^Act type: `([^`\n]+)`$/gm);
     const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
     const day = Date.parse(`${date}T00:00:00Z`);
@@ -680,8 +677,7 @@ export interface VersionedSignoffForm {
   readonly installed: string;
   /** As `DigestBoundActForm.stems`; the installed entry's path is swept too. */
   readonly stems: readonly string[];
-  /** As `DigestBoundActForm.scope` and `.citedRows`. */
-  readonly scope: string;
+  /** As `DigestBoundActForm.citedRows`. */
   readonly citedRows?: readonly CitedRow[];
   /** The record as the recorder renders it (`render_record` with `installed_lines`), slots `date`, `quote`, `review`, `commit`,
    * `verdict`, `disposition`, `instant` and `sha`. */
@@ -782,7 +778,6 @@ export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = Object.
   installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
   // The bare package key carries the tag, both sign-off spellings, the record's file name and the installed entry's basename.
   stems: Object.freeze(['public-git-source-acquisition-local-agent', 'public git source acquisition, local-agent version — version-tagged sign-off']),
-  scope: 'the entry\'s own subject and read authority, nothing wider',
   citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', sha256: P104_ROW_SHA256 })]),
   template: registrySignoffTemplate({
     title: 'Public Git source acquisition, local-agent version', packageKey: 'public-git-source-acquisition-local-agent', version: '1.0',
@@ -802,8 +797,7 @@ export function readVersionedSignoffState(options: StrictReadOptions & { readonl
     if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
     const text = found.text, tag = `${form.packageKey}-v${form.version}`;
     if (!text.startsWith(`${form.title}\n`)) refuse();
-    recorderLines(text, form.scope);
-    // The recorder's own input checks (validate_inputs, validate_disposition): the selection names the Scope A extension, and a
+    // The template fixes the owner, provenance, A1 and scope lines. The recorder's own input checks (validate_inputs, validate_disposition): the selection names the Scope A extension, and a
     // CONFIRM WITH EXCEPTIONS names the disposition record that clears its notes.
     const slots = fromTemplate(form.template, text);
     if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')) refuse();
