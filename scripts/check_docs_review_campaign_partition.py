@@ -304,6 +304,11 @@ CAMPAIGNS = (
         r"R-POLARIS-DOSSIER-S3-GATES-.*\.md",
     ),
     campaign(
+        "polaris-dossier-clone-shape",
+        "Polaris dossier clone shape",
+        r"R-POLARIS-DOSSIER-CLONE-SHAPE-.*\.md",
+    ),
+    campaign(
         "redis-local-agent-sitting-brief",
         "Redis local-agent sitting brief",
         r"R-REDIS-LOCAL-AGENT-SITTING-BRIEF-.*\.md",
