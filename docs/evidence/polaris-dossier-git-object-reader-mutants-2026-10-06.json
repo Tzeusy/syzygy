@@ -1,6 +1,6 @@
 {
   "subject": {
-    "commit": "c5480b2289e1722febd35ca2cb09d9c97f7a64d6",
+    "commit": "87eb26f9ddc695b8848b6e1d9852bdb1f1ab2cfb",
     "branch": "agent/dossier-s2-object-reader",
     "fileSha256": {
       "packages/polaris-dossier/src/git-object-reader.ts": "42e83e3e052c70300dc5029dc84addb10c25b8ecbabe3a34a12bd645ddb2716f"
@@ -13,7 +13,7 @@
   "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-dossier",
-  "ranAt": "2026-10-06T01:07:43+00:00",
+  "ranAt": "2026-10-06T01:15:36+00:00",
   "mutants": [
     {
       "id": "X-noop-control",
@@ -328,6 +328,6 @@
       "note": "a tree entry name with a slash accepted"
     }
   ],
-  "ranAtCommit": "c5480b2289e1722febd35ca2cb09d9c97f7a64d6",
-  "summary": "23 of 24 mutants killed at c5480b2289e1722febd35ca2cb09d9c97f7a64d6; not killed: ['X-noop-control'] (the control). An earlier run of this same set at db012c05, before the variable rename that only changed L2-loose-skipped's fragment, also killed 23. A first run at the reader commit 6221e58f, before the hand-built-store tests, left five alive: P4-ofs-base-range-unchecked, D1-delta-source-size-unchecked, D2-delta-target-size-unchecked, W5-commit-tree-line-any-width and W6-tree-entry-name-slash. Each guards a malformation git never writes, so the fixture clones never reached it; hand-built stores now do, and all five are killed. Not mutated, because no code exists to mutate: the reader has no path that reads a ref, config, hook, alternates file, grafts, shallow file or replace ref, and the tests show each planted one is refused or ignored."
+  "ranAtCommit": "87eb26f9ddc695b8848b6e1d9852bdb1f1ab2cfb",
+  "summary": "23 of 24 mutants killed at 87eb26f9ddc695b8848b6e1d9852bdb1f1ab2cfb, after the rebase onto S1 (main 81643a0b); not killed: ['X-noop-control'] (the control). The reader and test bytes (fileSha256, testFileSha256) are identical to the pre-rebase runs, which gave the same result at c5480b22 and at db012c05 (before a variable rename that changed only L2-loose-skipped's fragment); both commits are unreachable after the rebase. A first run at the reader commit, before the hand-built-store tests, left five alive: P4-ofs-base-range-unchecked, D1-delta-source-size-unchecked, D2-delta-target-size-unchecked, W5-commit-tree-line-any-width and W6-tree-entry-name-slash. Each guards a malformation git never writes, so the fixture clones never reached it; hand-built stores now do, and all five are killed. Not mutated, because no code exists to mutate: the reader has no path that reads a ref, config, hook, alternates file, grafts, shallow file or replace ref, and the tests show each planted one is refused or ignored."
 }
