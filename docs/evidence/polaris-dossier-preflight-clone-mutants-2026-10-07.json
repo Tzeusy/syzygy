@@ -1,23 +1,51 @@
 {
-  "record": "Rule-6 mutants for preflight's clone commands (syzygy-qkea.24): a full clone printed again (Q1), the fetch taking the commit's history (Q2), the default branch fetched in place of the consented commit (Q3), every revision fetched into one directory (Q4). Not authority.",
+  "record": "Rule-6 mutants for preflight's clone commands (syzygy-qkea.24): a full clone printed again (Q1), the fetch taking the commit's history (Q2), the default branch fetched in place of the consented commit (Q3), every revision fetched into one directory (Q4); and init's clone-shape check: the refs walk skipped (C1), HEAD's detachment unchecked (C2), packed-refs ignored (C3), pseudo-refs ignored (C4), linked worktrees ignored (C5), shallow at any single commit accepted (C6), an unshallow clone of a commit with parents accepted (C7), objects beyond the tree ignored (C8), pack-index identifiers not named (C9), loose identifiers not named (C10), the pinned commit's parents not read (C11), init skipping the store check (C12) or the refs check (C13), and either skill text allowing a full clone (C14, C15). Not authority.",
   "measuredOn": {
-    "commit": "976b9975b3739502eb40d94da7f36e4303b09f89",
+    "commit": "7b83e497c54625723d75906304dbbc5c25af3a2f",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/preflight.ts",
         "sha256": "5b6cb3409f17ccb9af711d7c5bf759aa5317ea5327dbc0edc01d1383be0eb924"
       },
       {
+        "path": "packages/polaris-dossier/src/clone-shape.ts",
+        "sha256": "c333f1b9da6a9594a6b8243fe27c7fab79440d7a4ead1b61d52dd5e716bf6199"
+      },
+      {
+        "path": "packages/polaris-dossier/src/git-object-reader.ts",
+        "sha256": "9f33e5fbbf464b1df28b79c3fcf5016b8ad7db1910041734c5fb8e4a790998f3"
+      },
+      {
+        "path": "packages/polaris-dossier/src/init.ts",
+        "sha256": "ae13723e316d7e940fb31d4616a5585890c85ed2b4cae46157d10d18785ab3f3"
+      },
+      {
+        "path": ".claude/skills/polaris-dossier/SKILL.md",
+        "sha256": "433a94c4cd1ac6f7ec310b263952a2128c40e3684dd0496035ffd812af8271c2"
+      },
+      {
+        "path": ".codex/skills/polaris-dossier/SKILL.md",
+        "sha256": "71c43d2158d6b5d7d6462164cb5155c2cf383eb170d928f5d200b7afe1bb3629"
+      },
+      {
         "path": "packages/polaris-dossier/src/start-gates.test.ts",
-        "sha256": "9cce51f19538d0c1138fd610179c1b3ae7fe08937756ae3691d76b011908c387"
+        "sha256": "208eef82e2a254677772145fda6839c64e210ea694852549324da53d17e56e11"
+      },
+      {
+        "path": "packages/polaris-dossier/src/agent-texts.test.ts",
+        "sha256": "9d0edd8293940995fb66fd497ea58d774ce4ffc754fbaceaecd6fa33aed9cae2"
+      },
+      {
+        "path": "packages/polaris-dossier/src/full-run.testkit.ts",
+        "sha256": "5031a0e9e57ac11869c256ef6c7df45f7f83cdebdfcbb0b7ae00df342734f090"
       }
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence, by a function replacer so `$` sequences in `new` are literal) in the file at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied, the command exits nonzero and at least one test fails; a nonzero exit with no failed test is recorded as `error`.",
-  "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/start-gates.test.ts -t preflight",
+  "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/start-gates.test.ts packages/polaris-dossier/src/agent-texts.test.ts",
   "result": {
-    "killed": 4,
-    "total": 4
+    "killed": 19,
+    "total": 19
   },
   "mutants": [
     {
@@ -51,6 +79,126 @@
       "new": "cloneCommands: revisions.flatMap((r, i) => i > 0 ? [`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`] : [",
       "outcome": "killed",
       "failedTests": 2
+    },
+    {
+      "id": "C1-refs-walk-skipped",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "  while (pending.length > 0) {",
+      "new": "  while (pending.length > 99) {",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "C2-head-detachment-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (head.text.replace(/\\n$/u, '') !== commit) return refuse(",
+      "new": "if (false) return refuse(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C3-packed-refs-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (ref !== undefined) return refuse('packed-refs",
+      "new": "if (false) return refuse('packed-refs",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C4-pseudo-refs-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (named.some(id => id !== commit))",
+      "new": "if (false)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C5-worktrees-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "fs.readdirSync(path.join(gitDir, 'worktrees')).length > 0",
+      "new": "fs.readdirSync(path.join(gitDir, 'worktrees')).length > 99",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C6-shallow-any-single-commit",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (rows.length !== 1 || rows[0] !== commit) {",
+      "new": "if (rows.length !== 1) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C7-unshallow-with-parents-passes",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (inventory.parents.length > 0 || shallow !== null) {",
+      "new": "if (shallow !== null) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C8-objects-beyond-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (inventory.beyondCount > 0) {",
+      "new": "if (false) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C9-pack-ids-not-named",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "    const width = HEX[this.algorithm] / 2;\n    for (const pack of this.packs) {",
+      "new": "    const width = HEX[this.algorithm] / 2;\n    for (const pack of [] as PackIndex[]) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C10-loose-ids-not-named",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "for (const fan of (await readdir(this.objects)).filter(n => /^[0-9a-f]{2}$/.test(n)).sort()) {",
+      "new": "for (const fan of [] as string[]) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C11-parents-not-read",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "const parents = await walk.parents();",
+      "new": "const parents: string[] = [];",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C12-init-skips-store-shape",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "    if (!storeShape.ok) return refuse('clone-shape', storeShape.reason);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "C13-init-skips-ref-shape",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  if (!refShape.ok) return refuse('clone-shape', refShape.reason);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 4
+    },
+    {
+      "id": "C14-claude-skill-allows-full-clone",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "fetched alone, never a full clone.",
+      "new": "fetched alone, or a full clone.",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "C15-codex-skill-allows-full-clone",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "fetched alone, never\n  a full clone.",
+      "new": "fetched alone, or\n  a full clone.",
+      "outcome": "killed",
+      "failedTests": 1
     }
   ]
 }
