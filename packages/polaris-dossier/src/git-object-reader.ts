@@ -12,7 +12,8 @@ import { inflateSync } from 'node:zlib';
  * - follows no symbolic link under `.git` and reads no special file: `objects/`, `objects/pack/`, each fan-out directory, each loose
  *   object, `.idx` and `.pack` must be a directory or regular file reached without one (files are opened `O_NOFOLLOW | O_NONBLOCK`
  *   and checked regular after opening), or the call refuses (`unsafe-store-entry`). Residual: a directory swapped for a link between
- *   its `lstat` and the open of a file beneath it is not detected; the bytes read are still re-hashed;
+ *   its `lstat` and the open of a file beneath it is not detected, nor is a hard link, which no open can tell from the file itself;
+ *   either can make the reader load a regular file from outside the clone, and the bytes read are still re-hashed;
  * - takes the hash algorithm from the consented identifier (40 hex digits SHA-1, 64 SHA-256), never `extensions.objectFormat`.
  *   SHA-1 is plain SHA-1, without git's collision detection (sha1dc): a chosen-prefix collision needs both colliding objects
  *   prepared before the upstream publishes one;
@@ -20,11 +21,20 @@ import { inflateSync } from 'node:zlib';
  * - on every call, re-reads and recomputes the identifier of every commit, tree and blob on the way down, and refuses
  *   (`GitObjectReadRefusal`) when one differs from the identifier it was reached by, is missing (an object only an alternate or a
  *   replacement could supply is missing), cannot be decoded, or has the wrong type. Nothing verified is kept between calls;
- * - refuses a tree entry git's fsck rejects as ambiguous: a name that is `.`, `..` or `.git` in any case, is not UTF-8, or repeats a
- *   name in the same tree, and a mode git does not write. Every path `listTree` returns is one `readBlobs` resolves to that entry;
- * - bounds each call: one object's inflated size (`maxObjectBytes`), the delta chain depth (`maxDeltaChainDepth`), the bytes
- *   inflated and produced by deltas summed over the call (`maxInflatedBytesPerCall`), and the objects read plus tree entries
- *   listed (`maxObjectsPerCall`). A store that cannot be read at all refuses (`store-unreadable`), never throws anything else.
+ * - refuses a tree entry whose name is `.` or `..`, is not UTF-8, repeats a name in the same tree, or is a name some filesystem
+ *   reads as `.git` (git's fsck `is_hfs_dotgit` and `is_ntfs_dotgit`): `.git` in any case, with any code point HFS+ ignores, or, in
+ *   any backslash-separated component, `.git` or its short name `git~1` followed by dots or spaces, a `:` stream name, or nothing;
+ *   and a mode git does not write. Entries out of git's order are not refused. Every path `listTree` returns is one `readBlobs`
+ *   resolves to that entry;
+ * - bounds each call, and only each call: one object's inflated size (`maxObjectBytes`), the delta chain depth
+ *   (`maxDeltaChainDepth`), the stored bytes inflated plus the bytes they inflate to and the bytes deltas produce, summed over the
+ *   call (`maxInflatedBytesPerCall`), and the objects read plus tree entries listed (`maxObjectsPerCall`). A zlib stream longer
+ *   stored than git writes for its inflated size (`storedBound`), or a loose object with bytes after its stream, refuses
+ *   (`corrupt-object`), so padding cannot buy unbounded work. Nothing carries between calls: a ceiling over many calls is the
+ *   caller's. Peak memory in one call is about three times `maxObjectBytes` (a delta's base, the delta and its output held at
+ *   once; 3 GiB at the default), plus the `.idx` files;
+ * - refuses a store that cannot be read (`store-unreadable`, a filesystem error code) and its own defects (`reader-fault`, any other
+ *   error), and never throws anything else.
  * Not bounded: the bytes of `.idx` files, each read and parsed in full once per call. Classification and screening of what it returns
  * (REQ-polaris-generation-025) are the caller's. */
 
@@ -33,7 +43,7 @@ export type GitObjectType = 'commit' | 'tree' | 'blob' | 'tag';
 export type GitObjectReadRefusalReason =
   | 'malformed-identifier' | 'not-a-git-directory' | 'malformed-path' | 'object-missing' | 'corrupt-object' | 'identifier-mismatch'
   | 'type-mismatch' | 'malformed-commit' | 'malformed-tree' | 'path-not-found' | 'not-a-blob' | 'invalid-pack-index'
-  | 'unsafe-store-entry' | 'budget-exceeded' | 'store-unreadable';
+  | 'unsafe-store-entry' | 'budget-exceeded' | 'store-unreadable' | 'reader-fault';
 
 /** A refused read, in human form (`message`) and machine form (`toJSON()`). None of the refused object's content is carried, nor
  * the identifier its bytes would hash to. */
@@ -93,7 +103,7 @@ export interface PinnedObjectReaderOptions {
   readonly maxObjectBytes?: number;
   /** Longest delta chain resolved. Default 1,000 (git's default `pack.depth` is 50 and its maximum 4,095). */
   readonly maxDeltaChainDepth?: number;
-  /** Bytes inflated plus bytes produced by deltas, summed over one call. Default 4 GiB. */
+  /** Stored bytes inflated, plus the bytes they inflate to and the bytes deltas produce, summed over one call. Default 4 GiB. */
   readonly maxInflatedBytesPerCall?: number;
   /** Objects read (each delta base counted) plus tree entries listed, over one call. Default 1,000,000. */
   readonly maxObjectsPerCall?: number;
@@ -115,8 +125,9 @@ export function openPinnedObjectReader(options: PinnedObjectReaderOptions): Pinn
       return await body(new Walk(store, revision));
     } catch (e) {
       if (e instanceof GitObjectReadRefusal) throw e;
-      const code = (e as { code?: unknown }).code;
-      return refuse('store-unreadable', `the object store could not be read (${typeof code === 'string' ? code : e instanceof Error ? e.name : 'unknown error'})`);
+      const code = errorCode(e);
+      if (typeof code === 'string' && /^E[A-Z0-9]+$/.test(code)) return refuse('store-unreadable', `the object store could not be read (${code})`);
+      return refuse('reader-fault', `the reader failed (${e instanceof Error ? e.name : 'unknown error'}), a defect of the reader and not of the store`);
     } finally {
       await store?.close().catch(() => undefined);
     }
@@ -175,12 +186,12 @@ class Walk {
     return refuse('malformed-path', `"${target}" names nothing`, null, target);
   }
 
-  async list(tree: string, prefix: string): Promise<TreeEntry[]> {
-    const out: TreeEntry[] = [];
+  /** Appends every non-tree entry under `tree` to `out`, one at a time: a subtree's entries are never spread as call arguments. */
+  async list(tree: string, prefix: string, out: TreeEntry[] = []): Promise<TreeEntry[]> {
     for (const e of await this.tree(tree, prefix === '' ? null : prefix)) {
       const p = prefix === '' ? e.name : `${prefix}/${e.name}`;
       this.store.count(e.id, p);
-      if (e.mode === '40000') out.push(...await this.list(e.id, p));
+      if (e.mode === '40000') await this.list(e.id, p, out);
       else out.push({ path: p, mode: e.mode, id: e.id });
     }
     return out;
@@ -200,6 +211,12 @@ const NAME = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
 /** The modes git writes: a file, an executable, a symbolic link, a tree, a submodule, and the group-writable file git once wrote and
  * fsck still accepts. */
 const MODES: ReadonlySet<string> = new Set(['100644', '100755', '120000', '40000', '160000', '100664']);
+/** The code points HFS+ ignores when it compares names (git's `is_hfs_dotgit`). */
+const HFS_IGNORED = /[\u200c-\u200f\u202a-\u202e\u206a-\u206f\ufeff]/g;
+/** Whether some filesystem reads `name` as `.git`: HFS+ ignoring case and its ignored code points, or NTFS in any
+ * backslash-separated component, `.git` or `git~1` followed by dots or spaces and then a `:` stream name or nothing. */
+const isDotGit = (name: string): boolean =>
+  name.replace(HFS_IGNORED, '').toLowerCase() === '.git' || name.toLowerCase().split('\\').some(c => /^(?:\.git|git~1)[. ]*(?::|$)/.test(c));
 function parseTree(body: Uint8Array, id: string, algorithm: HashAlgorithm): RawEntry[] {
   const width = HEX[algorithm] / 2, buf = Buffer.from(body), out: RawEntry[] = [], names = new Set<string>();
   let at = 0;
@@ -211,7 +228,7 @@ function parseTree(body: Uint8Array, id: string, algorithm: HashAlgorithm): RawE
     try { name = NAME.decode(buf.subarray(space + 1, nul)); } catch { refuse('malformed-tree', `tree ${id} has an entry name that is not UTF-8`, id); }
     if (!MODES.has(mode)) refuse('malformed-tree', `tree ${id} has an entry of a mode git does not write`, id);
     if (name === '' || name.includes('/')) refuse('malformed-tree', `tree ${id} has an entry name that is empty or holds a slash`, id);
-    if (name === '.' || name === '..' || name.toLowerCase() === '.git') refuse('malformed-tree', `tree ${id} has an entry named ., .. or .git`, id);
+    if (name === '.' || name === '..' || isDotGit(name)) refuse('malformed-tree', `tree ${id} has an entry named ., .. or .git`, id);
     if (names.has(name)) refuse('malformed-tree', `tree ${id} names one entry twice`, id);
     names.add(name);
     out.push({ mode, name, id: buf.toString('hex', nul + 1, nul + 1 + width) });
@@ -228,7 +245,9 @@ interface PackIndex { readonly name: string; readonly ids: Buffer; readonly offs
 interface Pack { readonly fh: FileHandle; readonly size: number }
 type RawObject = { readonly type: GitObjectType; readonly body: Uint8Array };
 
-const errorCode = (e: unknown): unknown => (e as { code?: unknown }).code;
+const errorCode = (e: unknown): unknown => (e as { code?: unknown } | null)?.code;
+/** `inflateSync` with `info: true`: the output, and the stored bytes the stream took (`bytesWritten`), which stops at its end. */
+type Inflated = { readonly buffer: Buffer; readonly engine: { readonly bytesWritten: number } };
 /** The most bytes a stored (zlib-wrapped) form of an inflated size may take: incompressible input grows a little. */
 const storedBound = (inflated: number): number => inflated + Math.floor(inflated / 8) + 1024;
 
@@ -277,7 +296,7 @@ class ObjectStore {
 
   private charge(bytes: number, id: string, at: string | null): void {
     this.inflatedBytes += bytes;
-    if (this.inflatedBytes > this.limits.callBytes) refuse('budget-exceeded', `${id}: this call would inflate more than ${this.limits.callBytes} bytes`, id, at);
+    if (this.inflatedBytes > this.limits.callBytes) refuse('budget-exceeded', `${id}: this call would inflate or produce more than ${this.limits.callBytes} bytes`, id, at);
   }
 
   /** The body of object `id`, which must be of `type` and hash, with its header, to `id` under the consented algorithm. */
@@ -315,9 +334,13 @@ class ObjectStore {
 
   private loose(stored: Buffer, id: string, at: string | null): RawObject {
     this.count(id, at);
-    let inflated: Buffer;
-    try { inflated = inflateSync(stored, { maxOutputLength: this.limits.objectBytes + 64 }); } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
-    this.charge(inflated.length, id, at);
+    let inflated: Buffer, consumed: number;
+    try {
+      ({ buffer: inflated, engine: { bytesWritten: consumed } } = inflateSync(stored, { maxOutputLength: this.limits.objectBytes + 64, info: true }) as unknown as Inflated);
+    } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
+    this.charge(stored.length + inflated.length, id, at);
+    if (consumed !== stored.length) refuse('corrupt-object', `loose object ${id} has bytes after its zlib stream`, id, at);
+    if (stored.length > storedBound(inflated.length)) refuse('corrupt-object', `loose object ${id} is stored in more bytes than git writes for its size`, id, at);
     const nul = inflated.indexOf(0);
     const header = /^(commit|tree|blob|tag) (0|[1-9][0-9]*)$/.exec(nul < 0 ? '' : inflated.toString('latin1', 0, nul));
     if (header === null || Number(header[2]) !== inflated.length - nul - 1) return refuse('corrupt-object', `loose object ${id} has a malformed header`, id, at);
@@ -369,19 +392,18 @@ class ObjectStore {
     return refuse('object-missing', `${id}: delta base ${baseId} is not in this clone`, id, at);
   }
 
+  /** The `size` bytes the pack entry's zlib stream at `start` inflates to. git writes no stream longer than `storedBound(size)`, so
+   * that much is read, once, and a stream that needs more refuses: padding cannot make a read longer or repeat it. */
   private async inflateAt(fh: FileHandle, end: number, start: number, size: number, id: string, at: string | null): Promise<Buffer> {
     this.charge(size, id, at);
-    for (let window = storedBound(size); ; window *= 2) {
-      const chunk = await readAt(fh, start, Math.min(window, end - start));
-      try {
-        const out = inflateSync(chunk, { maxOutputLength: size + 1 });
-        if (out.length !== size) refuse('corrupt-object', `${id}: pack entry inflates to ${out.length} bytes, not the ${size} it declares`, id, at);
-        return out;
-      } catch (e) {
-        if (e instanceof GitObjectReadRefusal) throw e;
-        if ((e as { code?: string }).code !== 'Z_BUF_ERROR' || start + window >= end) refuse('corrupt-object', `${id}: pack entry does not inflate`, id, at);
-      }
-    }
+    const chunk = await readAt(fh, start, Math.min(storedBound(size), end - start));
+    let out: Buffer, consumed: number;
+    try {
+      ({ buffer: out, engine: { bytesWritten: consumed } } = inflateSync(chunk, { maxOutputLength: size + 1, info: true }) as unknown as Inflated);
+    } catch { return refuse('corrupt-object', `${id}: pack entry does not inflate within the ${storedBound(size)} stored bytes git writes for its size`, id, at); }
+    this.charge(consumed, id, at);
+    if (out.length !== size) refuse('corrupt-object', `${id}: pack entry inflates to ${out.length} bytes, not the ${size} it declares`, id, at);
+    return out;
   }
 
   private async handle(pack: PackIndex): Promise<Pack> {
@@ -401,7 +423,7 @@ class ObjectStore {
 async function realDirectory(gitDir: string, dir: string): Promise<boolean> {
   let stat;
   try { stat = await lstat(dir); } catch (e) { if (errorCode(e) === 'ENOENT') return false; throw e; }
-  if (!stat.isDirectory()) refuse('unsafe-store-entry', `${path.relative(gitDir, dir)} is not a directory; nothing under .git is read through a link`);
+  if (!stat.isDirectory()) refuse('unsafe-store-entry', `${path.relative(gitDir, dir)} is not a directory; nothing under .git is read through a symbolic link`);
   return true;
 }
 

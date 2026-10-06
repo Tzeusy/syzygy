@@ -450,14 +450,14 @@ describe('nothing under .git is read through a link or from a special file (R-PO
     const objects = path.join(T, 'link-objects/.git');
     mkdirSync(objects, { recursive: true });
     symlinkSync(path.join(other, '.git/objects'), path.join(objects, 'objects'));
-    expect(await refusedWithin(2000, reader(path.join(T, 'link-objects'), commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects is not a directory; nothing under .git is read through a link' });
+    expect(await refusedWithin(2000, reader(path.join(T, 'link-objects'), commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects is not a directory; nothing under .git is read through a symbolic link' });
     const pack = handBuilt('link-pack', [blob, tree, commit]);
     rmSync(path.join(pack, '.git/objects/pack'), { recursive: true });
     symlinkSync(path.join(OFS, '.git/objects/pack'), path.join(pack, '.git/objects/pack'));
-    expect(await refusal(reader(pack, commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects/pack is not a directory; nothing under .git is read through a link' });
+    expect(await refusal(reader(pack, commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects/pack is not a directory; nothing under .git is read through a symbolic link' });
     const fan = handBuilt('link-fan', [tree, commit]);
     symlinkSync(path.join(other, '.git/objects', blob.id.slice(0, 2)), path.join(fan, '.git/objects', blob.id.slice(0, 2)));
-    expect(await refusal(reader(fan, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'unsafe-store-entry', message: `objects/${blob.id.slice(0, 2)} is not a directory; nothing under .git is read through a link` });
+    expect(await refusal(reader(fan, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'unsafe-store-entry', message: `objects/${blob.id.slice(0, 2)} is not a directory; nothing under .git is read through a symbolic link` });
   });
   it('an .idx or .pack that is a link, a directory, or a .pack that is absent refuses', async () => {
     const { blob, tree, commit } = oneFile('abc');
@@ -528,6 +528,20 @@ describe('tree entries are unambiguous: listTree emits only paths readBlobs reso
       ['dot', [['100644', '.', one.id]], 'has an entry named ., .. or .git'],
       ['dotgit', [['100644', '.git', one.id]], 'has an entry named ., .. or .git'],
       ['dotgit-case', [['40000', '.GiT', one.id]], 'has an entry named ., .. or .git'],
+      // the spellings git's fsck reads as .git on HFS+ and NTFS (R-POLARIS-DOSSIER-S2-READER-2 note 3)
+      ['hfs-zwnj', [['40000', '.git\u200c', one.id]], 'has an entry named ., .. or .git'],
+      ['hfs-zwj', [['40000', '.g\u200dit', one.id]], 'has an entry named ., .. or .git'],
+      ['hfs-bom', [['40000', '\ufeff.GIT', one.id]], 'has an entry named ., .. or .git'],
+      ['hfs-rlo', [['40000', '.gi\u202et', one.id]], 'has an entry named ., .. or .git'],
+      ['hfs-iss', [['40000', '.git\u206a', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-short', [['40000', 'git~1', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-short-case', [['40000', 'GIT~1', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-dot', [['40000', '.git.', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-space', [['40000', '.git ', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-dots-spaces', [['40000', 'Git~1 . ', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-stream', [['40000', '.git::$INDEX_ALLOCATION', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-component', [['40000', 'a\\.git', one.id]], 'has an entry named ., .. or .git'],
+      ['ntfs-component-first', [['40000', '.git\\a', one.id]], 'has an entry named ., .. or .git'],
       ['duplicate', [['100644', 'dup', one.id], ['100644', 'dup', two.id]], 'names one entry twice'],
       ['duplicate-file-and-dir', [['100644', 'dup', one.id], ['40000', 'dup', one.id]], 'names one entry twice'],
       ['not-utf8', [['100644', Buffer.from([0x61, 0xff]), one.id], ['100644', Buffer.from([0x61, 0xfe]), two.id]], 'has an entry name that is not UTF-8'],
@@ -538,8 +552,9 @@ describe('tree entries are unambiguous: listTree emits only paths readBlobs reso
       expect(await refusal(reader(repo, commit).listTree()), name).toEqual({ reason: 'malformed-tree', objectId: tree.id, path: null, message: `tree ${tree.id} ${says}` });
       expect((await refusal(reader(repo, commit).readBlobs(['dup']))).reason, name).toBe('malformed-tree');
     }
-    const fine = treeOf([['100644', 'aé', one.id], ['100644', '.gitignore', two.id]]), { repo, commit } = onTree('name-fine', fine, [one, two]);
-    expect((await reader(repo, commit).listTree()).map(e => e.path)).toEqual(['aé', '.gitignore']);
+    const near = ['aé', '.gitignore', '.git~1', 'git~2', 'git~10', 'xgit~1', '.git-x', '.gitx.', 'a\u200c.git', 'a\\b'];
+    const fine = treeOf(near.map((n, k) => ['100644', n, (k % 2 === 0 ? one : two).id] as const)), { repo, commit } = onTree('name-fine', fine, [one, two]);
+    expect((await reader(repo, commit).listTree()).map(e => e.path)).toEqual(near);
   });
   it('a mode git does not write refuses; the legacy group-writable file mode reads', async () => {
     for (const mode of ['100666', '040000', '120755', '0100644']) {
@@ -560,7 +575,7 @@ describe('tree entries are unambiguous: listTree emits only paths readBlobs reso
 describe('each call is bounded: bytes inflated, delta depth, objects visited (finding 4)', () => {
   it('the reviewer\'s amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget', async () => {
     const { repo, commit } = chainRepo('amp-default', 100, 64 * 2 ** 20), started = Date.now();
-    expect(await refusedWithin(30_000, reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', message: expect.stringContaining('this call would inflate more than 4294967296 bytes') });
+    expect(await refusedWithin(30_000, reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', message: expect.stringContaining('this call would inflate or produce more than 4294967296 bytes') });
     expect(Date.now() - started).toBeLessThan(30_000);
   }, 60_000);
   it('the per-call byte budget is a parameter: the same chain reads under it and refuses one level over', async () => {
@@ -664,5 +679,103 @@ describe('pack and delta malformations, each predicate (finding 5)', () => {
     const d = Buffer.from([...varint(other.body.length), ...varint(other.body.length), 0x90, other.body.length]);
     const rebased = handBuilt('ref-swap', [want.tree, want.commit, other], [{ id: want.blob.id, entry: Buffer.concat([entryHead(7, d.length), Buffer.from(other.id, 'hex'), deflateSync(d)]) }]);
     expect((await refusal(reader(rebased, want.commit.id).readBlobs(['f']))).reason).toBe('identifier-mismatch');
+  });
+});
+
+/** A zlib stream of `body` (at most 65,535 bytes) that inflates exactly, padded with `blocks` empty non-final stored blocks of five
+ * bytes each: 14 + 5 × `blocks` + `body.length` bytes in all (the reviewer's padding construction). */
+function padded(body: Buffer, blocks: number): Buffer {
+  const pad = Buffer.alloc(5 * blocks);
+  for (let k = 0; k < blocks; k += 1) { pad[5 * k + 3] = 0xff; pad[5 * k + 4] = 0xff; }
+  let a = 1, b = 0;
+  for (const byte of body) { a = (a + byte) % 65521; b = (b + a) % 65521; }
+  const last = Buffer.from([1, body.length & 255, body.length >> 8, ~body.length & 255, (~body.length >> 8) & 255]), adler = Buffer.alloc(4);
+  adler.writeUInt32BE(((b << 16) | a) >>> 0);
+  return Buffer.concat([Buffer.from([0x78, 0x01]), pad, last, body, adler]);
+}
+
+describe('stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1)', () => {
+  const { blob, tree, commit } = oneFile('abc');
+  it('a pack entry reads up to the stored bound git writes for its size (1,027 bytes for 3) and refuses one block past it', async () => {
+    const at = (blocks: number): string => handBuilt(`pad-pack-${blocks}`, [tree, commit], [{ id: blob.id, entry: Buffer.concat([entryHead(3, 3), padded(blob.body, blocks)]) }]);
+    expect(text((await reader(at(202), commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abc');   // 1,027 stored bytes
+    expect(await refusal(reader(at(203), commit.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: blob.id, path: 'f', message: `${blob.id}: pack entry does not inflate within the 1027 stored bytes git writes for its size`,
+    });
+  });
+  it('a loose object reads up to the stored bound for its inflated size (1,069 bytes for 40) and refuses one block past it', async () => {
+    const thirtyTwo = oneFile('x'.repeat(32));   // "blob 32\0" and 32 bytes: 40 inflated
+    const at = (blocks: number): string => {
+      const repo = handBuilt(`pad-loose-${blocks}`, [thirtyTwo.blob, thirtyTwo.tree, thirtyTwo.commit]);
+      overwrite(looseFile(repo, thirtyTwo.blob.id), padded(Buffer.from(`blob 32\0${'x'.repeat(32)}`, 'latin1'), blocks));
+      return repo;
+    };
+    expect(text((await reader(at(203), thirtyTwo.commit.id).readBlobs(['f']))[0]!.bytes)).toBe('x'.repeat(32));   // 1,069 stored bytes
+    expect(await refusal(reader(at(204), thirtyTwo.commit.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: thirtyTwo.blob.id, path: 'f', message: `loose object ${thirtyTwo.blob.id} is stored in more bytes than git writes for its size`,
+    });
+  });
+  it('a loose object with bytes after its zlib stream refuses', async () => {
+    const repo = handBuilt('loose-trailing', [blob, tree, commit]), file = looseFile(repo, blob.id);
+    overwrite(file, Buffer.concat([readFileSync(file), Buffer.from('x')]));
+    expect(await refusal(reader(repo, commit.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: blob.id, path: 'f', message: `loose object ${blob.id} has bytes after its zlib stream`,
+    });
+  });
+  it('the reviewer\'s padded pack base: 50 offset deltas over a base padded by 4 MiB refuse at once, under any budget', async () => {
+    const base = raw('blob', Buffer.from('abcdefghij')), targets = Array.from({ length: 50 }, (_, k) => raw('blob', Buffer.from(`abcdefghij${k}`)));
+    const entries = [Buffer.concat([entryHead(3, 10), padded(base.body, 838_861)])], rows: PackRow[] = [{ id: base.id, entry: entries[0]! }];
+    let at = 12 + entries[0]!.length;
+    for (const t of targets) {
+      const add = Buffer.from(String(targets.indexOf(t))), d = Buffer.from([10, 10 + add.length, 0x90, 10, add.length, ...add]);
+      const entry = Buffer.concat([entryHead(6, d.length), ofsBack(at - 12), deflateSync(d)]);
+      rows.push({ id: t.id, entry }); at += entry.length;
+    }
+    const top = treeOf(targets.map((t, k) => ['100644', `t${k}`, t.id] as const)), c = raw('commit', Buffer.from(`tree ${top.id}\n\nm\n`));
+    const repo = handBuilt('pad-pack-base', [top, c], rows), paths = targets.map((_, k) => `t${k}`);
+    for (const limits of [{}, { maxInflatedBytesPerCall: 2 ** 20 }]) {
+      expect(await refusedWithin(2000, reader(repo, c.id, limits).readBlobs(paths))).toMatchObject({
+        reason: 'corrupt-object', objectId: targets[0]!.id, path: 't0', message: `${targets[0]!.id}: pack entry does not inflate within the 1035 stored bytes git writes for its size`,
+      });
+    }
+  });
+  it('the reviewer\'s padded loose base: reference deltas over a loose base padded by 4 MiB refuse at once', async () => {
+    const base = raw('blob', Buffer.from('abcdefghij')), { blob: target, tree: t, commit: c } = oneFile('abcdefghij!!');
+    const d = Buffer.from([10, 12, 0x90, 10, 2, 0x21, 0x21]);
+    const repo = handBuilt('pad-loose-base', [t, c], [{ id: target.id, entry: Buffer.concat([entryHead(7, d.length), Buffer.from(base.id, 'hex'), deflateSync(d)]) }]);
+    const file = looseFile(repo, base.id);
+    mkdirSync(path.dirname(file), { recursive: true });
+    writeFileSync(file, padded(Buffer.from('blob 10\0abcdefghij', 'latin1'), 838_861));
+    expect(await refusedWithin(2000, reader(repo, c.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: base.id, path: 'f', message: `loose object ${base.id} is stored in more bytes than git writes for its size`,
+    });
+    expect(await refusedWithin(2000, reader(repo, c.id, { maxInflatedBytesPerCall: 2 ** 20 }).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', objectId: base.id });
+  });
+  it('the stored bytes inflated are charged to the call, loose and packed, beside the bytes they inflate to', async () => {
+    let seed = Buffer.from('seed');
+    const noise = oneFile(Buffer.concat(Array.from({ length: 64 }, () => (seed = createHash('sha256').update(seed).digest()))));   // 2,048 incompressible bytes
+    const loose = handBuilt('charge-loose', [noise.blob, noise.tree, noise.commit]);
+    const packed = handBuilt('charge-packed', [noise.tree, noise.commit], [{ id: noise.blob.id, entry: whole(noise.blob.body) }]);
+    for (const repo of [loose, packed]) {
+      expect(await reader(repo, noise.commit.id, { maxInflatedBytesPerCall: 5000 }).readBlobs(['f']), repo).toHaveLength(1);   // about 4,300 with the stored bytes
+      expect(await refusal(reader(repo, noise.commit.id, { maxInflatedBytesPerCall: 3000 }).readBlobs(['f'])), repo).toEqual({   // about 2,200 without
+        reason: 'budget-exceeded', objectId: noise.blob.id, path: 'f', message: `${noise.blob.id}: this call would inflate or produce more than 3000 bytes`,
+      });
+    }
+  });
+});
+
+describe('a large valid store lists, and a reader defect is not blamed on the store (R-POLARIS-DOSSIER-S2-READER-2 finding 2, note 6)', () => {
+  it('a subdirectory of 200,000 entries lists: a subtree is never spread into call arguments', async () => {
+    const leaf = raw('blob', Buffer.from('leaf')), leafId = Buffer.from(leaf.id, 'hex');
+    const wide = raw('tree', Buffer.concat(Array.from({ length: 200_000 }, (_, k) => Buffer.concat([Buffer.from(`100644 f${k}\0`), leafId]))));
+    const root = treeOf([['40000', 'd', wide.id]]), { repo, commit } = onTree('wide-nested', root, [leaf, wide]);
+    const listed = await reader(repo, commit).listTree();
+    expect(listed).toHaveLength(200_000);
+    expect([listed[0], listed[199_999]]).toEqual([{ path: 'd/f0', mode: '100644', id: leaf.id }, { path: 'd/f199999', mode: '100644', id: leaf.id }]);
+  }, 60_000);
+  it('an error that is not a filesystem error refuses as reader-fault, never store-unreadable', async () => {
+    const r = openPinnedObjectReader({ gitDir: gitDir(L), revision: C2, maxObjectBytes: 1n as unknown as number });   // a size the reader cannot do arithmetic on
+    expect(await refusal(r.tree())).toEqual({ reason: 'reader-fault', objectId: null, path: null, message: 'the reader failed (TypeError), a defect of the reader and not of the store' });
   });
 });
