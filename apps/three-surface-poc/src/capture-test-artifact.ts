@@ -1,7 +1,6 @@
 import {
-  buildTestArtifactRecordFromJUnit,
-  parseJUnitRootTotals,
-  type TestArtifactRecord,
+  buildOperatorReportedTestArtifactRecord,
+  type OperatorReportedTestArtifactRecord,
 } from '@syzygy/three-surface-poc-core';
 
 // Syzygy never runs the observed Butlers test suite (SEC-3, RFC5-18; owner
@@ -48,12 +47,21 @@ export function operatorInstructions(input: OperatorInstructionsInput): string {
   return [
     'Syzygy does not run this test suite. Run these yourself, in your own shell:',
     '',
+    'For the owner or a human operator. An agent session must not run step 2',
+    'unless the owner has recorded a SEC-3 choice for that run.',
+    '',
     `  1. git -C ${shellQuote(input.repoRoot)} rev-parse HEAD`,
     `  2. cd ${shellQuote(input.repoRoot)} && ${run}; echo "exit $?"`,
     '',
-    'Then hand the result back:',
+    'Then hand the result back, at the same commit, without switching the',
+    'checkout in between:',
     '',
     `  3. ${ingest}`,
+    '',
+    'Syzygy checks that HEAD is still the reported commit when it ingests the',
+    'file. It does not check the working tree for uncommitted changes, and it',
+    'records the exit status and the run as your report: the result is shown',
+    'as operator-reported (report-fact), never as Verified.',
     '',
   ].join('\n');
 }
@@ -68,7 +76,7 @@ export interface IngestTestArtifactInput extends FocusedTestCommandInput {
 }
 
 export type IngestTestArtifactResult =
-  | { readonly kind: 'captured'; readonly record: TestArtifactRecord }
+  | { readonly kind: 'captured'; readonly record: OperatorReportedTestArtifactRecord }
   | { readonly kind: 'failed'; readonly reason: string };
 
 const FULL_COMMIT = /^[0-9a-f]{40}$/;
@@ -80,11 +88,16 @@ function describeFailure(cause: unknown, activity: string): string {
 
 /** Ingests the JUnit file an operator produced by running
  * {@link operatorInstructions}. The operator reports the exit status and
- * the commit they ran at; the commit must still be the checkout's HEAD, so
- * a run at one commit is never recorded against another. A non-zero exit
- * status is recorded faithfully, never swallowed, so a genuine failure is
- * visible as "captured but failing". An exit status of 0 beside failing or
- * erroring tests is refused as an inconsistent report. */
+ * the commit they ran at; the commit must still be the checkout's HEAD when
+ * the file is ingested, so a run reported at one commit is never recorded
+ * against another. Neither a checkout switched away and back between the
+ * run and the ingest nor a dirty working tree is detected: the record is
+ * marked operator-reported and never renders as Verified (RFC5-19). A
+ * non-zero exit status is recorded faithfully, never swallowed, so a genuine
+ * failure is visible as "reported but failing". An exit status of 0 beside
+ * failing or erroring tests, or beside zero tests, is refused as an
+ * inconsistent report. `readFile` must refuse anything but a bounded
+ * regular file (`readBoundedRegularFile` in the CLI). */
 export function ingestTestArtifact(input: IngestTestArtifactInput): IngestTestArtifactResult {
   if (!EXIT_STATUS.test(input.reportedExitCode) || Number(input.reportedExitCode) > 255) {
     return { kind: 'failed', reason: `the reported exit status ${JSON.stringify(input.reportedExitCode)} is not an integer from 0 to 255` };
@@ -114,23 +127,15 @@ export function ingestTestArtifact(input: IngestTestArtifactInput): IngestTestAr
     return { kind: 'failed', reason: describeFailure(cause, `the JUnit artifact at ${input.junitPath} could not be read`) };
   }
 
-  const totals = parseJUnitRootTotals(rawJUnitXml);
-  if (totals !== null && exitCode === 0 && totals.failures + totals.errors > 0) {
-    return {
-      kind: 'failed',
-      reason: `the reported exit status is 0 but the artifact records ${totals.failures} failed and ${totals.errors} errored`,
-    };
-  }
-
-  const built = buildTestArtifactRecordFromJUnit({
+  const built = buildOperatorReportedTestArtifactRecord({
     rawJUnitXml,
     command: focusedTestCommand(input),
-    exitCode,
-    capturedAt: input.now(),
+    reportedExitCode: exitCode,
+    ingestedAt: input.now(),
     repositoryCommit,
     scope: input.scope,
   });
-  if (built.kind === 'unparseable') {
+  if (built.kind !== 'built') {
     return { kind: 'failed', reason: built.reason };
   }
   return { kind: 'captured', record: built.record };

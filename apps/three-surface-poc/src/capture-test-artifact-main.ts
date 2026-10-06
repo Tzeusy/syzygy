@@ -1,9 +1,13 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { closeSync, constants, fstatSync, lstatSync, openSync, readSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { writeTestArtifactRecordFile, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
+import {
+  MAX_JUNIT_ARTIFACT_BYTES,
+  writeTestArtifactRecordFile,
+  type TestArtifactRecord,
+} from '@syzygy/three-surface-poc-core';
 
 import { ingestTestArtifact, operatorInstructions } from './capture-test-artifact.js';
 
@@ -17,9 +21,16 @@ Syzygy never runs the observed project's tests (SEC-3, RFC5-18). "print"
 prints the exact focused pytest command for you to run in your own shell,
 and starts no process. "ingest" reads back only the JUnit file you hand it,
 checks that the checkout is still at the commit you report, and stores safe,
-structured metadata (command, exit status, ingest time, commit, scope,
-digest) in the state directory. No test body, secret, or raw exception
-content is stored (AC5).
+structured metadata (command, reported exit status, ingest time, commit,
+scope, digest) in the state directory, marked operator-reported. The JUnit
+file must be a regular file of at most 4 MiB. No test body, secret, or raw
+exception content is stored (AC5). The working tree is not checked for
+uncommitted changes, and the run is never shown as Verified: an
+operator-reported result caps at report-fact (RFC5-19).
+
+"print" is for the owner or a human operator. An agent session must not run
+the printed test command unless the owner has recorded a SEC-3 choice for
+that run.
 `;
 
 export interface CaptureCliIo {
@@ -37,10 +48,49 @@ function resolveCommitWithGit(repoRoot: string): string {
   return execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 }
 
+/**
+ * Reads the handed-in file only when it is a regular file no larger than
+ * `maxBytes`. The bytes come from running observed code, so they are
+ * untrusted: a FIFO would block forever and a device or huge file would
+ * read until memory fails. `lstat` refuses a symlink, FIFO or device before
+ * anything is opened; the open never follows a link and never blocks; and
+ * the opened file must be the one `lstat` saw. At most `maxBytes + 1`
+ * bytes are ever read, so a file that grows after the check is refused too.
+ */
+export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNIT_ARTIFACT_BYTES): string {
+  const seen = lstatSync(path);
+  if (!seen.isFile()) {
+    throw new Error('it is not a regular file (a symlink, FIFO, device or directory is refused)');
+  }
+  if (seen.size > maxBytes) {
+    throw new Error(`it is ${seen.size} bytes, over the ${maxBytes}-byte ceiling`);
+  }
+  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+  try {
+    const opened = fstatSync(fd);
+    if (!opened.isFile() || opened.dev !== seen.dev || opened.ino !== seen.ino) {
+      throw new Error('it changed between the check and the read');
+    }
+    const buffer = Buffer.alloc(maxBytes + 1);
+    let length = 0;
+    for (;;) {
+      const read = readSync(fd, buffer, length, buffer.length - length, null);
+      if (read === 0) break;
+      length += read;
+      if (length > maxBytes) {
+        throw new Error(`it grew past the ${maxBytes}-byte ceiling while being read`);
+      }
+    }
+    return buffer.subarray(0, length).toString('utf8');
+  } finally {
+    closeSync(fd);
+  }
+}
+
 export const REAL_IO: CaptureCliIo = {
   stdout: (text) => process.stdout.write(text),
   stderr: (text) => process.stderr.write(text),
-  readFile: (path) => readFileSync(path, 'utf8'),
+  readFile: (path) => readBoundedRegularFile(path),
   resolveCommit: resolveCommitWithGit,
   writeRecord: writeTestArtifactRecordFile,
   now: () => new Date().toISOString(),
@@ -123,7 +173,7 @@ export function runCaptureTestArtifactCli(argv: readonly string[], io: CaptureCl
   }
   io.writeRecord(stateDir, result.record);
   io.stdout(
-    `capture-test-artifact: ingested "${result.record.summary}" at commit ${result.record.repositoryCommit} (exit ${result.record.exitCode})\n`,
+    `capture-test-artifact: ingested "${result.record.summary}" at commit ${result.record.repositoryCommit} (operator-reported exit ${result.record.exitCode})\n`,
   );
   return 0;
 }

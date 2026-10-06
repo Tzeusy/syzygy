@@ -3,7 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
 
 import { renderTrajectoryPage } from './trajectory.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -232,7 +232,15 @@ describe('Trajectory', () => {
       workerChangeIntentId,
     } as const;
 
-    const build = (seeds: typeof BUTLERS_POC_SEEDS) => buildPocModel({
+    const passing = {
+      command: ['python3', '-m', 'pytest', 'tests/connectors/test_whatsapp_user_client.py', '-q'],
+      exitCode: 0,
+      repositoryCommit: changedRevision,
+      scope: 'tests/connectors/test_whatsapp_user_client.py',
+      digest: 'sha256:' + '2'.repeat(64),
+      summary: '4 passed, 0 failed, 0 errored, 0 skipped in 0.5s',
+    };
+    const build = (seeds: typeof BUTLERS_POC_SEEDS, testArtifactRecord: TestArtifactRecord = { ...passing, capturedAt }) => buildPocModel({
       seeds,
       repoRoot,
       repositoryRevision: changedRevision,
@@ -241,15 +249,7 @@ describe('Trajectory', () => {
       materializationRecord,
       runWorkItemQuery: (_repoRoot, sql) =>
         sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
-      testArtifactRecord: {
-        command: ['python3', '-m', 'pytest', 'tests/connectors/test_whatsapp_user_client.py', '-q'],
-        exitCode: 0,
-        capturedAt,
-        repositoryCommit: changedRevision,
-        scope: 'tests/connectors/test_whatsapp_user_client.py',
-        digest: 'sha256:' + '2'.repeat(64),
-        summary: '4 passed, 0 failed, 0 errored, 0 skipped in 0.5s',
-      },
+      testArtifactRecord,
     });
     const model = build(alternateSeeds);
     expect(model.testArtifactVerification.kind).toBe('verified');
@@ -271,6 +271,20 @@ describe('Trajectory', () => {
     expect(missingIdentityCard).toContain('Verification: Unknown — governing intent identity unavailable');
     expect(missingIdentityCard).not.toContain('Verification: Verified');
     expect(missingIdentityCard).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
+
+    // Round-1 finding 1: the same passing run, reported by the operator,
+    // caps at report-fact (RFC5-19). It renders with the declared Unknown
+    // encoding and its disclosure, never Observed and never "Verified".
+    const reportedModel = build(alternateSeeds, { ...passing, provenance: 'operator-reported', ingestedAt: capturedAt });
+    expect(reportedModel.testArtifactVerification.kind).toBe('reported');
+    const reportedCard = cardBody(renderTrajectoryPage(reportedModel), 'bu-verified-1');
+    const badge = /<span class="epistemic [^"]*" data-parity-field="worker-change-verification"[^>]*>/.exec(reportedCard)?.[0] ?? '';
+    expect(badge).toContain('class="epistemic epistemic-unknown"');
+    expect(badge).toContain('data-evidence-tier="report-fact"');
+    expect(reportedCard).toContain('Verification: Not verified by Syzygy — operator-reported (report-fact): 4 passed, 0 failed, 0 errored, 0 skipped in 0.5s.');
+    expect(reportedCard).toContain('That the tests ran, at this commit, on a clean working tree, with exit status 0, is the operator&#39;s report');
+    expect(reportedCard).not.toContain('Verification: Verified');
+    expect(reportedCard).not.toContain('epistemic-observed" data-parity-field="worker-change-verification"');
     },
   );
 

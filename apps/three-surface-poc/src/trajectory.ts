@@ -76,7 +76,14 @@ function verificationBadge(
   }
   const id = workerChangeVerificationId(beadId);
   const unknown = unknownSubject(model, id);
-  if (verification.kind === 'verified') {
+  if (verification.kind === 'reported' && governingIntentId !== null) {
+    // The declared table has Observed and Unknown only (POC-REQ-060). An
+    // operator-reported run caps at report-fact (RFC5-19), so it takes the
+    // Unknown encoding with the operator's summary and its disclosure,
+    // never the Observed one and never the word Verified.
+    return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" data-evidence-tier="report-fact"${unknownMarker(id, unknown)} title="${escapeHtml(verification.disclosure)}">Verification: Not verified by Syzygy — operator-reported (report-fact): ${escapeHtml(verification.record.summary)}. ${escapeHtml(verification.disclosure)} ${unknownRoute(unknown)}</span>`;
+  }
+  if (verification.kind === 'verified' || verification.kind === 'reported') {
     return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable. ${unknownRoute(unknown)}</span>`;
   }
   return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="${escapeHtml(verification.reason)}">Verification: Not verified. ${unknownRoute(unknown)}</span>`;

@@ -233,10 +233,10 @@ keeps its exact-table link as well.
    - the worker-change observer's state ("External worker: Planned / Active /
      Changed / merged", tracking real git activity against it);
    - its independent Bead status.
-   - A captured, verified test-run artifact (see below) additionally renders a
-     "Verification: Verified — …" badge once a real, matching JUnit artifact
-     has been ingested for the governing seam; absent that, it stays
-     "Verification: Not verified".
+   - An ingested, operator-reported test-run artifact (see below) for the
+     governing seam renders as "Verification: Not verified by Syzygy —
+     operator-reported (report-fact): …", never as Verified (RFC5-19); absent
+     one, it stays "Verification: Not verified".
 5. Test-run evidence is not captured automatically.
    - Run
      `npm run poc:capture-test-artifact -- print --repo <butlers> --scope <path> --junit <file> --state-dir <dir>`,
@@ -268,21 +268,42 @@ npm run poc:capture-test-artifact -- print \
   --junit <file> --state-dir <dir> [--python <bin>]
 ```
 
+- **Who runs it:** the owner or a human operator. An agent session must not
+  run the printed test command unless the owner has recorded a SEC-3 choice
+  for that run; the printed text says so.
 - **What it prints:** the `git rev-parse HEAD` to note the commit, the exact
   focused pytest command to run in your own shell (Butlers needs its own
   `.venv/bin/python`), and the `ingest` command to run afterwards with that
   commit and the exit status. `print` starts no process.
-- **What it ingests:** only the JUnit file you hand back — command, exit
-  status, ingest time, commit, scope, digest, and a safe summary only,
-  never raw test output. Its one process is `git rev-parse HEAD`: it refuses
+- **What it ingests:** only the JUnit file you hand back, which must be a
+  regular file (no symlink, FIFO or device) of at most 4 MiB. It stores the
+  command, the exit status you report, the ingest time, the commit, the
+  scope, the file's digest and a safe summary, marked `operator-reported`,
+  never raw test output. Its one process is `git rev-parse HEAD`. It refuses
   if the checkout has moved from the commit you report, if the exit status
-  is not 0–255, or if you report 0 beside failing tests.
-- **When verification renders `Verified`:** only when all three hold:
-  - the captured commit exactly matches the git-observed worker-change commit
+  is not 0–255, if any count in the file is not a non-negative integer, or
+  if you report 0 beside failing tests or beside zero tests.
+- **What it does not check:** that the tests ran at all, or at that commit,
+  or with that exit status — those are your report. It sees only that HEAD
+  is the reported commit when it ingests the file, so a checkout switched
+  away and back in between, or uncommitted changes in the working tree, go
+  undetected.
+- **How an ingested run renders:** never as `Verified`. RFC5-19 caps an
+  artifact of unverifiable origin at `report-fact` ("however retained,
+  well-formed, and revision-bound it is. Reading is free; being believed is
+  not."), so Trajectory shows "Verification: Not verified by Syzygy —
+  operator-reported (report-fact): <summary>" in the declared Unknown
+  encoding, with what Syzygy observed and what it did not. It shows that
+  only when all three hold:
+  - the reported commit exactly matches the git-observed worker-change commit
     for the same seam;
-  - the exit code is 0;
-  - the capture time is neither future-dated nor earlier than the commit
-    itself.
+  - the reported exit status is 0;
+  - the ingest time is neither after the evaluation nor earlier than the
+    commit itself. Passing this says nothing about when the tests ran.
+  Otherwise it stays "Verification: Not verified" with the reason.
+- **When verification renders `Verified`:** only for a record whose exit
+  status and capture time the capturing process observed itself, which this
+  tool no longer produces.
 - **Scope:** the worker-change seam (`whatsapp_user_client.py`) — a different
   code path than the identity normalization capability Polaris and Orrery
   describe.

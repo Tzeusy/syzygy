@@ -565,7 +565,11 @@ function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknown
     if (change.kind === 'observed' && input.trajectory.rendered.some((item) => item.id === change.beadId)) {
       const verification = input.testArtifactVerification;
       if (verification.kind === 'unknown') add(workerChangeVerificationId(change.beadId), verification.reason, 'missing-evidence');
-      else if (input.governingIntentId === null) {
+      else if (verification.kind === 'reported' && input.governingIntentId !== null) {
+        // RFC5-19: an operator-reported run caps at report-fact, so the
+        // verification relationship stays Unknown with its disclosure.
+        add(workerChangeVerificationId(change.beadId), verification.disclosure, 'missing-evidence');
+      } else if (input.governingIntentId === null) {
         add(workerChangeVerificationId(change.beadId), 'The captured test artifact has no governing intent identity in this evaluation.', 'reference-unresolvable');
       }
     }
