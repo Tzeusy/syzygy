@@ -9,9 +9,10 @@ Decision ID: `REDIS-LOCAL-AGENT-SITTING-2026-10-07`
 This is a plain owner direction. It binds no artifact digest, adds no row to
 `ACCEPTANCE-ACT-RECORD.md` and registers nothing. It records the parts of the
 owner's answer to the Redis local-agent sitting brief (draft PR #371, items J
-and M) that are directions with no bytes. Items K and L of the same answer
-are recorded as the version-tagged sign-off in
-`POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`.
+and M) that are directions with no bytes. Its last section, added the same
+day, records the selections the same answer states for items A to I; those
+are not acts and wait for their recording. Items K and L are recorded as the
+version-tagged sign-off in `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`.
 
 ## The owner's words
 
@@ -51,3 +52,27 @@ recommendation" line, not picked from an offered structured question.
 What this direction does not do: it accepts no execution profile and changes
 no SEC-3 reading; the reworked tool runs no observed code, and the
 change is ordinary implementation work under the acts already in force.
+
+## Items A to I: the owner's stated selections, not themselves acts
+
+The same answer states selections for the brief's items A to I. They are
+recorded here as what the owner said. **This section is not itself any act**
+and performs, signs or binds nothing. Each item is a digest-bound or
+version-tagged act whose recorder writes a verbatim question opening,
+selection label and description, so each is put to the owner as a structured
+question with exactly the brief's option labels at recording time: after PR
+#370 and PR #367 merge, round 7 of screening scope version 2 confirms, and
+the local-agent installer (`syzygy-qkea.16`) exists. Until then none of them
+is in force.
+
+| Item | The owner's stated selection |
+|---|---|
+| A | Sign the Redis observation consent |
+| B | Sign screening scope version 1, with Q2 to Q8 as recommended |
+| C | Sign the RFC5-14 `project-documentation` class at the manifest row, with the SOURCE-POLICY.md readability successor |
+| D | Sign screening scope version 2, variant none; round 7 to run now (dispatched by the lead the same day) |
+| E | Extend Scope A to the source-acquisition entry and sign v1.0, **conditional on PR #367 having merged**; not offered before |
+| F | No drawer |
+| G | Sign the D9 in-force record, as recommended |
+| H | Sign the RFC7-20 reading in-force record, as recommended |
+| I | Adopt the non-governed narrative profile as recommended |

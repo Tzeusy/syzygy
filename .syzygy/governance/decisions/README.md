@@ -162,7 +162,7 @@ exists and what it is about, so that a reader can find it.
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md) | After the first amendment review: draft a SEC-3 amendment (agent runs on host); governed projects kept, with disclosure; RFC7-20 reading kept |
 | 2026-10-05 | [`POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md) | Dossier mode re-derives every Observed claim from re-hashed git objects; stored counts, timestamps and history labelled Inferred |
 | 2026-10-06 | [`POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md) | After D9's second REVISE: permission through any Syzygy instruction on a per-run recorded choice; credential condition reaches every process the session starts; one confirming round |
-| 2026-10-07 | [`REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`](REDIS-LOCAL-AGENT-SITTING-DIRECTION.md) | Redis sitting brief: 10a no ruling, 10b maintainer-stated only, 10c after the first run; `syzygy-4mbu` prints the command and ingests only the result |
+| 2026-10-07 | [`REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`](REDIS-LOCAL-AGENT-SITTING-DIRECTION.md) | Redis sitting brief: 10a no ruling, 10b maintainer-stated only, 10c after the first run; `syzygy-4mbu` prints the command and ingests only the result; A–I selections stated, not acts |
 
 Dates are each file's first-commit date, not a claim about when the owner
 acted; the act's own record states that. [Observed — enumerated 2026-09-05 over
