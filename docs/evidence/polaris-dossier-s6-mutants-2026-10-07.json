@@ -1,7 +1,7 @@
 {
   "record": "Rule-6 mutants for the polaris-dossier S6 slice (syzygy-qkea.7), `syzygy dossier check`: altered, elided, joined, out-of-range and excluded-file quotations (body and path screens); a claim the agent labels Observed; the execution marking; the repair-cycle, deadline and question limits; re-derivation (a previous stored check result reused); cited paths and ranges; citation by block kind; Unknown reasons; the understanding record; the pinned revision named by the draft and re-verified; self-reported discovery paths; a path a secret detector matches kept out of findings; the credential finding; duplicate identities; quotations outside an inferred claim; UTF-8 byte ranges; word boundaries; the frozen bytes; the secret body screen; the policy bytes re-hashed against the act; the lead's rulings of 2026-10-07: (a) the clone read only from the run record, which must name an absolute, normalised, NUL-free path of at most 4096 characters, operator-declared, Inferred and for reading, recorded by its real path; (b) the dossier screen in parity with the app's public-source screen, each side mutated alone; (c) the one quotation form in the brief and the schema, and the brief's check command naming no clone; (d) the one normalisation in polaris-generation-core, on text and with raw origins. Not authority.",
   "measuredOn": {
-    "commit": "9a6312b7ef3d4a883f7916eea02313171ab10e87",
+    "commit": "0c334eac15e24e11c0d24192c6ad38cafe402b7f",
     "subjects": [
       {
         "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
@@ -9,7 +9,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/brief.ts",
-        "sha256": "94b005c77989f4f248d2ef0cc5c2dd671c1ae57c9f6ff46fccfede675e0b30b6"
+        "sha256": "2d0e97c2ed374238164f662d01216066402114b52fcfda8f9f43d7a6baa0a935"
       },
       {
         "path": "packages/polaris-dossier/src/check.ts",
@@ -42,7 +42,7 @@
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S6 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
-  "history": "A first run at the pre-amend commit left M30 (the policy bytes read for the screen not compared with the act) surviving: the act chain already compares the bytes it reads, so no test changed the policy between that read and the screen's own. loadDossierScreen took an injectable byte reader and a test that changes the bytes between the two reads; the commit was amended and all 30 re-run. After the rulings (a)-(d), a run of 44 at the next pre-amend commit (e347db7d) left two surviving: M32, which then removed an `isAbsolute` clause made redundant by the `path.resolve(p) !== p` clause beside it (an equivalent mutant; the redundant clause was removed and M32 now removes the resolve clause), and M44, because no test located a quotation inside text a normalisation step carries over (the text of a link, an escaped character). Tests for that origin and for a clone path with a NUL or past 4096 characters were added, M45 (the NUL clause) was added, the commit was amended and all 45 re-run. S6 was then rebased onto the step-guard repair (syzygy-qkea.23, PR #379): its clone-recording hunk merged into the identical one in #379, `check` passes its object reader and the guard's machine refusals through, and M26's `old` fragment follows the new refusal block; all 45 were re-run at `commit`.",
+  "history": "A first run at the pre-amend commit left M30 (the policy bytes read for the screen not compared with the act) surviving: the act chain already compares the bytes it reads, so no test changed the policy between that read and the screen's own. loadDossierScreen took an injectable byte reader and a test that changes the bytes between the two reads; the commit was amended and all 30 re-run. After the rulings (a)-(d), a run of 44 at the next pre-amend commit (e347db7d) left two surviving: M32, which then removed an `isAbsolute` clause made redundant by the `path.resolve(p) !== p` clause beside it (an equivalent mutant; the redundant clause was removed and M32 now removes the resolve clause), and M44, because no test located a quotation inside text a normalisation step carries over (the text of a link, an escaped character). Tests for that origin and for a clone path with a NUL or past 4096 characters were added, M45 (the NUL clause) was added, the commit was amended and all 45 re-run. S6 was then rebased onto the step-guard repair (syzygy-qkea.23, PR #379): its clone-recording hunk merged into the identical one in #379, `check` passes its object reader and the guard's machine refusals through, and M26's `old` fragment follows the new refusal block; all 45 were re-run. After #379 merged with its round-2 repair (the provider compared with the brief record, which changes brief.ts, a subject here), S6 was rebased onto main, keeping both clone real-path tests, and all 45 were re-run at `commit`.",
   "result": {
     "killed": 45,
     "total": 45
@@ -56,7 +56,7 @@
       "new": "    if (!located.found && located.kind !== 'quotation-not-in-cited-file') {\n",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -67,7 +67,7 @@
       "new": "kind: 'quotation-not-in-cited-file' }",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -78,7 +78,7 @@
       "new": "  const hits = occurrences(tracked.text, wanted.slice(0, Math.ceil(wanted.length / 2)));",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "48 failed | 1014 passed (1062)",
+      "tests": "48 failed | 1022 passed (1070)",
       "killed": true
     },
     {
@@ -89,7 +89,7 @@
       "new": "      if (true) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "4 failed | 1058 passed (1062)",
+      "tests": "4 failed | 1066 passed (1070)",
       "killed": true
     },
     {
@@ -100,7 +100,7 @@
       "new": "    const outcome = undefined;",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -111,7 +111,7 @@
       "new": "    const outcome = undefined;\n    if (outcome !== undefined) { blobs.set(cited, { state: 'excluded', outcome }); continue; }",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "4 failed | 1058 passed (1062)",
+      "tests": "4 failed | 1066 passed (1070)",
       "killed": true
     },
     {
@@ -122,7 +122,7 @@
       "new": "    const allowed = block.kind === 'claim' ? ['inferred', 'unknown', 'non-normative', 'observed'] : ['inferred', 'unknown'];\n    if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -133,7 +133,7 @@
       "new": "      if (typeof executionId !== 'string') add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -144,7 +144,7 @@
       "new": "  if (revision > declared.maxRepairCycles + 1) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -155,7 +155,7 @@
       "new": "  if (started > deadlineEnds) return refuse('deadline',",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -166,7 +166,7 @@
       "new": "  if (asked > inputs.maxQuestions + 1) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -177,7 +177,7 @@
       "new": "    ({ quotations, excludedContent, citedBlobs } = revision > 0 && fs.existsSync(path.join(run, RUN_LAYOUT.checks, `rev-${revision - 1}.json`)) ? JSON.parse(fs.readFileSync(path.join(run, RUN_LAYOUT.checks, `rev-${revision - 1}.json`), 'utf8')) : derived);",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -188,7 +188,7 @@
       "new": "    if (state.state === 'absent') { void ({ kind: 'path-absent',",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -199,7 +199,7 @@
       "new": "    if (end > state.lines + 1) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -210,7 +210,7 @@
       "new": "    if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -221,7 +221,7 @@
       "new": "    if (false && (Object.hasOwn(value, 'citations')",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -232,7 +232,7 @@
       "new": "    if (false && !UNKNOWN_REASONS.includes(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -243,7 +243,7 @@
       "new": "    if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -254,7 +254,7 @@
       "new": "  if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -265,7 +265,7 @@
       "new": "    if (false) add(",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -276,7 +276,7 @@
       "new": "  const pathLabel = (cited: string): string => JSON.stringify(cited);",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -287,7 +287,7 @@
       "new": "  if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -298,7 +298,7 @@
       "new": "    else void ({ kind: 'duplicate-id',",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -309,7 +309,7 @@
       "new": "    if (block.kind !== 'claim') {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -320,7 +320,7 @@
       "new": "byteEnd: rawEnd };",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -331,7 +331,7 @@
       "new": "  if (false) {\n    return refuse('reverify',",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "4 failed | 1058 passed (1062)",
+      "tests": "4 failed | 1066 passed (1070)",
       "killed": true
     },
     {
@@ -342,7 +342,7 @@
       "new": "    fs.writeFileSync(frozen, '{}', { mode: 0o600, flag: 'wx' });",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "3 failed | 1059 passed (1062)",
+      "tests": "3 failed | 1067 passed (1070)",
       "killed": true
     },
     {
@@ -353,7 +353,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -364,7 +364,7 @@
       "new": "      screenBody: (body) => false ? 'secret-detector-match' :",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "5 failed | 1057 passed (1062)",
+      "tests": "5 failed | 1065 passed (1070)",
       "killed": true
     },
     {
@@ -375,7 +375,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -386,7 +386,7 @@
       "new": "({ gitDir: path.join(process.cwd(), '.git'), revision: pinned });",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "44 failed | 1018 passed (1062)",
+      "tests": "44 failed | 1026 passed (1070)",
       "killed": true
     },
     {
@@ -397,7 +397,7 @@
       "new": " ||",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -408,7 +408,7 @@
       "new": ") return",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -419,7 +419,7 @@
       "new": "  if (!isObject(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use'])) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -430,7 +430,7 @@
       "new": "  try { clonePath = path.resolve(request.clone); } catch (cause) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -441,7 +441,7 @@
       "new": "      : false ? 'secret-detector-match'",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -452,7 +452,7 @@
       "new": "        : false ? 'secret-detector-match'",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "4 failed | 1058 passed (1062)",
+      "tests": "4 failed | 1066 passed (1070)",
       "killed": true
     },
     {
@@ -463,7 +463,7 @@
       "new": "  if (!stringList(extensions)",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -474,7 +474,7 @@
       "new": "`;",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -485,7 +485,7 @@
       "new": "uniqueItems: true };",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -496,7 +496,7 @@
       "new": "run \\`syzygy dossier check <run> --clone <clone>\\`; repair",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -507,7 +507,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -518,7 +518,7 @@
       "new": "  const from = 0;",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "2 failed | 1060 passed (1062)",
+      "tests": "2 failed | 1068 passed (1070)",
       "killed": true
     },
     {
@@ -529,7 +529,7 @@
       "new": "  const a = 0;",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     },
     {
@@ -540,7 +540,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-core",
       "exit": 1,
-      "tests": "1 failed | 1061 passed (1062)",
+      "tests": "1 failed | 1069 passed (1070)",
       "killed": true
     }
   ]
