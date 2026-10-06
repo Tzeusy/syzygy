@@ -5,6 +5,7 @@ import { buildPocModel } from './model.js';
 import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 import {
   buildOperatorReportedTestArtifactRecord,
+  liveTestOperatorInstructions,
   OPERATOR_REPORTED_DISCLOSURE,
   readBoundedRegularFile,
 } from './test-artifact-verification.js';
@@ -47,14 +48,7 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
 
   it('ingests one real, passing operator-reported focused-pytest artifact and resolves it to report-fact, never Verified, through the full model (AC1/AC3, RFC5-19)', () => {
     if (JUNIT === undefined || JUNIT_COMMIT === undefined || JUNIT_EXIT === undefined) {
-      throw new Error(
-        'Syzygy does not run the Butlers test suite. For the owner or a human operator: an agent session must not run ' +
-          'the pytest command below unless the owner has recorded a SEC-3 choice for that run. In your own shell, run\n' +
-          `  git -C ${repoRoot} rev-parse HEAD\n` +
-          `  cd ${repoRoot} && ${PYTHON} -m pytest ${SCOPE} -q --junitxml=<file>; echo "exit $?"\n` +
-          'then set SYZYGY_POC_BUTLERS_JUNIT=<file>, SYZYGY_POC_BUTLERS_JUNIT_COMMIT=<commit> and ' +
-          'SYZYGY_POC_BUTLERS_JUNIT_EXIT=<status>, and run this test again.',
-      );
+      throw new Error(liveTestOperatorInstructions(repoRoot, PYTHON, SCOPE));
     }
     expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');
 

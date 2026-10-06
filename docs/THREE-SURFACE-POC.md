@@ -313,7 +313,9 @@ npm run poc:capture-test-artifact -- print \
   when it passes and binds. Ingesting a run again replaces it. So the
   2026-08-29 POC direction's demonstration item "verification against the
   named intent revision" (`THREE-SURFACE-POC-MODE-DIRECTION.md`) now renders
-  Unknown (`execution-blocked`) and cannot render Verified until an
+  Unknown: `execution-blocked` for a matching operator-reported run, and
+  "Not verified" with its own reason for an absent, unmarked or mismatched
+  record. It cannot render Verified until an
   execution profile lets Syzygy launch the run itself: RFC5-18 keeps an
   unlaunched run's claims Unknown, and RFC5-19 caps an operator-reported
   result at `report-fact`. No spec requirement obliges a Verified state

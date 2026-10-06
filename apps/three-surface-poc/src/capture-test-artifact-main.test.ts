@@ -112,6 +112,23 @@ function isLiteralKey(node: ts.Expression): boolean {
   return ts.isStringLiteral(node) || ts.isNumericLiteral(node);
 }
 
+/** #386 round 1, finding 2: a literal `git` still runs a shell through
+ * `-c alias.x=!…`, `--exec-path` or an environment, so the one call must be
+ * exactly this shape: two literal arguments, and options naming only a
+ * working directory and an encoding. */
+const GIT_CALL_SHAPE = "('git', ['rev-parse', 'HEAD'], { cwd, encoding })";
+const GIT_CALL_OPTIONS = new Set(['cwd', 'encoding']);
+
+function isRevParseHead(call: ts.CallExpression): boolean {
+  const [, args, options, ...rest] = call.arguments;
+  if (args === undefined || options === undefined || rest.length > 0) return false;
+  const literal = (node: ts.Expression | undefined, text: string): boolean => node !== undefined && ts.isStringLiteral(node) && node.text === text;
+  if (!ts.isArrayLiteralExpression(args) || args.elements.length !== 2 || !literal(args.elements[0], 'rev-parse') || !literal(args.elements[1], 'HEAD')) return false;
+  if (!ts.isObjectLiteralExpression(options)) return false;
+  return options.properties.every((property) =>
+    (ts.isPropertyAssignment(property) || ts.isShorthandPropertyAssignment(property)) && ts.isIdentifier(property.name) && GIT_CALL_OPTIONS.has(property.name.text));
+}
+
 /** Reasons the source cannot be trusted to start nothing, read off the
  * TypeScript syntax tree so a comment or a string never counts and a
  * bracket or alias does not slip past a word match. */
@@ -161,6 +178,8 @@ function sourceViolations(fileName: string, text: string): string[] {
       const first = ts.isCallExpression(call) && call.expression === node ? call.arguments.at(0) : undefined;
       if (first === undefined || !ts.isStringLiteral(first) || first.text !== 'git') {
         violations.push(`uses ${RUN_GIT} other than as a direct call starting the literal git`);
+      } else if (!isRevParseHead(call as ts.CallExpression)) {
+        violations.push(`runs git other than ${GIT_CALL_SHAPE}`);
       }
     }
     ts.forEachChild(node, visit);
@@ -265,6 +284,14 @@ describe('capture-test-artifact never starts the observed project (source check)
     [`${RUN_GIT}('sh', []);`, `uses ${RUN_GIT} other than`],
     [`const cmd = 'git'; ${RUN_GIT}(cmd, []);`, `uses ${RUN_GIT} other than`],
     [`import { ${RUN_GIT} as run } from 'node:fs';`, `renames ${RUN_GIT} on import`],
+    // #386 round 1, finding 2: git's own options and environment run a shell.
+    [`${RUN_GIT}('git', ['-c', 'alias.p=!touch x', 'p'], { encoding: 'utf8' });`, 'runs git other than'],
+    [`${RUN_GIT}('git', ['--exec-path=/tmp', 'rev-parse'], { encoding: 'utf8' });`, 'runs git other than'],
+    [`${RUN_GIT}('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', env: { GIT_CONFIG_COUNT: '1' } });`, 'runs git other than'],
+    [`${RUN_GIT}('git', ['rev-parse', 'HEAD'], { ...{ env: {} }, encoding: 'utf8' });`, 'runs git other than'],
+    [`const args = ['rev-parse', 'HEAD']; ${RUN_GIT}('git', args, { encoding: 'utf8' });`, 'runs git other than'],
+    [`${RUN_GIT}('git', ['rev-parse', 'HEAD', '--', 'x'], { encoding: 'utf8' });`, 'runs git other than'],
+    [`${RUN_GIT}('git', ['rev-parse', 'HEAD']);`, 'runs git other than'],
   ])('the tree check refuses %s', (fragment, violation) => {
     const violations = sourceViolations(MODULE_SOURCE, `${text(MODULE_SOURCE)}\n${fragment}\n`);
     expect(violations.some((entry) => entry.startsWith(violation)), violations.join('; ')).toBe(true);

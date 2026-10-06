@@ -7,7 +7,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   buildOperatorReportedTestArtifactRecord,
   clearTestArtifactRecordFile,
+  liveTestOperatorInstructions,
   MAX_JUNIT_ARTIFACT_BYTES,
+  posixShellWord,
   parseJUnitRootTotals,
   readBoundedRegularFile,
   readTestArtifactRecordFile,
@@ -413,5 +415,22 @@ describe('test-artifact record file state', () => {
     const { provenance: _dropped, ...unmarked } = reportedRecord();
     writeFileSync(path, JSON.stringify(unmarked), 'utf8');
     expect(() => readTestArtifactRecordFile(dir)).toThrow('malformed');
+  });
+});
+
+// #386 round 1, note 5: the printed command interpolated the checkout and the
+// interpreter bare, so a path with a space or a quote pasted as another command.
+describe('the live test\'s printed command', () => {
+  it('quotes a word as one POSIX shell word, a quote inside it included', () => {
+    expect(posixShellWord('plain')).toBe("'plain'");
+    expect(posixShellWord("it's here")).toBe("'it'\\''s here'");
+    expect(posixShellWord('$(touch x); `y`')).toBe("'$(touch x); `y`'");
+  });
+
+  it('quotes the checkout, the interpreter and the test path, with a space and a quote in each path', () => {
+    const text = liveTestOperatorInstructions("/tmp/my repo/it's", "/opt/py 3/bin/python'", 'tests/a b.py');
+    expect(text).toContain("\n  git -C '/tmp/my repo/it'\\''s' rev-parse HEAD\n");
+    expect(text).toContain("\n  cd '/tmp/my repo/it'\\''s' && '/opt/py 3/bin/python'\\''' -m pytest 'tests/a b.py' -q --junitxml=<file>; echo \"exit $?\"\n");
+    expect(text).toContain('Syzygy does not run the Butlers test suite.');
   });
 });

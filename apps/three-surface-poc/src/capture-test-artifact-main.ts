@@ -42,9 +42,11 @@ export interface CaptureCliIo {
 }
 
 /** The only process this tool starts: `git rev-parse HEAD`, never the
- * observed project's code. */
+ * observed project's code. Its arguments are those two literals and its
+ * options a working directory and an encoding, never an environment: git
+ * runs programs its options name (#386 round 1, finding 2). */
 function resolveCommitWithGit(repoRoot: string): string {
-  return execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' }).trim();
 }
 
 export const REAL_IO: CaptureCliIo = {
