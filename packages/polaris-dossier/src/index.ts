@@ -15,11 +15,23 @@ export {
   type GitObjectReadRefusalReason, type GitObjectType, type HashAlgorithm, type PinnedObjectReader, type PinnedObjectReaderOptions,
   type TreeEntry, type VerifiedBlob,
 } from './git-object-reader.js';
+export {
+  CREDENTIAL_CHECK_DISCLOSURE, CREDENTIAL_LIST_ENV, CREDENTIAL_LIST_FORMAT, classifyRead, createCredentialProbe, credentialListFromEnv,
+  credentialListFromFile, credentialStepCheck, openForRead,
+  type CredentialBreachFinding, type CredentialList, type CredentialListSource, type CredentialProbeResult, type CredentialReadOutcome,
+  type CredentialStep, type CredentialStepResult, type OpenForRead,
+} from './credential-probe.js';
 export { SECURITY_DOCTRINE_PATH, cutSec3, readSec3, type DoctrineSpan, type Sec3Read, type Sec3Text } from './doctrine-quote.js';
 export {
   CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, checkDraftShape, draftSchemaDocument, localDraftSchema,
   type DraftSchema, type DraftSchemaError, type DraftSchemaParameters,
 } from './draft-schema.js';
+export {
+  CHOICE_ATTRIBUTION, DECLARATIONS, EXECUTION_CHOICE_COVERS, EXECUTION_CHOICE_FORMAT, NOT_AN_EXECUTION_CONSENT, RUN_DIRECTORY_CHOICES,
+  allowExecution, readExecutionChoice,
+  type AllowExecutionDeps, type AllowExecutionRefusal, type AllowExecutionReport, type AllowExecutionRequest, type AllowExecutionResult,
+  type AllowExecutionStage, type StoredExecutionChoice,
+} from './execution-choice.js';
 export {
   PERMITTING_ARM_DISABLED_REASON, PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection,
   type BriefRole, type CredentialProbe, type ExecutionChoice, type ExecutionChoiceSource, type ExecutionInputs, type ExecutionRule,

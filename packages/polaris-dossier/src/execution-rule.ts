@@ -8,13 +8,13 @@ import type { GateState } from './gate-sources.js';
  * with the operator's declarations that the owner started the authoring session on the owner's own host and attends it; and the
  * adapter-credential probe passing. Only the authoring session's brief may carry the permission; any other role gets SEC-3's rule.
  *
- * The permitting arm is built here and kept off: `allow-execution` and the probe are S4's (syzygy-qkea.5), so until S4 lands no caller
- * passes ports and the arm stays disabled, and every brief carries SEC-3's rule with that reason stated. Tests enable it with fixture
- * ports. Syzygy cannot see who typed the choice or whether the owner attends, so both are the operator's declaration, labelled Inferred. */
+ * The permitting arm is built here and kept off by `PERMITTING_ARM_ENABLED`: the CLI wires `allow-execution`'s record and the
+ * credential probe (execution-choice.ts, credential-probe.ts) as its ports, but every brief carries SEC-3's rule, with that reason
+ * stated, until the flag is switched on. Tests enable it with fixture ports. Syzygy cannot see who typed the choice or whether the owner attends, so both are the operator's declaration, labelled Inferred. */
 
-/** Off until S4 lands. A caller that enables the arm must also supply its ports. */
+/** Off until S4 (syzygy-qkea.5) is merged and the flag is switched on. A caller that enables the arm must also supply its ports. */
 export const PERMITTING_ARM_ENABLED = false;
-export const PERMITTING_ARM_DISABLED_REASON = 'the permitting arm is not enabled in this build: the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe are not built yet (syzygy-qkea.5), so no brief may permit execution';
+export const PERMITTING_ARM_DISABLED_REASON = 'the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution';
 
 export type BriefRole = 'authoring' | 'inventory' | 'review';
 
