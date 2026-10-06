@@ -1,12 +1,12 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, closeSync, constants as fsConstants, cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { GitObjectReadRefusal, hashAlgorithmOf, openPinnedObjectReader, type PinnedObjectReader } from './git-object-reader.js';
+import { GitObjectReadRefusal, hashAlgorithmOf, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 
 // Fixture clones are built with the git CLI (the reader under test spawns nothing). Dates, names and content are fixed, so every
 // object identifier below is a literal: these are the identifiers git computed for these bytes, written here by hand.
@@ -49,7 +49,8 @@ const copy = (from: string, name: string): string => { const to = path.join(T, n
 const gitDir = (repo: string): string => path.join(repo, '.git');
 const looseFile = (repo: string, id: string): string => path.join(repo, '.git/objects', id.slice(0, 2), id.slice(2));
 const overwrite = (file: string, bytes: Buffer): void => { chmodSync(file, 0o644); writeFileSync(file, bytes); };
-const reader = (repo: string, revision: string): PinnedObjectReader => openPinnedObjectReader({ gitDir: gitDir(repo), revision });
+type Limits = Omit<PinnedObjectReaderOptions, 'gitDir' | 'revision'>;
+const reader = (repo: string, revision: string, limits: Limits = {}): PinnedObjectReader => openPinnedObjectReader({ gitDir: gitDir(repo), revision, ...limits });
 const text = (bytes: Uint8Array): string => Buffer.from(bytes).toString('utf8');
 async function refusal(p: Promise<unknown>): Promise<{ reason: string; objectId: string | null; path: string | null; message: string }> {
   try { await p; } catch (e) { if (e instanceof GitObjectReadRefusal) return e.toJSON(); throw e; }
@@ -154,7 +155,7 @@ describe('the clone\'s .git is untrusted: what an agent can plant there is refus
     overwrite(looseFile(repo, QUOTED_ID), deflateSync(Buffer.from('blob 14\0Other bytes.\n\n')));
     expect(await refusal(reader(repo, C2).readBlobs(['src/quoted.txt']))).toEqual({
       reason: 'identifier-mismatch', objectId: QUOTED_ID, path: 'src/quoted.txt',
-      message: `the object read as ${QUOTED_ID} hashes to b0e528470923605c7bed3aa46b985fec42f42157`,
+      message: `the object read as ${QUOTED_ID} hashes to another identifier`,
     });
     // the other files still read: the refusal is the step's that needed the object
     expect(text((await reader(repo, C2).readBlobs(['README.md']))[0]!.bytes)).toBe('hello\n');
@@ -292,7 +293,7 @@ describe('paths, types, and no state between calls', () => {
     const source = readFileSync(fileURLToPath(new URL('./git-object-reader.ts', import.meta.url)), 'utf8');
     expect(source.match(/^import .*$/gm)).toEqual([
       "import { createHash } from 'node:crypto';",
-      "import { lstat, open, readdir, readFile, type FileHandle } from 'node:fs/promises';",
+      "import { constants, lstat, open, readdir, type FileHandle } from 'node:fs/promises';",
       "import path from 'node:path';",
       "import { inflateSync } from 'node:zlib';",
     ]);
@@ -304,7 +305,9 @@ describe('paths, types, and no state between calls', () => {
 // only the malformation can refuse it.
 const raw = (type: string, body: Buffer): { id: string; type: string; body: Buffer } =>
   ({ id: createHash('sha1').update(`${type} ${body.length}\0`).update(body).digest('hex'), type, body });
-function handBuilt(name: string, loose: ReadonlyArray<{ id: string; type: string; body: Buffer }>, pack: ReadonlyArray<{ id: string; entry: Buffer }> = []): string {
+interface PackRow { readonly id: string; readonly entry: Buffer; readonly offset?: number }
+/** `offset` overrides where the index says a row's entry is; `idx` rewrites the finished index. */
+function handBuilt(name: string, loose: ReadonlyArray<{ id: string; type: string; body: Buffer }>, pack: readonly PackRow[] = [], idx?: (bytes: Buffer, count: number) => Buffer): string {
   const repo = path.join(T, name), objects = path.join(repo, '.git/objects');
   mkdirSync(path.join(objects, 'pack'), { recursive: true });
   for (const o of loose) {
@@ -318,14 +321,15 @@ function handBuilt(name: string, loose: ReadonlyArray<{ id: string; type: string
     let at = 12;
     for (const e of pack) { offsets.push(at); at += e.entry.length; }
     writeFileSync(path.join(objects, 'pack/pack-x.pack'), Buffer.concat([head, ...pack.map(e => e.entry), Buffer.alloc(20)]));
-    const sorted = pack.map((e, k) => ({ id: e.id, offset: offsets[k]! })).sort((a, b) => (a.id < b.id ? -1 : 1));
+    const sorted = pack.map((e, k) => ({ id: e.id, offset: e.offset ?? offsets[k]! })).sort((a, b) => (a.id < b.id ? -1 : 1));
     const fanout = Buffer.alloc(1024);
     for (let b = 0; b < 256; b += 1) fanout.writeUInt32BE(sorted.filter(e => parseInt(e.id.slice(0, 2), 16) <= b).length, b * 4);
     const offs = Buffer.alloc(4 * sorted.length);
-    sorted.forEach((e, k) => offs.writeUInt32BE(e.offset, k * 4));
-    writeFileSync(path.join(objects, 'pack/pack-x.idx'), Buffer.concat([
+    sorted.forEach((e, k) => offs.writeUInt32BE(e.offset >>> 0, k * 4));
+    const index = Buffer.concat([
       Buffer.from([0xff, 0x74, 0x4f, 0x63, 0, 0, 0, 2]), fanout, ...sorted.map(e => Buffer.from(e.id, 'hex')), Buffer.alloc(4 * sorted.length), offs, Buffer.alloc(40),
-    ]));
+    ]);
+    writeFileSync(path.join(objects, 'pack/pack-x.idx'), idx === undefined ? index : idx(index, sorted.length));
   }
   return repo;
 }
@@ -337,9 +341,9 @@ const entryHead = (type: number, size: number): Buffer => {
 };
 const ofsBack = (n: number): Buffer => { const out = [n & 0x7f]; while ((n = Math.floor(n / 128)) > 0) { n -= 1; out.unshift(0x80 | (n & 0x7f)); } return Buffer.from(out); };
 /** A pack holding BASE whole and TARGET as an offset delta over it, with the delta's declared sizes and base offset adjustable. */
-function deltaRepo(name: string, over: { source?: number; target?: number; back?: (deltaAt: number) => number } = {}): { repo: string; commit: string } {
+function deltaRepo(name: string, over: { source?: number; target?: number; back?: (deltaAt: number) => number; ops?: readonly number[] } = {}): { repo: string; commit: string } {
   const base = raw('blob', Buffer.from('abcdefghij')), target = raw('blob', Buffer.from('abcdefghij!!'));
-  const delta = Buffer.from([...varint(over.source ?? 10), ...varint(over.target ?? 12), 0x90, 10, 2, 0x21, 0x21]);   // copy 10 from 0; insert "!!"
+  const delta = Buffer.from([...varint(over.source ?? 10), ...varint(over.target ?? 12), ...(over.ops ?? [0x90, 10, 2, 0x21, 0x21])]);   // copy 10 from 0; insert "!!"
   const baseEntry = Buffer.concat([entryHead(3, 10), deflateSync(base.body)]), deltaAt = 12 + baseEntry.length;
   const deltaEntry = Buffer.concat([entryHead(6, delta.length), ofsBack(over.back?.(deltaAt) ?? deltaAt - 12), deflateSync(delta)]);
   const tree = raw('tree', Buffer.concat([Buffer.from('100644 f\0'), Buffer.from(target.id, 'hex')]));
@@ -376,5 +380,287 @@ describe('malformations git never writes, in hand-built stores', () => {
     const commit = raw('commit', Buffer.from(`tree ${tree.id}\n\nm\n`)), repo = handBuilt('slash-name', [blob, tree, commit]);
     expect(await refusal(reader(repo, commit.id).listTree())).toMatchObject({ reason: 'malformed-tree', objectId: tree.id });
     expect(await refusal(reader(repo, commit.id).readBlobs(['a/b']))).toMatchObject({ reason: 'malformed-tree' });
+  });
+});
+
+/** The refusal `p` ends in, which must arrive within `ms` (a hang is a failure, not a pass). */
+async function refusedWithin(ms: number, p: Promise<unknown>): Promise<{ reason: string; objectId: string | null; path: string | null; message: string }> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error(`no refusal within ${ms} ms`)), ms); });
+  try { return await Promise.race([refusal(p), late]); } finally { clearTimeout(timer); }
+}
+/** One file `f` holding `content`, under a tree under a commit. */
+const oneFile = (content: Buffer | string): { blob: ReturnType<typeof raw>; tree: ReturnType<typeof raw>; commit: ReturnType<typeof raw> } => {
+  const blob = raw('blob', Buffer.from(content));
+  const tree = raw('tree', Buffer.concat([Buffer.from('100644 f\0'), Buffer.from(blob.id, 'hex')]));
+  return { blob, tree, commit: raw('commit', Buffer.from(`tree ${tree.id}\n\nm\n`)) };
+};
+const whole = (body: Buffer, type = 3): Buffer => Buffer.concat([entryHead(type, body.length), deflateSync(body)]);
+/** `levels` offset deltas stacked over one whole blob of `size` bytes, each copying all of its base, so every level yields the
+ * same bytes and the index points the blob's identifier at the top level (the reviewer's amplification construction). */
+function chainRepo(name: string, levels: number, size: number): { repo: string; commit: string } {
+  const { blob, tree, commit } = oneFile(Buffer.alloc(size, 0x61));
+  const ops: number[] = [];
+  for (let from = 0; from < size;) {
+    const n = Math.min(0xffffff, size - from);
+    ops.push(0xff, from & 255, (from >> 8) & 255, (from >> 16) & 255, (from >>> 24) & 255, n & 255, (n >> 8) & 255, (n >> 16) & 255);
+    from += n;
+  }
+  const delta = Buffer.from([...varint(size), ...varint(size), ...ops]), stored = deflateSync(delta), entries = [whole(blob.body)];
+  for (let k = 0; k < levels; k += 1) entries.push(Buffer.concat([entryHead(6, delta.length), ofsBack(entries[entries.length - 1]!.length), stored]));
+  const top = 12 + entries.slice(0, -1).reduce((n, e) => n + e.length, 0);
+  return { repo: handBuilt(name, [tree, commit], [{ id: blob.id, entry: Buffer.concat(entries), offset: top }]), commit: commit.id };
+}
+/** A tree of entries written byte for byte: [mode, name bytes, id]. */
+const treeOf = (entries: ReadonlyArray<readonly [string, Buffer | string, string]>): ReturnType<typeof raw> =>
+  raw('tree', Buffer.concat(entries.flatMap(([mode, name, id]) => [Buffer.from(`${mode} `), Buffer.from(name), Buffer.from([0]), Buffer.from(id, 'hex')])));
+const onTree = (name: string, tree: ReturnType<typeof raw>, extra: ReadonlyArray<ReturnType<typeof raw>> = []): { repo: string; commit: string } => {
+  const commit = raw('commit', Buffer.from(`tree ${tree.id}\n\nm\n`));
+  return { repo: handBuilt(name, [...extra, tree, commit]), commit: commit.id };
+};
+
+describe('nothing under .git is read through a link or from a special file (R-POLARIS-DOSSIER-S2-READER-1 finding 2)', () => {
+  it('a loose object that is a link to a FIFO, a FIFO, a directory or a link to a device refuses at once, never blocks', async () => {
+    const { blob, tree, commit } = oneFile('abc'), fifo = path.join(T, 'the-fifo');
+    execFileSync('mkfifo', [fifo]);
+    try {
+      const cases = [
+        ['link-to-fifo', (at: string) => symlinkSync(fifo, at), 'is a symbolic link, never followed'],
+        ['fifo', (at: string) => execFileSync('mkfifo', [at]), 'is not a regular file'],
+        ['directory', (at: string) => mkdirSync(at), 'is not a regular file'],
+        ['link-to-device', (at: string) => symlinkSync('/dev/zero', at), 'is a symbolic link, never followed'],
+      ] as const;
+      for (const [name, plant, says] of cases) {
+        const repo = handBuilt(`special-${name}`, [tree, commit]), at = looseFile(repo, blob.id);
+        mkdirSync(path.dirname(at), { recursive: true });
+        plant(at);
+        expect(await refusedWithin(2000, reader(repo, commit.id).readBlobs(['f'])), name).toEqual({
+          reason: 'unsafe-store-entry', objectId: null, path: null, message: `objects/${blob.id.slice(0, 2)}/${blob.id.slice(2)} ${says}`,
+        });
+      }
+    } finally {
+      // a reader blocked on the FIFO (a mutant) is released, so the run ends
+      try { closeSync(openSync(fifo, fsConstants.O_WRONLY | fsConstants.O_NONBLOCK)); } catch { /* no reader waiting */ }
+    }
+  });
+  it('a linked objects, pack or fan-out directory refuses: another store is never read as this one (a de facto alternate)', async () => {
+    const { blob, tree, commit } = oneFile('abc');
+    const other = handBuilt('link-target', [blob, tree, commit]);
+    expect(text((await reader(other, commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abc');   // the linked-to store reads
+    const objects = path.join(T, 'link-objects/.git');
+    mkdirSync(objects, { recursive: true });
+    symlinkSync(path.join(other, '.git/objects'), path.join(objects, 'objects'));
+    expect(await refusedWithin(2000, reader(path.join(T, 'link-objects'), commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects is not a directory; nothing under .git is read through a link' });
+    const pack = handBuilt('link-pack', [blob, tree, commit]);
+    rmSync(path.join(pack, '.git/objects/pack'), { recursive: true });
+    symlinkSync(path.join(OFS, '.git/objects/pack'), path.join(pack, '.git/objects/pack'));
+    expect(await refusal(reader(pack, commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects/pack is not a directory; nothing under .git is read through a link' });
+    const fan = handBuilt('link-fan', [tree, commit]);
+    symlinkSync(path.join(other, '.git/objects', blob.id.slice(0, 2)), path.join(fan, '.git/objects', blob.id.slice(0, 2)));
+    expect(await refusal(reader(fan, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'unsafe-store-entry', message: `objects/${blob.id.slice(0, 2)} is not a directory; nothing under .git is read through a link` });
+  });
+  it('an .idx or .pack that is a link, a directory, or a .pack that is absent refuses', async () => {
+    const { blob, tree, commit } = oneFile('abc');
+    const dir = handBuilt('idx-dir', [blob, tree, commit]);   // every object loose
+    mkdirSync(path.join(dir, '.git/objects/pack/pack-y.idx'));
+    expect(await refusal(reader(dir, commit.id).readBlobs(['f']))).toEqual({ reason: 'unsafe-store-entry', objectId: null, path: null, message: 'objects/pack/pack-y.idx is not a regular file' });
+    const packed = (name: string): string => handBuilt(name, [tree, commit], [{ id: blob.id, entry: whole(blob.body) }]);
+    expect(text((await reader(packed('pack-good'), commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abc');
+    const idxLink = packed('idx-link'), idxAt = path.join(idxLink, '.git/objects/pack/pack-x.idx');
+    rmSync(idxAt); symlinkSync(path.join(packed('idx-link-target'), '.git/objects/pack/pack-x.idx'), idxAt);
+    expect(await refusal(reader(idxLink, commit.id).tree())).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects/pack/pack-x.idx is a symbolic link, never followed' });
+    const packLink = packed('pack-link'), packAt = path.join(packLink, '.git/objects/pack/pack-x.pack');
+    rmSync(packAt); symlinkSync(path.join(packed('pack-link-target'), '.git/objects/pack/pack-x.pack'), packAt);
+    expect(await refusal(reader(packLink, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'unsafe-store-entry', message: 'objects/pack/pack-x.pack is a symbolic link, never followed' });
+    const packGone = packed('pack-gone');
+    rmSync(path.join(packGone, '.git/objects/pack/pack-x.pack'));
+    expect(await refusal(reader(packGone, commit.id).readBlobs(['f']))).toEqual({ reason: 'invalid-pack-index', objectId: null, path: null, message: 'pack-x.idx has no readable pack' });
+  });
+});
+
+describe('every malformed store ends in a typed refusal (finding 1)', () => {
+  const { blob, tree, commit } = oneFile('abc');
+  const offsetsAt = 8 + 1024 + 24;   // one SHA-1 entry: identifier and CRC before the offset table
+  /** The one-entry index with its offset replaced by `small`, and `large` as its large-offset table. */
+  const withOffset = (small: number, large: readonly bigint[] = []) => (idx: Buffer): Buffer => {
+    const out = Buffer.from(idx.subarray(0, offsetsAt + 4));
+    out.writeUInt32BE(small >>> 0, offsetsAt);
+    return Buffer.concat([out, ...large.map(v => { const b = Buffer.alloc(8); b.writeBigUInt64BE(v); return b; }), Buffer.alloc(40)]);
+  };
+  it('an index offset outside its pack, small or large, refuses instead of throwing out of the read', async () => {
+    const cases = [['past-end', withOffset(0x7fffffff)], ['inside-header', withOffset(4)], ['large-2^60', withOffset(0x80000000, [2n ** 60n])]] as const;
+    for (const [name, idx] of cases) {
+      const repo = handBuilt(`offset-${name}`, [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx);
+      expect(await refusedWithin(2000, reader(repo, commit.id).readBlobs(['f'])), name).toEqual({
+        reason: 'invalid-pack-index', objectId: blob.id, path: 'f', message: `${blob.id}: pack-x.idx gives an offset outside its pack`,
+      });
+    }
+    const past = handBuilt('offset-past-table', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], withOffset(0x80000005, [12n]));
+    expect(await refusal(reader(past, commit.id).tree())).toMatchObject({ reason: 'invalid-pack-index', message: 'pack-x.idx is not a version-2 sha1 pack index: a large offset lies past the large-offset table' });
+    const fine = handBuilt('offset-large-good', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], withOffset(0x80000000, [12n]));
+    expect(text((await reader(fine, commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abc');   // a large offset in range reads
+  });
+  it('an index with a bad header or truncated refuses, even beside an all-loose store', async () => {
+    const junk = handBuilt('idx-junk', [blob, tree, commit]);
+    writeFileSync(path.join(junk, '.git/objects/pack/pack-z.idx'), 'junk');
+    expect(await refusal(reader(junk, commit.id).tree())).toMatchObject({ reason: 'invalid-pack-index', message: 'pack-z.idx is not a version-2 sha1 pack index: bad header' });
+    const versionThree = handBuilt('idx-v3', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx => { const out = Buffer.from(idx); out.writeUInt32BE(3, 4); return out; });
+    expect((await refusal(reader(versionThree, commit.id).tree())).message).toBe('pack-x.idx is not a version-2 sha1 pack index: bad header');
+    const truncated = handBuilt('idx-truncated', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx => idx.subarray(0, offsetsAt));
+    expect((await refusal(reader(truncated, commit.id).tree())).message).toBe('pack-x.idx is not a version-2 sha1 pack index: truncated');
+  });
+  it.skipIf(process.getuid?.() === 0)('an unreadable store file refuses as store-unreadable, naming only the error code', async () => {
+    const repo = handBuilt('unreadable', [blob, tree, commit]), file = looseFile(repo, blob.id);
+    chmodSync(file, 0o000);
+    try {
+      expect(await refusal(reader(repo, commit.id).readBlobs(['f']))).toEqual({ reason: 'store-unreadable', objectId: null, path: null, message: 'the object store could not be read (EACCES)' });
+    } finally { chmodSync(file, 0o644); }
+  });
+});
+
+describe('tree entries are unambiguous: listTree emits only paths readBlobs resolves (finding 3)', () => {
+  const one = raw('blob', Buffer.from('one')), two = raw('blob', Buffer.from('two'));
+  it('names ., .., .git in any case, a repeated name and a name not UTF-8 refuse, in listTree and readBlobs', async () => {
+    const cases: ReadonlyArray<readonly [string, ReadonlyArray<readonly [string, Buffer | string, string]>, string]> = [
+      ['dotdot', [['100644', '..', one.id]], 'has an entry named ., .. or .git'],
+      ['dot', [['100644', '.', one.id]], 'has an entry named ., .. or .git'],
+      ['dotgit', [['100644', '.git', one.id]], 'has an entry named ., .. or .git'],
+      ['dotgit-case', [['40000', '.GiT', one.id]], 'has an entry named ., .. or .git'],
+      ['duplicate', [['100644', 'dup', one.id], ['100644', 'dup', two.id]], 'names one entry twice'],
+      ['duplicate-file-and-dir', [['100644', 'dup', one.id], ['40000', 'dup', one.id]], 'names one entry twice'],
+      ['not-utf8', [['100644', Buffer.from([0x61, 0xff]), one.id], ['100644', Buffer.from([0x61, 0xfe]), two.id]], 'has an entry name that is not UTF-8'],
+      ['empty', [['100644', '', one.id]], 'has an entry name that is empty or holds a slash'],
+    ];
+    for (const [name, entries, says] of cases) {
+      const tree = treeOf(entries), { repo, commit } = onTree(`name-${name}`, tree, [one, two]);
+      expect(await refusal(reader(repo, commit).listTree()), name).toEqual({ reason: 'malformed-tree', objectId: tree.id, path: null, message: `tree ${tree.id} ${says}` });
+      expect((await refusal(reader(repo, commit).readBlobs(['dup']))).reason, name).toBe('malformed-tree');
+    }
+    const fine = treeOf([['100644', 'aé', one.id], ['100644', '.gitignore', two.id]]), { repo, commit } = onTree('name-fine', fine, [one, two]);
+    expect((await reader(repo, commit).listTree()).map(e => e.path)).toEqual(['aé', '.gitignore']);
+  });
+  it('a mode git does not write refuses; the legacy group-writable file mode reads', async () => {
+    for (const mode of ['100666', '040000', '120755', '0100644']) {
+      const tree = treeOf([[mode, 'f', one.id]]), { repo, commit } = onTree(`mode-${mode.trim()}`, tree, [one]);
+      expect(await refusal(reader(repo, commit).listTree()), mode).toMatchObject({ reason: 'malformed-tree', message: `tree ${tree.id} has an entry of a mode git does not write` });
+    }
+    const legacy = treeOf([['100664', 'f', one.id]]), { repo, commit } = onTree('mode-100664', legacy, [one]);
+    expect(await reader(repo, commit).listTree()).toEqual([{ path: 'f', mode: '100664', id: one.id }]);
+    expect(text((await reader(repo, commit).readBlobs(['f']))[0]!.bytes)).toBe('one');
+  });
+  it('a tree entry cut short refuses as truncated', async () => {
+    const whole_ = treeOf([['100644', 'f', one.id]]), tree = raw('tree', whole_.body.subarray(0, whole_.body.length - 1));
+    const { repo, commit } = onTree('truncated-entry', tree, [one]);
+    expect(await refusal(reader(repo, commit).listTree())).toMatchObject({ reason: 'malformed-tree', message: `tree ${tree.id} has a truncated entry` });
+  });
+});
+
+describe('each call is bounded: bytes inflated, delta depth, objects visited (finding 4)', () => {
+  it('the reviewer\'s amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget', async () => {
+    const { repo, commit } = chainRepo('amp-default', 100, 64 * 2 ** 20), started = Date.now();
+    expect(await refusedWithin(30_000, reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', message: expect.stringContaining('this call would inflate more than 4294967296 bytes') });
+    expect(Date.now() - started).toBeLessThan(30_000);
+  }, 60_000);
+  it('the per-call byte budget is a parameter: the same chain reads under it and refuses one level over', async () => {
+    const { repo, commit } = chainRepo('amp-small', 3, 2 ** 20);
+    expect((await reader(repo, commit, { maxInflatedBytesPerCall: 5 * 2 ** 20 }).readBlobs(['f']))[0]!.bytes.length).toBe(2 ** 20);
+    expect(await refusal(reader(repo, commit, { maxInflatedBytesPerCall: 4 * 2 ** 20 }).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded' });
+  });
+  it('the budget is per call, summed over every path read', async () => {
+    const a = raw('blob', Buffer.alloc(1000, 0x61)), b = raw('blob', Buffer.alloc(1000, 0x62));
+    const tree = treeOf([['100644', 'a', a.id], ['100644', 'b', b.id]]), { repo, commit } = onTree('budget-sum', tree, [a, b]);
+    expect(await reader(repo, commit, { maxInflatedBytesPerCall: 1500 }).readBlobs(['a'])).toHaveLength(1);
+    expect(await refusal(reader(repo, commit, { maxInflatedBytesPerCall: 1500 }).readBlobs(['a', 'b']))).toMatchObject({ reason: 'budget-exceeded', objectId: b.id, path: 'b' });
+  });
+  it('a delta chain one past the depth cap refuses, by default (1,000) and as a parameter; at the cap it reads', async () => {
+    const atCap = chainRepo('depth-1000', 1000, 1), over = chainRepo('depth-1001', 1001, 1);
+    expect(text((await reader(atCap.repo, atCap.commit).readBlobs(['f']))[0]!.bytes)).toBe('a');
+    expect(await refusedWithin(5000, reader(over.repo, over.commit).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', message: expect.stringContaining('has a delta chain longer than 1000') });
+    const five = chainRepo('depth-5', 5, 1);
+    expect(await reader(five.repo, five.commit, { maxDeltaChainDepth: 5 }).readBlobs(['f'])).toHaveLength(1);
+    expect((await refusal(reader(five.repo, five.commit, { maxDeltaChainDepth: 4 }).readBlobs(['f']))).message).toContain('has a delta chain longer than 4');
+  });
+  it('a reference delta naming itself refuses at the depth cap, quickly', async () => {
+    const { blob, tree, commit } = oneFile('x'), d = Buffer.from([1, 1, 0x90, 1]);
+    const repo = handBuilt('ref-cycle', [tree, commit], [{ id: blob.id, entry: Buffer.concat([entryHead(7, d.length), Buffer.from(blob.id, 'hex'), deflateSync(d)]) }]);
+    expect(await refusedWithin(5000, reader(repo, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'budget-exceeded', objectId: blob.id });
+  });
+  it('a tree DAG that re-lists one subtree many times refuses past the objects-per-call cap', async () => {
+    const leaf = raw('blob', Buffer.from('leaf'));
+    const names = Array.from({ length: 16 }, (_, k) => `n${k.toString(16)}`);
+    let tree = treeOf(names.map(n => ['100644', n, leaf.id] as const));
+    const trees = [tree];
+    for (let level = 0; level < 3; level += 1) { const below = tree; tree = treeOf(names.map(n => ['40000', n, below.id] as const)); trees.push(tree); }
+    const { repo, commit } = onTree('dag', tree, [leaf, ...trees.slice(0, -1)]);
+    expect(await reader(repo, commit).listTree()).toHaveLength(16 ** 4);   // 65,536 paths from five objects, under the default cap
+    expect(await refusal(reader(repo, commit, { maxObjectsPerCall: 10_000 }).listTree())).toMatchObject({ reason: 'budget-exceeded', message: 'this call reads or lists more than 10000 objects and entries' });
+  });
+  it('an object larger than maxObjectBytes refuses: loose stored, loose inflated, packed, and delta output', async () => {
+    let seed = Buffer.from('seed');
+    const noise = Buffer.concat(Array.from({ length: 64 }, () => (seed = createHash('sha256').update(seed).digest())));   // 2,048 incompressible bytes
+    const big = oneFile(noise), loose = handBuilt('loose-stored-big', [big.blob, big.tree, big.commit]);
+    expect(await refusal(reader(loose, big.commit.id, { maxObjectBytes: 512 }).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: `loose object ${big.blob.id} is larger stored than any object the reader holds` });
+    const runs = oneFile(Buffer.alloc(4096, 0x61)), inflating = handBuilt('loose-inflated-big', [runs.blob, runs.tree, runs.commit]);
+    expect(await refusal(reader(inflating, runs.commit.id, { maxObjectBytes: 512 }).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: `loose object ${runs.blob.id} does not inflate` });
+    expect(await reader(inflating, runs.commit.id, { maxObjectBytes: 4096 }).readBlobs(['f'])).toHaveLength(1);
+    const packed = handBuilt('packed-big', [runs.tree, runs.commit], [{ id: runs.blob.id, entry: whole(runs.blob.body) }]);
+    expect(await refusal(reader(packed, runs.commit.id, { maxObjectBytes: 4095 }).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: `${runs.blob.id}: pack entry declares 4096 bytes` });
+    const { repo, commit } = deltaRepo('delta-big');
+    expect(await refusal(reader(repo, commit, { maxObjectBytes: 11 }).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: '1ccd73aeacfd33cab1d9e1091d21860c1922ef53: delta declares 12 bytes' });
+  });
+});
+
+describe('pack and delta malformations, each predicate (finding 5)', () => {
+  const T1 = '1ccd73aeacfd33cab1d9e1091d21860c1922ef53';   // the delta fixture's target identifier
+  it('a delta with a truncated header, an out-of-range copy or insert, or opcode 0 refuses', async () => {
+    const cases: ReadonlyArray<readonly [string, { source?: number; target?: number; ops?: readonly number[] }, string]> = [
+      ['copy-past-base', { ops: [0x91, 5, 10] }, 'delta copy out of range'],          // copy 10 from 5 of a 10-byte base
+      ['copy-past-target', { target: 9, ops: [0x90, 10] }, 'delta copy out of range'],  // copy 10 into 9
+      ['copy-operand-missing', { ops: [0x90] }, 'delta copy out of range'],             // copy whose size byte is absent
+      ['insert-past-delta', { target: 15, ops: [0x90, 10, 5, 0x21, 0x21] }, 'delta insert out of range'],   // 5 to insert, 2 left
+      ['insert-past-target', { target: 11, ops: [0x90, 10, 2, 0x21, 0x21] }, 'delta insert out of range'],
+      ['opcode-0', { ops: [0x90, 10, 0, 2, 0x21, 0x21] }, 'delta opcode 0 is reserved'],
+    ];
+    for (const [name, over, says] of cases) {
+      const { repo, commit } = deltaRepo(`delta-${name}`, over);
+      expect(await refusal(reader(repo, commit).readBlobs(['f'])), name).toMatchObject({ reason: 'corrupt-object', message: `${T1}: ${says}` });
+    }
+  });
+  it('a delta whose size header runs off its end refuses as truncated', async () => {
+    const base = raw('blob', Buffer.from('abcdefghij')), { blob, tree, commit } = oneFile('abcdefghij!!');
+    const d = Buffer.from([10, 0x8c]);   // the target size's continuation bit set, and nothing after it
+    const deltaAt = 12 + whole(base.body).length;
+    const repo = handBuilt('delta-header', [tree, commit], [{ id: base.id, entry: whole(base.body) }, { id: blob.id, entry: Buffer.concat([entryHead(6, d.length), ofsBack(deltaAt - 12), deflateSync(d)]) }]);
+    expect(await refusal(reader(repo, commit.id).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: `${blob.id}: truncated delta header` });
+  });
+  it('a pack entry with an endless size header, an endless base offset or an unknown type refuses', async () => {
+    const { blob, tree, commit } = oneFile('abc');
+    const cases = [
+      ['size-header', Buffer.concat([Buffer.from([0xbf]), Buffer.alloc(60, 0xff)]), 'pack entry header too long in pack-x'],
+      ['offset-header', Buffer.concat([entryHead(6, 4), Buffer.alloc(60, 0xff)]), 'delta offset too long in pack-x'],
+      ['type-5', whole(blob.body, 5), 'pack entry of unknown type 5 in pack-x'],
+      ['type-0', whole(blob.body, 0), 'pack entry of unknown type 0 in pack-x'],
+    ] as const;
+    for (const [name, entry, says] of cases) {
+      const repo = handBuilt(`entry-${name}`, [tree, commit], [{ id: blob.id, entry: Buffer.concat([entry, Buffer.alloc(64)]) }]);
+      expect(await refusal(reader(repo, commit.id).readBlobs(['f'])), name).toMatchObject({ reason: 'corrupt-object', message: `${blob.id}: ${says}` });
+    }
+  });
+  it('a reference delta reads over a loose base and refuses when its base is absent', async () => {
+    const base = raw('blob', Buffer.from('abcdefghij')), { blob, tree, commit } = oneFile('abcdefghij!!');
+    const d = Buffer.from([10, 12, 0x90, 10, 2, 0x21, 0x21]);
+    const entry = Buffer.concat([entryHead(7, d.length), Buffer.from(base.id, 'hex'), deflateSync(d)]);
+    const withBase = handBuilt('ref-loose-base', [base, tree, commit], [{ id: blob.id, entry }]);
+    expect(text((await reader(withBase, commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abcdefghij!!');
+    const without = handBuilt('ref-no-base', [tree, commit], [{ id: blob.id, entry }]);
+    expect(await refusal(reader(without, commit.id).readBlobs(['f']))).toEqual({ reason: 'object-missing', objectId: blob.id, path: 'f', message: `${blob.id}: delta base ${base.id} is not in this clone` });
+  });
+  it('a packed substitution refuses: an index pointing at another object\'s entry, a reference delta over another base', async () => {
+    const want = oneFile('the consented bytes'), other = raw('blob', Buffer.from('other bytes'));
+    const swapped = handBuilt('swap', [want.tree, want.commit], [{ id: other.id, entry: whole(other.body) }, { id: want.blob.id, entry: Buffer.alloc(0), offset: 12 }]);
+    expect(await refusal(reader(swapped, want.commit.id).readBlobs(['f']))).toEqual({ reason: 'identifier-mismatch', objectId: want.blob.id, path: 'f', message: `the object read as ${want.blob.id} hashes to another identifier` });
+    const d = Buffer.from([...varint(other.body.length), ...varint(other.body.length), 0x90, other.body.length]);
+    const rebased = handBuilt('ref-swap', [want.tree, want.commit, other], [{ id: want.blob.id, entry: Buffer.concat([entryHead(7, d.length), Buffer.from(other.id, 'hex'), deflateSync(d)]) }]);
+    expect((await refusal(reader(rebased, want.commit.id).readBlobs(['f']))).reason).toBe('identifier-mismatch');
   });
 });
