@@ -12,6 +12,19 @@ import { beforeAll, describe, expect, it } from 'vitest';
 // the TypeScript syntax tree, so a comment or string never counts and a
 // bracket, alias or the built-in module table does not slip past a word
 // match (#383 round 1, finding 3).
+//
+// Residual: a static guard against future edits cannot be complete.
+// JavaScript reaches the global object and the module table by too many
+// routes (#383 round 2 found `.constructor.constructor`). This check refuses
+// every route found so far, as names, member names and literal keys, across
+// the whole closure. It refuses computed member access with a key it cannot
+// read in the live test only: the modules the test imports index arrays and
+// records by variable keys at 89 sites, so a key built at run time (the
+// string "constructor" assembled from pieces) inside one of them is not
+// caught here. The test is skipped in the default suite and runs only
+// when an operator sets SYZYGY_POC_BUTLERS_REPO; a new route has to be
+// spelled where a reviewer sees it, but the check does not prove that no
+// route exists.
 
 const SRC = dirname(fileURLToPath(import.meta.url));
 const LIVE = 'test-artifact-verification.live.test.ts';
@@ -28,6 +41,21 @@ const COMMANDS = new Set(['git', 'bd']);
  * `process.dlopen` and `process.binding` are refused by the member list
  * below, so a parameter that happens to be named `binding` is not. */
 const FORBIDDEN_IDENTIFIERS = new Set(['getBuiltinModule', 'globalThis', 'global', 'eval', 'Function', 'require', 'Worker', 'Reflect']);
+
+/** #383 round 2, finding 1: every object's `.constructor.constructor` is
+ * `Function`, so `process.stdout.constructor.constructor('return this')()`
+ * reached the global object with no forbidden word in it. These names may
+ * not appear as an identifier, a member name or a literal key, and the
+ * reflection calls that fetch a member by a computed name are refused too. */
+const FORBIDDEN_MEMBER_NAMES = new Set([
+  'constructor', 'prototype', '__proto__',
+  'getPrototypeOf', 'setPrototypeOf', 'getOwnPropertyDescriptor', 'getOwnPropertyDescriptors', 'getOwnPropertyNames', 'defineProperty', 'Proxy',
+]);
+
+/** A computed key the check can read: a plain string or number literal. */
+function isLiteralKey(node: ts.Expression): boolean {
+  return ts.isStringLiteral(node) || ts.isNumericLiteral(node);
+}
 
 /** Workspace packages in the closure, followed into their sources. */
 const WORKSPACE_PACKAGES: Readonly<Record<string, string>> = {
@@ -73,6 +101,16 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
           add(`starts ${command?.getText() ?? 'nothing'}, not a literal ${[...COMMANDS].join(' or ')}`);
         }
       }
+    }
+    if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+      if (FORBIDDEN_MEMBER_NAMES.has(node.text)) add(`reaches ${node.text}`);
+    }
+    if (file === LIVE) {
+      // The live test only: the modules it imports index arrays and
+      // records by variable keys at 89 sites (counted 2026-10-07), which
+      // this check does not rewrite. See the residual in the header.
+      if (ts.isElementAccessExpression(node) && !isLiteralKey(node.argumentExpression)) add('computed access with a non-literal key');
+      if (ts.isComputedPropertyName(node) && !isLiteralKey(node.expression)) add('computed property name with a non-literal key');
     }
     if (ts.isIdentifier(node)) {
       if (FORBIDDEN_IDENTIFIERS.has(node.text)) add(`names ${node.text}`);
@@ -141,6 +179,17 @@ describe('the live verification test, and every module it imports, runs no obser
     [`${RUN_GIT}('python3', ['-m', 'pytest']);`, 'starts '],
     [`const cmd = 'git'; ${RUN_GIT}(cmd, []);`, 'starts '],
     ["import { Worker } from 'node:worker_threads';", 'imports node:worker_threads'],
+    // #383 round 2, finding 1: the reviewer's evasion and its respellings.
+    ["const g = (process.stdout.constructor as unknown as { constructor: (s: string) => () => Record<string, unknown> }).constructor('return this.process')();", 'reaches constructor'],
+    ["const g: Record<string, unknown> = {}; g[['get', 'Builtin', 'Module'].join('')];", 'computed access with a non-literal key'],
+    ["const k = 'x'; const o: Record<string, unknown> = {}; o[k];", 'computed access with a non-literal key'],
+    ["process.stdout['constructor'];", 'reaches constructor'],
+    ["const { constructor: c } = process.stdout;", 'reaches constructor'],
+    ["const k = 'x'; const { [k]: c } = process.stdout as unknown as Record<string, unknown>;", 'computed property name with a non-literal key'],
+    ["Object.getPrototypeOf(process.stdout);", 'reaches getPrototypeOf'],
+    ["Object.getOwnPropertyDescriptor(process.stdout, 'x');", 'reaches getOwnPropertyDescriptor'],
+    ["({}).__proto__;", 'reaches __proto__'],
+    ["(() => 0).prototype;", 'reaches prototype'],
   ])('the tree check refuses %s', (fragment, violation) => {
     const { violations } = closure(LIVE, { [LIVE]: `${fragment}\n` });
     expect(violations.some((entry) => entry.file === LIVE && entry.reason.startsWith(violation)), JSON.stringify(violations)).toBe(true);
@@ -150,7 +199,7 @@ describe('the live verification test, and every module it imports, runs no obser
     for (const name of ['SYZYGY_POC_BUTLERS_JUNIT', 'SYZYGY_POC_BUTLERS_JUNIT_COMMIT', 'SYZYGY_POC_BUTLERS_JUNIT_EXIT']) {
       expect(source).toContain(`process.env.${name};`);
     }
-    expect(source).toContain('const rawJUnitXml = readBoundedRegularFile(JUNIT);');
+    expect(source).toContain('const rawJUnit = readBoundedRegularFile(JUNIT);');
     expect(source).not.toMatch(/\breadFileSync\b/);
   });
 
