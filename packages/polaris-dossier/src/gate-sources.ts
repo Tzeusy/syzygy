@@ -23,6 +23,8 @@ export interface ProviderStatementRecord {
   readonly recordId: string;
   readonly version: string;
   readonly digest: string;
+  /** The agent tool the statement names, as the run configuration writes it (`AGENT_TOOLS`): consent is to one tool with one provider. */
+  readonly agentTool: string;
   /** The model provider the statement names. */
   readonly provider: string;
   /** The content classes it may receive. */
@@ -96,11 +98,13 @@ export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm = sittingForm('RFC7-20-
 export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object.freeze({
   'redis-redis': sittingForm('REDIS-NO-EVIDENCE-DRAWER', 'no kernel evidence drawer for redis/redis', 'state-project-input', 'NO-EVIDENCE-DRAWER-REDIS', 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md'),
 });
-/** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the provider it consents to. */
-export const STATEMENT_FORMS: Readonly<Record<string, readonly { readonly provider: string; readonly recordId: string; readonly form: DigestBoundActForm }[]>> = Object.freeze({
+/** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the tool (its run-configuration id and
+ * the name its record's `Agent tool:` line opens with) and the provider it consents to. */
+export interface StatementForm { readonly agentTool: string; readonly toolName: string; readonly provider: string; readonly recordId: string; readonly form: DigestBoundActForm }
+export const STATEMENT_FORMS: Readonly<Record<string, readonly StatementForm[]>> = Object.freeze({
   'redis-redis': Object.freeze([
-    { provider: 'anthropic', recordId: 'AGENT-PROVIDER-redis-redis-anthropic', form: sittingForm('REDIS-AGENT-ANTHROPIC', 'agent-provider statement for redis/redis: Claude Code with Anthropic', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-ANTHROPIC', 'redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md') },
-    { provider: 'openai', recordId: 'AGENT-PROVIDER-redis-redis-openai', form: sittingForm('REDIS-AGENT-OPENAI', 'agent-provider statement for redis/redis: Codex with OpenAI', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-OPENAI', 'redis/AGENT-PROVIDER-STATEMENT-OPENAI.md') },
+    { agentTool: 'claude-code', toolName: 'Claude Code', provider: 'anthropic', recordId: 'AGENT-PROVIDER-redis-redis-anthropic', form: sittingForm('REDIS-AGENT-ANTHROPIC', 'agent-provider statement for redis/redis: Claude Code with Anthropic', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-ANTHROPIC', 'redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md') },
+    { agentTool: 'codex', toolName: 'Codex', provider: 'openai', recordId: 'AGENT-PROVIDER-redis-redis-openai', form: sittingForm('REDIS-AGENT-OPENAI', 'agent-provider statement for redis/redis: Codex with OpenAI', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-OPENAI', 'redis/AGENT-PROVIDER-STATEMENT-OPENAI.md') },
   ]),
 });
 
@@ -129,11 +133,12 @@ function drawerStatement(state: ActState<DigestBoundAct>, repositoryId: string):
 }
 
 /** One provider statement as the gate reads it; null when no act is recorded or in force yet, so an unrecorded statement is no
- * statement at all. A record whose act does not bind it, or whose bytes do not name exactly this subject and provider, carries
- * `act: null`. */
-function providerStatement(state: ActState<DigestBoundAct>, repositoryId: string, provider: string, recordId: string): ProviderStatementRecord | null {
+ * statement at all. A record whose act does not bind it, or whose bytes do not name exactly this subject, tool and provider,
+ * carries `act: null`. */
+function providerStatement(state: ActState<DigestBoundAct>, repositoryId: string, s: StatementForm): ProviderStatementRecord | null {
   if (state.state === 'absent') return null;
-  const unbound: ProviderStatementRecord = { recordId, version: 'unestablished', digest: '', provider, contentClasses: [], withdrawn: false, act: null };
+  const { agentTool, provider, recordId } = s;
+  const unbound: ProviderStatementRecord = { recordId, version: 'unestablished', digest: '', agentTool, provider, contentClasses: [], withdrawn: false, act: null };
   if (state.state !== 'ok') return unbound;
   const text = state.artifactText, version = field(text, 'Record version');
   const lines = text.split('\n'), at = lines.findIndex(line => line.startsWith('Content classes the provider may receive'));
@@ -143,19 +148,27 @@ function providerStatement(state: ActState<DigestBoundAct>, repositoryId: string
     if (m === null) break;
     classes.push(m[1]!);
   }
-  if (field(text, 'Record ID') !== recordId || version === null || field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId}, agent-provider:${provider})`) return unbound;
-  return { recordId, version, digest: state.artifactDigest, provider, contentClasses: classes, withdrawn: false, act: { identity: state.act.identity, inForceAt: state.act.recordedAt } };
+  const tools = lines.filter(line => line.startsWith('Agent tool: '));
+  if (field(text, 'Record ID') !== recordId || version === null || field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId}, agent-provider:${provider})`
+    || tools.length !== 1 || !tools[0]!.startsWith(`Agent tool: ${s.toolName}, `)) return unbound;
+  return { recordId, version, digest: state.artifactDigest, agentTool, provider, contentClasses: classes, withdrawn: false, act: { identity: state.act.identity, inForceAt: state.act.recordedAt } };
 }
 
-/** The statement gate: exactly one in-force statement for the subject that names `provider` and at least one content class. */
-export function providerStatementGate(records: readonly ProviderStatementRecord[], provider: string, now: number): GateState {
-  const named = records.filter(r => r.provider === provider);
+/** The statement gate: exactly one in-force statement for the subject that names the run's declared `agentTool` with its `provider`,
+ * and at least one content class. A statement for the same provider under another tool, or the same tool with another provider, is
+ * no consent to this pair (SEC-2: the record consents to one tool with one provider). */
+export function providerStatementGate(records: readonly ProviderStatementRecord[], agentTool: string, provider: string, now: number): GateState {
+  const pair = `the agent tool ${agentTool} with the provider ${provider}`;
+  const named = records.filter(r => r.agentTool === agentTool && r.provider === provider);
   const live = named.filter(r => !r.withdrawn && r.act !== null && r.act.inForceAt <= now && r.contentClasses.length > 0);
   if (live.length === 1) return { state: 'ok', record: `${live[0]!.recordId}@${live[0]!.version}` };
-  if (live.length > 1) return { state: 'refused', why: `${live.length} in-force per-project statements name the provider ${provider}; which one governs is ambiguous` };
-  if (named.length === 0) return { state: 'absent', why: `no per-project statement names the operator's agent provider ${provider}` };
+  if (live.length > 1) return { state: 'refused', why: `${live.length} in-force per-project statements name ${pair}; which one governs is ambiguous` };
+  if (named.length === 0) {
+    const others = records.filter(r => r.agentTool === agentTool || r.provider === provider).map(r => `${r.recordId}@${r.version} names ${r.agentTool} with ${r.provider}`);
+    return { state: 'absent', why: `no per-project statement names the operator's agent tool ${agentTool} with the provider ${provider}${others.length === 0 ? '' : ` (${others.join('; ')})`}` };
+  }
   const why = named.map(r => `${r.recordId}@${r.version} ${r.withdrawn ? 'is withdrawn' : r.act === null ? 'has no owner act binding its bytes' : r.act.inForceAt > now ? 'is not in force yet' : 'names no content class'}`);
-  return { state: 'absent', why: `no per-project statement naming ${provider} is in force: ${why.join('; ')}` };
+  return { state: 'absent', why: `no per-project statement naming ${pair} is in force: ${why.join('; ')}` };
 }
 
 export interface PackageGateSourceOptions {
@@ -192,7 +205,7 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
   const providerStatements: ProviderStatementSource = {
     statementsFor: async repositoryId => {
       const forms = Object.hasOwn(STATEMENT_FORMS, repositoryId) ? STATEMENT_FORMS[repositoryId]! : [];
-      const found = await Promise.all(forms.map(async s => providerStatement(await read(s.form), repositoryId, s.provider, s.recordId)));
+      const found = await Promise.all(forms.map(async s => providerStatement(await read(s.form), repositoryId, s)));
       return found.filter((r): r is ProviderStatementRecord => r !== null);
     },
   };

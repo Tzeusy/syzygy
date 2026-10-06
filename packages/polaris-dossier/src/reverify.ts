@@ -149,7 +149,7 @@ export async function reverifyPinnedRevision(runDir: string, sources: GateSource
   }
   let providerStatement: string | null = null;
   if (governed.statementRequired) {
-    const statement = providerStatementGate(await sources.providerStatements.statementsFor(repositoryId), declared.agentProvider, now);
+    const statement = providerStatementGate(await sources.providerStatements.statementsFor(repositoryId), declared.agentTool, declared.agentProvider, now);
     if (statement.state !== 'ok') {
       refusals.push({ code: 'statement', reason: `the subject is ${governed.kind} now and has no per-project statement in force: ${statement.why}` });
     } else if (statement.record !== subject.providerStatement) {

@@ -136,7 +136,7 @@ const records = (over: Record<string, string | null> = {}, rows?: readonly [stri
 const NO_DRAWER: ProjectInputSource = { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-REDIS@1' }) };
 const DRAWER: ProjectInputSource = { drawerFor: async () => ({ stated: true, drawer: 'present', record: 'PROJECT-INPUT-REDIS@1' }) };
 const STATEMENT: ProviderStatementRecord = {
-  recordId: 'STATEMENT-REDIS-ANTHROPIC', version: '1', digest: 'a'.repeat(64), provider: 'anthropic', contentClasses: ['code-content'],
+  recordId: 'STATEMENT-REDIS-ANTHROPIC', version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: ['code-content'],
   withdrawn: false, act: { identity: 'STATEMENT-REDIS-ANTHROPIC-ACT-2026-10-06', inForceAt: Date.UTC(2026, 9, 6) },
 };
 const statements = (...list: ProviderStatementRecord[]): ProviderStatementSource => ({ statementsFor: async () => list });
@@ -310,7 +310,7 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
     ['a recorded kernel evidence drawer', 'A' as const, DRAWER, 'governed'],
     ['a project input that does not say', 'A' as const, { drawerFor: async () => ({ stated: false, why: 'no admitted project input record (REQ-polaris-generation-001) for this subject exists, so whether a kernel evidence drawer exists is not stated' }) } as ProjectInputSource, 'unstated'],
   ])('refuses a subject with %s and no per-project statement, after listing the pinned tree', async (_name, commit, projectInput, kind) => {
-    await expectRefused({ clone: cloneAt(commits[commit]), projectInput }, 'statement', `the subject is ${kind} and the per-project statement is missing: no per-project statement names the operator's agent provider anthropic`, true);
+    await expectRefused({ clone: cloneAt(commits[commit]), projectInput }, 'statement', `the subject is ${kind} and the per-project statement is missing: no per-project statement names the operator's agent tool claude-code with the provider anthropic`, true);
   });
 
   it.each([
@@ -333,11 +333,18 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
 
   it.each([
     ['names another provider', { ...STATEMENT, provider: 'openai' }],
+    ['names the provider for another agent tool', { ...STATEMENT, agentTool: 'codex' }],
     ['is withdrawn', { ...STATEMENT, withdrawn: true }],
     ['has no act', { ...STATEMENT, act: null }],
   ])('refuses a governed subject whose only statement %s', async (_name, statement) => {
     const run = await init({ clone: cloneAt(commits.B), providerStatements: statements(statement) });
     expect(refusal(run.result)?.stage).toBe('statement');
+  });
+
+  it('refuses a Codex run with Anthropic against the Claude Code statement: consent is to the declared tool and provider pair', async () => {
+    const config = JSON.stringify({ ...JSON.parse(CONFIG), agentTool: 'codex', agentToolVersion: '0.40.0' });
+    const run = await init({ clone: cloneAt(commits.B), config, providerStatements: statements(STATEMENT) });
+    expect(refusal(run.result)).toMatchObject({ stage: 'statement', reason: 'the subject is governed and the per-project statement is missing: no per-project statement names the operator\'s agent tool codex with the provider anthropic (STATEMENT-REDIS-ANTHROPIC@1 names claude-code with anthropic)' });
   });
 
   it('starts a governed or unstated run that relies on an in-force statement, and cites it', async () => {
@@ -494,7 +501,16 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
     const { runDir, root } = await started({ clone: cloneAt(commits.B), providerStatements: statements(STATEMENT) });
     expect(await guard(runDir, root, { providerStatements: statements(STATEMENT) })).toMatchObject({ ok: true, providerStatement: 'STATEMENT-REDIS-ANTHROPIC@1', governed: { kind: 'governed' } });
     const result = await guard(runDir, root, { providerStatements: statements({ ...STATEMENT, withdrawn: true }) });
-    expect(!result.ok && result.refusals).toEqual([{ code: 'statement', reason: 'the subject is governed now and has no per-project statement in force: no per-project statement naming anthropic is in force: STATEMENT-REDIS-ANTHROPIC@1 is withdrawn' }]);
+    expect(!result.ok && result.refusals).toEqual([{ code: 'statement', reason: 'the subject is governed now and has no per-project statement in force: no per-project statement naming the agent tool claude-code with the provider anthropic is in force: STATEMENT-REDIS-ANTHROPIC@1 is withdrawn' }]);
+  });
+
+  it('re-checks the statement against the run\'s declared tool: a Codex run with OpenAI keeps its Codex statement, and no Claude Code one stands in', async () => {
+    const codex: ProviderStatementRecord = { ...STATEMENT, recordId: 'STATEMENT-REDIS-OPENAI', agentTool: 'codex', provider: 'openai' };
+    const config = JSON.stringify({ ...JSON.parse(CONFIG), agentTool: 'codex', agentToolVersion: '0.40.0', agentProvider: 'openai', model: 'gpt-5.5' });
+    const { runDir, root } = await started({ clone: cloneAt(commits.B), config, providerStatements: statements(codex) });
+    expect((await guard(runDir, root, { providerStatements: statements(codex) })).ok).toBe(true);
+    const result = await guard(runDir, root, { providerStatements: statements({ ...codex, agentTool: 'claude-code' }) });
+    expect(!result.ok && result.refusals).toEqual([{ code: 'statement', reason: 'the subject is governed now and has no per-project statement in force: no per-project statement names the operator\'s agent tool codex with the provider openai (STATEMENT-REDIS-OPENAI@1 names claude-code with openai)' }]);
   });
 
   // R-POLARIS-DOSSIER-S3-GATES-2 finding 6: the provider is the operator's declaration, read from the run record; it selects the statement.

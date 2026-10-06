@@ -100,11 +100,16 @@ describe('the sitting\'s acts as gate sources, once recorded', () => {
     expect(await s.registryEntry()).toEqual({ state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' });
     const statements = await s.providerStatements.statementsFor('redis-redis');
     expect(statements).toEqual([
-      { recordId: 'AGENT-PROVIDER-redis-redis-anthropic', version: '0.1.0-candidate.1', digest: sha(real(ACTS['redis-agent-anthropic'].record)), provider: 'anthropic', contentClasses: CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-REDIS-ANTHROPIC-2026-10-07', inForceAt: AT } },
-      { recordId: 'AGENT-PROVIDER-redis-redis-openai', version: '0.1.0-candidate.1', digest: sha(real(ACTS['redis-agent-openai'].record)), provider: 'openai', contentClasses: CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-REDIS-OPENAI-2026-10-07', inForceAt: AT } },
+      { recordId: 'AGENT-PROVIDER-redis-redis-anthropic', version: '0.1.0-candidate.1', digest: sha(real(ACTS['redis-agent-anthropic'].record)), agentTool: 'claude-code', provider: 'anthropic', contentClasses: CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-REDIS-ANTHROPIC-2026-10-07', inForceAt: AT } },
+      { recordId: 'AGENT-PROVIDER-redis-redis-openai', version: '0.1.0-candidate.1', digest: sha(real(ACTS['redis-agent-openai'].record)), agentTool: 'codex', provider: 'openai', contentClasses: CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-REDIS-OPENAI-2026-10-07', inForceAt: AT } },
     ]);
-    expect(providerStatementGate(statements, 'anthropic', NOW)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1' });
-    expect(providerStatementGate(statements, 'openai', NOW)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1' });
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1' });
+    expect(providerStatementGate(statements, 'codex', 'openai', NOW)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1' });
+  });
+  it('consent to one tool with one provider: Codex with Anthropic, or Claude Code with OpenAI, finds no statement', async () => {
+    const statements = await sources(world(KEYS)).providerStatements.statementsFor('redis-redis');
+    expect(providerStatementGate(statements, 'codex', 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement names the operator\'s agent tool codex with the provider anthropic (AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1 names claude-code with anthropic; AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1 names codex with openai)' });
+    expect(providerStatementGate(statements, 'claude-code', 'openai', NOW)).toEqual({ state: 'absent', why: 'no per-project statement names the operator\'s agent tool claude-code with the provider openai (AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1 names claude-code with anthropic; AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1 names codex with openai)' });
   });
   it('establish only what was recorded: one act alone leaves every other source as it was', async () => {
     const d9 = sources(world(['d9-in-force']));
@@ -117,7 +122,7 @@ describe('the sitting\'s acts as gate sources, once recorded', () => {
     expect(await drawer.d9()).toEqual(notEstablished(D9_WHAT));
     const openai = await sources(world(['redis-agent-openai'])).providerStatements.statementsFor('redis-redis');
     expect(openai.map(r => r.recordId)).toEqual(['AGENT-PROVIDER-redis-redis-openai']);
-    expect(providerStatementGate(openai, 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement names the operator\'s agent provider anthropic' });
+    expect(providerStatementGate(openai, 'claude-code', 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement names the operator\'s agent tool claude-code with the provider anthropic' });
     expect((await sources(world(['rfc7-20-reading-in-force'])).rfc720Ruling()).state).toBe('ok');
   });
   it('state the drawer for redis-redis only', async () => {
@@ -156,6 +161,12 @@ describe('the sitting\'s acts fail closed', () => {
     write(root, ACTS['d9-in-force'].record, record);
     write(root, ACTS['d9-in-force'].file, renderDossierLocalAgentAct('d9-in-force', sha(record), DATE, INSTANT));
     expect(await sources(root).d9()).toEqual({ state: 'refused', why: `the act's artifact binds ${SECURITY}, not exactly ${SECURITY}, ${V1}` });
+    const readme = '.syzygy/governance/doctrine/README.md';
+    write(root, readme, real(readme));
+    const other = real(ACTS['d9-in-force'].record).replace(/^\| `\.syzygy\/governance\/doctrine\/v1\.md` \| `[0-9a-f]{64}` \|$/m, `| \`${readme}\` | \`${sha(real(readme))}\` |`);
+    write(root, ACTS['d9-in-force'].record, other);
+    write(root, ACTS['d9-in-force'].file, renderDossierLocalAgentAct('d9-in-force', sha(other), DATE, INSTANT));
+    expect(await sources(root).d9()).toEqual({ state: 'refused', why: `the act's artifact binds ${SECURITY}, ${readme}, not exactly ${SECURITY}, ${V1}` });
     const twice = `${record}\n| File | SHA-256 |\n|---|---|\n`;
     write(root, ACTS['d9-in-force'].record, twice);
     write(root, ACTS['d9-in-force'].file, renderDossierLocalAgentAct('d9-in-force', sha(twice), DATE, INSTANT));
@@ -170,7 +181,7 @@ describe('the sitting\'s acts fail closed', () => {
     expect(await s.projectInput.drawerFor('redis-redis')).toEqual({ stated: false, why: `the project-input statement for this subject is not in force: the bytes of ${ACTS['redis-no-evidence-drawer'].record} differ from the act's argument` });
     const statements = await s.providerStatements.statementsFor('redis-redis');
     expect(statements.map(r => [r.recordId, r.act])).toEqual([['AGENT-PROVIDER-redis-redis-anthropic', null], ['AGENT-PROVIDER-redis-redis-openai', null]]);
-    expect(providerStatementGate(statements, 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement naming anthropic is in force: AGENT-PROVIDER-redis-redis-anthropic@unestablished has no owner act binding its bytes' });
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW)).toEqual({ state: 'absent', why: 'no per-project statement naming the agent tool claude-code with the provider anthropic is in force: AGENT-PROVIDER-redis-redis-anthropic@unestablished has no owner act binding its bytes' });
   });
   it('refuse an act another decisions file names: a withdrawal in a form the reader does not define', async () => {
     const root = world(KEYS, true);
@@ -201,6 +212,8 @@ describe('the sitting\'s acts fail closed', () => {
     ['another provider', (t: string) => t.replace('agent-provider:anthropic)`', 'agent-provider:openai)`')],
     ['another repository', (t: string) => t.replace('repository:redis-redis, agent-provider', 'repository:redis-fork, agent-provider')],
     ['another record id', (t: string) => t.replace('`AGENT-PROVIDER-redis-redis-anthropic`', '`AGENT-PROVIDER-redis-redis-openai`')],
+    ['another agent tool', (t: string) => t.replace('Agent tool: Claude Code, run by', 'Agent tool: Codex, run by')],
+    ['a second agent tool line', (t: string) => t.replace('Agent tool: Claude Code, run by', 'Agent tool: Claude Code, run by the operator\n\nAgent tool: Codex, run by')],
     ['no record version', (t: string) => t.replace(/^Record version: .*\n/m, '')],
   ])('carry no act for a statement whose record names %s, even under an act', async (_name, mutate) => {
     const root = world([]);

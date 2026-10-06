@@ -121,7 +121,7 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
   const governed = governedSubject(await ports.sources.projectInput.drawerFor(repositoryId), paths);
   let providerStatement: string | null = null;
   if (governed.statementRequired) {
-    const statement = providerStatementGate(await ports.sources.providerStatements.statementsFor(repositoryId), config.config.agentProvider, ports.now());
+    const statement = providerStatementGate(await ports.sources.providerStatements.statementsFor(repositoryId), config.config.agentTool, config.config.agentProvider, ports.now());
     if (statement.state !== 'ok') {
       return refuse('statement', `the subject is ${governed.kind} and the per-project statement is missing: ${statement.why}`, { governed });
     }
