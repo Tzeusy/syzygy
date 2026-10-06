@@ -209,7 +209,7 @@ export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object
     title: 'no kernel evidence drawer for redis/redis', type: 'state-project-input', artifact: 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md',
     scope: 'the drawer half of REQ-polaris-generation-033\'s governed predicate for this one repository',
     effect: 'The record is the owner\'s statement, in the admitted project input, that no kernel evidence drawer exists for (`project:syzygy`, `repository:redis-redis`). With the pinned tree holding no `openspec/**` and no `.syzygy/` path, the subject is non-governed under REQ-polaris-generation-033 and a brief needs no agent-provider statement.',
-  }, { stems: ['no-evidence-drawer-redis-redis'], fieldStems: ['(project:syzygy, repository:redis-redis)'] }),
+  }, { fieldStems: ['(project:syzygy, repository:redis-redis)'] }),
 });
 /** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the tool (its run-configuration id and
  * the name its record's `Agent tool:` line opens with) and the provider it consents to. A statement's record says it is withdrawn by
