@@ -8,7 +8,8 @@ import { evaluateDossier, parseDossierManifest, scanDossierPage } from '@syzygy/
 import { issueBrief } from './brief.js';
 import { checkDraft, type CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
-import { NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { checkInventory } from './inventory.js';
 import { NO_RENDERER, renderRun, type DossierRenderer, type DossierRendererInput, type RenderDeps } from './render.js';
 import { reviewCheck, reviewPacket } from './review.js';
@@ -88,13 +89,14 @@ const RULING_ABSENT: GateState = { state: 'absent', why: 'no owner-act record bi
 const sources = (ruling: GateState = { state: 'ok', record: 'RFC7-20-RULING-FIXTURE' }): GateSources => ({
   recordsRoot: REAL_ROOT,
   repositoryIdsFor: async () => ['redis-redis'],
-  consentedRevisionsFor: async () => [],
+  consentedRevisionsFor: async () => [{ label: 'fixture', commitId: commit }],
   observationConsentFor: async (_id, revision) => (revision === commit ? { satisfied: true, record: 'PUBLIC-OBS-FIXTURE@1' } : { satisfied: false, why: 'the consent does not name it' }),
   registryEntry: async () => OK,
   screeningPolicy: async () => OK,
   d9: async () => OK,
   rfc720Ruling: async () => ruling,
-  projectInput: NO_PROJECT_INPUT,
+  // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
@@ -365,9 +367,17 @@ describe('render', () => {
   it('refuses when an object at the pinned revision can no longer be read, and writes nothing', async () => {
     const run = await prepared(draft(), false);
     const clone = JSON.parse(fs.readFileSync(path.join(run, 'run.json'), 'utf8')).subject.clone.path as string;
-    fs.rmSync(path.join(clone, '.git', 'objects'), { recursive: true, force: true });
-    fs.mkdirSync(path.join(clone, '.git', 'objects'));
-    expect(await renderRun(run, renderDeps())).toMatchObject({ ok: false, refusal: { stage: 'object-read' } });
+    const empty = (): void => { fs.rmSync(path.join(clone, '.git', 'objects'), { recursive: true, force: true }); fs.mkdirSync(path.join(clone, '.git', 'objects')); };
+    // Emptied after the step guard listed the pinned tree: the render's own reads refuse.
+    let calls = 0;
+    const openReader = (options: PinnedObjectReaderOptions): PinnedObjectReader => { if (++calls === 2) empty(); return openPinnedObjectReader(options); };
+    expect(await renderRun(run, renderDeps({ openReader }))).toMatchObject({ ok: false, refusal: { stage: 'object-read', objectRead: { reason: 'object-missing' } } });
+    expect(calls).toBe(2);
+    expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
+    // Emptied before: the step guard cannot list the tree and refuses first.
+    const refused = await renderRun(run, renderDeps());
+    expect(refused).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
+    expect(!refused.ok && refused.refusal.refusals?.map((r) => r.code)).toEqual(['listing']);
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
   });
 
@@ -389,6 +399,47 @@ describe('render', () => {
     if (!first.ok || !second.ok) throw new Error('render refused');
     expect([first.report.site, second.report.site]).toEqual([path.join(run, 'site', '0'), path.join(run, 'site', '1')]);
     expect(fs.readdirSync(path.join(run, 'site')).sort()).toEqual(['0', '1']);
+  });
+
+  it('discloses the consent record and label the live consent gives the pinned revision at this render', async () => {
+    const run = await prepared(draft(), false);
+    const text = async (over: Partial<GateSources>): Promise<string> => {
+      const result = await renderRun(run, renderDeps({ sources: { ...sources(), ...over } }));
+      if (!result.ok) throw new Error(result.refusal.reason);
+      const machine = JSON.parse(readSite(result.report.site).get('machine.json')!);
+      return (machine.disclosure as { id: string; text: string }[]).find((item) => item.id === 'pinned-revision-verified')!.text;
+    };
+    expect(await text({})).toBe('At this render Syzygy verified again that the in-force observation consent PUBLIC-OBS-FIXTURE@1 names the pinned revision as fixture, and that the source-acquisition registry entry and the screening policy are in force.');
+    expect(await text({
+      consentedRevisionsFor: async () => [{ label: 'fixture', commitId: commit }, { label: 'v9', commitId: commit }],
+      observationConsentFor: async () => ({ satisfied: true, record: 'PUBLIC-OBS-FIXTURE@2' }),
+    })).toBe('At this render Syzygy verified again that the in-force observation consent PUBLIC-OBS-FIXTURE@2 names the pinned revision, under more than one label, and that the source-acquisition registry entry and the screening policy are in force.');
+  });
+
+  it.each([
+    ['the consent stops naming the pinned revision', { observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }) }, ['revision-unnamed']],
+    ['the project input now records a drawer', { projectInput: { drawerFor: async () => ({ stated: true, drawer: 'present', record: 'PROJECT-INPUT-FIXTURE@2' }) } }, ['governed-changed', 'statement']],
+  ] as [string, Partial<GateSources>, string[]][])('refuses before it renders when %s, with the step guard\'s codes, and writes no site (syzygy-qkea.23)', async (_name, over, codes) => {
+    const run = await prepared(draft(), false);
+    const result = await renderRun(run, renderDeps({ sources: { ...sources(), ...over } }));
+    expect(result).toMatchObject({ ok: false, refusal: { command: 'render', stage: 'reverify' } });
+    expect(!result.ok && result.refusal.refusals?.map((r) => r.code)).toEqual(codes);
+    expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
+  });
+
+  it('lists the pinned tree with the object reader the CLI is given', async () => {
+    const run = await prepared(draft(), false);
+    const opened: string[] = [];
+    const openReader = (options: PinnedObjectReaderOptions) => {
+      opened.push(options.gitDir);
+      return { listTree: async () => [{ path: 'openspec/specs/x.md' }] } as unknown as PinnedObjectReader;
+    };
+    const out: string[] = [];
+    const io = { stdout: (text: string) => { out.push(text); }, stderr: () => {} };
+    expect(await runDossierCli(['render', run, '--json'], io, { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, renderer: renderDossier, openReader })).toBe(1);
+    expect(JSON.parse(out.join(''))).toMatchObject({ command: 'render', stage: 'reverify', refusals: [{ code: 'governed-changed' }, { code: 'statement' }] });
+    expect(opened.length).toBe(1);
+    expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
   });
 
   it('is the `render` command of the CLI, which refuses when the composition root injects no renderer', async () => {

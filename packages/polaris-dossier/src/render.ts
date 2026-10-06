@@ -15,6 +15,7 @@ import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader } from './git-object-reader.js';
 import { errno, logStep, openRun, readRecord, type OpenedRun } from './inventory.js';
 import { latestPassedDraft, reviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
+import type { ReverifyRefusal } from './reverify.js';
 import { NO_WORK_ITEM_REASON } from './run-record.js';
 import { loadDossierScreen, type DossierScreen, type ScreenExclusion } from './screen.js';
 import { RUN_LAYOUT } from './state-directory.js';
@@ -63,6 +64,8 @@ export interface RenderRefusal {
   readonly stage: RenderStage;
   readonly reason: string;
   readonly reasons?: readonly string[];
+  /** The step guard's refusals with their machine codes, when the guard refused. */
+  readonly refusals?: readonly ReverifyRefusal[];
   readonly objectRead?: ReturnType<GitObjectReadRefusal['toJSON']>;
   readonly disclosures: readonly string[];
 }
@@ -110,8 +113,8 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
     return { ok: false, refusal: { command: 'render', outcome: 'refused', stage, reason, ...extra, disclosures: DISCLOSURES } };
   };
   if (deps.renderer === undefined) return refuse('renderer', NO_RENDERER);
-  const opened = await openRun(runDir, deps.sources, now, 'nothing is rendered');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons === undefined ? {} : { reasons: opened.reasons });
+  const opened = await openRun(runDir, deps.sources, now, 'nothing is rendered', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, { ...(opened.reasons ? { reasons: opened.reasons } : {}), ...(opened.refusals ? { refusals: opened.refusals } : {}) });
   const { run, subject, declared } = opened;
   logRun = run;
   const pinned = subject.pinnedRevision.commit;
@@ -485,7 +488,7 @@ function disclosureItems(inputs: {
     { id: 'reported-commands', text: commands.length === 0 ? 'The agent reports building or running nothing.' : `The agent reports running ${commands.length} command(s), whether or not a claim rests on them: ${commands.join('; ')}. This is its own report, not complete and not observed.`, label: 'Inferred' },
     { id: 'no-provider-call', text: 'Syzygy made no provider call and transmitted no project content.', label: null },
     { id: 'pinned-revision', text: `Pinned revision ${subject.pinnedRevision.commit} of ${subject.repository.url}; which consented revision the run was pinned to rests on the stored run record.`, label: 'Inferred' },
-    { id: 'pinned-revision-verified', text: 'At this render Syzygy verified again that the in-force observation consent names the pinned revision, and that the source-acquisition registry entry and the screening policy are in force.', label: 'Observed' },
+    { id: 'pinned-revision-verified', text: `At this render Syzygy verified again that the in-force observation consent ${opened.revision.consentRecord} names the pinned revision${opened.revision.label === null ? ', under more than one label' : ` as ${opened.revision.label}`}, and that the source-acquisition registry entry and the screening policy are in force.`, label: 'Observed' },
     { id: 'quotations', text: `Each of the ${quotationCount} quotation(s) shown was located by Syzygy at this render in the blob it read at the pinned revision, the object identifiers recomputed from the bytes read; never the agent's copy or a stored byte range.`, label: 'Observed' },
     { id: 'stored-records', text: 'Every value shown from Syzygy\'s stored records rather than re-derived at this render is Inferred: the repair-cycle count, the instants of earlier steps, the run record\'s history, the pinned revision chosen, the brief and the execution rule it carried, the execution choice and who entered it, the per-project statement cited, session identifiers and launch forms, and which objects earlier steps read.', label: 'Inferred' },
     { id: 'records-within-reach', text: `The records the gates read and the run directory lie within the agent sessions' write reach: ${RECORDS_WITHIN_REACH}.`, label: null },
