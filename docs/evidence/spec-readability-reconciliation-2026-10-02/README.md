@@ -372,3 +372,25 @@ commit by `--regenerate`, never by hand.
   method: not run [Unknown].
 - **Results** [Observed, `--check` at the recording commit]: R1 to R5 and
   R7 pass; R6 reports the two PWB pins of §10, unchanged.
+
+## 12. The dossier local-agent v1.1 sign-off — 2026-10-07
+
+The first signed successor of a Polaris addition, re-derived in the
+sign-off's recording commit by `--regenerate`, never by hand.
+
+- **The outcome** [Observed]: the owner signed off
+  `polaris-dossier-local-agent-mode` v1.1, a version-tagged sign-off.
+  Record: `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`.
+  Its builder applied the v1.1 patches to the signed v1.0 bytes of the
+  change's `spec.md`, `design.md` and `proposal.md`, with the options the
+  record names. REQ-polaris-generation-033 and 034 are amended in place;
+  no identifier is added or retired.
+- **What the checker does** [Observed]: as §11. R1 checks the v1.1 record
+  beside v1.0's; R4 requires the regenerated `GOVERNING-DEPENDENCIES.md`
+  (RFC5-12 added to 033's warrants) to equal its warrants; R5 requires the
+  `openspec/README.md` row to cite the v1.1 record.
+- **Figures**: 033 gains scenarios; the populations at that commit and
+  since are [`census.json`](census.json) (§2). CAP1, POC and PWB are
+  unchanged. Third method: not run [Unknown].
+- **Results** [Observed, `--check` at the recording commit]: R1 to R5 and
+  R7 pass; R6 reports the two PWB pins of §10, unchanged.

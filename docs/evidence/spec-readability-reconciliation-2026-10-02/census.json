@@ -558,7 +558,7 @@
     },
     "POLARIS": {
       "requirements": 35,
-      "scenarios": 227,
+      "scenarios": 232,
       "members": {
         "REQ-polaris-generation-001": {
           "name": "Admitted project input",
@@ -918,7 +918,12 @@
             "Execution permission stays with the authoring session",
             "Adapter credential readable",
             "Execution permitted under the amendment",
+            "Permitting brief without the host and attendance declaration",
+            "Consent or policy record without its owner act",
+            "D9 record without its owner act",
+            "RFC7-20 reading record without its owner act",
             "Every reported command disclosed",
+            "Reported command outside the named scope",
             "Mode disclosed on every page",
             "Operator-computed draft admitted under the owner's reading",
             "Provider-mode draft keeps the adopted rule",
