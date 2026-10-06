@@ -1,0 +1,157 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S10 slice (syzygy-qkea.11): close, operator-declared usage and the no-egress proof (REQ-polaris-generation-033, scenarios \"Agent usage is not observed\" and \"No provider call and no egress record\"; tasks \"Prove no provider call and no transmission\" and \"Limits\"). Usage: a zero figure accepted (U1), undeclared usage recorded as a declared figure (U2), declared usage labelled Observed (U3). Close: a second close accepted (C1), a close that fails re-verification of the pinned revision proceeding (C2), the adapter-credential check skipped at close (C3), the reported commands copied unscreened (R1), the brief body copied into the record (R2), the record overwritten rather than written once (R3). Status: undeclared usage shown as zero (S1), the record ignored (S2). No egress: close sending one loopback datagram (E1), the capture predicate blind to Internet-family sockets (E2). No credential: close writing the environment, which holds sentinel credentials, into the run directory (K1). Not authority.",
+  "measuredOn": {
+    "commit": "7ce7c500c329b944ee6a22bccee1e91c5987b822",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/close.ts",
+        "sha256": "714272c04384dc62c6206ee1bdb39cdb572f8142d67f2c839db183e82db0b7d8"
+      },
+      {
+        "path": "packages/polaris-dossier/src/status.ts",
+        "sha256": "bdc0bf19243c85a79d7426f01bce68e5cebf241ded623fe2f45e9a1cdf209a88"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "138f94bc47ce04d35e212b72d84bd95e918b69d609e19a9e002af0f4a5390be7"
+      },
+      {
+        "path": "packages/polaris-dossier/src/close.test.ts",
+        "sha256": "a59a31a858f15f30e1af546b8d3a1ce5595d074d9c1aeeaea30a31249e8cdd2d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/no-egress.test.ts",
+        "sha256": "0a4c86f7e86d85e2d29bbdc90f397e4644fb64d250ab6ad2afb94630b68d8b23"
+      },
+      {
+        "path": "packages/polaris-dossier/src/full-run.testkit.ts",
+        "sha256": "12fe0e677bc3d816e5aa8a778d24376331b2916c15595e5bbaef10e326a0414b"
+      },
+      {
+        "path": "packages/polaris-dossier/test-support/no-egress-driver.ts",
+        "sha256": "438c9d051c74609fa90990e1c7f74bf41d6064cf7bb1ca7780d71365e87bea19"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S10 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero. The no-egress test runs under strace on the measuring host (strace present), so E1 and E2 were judged with the capture active.",
+  "history": "A first run at an earlier commit of the same branch left R3 surviving: the closed-once check before it made the write-once flag reachable only by a close racing another. The test \"never overwrites a record that appears while it closes\" was added for that case, the feature commit amended, and the whole set re-run at `commit`.",
+  "command": "npx vitest run packages/polaris-dossier/src/close.test.ts packages/polaris-dossier/src/no-egress.test.ts packages/polaris-dossier/src/status.test.ts",
+  "result": {
+    "killed": 14,
+    "total": 14
+  },
+  "mutants": [
+    {
+      "id": "U1-zero-usage-accepted",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "if (!/^[1-9][0-9]*$/.test(value)",
+      "new": "if (!/^[0-9]+$/.test(value)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "U2-undeclared-usage-as-declared",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "const usage: AgentUsage = tokens === null && turns === null",
+      "new": "const usage: AgentUsage = false",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "U3-usage-labelled-observed",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "declaredBy: 'operator', label: 'Inferred',\n      basis:",
+      "new": "declaredBy: 'operator', label: 'Observed' as 'Inferred',\n      basis:",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C1-second-close-allowed",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "if (fs.existsSync(recordFile)) return refuse(",
+      "new": "if (false) return refuse(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C2-closes-without-reverify",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "if (!opened.ok) return refuse(opened.stage, opened.reason,",
+      "new": "if (!opened.ok && opened.stage === 'run') return refuse(opened.stage, opened.reason,",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "C3-no-credential-check-at-close",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "const credential = await credentialStepCheck(run, 'close', deps.probe, now);",
+      "new": "const credential: CredentialStepResult = { required: false, why: 'mutant' };",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "R1-commands-unscreened",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "command: clean(text(entry['command']) ?? '')",
+      "new": "command: text(entry['command']) ?? ''",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R2-brief-body-copied",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "    executionRule: isObj(brief) && isObj",
+      "new": "    briefBody: fs.readFileSync(path.join(run, RUN_LAYOUT.brief), 'utf8'),\n    executionRule: isObj(brief) && isObj",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R3-record-not-written-once",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "{ mode: 0o600, flag: 'wx' });\n  } catch (cause) {\n    return refuse('write', `the Execution Record",
+      "new": "{ mode: 0o600 });\n  } catch (cause) {\n    return refuse('write', `the Execution Record",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S1-status-shows-zero",
+      "file": "packages/polaris-dossier/src/status.ts",
+      "old": "if (state === 'not-recorded') return USAGE_NOT_RECORDED;",
+      "new": "if (state === 'not-recorded') return '0 tokens';",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S2-status-ignores-record",
+      "file": "packages/polaris-dossier/src/status.ts",
+      "old": "agentUsage: steps.closed ? closedUsage(",
+      "new": "agentUsage: false ? closedUsage(",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "E1-close-transmits",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "  const now = deps.now();\n  let logRun",
+      "new": "  const now = deps.now();\n  await new Promise<void>((resolve) => { void import('node:dgram').then(({ createSocket }) => { const s = createSocket('udp4'); s.send('x', 9, '127.0.0.1', () => { s.close(); resolve(); }); }); });\n  let logRun",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "E2-capture-blind-to-inet",
+      "file": "packages/polaris-dossier/src/no-egress.test.ts",
+      "old": "const INTERNET_FAMILY = /\\bAF_INET6?\\b/u;",
+      "new": "const INTERNET_FAMILY = /\\bAF_NEVER\\b/u;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "K1-close-writes-environment",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "    const env = ports.env ?? process.env;\n    const result = await closeRun(",
+      "new": "    const env = ports.env ?? process.env;\n    fs.writeFileSync(`${options.positional[0]}/environment.json`, JSON.stringify(env));\n    const result = await closeRun(",
+      "outcome": "killed",
+      "failedTests": 1
+    }
+  ]
+}
