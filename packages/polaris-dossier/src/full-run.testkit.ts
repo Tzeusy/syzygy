@@ -96,7 +96,8 @@ export const draft = (commit: string, plantSecret = false): Doc => ({
   clarifications: [],
   executions: [
     { id: 'x-1', command: 'git log --oneline -1', workingDirectory: 'the clone', purpose: 'Find the pinned commit.' },
-    ...(plantSecret ? [{ id: 'x-2', command: `curl -H 'Authorization: token ${PLANTED_SECRET}' https://api.github.com/user`, workingDirectory: 'the clone', purpose: 'A command whose text carries a token.' }] : []),
+    ...(plantSecret ? [{ id: 'x-2', command: `curl -H 'Authorization: token ${PLANTED_SECRET}' https://api.github.com/user`, workingDirectory: 'the clone', purpose: 'A command whose text carries a token.' },
+      { id: 'x-3', command: 'ls', workingDirectory: `/tmp/${PLANTED_SECRET}`, purpose: 'A command whose working directory carries a token.' }] : []),
   ],
 });
 const inventory = (commit: string): Doc => ({

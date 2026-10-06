@@ -178,7 +178,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const flag = rest.find((arg) => arg.startsWith('-'));
     if (flag !== undefined) return usageError(`unknown option for status: ${flag}`);
     if (rest.length !== 1) return usageError('status takes exactly one argument, the run directory');
-    const result = runStatus(rest[0]!);
+    const result = runStatus(rest[0]!, now);
     if (!result.ok) return refused({ command: 'status', outcome: 'refused', reason: result.reason, ...(result.refusals ? { refusals: result.refusals } : {}) });
     return report(result.report, EXIT.clean);
   }

@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { runDossierCli } from './cli.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { runStatus } from './status.js';
@@ -74,6 +75,7 @@ describe('status (REQ-polaris-generation-033)', () => {
         deadline: 'PT3H; not started (no brief recorded)',
         agentUsage: 'not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed',
       },
+      executionRecord: 'not written: the run is not closed',
       openFindings: 'not recorded',
       reviewsStillRequired: ['inventory', 'fidelity review', 'rendered-design review'],
       unrecognizedEntries: [],
@@ -97,8 +99,38 @@ describe('status (REQ-polaris-generation-033)', () => {
     });
     expect(result.ok && result.report.state).toBe('drafting');
     expect(result.ok && result.report.limitsSpent.repairCycles).toBe('1 checked revisions recorded of 2 repair cycles declared');
-    expect(result.ok && result.report.limitsSpent.deadline).toBe('PT3H from the brief; elapsed time not recorded');
+    expect(result.ok && result.report.limitsSpent.deadline).toBe('PT3H from the brief; its end cannot be measured (the run holds no readable brief.json: no brief was issued, so the deadline clock has not started and no step is checked)');
     expect(result.ok && result.report.unrecognizedEntries).toEqual(['notes.txt']);
+  });
+
+  it('says why a run whose deadline passed before close has no Execution Record, and why its usage is not recorded', () => {
+    fs.writeFileSync(path.join(runDir, 'brief.md'), '# brief\n');
+    fs.writeFileSync(path.join(runDir, 'brief.json'), JSON.stringify({ pinnedRevision: SUBJECT.pinnedRevision.commit, issuedAt: '2026-10-07T10:00:00.000Z' }));
+    const at = (instant: string) => runStatus(runDir, () => Date.parse(instant));
+    const before = at('2026-10-07T12:59:59.999Z');
+    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\'s clock; elapsed time not recorded');
+    expect(before.ok && before.report.limitsSpent.agentUsage).toBe('not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed');
+    expect(before.ok && before.report.executionRecord).toBe('not written: the run is not closed');
+    const after = at('2026-10-07T13:00:00.000Z');
+    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\'s clock; elapsed time not recorded');
+    expect(after.ok && after.report.limitsSpent.agentUsage).toBe('not recorded; the deadline passed before the run was closed, so no Execution Record will carry it, and Syzygy cannot observe the agent sessions\' usage');
+    expect(after.ok && after.report.executionRecord).toBe('not written, and it will not be: the deadline passed before the run was closed, and close, like every step, refuses after it; the agent usage is therefore not recorded');
+    // A closed run's record exists whatever the clock says.
+    fs.writeFileSync(path.join(runDir, 'record.json'), JSON.stringify({ agentUsage: { state: 'not-recorded' } }));
+    const closed = at('2026-10-08T00:00:00.000Z');
+    expect(closed.ok && closed.report.executionRecord).toBe('written at close: record.json');
+  });
+
+  it('measures the deadline on the CLI\'s clock', async () => {
+    fs.writeFileSync(path.join(runDir, 'brief.md'), '# brief\n');
+    fs.writeFileSync(path.join(runDir, 'brief.json'), JSON.stringify({ pinnedRevision: SUBJECT.pinnedRevision.commit, issuedAt: '2026-10-07T10:00:00.000Z' }));
+    const status = async (instant: string): Promise<string> => {
+      let stdout = '';
+      expect(await runDossierCli(['status', runDir, '--json'], { stdout: (text) => { stdout += text; }, stderr: () => {} }, { now: () => Date.parse(instant) })).toBe(0);
+      return JSON.parse(stdout).executionRecord;
+    };
+    expect(await status('2026-10-07T12:00:00.000Z')).toBe('not written: the run is not closed');
+    expect(await status('2026-10-07T14:00:00.000Z')).toMatch(/^not written, and it will not be: the deadline passed/u);
   });
 
   it.each([

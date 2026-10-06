@@ -120,7 +120,7 @@ export async function closeRun(runDir: string, request: CloseRequest, deps: Clos
   const credential = await credentialStepCheck(run, 'close', deps.probe, now);
   const screenLoad = await (deps.loadScreen ?? (() => loadDossierScreen(deps.sources.recordsRoot, now)))();
   if (!screenLoad.ok) return refuse('screen', screenLoad.why);
-  const clean = (value: string): string => (screenLoad.screen.screenBody(value) === 'secret-detector-match' ? WITHHELD_TEXT : value);
+  const secret = (value: string): boolean => screenLoad.screen.screenBody(value) === 'secret-detector-match';
   const ruling = await deps.sources.rfc720Ruling();
 
   const brief = readRecord(path.join(run, RUN_LAYOUT.briefRecord));
@@ -141,7 +141,7 @@ export async function closeRun(runDir: string, request: CloseRequest, deps: Clos
       ? { issuedAt: text(brief['issuedAt']) ?? null, files: brief['files'] ?? null, label: 'Inferred' }
       : { issuedAt: null, why: `${RUN_LAYOUT.briefRecord} cannot be read`, label: 'Unknown' },
     executionRule: isObj(brief) && isObj(brief['executionRule']) ? { ...brief['executionRule'], label: 'Inferred' } : { why: `${RUN_LAYOUT.briefRecord} names no execution rule`, label: 'Unknown' },
-    reportedCommands: reportedCommands(run, clean),
+    reportedCommands: reportedCommands(run, secret),
     agentUsage: usage,
     steps: stepInstants(run),
     credential: { atClose: credential, breaches: breachLog(run), ...(credential.required ? { disclosure: CREDENTIAL_CHECK_DISCLOSURE } : {}) },
@@ -174,22 +174,31 @@ export async function closeRun(runDir: string, request: CloseRequest, deps: Clos
   };
 }
 
-/** The commands the latest passed draft revision reports, each screened: the agent's own report, Inferred, never complete. */
-function reportedCommands(run: string, clean: (value: string) => string): Readonly<Record<string, unknown>> {
+/** The commands the latest passed draft revision reports, each screened by the secret detectors that screen every other carried text:
+ * the agent's own report, Inferred, never complete. A command any of whose fields a detector matches is withheld whole and stays
+ * counted, by the digest of what was reported. */
+function reportedCommands(run: string, secret: (value: string) => boolean): Readonly<Record<string, unknown>> {
   const latest = latestPassedDraft(run);
   if (!latest.ok) return { label: 'Unknown', why: `the agent's reported commands are not recorded: ${latest.reason}` };
   let doc: unknown;
   try { doc = parseBoundedJson(new TextDecoder('utf-8', { fatal: true }).decode(latest.bytes), { maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 }); } catch { doc = undefined; }
   if (!isObj(doc)) return { label: 'Unknown', why: `draft revision ${latest.revision} is not one bounded JSON object` };
   const entries = (Array.isArray(doc['executions']) ? doc['executions'] : []).filter(isObj);
+  const commands = entries.map((entry) => {
+    const id = text(entry['id']) ?? null, command = text(entry['command']) ?? '', workingDirectory = text(entry['workingDirectory']) ?? '';
+    return [id ?? '', command, workingDirectory].some(secret)
+      ? { withheld: WITHHELD_TEXT, sha256: createHash('sha256').update(JSON.stringify([id, command, workingDirectory])).digest('hex') }
+      : { id, command, workingDirectory };
+  });
   return {
     draftRevision: latest.revision,
     reportedBy: 'the authoring agent',
     label: 'Inferred',
     basis: 'the agent\'s own report in its latest passed draft revision; Syzygy cannot observe what the agent ran, ran nothing itself, and does not present the list as complete',
-    commands: entries.map((entry) => ({
-      id: text(entry['id']) ?? null, command: clean(text(entry['command']) ?? ''), workingDirectory: clean(text(entry['workingDirectory']) ?? ''),
-    })),
+    count: commands.length,
+    withheld: commands.filter((command) => 'withheld' in command).length,
+    withheldDigest: 'sha256 of the JSON array [id, command, workingDirectory] as the agent reported them',
+    commands,
   };
 }
 

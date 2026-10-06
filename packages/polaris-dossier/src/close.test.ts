@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
@@ -122,10 +123,14 @@ describe('close (S10)', () => {
     const { run } = await fullRun({ plantSecret: true });
     const text = fs.readFileSync(path.join(run, 'record.json'), 'utf8');
     const record = JSON.parse(text);
-    expect(record.reportedCommands).toMatchObject({ draftRevision: 0, reportedBy: 'the authoring agent', label: 'Inferred' });
+    expect(record.reportedCommands).toMatchObject({ draftRevision: 0, reportedBy: 'the authoring agent', label: 'Inferred', count: 3, withheld: 2 });
+    // A withheld command stays counted, by the digest of what the agent reported, computed here from the fixture's own literals.
+    const digest = (...fields: string[]): string => createHash('sha256').update(JSON.stringify(fields)).digest('hex');
+    const WITHHELD = '[withheld: a secret detector matches this text]';
     expect(record.reportedCommands.commands).toEqual([
       { id: 'x-1', command: 'git log --oneline -1', workingDirectory: 'the clone' },
-      { id: 'x-2', command: '[withheld: a secret detector matches this text]', workingDirectory: 'the clone' },
+      { withheld: WITHHELD, sha256: digest('x-2', `curl -H 'Authorization: token ${PLANTED_SECRET}' https://api.github.com/user`, 'the clone') },
+      { withheld: WITHHELD, sha256: digest('x-3', 'ls', `/tmp/${PLANTED_SECRET}`) },
     ]);
     expect(text).not.toContain(PLANTED_SECRET);
     // No body of a prompt, brief or packet Syzygy wrote: no line of eight words or more from any of them appears in the record, except

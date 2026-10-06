@@ -76,6 +76,8 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     // None names an Internet address family.
     expect(run.calls.length).toBeGreaterThan(0);
     expect(run.calls.filter((line) => INTERNET_FAMILY.test(line))).toEqual([]);
+    // One line in the test log saying the proof ran, and over what population.
+    console.log(`no-egress proof ran under strace: ${run.calls.length} network-class calls, traced calls from ${run.tasks} task(s), 0 Internet-family`);
   }, 240_000);
 
   it('sees the canary: one loopback datagram sent before the same run is in the capture', () => {
@@ -87,6 +89,9 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
   }, 240_000);
 });
 
+// Under CI the proof is required: node-ci installs strace, so its absence there is a failure, never a skip.
+const IN_CI = process.env['CI'] === 'true';
 describe.skipIf(HAVE_STRACE)('no provider call and no transmission (S10), without strace', () => {
-  it.skip('is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed', () => {});
+  if (IN_CI) it('is required under CI, where strace is installed: its absence fails the proof', () => { expect.fail('strace is unavailable under CI=true, so the no-egress proof did not run'); });
+  else it.skip('is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed', () => {});
 });

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { briefIssuedAt } from './check.js';
 import { USAGE_NOT_RECORDED } from './close.js';
 import { readRunRecord, type RecordedRunConfig } from './run-record.js';
 import { REVIEW_PACKET_DIR, REVIEW_VERDICT_FILE, REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
@@ -50,6 +51,8 @@ export interface StatusReport {
     readonly deadline: string;
     readonly agentUsage: string;
   };
+  /** Whether the run's Execution Record exists, and when it does not, why: not closed yet, or never, because the deadline passed first. */
+  readonly executionRecord: string;
   readonly openFindings: string;
   readonly reviewsStillRequired: readonly string[];
   /** Entries in the run directory that no step writes. Listed, never read. */
@@ -83,7 +86,9 @@ function closedUsage(file: string): string {
   return `${NOT_RECORDED}; the Execution Record carries no usage in the form close writes`;
 }
 
-export function runStatus(runDir: string): StatusResult {
+export const NO_RECORD_DEADLINE_PASSED = 'not written, and it will not be: the deadline passed before the run was closed, and close, like every step, refuses after it; the agent usage is therefore not recorded';
+
+export function runStatus(runDir: string, now: () => number = Date.now): StatusResult {
   const run = path.resolve(runDir);
   let stats: fs.Stats;
   try {
@@ -131,6 +136,13 @@ export function runStatus(runDir: string): StatusResult {
           : steps.brief === 'recorded' ? 'briefed' : 'configured';
 
   const declared = record.record.declared;
+  // The deadline is measured as every step measures it: from the brief record's issue instant, on Syzygy's clock now.
+  const issued = steps.brief === 'recorded' ? briefIssuedAt(run, record.record.subject.pinnedRevision.commit, 'step') : undefined;
+  const endsAt = typeof issued === 'number' ? issued + declared.deadline.seconds * 1000 : undefined;
+  const passed = endsAt !== undefined && now() >= endsAt;
+  const deadline = steps.brief !== 'recorded' ? `${declared.deadline.declared}; not started (no brief recorded)`
+    : endsAt === undefined ? `${declared.deadline.declared} from the brief; its end cannot be measured (${issued as string})`
+      : `${declared.deadline.declared} from the brief, ${passed ? 'ended' : 'ending'} at ${new Date(endsAt).toISOString()} on Syzygy's clock; elapsed time ${NOT_RECORDED}`;
   const values: Record<string, string | number | boolean> = {
     operator: declared.operator, agentTool: declared.agentTool, agentToolVersion: declared.agentToolVersion,
     agentProvider: declared.agentProvider, model: declared.model, modelVersion: declared.modelVersion ?? 'not shown by the agent tool',
@@ -156,9 +168,12 @@ export function runStatus(runDir: string): StatusResult {
       limitsSpent: {
         repairCycles: `${checkedRevisions} checked revisions recorded of ${declared.maxRepairCycles} repair cycles declared`,
         questions: `${NOT_RECORDED} of ${declared.maxQuestions} declared`,
-        deadline: steps.brief === 'recorded' ? `${declared.deadline.declared} from the brief; elapsed time ${NOT_RECORDED}` : `${declared.deadline.declared}; not started (no brief recorded)`,
-        agentUsage: steps.closed ? closedUsage(path.join(run, RUN_LAYOUT.record)) : 'not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed',
+        deadline,
+        agentUsage: steps.closed ? closedUsage(path.join(run, RUN_LAYOUT.record))
+          : passed ? `${NOT_RECORDED}; the deadline passed before the run was closed, so no Execution Record will carry it, and Syzygy cannot observe the agent sessions' usage`
+            : 'not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed',
       },
+      executionRecord: steps.closed ? `written at close: ${RUN_LAYOUT.record}` : passed ? NO_RECORD_DEADLINE_PASSED : 'not written: the run is not closed',
       openFindings: NOT_RECORDED,
       reviewsStillRequired: ['inventory', 'fidelity review', 'rendered-design review'],
       unrecognizedEntries: entries.filter((name) => !KNOWN_ENTRIES.has(name)),
