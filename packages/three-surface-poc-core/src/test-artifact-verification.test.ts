@@ -430,7 +430,12 @@ describe('the live test\'s printed command', () => {
   it('quotes the checkout, the interpreter and the test path, with a space and a quote in each path', () => {
     const text = liveTestOperatorInstructions("/tmp/my repo/it's", "/opt/py 3/bin/python'", 'tests/a b.py');
     expect(text).toContain("\n  git -C '/tmp/my repo/it'\\''s' rev-parse HEAD\n");
-    expect(text).toContain("\n  cd '/tmp/my repo/it'\\''s' && '/opt/py 3/bin/python'\\''' -m pytest 'tests/a b.py' -q --junitxml=<file>; echo \"exit $?\"\n");
+    expect(text).toContain("\n  cd -- '/tmp/my repo/it'\\''s' && '/opt/py 3/bin/python'\\''' -m pytest 'tests/a b.py' -q --junitxml=<file>; echo \"exit $?\"\n");
     expect(text).toContain('Syzygy does not run the Butlers test suite.');
+  });
+
+  // #386 round 2, note 4: a checkout path that begins with `-` is not read as an option of cd.
+  it('ends cd\'s options before a checkout path that begins with a dash', () => {
+    expect(liveTestOperatorInstructions('-repo', 'python', 'tests')).toContain("\n  cd -- '-repo' && 'python' -m pytest");
   });
 });

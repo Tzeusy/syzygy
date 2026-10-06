@@ -23,16 +23,21 @@ import { beforeAll, describe, expect, it } from 'vitest';
 // string "constructor" assembled from pieces) inside one of them is not
 // caught here (recorded as the expected survivor H15).
 //
-// A second residual is git itself (#386 round 1, finding 2 and note 4): the
-// permitted command runs programs its options and configuration name. The
-// check refuses the options that do so (`-c`, `--config-env`, `--exec-path`)
-// and any `alias.` string as literals, and any write to process.env, but
-// not an option assembled from pieces at run time (the expected survivor
-// H23). Nor can it see what git inherits: the GIT_CONFIG_* variables, PATH
-// and GIT_EXEC_PATH of the operator's environment, and the checkout's own
-// `.git/config`, which the observer's git fallback reads with arguments the
-// observer chooses (`core.fsmonitor` names a program that index-refreshing
-// commands run). Those are the operator's, not committed project content.
+// A second residual is git itself (#386 rounds 1 and 2): git is itself a
+// code-execution surface. Any git call whose subcommand, arguments,
+// options, config or target repository the closure chooses can run a shell
+// (a `core.fsmonitor` the closure configured, an `--upload-pack=` program,
+// an alias in a config file the closure wrote). The static check bounds only
+// the capture tool's one pinned call (its own source check holds it to
+// `rev-parse HEAD`). Here it refuses a few spellings, as literals: `-c`,
+// `--config-env`, `--exec-path`, any `alias.` string, any write to
+// process.env, and an `env` key on any git or bd call's options. It does
+// not enumerate git's surface. The expected survivors are H23 (an option
+// assembled from pieces at run time) and the round-2 reviewer's probes A and
+// B (H26, H27); probe D's `env` key is refused (H24). Nor can the check see what git
+// inherits: the GIT_CONFIG_* variables, PATH and GIT_EXEC_PATH of the
+// operator's environment, and the checkout's own `.git/config`. Those are
+// the operator's, not committed project content.
 //
 // The test is skipped in the default suite and runs only when an operator
 // sets SYZYGY_POC_BUTLERS_REPO; a new route has to be spelled where a
@@ -111,6 +116,10 @@ const PROCESS_MEMBERS = new Set(['env', 'stdout', 'stderr', 'argv', 'exitCode', 
  * workspace sources and does not read installed packages. */
 const ALLOWED_PACKAGES = new Set([PROCESS_MODULE, 'node:fs', 'node:path', 'node:crypto', 'node:os', 'node:url', 'vitest', 'yaml']);
 
+/** The only names the closure may import from vitest: the test functions
+ * and hooks. `vi` is not among them (#386 round 2, finding 2). */
+const VITEST_IMPORTS = new Set(['describe', 'it', 'expect', 'beforeAll', 'afterAll', 'beforeEach', 'afterEach']);
+
 interface Violation {
   readonly file: string;
   readonly reason: string;
@@ -136,6 +145,15 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
       // #386 round 1, note 3: a re-export hands the process module to an
       // importer that this rule never sees bind it.
       if (specifier === PROCESS_MODULE && ts.isExportDeclaration(node)) add('re-exports from the process module');
+      // #386 round 2, finding 2: `vi.importActual` loads any module by a
+      // run-time name, as dynamic import() does. Only the named test
+      // functions may be imported, so `vi` and its loaders cannot.
+      if (specifier === 'vitest') {
+        const clause = ts.isImportDeclaration(node) ? node.importClause : undefined;
+        const bindings = clause?.namedBindings;
+        const names = bindings !== undefined && ts.isNamedImports(bindings) ? bindings.elements.map((element) => (element.propertyName ?? element.name).text) : ['<not named>'];
+        if (clause === undefined || clause.name !== undefined || names.some((name) => !VITEST_IMPORTS.has(name))) add(`imports ${names.join(', ')} from vitest`);
+      }
     }
     // #386 round 1, finding 1: `import m = require('node:module')` names no
     // module specifier above and no `require` identifier, since the keyword
@@ -157,6 +175,19 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
         const command = node.arguments[0];
         if (command === undefined || !ts.isStringLiteral(command) || !COMMANDS.has(command.text)) {
           add(`starts ${command?.getText() ?? 'nothing'}, not a literal ${[...COMMANDS].join(' or ')}`);
+        }
+        // #386 round 2, finding 1: a call's own `env` option can point git
+        // at a configuration the closure wrote. The options must be one
+        // object literal whose keys the check reads, none of them `env`.
+        const options = node.arguments[2];
+        if (node.arguments.length > 3) add(`passes ${RUN_GIT} more than a command, its arguments and its options`);
+        if (options !== undefined && !ts.isObjectLiteralExpression(options)) add(`passes ${RUN_GIT} options other than an object literal`);
+        if (options !== undefined && ts.isObjectLiteralExpression(options)) {
+          for (const property of options.properties) {
+            const key = property.name !== undefined && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : undefined;
+            if (key === undefined) add(`passes ${RUN_GIT} an option key it cannot read`);
+            else if (key === 'env') add(`passes ${RUN_GIT} an env option`);
+          }
         }
       }
     }
@@ -276,6 +307,19 @@ describe('the live verification test, and every module it imports, runs no obser
     ["({ x: process.env.PATH } = { x: '/tmp' });", 'writes process.env'],
     ["Object.assign(process.env, { PATH: '/tmp' });", 'uses process.env other than reading one named variable'],
     ["const { PATH } = process.env;", 'uses process.env other than reading one named variable'],
+    // #386 round 2, finding 1: the reviewer's probe D, and the option shapes that would hide an env key.
+    [`${RUN_GIT}('git', ['probe'], { env: { GIT_CONFIG_GLOBAL: '/tmp/cfg' }, encoding: 'utf8' });`, `passes ${RUN_GIT} an env option`],
+    [`${RUN_GIT}('bd', ['list'], { 'env': {} });`, `passes ${RUN_GIT} an env option`],
+    [`const env = {}; ${RUN_GIT}('git', ['status'], { env });`, `passes ${RUN_GIT} an env option`],
+    [`const o = {}; ${RUN_GIT}('git', ['status'], o);`, `passes ${RUN_GIT} options other than an object literal`],
+    [`const o = {}; ${RUN_GIT}('git', ['status'], { ...o });`, `passes ${RUN_GIT} an option key it cannot read`],
+    [`${RUN_GIT}('git', ['status'], {}, {});`, `passes ${RUN_GIT} more than a command`],
+    // #386 round 2, finding 2: the reviewer's probe C, and the other forms that reach vi.
+    [`import { vi } from 'vitest';\nconst cp = await vi.importActual<{ spawnSync: (c: string, a: string[]) => unknown }>(['node:child', 'process'].join('_'));\ncp.spawnSync('touch', ['x']);`, 'imports vi from vitest'],
+    ["import { it as test, vi as v } from 'vitest';", 'imports it, vi from vitest'],
+    ["import * as vt from 'vitest';", 'imports <not named> from vitest'],
+    ["import vt from 'vitest';", 'imports <not named> from vitest'],
+    ["export { vi } from 'vitest';", 'imports <not named> from vitest'],
   ])('the tree check refuses %s', (fragment, violation) => {
     const { violations } = closure(LIVE, { [LIVE]: `${fragment}\n` });
     expect(violations.some((entry) => entry.file === LIVE && entry.reason.startsWith(violation)), JSON.stringify(violations)).toBe(true);
