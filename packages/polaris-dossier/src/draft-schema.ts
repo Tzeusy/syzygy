@@ -1,6 +1,6 @@
 import { types } from 'node:util';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { DIAGRAM_KINDS, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN } from '@syzygy/polaris-generation-core';
+import { DIAGRAM_KINDS, QUOTE_LEAD_IN, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN } from '@syzygy/polaris-generation-core';
 
 /** The local-agent draft schema (REQ-polaris-generation-034; design "The local-agent draft schema").
  *
@@ -27,7 +27,7 @@ export const CLARIFICATION_ANSWER_KINDS = Object.freeze(['free-text', 'selected-
 
 export type DraftSchema =
   | { readonly type: 'object'; readonly properties: Readonly<Record<string, DraftSchema>>; readonly required: readonly string[]; readonly additionalProperties: false }
-  | { readonly type: 'array'; readonly items: DraftSchema; readonly minItems: number; readonly maxItems: number; readonly uniqueItems?: true }
+  | { readonly type: 'array'; readonly items: DraftSchema; readonly minItems: number; readonly maxItems: number; readonly uniqueItems?: true; readonly description?: string }
   | { readonly type: 'string'; readonly minLength: number; readonly maxLength: number; readonly pattern?: string; readonly enum?: readonly string[] }
   | { readonly type: 'integer'; readonly minimum: number; readonly maximum: number }
   | { readonly oneOf: readonly DraftSchema[] }
@@ -53,11 +53,16 @@ const line: DraftSchema = { type: 'integer', minimum: 1, maximum: 10_000_000 };
 const citations = (minItems: number): DraftSchema => list(ref('citation'), minItems, 50);
 const reason = ref('unknownReason');
 
+/** The one form a quotation takes, stated in the brief and in the schema's `quotations` description alike. `check` counts only this
+ * form; quoted text without the lead-in is the agent's prose. */
+export const QUOTATION_FORM = `Write each quotation in a block's \`text\` with the lead-in and straight double quotes, exactly: ${QUOTE_LEAD_IN} "Each command runs to completion before the next one starts." The block's \`quotations\` names, in order, the citation each such quotation is taken from. Quoted text without the lead-in is your prose, not a quotation: Syzygy does not verify it and never renders it as Observed.`;
+
 /** The four claim forms. `quotations` lists, in order, the citation each `The project states: "…"` span in `text` is taken from. */
 function claimForms(extra: Record<string, DraftSchema>): DraftSchema {
+  const quotations: DraftSchema = { type: 'array', items: handle, minItems: 0, maxItems: 20, uniqueItems: true, description: QUOTATION_FORM };
   return { oneOf: [
-    object({ id: handle, label: one('inferred'), basis: one('source'), text, citations: citations(1), quotations: refs(0, 20), ...extra }),
-    object({ id: handle, label: one('inferred'), basis: one('execution'), executionIds: refs(1, 20), text, citations: citations(1), quotations: refs(0, 20), ...extra }),
+    object({ id: handle, label: one('inferred'), basis: one('source'), text, citations: citations(1), quotations, ...extra }),
+    object({ id: handle, label: one('inferred'), basis: one('execution'), executionIds: refs(1, 20), text, citations: citations(1), quotations, ...extra }),
     object({ id: handle, label: one('unknown'), reason, text, citations: citations(0), ...extra }),
     object({ id: handle, label: one('non-normative'), text, ...extra }),
   ] };

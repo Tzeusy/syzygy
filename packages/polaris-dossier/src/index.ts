@@ -2,6 +2,12 @@ export {
   BRIEF_RECORD_FORMAT, BRIEF_VERSION, DOSSIER_GUIDANCE, DOSSIER_GUIDANCE_VERSION, issueBrief, renderBrief,
   type BriefDeps, type BriefInput, type BriefRefusal, type BriefReport, type BriefResult, type BriefStage,
 } from './brief.js';
+export {
+  CHECK_RECORD_FORMAT, DEFAULT_DRAFT, DRAFT_MAX_BYTES, STEP_LOG_FORMAT, checkDraft,
+  type CheckDeps, type CheckFinding, type CheckFindingKind, type CheckRecord, type CheckRefusal, type CheckReport, type CheckRequest,
+  type CheckResult, type CheckStage, type CitedBlob, type ExcludedQuotation, type VerifiedQuotation,
+} from './check.js';
+export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';
 export {

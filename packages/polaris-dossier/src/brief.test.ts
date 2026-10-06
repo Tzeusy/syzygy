@@ -85,6 +85,14 @@ describe('brief: issued', () => {
     expect(brief).toContain(`- Pinned revision: \`${REV}\` (8.10.2)`);
     expect(brief).toContain(`- Draft schema: \`polaris-dossier-local-draft-v1\`, in \`draft.schema.json\` beside this brief (sha256 \`${sha(schema)}\`)`);
     expect(brief).toContain('Your draft names that revision in `pinnedRevision`');
+    expect(brief).toContain('Write it to `drafts/next.json` in the run directory and run `syzygy dossier check <run>`;');
+    // The one quotation form, with an example, and what quoted text without it is: the brief and the schema say the same.
+    const form = 'Write each quotation in a block\'s `text` with the lead-in and straight double quotes, exactly: The project states: "Each command runs to completion before the next one starts." The block\'s `quotations` names, in order, the citation each such quotation is taken from. Quoted text without the lead-in is your prose, not a quotation: Syzygy does not verify it and never renders it as Observed.';
+    expect(brief).toContain(`## Quotation rule\n\n${form} A quotation is one contiguous span`);
+    const defs = JSON.parse(schema).$defs;
+    for (const name of ['paragraph', 'block']) {
+      expect(defs[name].oneOf.map((arm: { properties: Record<string, { description?: string }> }) => arm.properties['quotations']?.description ?? null)).toEqual([form, form, null, null]);
+    }
     expect(JSON.parse(schema).properties.pinnedRevision.enum).toEqual([REV]);
     const record = JSON.parse(read(run, 'brief.json'));
     expect(record).toMatchObject({

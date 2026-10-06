@@ -180,6 +180,14 @@ describe('init: a run that passes every start gate', () => {
     expect(dotted.result.ok && dotted.result.report.subject.clone.path).toBe(clone);
   });
 
+  it('records the clone by its real path when the operator names it through a symbolic link', async () => {
+    const clone = cloneAt(commits.A);
+    const link = path.join(tempDir('dossier-link-'), 'via');
+    fs.symlinkSync(clone, link);
+    const { result } = await init({ clone: link });
+    expect(result.ok && result.report.subject.clone).toEqual({ path: fs.realpathSync(clone), declaredBy: 'operator', label: 'Inferred', use: 'read' });
+  });
+
   it('follows HEAD on a branch to a consented commit', async () => {
     const clone = cloneAt(commits.A);
     execFileSync('git', ['-C', clone, 'checkout', '-q', '-B', 'pinned', commits.A], { env: GIT_ENV });

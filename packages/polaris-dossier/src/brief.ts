@@ -2,9 +2,9 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, ILLUSTRATION_HEADING, OWNER_TOPICS, QUOTE_LEAD_IN, promptForStage } from '@syzygy/polaris-generation-core';
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, ILLUSTRATION_HEADING, OWNER_TOPICS, promptForStage } from '@syzygy/polaris-generation-core';
 import { readSec3 } from './doctrine-quote.js';
-import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
+import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
@@ -109,7 +109,7 @@ export function renderBrief(input: BriefInput): string {
     '',
     '## Quotation rule',
     '',
-    `A quotation is written \`${QUOTE_LEAD_IN} "…"\` in a block's text, and the block's \`quotations\` names, in order, the citation each quotation is taken from. A quotation is one contiguous span of one cited file at the pinned revision, inside the cited line range, beginning and ending on word boundaries, without elision, joining or alteration. Syzygy compares it after this normalisation, applied to the quotation and the file alike: comment leaders at line starts and a closing comment marker at a line end are dropped; markdown links and images keep only their text; character entities are decoded; markdown backslash escapes are removed; backticks are dropped; paired emphasis marks at word edges are dropped; curly quotes are straightened; an ellipsis character becomes three full stops; and each whitespace run becomes one space. Nothing else is forgiven: an ellipsis the file does not carry at that spot is an elision and fails. A quotation from a file that classification or screening excludes is not verified or rendered, and its block renders Unknown (\`excluded-content\`). Syzygy renders every verified quotation from its own read of the file, never from your copy.`,
+    `${QUOTATION_FORM} A quotation is one contiguous span of one cited file at the pinned revision, inside the cited line range, beginning and ending on word boundaries, without elision, joining or alteration. Syzygy compares it after this normalisation, applied to the quotation and the file alike: comment leaders at line starts and a closing comment marker at a line end are dropped; markdown links and images keep only their text; character entities are decoded; markdown backslash escapes are removed; backticks are dropped; paired emphasis marks at word edges are dropped; curly quotes are straightened; an ellipsis character becomes three full stops; and each whitespace run becomes one space. Nothing else is forgiven: an ellipsis the file does not carry at that spot is an elision and fails. A quotation from a file that classification or screening excludes is not verified or rendered, and its block renders Unknown (\`excluded-content\`). Syzygy renders every verified quotation from its own read of the file, never from your copy.`,
     '',
     '## Discovery',
     '',

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { issueBrief } from './brief.js';
+import { checkDraft } from './check.js';
 import { createCredentialProbe, credentialListFromEnv } from './credential-probe.js';
 import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution-choice.js';
 import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
@@ -9,6 +10,7 @@ import { initRun } from './init.js';
 import { preflight } from './preflight.js';
 import type { ReverifyOptions } from './reverify.js';
 import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
+import type { ScreenLoad } from './screen.js';
 import { runStatus } from './status.js';
 
 /** The `syzygy dossier` command family (design "Command surface").
@@ -48,6 +50,13 @@ Commands:
                       personally, never through an agent. Refused while D9 is not in
                       force, after the brief, or for another run or revision. It is
                       not an execution consent and approves no execution profile
+  check <run> [--draft <file>]
+                      re-verify the pinned revision, refuse past the deadline or the
+                      repair-cycle limit, check the draft (drafts/next.json by
+                      default) against the objects at the pinned revision, read from
+                      the object store of the clone init recorded and re-hashed,
+                      freeze it as revision N
+                      and write checks/rev-N.json; exit 1 on any finding
   status <run>        report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -71,6 +80,8 @@ export interface CliPorts {
   readonly sources?: GateSources;
   /** The object reader the step guard lists the pinned tree with; by default the re-hashing in-process reader. */
   readonly openReader?: ReverifyOptions['openReader'];
+  /** The screen `check` applies; by default the policy the act chain puts in force in this checkout. */
+  readonly loadScreen?: () => Promise<ScreenLoad>;
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
@@ -127,6 +138,18 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
       enabled: PERMITTING_ARM_ENABLED, choices: RUN_DIRECTORY_CHOICES, probe: createCredentialProbe(credentialListFromEnv(env)),
     } });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'check') {
+    const options = parseOptions(rest, ['--draft']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('check takes exactly one positional argument, the run directory');
+    const draftFile = options.values.get('--draft');
+    const env = ports.env ?? process.env;
+    const result = await checkDraft(options.positional[0]!, draftFile === undefined ? {} : { draftFile }, {
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
+    });
+    if (!result.ok) return refused(result.refusal);
+    return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
   }
   if (command === 'allow-execution') {
     const options = parseOptions(rest, ['--revision', '--declare']);
