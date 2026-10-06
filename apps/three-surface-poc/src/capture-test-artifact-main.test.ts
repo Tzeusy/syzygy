@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { MAX_JUNIT_ARTIFACT_BYTES, readTestArtifactRecordFile } from '@syzygy/three-surface-poc-core';
+import { MAX_JUNIT_ARTIFACT_BYTES, readBoundedRegularFile, readTestArtifactRecordFile } from '@syzygy/three-surface-poc-core';
 
-import { REAL_IO, readBoundedRegularFile, runCaptureTestArtifactCli, type CaptureCliIo } from './capture-test-artifact-main.js';
+import { REAL_IO, runCaptureTestArtifactCli, type CaptureCliIo } from './capture-test-artifact-main.js';
 
 // syzygy-4mbu: the tool prints the focused pytest command and ingests the
 // result; it never runs the observed project's code. Two independent
@@ -72,7 +72,7 @@ const MODULE_LITERAL = /['"](?:node:)?child_process['"]/g;
 /** Every module each checked file may import. Anything else — a worker,
  * `vm`, `module`, another core file — fails the check. */
 const ALLOWED_IMPORTS: Readonly<Record<string, readonly string[]>> = {
-  [MAIN_SOURCE]: [['node:child', 'process'].join('_'), 'node:fs', 'node:path', 'node:url', '@syzygy/three-surface-poc-core', './capture-test-artifact.js'],
+  [MAIN_SOURCE]: [['node:child', 'process'].join('_'), 'node:path', 'node:url', '@syzygy/three-surface-poc-core', './capture-test-artifact.js'],
   [MODULE_SOURCE]: ['@syzygy/three-surface-poc-core'],
   [CORE_SOURCE]: ['node:crypto', 'node:fs', 'node:path'],
 };
