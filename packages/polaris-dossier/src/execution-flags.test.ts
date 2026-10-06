@@ -51,6 +51,15 @@ describe('flagCommand', () => {
     expect(kinds({ command: 'ls', workingDirectory: `${CLONE}-other` })).toEqual(['working-directory-outside-clone']);
     expect(kinds({ command: 'ls', workingDirectory: `${CLONE}/src/../..` })).toEqual(['working-directory-outside-clone']);
     expect(kinds({ command: 'ls', workingDirectory: path.dirname(CLONE) })).toEqual(['working-directory-outside-clone']);
+    // A shared string prefix is not containment, before or after `..` is normalised.
+    expect(kinds({ command: 'ls', workingDirectory: `${CLONE}-x` })).toEqual(['working-directory-outside-clone']);
+    expect(kinds({ command: 'ls', workingDirectory: `${CLONE}-x/src` })).toEqual(['working-directory-outside-clone']);
+    expect(kinds({ command: 'ls', workingDirectory: `${CLONE}/../kestrel-x` })).toEqual(['working-directory-outside-clone']);
+    expect(kinds({ command: 'ls', workingDirectory: `${CLONE}/src/../../kestrel-x/src` })).toEqual(['working-directory-outside-clone']);
+    // `..` is normalised on both sides: a climb that comes back into the clone is inside it.
+    expect(kinds({ command: 'ls', workingDirectory: `${CLONE}/../kestrel/src` })).toEqual([]);
+    expect(flagCommand({ command: 'ls', workingDirectory: `${CLONE}/src` }, `${CLONE}/tmp/..`)).toEqual([]);
+    expect(flagCommand({ command: 'ls', workingDirectory: `${CLONE}-x` }, `${CLONE}/`).map((flag) => flag.kind)).toEqual(['working-directory-outside-clone']);
     const relative = flagCommand({ command: 'ls', workingDirectory: 'the clone' }, CLONE);
     expect(relative).toEqual([{ kind: 'working-directory-outside-clone', detail: 'the reported working directory is not an absolute path, so Syzygy cannot place it within the clone', label: 'Inferred' }]);
   });
@@ -156,6 +165,9 @@ describe('check, render and close disclose the flags beside each command and ref
 
     const machine = fs.readFileSync(path.join(site, 'machine.json'), 'utf8');
     expect(machine).toContain('Flagged reported commands: 3 of 5');
+    const scopeOwn = 'Whether a command falls within the scope of the owner\'s execution choice is the agent\'s own statement, labelled Inferred; Syzygy does not judge it.';
+    expect(machine).toContain(scopeOwn);
+    expect(checked.executionFlags.basis).toContain(scopeOwn);
 
     const record = readJson(path.join(runDir, 'record.json'));
     expect(record.reportedCommands.count).toBe(5);
