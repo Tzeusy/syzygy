@@ -1,12 +1,13 @@
 {
-  "subject": "syzygy-hjuz live test runs no observed code, reads bounded, expects report-fact",
-  "commit": "31bb1995804e680ebac836b9a412a5c9209888e5",
+  "subject": "syzygy-hjuz live test runs no observed code, reads bounded, expects report-fact; #383 round-2 constructor and computed-key rule",
+  "commit": "c4c2f921da5b727194d3018c91638e8928e008de",
   "subjectDigests": {
-    "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts": "sha256:c67956f7de4ab19a4fea2701f1b66ee70d72e01e46e790aa859b9fc177448053",
-    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": "sha256:d5b95475c5d0ea2826d86a7d828146cc591b88a3f65eb49e34747791af10a0a6",
+    "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts": "sha256:b251ae99e7d0b375b12617a03b2de8b4923e1692a7acaa1e981659e6e0edd1fd",
+    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": "sha256:1de43308be4d5f7057cc716d2044728a886a91c61e433248a2eeade568beb372",
     "apps/three-surface-poc/src/sync-child-process-guard.test.ts": "sha256:a0774fc807a836c0693829b183b11a3ec37616d2388ad9ef049a0e6b4cff4062",
     "packages/three-surface-poc-core/src/worker-change-observation.ts": "sha256:cb66a5ff0ddcb16ded19fdb3212f79906de036ea4aeb8340f591f4cfe4e585a7",
-    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:f0ee4eb0f5312e2dbd82cd85c919f048d5118f6f64ee92f3861713acb410599f"
+    "packages/three-surface-poc-core/src/authority-artifact-fields.ts": "sha256:01fc903901fc09082ce4923bf7bdcf4937b492ef93e62058be5a7c04ca87395e",
+    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:8fdd94651253959bdfc8774f283047780a91598cbd99bd4bf1192ce241d508b8"
   },
   "command": "npx vitest run packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts apps/three-surface-poc/src/sync-child-process-guard.test.ts",
   "mutants": [
@@ -25,7 +26,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -43,7 +44,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
@@ -68,7 +69,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
@@ -87,7 +88,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -105,7 +106,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -132,7 +133,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -150,7 +151,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -167,7 +168,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -184,7 +185,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -202,16 +203,82 @@
         },
         {
           "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
-          "old": "    const rawJUnitXml = readBoundedRegularFile(JUNIT);\n",
-          "new": "    const rawJUnitXml = readFileSync(JUNIT, 'utf8');\n"
+          "old": "    const rawJUnit = readBoundedRegularFile(JUNIT);\n",
+          "new": "    const rawJUnit = readFileSync(JUNIT);\n"
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader"
       ],
       "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H12-reviewer-constructor-evasion-runs-sh",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    const g = (process.stdout.constructor as unknown as { constructor: (s: string) => () => Record<string, (n: string) => Record<string, (...a: unknown[]) => unknown>> }).constructor('return this.process')();\n    g[['get', 'Builtin', 'Module'].join('')]?.(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED-HJUZ']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H13-split-constructor-key-runs-sh",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    const k = ['constr', 'uctor'].join('');\n    const s = process.stdout as unknown as Record<string, Record<string, (s: string) => () => Record<string, (n: string) => Record<string, (...a: unknown[]) => unknown>>>>;\n    const g = s[k]![k]!('return this.process')();\n    g[['get', 'Builtin', 'Module'].join('')]?.(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED-HJUZ']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H14-imported-module-reaches-prototype",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+          "old": "  if (Object.hasOwn(root, 'entries')) {\n",
+          "new": "  if (Object.prototype.hasOwnProperty.call(root, 'entries')) {\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 29,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H15-imported-module-split-constructor-key-EXPECTED-SURVIVOR",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/worker-change-observation.ts",
+          "old": "  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {",
+          "new": "  void (Object as unknown as Record<string, unknown>)[['constr', 'uctor'].join('')];\n  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {"
+        }
+      ],
+      "exit": 0,
+      "tests": 29,
+      "failed": [],
+      "killed": false,
       "shSentinelWritten": false
     },
     {
@@ -224,7 +291,7 @@
         }
       ],
       "exit": 1,
-      "tests": 19,
+      "tests": 29,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code builds an operator-reported record and expects report-fact, never Verified"
       ],
