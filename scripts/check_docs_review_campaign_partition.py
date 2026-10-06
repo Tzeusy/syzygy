@@ -293,6 +293,11 @@ CAMPAIGNS = (
         "Polaris dossier local-agent amendment gate",
         r"R-POLARIS-DOSSIER-LOCAL-AGENT-.*\.md",
     ),
+    campaign(
+        "polaris-dossier-s2-reader",
+        "Polaris dossier S2 object reader",
+        r"R-POLARIS-DOSSIER-S2-READER-.*\.md",
+    ),
 )
 
 
