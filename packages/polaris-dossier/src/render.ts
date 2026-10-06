@@ -8,8 +8,9 @@ import {
   type ProviderBlock, type ProviderDraft, type ProviderParagraph,
 } from '@syzygy/polaris-generation-core';
 import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';
-import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, type CredentialStepResult } from './credential-probe.js';
+import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { UNDERSTANDING_ITEMS } from './draft-schema.js';
+import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader } from './git-object-reader.js';
@@ -434,12 +435,17 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     })) }],
   };
   const executionList = list(doc['executions']).filter(isObj);
+  const flags = executionFlags(executionList, subject.clone.path, storedBriefArm(run));
   const executionsPage: LocalPage = {
     path: 'executions.html', title: 'Executions',
     intro: 'Every command the agent reports having run. Syzygy cannot observe what the agent ran and ran nothing itself: the list is the agent\'s own report, Inferred, and not complete or Observed.',
-    groups: [{ id: 'executions-reported', heading: 'Reported commands', note: 'Self-reported; Inferred.', empty: 'The agent reports running no command.', items: executionList.map((entry) => ({
+    groups: [{ id: 'executions-reported', heading: 'Reported commands', note: 'Self-reported; Inferred.', empty: 'The agent reports running no command.', items: executionList.map((entry, index) => ({
       id: `execution/${text(entry['id'])!}`, marking: 'inferred' as const, unknownReason: null, title: clean(text(entry['command']) ?? ''), text: clean(text(entry['purpose']) ?? ''),
-      details: [`Working directory: ${clean(text(entry['workingDirectory']) ?? '')}`], sourceIds: [],
+      details: [
+        `Working directory: ${text(entry['workingDirectory']) === undefined ? 'not reported' : clean(text(entry['workingDirectory'])!)}`,
+        ...(flags.applies ? [`Scope, as the agent states it: ${flags.commands[index]!.scope === 'not-stated' ? 'not stated' : flags.commands[index]!.scope}`] : []),
+        ...(flags.applies ? flags.commands[index]!.flags.map((flag) => `Flagged (Inferred, self-reported): ${flag.detail}`) : []),
+      ], sourceIds: [],
     })) }],
   };
   const reviewItems: LocalPageItem[] = review.counts ? [
@@ -467,7 +473,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     : { state: 'unknown', reason: 'unconsented-source-or-provider', why };
 
   const quotationCount = [...blocks.values()].reduce((n, block) => n + block.segments.filter((part) => part.kind === 'quotation').length, 0);
-  const disclosure = disclosureItems({ opened, draftLayer, executionList, quotationCount, credential, clean, run });
+  const disclosure = disclosureItems({ opened, draftLayer, executionList, flags, quotationCount, credential, clean, run });
   const reviewStatus: LocalDisclosureItem[] = [
     review.counts
       ? { id: 'review-status/fidelity', text: `Fidelity review: one counts, bound to packet ${review.packetSha256} rebuilt at this render; its verdict, ${review.verdict.readiness}, is the review session's.`, label: 'Inferred' }
@@ -505,9 +511,9 @@ const UNDERSTANDING_HEADINGS: Readonly<Record<(typeof UNDERSTANDING_ITEMS)[numbe
 /** The run disclosure REQ-polaris-generation-036 requires on every page and in the machine view. */
 function disclosureItems(inputs: {
   readonly opened: Extract<OpenedRun, { ok: true }>; readonly draftLayer: LocalDraftLayer; readonly executionList: readonly Readonly<Record<string, unknown>>[];
-  readonly quotationCount: number; readonly credential: CredentialStepResult; readonly clean: (value: string) => string; readonly run: string;
+  readonly flags: ExecutionFlags; readonly quotationCount: number; readonly credential: CredentialStepResult; readonly clean: (value: string) => string; readonly run: string;
 }): LocalDisclosureItem[] {
-  const { opened, draftLayer, executionList, quotationCount, credential, clean, run } = inputs;
+  const { opened, draftLayer, executionList, flags, quotationCount, credential, clean, run } = inputs;
   const { subject, declared } = opened;
   const brief = readRecord(path.join(run, RUN_LAYOUT.briefRecord));
   const rule = isObj(brief) && isObj(brief['executionRule']) ? brief['executionRule'] : {};
@@ -521,6 +527,7 @@ function disclosureItems(inputs: {
       ? { id: 'execution-rule', text: `The brief permitted building and running the observed project from the authoring session, under the owner's execution choice it names (who entered the choice is the operator's declaration). What that costs, as D9 states: ${isObj(rule['cost']) ? text(rule['cost']['text']) ?? '' : ''}`, label: 'Inferred' }
       : { id: 'execution-rule', text: 'The brief carried SEC-3\'s rule: no building or running of the observed project outside an explicit, opt-in execution profile, and it granted none.', label: 'Inferred' },
     { id: 'reported-commands', text: commands.length === 0 ? 'The agent reports building or running nothing.' : `The agent reports running ${commands.length} command(s), whether or not a claim rests on them: ${commands.join('; ')}. This is its own report, not complete and not observed.`, label: 'Inferred' },
+    ...(flags.applies ? [{ id: 'execution-flags', text: `Flagged reported commands: ${flags.flagged} of ${flags.commands.length}, each flag shown beside its command on the Executions page: a command without a reported working directory, with one outside the clone, or that the agent states falls outside the owner's execution choice. ${EXECUTION_FLAGS_BASIS}`, label: 'Inferred' as const }] : []),
     { id: 'no-provider-call', text: 'Syzygy made no provider call and transmitted no project content.', label: null },
     { id: 'pinned-revision', text: `Pinned revision ${subject.pinnedRevision.commit} of ${subject.repository.url}; which consented revision the run was pinned to rests on the stored run record.`, label: 'Inferred' },
     { id: 'pinned-revision-verified', text: `At this render Syzygy verified again that the in-force observation consent ${opened.revision.consentRecord} names the pinned revision${opened.revision.label === null ? ', under more than one label' : ` as ${opened.revision.label}`}, and that the source-acquisition registry entry and the screening policy are in force.`, label: 'Observed' },

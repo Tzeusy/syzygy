@@ -46,6 +46,8 @@ const SUBAGENTS = 'Work you hand to your own subagents stays part of this sessio
 const NO_LONG_LIVED = 'Start no process meant to outlive this session.';
 const STOP_EVERY = 'Before this session ends, stop every process you started, including any you left running in the background, and say in your report that you did.';
 const PERMISSION = 'You may build and run the observed project in the clone, from this authoring session only';
+const SCOPE_ASK = 'For every command you run, also give in `executions` its `workingDirectory`, the absolute path you ran it in, and its `scope`: `within-scope` when it falls within what the owner\'s execution choice names';
+const FLAGGED = 'Syzygy flags, beside the command and labelled Inferred, each one that reports no working directory, whose working directory lies outside the clone, or that you mark `outside-scope`. A flag refuses no step and hides no command';
 const SEC3_RULE = 'So: do not build or run the observed project outside an explicit, opt-in execution profile.';
 
 describe('the permitting arm is off in this build', () => {
@@ -75,6 +77,19 @@ describe('the permitting arm, enabled with fixture ports', () => {
     for (const sentence of [PERMISSION, LAPSE, SUBAGENTS, NO_LONG_LIVED, STOP_EVERY, '`choice-1`']) expect(text).toContain(sentence);
     expect(text).toContain(`\`\`\`text\n${lines(95, 101)}\n\`\`\``);
     expect(text).not.toContain(SEC3_RULE);
+  });
+
+  it('asks, for every command, its working directory and whether it falls within the choice\'s scope, and says what is flagged (v1.1, N6)', async () => {
+    const rule = await decideExecutionRule(inputs());
+    const text = executionRuleSection(rule);
+    expect(text).toContain(SCOPE_ASK);
+    expect(text).toContain(`for run \`${RUN}\` and revision \`${REV}\``);
+    expect(text).toContain(FLAGGED);
+    for (const role of ['inventory', 'review'] as const) {
+      const other = executionRuleSection(await decideExecutionRule(inputs({ role })));
+      expect(other).not.toContain(SCOPE_ASK);
+      expect(other).not.toContain('outside-scope');
+    }
   });
 
   it.each<[string, Partial<ExecutionInputs>, string]>([

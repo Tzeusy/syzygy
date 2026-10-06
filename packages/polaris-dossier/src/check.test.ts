@@ -138,7 +138,7 @@ type Draft = Record<string, any>; // eslint-disable-line @typescript-eslint/no-e
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) => ({ id, path: file, startLine, endLine });
 const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
 const valid = (): Draft => ({
-  schemaVersion: 'polaris-dossier-local-draft-v1',
+  schemaVersion: 'polaris-dossier-local-draft-v2',
   pinnedRevision: commit,
   sessionId: 'authoring-session-1',
   title: 'Kestrel',

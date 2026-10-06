@@ -63,6 +63,10 @@ export {
   type AllowExecutionStage, type StoredExecutionChoice,
 } from './execution-choice.js';
 export {
+  EXECUTION_FLAGS_BASIS, EXECUTION_SCOPES, executionFlags, flagCommand,
+  type ExecutionFlag, type ExecutionFlagKind, type ExecutionFlags, type ExecutionScope, type FlaggedCommand,
+} from './execution-flags.js';
+export {
   PERMITTING_ARM_DISABLED_REASON, PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection,
   type BriefRole, type CredentialProbe, type ExecutionChoice, type ExecutionChoiceSource, type ExecutionInputs, type ExecutionRule,
   type PermittingArm,

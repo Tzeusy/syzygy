@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core';
-import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, type CredentialStepResult } from './credential-probe.js';
+import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
+import { executionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { errno, logStep, openRun, readRecord } from './inventory.js';
@@ -141,7 +142,7 @@ export async function closeRun(runDir: string, request: CloseRequest, deps: Clos
       ? { issuedAt: text(brief['issuedAt']) ?? null, files: brief['files'] ?? null, label: 'Inferred' }
       : { issuedAt: null, why: `${RUN_LAYOUT.briefRecord} cannot be read`, label: 'Unknown' },
     executionRule: isObj(brief) && isObj(brief['executionRule']) ? { ...brief['executionRule'], label: 'Inferred' } : { why: `${RUN_LAYOUT.briefRecord} names no execution rule`, label: 'Unknown' },
-    reportedCommands: reportedCommands(run, secret),
+    reportedCommands: reportedCommands(run, subject.clone.path, secret),
     agentUsage: usage,
     steps: stepInstants(run),
     credential: { atClose: credential, breaches: breachLog(run), ...(credential.required ? { disclosure: CREDENTIAL_CHECK_DISCLOSURE } : {}) },
@@ -178,18 +179,21 @@ export async function closeRun(runDir: string, request: CloseRequest, deps: Clos
  * the agent's own report, Inferred, never complete. A command any of whose fields a detector matches is withheld whole and stays
  * counted, by its position in the report and the reason; no byte of it and no digest of it is kept, since a digest of a short secret
  * can be reversed by guessing. */
-function reportedCommands(run: string, secret: (value: string) => boolean): Readonly<Record<string, unknown>> {
+function reportedCommands(run: string, clone: string, secret: (value: string) => boolean): Readonly<Record<string, unknown>> {
   const latest = latestPassedDraft(run);
   if (!latest.ok) return { label: 'Unknown', why: `the agent's reported commands are not recorded: ${latest.reason}` };
   let doc: unknown;
   try { doc = parseBoundedJson(new TextDecoder('utf-8', { fatal: true }).decode(latest.bytes), { maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 }); } catch { doc = undefined; }
   if (!isObj(doc)) return { label: 'Unknown', why: `draft revision ${latest.revision} is not one bounded JSON object` };
   const entries = (Array.isArray(doc['executions']) ? doc['executions'] : []).filter(isObj);
+  const flags = executionFlags(entries, clone, storedBriefArm(run));
+  // A flag's detail is fixed text and a scope one of two words, so both are kept beside a withheld command without carrying its bytes.
+  const flagsOf = (index: number): Readonly<Record<string, unknown>> => (flags.applies ? { scope: flags.commands[index]!.scope, flags: flags.commands[index]!.flags } : {});
   const commands = entries.map((entry, index) => {
-    const id = text(entry['id']) ?? null, command = text(entry['command']) ?? '', workingDirectory = text(entry['workingDirectory']) ?? '';
-    return [id ?? '', command, workingDirectory].some(secret)
-      ? { position: index + 1, withheld: WITHHELD_TEXT, reason: 'secret-detector-match' }
-      : { position: index + 1, id, command, workingDirectory };
+    const id = text(entry['id']) ?? null, command = text(entry['command']) ?? '', workingDirectory = text(entry['workingDirectory']) ?? null;
+    return [id ?? '', command, workingDirectory ?? ''].some(secret)
+      ? { position: index + 1, withheld: WITHHELD_TEXT, reason: 'secret-detector-match', ...flagsOf(index) }
+      : { position: index + 1, id, command, workingDirectory, ...flagsOf(index) };
   });
   return {
     draftRevision: latest.revision,
@@ -198,6 +202,7 @@ function reportedCommands(run: string, secret: (value: string) => boolean): Read
     basis: 'the agent\'s own report in its latest passed draft revision; Syzygy cannot observe what the agent ran, ran nothing itself, and does not present the list as complete',
     count: commands.length,
     withheld: commands.filter((command) => 'withheld' in command).length,
+    executionFlags: flags.applies ? { applies: true, flagged: flags.flagged, label: flags.label, basis: flags.basis } : flags,
     commands,
   };
 }
