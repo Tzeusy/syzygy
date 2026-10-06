@@ -1,7 +1,7 @@
 # Design: the operator-agent mode and the `syzygy dossier` commands
 
 > **Candidate — binds nothing.** Explains the candidate requirements in
-> `proposed/polaris-generation/spec.md`; not adopted, and not an
+> proposed/polaris-generation/spec.md; not adopted, and not an
 > implementation. It contains no code. The command surface below is a design
 > for implementation after the owner's sign-off (direction item 5); the
 > requirements are the controlling text, and doctrine, accepted contracts,

@@ -16,7 +16,7 @@ references and the acceptance criteria.
 
 **The artifact under review.**
 
-- `openspec/changes/polaris-dossier-local-agent-mode/proposed/polaris-generation/spec.md`
+- `openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md` (installed there by the v1.0 sign-off, whose record gives the date; the reviews read it at openspec/changes/polaris-dossier-local-agent-mode/proposed/polaris-generation/spec.md)
   (the subject), and in the same change `proposal.md`, `design.md`,
   `tasks.md` and `GOVERNING-DEPENDENCIES.md`.
 - In `.syzygy/governance/contracts/candidates/polaris-dossier-local-agent-mode/`:

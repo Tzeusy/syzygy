@@ -4,7 +4,7 @@
 > `contracts/candidates/policy-candidates/SEMANTIC-DELTA-TEMPLATE.md`. An agent
 > drafted it; adoption belongs to the owner.
 
-**Artifact(s):**         `openspec/changes/polaris-dossier-local-agent-mode/proposed/polaris-generation/spec.md` (new); no existing file is edited
+**Artifact(s):**         `openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md` (new); no existing file is edited
 **Stable IDs affected:**  REQ-polaris-generation-033, 034, 035 and 036 (new). For a run in the operator-agent mode only, named text of REQ-polaris-generation-001, 002, 005, 006, 017, 018, 020, 021, 022, 030 and 031 and of the base change's `INTERFACES.md`, `OWNER-FLOW.md` and `SECURITY-CONTRACT.md` is displaced or read as quoted or named under "Current meaning"; no byte of any is edited. SEC-1's CLI-client bullet is read, not edited. RFC7-20 is affected by the owner's reading (`POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05`, item 1), not by an edit; both reviews' finding that the reading changes the clause's effect is preserved below for the owner, not resolved. SEC-3 is not edited here; the execution permission depends on the SEC-3 amendment drafted as doctrine amendment D9, not yet adopted (`POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05`, item 1), and 033 and 034 carry D9's draft conditions. Relied on, unchanged: REQ-polaris-generation-003, 004, 012, 019 and 025; RFC2-24, RFC4-2, RFC4-19, RFC7-2, RFC7-9, RFC7-10, RFC7-19, RFC7-25. No RFC, doctrine or adopted byte is edited.
 **Change class:**         Normative
 **Author:**               lane-spec drafting agent (Claude Opus 5.5)

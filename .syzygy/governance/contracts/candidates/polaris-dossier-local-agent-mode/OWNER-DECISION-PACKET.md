@@ -146,7 +146,7 @@ The selection binds a git tag, `polaris-dossier-local-agent-mode-v1.0`, on the
 commit that carries the package bytes you were shown, which must equal the
 bytes the confirming review read. The record is written by
 `scripts/record_versioned_signoff.py` once this package has the builder that
-recorder requires: it moves `proposed/polaris-generation/spec.md` to `specs/`
+recorder requires: it moves proposed/polaris-generation/spec.md to `specs/`
 and generalizes the effective-scenario recount. That builder is post-sign-off
 work (`tasks.md`), and the profile change (032) can reuse it. Implementation
 of the `syzygy dossier` commands waits for this sign-off (mode direction,
