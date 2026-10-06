@@ -108,7 +108,7 @@ describe('no route and no credential', () => {
   const sources = fs.readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
 
   it('sweeps a non-empty population of source files', () => {
-    expect(sources).toEqual(['cli.ts', 'index.ts', 'run-config.ts', 'run-record.ts', 'state-directory.ts', 'status.ts']);
+    expect(sources).toEqual(['cli.ts', 'git-object-reader.ts', 'index.ts', 'run-config.ts', 'run-record.ts', 'state-directory.ts', 'status.ts']);
   });
 
   it.each(sources.map((name) => [name]))('%s imports no network module', (name) => {
