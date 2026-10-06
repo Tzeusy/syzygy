@@ -1,6 +1,6 @@
 ---
 name: polaris-dossier
-description: Write a Polaris dossier (a multi-page explanatory site) for any repository the operator holds the consents for, with the syzygy binary. Use when the operator asks for a Polaris dossier of a repository URL, or invokes /polaris-dossier <url>. Also used, with a role, by the fresh inventory and review sessions the loop hands over to.
+description: Write a Polaris dossier (a multi-page explanatory site) for any repository the operator holds the consents for, with the syzygy binary. Use when the operator asks for a Polaris dossier of a repository URL, for example "generate me a Polaris dossier for <url>", or invokes /polaris-dossier <url>. Also used, with a role, by the fresh inventory and review sessions the loop hands over to.
 ---
 
 # Polaris dossier
@@ -17,15 +17,18 @@ Always:
 - Write only your drafts, inventory or verdict inside the run's state
   directory, and nothing else of Syzygy's. Syzygy re-checks everything it
   relies on; editing its files only makes the run's record less trustworthy.
-- Follow the execution rule in the run's `brief.md`; this skill grants no
-  execution of its own. Before there is a brief, and unless the brief says
-  otherwise, the observed project is not to be built or run outside an
-  explicit, opt-in execution profile. Add every command you do run to
-  `executions`; a claim that rests on one has `basis: execution`, names it,
-  and is `inferred`. Subagents you start follow the same rule. Start nothing
-  meant to outlive your session, and stop every process you started,
-  background services included, before it ends. If a step reports that the
-  permission has lapsed, run nothing further.
+- This skill grants no execution of its own. Follow the execution rule in
+  the brief or packet this session was given: the run's `brief.md` when you
+  author, the inventory brief or review packet in a session handed over to.
+  Absent that brief, the observed project is not to be built or run outside
+  an explicit, opt-in execution profile. Add every command you do run to
+  `executions`, with the working directory you ran it in, and, where the
+  brief asks, whether it falls within the scope the owner's choice names; a
+  claim that rests on one has `basis: execution`, names it, and is
+  `inferred`. Subagents you start follow the same rule. Start nothing meant
+  to outlive your session, and stop every process you started, background
+  services included, before it ends. If a step reports that the permission
+  has lapsed, run nothing further.
 - Label claims `inferred`, `unknown` (with a reason the brief lists) or
   `non-normative`. Never `observed`.
 - Never start a session with the clone as its working directory. Read the
@@ -40,9 +43,9 @@ With a URL (the author, driving the loop):
    a directory the operator agrees.
 3. Ask the operator, in one AskUserQuestion, for the deadline, a token or
    turn budget, the repair-cycle limit, the question limit and the model.
-   Offer presets; never pick for them. Say that the deadline runs on
-   Syzygy's clock from the brief and must cover the review sessions,
-   `render` and `close` as well as the drafting: no step runs after it.
+   Offer presets; never pick for them. Advise a generous deadline: it runs
+   on Syzygy's clock from the brief and must cover the review sessions,
+   `render` and `close` as well as the drafting, and no step runs after it.
    Write their answers as the run configuration file.
 4. `syzygy dossier init <clone> --url <url> --config <file> --state-root <dir>`.
    Only if `preflight` reports that D9 is in force, tell the operator that if
@@ -51,7 +54,8 @@ With a URL (the author, driving the loop):
    --declare owner-started-session,owners-own-host,owner-attends`
    personally, in a new terminal or after `!`, before you continue. Never
    run that command yourself, never ask for it otherwise, and never assume
-   the answer. Then `syzygy dossier brief <run>`; read `brief.md` and
+   the answer. The choice covers this one run at its pinned revision: never
+   reuse one from an earlier run. Then `syzygy dossier brief <run>`; read `brief.md` and
    `draft.schema.json`.
 5. Explore the clone for the five reader topics. Keep `discovery`: what you
    inspected and selected, what you left out and why, and why you stopped.
@@ -74,7 +78,10 @@ With a URL (the author, driving the loop):
    finished, and run `syzygy dossier status <run>`.
 9. On a blocking finding, go back to 7: a new draft revision retires the
    reviews.
-10. Ask the operator for the usage figure their tool shows, or none. Run
+10. Close before the deadline passes: after it `close` refuses, the run gets
+    no Execution Record and its usage is not recorded. Watch the deadline
+    the brief states, and if it is near, close rather than start another
+    repair. Ask the operator for the usage figure their tool shows, or none. Run
     `syzygy dossier close <run> --usage-tokens <n> --usage-turns <n>` with
     the figures they give, or `syzygy dossier close <run>` with none; never
     enter a figure they did not give, and never 0. Report the site path and
