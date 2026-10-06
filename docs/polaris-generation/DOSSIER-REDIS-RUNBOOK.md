@@ -1,12 +1,16 @@
 # Redis dossier runbook (local-agent mode, S12)
 
 **Candidate. Binds nothing.** This page is operating guidance for
-`syzygy-qkea.13` (S12): two attended end-to-end dossier runs against Redis,
-one in Claude Code and one in Codex. It performs no act, records no consent
-and is never authority. The owner, as operator, starts and attends every
-session. No agent starts one, and this page never lists an agent doing so.
-Every state claim below is dated 2026-10-07. Re-read `PROJECT-STATUS.md` and
-the act records before relying on any of them.
+`syzygy-qkea.13` (S12): attended end-to-end dossier runs against Redis. It
+performs no act, records no consent and is never authority. The owner, as
+operator, starts and attends every session. No agent starts one, and this
+page never lists an agent doing so. State claims below are dated 2026-10-07
+where they are not a command to run. Re-read `PROJECT-STATUS.md` and the act
+records before relying on any of them.
+
+**The default path is Run A:** Claude Code, with no execution, against Redis.
+A Redis dossier needs no building or running of Redis. Run B (Codex, with
+execution permitted) is blocked, and its section says why.
 
 ## Can the flow run before the sitting? No
 
@@ -30,29 +34,69 @@ sitting, against Redis itself.
 
 Each item is checked by the command named, never by reading a status word.
 
-**Owner acts.** The rows of the dossier sitting packet are listed in
-`.syzygy/governance/contracts/candidates/dossier-local-agent-acts/OWNER-SITTING-PACKET.md`.
+### Owner acts
 
-| Needed for | Act | Packet |
-|---|---|---|
-| Both runs | Redis observation consent | dossier packet, row 1 (the earlier Redis packet's row 5, the same record) |
-| Both runs | The source-acquisition entry, local-agent version, signed by tag v1.0 | dossier packet, row 2 |
-| Both runs | The "no evidence drawer" statement, or the provider statement for that run's tool | dossier packet, row 3, 3a or 3b |
-| Both runs, for a dossier with prose | The RFC7-20 reading in force | dossier packet, row 5 |
-| Both runs | The classification policy and the public-source screening scope | [Inferred, as the dossier packet says] the earlier Redis sitting, row 1 (`docs/polaris-generation/REDIS-SITTING-RUNBOOK.md`); preflight is the check |
-| Run B only | D9 in force | dossier packet, row 4 |
+The sitting the owner holds is put from
+`.syzygy/governance/contracts/candidates/REDIS-LOCAL-AGENT-SITTING-BRIEF.md`,
+items A to I. Read its sibling `REDIS-LOCAL-AGENT-SITTING-BRIEF-REVIEW-NOTES.md`
+beside it. Items J to M were settled before the sitting and are not asked. The
+item letters and owning packets below are copied from the brief's table "The
+decisions, in the order you would be asked". The dossier packet is
+`.syzygy/governance/contracts/candidates/dossier-local-agent-acts/OWNER-SITTING-PACKET.md`,
+the package of PR #370.
 
-**Code.** S10 (`close`, PR 388) is on `main`. As of 2026-10-07 these are not:
+| Brief item | Act | Owning packet | Run A | Run B |
+|---|---|---|---|---|
+| A | Redis observation consent | dossier packet row 1 (the same record as PR #260 row 5) | needed | needed |
+| B | Public-source screening scope, version 1, with its Q2 to Q8 | `public-source-screening-scope/OWNER-DECISION-PACKET.md`; PR #260 row 1 | needed | needed |
+| C | RFC5-14 `project-documentation` class | `rfc5-project-documentation-class/OWNER-DECISION-PACKET.md`; PR #260 row 7 | only with D | only with D |
+| D | Screening scope, version 2 | `public-source-screening-scope-v2/OWNER-DECISION-PACKET.md`; PR #260 row 12 | as the brief recommends | as the brief recommends |
+| E | Source-acquisition entry, local-agent version, signed by tag v1.0 | dossier packet row 2 | needed | needed |
+| F | "Redis has no kernel evidence drawer", or a provider statement for the run's tool | dossier packet row 3, 3a or 3b | one of them | one of them |
+| G | D9 bound to exact bytes | dossier packet row 4 | not needed | needed |
+| H | The RFC7-20 reading bound to exact bytes | dossier packet row 5 | needed for a dossier with prose | needed for a dossier with prose |
+| I | The non-governed narrative profile (requirement 032) | `non-governed-narrative-profile/OWNER-DECISION-PACKET.md`; PR #260 rows 9a to 9d | needed | needed |
 
-- S11, the skill and the Codex instructions (PR 389).
-- S10b, `syzygy-bur3`: each command's working directory and scope, flagged by `check`, `render` and `close`.
-- `syzygy-qkea.21` (PR 377), which wires the G5 records into the gates. [Observed] Until it lands:
-  - the registry gate reads the act over the parked provider-mode entry, which names another implementation, so it refuses;
-  - the drawer and statement sources state nothing, so Redis counts as governed and the brief refuses;
-  - `D9_ACT_FORM` and `RFC7_20_RULING_ACT_FORM` are `null`.
-- Run B only: `PERMITTING_ARM_ENABLED` in `packages/polaris-dossier/src/execution-rule.ts` is `false`, and while it is false no brief permits execution. Switching it on is its own reviewed change, after `syzygy-qkea.21`.
+Packet paths without a directory are under
+`.syzygy/governance/contracts/candidates/`.
 
-**Check before each run.**
+Two things the brief and its notes add:
+
+- [Observed in the brief, "What declining does to the sitting", and note 1]
+  The installer (`scripts/install_redis_local_agent_sitting.py`) records no act
+  at all unless it has answers for A, B, E, H, I and one of F's options. It
+  also refuses D without C. Declining one of those leaves every act for a later
+  sitting.
+- [Observed in note 4] G and H take effect at the gate only once PR #377
+  (`syzygy-qkea.21`) is merged. Until then `D9_ACT_FORM` and
+  `RFC7_20_RULING_ACT_FORM` are `null` in
+  `packages/polaris-dossier/src/gate-sources.ts`.
+
+### Code
+
+Check these in the checkout you will run, at the commit you will record. Each
+is a precondition. A command that prints nothing means it is not met.
+
+```
+git -C <syzygy checkout> log --oneline --grep=syzygy-qkea.21
+git -C <syzygy checkout> log --oneline --grep=syzygy-bur3
+git -C <syzygy checkout> log --oneline --grep=syzygy-s6xo
+git -C <syzygy checkout> log --oneline --grep=syzygy-qkea.12
+git -C <syzygy checkout> log --oneline --grep=syzygy-qkea.11
+```
+
+- `syzygy-qkea.21` (PR #377) wires the sitting's records into the gates. Before
+  it, the registry gate reads the parked provider-mode entry and refuses, and
+  Redis counts as governed so the brief refuses.
+- `syzygy-bur3` makes `check`, `render` and `close` flag a reported command's
+  working directory and scope where execution was permitted.
+- `syzygy-s6xo` is the sitting installer's follow-up. It flips the real-tree
+  test pins in the commit that records the acts, and it adds the sitting-log
+  citation check.
+- `syzygy-qkea.12` is the skill and the Codex instructions (S11).
+  `syzygy-qkea.11` is `close` (S10).
+
+Then preflight, which reads the records themselves:
 
 ```
 git -C <syzygy checkout> status --short
@@ -61,24 +105,23 @@ npm --prefix <syzygy checkout> run build
 node <syzygy checkout>/apps/syzygy/dist/main.js dossier preflight https://github.com/redis/redis
 ```
 
-The tree must be clean and on the commit you will record. Preflight must name
-every start gate as in force and list the consented revisions. If it names any
-gate as absent or refused, stop. Do not work around it.
+The tree must be clean. Preflight's `outcome` must be `ready` and its
+`missing` list empty. `startGates` names the observation consent, the registry
+entry and the screening policy. `consentedRevisions` lists the revisions you
+may pin. For prose, `rfc720Ruling` must be `ok`. If anything is absent or
+refused, stop. Do not work around it.
+
+Do not use preflight's `cloneCommands`. They run a full `git clone`, which
+gives the agent every commit the clone holds. The consent's stated form is
+one commit fetched alone (step 1 below; `syzygy-qkea.24`).
 
 Below, `syzygy` stands for `node <syzygy checkout>/apps/syzygy/dist/main.js`.
 
-## The two runs
+## Run A (the default): Claude Code, no execution
 
-| | Run A | Run B |
-|---|---|---|
-| Tool | Claude Code | Codex |
-| Execution | not permitted (the brief carries SEC-3's rule) | permitted for this run only, through `allow-execution` |
-| Extra preconditions | none | dossier packet row 4, `PERMITTING_ARM_ENABLED`, a credential list |
+The brief carries SEC-3's rule. Nothing in this run builds or runs Redis.
 
-Run them one after the other, each with its own clone and its own run
-directory. A choice recorded for run A never carries to run B.
-
-### 1. Make the clone (operator)
+### A1. Make the clone (operator)
 
 Use one of the revisions preflight names. Fetch that commit alone, as the
 consent's stated form says:
@@ -91,13 +134,11 @@ git -C <clones>/redis-<revision> checkout --detach FETCH_HEAD
 
 Keep the clone outside the Syzygy checkout and outside the state root.
 
-### 2. Start the authoring session (operator)
+### A2. Start the authoring session (operator)
 
-Start the session in the Syzygy checkout, so that its project skill loads.
-Never start it in the clone.
-
-- Run A: `claude`, then ask: generate me a Polaris dossier for https://github.com/redis/redis
-- Run B: `codex`, with the same request.
+Start `claude` in the Syzygy checkout, so that its project skill loads. Never
+start it in the clone. Then ask: generate me a Polaris dossier for
+https://github.com/redis/redis
 
 [Inferred] The session can then write files in the checkout, the gate records
 included. Every step re-checks those records and its report says so
@@ -107,14 +148,14 @@ From here on, the skill drives the session. The steps below are what the
 operator sees and does. Each command is printed by the session or typed by
 the operator, as the step says.
 
-### 3. Configure and init (session, with the operator's answers)
+### A3. Configure and init (session, with the operator's answers)
 
 The session asks for the deadline, a token or turn budget, the repair-cycle
 limit, the question limit and the model. It writes them as a run
 configuration file with these fields:
 
 - `operator`
-- `agentTool` (`claude-code` or `codex`)
+- `agentTool` (`claude-code`)
 - `agentToolVersion`, `agentProvider`, `model` and optionally `modelVersion`
 - `deadline`, as an ISO 8601 duration such as `PT3H`
 - `agentTokenBudget` and/or `agentTurnBudget`
@@ -127,20 +168,7 @@ and it must also cover the inventory, both reviews, `render` and `close`.
 syzygy dossier init <clones>/redis-<revision> --url https://github.com/redis/redis --config <run.json> --state-root <state root>
 ```
 
-### 4. Run B only: record the execution choice (operator, personally)
-
-Type this in a new terminal, or after `!`. Never let the session type it.
-
-```
-syzygy dossier allow-execution <run> --revision <revision> --declare owner-started-session,owners-own-host,owner-attends
-```
-
-For every Run B step from `brief` through `close`, set
-`SYZYGY_DOSSIER_CREDENTIAL_LIST` in the session's environment. It names a
-`syzygy-adapter-credential-list/1` file listing every credential the host's
-Syzygy adapters hold. An empty list must be declared explicitly.
-
-### 5. Brief, draft, check (session)
+### A4. Brief, draft, check (session)
 
 ```
 syzygy dossier brief <run>
@@ -148,12 +176,10 @@ syzygy dossier check <run>
 ```
 
 The session repairs and re-checks until `check` is clean or refuses. Read
-`brief.md`'s execution rule:
+`brief.md`'s execution rule: it must say the project is not to be built or
+run.
 
-- Run A: it must say the project is not to be built or run.
-- Run B: it must state the permitting rule, and each command the session reports must name its working directory and scope.
-
-### 6. Hand-overs (the operator starts every session)
+### A5. Hand-overs (the operator starts every session)
 
 Each hand-over has three parts, in this order.
 
@@ -166,10 +192,10 @@ Each hand-over has three parts, in this order.
    - `syzygy dossier launch-form <run> inventory terminal|bang`;
    - `syzygy dossier launch-form <run> review terminal|bang --kind fidelity|design`.
 
-A blocking finding sends the run back to step 5, and a new draft revision
-retires the reviews.
+A blocking finding sends the run back to A4, and a new draft revision retires
+the reviews.
 
-### 7. Close before the deadline (session, with the operator's figures)
+### A6. Close before the deadline (session, with the operator's figures)
 
 ```
 syzygy dossier close <run> --usage-tokens <n> --usage-turns <n>
@@ -178,6 +204,47 @@ syzygy dossier status <run>
 
 Give only the figures the tool shows, or neither flag. Never give 0. After the
 deadline, `close` refuses and the run gets no Execution Record.
+
+Then build the evidence record (below), with `<tool>` set to `claude-code`.
+
+## Run B: Codex, execution permitted (blocked)
+
+> **Blocked: not offered until D9 (G) is in force, `PERMITTING_ARM_ENABLED`
+> is switched on by its own reviewed change, and the owner chooses to permit
+> execution for that run.** The owner's sitting choices decide whether it is
+> ever offered. Declining G closes it for good, until a later act.
+> [Observed] Today `PERMITTING_ARM_ENABLED` is `false` in
+> `packages/polaris-dossier/src/execution-rule.ts`. While it is false, every
+> brief carries SEC-3's rule, whatever was recorded. Check with
+> `grep -n "PERMITTING_ARM_ENABLED = " <syzygy checkout>/packages/polaris-dossier/src/execution-rule.ts`.
+
+The steps are kept here so the run is ready if it is ever offered. Do not
+start it while the banner holds.
+
+Run B uses its own clone and its own run directory. A choice recorded for
+Run A never carries to Run B.
+
+1. **Clone:** as A1, into a fresh directory.
+2. **Session:** as A2, but start `codex` in the Syzygy checkout.
+3. **Configure and init:** as A3, with `agentTool` set to `codex`.
+4. **Record the execution choice (operator, personally).** Type this in a new
+   terminal, or after `!`. Never let the session type it.
+
+   ```
+   syzygy dossier allow-execution <run> --revision <revision> --declare owner-started-session,owners-own-host,owner-attends
+   ```
+
+   For every step from `brief` through `close`, set
+   `SYZYGY_DOSSIER_CREDENTIAL_LIST` in the session's environment. It names a
+   `syzygy-adapter-credential-list/1` file listing every credential the host's
+   Syzygy adapters hold. An empty list must be declared explicitly.
+5. **Brief, draft, check:** as A4. `brief.md` must state the permitting rule.
+   Each command the session reports must give its `workingDirectory` and
+   `scope`. `check`, `render` and `close` flag any command without a
+   directory, with one outside the clone, or stated outside the scope. A
+   flag refuses nothing and hides nothing.
+6. **Hand-overs:** as A5.
+7. **Close:** as A6. Build the evidence record with `<tool>` set to `codex`.
 
 ## Evidence record (one per run)
 
@@ -206,7 +273,7 @@ Before committing, check three things:
 
 - `measuredOn.syzygyTrackedTreeClean` is `true`.
 - `outcome.closed` is `true`.
-- For run B, `executionRule` is the permitting arm. For run A, it is not.
+- `executionRule` is SEC-3's rule for Run A, and the permitting arm for Run B.
 
 A record that fails any of these is still kept, with a note saying why. It is
 never edited into a pass.
@@ -219,6 +286,7 @@ never edited into a pass.
 - [Inferred] Redis has neither an `openspec/` nor a `.syzygy/` path at the
   consented revisions. This comes from general knowledge: nothing has been
   read to check it, because no read is authorised yet. If either path exists,
-  `init` reports Redis as governed and the run needs row 3a or 3b.
+  `init` reports Redis as governed and the run needs row 3a or 3b (brief item
+  F).
 - [Unknown] Whether the deadline, budgets and resource limits suit a
   repository of Redis's size. No run has measured them.
