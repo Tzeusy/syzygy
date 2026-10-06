@@ -1,7 +1,7 @@
 {
-  "record": "Rule-6 mutants for S10b, the N6 runtime flags (syzygy-bur3): an unreadable brief record taken as SEC-3 (F1), commands flagged under SEC-3 (F2), a blank working directory accepted (F3), a relative directory placed in the clone (F4), a `..`-prefixed name taken for a climb (F5), string-prefix containment (F6), an outside-scope statement ignored (F7), the scope not carried (F8), every command counted as flagged (F9), check never flagging (F10), a flag refusing the check (F11), render never flagging (F12), a flag not shown beside its command (F13), the scope not shown (F14), the disclosure dropped (F15), flagged commands hidden (F16), close dropping the flags (F17), close never flagging (F18), a missing directory closed as empty (F19), the brief not asking (F20), the brief saying a flag may refuse (F21), the working directory made required (F22), optional properties left unchecked (F23). Not authority.",
+  "record": "Rule-6 mutants for S10b, the N6 runtime flags (syzygy-bur3): an unreadable brief record taken as SEC-3 (F1), commands flagged under SEC-3 (F2), a blank working directory accepted (F3), a relative directory placed in the clone (F4), a `..`-prefixed name taken for a climb (F5), string-prefix containment (F6), an outside-scope statement ignored (F7), the scope not carried (F8), every command counted as flagged (F9), check never flagging (F10), a flag refusing the check (F11), render never flagging (F12), a flag not shown beside its command (F13), the scope not shown (F14), the disclosure dropped (F15), flagged commands hidden (F16), close dropping the flags (F17), close never flagging (F18), a missing directory closed as empty (F19), the brief not asking (F20), the brief saying a flag may refuse (F21), the working directory made required (F22), optional properties left unchecked (F23), containment tested on the unnormalised strings so `..` is not resolved (F24), the disclosure no longer saying the scope is the agent's own statement (F25). Not authority.",
   "measuredOn": {
-    "commit": "0839602eff2ab7343b40145ca9d83049bd3dcc2d",
+    "commit": "2b8f93d19122a33ca868a4463e03fa6b331b1dc7",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/check.ts",
@@ -17,7 +17,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/execution-flags.ts",
-        "sha256": "3879aaeaeaaa2593208fe21de1a78c31212f297285799e50bbd310443646f68e"
+        "sha256": "f70e08e098e3f21954ccbdfab9d095a89b4f91c1820324837f1a3501c83ad2af"
       },
       {
         "path": "packages/polaris-dossier/src/execution-rule.ts",
@@ -29,7 +29,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/execution-flags.test.ts",
-        "sha256": "ea1115e62dfab411ba8239bc80ad9721d6f2aaacbd31ec34790f8278cebaf108"
+        "sha256": "c3f99a2f9158017b3e8d3cf4c5ca22f5660722417809128f02a9b77c5a9146a6"
       },
       {
         "path": "packages/polaris-dossier/src/execution-rule.test.ts",
@@ -52,8 +52,8 @@
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence, by a function replacer so `$` sequences in `new` are literal) in the file at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied, the command exits nonzero and at least one test fails; a nonzero exit with no failed test is recorded as `error` (a compile or collection fault). An earlier run applied F11 with a string replacer, which read `$'` as a pattern and left check.ts unparsable; that run is not this record.",
   "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/execution-flags.test.ts packages/polaris-dossier/src/execution-rule.test.ts packages/polaris-dossier/src/draft-schema.test.ts packages/polaris-dossier/src/close.test.ts",
   "result": {
-    "killed": 23,
-    "total": 23
+    "killed": 25,
+    "total": 25
   },
   "mutants": [
     {
@@ -237,6 +237,22 @@
       "file": "packages/polaris-dossier/src/draft-schema.ts",
       "old": "if (Object.hasOwn(descriptors, key)) visit(",
       "new": "if (schema.required.includes(key) && Object.hasOwn(descriptors, key)) visit(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "F24-dotdot-not-normalised",
+      "file": "packages/polaris-dossier/src/execution-flags.ts",
+      "old": "relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)",
+      "new": "!(directory === clone || directory.startsWith(`${clone.replace(/\\/+$/u, '')}${path.sep}`))",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "F25-scope-ownership-unstated",
+      "file": "packages/polaris-dossier/src/execution-flags.ts",
+      "old": "Whether a command falls within the scope of the owner\\'s execution choice is the agent\\'s own statement, labelled Inferred; Syzygy does not judge it. ",
+      "new": "",
       "outcome": "killed",
       "failedTests": 1
     }
