@@ -89,7 +89,8 @@ git -C <syzygy checkout> log --oneline --grep=syzygy-qkea.11
   it, the registry gate reads the parked provider-mode entry and refuses, and
   Redis counts as governed so the brief refuses.
 - `syzygy-bur3` makes `check`, `render` and `close` flag a reported command's
-  working directory and scope where execution was permitted.
+  working directory and scope where execution was permitted. [Observed,
+  2026-10-07] It is on `main`, merged in PR #391. It matters only to Run B.
 - `syzygy-s6xo` is the sitting installer's follow-up. It flips the real-tree
   test pins in the commit that records the acts, and it adds the sitting-log
   citation check.
