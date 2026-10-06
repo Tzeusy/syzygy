@@ -159,10 +159,16 @@ function deadlineFaults(text: string): string[] {
   return faults;
 }
 
-/** The clone is made in the consent's form (syzygy-qkea.24): preflight's commands, one commit fetched alone, never a full clone. */
+/** The clone is made in the consent's form (syzygy-qkea.24): preflight's commands, one commit fetched alone, never a full clone; what
+ * `init` checks is `.git`, and the working tree it does not inspect is stated (R-POLARIS-DOSSIER-CLONE-SHAPE-1 note N5). */
 function cloneFormFaults(text: string): string[] {
-  return /Make the clone with the commands preflight prints, for a revision it names, in a new empty directory[^.]*: that one commit, fetched alone, never a full clone\./u.test(text.replace(/\s+/gu, ' '))
-    ? [] : ['the text does not say to make the clone with preflight\'s commands, one commit fetched alone, never a full clone'];
+  const flat = text.replace(/\s+/gu, ' ');
+  return [
+    ...(/Make the clone with the commands preflight prints, for a revision it names, in a new empty directory[^.]*: that one commit, fetched alone, never a full clone\./u.test(flat)
+      ? [] : ['the text does not say to make the clone with preflight\'s commands, one commit fetched alone, never a full clone']),
+    ...(flat.includes('`init` refuses a `.git` that holds more than the commit. It does not inspect the working tree, which you read, so put nothing else in that directory.')
+      ? [] : ['the text does not say that init checks .git alone and leaves the working tree uninspected']),
+  ];
 }
 
 /** The description triggers on the operator's plain request. */
@@ -221,6 +227,7 @@ describe('agent texts (S11)', () => {
     expect(triggerFaults(swap('for example "generate me a Polaris dossier for <url>", ', ''))).toHaveLength(1);
     expect(cloneFormFaults(swap('fetched alone, never a full clone', 'or a full clone'))).toHaveLength(1);
     expect(cloneFormFaults(swap('Make the clone with the commands preflight prints', 'Clone the repository'))).toHaveLength(1);
+    expect(cloneFormFaults(swap('so put nothing else in', 'so put anything in'))).toHaveLength(1);
   });
 
   it('the description lint holds the trigger phrase against the Codex text too', () => {

@@ -9,6 +9,7 @@ import { renderDossierLocalAgentAct, renderLocalAgentSignoff, renderPolicyAct, r
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { runDossierCli } from './cli.js';
 import { createPackageGateSources, type ProjectInputSource, type ProviderStatementRecord, type ProviderStatementSource } from './gate-sources.js';
+import { cloneGitDirShape } from './clone-shape.js';
 import { openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { initRun, type InitResult } from './init.js';
 import { preflight } from './preflight.js';
@@ -242,13 +243,40 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     expect(fs.existsSync(run.stateRoot)).toBe(false);
   };
   const git = (clone: string, ...args: string[]): string => execFileSync('git', ['-C', clone, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
+  const dotGit = (clone: string, ...parts: string[]): string => path.join(clone, '.git', ...parts);
+  const never = (name: string): string => `.git holds ${name}, which the consented form never leaves there`;
+  const packStem = (clone: string): string => {
+    const names = fs.readdirSync(dotGit(clone, 'objects', 'pack')).filter(name => name.endsWith('.pack'));
+    expect(names).toHaveLength(1);
+    return names[0]!.slice(0, -'.pack'.length);
+  };
+  /** The pinned commit's objects as one pack (a small fetch leaves them loose). */
+  const packedCloneAt = (commit: string): string => {
+    const clone = cloneAt(commit);
+    git(clone, 'repack', '-a', '-d', '-q', '-n');
+    return clone;
+  };
+
+  it('leaves in .git exactly the entries the allowlist names, as the header derives them', () => {
+    const clone = cloneAt(commits.A);
+    expect(fs.readdirSync(dotGit(clone)).sort()).toEqual(['FETCH_HEAD', 'HEAD', 'config', 'description', 'hooks', 'index', 'info', 'logs', 'objects', 'refs', 'shallow']);
+    expect(fs.readdirSync(dotGit(clone, 'info'))).toEqual(['exclude']);
+    expect(fs.readdirSync(dotGit(clone, 'logs'))).toEqual(['HEAD']);
+    expect(fs.readdirSync(dotGit(clone, 'hooks')).every(name => name.endsWith('.sample'))).toBe(true);
+    expect(fs.readdirSync(dotGit(clone, 'objects', 'info'))).toEqual([]);
+    expect(cloneGitDirShape(dotGit(clone), commits.A)).toEqual({ ok: true });
+  });
+
+  it('starts from a clone whose objects are packed, with a reverse index', async () => {
+    const clone = packedCloneAt(commits.A);
+    expect(fs.readdirSync(dotGit(clone, 'objects', 'pack')).map(name => path.extname(name)).sort()).toEqual(['.idx', '.pack', '.rev']);
+    expect((await init({ clone })).result.ok).toBe(true);
+  });
 
   it('refuses a full clone, before reading any object', async () => {
     const clone = fullCloneAt(commits.A);
     const run = await init({ clone });
-    expect(refusal(run.result)?.stage).toBe('clone-shape');
-    expect(refusal(run.result)?.reason).toMatch(/^refs\/\S+ is a ref or not a directory, and the clone may hold no ref but HEAD; /u);
-    expect(refusal(run.result)?.objectsRead).toBe(false);
+    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: `${never('packed-refs')}; ${SHAPE}`, objectsRead: false });
     expect(run.readerOpened).toBe(false);
   });
 
@@ -263,19 +291,116 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     git(tagged, 'update-ref', 'refs/tags/extra', commits.A);
     await refusedShape(tagged, 'refs/tags/extra is a ref or not a directory, and the clone may hold no ref but HEAD', false);
     git(tagged, 'pack-refs', '--all');
-    expect(fs.existsSync(path.join(tagged, '.git', 'refs', 'tags', 'extra'))).toBe(false);
-    await refusedShape(tagged, 'packed-refs holds a ref, and the clone may hold no ref but HEAD', false);
+    expect(fs.existsSync(dotGit(tagged, 'refs', 'tags', 'extra'))).toBe(false);
+    await refusedShape(tagged, never('packed-refs'), false);
   });
 
-  it('refuses a pseudo-ref naming another commit, and a linked worktree', async () => {
+  it('refuses FETCH_HEAD naming another commit, and passes it naming the pinned commit alone', async () => {
     const clone = cloneAt(commits.A);
-    fs.writeFileSync(path.join(clone, '.git', 'ORIG_HEAD'), `${commits.B}\n`);
-    await refusedShape(clone, `ORIG_HEAD names an object other than ${commits.A}`, false);
-    fs.writeFileSync(path.join(clone, '.git', 'ORIG_HEAD'), `${commits.A}\n`);
+    const fetched = fs.readFileSync(dotGit(clone, 'FETCH_HEAD'), 'latin1');
+    fs.writeFileSync(dotGit(clone, 'FETCH_HEAD'), `${fetched}${commits.B}\t\t'${commits.B}' of file:///elsewhere\n`);
+    await refusedShape(clone, `FETCH_HEAD names an object other than ${commits.A}`, false);
+    fs.writeFileSync(dotGit(clone, 'FETCH_HEAD'), fetched);
     expect((await init({ clone })).result.ok).toBe(true);
-    const linked = cloneAt(commits.A);
-    fs.mkdirSync(path.join(linked, '.git', 'worktrees', 'other'), { recursive: true });
-    await refusedShape(linked, 'the clone has a linked worktree, whose HEAD is another ref', false);
+  });
+
+  it('refuses every top-level name the consented form never leaves: commondir, modules, worktrees, pseudo-refs, bisect and rebase state', async () => {
+    const add: [string, (clone: string) => void][] = [
+      ['commondir', clone => fs.writeFileSync(dotGit(clone, 'commondir'), `${fullCloneAt(commits.A)}/.git\n`)],
+      ['gitdir', clone => fs.writeFileSync(dotGit(clone, 'gitdir'), '/elsewhere/.git\n')],
+      ['modules', clone => fs.cpSync(dotGit(fullCloneAt(commits.A)), dotGit(clone, 'modules', 'deps'), { recursive: true })],
+      ['worktrees', clone => fs.mkdirSync(dotGit(clone, 'worktrees', 'other'), { recursive: true })],
+      ['ORIG_HEAD', clone => fs.writeFileSync(dotGit(clone, 'ORIG_HEAD'), `${commits.A}\n`)],
+      ['BISECT_EXPECTED_REV', clone => fs.writeFileSync(dotGit(clone, 'BISECT_EXPECTED_REV'), `${commits.B}\n`)],
+      ['rebase-merge', clone => { fs.mkdirSync(dotGit(clone, 'rebase-merge')); fs.writeFileSync(dotGit(clone, 'rebase-merge', 'orig-head'), `${commits.B}\n`); }],
+    ];
+    for (const [name, make] of add) {
+      const clone = cloneAt(commits.A);
+      make(clone);
+      await refusedShape(clone, never(name), false);
+    }
+  });
+
+  it('refuses objects/info/alternates and http-alternates, as a file or a link, and whatever they name', async () => {
+    for (const name of ['alternates', 'http-alternates']) {
+      const clone = cloneAt(commits.A);
+      fs.writeFileSync(dotGit(clone, 'objects', 'info', name), `${dotGit(fullCloneAt(commits.A), 'objects')}\n`);
+      await refusedShape(clone, `objects/info/${name} exists, and would lend the clone another repository's objects`, false);
+      const linked = cloneAt(commits.A);
+      fs.symlinkSync('/nonexistent', dotGit(linked, 'objects', 'info', name));
+      await refusedShape(linked, `objects/info/${name} exists, and would lend the clone another repository's objects`, false);
+    }
+    const relative = cloneAt(commits.A);
+    fs.cpSync(dotGit(fullCloneAt(commits.A), 'objects'), dotGit(relative, 'extra-objects'), { recursive: true });
+    fs.writeFileSync(dotGit(relative, 'objects', 'info', 'alternates'), '../extra-objects\n');
+    await refusedShape(relative, 'objects/info/alternates exists, and would lend the clone another repository\'s objects', false);
+  });
+
+  it('refuses in the object store anything but loose objects, an empty info/ and paired packs', async () => {
+    const write = (clone: string, rel: string, text = ''): void => { fs.mkdirSync(path.dirname(dotGit(clone, rel)), { recursive: true }); fs.writeFileSync(dotGit(clone, rel), text); };
+    const tmp = cloneAt(commits.A);
+    write(tmp, `objects/tmp_obj_${commits.U}`, 'x');
+    await refusedShape(tmp, `objects/tmp_obj_${commits.U} is not an entry the consented form leaves in the object store`, false);
+    const info = cloneAt(commits.A);
+    write(info, 'objects/info/packs', 'P pack-x.pack\n');
+    await refusedShape(info, 'objects/info holds packs, and the consented form leaves it empty', false);
+    const misnamed = cloneAt(commits.A);
+    write(misnamed, `objects/${commits.A.slice(0, 2)}/not-an-object`, 'x');
+    await refusedShape(misnamed, `objects/${commits.A.slice(0, 2)}/not-an-object is not a loose object`, false);
+    for (const extension of ['promisor', 'keep', 'bitmap']) {
+      const clone = packedCloneAt(commits.A);
+      write(clone, `objects/pack/${packStem(clone)}.${extension}`);
+      await refusedShape(clone, `objects/pack/${packStem(clone)}.${extension} is not a pack, index or reverse index the consented form leaves`, false);
+    }
+    const unpaired = packedCloneAt(commits.A);
+    const stem = packStem(unpaired);
+    fs.rmSync(dotGit(unpaired, 'objects', 'pack', `${stem}.idx`));
+    await refusedShape(unpaired, `objects/pack/${stem} is not a .pack with its .idx`, false);
+  });
+
+  it('refuses unknown files under the allowed directories: hooks that run, grafts, other logs', async () => {
+    const hook = cloneAt(commits.A);
+    fs.writeFileSync(dotGit(hook, 'hooks', 'post-checkout'), '#!/bin/sh\n', { mode: 0o755 });
+    await refusedShape(hook, 'hooks/post-checkout is not a sample hook, the only kind the consented form leaves', false);
+    const grafts = cloneAt(commits.A);
+    fs.writeFileSync(dotGit(grafts, 'info', 'grafts'), `${commits.A} ${commits.U}\n`);
+    await refusedShape(grafts, 'info/grafts is not info/exclude, the only entry the consented form leaves there', false);
+    const logs = cloneAt(commits.A);
+    fs.mkdirSync(dotGit(logs, 'logs', 'refs', 'heads'), { recursive: true });
+    await refusedShape(logs, 'logs/refs is not logs/HEAD, the only log the consented form leaves', false);
+  });
+
+  it('refuses logs/HEAD naming any commit but the pinned one or the zero identifier', async () => {
+    const clone = cloneAt(commits.A);
+    const log = fs.readFileSync(dotGit(clone, 'logs', 'HEAD'), 'latin1');
+    expect(log.startsWith(`${'0'.repeat(40)} ${commits.A} `)).toBe(true);
+    fs.writeFileSync(dotGit(clone, 'logs', 'HEAD'), `${log}${commits.A} ${commits.B} t <t@example.invalid> 1791330124 +0000\tcheckout: moving\n`);
+    await refusedShape(clone, `logs/HEAD names ${commits.B}, an object other than ${commits.A}`, false);
+  });
+
+  it('refuses a symbolic link anywhere under .git, never following it', async () => {
+    const at: [string, (clone: string) => void][] = [
+      ['worktrees', clone => fs.symlinkSync(dotGit(cloneAt(commits.B)), dotGit(clone, 'worktrees'))],
+      ['objects/zz', clone => fs.symlinkSync(dotGit(fullCloneAt(commits.A), 'objects', 'pack'), dotGit(clone, 'objects', 'zz'))],
+      ['hooks/pre-commit.sample', clone => { fs.rmSync(dotGit(clone, 'hooks', 'pre-commit.sample')); fs.symlinkSync('/bin/true', dotGit(clone, 'hooks', 'pre-commit.sample')); }],
+      ['refs/heads', clone => { fs.rmSync(dotGit(clone, 'refs', 'heads'), { recursive: true }); fs.symlinkSync(dotGit(fullCloneAt(commits.A), 'refs', 'heads'), dotGit(clone, 'refs', 'heads')); }],
+      ['FETCH_HEAD', clone => { fs.rmSync(dotGit(clone, 'FETCH_HEAD')); fs.symlinkSync('/dev/zero', dotGit(clone, 'FETCH_HEAD')); }],
+    ];
+    for (const [rel, make] of at) {
+      const clone = cloneAt(commits.A);
+      make(clone);
+      await refusedShape(clone, `${rel} is a symbolic link; nothing under .git is followed`, false);
+    }
+  });
+
+  it('refuses a file over its bound, and a .git with more entries than the walk\'s bound', async () => {
+    const big = cloneAt(commits.A);
+    fs.appendFileSync(dotGit(big, 'FETCH_HEAD'), ' '.repeat(1024 * 1024));
+    await refusedShape(big, 'FETCH_HEAD is larger than 1048576 bytes', false);
+    const clone = cloneAt(commits.A);
+    const entries = fs.readdirSync(dotGit(clone), { recursive: true }).length;
+    expect(cloneGitDirShape(dotGit(clone), commits.A, { maxEntries: entries })).toEqual({ ok: true });
+    expect(cloneGitDirShape(dotGit(clone), commits.A, { maxEntries: entries - 1 })).toEqual({ ok: false, reason: `.git holds more than ${entries - 1} entries; ${SHAPE}` });
   });
 
   it('refuses a two-commit shallow clone, and a clone shallow at another commit or not shallow', async () => {
@@ -287,9 +412,9 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     await refusedShape(two, `the clone is shallow at 1 commit(s), not at ${commits.C} alone`, true, { providerStatements: statements(STATEMENT) });
 
     const elsewhere = cloneAt(commits.C);
-    fs.writeFileSync(path.join(elsewhere, '.git', 'shallow'), `${commits.C}\n${commits.B}\n`);
+    fs.writeFileSync(dotGit(elsewhere, 'shallow'), `${commits.C}\n${commits.B}\n`);
     await refusedShape(elsewhere, `the clone is shallow at 2 commit(s), not at ${commits.C} alone`, true, { providerStatements: statements(STATEMENT) });
-    fs.rmSync(path.join(elsewhere, '.git', 'shallow'));
+    fs.rmSync(dotGit(elsewhere, 'shallow'));
     await refusedShape(elsewhere, `the clone is not shallow, and ${commits.C} has 1 parent(s)`, true, { providerStatements: statements(STATEMENT) });
   });
 
@@ -307,14 +432,17 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     await refusedShape(packed, `the object store names 1 object(s) that are neither ${commits.A} nor under its tree (first: ${commits.U})`, true);
   });
 
-  it('never reads the working tree: an uncommitted change does not change the listing or the decision', async () => {
+  it('never reads the working tree: an uncommitted change, or a nested repository, does not change the listing or the decision', async () => {
     const clone = cloneAt(commits.A);
     fs.mkdirSync(path.join(clone, '.syzygy'));
     fs.writeFileSync(path.join(clone, '.syzygy', 'x.md'), 'uncommitted\n');
     fs.mkdirSync(path.join(clone, 'openspec'));
     fs.writeFileSync(path.join(clone, 'openspec', 'y.md'), 'uncommitted\n');
+    fs.cpSync(fullCloneAt(commits.A), path.join(clone, 'nested'), { recursive: true });
     const { result } = await init({ clone });
     expect(result.ok && result.report.subject.governed.kind).toBe('non-governed');
+    // The residual is disclosed: the working tree outside .git is not inspected.
+    expect(result.ok && result.report.disclosures.some(d => d.includes('the working tree outside .git is not inspected, though the agent reads the checked-out files'))).toBe(true);
   });
 });
 
@@ -744,6 +872,9 @@ describe('preflight', () => {
     }
     expect(execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8', env: GIT_ENV }).trim()).toBe(commits.B);
     expect(execFileSync('git', ['-C', dir, 'rev-list', '--all'], { encoding: 'utf8', env: GIT_ENV }).trim().split('\n')).toEqual([commits.B]);
+    // And init starts a run on the clone those commands made (R-POLARIS-DOSSIER-CLONE-SHAPE-1 note N9).
+    const started = await init({ clone: dir, providerStatements: statements(STATEMENT) });
+    expect(started.result.ok && started.result.report.subject.pinnedRevision.commit).toBe(commits.B);
   });
   it('names each missing record and is not ready', async () => {
     const result = await run(records({ [CONSENT_ACT]: null, [POLICY_ACT]: null }));

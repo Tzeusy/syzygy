@@ -41,7 +41,9 @@ With a URL (the author, driving the loop):
    record is missing and stop.
 2. Make the clone with the commands preflight prints, for a revision it
    names, in a new empty directory the operator agrees: that one commit,
-   fetched alone, never a full clone. `init` refuses a clone that holds more.
+   fetched alone, never a full clone. `init` refuses a `.git` that holds
+   more than the commit. It does not inspect the working tree, which you
+   read, so put nothing else in that directory.
 3. Ask the operator, in one AskUserQuestion, for the deadline, a token or
    turn budget, the repair-cycle limit, the question limit and the model.
    Offer presets; never pick for them. Advise a generous deadline: it runs
