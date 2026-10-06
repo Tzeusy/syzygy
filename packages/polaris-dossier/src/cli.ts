@@ -236,7 +236,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (rest.length !== 1) return usageError('render takes exactly one argument, the run directory');
     const env = ports.env ?? process.env;
     const result = await renderRun(rest[0]!, {
-      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)),
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader,
       ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}), ...(ports.renderer ? { renderer: ports.renderer } : {}),
     });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
