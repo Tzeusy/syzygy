@@ -1,23 +1,32 @@
 {
-  "record": "Rule-6 mutants for the polaris-dossier S9a slice (syzygy-qkea.10), render (REQ-polaris-generation-033, 034, 036): a block rendered Inferred without the counted review judging it supported; a quotation rendered from the agent's copy rather than the located blob bytes; the check that every page and the machine view carry the run disclosure removed; a block resting on an excluded quotation not rendered Unknown; the RFC7-20 ruling ignored for the draft layer; an anchor whose target state is not the pinned revision; a render written over an earlier site directory; and render proceeding with no renderer wired. Not authority.",
+  "record": "Rule-6 mutants for the polaris-dossier S9a slice (syzygy-qkea.10), render (REQ-polaris-generation-033, 034, 036): a block rendered Inferred without the counted review judging it supported; a quotation rendered from the agent's copy rather than the located blob bytes; the check that every page and the machine view carry the run disclosure removed; a block resting on an excluded quotation not rendered Unknown; the RFC7-20 ruling ignored for the draft layer; an anchor whose target state is not the pinned revision; a render written over an earlier site directory; and render proceeding with no renderer wired. Since the step guard (syzygy-qkea.23): the guard run with the default reader rather than the one render is given (G1); a guard refusal without its coded refusals (G2); the CLI not passing its reader port to render (G3); the pinned-revision-verified disclosure naming the run record's consent record (G4) or ignoring that the live consent gives the commit more than one label (G5); openRun returning the run record's revision rather than the guard's (G6). Not authority.",
   "measuredOn": {
-    "commit": "c18f1ceedbbde974b78b868f5039b861e7ad137c",
+    "commit": "57e545225d478c94b479c0b0ec6f604812e4940a",
     "subjects": [
       {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "b1ce22d144906a339d34b33200cb8733538fd52cf45ace870f4ff6f5d12c4554"
+      },
+      {
+        "path": "packages/polaris-dossier/src/inventory.ts",
+        "sha256": "53142d446b00915c004a44ae83b1af4e2085671e4425363cf130b311c0fadee9"
+      },
+      {
         "path": "packages/polaris-dossier/src/render.ts",
-        "sha256": "d29525ef9bbc16f02f80009934a0e3907fd0a39ea08b9e2a51b33909294be4bf"
+        "sha256": "2b1b3fcf7a668418525a8e241ea17d64049714030304f15baf1dca1d4bcc27fa"
       },
       {
         "path": "packages/polaris-dossier/src/render.test.ts",
-        "sha256": "d03ceeada4208829d01b5100951c4e5b11df2032b76c6bae22d30f6255a3bb3b"
+        "sha256": "3646bdc4c9d24eb55e84e32cf3535f7a078d313dac9a1614cb708296938302b0"
       }
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S9 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
+  "history": "A first record at the first S9a head held M1-M8, 8 of 8 killed. The render was then threaded through the step guard (its reader, its coded refusals, the live consent in the disclosure); G1-G6 were added and all 14 run at `commit`.",
   "command": "npx vitest run packages/polaris-dossier/src/render.test.ts",
   "result": {
-    "killed": 8,
-    "total": 8
+    "killed": 14,
+    "total": 14
   },
   "mutants": [
     {
@@ -74,7 +83,7 @@
       "old": "String(taken.length === 0 ? 0 : Math.max(...taken) + 1)",
       "new": "String(0)",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 2
     },
     {
       "id": "M8-no-renderer-check",
@@ -83,6 +92,54 @@
       "new": "",
       "outcome": "killed",
       "failedTests": 2
+    },
+    {
+      "id": "G1-guard-default-reader",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "'nothing is rendered', deps.openReader ? { openReader: deps.openReader } : {})",
+      "new": "'nothing is rendered')",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "G2-guard-refusals-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": ", ...(opened.refusals ? { refusals: opened.refusals } : {})",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 4
+    },
+    {
+      "id": "G3-cli-reader-dropped",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader,\n      ...(ports.loadScreen",
+      "new": "probe: createCredentialProbe(credentialListFromEnv(env)),\n      ...(ports.loadScreen",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G4-disclosed-record-from-run-record",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "consent ${opened.revision.consentRecord} names",
+      "new": "consent ${opened.subject.pinnedRevision.consentRecord} names",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G5-disclosed-label-ambiguity-ignored",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "opened.revision.label === null ? ', under more than one label'",
+      "new": "false ? ', under more than one label'",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G6-openrun-revision-from-run-record",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "deadlineEnds, revision: checked.revision };",
+      "new": "deadlineEnds, revision: subject.pinnedRevision };",
+      "outcome": "killed",
+      "failedTests": 1
     }
   ]
 }
