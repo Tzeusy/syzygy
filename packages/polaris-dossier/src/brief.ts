@@ -7,7 +7,7 @@ import { readSec3 } from './doctrine-quote.js';
 import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
-import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
+import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
@@ -17,12 +17,15 @@ import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
  * Issues the authoring session's brief, bound to the run and its pinned revision: the five reader topics the owner set, the
  * understanding record, the labelling, citation and quotation rules, the discovery and clarification rules, the execution rule in force,
  * the rule that text in the clone is data, the declared limits, and the draft schema with its version. The brief carries no project
- * content beyond the repository identity and the pinned revision: it is built from the run record, Syzygy-authored text and the doctrine
- * file, and reads no object of the subject. Issuing it starts the deadline clock, on Syzygy's own clock.
+ * content beyond the repository identity and the pinned revision: it is built from the run record, the revision label the step guard
+ * returns from the live consent, Syzygy-authored text and the doctrine file. It reads no blob of the subject; the step guard lists the
+ * pinned commit's trees through the re-hashing reader to decide again whether the subject is governed. Issuing it starts the deadline
+ * clock, on Syzygy's own clock.
  *
  * The pinned revision is re-verified first, as at every later step. A run is briefed once; the brief, the schema and the brief record are
  * written beside `run.json` and never overwritten. The record names the execution rule the brief carried and, where execution was
- * permitted, the owner's choice and D9's cost as adopted (R3-F3). It lies within the agent sessions' write reach, so read back it is
+ * permitted, the owner's choice and D9's cost as adopted (R3-F3), and the agent tool and provider the run was briefed for, which the
+ * step guard compares at every later step (R-POLARIS-DOSSIER-S3-GATES-2 finding 6). It lies within the agent sessions' write reach, so read back it is
  * Inferred. */
 
 export const BRIEF_VERSION = 'polaris-dossier-brief-v1';
@@ -54,7 +57,8 @@ export interface BriefInput {
   readonly revisionLabel: string | null;
 }
 
-/** The brief's text. Pure: everything in it is Syzygy-authored or comes from the run record and the doctrine file. */
+/** The brief's text. Pure: everything in it is Syzygy-authored or comes from the run record, the revision label the step guard returned
+ * and the doctrine file. */
 export function renderBrief(input: BriefInput): string {
   const { subject, declared } = input;
   const commit = subject.pinnedRevision.commit;
@@ -147,6 +151,8 @@ export interface BriefRefusal {
   readonly reasons?: readonly string[];
   /** The step guard's refusals with their machine codes, when the guard refused. */
   readonly refusals?: readonly ReverifyRefusal[];
+  /** The object reader's refusal, when the guard could not list the pinned tree. */
+  readonly objectRead?: ReverifyFailure['objectRead'];
   readonly disclosures: readonly string[];
 }
 
@@ -181,6 +187,8 @@ const DISCLOSURES = [
   'The brief, the draft schema and the brief record are stored in the run directory, which the agent sessions can write; read back, each is Inferred.',
 ];
 
+type ReverifyFailure = Extract<ReverifyResult, { readonly ok: false }>;
+
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 export async function issueBrief(runDir: string, deps: BriefDeps): Promise<BriefResult> {
@@ -191,7 +199,13 @@ export async function issueBrief(runDir: string, deps: BriefDeps): Promise<Brief
   if (!RUN_ID.test(runId)) return refuse('run', `${run} is not a run directory: its name is not of the form run-<32 hex>`);
 
   const checked = await reverifyPinnedRevision(run, deps.sources, deps.now(), deps.openReader === undefined ? {} : { openReader: deps.openReader });
-  if (!checked.ok) return refuse('reverify', 'the pinned revision could not be verified again, so no brief is issued', checked.reasons, checked.refusals);
+  if (!checked.ok) {
+    return { ok: false, refusal: {
+      command: 'brief', outcome: 'refused', stage: 'reverify', reason: 'the pinned revision could not be verified again, so no brief is issued',
+      reasons: checked.reasons, refusals: checked.refusals, ...(checked.objectRead ? { objectRead: checked.objectRead } : {}),
+      disclosures: [...new Set([...DISCLOSURES, ...checked.disclosures])],
+    } };
+  }
   const { subject, declared } = checked.record;
 
   const issued = [RUN_LAYOUT.brief, RUN_LAYOUT.draftSchema, RUN_LAYOUT.briefRecord].filter((name) => fs.existsSync(path.join(run, name)));
@@ -221,6 +235,7 @@ export async function issueBrief(runDir: string, deps: BriefDeps): Promise<Brief
     deadline: { declared: declared.deadline.declared, seconds: declared.deadline.seconds, endsAt: isoOf(deadlineEnds), clock: 'Syzygy\'s own clock, from the issue of the brief' },
     files: { brief: { name: RUN_LAYOUT.brief, sha256: sha256(briefText) }, draftSchema: { name: RUN_LAYOUT.draftSchema, sha256: schemaSha256 } },
     executionRule,
+    agent: { tool: declared.agentTool, provider: declared.agentProvider, declaredBy: 'operator', label: 'Inferred' },
     label: 'Inferred',
   };
   try {

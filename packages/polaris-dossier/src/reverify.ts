@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core';
 import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { governedSubject, type GovernedDecision } from './governed.js';
@@ -11,7 +12,11 @@ import { RUN_LAYOUT } from './state-directory.js';
  * consent names, and SHALL refuse the step otherwise").
  *
  * `run.json` lies within the agent sessions' write reach, so nothing the guard decides rests on what it says beyond which revision,
- * repository and clone to look at. Every gate is re-read now: the consent found by the URL must still be the one for the recorded
+ * repository and clone to look at, and the operator's agent provider. The provider is the operator's declaration and nothing live can
+ * attest it, so it is read from the run record, and the per-project statement it selects is selected by that Inferred value
+ * (R-POLARIS-DOSSIER-S3-GATES-2 finding 6). Once the run is briefed, a tool or provider that differs from the one the brief record
+ * states refuses; the brief record lies within the same reach, so an edit of both records together is not detected, and the disclosure
+ * says so. Where the clone lies is likewise whoever last wrote the run record's choice. Every gate is re-read now: the consent found by the URL must still be the one for the recorded
  * repository and must still name the pinned commit; the registry entry and the policy must still be in force by their acts. Only then
  * is the pinned tree listed, through the re-hashing reader from the recorded clone, and whether the subject is governed is decided again
  * from the project input in force now and that listing. The recomputed kind must equal the recorded one, and whenever the subject needs
@@ -25,7 +30,7 @@ import { RUN_LAYOUT } from './state-directory.js';
 
 export type ReverifyCode =
   | 'record-invalid' | 'consent-ids' | 'revision-unnamed' | 'registry' | 'policy' | 'listing' | 'governed-changed' | 'statement'
-  | 'statement-changed';
+  | 'statement-changed' | 'declared-changed';
 
 export interface ReverifyRefusal { readonly code: ReverifyCode; readonly reason: string }
 
@@ -63,8 +68,29 @@ export interface ReverifyOptions {
 
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,
-  'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and which statement covers it were decided again at this step from the records in force now and the pinned tree listed now',
+  'the run record names the repository, the clone and the pinned commit to look at; whether that commit is consented, whether the subject is governed and whether a per-project statement is in force were decided again at this step from the records in force now and the pinned tree listed now',
+  'which per-project statement applies is selected by the agent provider the run record declares: that provider, the statement citation it selects and the clone location are Inferred and lie within the agent sessions\' write reach; a tool or provider that differs from the one the brief record states refuses, but the brief record lies within the same reach, so an edit of both records together is not detected',
 ];
+
+const BRIEF_RECORD_LIMITS = Object.freeze({ maxBytes: 262_144, maxNodes: 4096, maxDepth: 8 });
+
+/** The agent tool and provider the brief record states, once the run is briefed (R-POLARIS-DOSSIER-S3-GATES-2 finding 6). */
+function briefDeclaredAgent(run: string): { readonly state: 'unbriefed' } | { readonly state: 'ok'; readonly tool: string; readonly provider: string } | { readonly state: 'invalid'; readonly why: string } {
+  let text: string;
+  try {
+    text = fs.readFileSync(path.join(run, RUN_LAYOUT.briefRecord), 'utf8');
+  } catch (cause) {
+    const code = (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
+    return code === 'ENOENT' ? { state: 'unbriefed' } : { state: 'invalid', why: `it cannot be read (${code})` };
+  }
+  let record: unknown;
+  try { record = parseBoundedJson(text, BRIEF_RECORD_LIMITS); } catch { return { state: 'invalid', why: 'it is not bounded JSON' }; }
+  const agent = record !== null && typeof record === 'object' && !Array.isArray(record) ? (record as Record<string, unknown>)['agent'] : undefined;
+  if (agent === null || typeof agent !== 'object' || Array.isArray(agent)) return { state: 'invalid', why: 'it states no agent tool and provider' };
+  const { tool, provider } = agent as Record<string, unknown>;
+  if (typeof tool !== 'string' || typeof provider !== 'string') return { state: 'invalid', why: 'it states no agent tool and provider' };
+  return { state: 'ok', tool, provider };
+}
 
 export async function reverifyPinnedRevision(runDir: string, sources: GateSources, now: number, options: ReverifyOptions = {}): Promise<ReverifyResult> {
   const refusals: ReverifyRefusal[] = [];
@@ -97,6 +123,12 @@ export async function reverifyPinnedRevision(runDir: string, sources: GateSource
   const [registryEntry, screeningPolicy] = await Promise.all([sources.registryEntry(), sources.screeningPolicy()]);
   if (registryEntry.state !== 'ok') refusals.push({ code: 'registry', reason: `the source-acquisition registry entry is no longer in force: ${registryEntry.why}` });
   if (screeningPolicy.state !== 'ok') refusals.push({ code: 'policy', reason: `the classification and screening policy is no longer in force: ${screeningPolicy.why}` });
+  const briefed = briefDeclaredAgent(path.resolve(runDir));
+  if (briefed.state === 'invalid') {
+    refusals.push({ code: 'declared-changed', reason: `the brief record ${RUN_LAYOUT.briefRecord} exists but ${briefed.why}, so whether the agent tool and provider changed since the brief cannot be decided` });
+  } else if (briefed.state === 'ok' && (briefed.tool !== declared.agentTool || briefed.provider !== declared.agentProvider)) {
+    refusals.push({ code: 'declared-changed', reason: `the run record declares agent tool ${declared.agentTool} and provider ${declared.agentProvider}, not the tool ${briefed.tool} and provider ${briefed.provider} the brief record states the run was briefed for; the provider selects the per-project statement` });
+  }
   // No object is read for a revision, repository or reader the gates no longer admit.
   if (refusals.length > 0 || !consent.satisfied) return refuse();
 
