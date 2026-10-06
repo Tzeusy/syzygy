@@ -12,6 +12,23 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-10-06 (P-103 — doctrine amendment D9)
+
+The owner adopted doctrine amendment D9, SEC-3 and the owner's attended
+agent session, with the words "Adopt D9 and v1 signed off" (the second half
+is the separate dossier sign-off). The bare "Adopt D9" is read as the
+packet's recommendations; that reading, and the doctrine bytes applied, are
+in the `D9` row of [`DOCTRINE-AMENDMENT-LOG.md`](DOCTRINE-AMENDMENT-LOG.md).
+Package:
+`../contracts/candidates/doctrine-amendment-sec3-attended-agent-session-d9/`;
+round-3 notes:
+[`DOCTRINE-AMENDMENT-D9-REVIEW-NOTES.md`](../contracts/candidates/DOCTRINE-AMENDMENT-D9-REVIEW-NOTES.md).
+The row as it stood in the register:
+
+| # | Decision | Type | Blocks / earliest gate | Owning record |
+|---|---|---|---|---|
+| P-103 | SEC-3 and the owner's attended agent session, doctrine amendment D9 (owner direction `POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05` item 1, "Allow on host, amend SEC-3", chosen over "Only in a sandbox" and "Forbid, disclose"; scope answered 2026-10-06 after round 2, POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md: "Any feature, per-run choice", chosen over "Dossier briefs only" and "Any feature, standing choice"). Q1, which text and so whom SEC-3's execution rule binds (round 2 folded Q2 into it): arm A (recommended) binds Syzygy, what it launches or schedules, and every instruction a Syzygy feature gives an agent (a brief, prompt, skill or work item), and permits one case in any feature: a Syzygy instruction may let an attended session the owner started on the owner's own host build and run observed code, on a choice the owner records for that one run, naming what it covers; a standing or per-project record does not qualify. This is wider than the dossier ruling, by the owner's choice, and a future feature needs no new doctrine act. The conditions: the choice for the run is recorded first, claims resting on the run are Inferred, and every reported command is disclosed. The case's limits bind Syzygy's instruction, not the session. "Untrusted, everywhere" and the violation example stay verbatim, and the cost is stated. Arm W binds everyone with one exception, and it would make CI and hand-typed commands violations. The `v1.md` sentence is optional. Q3: RFC5-12 "Absent: no observed code runs" and RFC5-24 "never visible to observed-project code" change effect in the permitted case; recommended (b), the condition that no adapter credential is readable, at the operating-system level, by the session or any process it starts while any runs, plus (a), recording RFC5-12's effect, with (c), an RFC 0005 amendment, queued. Q4: CC-SEC-3 follows after D9; the dossier brief is its named case. Q5: definitions kept in place. [Inferred] Pre-existing and independent of D9: `poc:capture-test-artifact` runs observed pytest without a profile (bead `syzygy-4mbu`). Rounds 1 and 2 (2026-10-06) returned `REVISE`; each was repaired once (`ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`), and round 3 is the last confirming round; a third `REVISE` returns to the owner. Adoption stays open. | doctrine amendment: owner adoption (VIS-4), no phrase | the local-agent dossier mode's sign-off (PR #353); any brief that lets an agent run observed code | `contracts/candidates/doctrine-amendment-sec3-attended-agent-session-d9/OWNER-DECISION-PACKET.md`; `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md` beside it |
+
 ## Resolved on 2026-09-27 (P-25, P-25(c) — doctrine amendment D5)
 
 The owner adopted doctrine amendment D5, a readability rewrite of all six

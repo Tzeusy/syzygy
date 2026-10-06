@@ -58,16 +58,56 @@ providers included — without explicit, recorded, per-project consent.
 - *Violation:* an index synced to a third-party service as a side effect of a
   feature; project source sent to an unnamed model provider.
 
-**SEC-3 — Observed code is untrusted, everywhere.** Observed-project code runs
-only inside an explicit, opt-in execution profile.
+**SEC-3 — Observed code is untrusted, everywhere.** Syzygy runs
+observed-project code only inside an explicit, opt-in execution profile.
 
 - **It is untrusted whoever owns the project.**
+- **What this binds:** Syzygy itself, every process Syzygy launches or
+  schedules, and every instruction a Syzygy feature gives an agent (a brief,
+  prompt, skill or work item). None of them runs observed code outside a
+  profile, or tells anything else to, except in the one permitted case
+  below.
 - **The profile is:** default-deny, with isolated credentials, declared
   network access, resource limits, and gates on destructive operations.
 - **The profile contract is a blocking RFC:** no observed-project code runs
   until it is accepted.
+- **The one permitted case — the owner's attended agent session.** A Syzygy
+  instruction may let an agent session build and run observed-project code
+  outside a profile when three things hold: the session is on the owner's
+  own host; the owner started it and attends it, being present to see and
+  stop what it does; and the owner has recorded a choice for that one run,
+  naming what the instruction covers. A standing or per-project record does
+  not qualify. The code stays untrusted, and:
+  - The owner's choice for the run is recorded before Syzygy issues the
+    instruction.
+  - Every claim that rests on that execution is labelled Inferred, never
+    Observed.
+  - Every command the session reports having run is disclosed, as the
+    session's own report.
+  - Syzygy keeps every credential it holds for its typed adapters where
+    neither the session nor any process it starts, directly or not, can read
+    it at the operating-system level, for as long as any of them runs.
+- **Whom the case binds:** Syzygy. Syzygy never gives the instruction to a
+  session it started or to one left running unattended, and never asks for a
+  process that outlives the session. Work the session hands to its own
+  subagents is part of the session. Once the instruction is given, SEC-3
+  governs what Syzygy does about the session, not what the session does.
+- **What the permitted case costs:** the session runs with the owner's own
+  credentials and network, including Syzygy's endpoints and any Syzygy
+  credential readable on that host. Observed code it runs can reach them,
+  and can change any file the owner can, the clone it runs in included.
+  Nothing contains it, so it gives none of a profile's guarantees. The owner
+  accepted that risk over two alternatives: allowing execution only in a
+  sandbox, and forbidding it.
 - *Violation:* an execution profile that inherits the host user's ambient
-  credentials "for convenience."
+  credentials "for convenience." The permitted case is not such a profile.
+  Its exposure to the owner's credentials is the same; what differs is that
+  nothing claims otherwise. It claims no containment, Syzygy instructs it
+  only on the owner's recorded choice for that run, and nothing resting on
+  it renders as more than Inferred. Also violations: Syzygy instructing a
+  session to run observed code before the owner's choice for that run is
+  recorded, or on a standing record; a claim that rests on the session's
+  execution rendered Observed.
 
 **SEC-4 — Writes are consented, attributed, and revertable.** Syzygy writes
 into a governed repository only with recorded consent, and every write can be
