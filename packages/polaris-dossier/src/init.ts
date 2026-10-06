@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { resolveCloneHead } from './clone-head.js';
-import { cloneRefShape, cloneStoreShape } from './clone-shape.js';
+import { cloneGitDirShape, cloneStoreShape } from './clone-shape.js';
 import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { dossierRepositoryUrl } from './github-url.js';
@@ -14,8 +14,8 @@ import { createRunDirectory, stateRootViolation, type RunPorts } from './state-d
  *
  * Syzygy's start gates pass before it reads any object for the run: the observation consent found by the URL, the source-acquisition
  * registry entry and the classification and screening policy, each in force by its act. Then the clone's HEAD must be a revision the
- * consent names; it becomes the pinned revision. The clone must hold that commit alone (clone-shape.ts): no ref but a detached HEAD,
- * shallow at that commit, and no object beyond its tree. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
+ * consent names; it becomes the pinned revision. The clone's `.git` must hold that commit alone (clone-shape.ts): only the entries the
+ * consented form leaves there, no ref but a detached HEAD, shallow at that commit, and no object beyond its tree. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
  * decide whether the subject is governed; a governed subject, or one whose project input is silent, needs the per-project statement.
  * Any failure refuses the run with its reason in human and machine form, and nothing is written. On success the run directory is made
  * under the state root, never inside or around the clone, and holds only `run.json`, which records the clone's real path as the one
@@ -68,6 +68,7 @@ export interface InitPorts extends RunPorts {
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,
   'HEAD was read from the clone\'s own .git files, which the agent sessions can write; it is compared with the revisions the consent names, and every object at the pinned revision is read by identifier and re-hashed',
+  'the clone\'s .git was checked at init to hold the consented commit alone, and is not checked again; the working tree outside .git is not inspected, though the agent reads the checked-out files, so anything placed there, a nested repository included, is not seen by that check',
   'the dossier commands serve no route, accept no network request and hold no credential that authenticates to Syzygy; the principal is the operator, operator-declared, with credential identity Unknown',
 ];
 
@@ -111,8 +112,8 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
     return refuse('revision', `the clone's HEAD ${head.commit} (${head.via}) is not a revision the in-force observation consent for ${repositoryId} names${consent.satisfied ? '' : `: ${consent.why}`}`, { consentedRevisions: revisions });
   }
 
-  const refShape = cloneRefShape(head.gitDir, head.commit);
-  if (!refShape.ok) return refuse('clone-shape', refShape.reason);
+  const gitDirShape = cloneGitDirShape(head.gitDir, head.commit);
+  if (!gitDirShape.ok) return refuse('clone-shape', gitDirShape.reason);
 
   let paths: readonly string[];
   try {

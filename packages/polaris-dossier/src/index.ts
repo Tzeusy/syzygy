@@ -33,7 +33,7 @@ export {
 export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';
-export { cloneRefShape, cloneStoreShape, type CloneShape } from './clone-shape.js';
+export { cloneGitDirShape, cloneStoreShape, type CloneShape } from './clone-shape.js';
 export {
   D9_ACT_FORM, DOSSIER_READER_IMPLEMENTATION_ID, DRAWER_FORMS, NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, RECORDS_WITHIN_REACH, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS,
   createPackageGateSources, providerStatementGate, registryEntryUsable,

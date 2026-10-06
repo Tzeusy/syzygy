@@ -16,7 +16,9 @@ JSON document.
 - `syzygy dossier preflight <url>`; stop if it refuses, naming the missing
   record. Make the clone with the commands preflight prints, for a revision
   it names, in a new empty directory: that one commit, fetched alone, never
-  a full clone. `init` refuses a clone that holds more.
+  a full clone. `init` refuses a `.git` that holds more than the commit. It
+  does not inspect the working tree, which you read, so put nothing else in
+  that directory.
 - Ask the operator for the deadline, a token or turn budget, the repair and
   question limits and the model; never choose them. Advise a generous
   deadline: it runs on Syzygy's clock from the brief and must cover the
