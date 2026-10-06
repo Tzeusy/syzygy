@@ -33,7 +33,7 @@ describe('the operating-system read attempt', () => {
     fs.writeFileSync(token, 'secret', { mode: 0o600 });
     fs.chmodSync(token, 0o000);
     const probe = createCredentialProbe(listOf([token, path.join(dir, 'absent.token')]));
-    expect(await probe.probe()).toEqual({ passed: true, checked: 2, source: 'fixture list' });
+    expect(await probe.probe()).toEqual({ passed: true, checked: 2, source: 'fixture list, together with 0 credential paths configured by typed adapters in this repository' });
     expect(probe.last()?.outcomes).toEqual([{ path: token, outcome: 'not-readable' }, { path: path.join(dir, 'absent.token'), outcome: 'absent' }]);
   });
 
@@ -73,8 +73,25 @@ describe('the credential list', () => {
     });
   });
 
-  it('fails closed on a list that names no credential', async () => {
-    expect(await createCredentialProbe(listOf([])).probe()).toEqual({ passed: false, why: 'the credential list names no credential, so the check establishes nothing (source: fixture list)' });
+  it('passes an explicitly declared empty list, saying it is operator-declared and naming the source', async () => {
+    expect(await createCredentialProbe(listOf([])).probe()).toEqual({
+      passed: true, checked: 0,
+      source: 'no adapter credential declared; list operator-declared, Inferred (fixture list, together with 0 credential paths configured by typed adapters in this repository)',
+    });
+  });
+
+  it('probes the union of the declared list and the paths typed adapters configure', async () => {
+    const dir = tempDir();
+    const configured = path.join(dir, 'provider.key');
+    fs.writeFileSync(configured, 'secret', { mode: 0o600 });
+    const probe = createCredentialProbe(listOf([]), undefined, [configured]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `adapter credentials readable by the operator's user: ${configured}` });
+    expect(probe.last()?.source).toBe('fixture list, together with 1 credential path configured by typed adapters in this repository');
+  });
+
+  it('configures no adapter credential in this repository, and never the cap1 machine token', async () => {
+    const { CONFIGURED_ADAPTER_CREDENTIALS } = await import('./credential-probe.js');
+    expect(CONFIGURED_ADAPTER_CREDENTIALS).toEqual([]);
   });
 
   it('reads a list file named by the environment and names it as the source', async () => {
@@ -82,8 +99,23 @@ describe('the credential list', () => {
     const file = path.join(dir, 'credentials.json');
     fs.writeFileSync(file, JSON.stringify({ format: 'syzygy-adapter-credential-list/1', credentials: [path.join(dir, 'absent.token')] }));
     expect(await createCredentialProbe(credentialListFromEnv({ SYZYGY_DOSSIER_CREDENTIAL_LIST: file })).probe()).toEqual({
-      passed: true, checked: 1, source: `the credential list file ${file}, which the agent sessions can write`,
+      passed: true, checked: 1, source: `the credential list file ${file}, which the agent sessions can write, together with 0 credential paths configured by typed adapters in this repository`,
     });
+  });
+
+  it('passes a list file that declares no credential, naming the file', async () => {
+    const dir = tempDir();
+    const file = path.join(dir, 'credentials.json');
+    fs.writeFileSync(file, JSON.stringify({ format: 'syzygy-adapter-credential-list/1', credentials: [] }));
+    expect(await createCredentialProbe(credentialListFromEnv({ SYZYGY_DOSSIER_CREDENTIAL_LIST: file })).probe()).toEqual({
+      passed: true, checked: 0,
+      source: `no adapter credential declared; list operator-declared, Inferred (the credential list file ${file}, which the agent sessions can write, together with 0 credential paths configured by typed adapters in this repository)`,
+    });
+  });
+
+  it('fails closed on an unreadable list file', async () => {
+    const dir = tempDir();
+    expect(await createCredentialProbe(credentialListFromFile(path.join(dir, 'missing.json'))).probe()).toMatchObject({ passed: false });
   });
 
   it.each<[string, unknown]>([
