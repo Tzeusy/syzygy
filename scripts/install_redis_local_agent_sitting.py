@@ -521,7 +521,48 @@ def step_battery(root: pathlib.Path, write: bool, steps: list[Step]) -> bool:
     return True
 
 
-def install(root: pathlib.Path, write: bool, steps: list[Step]) -> list[str]:
+#: P-104's open row, as the register carries it until the sitting resolves it.
+P104_OPEN = "| P-104 | The local-agent Redis sitting (`syzygy-qkea.14`): seven decisions"
+
+
+def p104_resolved_row(answers: dict) -> str:
+    """P-104 resolved in place, in the form P-53 took. The acts are named by the
+    brief's item letters only: a record filename, act identity or artifact path
+    is a stem the gate's withdrawal sweep reads (Note 6), and gate_sweep proves
+    this row carries none."""
+    acts = answers["acts"]
+    row3 = [r for k, r in (("redis-no-evidence-drawer", "3"), ("redis-agent-anthropic", "3a"),
+                           ("redis-agent-openai", "3b")) if k in acts]
+    taken = ["A (row 1)", "E (row 2)", f"F (row{'s' if len(row3) > 1 else ''} {' and '.join(row3)})"]
+    if "d9-in-force" in acts:
+        taken.append("G (row 4)")
+    taken.append("H (row 5)")
+    untaken = "" if "d9-in-force" in acts else " Row 4 was not taken: the agent may not build or run Redis."
+    return (f"| P-104 | [Observed] **Resolved {answers['date']}:** the local-agent Redis sitting recorded "
+            f"{', '.join(taken[:-1])} and {taken[-1]}, by the item letters of the sitting brief, each a separate "
+            f"act.{untaken} Each act's record is listed in `ACCEPTANCE-ACT-RECORD.md`. | owner acts recorded | "
+            "a local-agent Redis dossier run, once the post-sitting install and battery pass | "
+            "`contracts/candidates/REDIS-LOCAL-AGENT-SITTING-BRIEF.md` |")
+
+
+def step_p104(root: pathlib.Path, write: bool, answers: dict) -> bool:
+    path = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
+    lines = path.read_text(encoding="utf-8").split("\n")
+    at = [i for i, ln in enumerate(lines) if ln.startswith(P104)]
+    if len(at) != 1:
+        raise Refusal(f"PENDING-OWNER-DECISIONS.md carries {len(at)} P-104 rows, not exactly one")
+    new = p104_resolved_row(answers)
+    if lines[at[0]] == new:
+        return False
+    if not lines[at[0]].startswith(P104_OPEN):
+        raise Refusal("the P-104 row is neither its open form nor this sitting's resolved form: resolve it by hand")
+    if write:
+        lines[at[0]] = new
+        base.J.write(path, "\n".join(lines))
+    return True
+
+
+def install(root: pathlib.Path, write: bool, steps: list[Step], answers: dict) -> list[str]:
     pending = []
     for name, fn in (("registrations", step_registrations), ("rfc5", step_rfc5),
                      ("battery-copies", step_battery_copies),
@@ -531,6 +572,8 @@ def install(root: pathlib.Path, write: bool, steps: list[Step]) -> list[str]:
             pending.append(name)
     if step_battery(root, write, steps):
         pending.append("battery")
+    if step_p104(root, write, answers):
+        pending.append("p-104")
     return pending
 
 
@@ -608,13 +651,13 @@ def record_and_install(root: pathlib.Path, answers: dict) -> int:
                     raise Refusal(f"check_spec_reconciliation --regenerate: {(p.stdout + p.stderr)[-400:]}")
                 v11_route_edits(root, answers["date"])
                 print("v1.1: reconciliation regenerated, route edits applied")
-        pending = install(root, True, steps)
+        pending = install(root, True, steps, answers)
     except (Refusal, subprocess.SubprocessError, OSError, ValueError) as exc:
         print(f"REFUSED: {exc}")
         stash(root, str(exc))
         return 2
     print("installed: " + (", ".join(pending) if pending else "nothing to do"))
-    again = install(root, False, steps)
+    again = install(root, False, steps, answers)
     if again:
         print(f"NOT IDEMPOTENT: a second pass would still change {again}")
         return 1
@@ -647,7 +690,7 @@ def check(root: pathlib.Path, answers: dict) -> int:
             p = subprocess.run([sys.executable] + s.check[1:], cwd=root, capture_output=True, text=True)
             if p.returncode:
                 failing.append(s.label)
-        pending = install(root, False, steps)
+        pending = install(root, False, steps, answers)
     except Refusal as exc:
         print(f"REFUSED: {exc}")
         return 2
@@ -755,6 +798,31 @@ def selftest() -> int:
         (root / DECISIONS / "DECISION-HISTORY.md").write_text("| P-104 | moved |\n")
         ok.append(("a P-104 row moved into DECISION-HISTORY.md is refused",
                    any("never moved" in w for w in register_check(root))))
+        base.J = base.Journal()
+        try:
+            step_p104(root, True, good)
+            ok.append(("a P-104 row in neither form is refused, never overwritten", False))
+        except Refusal:
+            ok.append(("a P-104 row in neither form is refused, never overwritten", True))
+        reg = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
+        reg.write_text(f"before\n{P104_OPEN} (rows 1 to 5) | acts | run | packet |\nafter\n")
+        changed = step_p104(root, True, good)
+        text = reg.read_text()
+        ok.append(("the open P-104 row is resolved in place, the rows around it untouched",
+                   changed and text.startswith("before\n| P-104 | [Observed] **Resolved 2026-10-07:**")
+                   and text.endswith("\nafter\n") and text.count(P104) == 1))
+        ok.append(("resolving P-104 twice changes nothing", step_p104(root, False, good) is False))
+        row = p104_resolved_row(good)
+        ok.append(("the resolved row names each act by item letter, row 4 taken",
+                   all(s in row for s in ("A (row 1)", "E (row 2)", "F (row 3)", "G (row 4)", "and H (row 5)"))
+                   and "not taken" not in row and row.count(" | ") == 4))
+        no_d9 = json.loads(json.dumps(good))
+        no_d9["acts"].pop("d9-in-force")
+        no_d9["acts"].pop("redis-no-evidence-drawer")
+        no_d9["acts"].update({"redis-agent-anthropic": {}, "redis-agent-openai": {}})
+        row = p104_resolved_row(no_d9)
+        ok.append(("without D9 the row says row 4 was not taken; both provider statements are rows 3a and 3b",
+                   "G (row 4)" not in row and "Row 4 was not taken" in row and "F (rows 3a and 3b)" in row))
         ok.append(("a refusal of the answers writes nothing",
                    record_and_install(root, {"date": "x", "acts": {}}) == 2
                    and sorted(p.name for p in root.iterdir()) == [".git", ".syzygy", "m.txt"]))
