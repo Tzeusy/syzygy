@@ -4,12 +4,16 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DOSSIER_USAGE } from './cli.js';
 
-/** The lint over the installed agent texts (syzygy-qkea.12; REQ-polaris-generation-033 and 035; D9-N5; R3-F9): the Claude Code skill
- * and the Codex instructions. Neither grants execution: each defers to the execution rule in the run's `brief.md` and, absent it, says
- * the observed project is not built or run outside an explicit, opt-in execution profile. `allow-execution` appears only as a command
- * the operator types personally, beside the instruction never to run it. Every `syzygy dossier` command they name exists, with the
- * options and literal arguments its usage states and every option its usage requires. The skill's description names any repository
- * the operator holds the consents for, not only public ones. Each predicate is shown to fire on a mutated copy of the text. */
+/** The lint over the installed agent texts (syzygy-qkea.12; REQ-polaris-generation-033 and 035 at version 1.1; D9-N5, N1 and N6 as
+ * signed; R3-F9): the Claude Code skill and the Codex instructions. Neither grants execution: each defers every session to the
+ * execution rule in the brief or packet it was given (the run's `brief.md` for the authoring session, per the v1.1 review notes' note 1)
+ * and, absent it, says the observed project is not built or run outside an explicit, opt-in execution profile. `allow-execution`
+ * appears only as a command the operator types personally, beside the instruction never to run it, and the choice covers one run.
+ * Every reported command carries its working directory and, where the brief asks, whether it is within the choice's scope. The texts
+ * advise a generous deadline and closing before it passes. Every `syzygy dossier` command they name exists, with the options and
+ * literal arguments its usage states and every option its usage requires. The description names any repository the operator holds the
+ * consents for, not only public ones, and the request "generate me a Polaris dossier for <url>". Each predicate is shown to fire on a
+ * mutated copy of the text. */
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const TEXTS = ['.claude/skills/polaris-dossier/SKILL.md', '.codex/skills/polaris-dossier/SKILL.md'];
@@ -116,15 +120,54 @@ function descriptionFaults(text: string): string[] {
   return faults;
 }
 
+/** D9-N5 as signed in v1.1, quoted from the change's own spec bytes (the test fails if a later version moves the sentence), and the
+ * obligation the v1.1 review notes record against it (note 1): each session defers to the brief or packet it was given, the run's
+ * `brief.md` only for the authoring session. */
+const SPEC = 'openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md';
+const N5 = 'The `/polaris-dossier` skill and the Codex instructions SHALL NOT grant execution themselves: they SHALL only defer to the execution rule in the run\'s `brief.md`, and absent that brief SHALL state that the observed project is not to be built or run outside an explicit, opt-in execution profile.';
+const NEVER_RUN = 'The skill and agent texts SHALL tell the agent never to run that command.';
+
 function deferralFaults(text: string): string[] {
   const flat = text.replace(/\s+/gu, ' ');
   const faults: string[] = [];
-  if (!/Follow the execution rule in the run's `brief\.md`/u.test(flat)) faults.push('the text does not defer to the execution rule in the run\'s brief.md');
-  if (!/not to be built or run outside an explicit, opt-in execution profile/u.test(flat)) faults.push('the text does not say, absent the brief, that the project is not built or run outside an explicit, opt-in execution profile');
+  if (!/\bgrants? no execution of (?:its|their) own\b/u.test(flat)) faults.push('the text does not say it grants no execution of its own');
+  if (!/Follow the execution rule in the brief or packet this session was given: the run's `brief\.md` when you author, the inventory brief or review packet in a session handed over to\./u.test(flat)) faults.push('the text does not defer each session to the execution rule in the brief or packet it was given');
+  if (!/Absent that brief, the observed project is not to be built or run outside an explicit, opt-in execution profile\./u.test(flat)) faults.push('the text does not say, absent the brief, that the project is not built or run outside an explicit, opt-in execution profile');
   return faults;
 }
 
-const lint = (text: string): string[] => [...commandFaults(text), ...grantingSentences(text).map((s) => `grants execution: ${s}`), ...allowExecutionFaults(text).map((b) => `allow-execution not the operator's: ${b}`), ...descriptionFaults(text), ...deferralFaults(text)];
+/** The owner's choice covers one run (D9-N1 as ruled: a run is one authoring session at one pinned revision), never a standing one. */
+function runScopeFaults(text: string): string[] {
+  return /The choice covers this one run at its pinned revision: never reuse one from an earlier run\./u.test(text.replace(/\s+/gu, ' ')) ? [] : ['the text does not say the choice covers this one run and is never reused'];
+}
+
+/** D9-N6 as signed: every reported command carries its working directory and, where the brief asks, whether it is within the scope. */
+function commandReportFaults(text: string): string[] {
+  const flat = text.replace(/\s+/gu, ' ');
+  const faults: string[] = [];
+  if (!/`executions`, with the working directory you ran it in\b/u.test(flat)) faults.push('the text does not ask for each command\'s working directory');
+  if (!/where the brief asks, whether it falls within the scope the owner's choice names/u.test(flat)) faults.push('the text does not ask, where the brief does, whether a command falls within the scope the owner\'s choice names');
+  return faults;
+}
+
+/** The deadline is applied literally: advise a generous one, and close before it passes. */
+function deadlineFaults(text: string): string[] {
+  const flat = text.replace(/\s+/gu, ' ');
+  const faults: string[] = [];
+  if (!/Advise a generous deadline\b/u.test(flat)) faults.push('the text does not advise a generous deadline');
+  if (!/Close before the deadline passes: after it `close` refuses, the run gets no Execution Record and its usage is not recorded\./u.test(flat)) faults.push('the text does not say to close before the deadline passes');
+  return faults;
+}
+
+/** The description triggers on the operator's plain request. */
+function triggerFaults(text: string): string[] {
+  return (frontmatter(text)['description'] ?? '').includes('"generate me a Polaris dossier for <url>"') ? [] : ['the description does not name the request "generate me a Polaris dossier for <url>"'];
+}
+
+const lint = (text: string): string[] => [
+  ...commandFaults(text), ...grantingSentences(text).map((s) => `grants execution: ${s}`), ...allowExecutionFaults(text).map((b) => `allow-execution not the operator's: ${b}`),
+  ...descriptionFaults(text), ...deferralFaults(text), ...runScopeFaults(text), ...commandReportFaults(text), ...deadlineFaults(text), ...triggerFaults(text),
+];
 
 describe('agent texts (S11)', () => {
   it('reads every command synopsis from the usage text', () => {
@@ -133,6 +176,13 @@ describe('agent texts (S11)', () => {
     expect(SYNOPSES.get('launch-form')!.positional).toEqual(['<run>', 'inventory|review', 'terminal|bang']);
     expect(SYNOPSES.get('allow-execution')!.required).toEqual(new Set(['--revision', '--declare']));
     expect(SYNOPSES.get('review-check')!.options.get('--kind')).toEqual(['fidelity', 'design']);
+  });
+
+  it('quotes D9-N5 and the never-run sentence from the v1.1 spec bytes', () => {
+    const spec = fs.readFileSync(path.join(ROOT, SPEC), 'utf8');
+    expect(spec.split(N5)).toHaveLength(2);
+    expect(spec.split(NEVER_RUN)).toHaveLength(2);
+    expect(spec).toContain('Exact behavioral delta, version 1.1.');
   });
 
   for (const file of TEXTS) {
@@ -154,6 +204,20 @@ describe('agent texts (S11)', () => {
     expect(commandFaults(swap('--kind fidelity|design --verdict verdict.json', '--kind summary --verdict verdict.json'))).toHaveLength(1);
     expect(allowExecutionFaults(swap('Never\n   run that command yourself', 'Run\n   that command yourself'))).toHaveLength(1);
     expect(descriptionFaults(swap('for any repository the operator holds the consents for', 'for any public repository'))).toHaveLength(2);
-    expect(deferralFaults(swap('Follow the execution rule in the run\'s `brief.md`', 'Use your judgement'))).toHaveLength(1);
+    expect(deferralFaults(swap('Follow the execution rule in\n  the brief or packet this session was given', 'Follow the execution rule in\n  the run\'s `brief.md`'))).toHaveLength(1);
+    expect(deferralFaults(swap('This skill grants no execution of its own.', 'This skill grants execution.'))).toHaveLength(1);
+    expect(deferralFaults(swap('Absent that brief, the observed project', 'Later, the observed project'))).toHaveLength(1);
+    expect(runScopeFaults(swap('never\n   reuse one from an earlier run', 'reuse\n   one from an earlier run'))).toHaveLength(1);
+    expect(commandReportFaults(swap('with the working directory you ran it in', 'with what it did'))).toHaveLength(1);
+    expect(commandReportFaults(swap('whether it falls within the scope the owner\'s choice names', 'why'))).toHaveLength(1);
+    expect(deadlineFaults(swap('Advise a generous deadline', 'Suggest a deadline'))).toHaveLength(1);
+    expect(deadlineFaults(swap('Close before the deadline passes', 'Close when done'))).toHaveLength(1);
+    expect(triggerFaults(swap('for example "generate me a Polaris dossier for <url>", ', ''))).toHaveLength(1);
+  });
+
+  it('the description lint holds the trigger phrase against the Codex text too', () => {
+    const text = fs.readFileSync(path.join(ROOT, TEXTS[1]!), 'utf8');
+    expect(triggerFaults(text)).toEqual([]);
+    expect(triggerFaults(text.replace('"generate me a Polaris dossier for <url>"', '"make a site"'))).toHaveLength(1);
   });
 });
