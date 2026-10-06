@@ -384,6 +384,32 @@ export const OPERATOR_REPORTED_DISCLOSURE =
   'Reported by the operator, not verified by Syzygy. Syzygy observed the result file\'s digest and totals, and that HEAD was this commit when the file was ingested. That the tests ran, at this commit, on a clean working tree, with exit status 0, is the operator\'s report, and the working tree\'s state is not checked. RFC5-19: "an artifact of unverifiable origin caps at report-fact however retained, well-formed, and revision-bound it is."';
 
 /**
+ * One word for a POSIX shell: single-quoted, each `'` written `'\''`
+ * (#386 round 1, note 5). For display only: Syzygy hands it to no shell.
+ */
+export function posixShellWord(word: string): string {
+  return `'${word.replaceAll("'", `'\\''`)}'`;
+}
+
+/**
+ * What the live verification test says when the operator's result is
+ * missing: the commands to run in their own shell, with the checkout, the
+ * interpreter and the test path each quoted as one shell word, so a path
+ * with a space or a quote pastes as the command it names.
+ */
+export function liveTestOperatorInstructions(repoRoot: string, python: string, scope: string): string {
+  const repo = posixShellWord(repoRoot);
+  return (
+    'Syzygy does not run the Butlers test suite. For the owner or a human operator: an agent session must not run ' +
+    'the pytest command below unless the owner has recorded a SEC-3 choice for that run. In your own shell, run\n' +
+    `  git -C ${repo} rev-parse HEAD\n` +
+    `  cd ${repo} && ${posixShellWord(python)} -m pytest ${posixShellWord(scope)} -q --junitxml=<file>; echo "exit $?"\n` +
+    'then set SYZYGY_POC_BUTLERS_JUNIT=<file>, SYZYGY_POC_BUTLERS_JUNIT_COMMIT=<commit> and ' +
+    'SYZYGY_POC_BUTLERS_JUNIT_EXIT=<status>, and run this test again.'
+  );
+}
+
+/**
  * There is no Verified result. Every record Syzygy can read was written
  * outside a run Syzygy launched or observed, so the best it supports is
  * `report-fact` (RFC5-19); a Verified result needs a producer whose

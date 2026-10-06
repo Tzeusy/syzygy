@@ -21,10 +21,22 @@ import { beforeAll, describe, expect, it } from 'vitest';
 // read in the live test only: the modules the test imports index arrays and
 // records by variable keys at 89 sites, so a key built at run time (the
 // string "constructor" assembled from pieces) inside one of them is not
-// caught here. The test is skipped in the default suite and runs only
-// when an operator sets SYZYGY_POC_BUTLERS_REPO; a new route has to be
-// spelled where a reviewer sees it, but the check does not prove that no
-// route exists.
+// caught here (recorded as the expected survivor H15).
+//
+// A second residual is git itself (#386 round 1, finding 2 and note 4): the
+// permitted command runs programs its options and configuration name. The
+// check refuses the options that do so (`-c`, `--config-env`, `--exec-path`)
+// and any `alias.` string as literals, and any write to process.env, but
+// not an option assembled from pieces at run time (the expected survivor
+// H23). Nor can it see what git inherits: the GIT_CONFIG_* variables, PATH
+// and GIT_EXEC_PATH of the operator's environment, and the checkout's own
+// `.git/config`, which the observer's git fallback reads with arguments the
+// observer chooses (`core.fsmonitor` names a program that index-refreshing
+// commands run). Those are the operator's, not committed project content.
+//
+// The test is skipped in the default suite and runs only when an operator
+// sets SYZYGY_POC_BUTLERS_REPO; a new route has to be spelled where a
+// reviewer sees it, but the check does not prove that no route exists.
 
 const SRC = dirname(fileURLToPath(import.meta.url));
 const LIVE = 'test-artifact-verification.live.test.ts';
@@ -51,6 +63,35 @@ const FORBIDDEN_MEMBER_NAMES = new Set([
   'constructor', 'prototype', '__proto__',
   'getPrototypeOf', 'setPrototypeOf', 'getOwnPropertyDescriptor', 'getOwnPropertyDescriptors', 'getOwnPropertyNames', 'defineProperty', 'Proxy',
 ]);
+
+/** #386 round 1, finding 2: git options that name a program git then runs,
+ * or that rewrite its configuration (where `alias.*`, `core.fsmonitor` and
+ * `core.pager` name programs). Refused as literals anywhere in the closure. */
+const GIT_PROGRAM_OPTIONS: readonly ((text: string) => boolean)[] = [
+  (text) => text === '-c',
+  (text) => text.startsWith('--config-env'),
+  (text) => text.startsWith('--exec-path'),
+  (text) => text.includes('alias.'),
+];
+
+/** Whether `target` is written: assigned to, deleted, incremented, or a
+ * destructuring target. */
+function isWritten(target: ts.Expression): boolean {
+  let node: ts.Node = target;
+  while (
+    ts.isParenthesizedExpression(node.parent) || ts.isArrayLiteralExpression(node.parent) || ts.isObjectLiteralExpression(node.parent) ||
+    ts.isSpreadElement(node.parent) || ts.isSpreadAssignment(node.parent) || ts.isShorthandPropertyAssignment(node.parent) ||
+    (ts.isPropertyAssignment(node.parent) && node.parent.initializer === node)
+  ) node = node.parent;
+  const parent = node.parent;
+  if (ts.isBinaryExpression(parent) && parent.left === node) {
+    return parent.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && parent.operatorToken.kind <= ts.SyntaxKind.LastAssignment;
+  }
+  if (ts.isDeleteExpression(parent)) return true;
+  if ((ts.isPrefixUnaryExpression(parent) || ts.isPostfixUnaryExpression(parent))
+    && (parent.operator === ts.SyntaxKind.PlusPlusToken || parent.operator === ts.SyntaxKind.MinusMinusToken)) return true;
+  return (ts.isForInStatement(parent) || ts.isForOfStatement(parent)) && parent.initializer === node;
+}
 
 /** A computed key the check can read: a plain string or number literal. */
 function isLiteralKey(node: ts.Expression): boolean {
@@ -92,6 +133,23 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
         const names = bindings !== undefined && ts.isNamedImports(bindings) ? bindings.elements.map((element) => element.getText()) : ['<not named>'];
         if (names.some((name) => name !== RUN_GIT) || node.importClause?.name !== undefined) add(`binds ${names.join(', ')} from the process module`);
       }
+      // #386 round 1, note 3: a re-export hands the process module to an
+      // importer that this rule never sees bind it.
+      if (specifier === PROCESS_MODULE && ts.isExportDeclaration(node)) add('re-exports from the process module');
+    }
+    // #386 round 1, finding 1: `import m = require('node:module')` names no
+    // module specifier above and no `require` identifier, since the keyword
+    // is a token; it reached `createRequire` and started `sh`.
+    if (ts.isImportEqualsDeclaration(node)) add('import = require');
+    // #386 round 1, finding 2: git runs programs named by its own options,
+    // so a literal `git` alone does not keep it from starting a shell.
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node)) {
+      if (GIT_PROGRAM_OPTIONS.some((option) => option(node.text))) add(`names the git option ${JSON.stringify(node.text)}`);
+    }
+    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'process' && node.name.text === 'env') {
+      const read = node.parent;
+      if (!ts.isPropertyAccessExpression(read) || read.expression !== node) add('uses process.env other than reading one named variable');
+      else if (isWritten(read)) add('writes process.env');
     }
     if (ts.isCallExpression(node)) {
       if (node.expression.kind === ts.SyntaxKind.ImportKeyword) add('dynamic import()');
@@ -201,6 +259,23 @@ describe('the live verification test, and every module it imports, runs no obser
     [`${RUN_GIT}.call(null, 'sh', []);`, `uses ${RUN_GIT} other than as a direct call`],
     [`${RUN_GIT}.apply(null, ['sh', []]);`, `uses ${RUN_GIT} other than as a direct call`],
     [`const r = ${RUN_GIT}; r('sh');`, `uses ${RUN_GIT} other than as a direct call`],
+    // #386 round 1, finding 1: the reviewer's probe, and its plain form.
+    [`import m = require('node:module');\n(m.createRequire(import.meta.url)(['node:child', 'process'].join('_')) as { spawnSync: (c: string, a: string[]) => unknown }).spawnSync('sh', ['-c', 'touch x']);`, 'import = require'],
+    [`import cp = require('${PROCESS_MODULE}');`, 'import = require'],
+    // #386 round 1, note 3: a re-export from the process module.
+    [`export { spawn } from '${PROCESS_MODULE}';`, 're-exports from the process module'],
+    [`export * from '${PROCESS_MODULE}';`, 're-exports from the process module'],
+    // #386 round 1, finding 2: the reviewer's probe, and git's other program-naming options.
+    [`${RUN_GIT}('git', ['-c', 'alias.probe=!touch x', 'probe']);`, 'names the git option "-c"'],
+    [`${RUN_GIT}('git', ['--config-env=core.pager=P', 'log']);`, 'names the git option "--config-env=core.pager=P"'],
+    [`${RUN_GIT}('git', ['--exec-path=/tmp', 'status']);`, 'names the git option "--exec-path=/tmp"'],
+    [`const key = \`alias.\${'p'}\`;`, 'names the git option "alias."'],
+    ["process.env.GIT_CONFIG_COUNT = '1';", 'writes process.env'],
+    ["process.env.PATH += ':/tmp';", 'writes process.env'],
+    ['delete process.env.GIT_DIR;', 'writes process.env'],
+    ["({ x: process.env.PATH } = { x: '/tmp' });", 'writes process.env'],
+    ["Object.assign(process.env, { PATH: '/tmp' });", 'uses process.env other than reading one named variable'],
+    ["const { PATH } = process.env;", 'uses process.env other than reading one named variable'],
   ])('the tree check refuses %s', (fragment, violation) => {
     const { violations } = closure(LIVE, { [LIVE]: `${fragment}\n` });
     expect(violations.some((entry) => entry.file === LIVE && entry.reason.startsWith(violation)), JSON.stringify(violations)).toBe(true);
@@ -211,6 +286,8 @@ describe('the live verification test, and every module it imports, runs no obser
       expect(source).toContain(`process.env.${name};`);
     }
     expect(source).toContain('const rawJUnit = readBoundedRegularFile(JUNIT);');
+    // #386 round 1, note 5: the printed command quotes each path as one shell word.
+    expect(source).toContain('throw new Error(liveTestOperatorInstructions(repoRoot, PYTHON, SCOPE));');
     expect(source).not.toMatch(/\breadFileSync\b/);
   });
 
