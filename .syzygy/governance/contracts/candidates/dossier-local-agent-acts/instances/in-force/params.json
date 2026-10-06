@@ -1,0 +1,27 @@
+{
+  "D9-IN-FORCE-RECORD.md": {
+    "template": "D9-IN-FORCE-RECORD-TEMPLATE.md",
+    "bound": [
+      ".syzygy/governance/doctrine/security.md",
+      ".syzygy/governance/doctrine/v1.md"
+    ],
+    "fields": {
+      "ADOPTION": "by the owner's own words on 2026-10-06, logged as row D9 of `.syzygy/governance/decisions/DOCTRINE-AMENDMENT-LOG.md`; that adoption binds no digest, which is why this record exists"
+    }
+  },
+  "RFC7-20-READING-IN-FORCE-RECORD.md": {
+    "template": "RFC7-20-READING-IN-FORCE-RECORD-TEMPLATE.md",
+    "bound": [
+      ".syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md"
+    ],
+    "fields": {
+      "DIRECTION_ID": "POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05",
+      "DIRECTION": "a plain owner direction given 2026-10-05 in `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`; it binds no digest, which is why this record exists"
+    }
+  },
+  "common": {
+    "DRAFT_DATE": "2026-10-06",
+    "OWNER": "Tzeusy",
+    "VERSION": "0.1.0-candidate.1"
+  }
+}

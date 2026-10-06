@@ -1731,6 +1731,55 @@ PUBLIC_EGRESS_V2_ACTS = (
     ("CONSENT TO PUBLIC TARGET EGRESS TO ANTHROPIC VERSION 2",
      f"{PUBLIC_EGRESS_V2_DIR}/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"),
 )
+#: The local-agent dossier sitting (syzygy-qkea.14): five separate state-(1)
+#: acts, each over one record named by a row of the sitting manifest, given by
+#: option selection at that row. Registered before the packet exists so a stale
+#: argument copy fails CG-7d and CG-7e; the performed records arrive with the
+#: acts and no chain link is registered. The manifest's registry-entry row is no
+#: act's argument (that entry is signed by version tag). Only the confirming
+#: round's notes record carries the phrases; it joins this tuple when that round
+#: returns (a REVISE round's record quotes no digest and is not registered).
+DOSSIER_LOCAL_AGENT_DIR = f"{CANDIDATES}/dossier-local-agent-acts"
+DOSSIER_LOCAL_AGENT_MANIFEST = f"{DOSSIER_LOCAL_AGENT_DIR}/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt"
+#: Each round's dispositions record, with the labels whose current argument it
+#: carries (None: all five). Round 2's drawer phrase was retired on 2026-10-07,
+#: when the round-3 repair of its note 6 changed that record.
+DOSSIER_LOCAL_AGENT_DISPOSITION_NAMES: dict[str, tuple[str, ...] | None] = {
+    "ROUND-2-DISPOSITIONS.md": (
+        "CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS",
+        "CONSENT TO AGENT PROVIDER OPENAI FOR REDIS-REDIS",
+        "BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS",
+        "BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS",
+    ),
+    "ROUND-3-DISPOSITIONS.md": None,
+}
+DOSSIER_LOCAL_AGENT_ACTS = (
+    ("STATE NO KERNEL EVIDENCE DRAWER FOR REDIS-REDIS",
+     f"{DOSSIER_LOCAL_AGENT_DIR}/instances/redis/NO-EVIDENCE-DRAWER-STATEMENT.md"),
+    ("CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS",
+     f"{DOSSIER_LOCAL_AGENT_DIR}/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md"),
+    ("CONSENT TO AGENT PROVIDER OPENAI FOR REDIS-REDIS",
+     f"{DOSSIER_LOCAL_AGENT_DIR}/instances/redis/AGENT-PROVIDER-STATEMENT-OPENAI.md"),
+    ("BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS",
+     f"{DOSSIER_LOCAL_AGENT_DIR}/instances/in-force/D9-IN-FORCE-RECORD.md"),
+    ("BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS",
+     f"{DOSSIER_LOCAL_AGENT_DIR}/instances/in-force/RFC7-20-READING-IN-FORCE-RECORD.md"),
+)
+#: Each act's dedicated record, written by `record_dossier_local_agent_acts.py`;
+#: registered with the aggregate record once it exists (its selftest checks
+#: these paths against the recorder's own).
+DOSSIER_LOCAL_AGENT_ACT_RECORDS = {
+    "STATE NO KERNEL EVIDENCE DRAWER FOR REDIS-REDIS":
+        f"{DECISIONS}/DOSSIER-LOCAL-AGENT-REDIS-NO-EVIDENCE-DRAWER-ACT.md",
+    "CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS":
+        f"{DECISIONS}/DOSSIER-LOCAL-AGENT-REDIS-AGENT-ANTHROPIC-ACT.md",
+    "CONSENT TO AGENT PROVIDER OPENAI FOR REDIS-REDIS":
+        f"{DECISIONS}/DOSSIER-LOCAL-AGENT-REDIS-AGENT-OPENAI-ACT.md",
+    "BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS":
+        f"{DECISIONS}/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-ACT.md",
+    "BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS":
+        f"{DECISIONS}/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md",
+}
 #: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
 #: and registry acts over amended artifact bytes. Each amended act gets its own
 #: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
@@ -2494,6 +2543,11 @@ def _act_subjects():
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     if os.path.isfile(os.path.join(ROOT, PUBLIC_EGRESS_V2_MANIFEST)):
         for label, subject in PUBLIC_EGRESS_V2_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, DOSSIER_LOCAL_AGENT_MANIFEST)):
+        for label, subject in DOSSIER_LOCAL_AGENT_ACTS:
             if not any(l == label for l, _rel, _pat in out):
                 out.append((label, subject, re.compile(
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -3269,6 +3323,33 @@ def _activate_public_egress_v2_manifest_copy_registry():
 
 
 _activate_public_egress_v2_manifest_copy_registry()
+
+
+def _activate_dossier_local_agent_manifest_copy_registry():
+    """The local-agent sitting manifest carries its five current arguments as rows.
+
+    Existence-gated candidate registration; the performed records arrive with
+    the acts. The round notes records are registered when they exist, so a
+    digest ever quoted there is checked.
+    """
+    labels = tuple(label for label, _subject in DOSSIER_LOCAL_AGENT_ACTS)
+    if os.path.isfile(os.path.join(ROOT, DOSSIER_LOCAL_AGENT_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[DOSSIER_LOCAL_AGENT_MANIFEST] = labels
+    for name, carried in DOSSIER_LOCAL_AGENT_DISPOSITION_NAMES.items():
+        rel = f"{DOSSIER_LOCAL_AGENT_DIR}/{name}"
+        if os.path.isfile(os.path.join(ROOT, rel)):
+            ACT_DIGEST_COPY_FILES[rel] = labels if carried is None else carried
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, record in DOSSIER_LOCAL_AGENT_ACT_RECORDS.items():
+        if not os.path.isfile(os.path.join(ROOT, record)):
+            continue
+        present = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in present:
+            ACT_DIGEST_COPY_FILES[aggregate] = present + (label,)
+        ACT_DIGEST_COPY_FILES[record] = (label,)
+
+
+_activate_dossier_local_agent_manifest_copy_registry()
 
 
 #: The public-source screening scope, version 2 (sitting row 12): one state-(1)

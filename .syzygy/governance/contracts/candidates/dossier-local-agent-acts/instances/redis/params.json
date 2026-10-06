@@ -1,0 +1,32 @@
+{
+  "NO-EVIDENCE-DRAWER-STATEMENT.md": {
+    "template": "NO-EVIDENCE-DRAWER-STATEMENT-TEMPLATE.md",
+    "fields": {
+      "BASIS": "`project:syzygy` has never onboarded this repository: it is a public repository offered for observation only, and observed only while the observation consent `PUBLIC-OBS-REDIS-2026-10-03` is in force; Syzygy keeps no evidence drawer for a repository it would only observe. This statement stays true whether or not that consent is signed. The owner states the absence; Syzygy cannot observe it."
+    }
+  },
+  "AGENT-PROVIDER-STATEMENT-ANTHROPIC.md": {
+    "template": "AGENT-PROVIDER-STATEMENT-TEMPLATE.md",
+    "fields": {
+      "PROVIDER_ID": "anthropic",
+      "TOOL": "Claude Code, run by the operator with the operator's own account",
+      "PROVIDER": "Anthropic, under the terms and settings of the operator's own account; Syzygy holds no key or account for it",
+      "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`"
+    }
+  },
+  "AGENT-PROVIDER-STATEMENT-OPENAI.md": {
+    "template": "AGENT-PROVIDER-STATEMENT-TEMPLATE.md",
+    "fields": {
+      "PROVIDER_ID": "openai",
+      "TOOL": "Codex, run by the operator with the operator's own account",
+      "PROVIDER": "OpenAI, under the terms and settings of the operator's own account; Syzygy holds no key or account for it",
+      "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`"
+    }
+  },
+  "common": {
+    "DRAFT_DATE": "2026-10-06",
+    "OWNER": "Tzeusy",
+    "VERSION": "0.1.0-candidate.1",
+    "REPOSITORY_ID": "redis-redis"
+  }
+}

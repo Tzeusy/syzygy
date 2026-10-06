@@ -50,7 +50,9 @@ validates, in this order, and writes nothing until every step passes:
 6. the package's own builder check passes on the unapplied package.
 
 Then the package's patches are applied through its builder, the dedicated
-record `decisions/<STEM>-SIGNOFF-v<M.m>.md` is written, one marked block is
+record `decisions/<STEM>-SIGNOFF-v<M.m>.md` is written (for a package that
+installs a registry entry, naming that entry and the SHA-256 of its installed
+bytes, which `--check` re-hashes), one marked block is
 appended to `ACCEPTANCE-ACT-RECORD.md`, and the tag to create is printed.
 
 `--check <package> --version M.m` reports "not performed" and exits 0 when no
@@ -62,6 +64,7 @@ a mutation fixture per predicate in temporary git repositories.
 from __future__ import annotations
 
 import argparse
+import datetime
 import importlib
 import pathlib
 import re
@@ -113,6 +116,10 @@ class Package:
     also: tuple[pathlib.Path, ...] = ()
     #: The reviewed subject, pre-apply; the raw's head digest must hash it.
     subject: pathlib.Path | None = None
+    #: A registry entry the sign-off installs. The record then names it with
+    #: the SHA-256 of its installed bytes (RFC3-16(b) item 3: approving a path
+    #: never approves later content at it), and `--check` re-hashes it.
+    installed: pathlib.Path | None = None
     #: The subject's reviewed bytes when they are not the file on disk (a
     #: successor carried as patches to an installed version): computed
     #: pre-apply from the tree, and hashed in place of ``subject``.
@@ -158,6 +165,7 @@ def real_packages() -> dict[str, Package]:
     readability = lambda: _module("build_pwb_readability_successor")  # noqa: E731
     tree_framing = lambda: _module("build_pwb_tree_framing_amendment")  # noqa: E731
     dossier = lambda: _module("build_polaris_dossier_local_agent_mode")  # noqa: E731
+    git_source = lambda: _module("build_public_git_source_acquisition_local_agent")  # noqa: E731
     dossier11 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_1")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
@@ -233,6 +241,22 @@ def real_packages() -> dict[str, Package]:
             subject=pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode/"
                                  "proposed/polaris-generation/spec.md"),
         ),
+        # Offered only if the owner extends Scope A to this entry at the
+        # sitting. The sitting review's head binds the sitting manifest, whose
+        # row for the proposed entry the builder check requires to be current.
+        "public-git-source-acquisition-local-agent": Package(
+            "public-git-source-acquisition-local-agent",
+            "Public Git source acquisition, local-agent version",
+            "registry entry",
+            CANDIDATES / "public-git-source-acquisition-local-agent",
+            "PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT",
+            lambda root: git_source().check(root),
+            lambda root: git_source().apply(root),
+            lambda root: git_source().applied(root),
+            subject=CANDIDATES / "dossier-local-agent-acts/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt",
+            installed=pathlib.Path(".syzygy/governance/declarations/adapter-registry/"
+                                   "POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json"),
+        ),
         # Version 1.1 patches the installed v1.0: its own candidate directory,
         # builder and reviewed bytes, under the same key, record stem and tag
         # series. ``package_for`` selects it for ``--version 1.1``.
@@ -287,7 +311,13 @@ def recorded_versions(root: pathlib.Path, pkg: Package) -> list[tuple[int, int]]
 
 # --- validation -------------------------------------------------------------
 
-def validate_inputs(version: str, date: str, quote: str) -> None:
+#: The Scope A direction names "the observer registry entry" of the PWB work. A
+#: package that installs any other registry entry is signed under Scope A only
+#: if the owner extends it, so its selection quote must name that extension.
+SCOPE_A_EXTENSION = "Extend Scope A"
+
+
+def validate_inputs(version: str, date: str, quote: str, pkg: Package | None = None) -> None:
     if not VERSION_RE.fullmatch(version):
         raise ValueError(f"version {version!r} is not major.minor without leading zeros")
     if not DATE_RE.fullmatch(date):
@@ -297,6 +327,10 @@ def validate_inputs(version: str, date: str, quote: str) -> None:
     if HEX64_RE.search(quote):
         raise ValueError("owner selection quote must not carry a digest; "
                          "a version-tagged sign-off names the version, not bytes")
+    if pkg is not None and pkg.installed is not None and SCOPE_A_EXTENSION not in quote:
+        raise ValueError(f"owner selection quote must name the Scope A extension "
+                         f"({SCOPE_A_EXTENSION!r}): this package installs a registry entry "
+                         f"Scope A does not name")
 
 
 def parse_head(review: str) -> tuple[str, str]:
@@ -440,6 +474,50 @@ DIRECTION_NOTE = (
     "digest argument exists.")
 
 
+INSTANT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+RECORDED_RE = re.compile(r"^Recorded at \(UTC\): (\S+)$", re.MULTILINE)
+
+
+def installed_lines(pkg: Package, root: pathlib.Path | None, instant: str | None) -> str:
+    """For a package that installs a registry entry, the RFC3-16(b) binding set
+    the tag alone does not carry: the entry and the SHA-256 of its installed
+    bytes (item 3), the act type (4), the instant (6), the scope (7), the
+    supersession (8), the provenance state and the explicit A1 absence (9).
+    RFC4-7 honours an entry only under RFC3-16(a), and RFC3-16(b) makes a
+    record that omits item 9 invalid."""
+    if pkg.installed is None:
+        return ""
+    path = (root or ROOT) / pkg.installed
+    sha = beh.digest(path.read_bytes()) if path.is_file() else "absent"
+    return (f"Recorded at (UTC): {instant}\n\n"
+            "Act type: `adopt-registry-entry`\n\n"
+            "Project identity: `project:syzygy`\n\n"
+            f"Installed entry: {pkg.installed.as_posix()}\n\n"
+            f"Installed entry SHA-256: {sha}\n\n"
+            "Scope: the entry's own subject and read authority, nothing wider\n\n"
+            f"Scope A extension: the owner's selection quoted above names it "
+            f"(\"{SCOPE_A_EXTENSION}\"); the extension is a plain owner direction "
+            "and this record is its only record\n\n"
+            "Supersession / revocation: supersedes nothing; revoked only by a later\n"
+            "exact owner act naming it\n\n"
+            "Provenance state: `owner-adopted (bootstrap, uncorrelated)` — state (1),\n"
+            "the owner's option selection quoted above\n\n"
+            "A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**\n\n")
+
+
+def does_not(pkg: Package) -> str:
+    if pkg.installed is None:
+        return ("It authorizes no implementation of the signed semantics, widens no consent,\n"
+                "read, write or egress, and approves no registry or policy byte. Every\n"
+                "exclusion of the acts in force stands.\n")
+    return ("It approves the registry entry named above at exactly the SHA-256 above and\n"
+            "no other byte: a later edit at that path is unsigned. It is one of the\n"
+            "separate acts a read needs; it gives no observation consent, adopts no\n"
+            "classification or screening policy, widens no egress, write or execution,\n"
+            "and authorizes no implementation. Every exclusion of the acts in force\n"
+            "stands.\n")
+
+
 def options_line(pkg: Package, options: frozenset[str]) -> str:
     """The record's options line; empty for a package that declares none."""
     if not pkg.options:
@@ -449,7 +527,8 @@ def options_line(pkg: Package, options: frozenset[str]) -> str:
 
 def render_record(pkg: Package, version: str, date: str, quote: str, review: str,
                   commit: str, verdict: str, disposition: str | None,
-                  options: frozenset[str] = frozenset()) -> str:
+                  options: frozenset[str] = frozenset(), *,
+                  root: pathlib.Path | None = None, instant: str | None = None) -> str:
     return f"""# {pkg.title} — version-tagged sign-off v{version}
 
 Date: {date}
@@ -474,7 +553,7 @@ Review verdict: {verdict}
 
 Disposition: {disposition or "none"}
 
-{options_line(pkg, options)}{DIRECTION_NOTE}
+{installed_lines(pkg, root, instant)}{options_line(pkg, options)}{DIRECTION_NOTE}
 
 ## What this records
 
@@ -491,10 +570,19 @@ new version signed separately; it does not retire this one.
 
 ## What this does not do
 
-It authorizes no implementation of the signed semantics, widens no consent,
-read, write or egress, and approves no registry or policy byte. Every
-exclusion of the acts in force stands.
-"""
+{does_not(pkg)}"""
+
+
+def aggregate_scope(pkg: Package) -> str:
+    """The aggregate's closing sentence, tailored as `does_not` is."""
+    if pkg.installed is None:
+        return ("This sign-off authorizes no implementation, widens no consent, read, write or\n"
+                "egress, and a later version of the package is signed separately.")
+    return ("This sign-off approves the registry entry its dedicated record names, at the\n"
+            "SHA-256 recorded there, under the Scope A extension the owner's selection\n"
+            "names. That is one of the separate acts a read needs. It gives no observation\n"
+            "consent, widens no write, egress or execution, authorizes no implementation,\n"
+            "and a later version of the package is signed separately.")
 
 
 def render_aggregate(pkg: Package, version: str, date: str, review: str,
@@ -517,8 +605,7 @@ Claude Code CLI (quoted in the dedicated record).
 | Recording | `{record_rel(pkg, version).as_posix()}`; annotated tag `{tag_for(pkg, version)}` on the commit carrying these records and the applied result |
 | Direction | `{DIRECTION_REL.as_posix()}` |
 
-This sign-off authorizes no implementation, widens no consent, read, write or
-egress, and a later version of the package is signed separately.
+{aggregate_scope(pkg)}
 {end}
 """
 
@@ -556,9 +643,14 @@ def parse_options(pkg: Package, text: str) -> frozenset[str]:
 
 def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
            review_rel: str, disposition_rel: str | None,
-           options: frozenset[str] = frozenset()) -> int:
+           options: frozenset[str] = frozenset(), *, instant: str | None = None) -> int:
+    if instant is None:
+        instant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
-        validate_inputs(version, date, quote)
+        validate_inputs(version, date, quote, pkg)
+        if pkg.installed is not None and not (INSTANT_RE.fullmatch(instant)
+                                              and instant.startswith(date + "T")):
+            raise ValueError("instant must be YYYY-MM-DDTHH:MM:SSZ (UTC) on the sign-off's date")
         unknown = sorted(set(options) - set(pkg.options))
         if unknown:
             raise ValueError(f"options {unknown} are not this package's; "
@@ -585,7 +677,8 @@ def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str
     disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
     (root / record_rel(pkg, version)).write_text(
         render_record(pkg, version, date, quote, review_rel, commit, verdict, disposition,
-                      options),
+                      options, root=root,
+                      instant=instant if pkg.installed is not None else None),
         encoding="utf-8")
     block = render_aggregate(pkg, version, date, review_rel, verdict, disposition)
     aggregate = root / AGGREGATE_REL
@@ -614,11 +707,19 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         text = rec.read_text(encoding="utf-8")
         f = parse_record(text)
         disposition = None if f["Disposition"] == "none" else f["Disposition"]
+        validate_inputs(version, f["Date"], f["Owner selection"], pkg)
         commit, verdict = validate_review(root, f["Review"], disposition)
         if (commit, verdict) != (f["Reviewed commit"], f["Review verdict"]):
             raise ValueError("record's reviewed commit or verdict differs from the review")
+        instant = None
+        if pkg.installed is not None:
+            found = RECORDED_RE.findall(text)
+            if len(found) != 1:
+                raise ValueError(f"record carries {len(found)} 'Recorded at (UTC)' lines, not 1")
+            instant = found[0]
         if text != render_record(pkg, version, f["Date"], f["Owner selection"], f["Review"],
-                                 commit, verdict, disposition, parse_options(pkg, text)):
+                                 commit, verdict, disposition, parse_options(pkg, text),
+                                 root=root, instant=instant):
             raise ValueError("dedicated record differs from its regeneration")
         block = render_aggregate(pkg, version, f["Date"], f["Review"], verdict, disposition)
         if aggregate_text(root).count(block) != 1:
@@ -1060,6 +1161,83 @@ def selftest() -> int:
         code, _ = run_record(tmp)
         results.append(("an edited sibling disposition record is not package bytes", code == 0))
 
+    with tempfile.TemporaryDirectory() as t:
+        tmp = pathlib.Path(t)
+        entry = pathlib.Path("declarations/ENTRY.json")
+        (tmp / "declarations").mkdir()
+        entry_bytes = b'{"entry": 1}\n'
+        (tmp / entry).write_bytes(entry_bytes)
+        base = stub_package()
+        reg = Package(base.key, base.title, "registry entry", base.candidate, base.record_stem,
+                      base.check, base.apply, base.applied, installed=entry)
+        args = ("1.0", "2026-10-06", "Extend Scope A to this entry and sign v1.0", "r.md", "c" * 40, "CONFIRM", None)
+        at = dict(root=tmp, instant="2026-10-06T09:30:00Z")
+        first = render_record(reg, *args, **at)
+        results.append(("a registry-entry record names the installed entry and its SHA-256",
+                        "Installed entry SHA-256: " + beh.digest(entry_bytes) in first
+                        and "approves no registry or policy byte" not in first))
+        results.append(("a registry-entry record carries RFC3-16(b) items 4, 6, 8 and 9",
+                        all(line in first for line in (
+                            "Recorded at (UTC): 2026-10-06T09:30:00Z",
+                            "Act type: `adopt-registry-entry`",
+                            "Supersession / revocation:",
+                            "A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**"))))
+        (tmp / entry).write_bytes(b'{"entry": 2}\n')
+        results.append(("an edit to the installed entry changes its record's regeneration",
+                        render_record(reg, *args, **at) != first))
+        plain = render_record(base, *args, **at)
+        results.append(("a package without an installed entry renders no entry lines",
+                        "Installed entry" not in plain and "approves no registry or policy byte" in plain
+                        and "Scope A extension" not in plain))
+        results.append(("a registry-entry record names the Scope A extension",
+                        'Scope A extension: the owner\'s selection quoted above names it ("Extend Scope A")' in first))
+        reg_block = render_aggregate(reg, "1.0", "2026-10-06", "r.md", "CONFIRM", None)
+        results.append(("the aggregate block of a registry entry says it is one of the acts a read "
+                        "needs, and no longer that it widens no read",
+                        "one of the separate acts a read needs" in reg_block and "widens no consent, read" not in reg_block
+                        and "widens no consent, read" in render_aggregate(base, "1.0", "2026-10-06", "r.md", "CONFIRM", None)))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t))
+        entry = pathlib.Path("declarations/ENTRY.json")
+        base = stub_package()
+
+        def install(root):
+            (root / entry).parent.mkdir(parents=True, exist_ok=True)
+            (root / entry).write_text('{"entry": 1}\n')
+            return 0
+        reg = Package(base.key, base.title, "registry entry", base.candidate, base.record_stem,
+                      base.check, install, lambda root: (root / entry).is_file(),
+                      also=base.also, subject=base.subject, installed=entry)
+        import io
+        import contextlib
+        with contextlib.redirect_stdout(io.StringIO()):
+            no_extension = record(tmp, reg, "1.0", "2026-10-02", "Sign it", STUB_REVIEW, None,
+                                  instant="2026-10-02T09:30:00Z")
+            off_date = record(tmp, reg, "1.0", "2026-10-02", "Extend Scope A and sign it", STUB_REVIEW, None,
+                              instant="2026-10-03T00:00:00Z")
+            wrote = record(tmp, reg, "1.0", "2026-10-02", "Extend Scope A and sign it", STUB_REVIEW, None,
+                           instant="2026-10-02T09:30:00Z")
+            checked = check(tmp, reg, "1.0")
+            rec = tmp / record_rel(reg, "1.0")
+            signed = rec.read_text(encoding="utf-8")
+            rec.write_text(signed.replace("Owner selection: Extend Scope A and sign it",
+                                          "Owner selection: Sign it"), encoding="utf-8")
+            requoted = check(tmp, reg, "1.0")
+            rec.write_text(signed, encoding="utf-8")
+            (tmp / entry).write_text('{"entry": 2}\n')
+            drifted = check(tmp, reg, "1.0")
+        results.append(("a registry-entry sign-off refuses a quote not naming the Scope A extension "
+                        "and an instant off its date, then records and checks, and an edit to the "
+                        "installed entry fails its check",
+                        no_extension == 1 and off_date == 1 and wrote == 0 and checked == 0 and drifted == 1))
+        results.append(("--check refuses a registry-entry record whose quote no longer names the "
+                        "Scope A extension", requoted == 1))
+    real_reg = real_packages()["public-git-source-acquisition-local-agent"]
+    results.append(("the real registry package installs its builder's entry and binds the sitting manifest",
+                    real_reg.installed == _module("build_public_git_source_acquisition_local_agent").INSTALLED
+                    and real_reg.subject == _module(
+                        "build_public_git_source_acquisition_local_agent").SITTING_MANIFEST))
+
     failing = 0
     for name, ok in results:
         failing += 0 if ok else 1
@@ -1079,6 +1257,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--review", help="the retained raw review, repo-relative")
     parser.add_argument("--disposition", help="the record beside the package (notes-only)")
     parser.add_argument("--owner-selection-quote", dest="quote")
+    parser.add_argument("--instant", help="UTC YYYY-MM-DDTHH:MM:SSZ on --date (default now); "
+                        "recorded only for a package that installs a registry entry")
     parser.add_argument("--option", action="append", default=[],
                         help="an option the owner took (repeatable; the package declares them)")
     args = parser.parse_args(argv)
@@ -1099,7 +1279,7 @@ def main(argv: list[str]) -> int:
             parser.error(f"--{ 'owner-selection-quote' if needed == 'quote' else needed} "
                          "is required with --record")
     return record(ROOT, pkg, args.version, args.date, args.quote,
-                  args.review, args.disposition, frozenset(args.option))
+                  args.review, args.disposition, frozenset(args.option), instant=args.instant)
 
 
 if __name__ == "__main__":

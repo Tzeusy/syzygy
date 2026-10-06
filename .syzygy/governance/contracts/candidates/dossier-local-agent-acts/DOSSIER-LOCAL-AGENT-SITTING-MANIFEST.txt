@@ -1,0 +1,13 @@
+# DOSSIER LOCAL-AGENT SITTING MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 6 rows sorted by codepoint path; each hashes the file's exact bytes.
+# Each row under instances/ is the argument of one separate owner act over
+# that record; no row binds another. The proposed registry-entry row is no
+# act's argument: the owner may sign that entry off by version tag, and the
+# row binds the sitting review to its bytes.
+41fdfaea8cbde4cd8220910113fb5b376c7834a470d8c2d9badd9ab0fec9ac66  .syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force/D9-IN-FORCE-RECORD.md
+f0725a204b6e6ccbccb211441e26e139502ef42a6447d0f4a40df2d09062f3d9  .syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force/RFC7-20-READING-IN-FORCE-RECORD.md
+fbbcd3c0e3d49aab3384a4ab18bf35816dbd8fb952e658d1edbac3d1c50e48a7  .syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md
+07006f9333ca9db0ff8a1ab8a4c37ce58db66780406d78ac79df6894668cd583  .syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/redis/AGENT-PROVIDER-STATEMENT-OPENAI.md
+e2dc0e2398cd9094001fc57c892d7090d445efc829c06588eb6ccf7475979f50  .syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/redis/NO-EVIDENCE-DRAWER-STATEMENT.md
+917aecc766f01133d5a29c1ee8b3e575332ad48d04308a1b62c68217e48d254b  .syzygy/governance/contracts/candidates/public-git-source-acquisition-local-agent/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json
