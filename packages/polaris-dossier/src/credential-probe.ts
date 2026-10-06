@@ -161,7 +161,7 @@ export async function credentialStepCheck(runDir: string, step: CredentialStep, 
   const run = path.resolve(runDir);
   const briefIssued = fs.existsSync(path.join(run, RUN_LAYOUT.brief)) || fs.existsSync(path.join(run, RUN_LAYOUT.briefRecord));
   if (!briefIssued) return { required: false, why: 'no brief has been issued, so no permission to execute exists' };
-  if (briefArm(run) === 'sec-3') return { required: false, why: 'the brief carried SEC-3\'s rule and permits no execution' };
+  if (storedBriefArm(run) === 'sec-3') return { required: false, why: 'the brief carried SEC-3\'s rule and permits no execution' };
   const result = await probe.probe();
   if (result.passed) return { required: true, passed: true, checked: result.checked, source: result.source };
   const finding: CredentialBreachFinding = {
@@ -172,8 +172,8 @@ export async function credentialStepCheck(runDir: string, step: CredentialStep, 
   return { required: true, passed: false, finding };
 }
 
-/** The arm the stored brief record names; null when it cannot be read, which the caller treats as permitting (fail closed). */
-function briefArm(run: string): 'sec-3' | 'permitting' | null {
+/** The arm the stored brief record names; null when it cannot be read, which every caller treats as permitting (fail closed). */
+export function storedBriefArm(run: string): 'sec-3' | 'permitting' | null {
   try {
     const record = parseBoundedJson(fs.readFileSync(path.join(run, RUN_LAYOUT.briefRecord), 'utf8'), { maxBytes: 262_144, maxNodes: 4096, maxDepth: 8 }) as { executionRule?: { arm?: unknown } };
     const arm = record.executionRule?.arm;

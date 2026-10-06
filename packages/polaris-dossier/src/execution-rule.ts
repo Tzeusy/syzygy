@@ -154,6 +154,8 @@ export function executionRuleSection(rule: ExecutionRule, report: 'executions' |
     'Before this session ends, stop every process you started, including any you left running in the background, and say in your report that you did.',
     'If `syzygy dossier check` reports that the permission has lapsed or that an adapter credential is readable, run nothing further.',
     '',
+    `For every command you run, also give in \`executions\` its \`workingDirectory\`, the absolute path you ran it in, and its \`scope\`: \`within-scope\` when it falls within what the owner's execution choice names (building or running the observed project in the clone, from this session, for run \`${rule.choice.runId}\` and revision \`${rule.choice.revision}\`), \`outside-scope\` when it does not. A command is admitted without them, but Syzygy flags, beside the command and labelled Inferred, each one that reports no working directory, whose working directory lies outside the clone, or that you mark \`outside-scope\`. A flag refuses no step and hides no command: it makes the command visible, it does not permit or forbid it.`,
+    '',
     `What the permitted case costs, as adopted (\`${rule.doctrine.path}\`, lines ${rule.cost.startLine}–${rule.cost.endLine}, sha256 \`${rule.doctrine.sha256}\`):`,
     '',
     fence(rule.cost),

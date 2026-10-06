@@ -1,6 +1,7 @@
 import { types } from 'node:util';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { DIAGRAM_KINDS, QUOTE_LEAD_IN, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN } from '@syzygy/polaris-generation-core';
+import { EXECUTION_SCOPES } from './execution-flags.js';
 
 /** The local-agent draft schema (REQ-polaris-generation-034; design "The local-agent draft schema").
  *
@@ -15,7 +16,8 @@ import { DIAGRAM_KINDS, QUOTE_LEAD_IN, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGT
  * fixed here. The schema checks shape only. Unique identities, resolving references, quotations, paths and ranges at the pinned
  * revision, and the execution marking against the executions list are `check`'s, over the frozen revision. */
 
-export const LOCAL_DRAFT_SCHEMA_VERSION = 'polaris-dossier-local-draft-v1';
+/** v2: an execution's `workingDirectory` is optional and it may state its `scope` (v1.1, N6). */
+export const LOCAL_DRAFT_SCHEMA_VERSION = 'polaris-dossier-local-draft-v2';
 
 /** The understanding record's items, in REQ-polaris-generation-002's order. */
 export const UNDERSTANDING_ITEMS = Object.freeze([
@@ -44,8 +46,8 @@ const choice = (values: readonly string[]): DraftSchema => ({ type: 'string', mi
 const handle: DraftSchema = { type: 'string', minLength: SOURCE_ID_MIN_LENGTH, maxLength: SOURCE_ID_MAX_LENGTH, pattern: SOURCE_ID_PATTERN };
 const list = (items: DraftSchema, minItems: number, maxItems: number): DraftSchema => ({ type: 'array', items, minItems, maxItems });
 const refs = (minItems: number, maxItems: number): DraftSchema => ({ type: 'array', items: handle, minItems, maxItems, uniqueItems: true });
-const object = (properties: Record<string, DraftSchema>): DraftSchema =>
-  ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
+const object = (properties: Record<string, DraftSchema>, optional: readonly string[] = []): DraftSchema =>
+  ({ type: 'object', properties, required: Object.keys(properties).filter((key) => !optional.includes(key)), additionalProperties: false });
 
 /** A repository path as `git ls-tree` names it: relative, no NUL. Whether it names a blob is `check`'s. */
 const repoPath: DraftSchema = { type: 'string', minLength: 1, maxLength: 1024, pattern: '^[^/\\u0000][^\\u0000]*$' };
@@ -139,7 +141,9 @@ export function localDraftSchema(parameters: DraftSchemaParameters): DraftSchema
       id: handle, question: text, evidence: citations(0), consequence: text, options: list(text, 0, 10),
       answer: text, answerKind: choice(CLARIFICATION_ANSWER_KINDS), attribution: one('operator'),
     }), 0, parameters.maxQuestions),
-    executions: list(object({ id: handle, command: text, workingDirectory: text, purpose: text }), 0, 500),
+    // REQ-polaris-generation-033 (v1.1, N6): a command is admitted whether or not it carries its working directory and scope; where
+    // execution was permitted, Syzygy flags one without them or outside the clone or scope (execution-flags.ts), and refuses nothing.
+    executions: list(object({ id: handle, command: text, workingDirectory: text, scope: choice(EXECUTION_SCOPES), purpose: text }, ['workingDirectory', 'scope']), 0, 500),
   }) };
 }
 
@@ -331,9 +335,9 @@ function visit(defs: DraftSchemaWithDefs['defs'], reference: DraftSchema, value:
     if (!Object.hasOwn(schema.properties, key)) errors.push({ path: `${at}.${key}`, detail: 'is not a field of this form' });
     else if (!descriptors[key]!.enumerable) errors.push({ path: `${at}.${key}`, detail: 'is not enumerable' });
   }
-  for (const key of schema.required) {
-    if (!Object.hasOwn(descriptors, key)) errors.push({ path: `${at}.${key}`, detail: 'is required' });
-    else visit(defs, schema.properties[key]!, descriptors[key]!.value, `${at}.${key}`, errors);
+  for (const key of Object.keys(schema.properties)) {
+    if (Object.hasOwn(descriptors, key)) visit(defs, schema.properties[key]!, descriptors[key]!.value, `${at}.${key}`, errors);
+    else if (schema.required.includes(key)) errors.push({ path: `${at}.${key}`, detail: 'is required' });
   }
 }
 

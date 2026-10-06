@@ -75,7 +75,7 @@ type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 3) => ({ id, path: file, startLine, endLine });
 const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
 export const draft = (commit: string, plantSecret = false): Doc => ({
-  schemaVersion: 'polaris-dossier-local-draft-v1',
+  schemaVersion: 'polaris-dossier-local-draft-v2',
   pinnedRevision: commit,
   sessionId: 'authoring-session-1',
   title: 'Kestrel',
@@ -157,6 +157,11 @@ export interface FullRunOptions {
   readonly renderer: DossierRenderer;
   /** The draft reports a command whose text carries a credential-shaped token (`PLANTED_SECRET`). */
   readonly plantSecret?: boolean;
+  /** The brief record names the permitting arm, as a permitting brief would (the arm itself is off in production); every later step
+   * then runs the credential check, so `env` must name a credential list. */
+  readonly permitted?: boolean;
+  /** The draft's `executions` in place of the fixture's, given the clone's path. */
+  readonly executions?: (clone: string) => readonly Doc[];
 }
 
 export interface FullRunStep { readonly argv: readonly string[]; readonly exit: number; readonly stdout: string; readonly stderr: string }
@@ -194,9 +199,13 @@ export async function fullFixtureRun(options: FullRunOptions): Promise<{ readonl
   const init = await cli(['init', clone, '--url', FIXTURE_URL, '--config', configFile, '--state-root', stateRoot]);
   const run = init['run'] as string;
   await cli(['brief', run]);
+  if (options.permitted === true) {
+    const briefRecord = JSON.parse(fs.readFileSync(path.join(run, 'brief.json'), 'utf8')) as Doc;
+    write(path.join(run, 'brief.json'), { ...briefRecord, executionRule: { arm: 'permitting' } });
+  }
   clock = LATER;
   fs.mkdirSync(path.join(run, 'drafts'), { recursive: true });
-  write(path.join(run, 'drafts', 'next.json'), draft(commit, options.plantSecret ?? false));
+  write(path.join(run, 'drafts', 'next.json'), { ...draft(commit, options.plantSecret ?? false), ...(options.executions ? { executions: options.executions(clone) } : {}) });
   await cli(['check', run]);
   const inv = await cli(['session-prompt', run, 'inventory']);
   write(path.join(inv['directory'] as string, 'inventory.json'), inventory(commit));

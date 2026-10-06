@@ -105,7 +105,7 @@ const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) =>
 const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
 const DISCOVERY_MARK = 'Read the server first, then the notes 7731.';
 const draft = (): Doc => ({
-  schemaVersion: 'polaris-dossier-local-draft-v1',
+  schemaVersion: 'polaris-dossier-local-draft-v2',
   pinnedRevision: commit,
   sessionId: 'authoring-session-1',
   title: 'Kestrel',

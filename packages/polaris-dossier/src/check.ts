@@ -3,8 +3,9 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, type TrackedText } from '@syzygy/polaris-generation-core';
-import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, type CredentialStepResult } from './credential-probe.js';
+import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { SESSION_ID_PATTERN, UNDERSTANDING_ITEMS, checkDraftShape, localDraftSchema, type DraftSchemaWithDefs } from './draft-schema.js';
+import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
@@ -121,6 +122,9 @@ export interface CheckRecord {
   /** The authoring session's identifier as the draft declares it; null where it declares none that is well formed. */
   readonly session: { readonly sessionId: string | null; readonly declaredBy: 'the authoring session'; readonly label: 'Inferred' };
   readonly findings: readonly CheckFinding[];
+  /** Where execution was permitted, the flags on the reported commands (v1.1, N6): disclosed beside each command, never a finding that
+   * sets the outcome, so a flag refuses no step. */
+  readonly executionFlags: ExecutionFlags;
   readonly quotations: readonly VerifiedQuotation[];
   readonly excludedContent: readonly ExcludedQuotation[];
   readonly citedBlobs: readonly CitedBlob[];
@@ -162,6 +166,7 @@ const DISCLOSURES = [
   'Every result of this check was derived at this step from Git objects read by identifier at the pinned revision and re-hashed now; no earlier check result, byte range or record of earlier reads was used.',
   'The repair-cycle count is the number of frozen draft revisions in the run directory, and the deadline runs from the instant the brief record states; both are stored where the agent sessions can write, so both are Inferred.',
   'Whether a claim not marked as resting on execution rests on it is the agent\'s report; Syzygy sees only the marking.',
+  `Where the brief permitted execution, each reported command without a working directory, with one outside the clone, or that the agent states falls outside the owner's choice is flagged in executionFlags, beside the command: ${EXECUTION_FLAGS_BASIS}`,
   'The discovery account is the agent\'s self-report, labelled Inferred; a path in it that exists does not make it Observed or complete.',
   'Quoted text without the lead-in is the agent\'s prose, not a quotation, and is never rendered as Observed.',
   'The clone read is the one the run record names, as the operator supplied it at init; the record is within the agent sessions\' write reach, so the location is Inferred, and only objects re-hashed from the pinned commit are used.',
@@ -193,6 +198,9 @@ export interface CheckedRevision {
   readonly deadline: CheckRecord['limits']['deadline'];
   /** The parsed subject; undefined when it is not one bounded JSON document. */
   readonly doc: unknown;
+  readonly run: string;
+  /** The clone's path as the run record names it. */
+  readonly clonePath: string;
 }
 
 /** A subject's own gate, run once the subject is parsed and before any object is read: a refusal, or what it found for the record. */
@@ -235,6 +243,7 @@ const DRAFT_PLAN: SubjectPlan<CheckRecord, null> = {
     draft: checked.file,
     session: { sessionId: declaredSessionId(checked.doc), declaredBy: 'the authoring session', label: 'Inferred' },
     findings: checked.findings,
+    executionFlags: executionFlags(isObj(checked.doc) ? checked.doc['executions'] : undefined, checked.clonePath, storedBriefArm(checked.run)),
     quotations: checked.quotations,
     excludedContent: checked.excludedContent,
     citedBlobs: checked.citedBlobs,
@@ -361,6 +370,8 @@ export async function checkSubject<R extends object, G>(runDir: string, file: st
     repairCycles: { declared: declared.maxRepairCycles, thisRevision: revision, label: 'Inferred', basis: `the frozen ${noun} revisions in the run directory` },
     deadline: { endsAt: isoOf(deadlineEnds), label: 'Inferred', basis: 'the issue instant the brief record states, plus the declared deadline' },
     doc: parseFault === null ? doc : undefined,
+    run,
+    clonePath: subject.clone.path,
   }, gate.found, declared);
   try {
     fs.mkdirSync(checksDir, { recursive: true, mode: 0o700 });
