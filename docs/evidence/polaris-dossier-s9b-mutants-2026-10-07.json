@@ -1,7 +1,7 @@
 {
-  "record": "Rule-6 mutants for the polaris-dossier S9b slice (syzygy-qkea.10), the rendered-design review (REQ-polaris-generation-035, scenario \"Design review survives its status region\"; design decision 5): the region not removed from a page (D1) or a page with two regions accepted (D2); the machine view keeping its reviewStatus member (D3) or re-serialized so a layout change outside it passes unseen (D4); a design verdict naming another packet (D5), omitting a page (D6), carrying a quotation (D7), declaring ready beside a deficient page (D8) or declared under the authoring session's identifier (D9) accepted; render not checking that its second drawing equals the first outside the region (R1), not stating its decision in the region (R2), keying excluded sources afresh per render (R3), or labelling the design verdict it states Observed (R4); the size report measuring the region (V1); a design session handed the fidelity packet (H1); a design launch form recorded as the fidelity session's (H2); review-check ignoring --kind (C1); design and fidelity verdicts numbered together (C2). Not authority.",
+  "record": "Rule-6 mutants for the polaris-dossier S9b slice (syzygy-qkea.10), the rendered-design review (REQ-polaris-generation-035, scenario \"Design review survives its status region\"; design decision 5): the region not removed from a page (D1), a page with two regions accepted (D2), a page with no region accepted unchanged (D10), or the strip range widened past the region by one tag (D11) or through a sibling aside after it (D12);the machine view keeping its reviewStatus member (D3) or re-serialized so a layout change outside it passes unseen (D4); a design verdict naming another packet (D5), omitting a page (D6), carrying a quotation (D7), declaring ready beside a deficient page (D8) or declared under the authoring session's identifier (D9) accepted; render not checking that its second drawing equals the first outside the region (R1), not stating its decision in the region (R2), keying excluded sources afresh per render (R3), feeding the excluded-source key anything but the path alone, whether the path with its object identifier (R5) or the object identifier, the blob's content digest, alone (R6), or labelling the design verdict it states Observed (R4); the size report measuring the region (V1); a design session handed the fidelity packet (H1); a design launch form recorded as the fidelity session's (H2); review-check ignoring --kind (C1); design and fidelity verdicts numbered together (C2). Not authority.",
   "measuredOn": {
-    "commit": "a1a339814cf729d9899a7947a2a414b8c95ff198",
+    "commit": "299b25c3b0ea36995577a82f097471a977703e85",
     "subjects": [
       {
         "path": "packages/polaris-generation-core/src/local-render.ts",
@@ -29,7 +29,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/render.test.ts",
-        "sha256": "04737d66f25c432ede0b46eb4a67f5c56878b4d060ac9b12ccfdf344e566123b"
+        "sha256": "d2b19ec1cb07044ef5d39a398733eac55ab0edda9927059a130e2557ce785b2b"
       },
       {
         "path": "packages/polaris-dossier/src/design-review.test.ts",
@@ -38,11 +38,11 @@
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S9b worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
-  "history": "A first run at `commit` had, as R4, a mutant making the review page's design group depend on the design decision; it survived because it is equivalent by construction: render applies the decision to the review-status region only, after the page builder ran, so the builder never sees it. It was replaced by the R4 below, and the whole set re-run at `commit`.",
+  "history": "A first run at `commit` had, as R4, a mutant making the review page's design group depend on the design decision; it survived because it is equivalent by construction: render applies the decision to the review-status region only, after the page builder ran, so the builder never sees it. It was replaced by the R4 below. That set (18 of 18 killed at a1a33981) was extended after review with D10-D12 and R5-R6, and the whole set re-run at `commit`.",
   "command": "npx vitest run packages/polaris-dossier/src/render.test.ts packages/polaris-dossier/src/design-review.test.ts",
   "result": {
-    "killed": 18,
-    "total": 18
+    "killed": 23,
+    "total": 23
   },
   "mutants": [
     {
@@ -51,7 +51,7 @@
       "old": "return html.slice(0, start) + html.slice(close + '</aside>'.length);",
       "new": "return html;",
       "outcome": "killed",
-      "failedTests": 31
+      "failedTests": 32
     },
     {
       "id": "D2-second-region-allowed",
@@ -62,12 +62,36 @@
       "failedTests": 2
     },
     {
+      "id": "D10-zero-regions-accepted",
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "old": "if (start === -1 || html.indexOf(REVIEW_STATUS_REGION_OPEN, start + 1) !== -1) return undefined;",
+      "new": "if (start === -1) return html; if (html.indexOf(REVIEW_STATUS_REGION_OPEN, start + 1) !== -1) return undefined;",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "D11-strip-widened-one-tag",
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "old": "return html.slice(0, start) + html.slice(close + '</aside>'.length);",
+      "new": "return html.slice(0, start) + html.slice(html.indexOf('>', close + '</aside>'.length) + 1);",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "D12-sibling-aside-stripped",
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "old": "return html.slice(0, start) + html.slice(close + '</aside>'.length);",
+      "new": "const next = html.indexOf('</aside>', close + 1); return html.slice(0, start) + html.slice((next === -1 ? close : next) + '</aside>'.length);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
       "id": "D3-machine-review-status-kept",
       "file": "packages/polaris-dossier/src/design-review.ts",
       "old": "const { [MACHINE_VIEW_REGION_MEMBER]: _region, ...rest } = view;",
       "new": "const rest = view;",
       "outcome": "killed",
-      "failedTests": 30
+      "failedTests": 31
     },
     {
       "id": "D4-machine-reserialized",
@@ -139,6 +163,22 @@
       "old": "const runKey = createHash('sha256')",
       "new": "const runKey = randomBytes(32); void createHash('sha256')",
       "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "R5-excluded-key-fed-object",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "sourceId: excludedSourceId(runKey, cited.path),",
+      "new": "sourceId: excludedSourceId(runKey, `${cited.path}\\u0000${cited.objectId}`),",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R6-excluded-key-fed-content-digest-alone",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "sourceId: excludedSourceId(runKey, cited.path),",
+      "new": "sourceId: excludedSourceId(runKey, cited.objectId),",
+      "outcome": "killed",
       "failedTests": 1
     },
     {
@@ -155,7 +195,7 @@
       "old": "const measured = (html: string): string => (local === undefined ? html : withoutReviewStatusRegion(html) ?? html);",
       "new": "const measured = (html: string): string => html;",
       "outcome": "killed",
-      "failedTests": 29
+      "failedTests": 30
     },
     {
       "id": "H1-design-session-gets-fidelity-packet",
