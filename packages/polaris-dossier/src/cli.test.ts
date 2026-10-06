@@ -17,6 +17,7 @@ const run = async (argv: readonly string[]): Promise<{ code: number; stdout: str
 };
 const SUBJECT: RunSubject = {
   repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
+  clone: { path: '/srv/clones/redis', declaredBy: 'operator', label: 'Inferred', use: 'read' },
   pinnedRevision: { commit: '498ecd0d6d007db11ddb3aea9428552598a78622', label: '8.10.2', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },
   startGates: { registryEntry: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-07', screeningPolicy: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' },
   governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },

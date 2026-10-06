@@ -44,6 +44,8 @@ export interface GateSources {
   readonly recordsRoot: string;
   /** Repository ids of the observation consents in force whose `Upstream:` is exactly the URL. */
   readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
+  /** Why no observation consent in force names the URL, for a refusal's reason only (R-POLARIS-DOSSIER-S3-GATES-1 finding 4). */
+  readonly consentAbsenceFor?: (url: string) => Promise<string>;
   readonly consentedRevisionsFor: (repositoryId: string) => Promise<readonly ConsentedRevision[]>;
   readonly observationConsentFor: (repositoryId: string, revision: string) => Promise<ConsentAnswer>;
   readonly registryEntry: () => Promise<GateState>;
@@ -117,6 +119,7 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
   return {
     recordsRoot: options.root,
     repositoryIdsFor: url => port.repositoryIdsFor(url),
+    ...(port.consentAbsenceFor === undefined ? {} : { consentAbsenceFor: port.consentAbsenceFor }),
     consentedRevisionsFor: repositoryId => port.consentedRevisionsFor(repositoryId),
     observationConsentFor: async (repositoryId, revision) => {
       const answer = await port.check({ kind: 'observation-consent', repositoryId, revision });

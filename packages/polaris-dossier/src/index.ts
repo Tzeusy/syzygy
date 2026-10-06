@@ -41,7 +41,7 @@ export { dossierRepositoryUrl, parseGithubUrl, type GithubTarget } from './githu
 export { governedSubject, type DrawerStatement, type GovernedDecision, type GovernedKind } from './governed.js';
 export { initRun, type InitPorts, type InitRefusal, type InitReport, type InitRequest, type InitResult, type InitStage } from './init.js';
 export { preflight, type PreflightReport, type PreflightResult } from './preflight.js';
-export { reverifyPinnedRevision, type ReverifyResult } from './reverify.js';
+export { reverifyPinnedRevision, type ReverifiedRevision, type ReverifyCode, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
 export {
   AGENT_TOOLS, RUN_CONFIG_JSON_LIMITS, parseRunConfig, validateRunConfig,
   type AgentTool, type RunConfig, type RunConfigRefusal, type RunConfigRefusalKind, type RunConfigResult,

@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core';
 import { dossierRepositoryUrl } from './github-url.js';
 import type { GovernedKind } from './governed.js';
@@ -15,15 +16,29 @@ import { validateRunConfig, type RunConfig, type RunConfigRefusal } from './run-
  * gates' records, the governed decision and the per-project statement it relied on. Read back, every one of these is Inferred: it is
  * which revision the run was pinned to, not that the revision is consented, which every later step verifies again
  * (`reverifyPinnedRevision`). The run makes no provider dispatch and no scheduler effect, so it has no work item; the record says why,
- * and the run is rendered as unattributed execution under RFC4-19. */
+ * and the run is rendered as unattributed execution under RFC4-19.
+ *
+ * The clone's location is recorded once, at `init`, as the operator supplied it (resolved to a real path), and every later step reads
+ * the objects it needs from that clone's object store, so no step takes a clone argument and an agent cannot move a step onto another
+ * clone by passing one. It is a read location only: nothing is written there. It too is Inferred, since the record is within the agent
+ * sessions' write reach; what makes a read trustworthy is that every object is read by identifier from the pinned commit and re-hashed. */
 
 export const RUN_RECORD_FORMAT = 'polaris-dossier-run/1' as const;
 export const NO_PROVIDER_MODEL_VERSION = 'no provider-reported model version is available in the operator-agent mode';
 
 export const NO_WORK_ITEM_REASON = 'the operator-agent run makes no provider dispatch and no scheduler effect, so no scheduler work item, Proposal or materialization record exists for it; it is rendered as unattributed execution under RFC4-19, never dropped';
 
+export interface RunClone {
+  /** The clone's real path when the run was initialised. */
+  readonly path: string;
+  readonly declaredBy: 'operator';
+  readonly label: 'Inferred';
+  readonly use: 'read';
+}
+
 export interface RunSubject {
   readonly repository: { readonly url: string; readonly repositoryId: string };
+  readonly clone: RunClone;
   readonly pinnedRevision: { readonly commit: string; readonly label: string; readonly consentRecord: string; readonly pinnedAt: string };
   readonly startGates: { readonly registryEntry: string; readonly screeningPolicy: string };
   readonly governed: { readonly kind: GovernedKind; readonly because: readonly string[] };
@@ -126,11 +141,13 @@ const GOVERNED_KINDS: readonly GovernedKind[] = ['governed', 'non-governed', 'un
 
 /** The subject block, validated in full; a description of the first fault otherwise. */
 function readSubject(value: unknown): RunSubject | string {
-  if (!isObject(value) || !hasKeys(value, ['repository', 'pinnedRevision', 'startGates', 'governed', 'providerStatement', 'workItem'])) return 'it must carry exactly repository, pinnedRevision, startGates, governed, providerStatement and workItem';
-  const { repository, pinnedRevision, startGates, governed, providerStatement, workItem } = value;
+  if (!isObject(value) || !hasKeys(value, ['repository', 'clone', 'pinnedRevision', 'startGates', 'governed', 'providerStatement', 'workItem'])) return 'it must carry exactly repository, clone, pinnedRevision, startGates, governed, providerStatement and workItem';
+  const { repository, clone, pinnedRevision, startGates, governed, providerStatement, workItem } = value;
   if (!isObject(repository) || !hasKeys(repository, ['url', 'repositoryId']) || !isText(repository['url']) || !isText(repository['repositoryId'])) return 'repository must carry a url and a repositoryId';
   const url = dossierRepositoryUrl(repository['url']);
   if (!url.ok || url.url !== repository['url'] || !/^[a-z0-9][a-z0-9-]*$/.test(repository['repositoryId'])) return 'repository url or repositoryId is malformed';
+  if (!isObject(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use']) || clone['declaredBy'] !== 'operator' || clone['label'] !== 'Inferred' || clone['use'] !== 'read') return 'clone must carry its path, declared by the operator, labelled Inferred, for reading only';
+  if (typeof clone['path'] !== 'string' || clone['path'].length > 4096 || path.resolve(clone['path']) !== clone['path'] || clone['path'].includes('\0')) return 'the clone path is not an absolute, normalised path';
   if (!isObject(pinnedRevision) || !hasKeys(pinnedRevision, ['commit', 'label', 'consentRecord', 'pinnedAt'])) return 'pinnedRevision must carry commit, label, consentRecord and pinnedAt';
   if (typeof pinnedRevision['commit'] !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(pinnedRevision['commit'])) return 'the pinned commit is not a full commit identifier';
   if (!isText(pinnedRevision['label']) || !isText(pinnedRevision['consentRecord'])) return 'the pinned revision must name its label and consent record';
@@ -144,6 +161,7 @@ function readSubject(value: unknown): RunSubject | string {
   if (!isObject(workItem) || !hasKeys(workItem, ['identity', 'reason']) || workItem['identity'] !== null || workItem['reason'] !== NO_WORK_ITEM_REASON) return 'workItem must record an absent identity with its reason';
   return {
     repository: { url: repository['url'], repositoryId: repository['repositoryId'] },
+    clone: { path: clone['path'], declaredBy: 'operator', label: 'Inferred', use: 'read' },
     pinnedRevision: { commit: pinnedRevision['commit'], label: pinnedRevision['label'], consentRecord: pinnedRevision['consentRecord'], pinnedAt: pinnedRevision['pinnedAt'] },
     startGates: { registryEntry: startGates['registryEntry'], screeningPolicy: startGates['screeningPolicy'] },
     governed: { kind, because: [...(governed['because'] as string[])] },

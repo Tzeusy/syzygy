@@ -38,7 +38,7 @@ export async function preflight(input: string, sources: GateSources, now: number
   const ids = await sources.repositoryIdsFor(url);
   const repositoryId = ids.length === 1 ? ids[0]! : null;
   const repositoryWhy = ids.length === 0
-    ? `no observation consent in force names ${url} as its Upstream`
+    ? `no observation consent in force names ${url} as its Upstream${sources.consentAbsenceFor === undefined ? '' : `: ${await sources.consentAbsenceFor(url)}`}`
     : ids.length > 1 ? `${ids.length} observation consents in force name ${url} (${ids.join(', ')}); which one governs is ambiguous` : undefined;
   const revisions = repositoryId === null ? [] : await sources.consentedRevisionsFor(repositoryId);
   const observationConsent: GateState = repositoryId === null

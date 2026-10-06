@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile as nodeReadFile, readdir as nodeReaddir } from 'node:fs/promises';
 import path from 'node:path';
 import { AdmissionRecordError, COMMIT_OBJECT_ID, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
-import { inForceRecords } from './consent-ports.js';
+import { inForceRecords, notInForceRecords, type NotInForce } from './consent-ports.js';
 import { CITATION_ALLOWLIST } from './citation-allowlist.js';
 
 /** Reads admission records from the public-repo-admission package layout.
@@ -593,7 +593,19 @@ export interface AdmissionRecordsPortLike {
   /** The repository ids of the observation records in force now whose `Upstream:` is exactly `url`, sorted and distinct. The caller
    * never derives an id from the URL: it takes the one id this returns, and refuses on none or several. Empty when records cannot be read. */
   readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
+  /** Why no observation record in force names `url` as its Upstream, for a refusal's reason: the records could not be read, none names
+   * it, or each that does is withdrawn, superseded, not yet in force, bound by no act, or voided by a byte-different twin. Reporting only;
+   * it grants nothing (R-POLARIS-DOSSIER-S3-GATES-1 finding 4). */
+  readonly consentAbsenceFor?: (url: string) => Promise<string>;
 }
+
+const NOT_IN_FORCE_TEXT: Readonly<Record<NotInForce, string>> = {
+  'withdrawn': 'is withdrawn',
+  'superseded': 'is superseded by a successor in force',
+  'future-dated': 'is not in force yet',
+  'not-in-force': 'has no owner act in force over its current bytes',
+  'ambiguous-records': 'is void: another record claims the same id and version with different bytes',
+};
 
 /** Answers each requirement from the reader, fresh on every call, with the same
  * in-force polarity as the consent ports. The public-source policy requirement
@@ -611,6 +623,17 @@ export function createAdmissionRecordsPort(options: { readonly reader: Admission
       let live: readonly AdmissionRecord[];
       try { live = inForceRecords(await options.reader.read(), options.now()); } catch { return []; }
       return Object.freeze([...new Set(live.filter(r => r.class === 'observation' && r.upstream === url).map(r => r.repositoryId!))].sort());
+    },
+    consentAbsenceFor: async url => {
+      let records: readonly AdmissionRecord[];
+      try { records = await options.reader.read(); } catch (cause) {
+        return `the admission act records could not be read (${cause instanceof Error ? cause.message : 'unknown error'}), so no consent can be established`;
+      }
+      const naming = records.filter(r => r.class === 'observation' && r.upstream === url);
+      if (naming.length === 0) return `no observation record names ${url} as its Upstream`;
+      const why = notInForceRecords(records, options.now());
+      const each = naming.map(r => `${r.recordId}@${r.version} ${why.has(r) ? NOT_IN_FORCE_TEXT[why.get(r)!] : 'is in force'}`).join('; ');
+      return naming.every(r => why.has(r)) ? `the observation record(s) naming ${url} are not in force: ${each}` : `the observation record(s) naming ${url}: ${each}`;
     },
     consentedRevisionsFor: async repositoryId => {
       let live: readonly AdmissionRecord[];

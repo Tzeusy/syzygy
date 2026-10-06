@@ -7,6 +7,7 @@ import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
 import { createPackageGateSources, type GateSources } from './gate-sources.js';
 import { initRun } from './init.js';
 import { preflight } from './preflight.js';
+import type { ReverifyOptions } from './reverify.js';
 import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
 import { runStatus } from './status.js';
 
@@ -52,7 +53,8 @@ Commands:
   help                print this usage and exit
 
 Every value status reports comes from files the agent sessions can write,
-and is labelled Inferred. --json prints the same content as one JSON document.
+and is labelled Inferred. --json prints the same content as one JSON document;
+the machine form, refusals included, is printed only with --json.
 Exit status: 0 clean, 1 refusal, 2 usage error.
 `;
 
@@ -67,6 +69,8 @@ export interface CliPorts {
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly now?: () => number;
   readonly sources?: GateSources;
+  /** The object reader the step guard lists the pinned tree with; by default the re-hashing in-process reader. */
+  readonly openReader?: ReverifyOptions['openReader'];
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
@@ -77,6 +81,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
   const args = argv.filter((arg) => arg !== '--json');
   const now = ports.now ?? Date.now;
   const sources = (): GateSources => ports.sources ?? createPackageGateSources({ root: RECORDS_ROOT, now });
+  const openReader = ports.openReader ? { openReader: ports.openReader } : {};
   const usageError = (detail: string): number => {
     io.stderr(`syzygy dossier: ${detail}\n\n${DOSSIER_USAGE}`);
     return EXIT.usage;
@@ -118,7 +123,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (flag !== undefined) return usageError(`unknown option for brief: ${flag}`);
     if (rest.length !== 1) return usageError('brief takes exactly one argument, the run directory');
     const env = ports.env ?? process.env;
-    const result = await issueBrief(rest[0]!, { sources: sources(), now, permitting: {
+    const result = await issueBrief(rest[0]!, { sources: sources(), now, ...openReader, permitting: {
       enabled: PERMITTING_ARM_ENABLED, choices: RUN_DIRECTORY_CHOICES, probe: createCredentialProbe(credentialListFromEnv(env)),
     } });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
@@ -130,7 +135,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const revision = options.values.get('--revision'), declare = options.values.get('--declare');
     if (revision === undefined) return usageError('allow-execution requires --revision <pinned revision>');
     if (declare === undefined) return usageError(`allow-execution requires --declare ${Object.keys(DECLARATIONS).join(',')}`);
-    const result = await allowExecution(options.positional[0]!, { revision, declarations: declare.split(',') }, { sources: sources(), now });
+    const result = await allowExecution(options.positional[0]!, { revision, declarations: declare.split(',') }, { sources: sources(), now, ...openReader });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'init') {

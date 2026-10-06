@@ -117,6 +117,12 @@ describe('governed predicate (R3-F9: any .syzygy/ path counts, adopted or not)',
     ['a .syzygy/ capability declaration, not adopted', '.syzygy/map/topology-candidates/x.yaml', 0, 1],
     ['a nested .syzygy/ directory', 'vendor/sub/.syzygy/governance/doctrine/x.md', 0, 1],
     ['.syzygy/ in another letter case', '.Syzygy/notes.md', 0, 1],
+    ['openspec/ spelled with a long s (U+017F)', 'openſpec/x.md', 1, 0],
+    ['.syzygy/ spelled with a long s (U+017F)', '.ſyzygy/x.md', 0, 1],
+    ['openspec/ in fullwidth letters', 'ｏｐｅｎｓｐｅｃ/x.md', 1, 0],
+    ['openspec/ with a trailing dot', 'openspec./x.md', 1, 0],
+    ['.syzygy/ with a trailing space', '.syzygy /x.md', 0, 1],
+    ['an entry named openspec itself (a symlink or gitlink)', 'openspec', 1, 0],
   ])('is governed for %s, even when the input states no drawer', (_name, file, openspec, syzygy) => {
     const decision = governedSubject(ABSENT, ['README.md', file]);
     expect(decision.kind).toBe('governed');

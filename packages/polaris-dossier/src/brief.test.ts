@@ -8,7 +8,8 @@ import { issueBrief, renderBrief } from './brief.js';
 import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
 import { decideExecutionRule, type ExecutionChoice } from './execution-rule.js';
-import { NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import type { PinnedObjectReader } from './git-object-reader.js';
 import { parseRunConfig, type RunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 
@@ -26,7 +27,9 @@ const RUN_ID = `run-${'a'.repeat(32)}`;
 
 const SUBJECT: RunSubject = {
   repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
-  pinnedRevision: { commit: REV, label: '8.10.2', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },
+  clone: { path: '/srv/clones/redis', declaredBy: 'operator', label: 'Inferred', use: 'read' },
+  // The recorded label is the agent-writable copy; the brief shows the live consent's label ('8.10.2') instead.
+  pinnedRevision: { commit: REV, label: 'label-in-run-json', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },
   startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },
   governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
   providerStatement: null,
@@ -55,22 +58,24 @@ const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
 const sources = (over: Partial<GateSources> = {}): GateSources => ({
   recordsRoot: REAL_ROOT,
   repositoryIdsFor: async () => ['redis-redis'],
-  consentedRevisionsFor: async () => [],
+  consentedRevisionsFor: async () => [{ label: '8.10.2', commitId: REV }],
   observationConsentFor: async (_id, revision) => (revision === REV ? { satisfied: true, record: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' } : { satisfied: false, why: 'not named' }),
   registryEntry: async () => OK,
   screeningPolicy: async () => OK,
   d9: async () => OK,
   rfc720Ruling: async () => OK,
-  projectInput: NO_PROJECT_INPUT,
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: NO_PROVIDER_STATEMENTS,
   ...over,
 });
+/** The step guard lists the pinned tree; a fixture reader stands in for a clone, giving these paths. */
+const tree = (paths: readonly string[] = ['src/server.c']) => (): PinnedObjectReader => ({ listTree: async () => paths.map((p) => ({ path: p })) }) as unknown as PinnedObjectReader;
 const read = (run: string, name: string): string => fs.readFileSync(path.join(run, name), 'utf8');
 
 describe('brief: issued', () => {
   it('writes the brief, the schema and the brief record, binding the run, the pinned revision and the schema version', async () => {
     const run = runDirectory();
-    const result = await issueBrief(run, { sources: sources(), now: () => NOW });
+    const result = await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW });
     expect(result).toMatchObject({ ok: true, report: {
       command: 'brief', outcome: 'issued', run, briefVersion: 'polaris-dossier-brief-v1', schemaVersion: 'polaris-dossier-local-draft-v1',
       pinnedRevision: REV, issuedAt: '2026-10-07T12:00:00.000Z', deadlineEndsAt: '2026-10-07T13:00:00.000Z', executionRule: { arm: 'sec-3' },
@@ -95,7 +100,7 @@ describe('brief: issued', () => {
 
   it('states the five reader topics, the understanding record and every rule 034 and 036 name', async () => {
     const run = runDirectory();
-    await issueBrief(run, { sources: sources(), now: () => NOW });
+    await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW });
     const brief = read(run, 'brief.md');
     for (const text of [
       '- `core-ideas`: What are this project\'s core ideas, stated so a newcomer could repeat them?',
@@ -120,7 +125,7 @@ describe('brief: issued', () => {
 
   it('quotes SEC-3\'s head byte-equal to the adopted security.md, read live', async () => {
     const run = runDirectory();
-    await issueBrief(run, { sources: sources(), now: () => NOW });
+    await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW });
     expect(read(run, 'brief.md')).toContain(`\`\`\`text\n${lines(61, 62)}\n\`\`\``);
   });
 
@@ -134,11 +139,12 @@ describe('brief: issued', () => {
       providerStatement: 'STATEMENT@1',
     };
     const first = runDirectory(), second = runDirectory(other);
-    await issueBrief(first, { sources: sources(), now: () => NOW });
-    await issueBrief(second, { sources: sources({ repositoryIdsFor: async () => ['example-other'], observationConsentFor: async () => ({ satisfied: true, record: 'OTHER-CONSENT@1' }), providerStatements: { statementsFor: async () => [{ recordId: 'STATEMENT', version: '1', digest: 'd', provider: 'anthropic', contentClasses: ['source'], withdrawn: false, act: { identity: 'A', inForceAt: 0 } }] } }), now: () => NOW });
-    const blank = (text: string, subject: RunSubject): string => [subject.repository.url, subject.repository.repositoryId, subject.pinnedRevision.commit, `(${subject.pinnedRevision.label})`]
+    await issueBrief(first, { sources: sources(), openReader: tree(), now: () => NOW });
+    await issueBrief(second, { sources: sources({ repositoryIdsFor: async () => ['example-other'], consentedRevisionsFor: async () => [{ label: 'v9', commitId: 'c'.repeat(40) }], observationConsentFor: async () => ({ satisfied: true, record: 'OTHER-CONSENT@1' }), providerStatements: { statementsFor: async () => [{ recordId: 'STATEMENT', version: '1', digest: 'd', provider: 'anthropic', contentClasses: ['source'], withdrawn: false, act: { identity: 'A', inForceAt: 0 } }] } }), openReader: tree(['openspec/specs/secret-name.md']), now: () => NOW });
+    // The label shown is the live consent's for the commit, not the run record's.
+    const blank = (text: string, subject: RunSubject, liveLabel: string): string => [subject.repository.url, subject.repository.repositoryId, subject.pinnedRevision.commit, `(${liveLabel})`]
       .reduce((acc, value) => acc.split(value).join('<identity>'), text).replace(/sha256 `[0-9a-f]{64}`\)/, 'sha256 `<schema>`)');
-    expect(blank(read(second, 'brief.md'), other)).toBe(blank(read(first, 'brief.md'), SUBJECT));
+    expect(blank(read(second, 'brief.md'), other, 'v9')).toBe(blank(read(first, 'brief.md'), SUBJECT, '8.10.2'));
     for (const leaked of ['OTHER-CONSENT', 'OTHER-REGISTRY', 'OTHER-POLICY', 'secret-name', 'STATEMENT@1']) expect(read(second, 'brief.md')).not.toContain(leaked);
   });
 
@@ -146,7 +152,7 @@ describe('brief: issued', () => {
     const sec3 = readSec3(REAL_ROOT);
     if (!sec3.ok) throw new Error(sec3.reason);
     const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, permitting: { enabled: false } });
-    const input = { runId: RUN_ID, subject: SUBJECT, declared: configOf(), issuedAt: NOW, schemaSha256: '0'.repeat(64), executionRule: rule };
+    const input = { runId: RUN_ID, subject: SUBJECT, declared: configOf(), issuedAt: NOW, schemaSha256: '0'.repeat(64), executionRule: rule, revisionLabel: '8.10.2' };
     expect(renderBrief(input)).toBe(renderBrief(structuredClone(input)));
   });
 });
@@ -160,7 +166,7 @@ describe('brief: the permitting arm, switched on with fixture ports', () => {
 
   it('records the choice and D9\'s cost bullet verbatim from the adopted security.md (R3-F3)', async () => {
     const run = runDirectory();
-    const result = await issueBrief(run, { sources: sources(), now: () => NOW, permitting: permitting(CHOICE) });
+    const result = await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting(CHOICE) });
     expect(result).toMatchObject({ ok: true, report: { executionRule: { arm: 'permitting' } } });
     const record = JSON.parse(read(run, 'brief.json'));
     expect(record.executionRule).toMatchObject({ arm: 'permitting', cites: 'SEC-3 (D9)', choice: CHOICE, choiceLabel: 'Inferred', cost: { text: lines(95, 101), startLine: 95, endLine: 101 } });
@@ -174,14 +180,14 @@ describe('brief: the permitting arm, switched on with fixture ports', () => {
     const stored = JSON.parse(read(run, 'run.json'));
     stored.executionChoice = CHOICE;
     fs.writeFileSync(path.join(run, 'run.json'), JSON.stringify(stored));
-    const result = await issueBrief(run, { sources: sources(), now: () => NOW, permitting: permitting(CHOICE) });
+    const result = await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting(CHOICE) });
     expect(result).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
     expect(fs.existsSync(path.join(run, 'brief.md'))).toBe(false);
   });
 
   it('a choice made for an earlier run gives SEC-3\'s rule', async () => {
     const run = runDirectory();
-    await issueBrief(run, { sources: sources(), now: () => NOW, permitting: permitting({ ...CHOICE, runId: `run-${'9'.repeat(32)}` }) });
+    await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting({ ...CHOICE, runId: `run-${'9'.repeat(32)}` }) });
     expect(JSON.parse(read(run, 'brief.json')).executionRule).toMatchObject({ arm: 'sec-3', notPermittedBecause: [`the execution choice choice-1 names run run-${'9'.repeat(32)}, not ${RUN_ID}`] });
     expect(read(run, 'brief.md')).not.toContain('You may build and run');
   });
@@ -194,7 +200,7 @@ describe('brief: refused', () => {
 
   it('refuses when the pinned revision is no longer consented, naming every reason, and writes nothing', async () => {
     const run = runDirectory();
-    const result = await issueBrief(run, { sources: sources({ observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }), screeningPolicy: async () => ({ state: 'absent', why: 'no act' }) }), now: () => NOW });
+    const result = await issueBrief(run, { sources: sources({ observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }), screeningPolicy: async () => ({ state: 'absent', why: 'no act' }) }), openReader: tree(), now: () => NOW });
     expect(result).toEqual({ ok: false, refusal: expect.objectContaining({
       command: 'brief', outcome: 'refused', stage: 'reverify', reason: 'the pinned revision could not be verified again, so no brief is issued',
       reasons: [`the recorded pinned revision ${REV} is not a revision the in-force observation consent for redis-redis names: withdrawn`, 'the classification and screening policy is no longer in force: no act'],
@@ -204,9 +210,9 @@ describe('brief: refused', () => {
 
   it('refuses a second brief: the deadline clock has started', async () => {
     const run = runDirectory();
-    expect((await issueBrief(run, { sources: sources(), now: () => NOW })).ok).toBe(true);
+    expect((await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW })).ok).toBe(true);
     const before = read(run, 'brief.json');
-    const again = await issueBrief(run, { sources: sources(), now: () => NOW + 60_000 });
+    const again = await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW + 60_000 });
     expect(again).toMatchObject({ ok: false, refusal: { stage: 'issued-already', reason: 'the run already holds brief.md, draft.schema.json, brief.json: a run is briefed once, and its deadline clock has started' } });
     expect(read(run, 'brief.json')).toBe(before);
   });
@@ -215,14 +221,14 @@ describe('brief: refused', () => {
     const run = runDirectory();
     const empty = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-records-')));
     cleanups.push(() => fs.rmSync(empty, { recursive: true, force: true }));
-    const result = await issueBrief(run, { sources: sources({ recordsRoot: empty }), now: () => NOW });
+    const result = await issueBrief(run, { sources: sources({ recordsRoot: empty }), openReader: tree(), now: () => NOW });
     expect(result).toMatchObject({ ok: false, refusal: { stage: 'doctrine', reason: 'SEC-3 cannot be quoted as adopted: .syzygy/governance/doctrine/security.md cannot be read (ENOENT)' } });
     nothingWritten(run);
   });
 
   it('refuses a directory that is not a run directory', async () => {
     const run = runDirectory(SUBJECT, configOf(), 'not-a-run');
-    expect(await issueBrief(run, { sources: sources(), now: () => NOW })).toMatchObject({ ok: false, refusal: { stage: 'run' } });
+    expect(await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW })).toMatchObject({ ok: false, refusal: { stage: 'run' } });
     nothingWritten(run);
   });
 });
@@ -230,7 +236,7 @@ describe('brief: refused', () => {
 describe('syzygy dossier brief', () => {
   const cli = async (argv: readonly string[], over: Partial<GateSources> = {}) => {
     let stdout = '', stderr = '';
-    const code = await runDossierCli(argv, { stdout: (t) => { stdout += t; }, stderr: (t) => { stderr += t; } }, { sources: sources(over), now: () => NOW });
+    const code = await runDossierCli(argv, { stdout: (t) => { stdout += t; }, stderr: (t) => { stderr += t; } }, { sources: sources(over), now: () => NOW, openReader: tree() });
     return { code, stdout, stderr };
   };
 

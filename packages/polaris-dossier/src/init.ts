@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { resolveCloneHead } from './clone-head.js';
 import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
@@ -14,7 +16,8 @@ import { createRunDirectory, stateRootViolation, type RunPorts } from './state-d
  * consent names; it becomes the pinned revision. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
  * decide whether the subject is governed; a governed subject, or one whose project input is silent, needs the per-project statement.
  * Any failure refuses the run with its reason in human and machine form, and nothing is written. On success the run directory is made
- * under the state root, never inside or around the clone, and holds only `run.json`. */
+ * under the state root, never inside or around the clone, and holds only `run.json`, which records the clone's real path as the one
+ * location every later step reads objects from. */
 
 export type InitStage = 'url' | 'config' | 'state-root' | 'repository' | 'start-gates' | 'head' | 'revision' | 'listing' | 'statement' | 'write';
 
@@ -81,7 +84,7 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
   const ids = await ports.sources.repositoryIdsFor(url.url);
   if (ids.length !== 1) {
     return refuse('repository', ids.length === 0
-      ? `no observation consent in force names ${url.url} as its Upstream`
+      ? `no observation consent in force names ${url.url} as its Upstream${ports.sources.consentAbsenceFor === undefined ? '' : `: ${await ports.sources.consentAbsenceFor(url.url)}`}`
       : `${ids.length} observation consents in force name ${url.url} (${ids.join(', ')}); which one governs is ambiguous`);
   }
   const repositoryId = ids[0]!;
@@ -95,6 +98,10 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
 
   const head = resolveCloneHead(request.clone);
   if (!head.ok) return refuse('head', head.reason);
+  let clonePath: string;
+  try { clonePath = fs.realpathSync(path.resolve(request.clone)); } catch (cause) {
+    return refuse('head', `the clone's real path cannot be resolved (${(cause as NodeJS.ErrnoException).code ?? 'unknown-error'})`);
+  }
   const revisions = (await ports.sources.consentedRevisionsFor(repositoryId)).map(r => ({ label: r.label, commit: r.commitId }));
   const consent = await ports.sources.observationConsentFor(repositoryId, head.commit);
   const pinned = revisions.find(r => r.commit === head.commit);
@@ -123,6 +130,7 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
 
   const subject: RunSubject = {
     repository: { url: url.url, repositoryId },
+    clone: { path: clonePath, declaredBy: 'operator', label: 'Inferred', use: 'read' },
     pinnedRevision: { commit: head.commit, label: pinned.label, consentRecord: consent.record, pinnedAt: new Date(ports.now()).toISOString() },
     startGates: { registryEntry: registryEntry.record, screeningPolicy: screeningPolicy.record },
     governed: { kind: governed.kind, because: governed.because },
