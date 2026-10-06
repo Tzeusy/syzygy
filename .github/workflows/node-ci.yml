@@ -46,6 +46,15 @@ jobs:
           node-version: 24
           cache: npm
 
+      # The CAP1-REQ-061 system oracle and the Polaris dossier no-egress proof
+      # (REQ-polaris-generation-033) both trace effects with strace. Install it
+      # rather than rely on the runner image; under CI=true the no-egress test
+      # fails, never skips, when strace is absent.
+      - name: install strace
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq strace
+
       # The CAP1-REQ-061 system oracle traces filesystem, network, and process
       # effects externally. This is a required host capability: fail closed
       # here with a named stage instead of silently shrinking the denominator.
