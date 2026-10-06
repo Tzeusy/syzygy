@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -296,5 +297,84 @@ describe('paths, types, and no state between calls', () => {
       "import { inflateSync } from 'node:zlib';",
     ]);
     expect(source).not.toMatch(/child_process|\bspawn(Sync)?\(|(?<![.\w])exec(File)?(Sync)?\(|\bimport\(|\brequire\(|\bprocess\./);
+  });
+});
+
+// Hand-built object stores, for malformations git itself never writes. Each object is written with its true SHA-1 identifier, so
+// only the malformation can refuse it.
+const raw = (type: string, body: Buffer): { id: string; type: string; body: Buffer } =>
+  ({ id: createHash('sha1').update(`${type} ${body.length}\0`).update(body).digest('hex'), type, body });
+function handBuilt(name: string, loose: ReadonlyArray<{ id: string; type: string; body: Buffer }>, pack: ReadonlyArray<{ id: string; entry: Buffer }> = []): string {
+  const repo = path.join(T, name), objects = path.join(repo, '.git/objects');
+  mkdirSync(path.join(objects, 'pack'), { recursive: true });
+  for (const o of loose) {
+    mkdirSync(path.join(objects, o.id.slice(0, 2)), { recursive: true });
+    writeFileSync(path.join(objects, o.id.slice(0, 2), o.id.slice(2)), deflateSync(Buffer.concat([Buffer.from(`${o.type} ${o.body.length}\0`), o.body])));
+  }
+  if (pack.length > 0) {
+    const head = Buffer.alloc(12);
+    head.write('PACK', 0, 'latin1'); head.writeUInt32BE(2, 4); head.writeUInt32BE(pack.length, 8);
+    const offsets: number[] = [];
+    let at = 12;
+    for (const e of pack) { offsets.push(at); at += e.entry.length; }
+    writeFileSync(path.join(objects, 'pack/pack-x.pack'), Buffer.concat([head, ...pack.map(e => e.entry), Buffer.alloc(20)]));
+    const sorted = pack.map((e, k) => ({ id: e.id, offset: offsets[k]! })).sort((a, b) => (a.id < b.id ? -1 : 1));
+    const fanout = Buffer.alloc(1024);
+    for (let b = 0; b < 256; b += 1) fanout.writeUInt32BE(sorted.filter(e => parseInt(e.id.slice(0, 2), 16) <= b).length, b * 4);
+    const offs = Buffer.alloc(4 * sorted.length);
+    sorted.forEach((e, k) => offs.writeUInt32BE(e.offset, k * 4));
+    writeFileSync(path.join(objects, 'pack/pack-x.idx'), Buffer.concat([
+      Buffer.from([0xff, 0x74, 0x4f, 0x63, 0, 0, 0, 2]), fanout, ...sorted.map(e => Buffer.from(e.id, 'hex')), Buffer.alloc(4 * sorted.length), offs, Buffer.alloc(40),
+    ]));
+  }
+  return repo;
+}
+const varint = (n: number): number[] => { const out: number[] = []; do { out.push((n & 0x7f) | (n > 0x7f ? 0x80 : 0)); n = Math.floor(n / 128); } while (n > 0); return out; };
+const entryHead = (type: number, size: number): Buffer => {
+  const out = [(type << 4) | (size & 0x0f) | (size > 0x0f ? 0x80 : 0)];
+  for (let rest = Math.floor(size / 16); rest > 0; rest = Math.floor(rest / 128)) out.push((rest & 0x7f) | (rest > 0x7f ? 0x80 : 0));
+  return Buffer.from(out);
+};
+const ofsBack = (n: number): Buffer => { const out = [n & 0x7f]; while ((n = Math.floor(n / 128)) > 0) { n -= 1; out.unshift(0x80 | (n & 0x7f)); } return Buffer.from(out); };
+/** A pack holding BASE whole and TARGET as an offset delta over it, with the delta's declared sizes and base offset adjustable. */
+function deltaRepo(name: string, over: { source?: number; target?: number; back?: (deltaAt: number) => number } = {}): { repo: string; commit: string } {
+  const base = raw('blob', Buffer.from('abcdefghij')), target = raw('blob', Buffer.from('abcdefghij!!'));
+  const delta = Buffer.from([...varint(over.source ?? 10), ...varint(over.target ?? 12), 0x90, 10, 2, 0x21, 0x21]);   // copy 10 from 0; insert "!!"
+  const baseEntry = Buffer.concat([entryHead(3, 10), deflateSync(base.body)]), deltaAt = 12 + baseEntry.length;
+  const deltaEntry = Buffer.concat([entryHead(6, delta.length), ofsBack(over.back?.(deltaAt) ?? deltaAt - 12), deflateSync(delta)]);
+  const tree = raw('tree', Buffer.concat([Buffer.from('100644 f\0'), Buffer.from(target.id, 'hex')]));
+  const commit = raw('commit', Buffer.from(`tree ${tree.id}\n\nm\n`));
+  return { repo: handBuilt(name, [tree, commit], [{ id: base.id, entry: baseEntry }, { id: target.id, entry: deltaEntry }]), commit: commit.id };
+}
+
+describe('malformations git never writes, in hand-built stores', () => {
+  it('a well-formed hand-built delta reads: the fixtures below differ from it only in the malformation', async () => {
+    const { repo, commit } = deltaRepo('delta-good');
+    expect(text((await reader(repo, commit).readBlobs(['f']))[0]!.bytes)).toBe('abcdefghij!!');
+  });
+  it('a delta whose declared base size is not its base\'s refuses, though its output would hash', async () => {
+    const { repo, commit } = deltaRepo('delta-source', { source: 11 });
+    expect(await refusal(reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: '1ccd73aeacfd33cab1d9e1091d21860c1922ef53: delta expects a 11-byte base, got 10' });
+  });
+  it('a delta that yields fewer bytes than it declares refuses as corrupt', async () => {
+    const { repo, commit } = deltaRepo('delta-target', { target: 13 });
+    expect(await refusal(reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: '1ccd73aeacfd33cab1d9e1091d21860c1922ef53: delta yields 12 bytes, not the 13 it declares' });
+  });
+  it('an offset delta whose base lies outside the pack\'s entries refuses', async () => {
+    for (const back of [(at: number) => at, (at: number) => at - 4, () => 0]) {
+      const { repo, commit } = deltaRepo('delta-back', { back });
+      expect(await refusal(reader(repo, commit).readBlobs(['f']))).toMatchObject({ reason: 'corrupt-object', message: '1ccd73aeacfd33cab1d9e1091d21860c1922ef53: delta base offset out of range in pack-x' });
+      rmSync(repo, { recursive: true });
+    }
+  });
+  it('a commit whose tree line is in another hash width refuses', async () => {
+    const commit = raw('commit', Buffer.from(`tree ${'a'.repeat(64)}\n\nm\n`));
+    expect(await refusal(reader(handBuilt('wide-tree-line', [commit]), commit.id).tree())).toMatchObject({ reason: 'malformed-commit', objectId: commit.id });
+  });
+  it('a tree entry whose name holds a slash refuses', async () => {
+    const blob = raw('blob', Buffer.from('x')), tree = raw('tree', Buffer.concat([Buffer.from('100644 a/b\0'), Buffer.from(blob.id, 'hex')]));
+    const commit = raw('commit', Buffer.from(`tree ${tree.id}\n\nm\n`)), repo = handBuilt('slash-name', [blob, tree, commit]);
+    expect(await refusal(reader(repo, commit.id).listTree())).toMatchObject({ reason: 'malformed-tree', objectId: tree.id });
+    expect(await refusal(reader(repo, commit.id).readBlobs(['a/b']))).toMatchObject({ reason: 'malformed-tree' });
   });
 });
