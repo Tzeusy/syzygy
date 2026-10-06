@@ -31,7 +31,7 @@ RFC5-12. `tasks.md` is unchanged. The optional hunk,
 only `spec.md`.
 
 **Stable IDs affected:** REQ-polaris-generation-033, amended in place
-(requirement text, three scenarios edited, three scenarios added, the
+(requirement text, five scenarios edited, four scenarios added, the
 falsifier, the case and the warrant block). REQ-polaris-generation-034,
 amended in place (one clause of its first paragraph). REQ-polaris-generation-035
 and 036 are unchanged. No identifier is minted, retired, renamed or
@@ -109,9 +109,12 @@ Each item names its source, then what the text does.
    "a source the disclosure names", which is disclosed as within the agent
    sessions' write reach. Readability "between checks, after close, through
    privilege escalation or by another route is Inferred and disclosed". The
-   scenario "Adapter credential readable" and the falsifier follow.
+   scenario "Adapter credential readable" and the falsifier follow; the
+   falsifier's arm for a readable credential is anchored "from a permitting
+   brief on", since before one a readable credential only blocks the
+   permitting brief.
    The keeping obligation has no end: it holds from the first permitting
-   brief on. That matches the recommended answer to D9's note N2 ("once
+   brief on. That matches the recommended answer to D9's note N2 ("Once
    Syzygy holds one, it is kept from your user account permanently"); if the
    owner rules N2 otherwise, this sentence needs a new version.
 2. **R3-F2, the declaration.** The command that records the choice "SHALL
@@ -119,19 +122,27 @@ Each item names its source, then what the text does.
    session on the owner's own host and attends it; Syzygy SHALL issue no
    permitting brief without that declaration". It is Inferred, attributed to
    the operator, disclosed beside the choice, added to the record rule's
-   Inferred list and named in the run record. Two scenarios are added,
-   "Permitting brief without the host and attendance declaration" and
-   "Permitting brief carries its lapse statement", and the falsifier gains
-   the two arms the finding asked for.
+   Inferred list and named in the run record. The scenario "Permitting brief
+   without the host and attendance declaration" is added, and the falsifier
+   gains the two arms the finding asked for (a permitting brief without the
+   declaration, or without the lapse statement). The lapse statement already
+   has its scenario, "Execution permission stays with the authoring
+   session".
 3. **R3-F3, D9's cost.** The run record carries "the cost D9 states, quoted
    verbatim from SEC-3's bullet "What the permitted case costs" as adopted in
    `security.md`, never restated or abridged". The restatement is deleted.
 4. **R3-F4, who can enter the choice.** "the authoring agent, which runs the
    neighbouring commands, could run that command itself or write its record
    into the state directory, and only the skill and agent texts forbid it."
-   This is a disclosure, not a new mechanism: the stronger design the finding
-   mentions (a typed confirmation from a controlling terminal) may exclude
-   the `!` launch form 033 admits, and is not proposed.
+   The sentence is in 033's requirement text: it tells the specification's
+   readers, the owner first, what the gate rests on. It is not added to the
+   page's disclosure list; what every page discloses stays who ran the
+   command, that the operator is the owner, and the declaration, each
+   Inferred. R3-F4 asked that the owner read the limit plainly; a page
+   disclosure would be wider than the finding. Nor is it a new mechanism:
+   the stronger design the finding mentions (a typed confirmation from a
+   controlling terminal) may exclude the `!` launch form 033 admits, and is
+   not proposed.
 5. **R3-F5, the non-permitting brief.** It "SHALL quote SEC-3's head sentence
    as adopted, cite SEC-3, and state the rule as it applies to the agent, in
    its own words: do not build or run the observed project outside an
@@ -150,12 +161,12 @@ Each item names its source, then what the text does.
    from the owner-act record, not from the stamp"), never from a status word
    or a file's presence." The disclosure list gains "that the records Syzygy
    read for its gates …, and where execution was permitted the source of the
-   credential list, lie within the agent sessions' write reach". The scenario
-   "Gate records established from owner acts" says what "not in force" does
-   for each input: a missing consent, registry entry, policy act or statement
-   refuses its step; D9 not in force gives a non-permitting brief; the
-   RFC7-20 reading not in force renders an operator-computed draft layer
-   Unknown.
+   credential list, lie within the agent sessions' write reach". Three
+   scenarios say what "not in force" does, one per outcome: "Consent or
+   policy record without its owner act" (the step is refused), "D9 record
+   without its owner act" (no permitting brief) and "RFC7-20 reading record
+   without its owner act" (the operator-computed draft layer renders
+   Unknown).
 8. **R3-F9, editorial residues.** The scenario reads "a capability
    declaration or declared topology, or any `.syzygy/` path, adopted or not";
    the proposal's "Modified in effect" list adds 021, `OWNER-FLOW.md` and
@@ -167,20 +178,32 @@ Each item names its source, then what the text does.
    to the execution rule in the run's `brief.md`, and absent that brief SHALL
    state that the observed project is not to be built or run outside an
    explicit, opt-in execution profile."
-10. **E1, banners now false.** The spec's head paragraph, `design.md`'s and
-    `proposal.md`'s banners said "Candidate — binds nothing", "not adopted",
-    and that D9 "is not adopted". After the v1.0 sign-off and D9's adoption
-    each is false in bytes no one may edit outside a new version. Version 1.1
-    states the version, the v1.0 sign-off and D9's adoption, and that these
-    bytes bind only by the v1.1 sign-off. This item is not in the notes
-    records; it is drafted here because v1.1 is the only lawful place to
-    correct those sentences, and the owner may drop it without touching any
-    other item.
+10. **E1, status sentences now false.** At v1.0 the spec's head read
+    "Candidate exact behavioral delta; not yet adopted, binds nothing" and
+    said D9 "is not adopted"; `design.md` opened "Candidate — binds nothing"
+    and called the requirements "not adopted"; `proposal.md` opened
+    "Candidate — binds nothing" and said "It is not adopted". After the v1.0
+    sign-off and D9's adoption each is false in bytes no one may edit
+    outside a new version. Version 1.1 states the version, the v1.0 sign-off
+    and D9's adoption, and that these bytes bind only by the v1.1 sign-off.
+    It also corrects the sentences that still read D9 as pending: the
+    spec's "drafted as D9" and "D9, or the identifier it carries when
+    adopted"; `design.md`'s "drafted as D9 (draft PR #357)"; and in
+    `proposal.md` the heading "Execution follows SEC-3 until it is amended",
+    "drafted as D9", "this change may not be signed before D9 is adopted",
+    and "The candidate delta is held in `proposed/`, not `specs/`", which the
+    v1.0 install made false. `tasks.md` is not edited: it is a checklist,
+    and its "Candidate — binds nothing" head and its unchecked D9-adoption
+    item are residues named here for the implementation's bookkeeping, not
+    specification text. This item is not in the notes records; it is drafted
+    here because v1.1 is the only lawful place to correct those sentences,
+    and the owner may drop it without touching any other item.
 11. **Optional: D9-N6, reported commands outside the named scope.** Only in
     `spec.md.n6-optional.patch`, and only if the owner accepts N6. Where
-    execution was permitted, each reported command carries its reported
-    working directory and the agent's statement of whether it falls within
-    the choice's scope; Syzygy flags, as an Inferred finding disclosed beside
+    execution was permitted, the brief asks the agent to report, for every
+    command, its working directory and whether it falls within the choice's
+    scope, and the draft is admitted whether or not each command carries
+    them; Syzygy flags, as an Inferred finding disclosed beside
     the command, every command reported outside the clone, with no working
     directory, or stated by the agent to fall outside the scope. "A flag
     refuses no step and hides no command." One scenario and one falsifier arm
@@ -193,7 +216,12 @@ Each item names its source, then what the text does.
 ### Not carried
 
 - **R3-F6** (the RFC5-24 line): drafted only for the case where the owner
-  declined D9's Q3 (b). The owner kept Q3 (b), so it drops out.
+  declined D9's Q3 (b). The owner kept Q3 (b), so it drops out. Its RFC5-12
+  half is answered by D9 itself: the owner chose (a) for RFC5-12, whose
+  "Absent: no observed code runs" D9 changes in effect for the permitted
+  case (`DOCTRINE-AMENDMENT-LOG.md`, row D9, "its effect change is
+  recorded"). v1.1 cites RFC5-12 only for what an execution consent is
+  (item 6), and changes nothing in that reading.
 - The three package-prose residues of R3-F9 (the v1.0 impact ledger's "No
   overlap" line, the v1.0 delta's "retained by the lead", the v1.0 packet's
   credential-check timing) sit in the v1.0 candidate package, whose bytes the
@@ -242,7 +270,7 @@ Each item names its source, then what the text does.
 - [Observed, this session at `55daf6ce`] the post-apply bytes validate under
   `openspec validate polaris-dossier-local-agent-mode --strict` (OpenSpec
   1.9.0) with and without the N6 hunk; the effective Polaris composition is
-  35 requirements and 230 scenarios (231 with N6), against 35 and 227 at
+  35 requirements and 231 scenarios (232 with N6), against 35 and 227 at
   v1.0 (`scripts/count_polaris_effective_scenarios.py`).
 
 ## Terms introduced / retired
@@ -270,11 +298,14 @@ implementation obligations from the notes record.
   the census. v1.0's record is never edited.
 - **Prerequisites that do not exist yet** (scripts, outside this package):
   a builder for this package's patches and its entry in
-  `record_versioned_signoff.py`'s `real_packages()`; the reconciliation's
-  handling of a second version-tagged record for an installed Polaris
-  addition (today `check_spec_reconciliation.py` treats a signed addition's
-  records by package and version, and v1.0's applied-tree check reads the
-  v1.0 bytes, which v1.1 replaces). The PWB successor chain is the precedent.
+  `record_versioned_signoff.py`'s `real_packages()`, with a selftest
+  fixture per predicate. The reconciliation needs no change: with the v1.1
+  bytes applied, regenerated and refigured, every check in the ledger's
+  scratch run passes, and v1.0's record still "regenerates exactly; applied
+  tree verified". That is also a gap: no check tells the signed v1.0 bytes
+  from unsigned v1.1 bytes, so until the builder exists the version-tagged
+  sign-off is the only guard on them (the packet says so). The PWB
+  successor chain is the precedent for a patch-carried successor.
 - The implementation slices keep the v1.0 tests; once v1.1 is signed, the
   tests that pin R3-F1, F2, F3, F5, F7, F8 and N5 obligations become
   conformance tests of normative text.

@@ -4,7 +4,8 @@
 > reviewer is given and what they decide. It is not a review and carries no
 > verdict. Stopping rule, set before round 1: at most three rounds; CONFIRM,
 > or CONFIRM WITH EXCEPTIONS with notes only, clears the bytes; a third
-> REVISE goes to the owner with all three raws.
+> REVISE goes to the owner with all three raws. Round 1 returned REVISE
+> over `afd789a9`; its repair and dispositions are below.
 
 ## What the reviewer is given, and nothing else
 
@@ -69,7 +70,8 @@ Each is a yes/no question with the evidence that settles it.
 
 1. **Is every item traceable to its source, and nothing more?** Each hunk
    of the three patches maps to R3-F1, F2, F3, F4, F5, F7, F8, F9, D9-N5, or
-   E1 (the banner correction the delta flags as not from the notes). A
+   E1 (the status-sentence correction the delta flags as not from the
+   notes). A
    hunk that maps to none, or that grants read, egress, write or execution
    beyond v1.0, is blocking. Is R3-F6 rightly omitted given the owner's
    Q3 (b)?
@@ -104,6 +106,25 @@ Each is a yes/no question with the evidence that settles it.
    blind spot, and the tooling prerequisite?
 10. **Does `design.md` stay design?** No implementation code in `openspec/**`;
     the skill and Codex texts never grant execution (N5).
+
+## Round 1 disposition
+
+Round 1 (verdict REVISE over `afd789a996952dfad9e810a66f9ad9c1b4c21a82`, 9
+findings: 1 revise, 8 notes; raw retained by the lead). Every repaired
+quotation re-verified by script; every digest, count and scratch-tree check
+in the ledger re-run on the repaired patches.
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | Packet says the page discloses that the agent could enter the choice; the spec requires no such disclosure | Fixed in the narrower form: packet bullet says the specification tells its reader, and the page does not repeat it; delta item 4 says who the sentence is for and why no page disclosure is added |
+| 2 | E1 leaves false status sentences | Fixed: E1 extended to the spec's "drafted as D9" and "the identifier it carries when adopted", and the proposal's heading, "drafted as D9", "may not be signed before D9 is adopted" and the `proposed/` sentence; `tasks.md` residues named in the delta, not edited |
+| 3 | Tooling prerequisite stated three ways; reconciliation claim contradicted | Fixed: one statement (builder, recorder entry, selftests) in delta, ledger and packet; the reconciliation claim dropped; the packet and ledger say no check tells v1.0 from v1.1 bytes |
+| 4 | Pre-regeneration check fails on three predicates, not two | Fixed: R3, R4, R5 named |
+| 5 | Lapse scenario restates its THEN; falsifier arm unanchored; gate scenario bundles three outcomes | Fixed: lapse scenario dropped (its falsifier arm stays, and "Execution permission stays with the authoring session" asserts it); arm anchored "from a permitting brief on"; gate scenario split into three, one per outcome (231 scenarios, 232 with N6) |
+| 6 | RFC5-12's D9-recorded effect change not mentioned | Fixed: delta "Not carried" names it and says v1.1 cites RFC5-12 only for what an execution consent is |
+| 7 | Miscounts | Fixed: five scenarios edited, four added; packet no longer counts the round-3 notes |
+| 8 | Two inexact quotations | Fixed: "Once" capitalized; E1 attributes each status phrase to the file that held it |
+| 9 | N6 "SHALL carry" vs "refuses no step" | Fixed: the brief asks the agent to report both; the draft is admitted either way; the scenario's THEN says so |
 
 ## Output
 

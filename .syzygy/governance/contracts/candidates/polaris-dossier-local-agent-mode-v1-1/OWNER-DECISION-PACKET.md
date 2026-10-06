@@ -9,9 +9,9 @@
 ## What this is, in one paragraph
 
 You signed off version 1.0 of the dossier local-agent mode on 2026-10-06,
-right after adopting D9. Round 3 of its review left nine notes that 1.0
-carried as implementation duties, and D9's review left one more that was
-routed to the dossier specification. Version 1.1 writes those into the
+right after adopting D9. Round 3 of its review left notes that 1.0 carried
+as implementation duties or as lines for a later amendment, and D9's review
+left one more that was routed to the dossier specification. Version 1.1 writes those into the
 specification itself, so a build that skips them no longer conforms. It
 adds no new permission. One further change, which only you can accept, is
 drafted separately (question 2).
@@ -34,9 +34,12 @@ drafted separately (question 2).
   permitted case costs" word for word, instead of a shortened paraphrase
   that left out the parts about reaching credentials and having no
   containment.
-- **Who can type the choice.** The page now says that the agent, which runs
-  the neighbouring commands, could run `allow-execution` itself or write its
-  record, and that only the skill and agent instructions forbid it.
+- **Who can type the choice.** The specification now says plainly, for you
+  as its reader, that the agent, which runs the neighbouring commands, could
+  run `allow-execution` itself or write its record, and that only the skill
+  and agent instructions forbid it. The rendered page does not repeat that
+  sentence; it goes on showing who ran the command, that you are the owner,
+  and your declaration, each as your word rather than something Syzygy saw.
 - **When running is not permitted.** The brief quotes SEC-3's adopted first
   sentence and then tells the agent, in plain words, not to build or run the
   project outside an execution profile. Version 1.0 asked it to quote a
@@ -56,11 +59,13 @@ drafted separately (question 2).
   now matches the rule ("adopted or not"); the proposal lists everything 1.0
   modifies in effect; the skill's description says "any repository you hold
   the consents for", not "a public repository".
-- **Banners.** The specification, proposal and design still said "candidate,
-  binds nothing" and "D9 not adopted". 1.1 says what is true: version 1.0
-  signed off, D9 adopted, these bytes binding only when you sign off 1.1.
-  This one was not in the review notes; drop it if you prefer, and nothing
-  else changes.
+- **Status sentences.** The specification, proposal and design still said
+  "candidate, binds nothing", "not adopted" and "drafted as D9", and the
+  proposal still said the specification sat in `proposed/`. 1.1 says what is
+  true: version 1.0 signed off, D9 adopted, these bytes binding only when you
+  sign off 1.1. The task checklist keeps its old head; it is not
+  specification text. This one was not in the review notes; drop it if you
+  prefer, and nothing else changes.
 
 Not included: round-3 finding 6, which applied only if you had declined
 D9's credential condition. You kept it.
@@ -77,8 +82,10 @@ Options:
   against 1.0, carrying these items as duties as it already does.
 
 Recording 1.1 needs a small tool change first (a builder that applies these
-patches); that is implementation work after your answer and changes no
-text you sign.
+patches, and its entry in the sign-off recorder); that is implementation
+work after your answer and changes no text you sign. Until it exists, no
+check in the battery can tell 1.0's signed bytes from 1.1's: your
+version-tagged sign-off is the only thing that makes 1.1 binding.
 
 ### Question 2 — D9 note N6: flag commands outside the named scope?
 
@@ -91,9 +98,9 @@ The note asks whether the run record should also compare each reported
 command with the named scope and flag the ones outside it, so overreach is
 visible rather than forbidden.
 
-The drafted hunk, if you take it: where running was permitted, each
-reported command carries where the agent says it ran it and whether the
-agent says it was in scope. Syzygy flags any command reported outside the
+The drafted hunk, if you take it: where running was permitted, the brief
+asks the agent to report, for each command, where it ran it and whether it
+was in scope, and a draft missing either is still admitted. Syzygy flags any command reported outside the
 clone, with no location, or called out of scope by the agent. A flag blocks
 nothing and hides nothing. It cannot catch an out-of-scope command the agent
 ran inside the clone and called in scope, because Syzygy cannot see the
