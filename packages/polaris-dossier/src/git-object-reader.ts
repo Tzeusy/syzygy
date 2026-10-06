@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { lstat, open, readdir, readFile, type FileHandle } from 'node:fs/promises';
+import { constants, lstat, open, readdir, type FileHandle } from 'node:fs/promises';
 import path from 'node:path';
 import { inflateSync } from 'node:zlib';
 
@@ -9,20 +9,34 @@ import { inflateSync } from 'node:zlib';
  * the identifier they were reached by. The reader:
  * - reads only the object store (`objects/` loose files and `objects/pack/` packs), never a ref, the index, the working tree,
  *   `config`, hooks, `objects/info/alternates`, `info/grafts`, `shallow`, `refs/replace/` or a commit-graph, and spawns no process;
- * - takes the hash algorithm from the consented identifier (40 hex digits SHA-1, 64 SHA-256), never `extensions.objectFormat`;
+ * - follows no symbolic link under `.git` and reads no special file: `objects/`, `objects/pack/`, each fan-out directory, each loose
+ *   object, `.idx` and `.pack` must be a directory or regular file reached without one (files are opened `O_NOFOLLOW | O_NONBLOCK`
+ *   and checked regular after opening), or the call refuses (`unsafe-store-entry`). Residual: a directory swapped for a link between
+ *   its `lstat` and the open of a file beneath it is not detected; the bytes read are still re-hashed;
+ * - takes the hash algorithm from the consented identifier (40 hex digits SHA-1, 64 SHA-256), never `extensions.objectFormat`.
+ *   SHA-1 is plain SHA-1, without git's collision detection (sha1dc): a chosen-prefix collision needs both colliding objects
+ *   prepared before the upstream publishes one;
  * - walks down from the pinned commit to its tree and from there to each entry, never to a parent;
  * - on every call, re-reads and recomputes the identifier of every commit, tree and blob on the way down, and refuses
  *   (`GitObjectReadRefusal`) when one differs from the identifier it was reached by, is missing (an object only an alternate or a
- *   replacement could supply is missing), cannot be decoded, or has the wrong type. Nothing verified is kept between calls.
- * Classification and screening of what it returns (REQ-polaris-generation-025) are the caller's. */
+ *   replacement could supply is missing), cannot be decoded, or has the wrong type. Nothing verified is kept between calls;
+ * - refuses a tree entry git's fsck rejects as ambiguous: a name that is `.`, `..` or `.git` in any case, is not UTF-8, or repeats a
+ *   name in the same tree, and a mode git does not write. Every path `listTree` returns is one `readBlobs` resolves to that entry;
+ * - bounds each call: one object's inflated size (`maxObjectBytes`), the delta chain depth (`maxDeltaChainDepth`), the bytes
+ *   inflated and produced by deltas summed over the call (`maxInflatedBytesPerCall`), and the objects read plus tree entries
+ *   listed (`maxObjectsPerCall`). A store that cannot be read at all refuses (`store-unreadable`), never throws anything else.
+ * Not bounded: the bytes of `.idx` files, each read and parsed in full once per call. Classification and screening of what it returns
+ * (REQ-polaris-generation-025) are the caller's. */
 
 export type HashAlgorithm = 'sha1' | 'sha256';
 export type GitObjectType = 'commit' | 'tree' | 'blob' | 'tag';
 export type GitObjectReadRefusalReason =
   | 'malformed-identifier' | 'not-a-git-directory' | 'malformed-path' | 'object-missing' | 'corrupt-object' | 'identifier-mismatch'
-  | 'type-mismatch' | 'malformed-commit' | 'malformed-tree' | 'path-not-found' | 'not-a-blob' | 'invalid-pack-index';
+  | 'type-mismatch' | 'malformed-commit' | 'malformed-tree' | 'path-not-found' | 'not-a-blob' | 'invalid-pack-index'
+  | 'unsafe-store-entry' | 'budget-exceeded' | 'store-unreadable';
 
-/** A refused read, in human form (`message`) and machine form (`toJSON()`). None of the refused object's content is carried. */
+/** A refused read, in human form (`message`) and machine form (`toJSON()`). None of the refused object's content is carried, nor
+ * the identifier its bytes would hash to. */
 export class GitObjectReadRefusal extends Error {
   constructor(
     readonly reason: GitObjectReadRefusalReason,
@@ -65,7 +79,8 @@ export interface PinnedObjectReader {
   /** Each path's blob at the pinned revision (a regular file or a symbolic link's target), every object from the commit down
    * re-hashed. One refusal refuses the whole call. */
   readBlobs(paths: readonly string[]): Promise<readonly VerifiedBlob[]>;
-  /** Every non-tree entry under the pinned commit's tree, by path in tree order, every tree re-hashed (blobs are not read). */
+  /** Every non-tree entry under the pinned commit's tree, by path in tree order, every tree re-hashed (blobs are not read). Not
+   * every entry is a readable blob: a submodule (mode `160000`) lists its commit identifier, and `readBlobs` refuses it. */
   listTree(): Promise<readonly TreeEntry[]>;
 }
 
@@ -76,14 +91,35 @@ export interface PinnedObjectReaderOptions {
   readonly revision: string;
   /** Largest object, inflated, the reader will hold. Default 1 GiB. */
   readonly maxObjectBytes?: number;
+  /** Longest delta chain resolved. Default 1,000 (git's default `pack.depth` is 50 and its maximum 4,095). */
+  readonly maxDeltaChainDepth?: number;
+  /** Bytes inflated plus bytes produced by deltas, summed over one call. Default 4 GiB. */
+  readonly maxInflatedBytesPerCall?: number;
+  /** Objects read (each delta base counted) plus tree entries listed, over one call. Default 1,000,000. */
+  readonly maxObjectsPerCall?: number;
 }
+
+interface Limits { readonly objectBytes: number; readonly chainDepth: number; readonly callBytes: number; readonly callObjects: number }
 
 export function openPinnedObjectReader(options: PinnedObjectReaderOptions): PinnedObjectReader {
   const algorithm = hashAlgorithmOf(options.revision);
-  const revision = options.revision, maxObjectBytes = options.maxObjectBytes ?? 2 ** 30;
+  const revision = options.revision;
+  const limits: Limits = {
+    objectBytes: options.maxObjectBytes ?? 2 ** 30, chainDepth: options.maxDeltaChainDepth ?? 1_000,
+    callBytes: options.maxInflatedBytesPerCall ?? 2 ** 32, callObjects: options.maxObjectsPerCall ?? 1_000_000,
+  };
   const step = async <T>(body: (walk: Walk) => Promise<T>): Promise<T> => {
-    const store = await ObjectStore.open(options.gitDir, algorithm, maxObjectBytes);
-    try { return await body(new Walk(store, revision)); } finally { await store.close(); }
+    let store: ObjectStore | null = null;
+    try {
+      store = await ObjectStore.open(options.gitDir, algorithm, limits);
+      return await body(new Walk(store, revision));
+    } catch (e) {
+      if (e instanceof GitObjectReadRefusal) throw e;
+      const code = (e as { code?: unknown }).code;
+      return refuse('store-unreadable', `the object store could not be read (${typeof code === 'string' ? code : e instanceof Error ? e.name : 'unknown error'})`);
+    } finally {
+      await store?.close().catch(() => undefined);
+    }
   };
   return {
     revision, algorithm,
@@ -99,12 +135,18 @@ export function openPinnedObjectReader(options: PinnedObjectReaderOptions): Pinn
 
 const HEX = { sha1: 40, sha256: 64 } as const;
 
-/** One call's walk from the pinned commit. Trees verified during the call are reused within it, never across calls. */
+/** One call's walk from the pinned commit. The commit and trees verified during the call are reused within it, never across calls. */
 class Walk {
   private readonly trees = new Map<string, readonly RawEntry[]>();
+  private root: Promise<string> | null = null;
   constructor(private readonly store: ObjectStore, private readonly revision: string) {}
 
-  async rootTree(): Promise<string> {
+  rootTree(): Promise<string> {
+    this.root ??= this.readRoot();
+    return this.root;
+  }
+
+  private async readRoot(): Promise<string> {
     const body = await this.store.verified(this.revision, 'commit', null);
     const text = Buffer.from(body).toString('latin1');
     const tree = new RegExp(`^tree ([0-9a-f]{${HEX[this.store.algorithm]}})\n`).exec(text);
@@ -137,6 +179,7 @@ class Walk {
     const out: TreeEntry[] = [];
     for (const e of await this.tree(tree, prefix === '' ? null : prefix)) {
       const p = prefix === '' ? e.name : `${prefix}/${e.name}`;
+      this.store.count(e.id, p);
       if (e.mode === '40000') out.push(...await this.list(e.id, p));
       else out.push({ path: p, mode: e.mode, id: e.id });
     }
@@ -153,14 +196,24 @@ class Walk {
 }
 
 interface RawEntry { readonly mode: string; readonly name: string; readonly id: string }
+const NAME = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
+/** The modes git writes: a file, an executable, a symbolic link, a tree, a submodule, and the group-writable file git once wrote and
+ * fsck still accepts. */
+const MODES: ReadonlySet<string> = new Set(['100644', '100755', '120000', '40000', '160000', '100664']);
 function parseTree(body: Uint8Array, id: string, algorithm: HashAlgorithm): RawEntry[] {
-  const width = HEX[algorithm] / 2, buf = Buffer.from(body), out: RawEntry[] = [];
+  const width = HEX[algorithm] / 2, buf = Buffer.from(body), out: RawEntry[] = [], names = new Set<string>();
   let at = 0;
   while (at < buf.length) {
     const space = buf.indexOf(0x20, at), nul = space < 0 ? -1 : buf.indexOf(0, space);
     if (space < 0 || nul < 0 || nul + 1 + width > buf.length) refuse('malformed-tree', `tree ${id} has a truncated entry`, id);
-    const mode = buf.toString('latin1', at, space), name = buf.toString('utf8', space + 1, nul);
-    if (!/^[0-7]{5,6}$/.test(mode) || name === '' || name.includes('/')) refuse('malformed-tree', `tree ${id} has a malformed entry`, id);
+    const mode = buf.toString('latin1', at, space);
+    let name = '';
+    try { name = NAME.decode(buf.subarray(space + 1, nul)); } catch { refuse('malformed-tree', `tree ${id} has an entry name that is not UTF-8`, id); }
+    if (!MODES.has(mode)) refuse('malformed-tree', `tree ${id} has an entry of a mode git does not write`, id);
+    if (name === '' || name.includes('/')) refuse('malformed-tree', `tree ${id} has an entry name that is empty or holds a slash`, id);
+    if (name === '.' || name === '..' || name.toLowerCase() === '.git') refuse('malformed-tree', `tree ${id} has an entry named ., .. or .git`, id);
+    if (names.has(name)) refuse('malformed-tree', `tree ${id} names one entry twice`, id);
+    names.add(name);
     out.push({ mode, name, id: buf.toString('hex', nul + 1, nul + 1 + width) });
     at = nul + 1 + width;
   }
@@ -168,52 +221,76 @@ function parseTree(body: Uint8Array, id: string, algorithm: HashAlgorithm): RawE
 }
 
 const PACK_TYPES: Readonly<Record<number, GitObjectType>> = { 1: 'commit', 2: 'tree', 3: 'blob', 4: 'tag' };
-const OFS_DELTA = 6, REF_DELTA = 7, MAX_DELTA_CHAIN = 10_000;
+const OFS_DELTA = 6, REF_DELTA = 7;
+const OPEN_FLAGS = constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK;
 
 interface PackIndex { readonly name: string; readonly ids: Buffer; readonly offsets: readonly number[]; readonly count: number }
+interface Pack { readonly fh: FileHandle; readonly size: number }
+type RawObject = { readonly type: GitObjectType; readonly body: Uint8Array };
+
+const errorCode = (e: unknown): unknown => (e as { code?: unknown }).code;
+/** The most bytes a stored (zlib-wrapped) form of an inflated size may take: incompressible input grows a little. */
+const storedBound = (inflated: number): number => inflated + Math.floor(inflated / 8) + 1024;
 
 /** The clone's own object store, read once per call: loose objects first, then packs in name order. Nothing else under `.git`. */
 class ObjectStore {
-  private readonly handles = new Map<string, FileHandle>();
+  private readonly handles = new Map<string, Pack>();
+  private inflatedBytes = 0;
+  private objectsVisited = 0;
   private constructor(
-    private readonly objects: string,
+    private readonly gitDir: string,
+    private readonly objects: string | null,
     readonly algorithm: HashAlgorithm,
     private readonly packs: readonly PackIndex[],
-    private readonly maxObjectBytes: number,
+    private readonly limits: Limits,
     private readonly alternatesPresent: boolean,
   ) {}
 
-  static async open(gitDir: string, algorithm: HashAlgorithm, maxObjectBytes: number): Promise<ObjectStore> {
+  static async open(gitDir: string, algorithm: HashAlgorithm, limits: Limits): Promise<ObjectStore> {
     let isDir = false;
     try { isDir = (await lstat(gitDir)).isDirectory(); } catch { isDir = false; }
     if (!isDir) refuse('not-a-git-directory', `${gitDir} is not a directory; a gitdir pointer file is never followed`);
     const objects = path.join(gitDir, 'objects'), packDir = path.join(objects, 'pack');
-    let names: string[] = [];
-    try { names = (await readdir(packDir)).filter(n => n.endsWith('.idx')).sort(); } catch { names = []; }
+    if (!(await realDirectory(gitDir, objects))) return new ObjectStore(gitDir, null, algorithm, [], limits, false);
+    const names = (await realDirectory(gitDir, packDir)) ? (await readdir(packDir)).filter(n => n.endsWith('.idx')).sort() : [];
     const packs: PackIndex[] = [];
-    for (const name of names) packs.push(parseIndex(await readFile(path.join(packDir, name)), name.slice(0, -4), algorithm));
+    for (const name of names) {
+      const fh = await openRegular(gitDir, path.join(packDir, name));
+      if (fh === null) refuse('invalid-pack-index', `${name} vanished while being read`);
+      try { packs.push(parseIndex(await fh!.readFile(), name.slice(0, -4), algorithm)); } finally { await fh!.close(); }
+    }
     let alternatesPresent = false;
     try { alternatesPresent = (await lstat(path.join(objects, 'info', 'alternates'))).isFile(); } catch { alternatesPresent = false; }
-    return new ObjectStore(objects, algorithm, packs, maxObjectBytes, alternatesPresent);
+    return new ObjectStore(gitDir, objects, algorithm, packs, limits, alternatesPresent);
   }
 
   async close(): Promise<void> {
-    for (const h of this.handles.values()) await h.close();
+    for (const h of this.handles.values()) await h.fh.close();
     this.handles.clear();
+  }
+
+  /** Counts one object read or tree entry listed against the call's budget. */
+  count(id: string, at: string | null): void {
+    this.objectsVisited += 1;
+    if (this.objectsVisited > this.limits.callObjects) refuse('budget-exceeded', `this call reads or lists more than ${this.limits.callObjects} objects and entries`, id, at);
+  }
+
+  private charge(bytes: number, id: string, at: string | null): void {
+    this.inflatedBytes += bytes;
+    if (this.inflatedBytes > this.limits.callBytes) refuse('budget-exceeded', `${id}: this call would inflate more than ${this.limits.callBytes} bytes`, id, at);
   }
 
   /** The body of object `id`, which must be of `type` and hash, with its header, to `id` under the consented algorithm. */
   async verified(id: string, type: GitObjectType, at: string | null): Promise<Uint8Array> {
     const object = await this.raw(id, at);
     const actual = createHash(this.algorithm).update(`${object.type} ${object.body.length}\0`).update(object.body).digest('hex');
-    if (actual !== id) refuse('identifier-mismatch', `the object read as ${id} hashes to ${actual}`, id, at);
+    if (actual !== id) refuse('identifier-mismatch', `the object read as ${id} hashes to another identifier`, id, at);
     if (object.type !== type) refuse('type-mismatch', `${id} is a ${object.type}, not a ${type}`, id, at);
     return object.body;
   }
 
-  private async raw(id: string, at: string | null): Promise<{ readonly type: GitObjectType; readonly body: Uint8Array }> {
-    let stored: Buffer | null = null;
-    try { stored = await readFile(path.join(this.objects, id.slice(0, 2), id.slice(2))); } catch { stored = null; }
+  private async raw(id: string, at: string | null): Promise<RawObject> {
+    const stored = await this.looseStored(id, at);
     if (stored !== null) return this.loose(stored, id, at);
     for (const pack of this.packs) {
       const offset = lookup(pack, id, this.algorithm);
@@ -223,18 +300,35 @@ class ObjectStore {
     return refuse('object-missing', `${id} is in neither a loose object nor a pack of this clone${why}`, id, at);
   }
 
-  private loose(stored: Buffer, id: string, at: string | null): { readonly type: GitObjectType; readonly body: Uint8Array } {
+  /** The stored bytes of loose object `id`, or null when there is none. */
+  private async looseStored(id: string, at: string | null): Promise<Buffer | null> {
+    if (this.objects === null) return null;
+    const dir = path.join(this.objects, id.slice(0, 2));
+    if (!(await realDirectory(this.gitDir, dir))) return null;
+    const fh = await openRegular(this.gitDir, path.join(dir, id.slice(2)));
+    if (fh === null) return null;
+    try {
+      if ((await fh.stat()).size > storedBound(this.limits.objectBytes)) refuse('corrupt-object', `loose object ${id} is larger stored than any object the reader holds`, id, at);
+      return await fh.readFile();
+    } finally { await fh.close(); }
+  }
+
+  private loose(stored: Buffer, id: string, at: string | null): RawObject {
+    this.count(id, at);
     let inflated: Buffer;
-    try { inflated = inflateSync(stored, { maxOutputLength: this.maxObjectBytes + 64 }); } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
+    try { inflated = inflateSync(stored, { maxOutputLength: this.limits.objectBytes + 64 }); } catch { return refuse('corrupt-object', `loose object ${id} does not inflate`, id, at); }
+    this.charge(inflated.length, id, at);
     const nul = inflated.indexOf(0);
     const header = /^(commit|tree|blob|tag) (0|[1-9][0-9]*)$/.exec(nul < 0 ? '' : inflated.toString('latin1', 0, nul));
     if (header === null || Number(header[2]) !== inflated.length - nul - 1) return refuse('corrupt-object', `loose object ${id} has a malformed header`, id, at);
     return { type: header[1] as GitObjectType, body: inflated.subarray(nul + 1) };
   }
 
-  private async packed(pack: PackIndex, offset: number, id: string, at: string | null, depth: number): Promise<{ readonly type: GitObjectType; readonly body: Uint8Array }> {
-    if (depth > MAX_DELTA_CHAIN) refuse('corrupt-object', `${id} has a delta chain longer than ${MAX_DELTA_CHAIN}`, id, at);
-    const fh = await this.handle(pack);
+  private async packed(pack: PackIndex, offset: number, id: string, at: string | null, depth: number): Promise<RawObject> {
+    if (depth > this.limits.chainDepth) refuse('budget-exceeded', `${id} has a delta chain longer than ${this.limits.chainDepth}`, id, at);
+    this.count(id, at);
+    const { fh, size: end } = await this.handle(pack);
+    if (offset < 12 || offset >= end) refuse('invalid-pack-index', `${id}: ${pack.name}.idx gives an offset outside its pack`, id, at);
     const head = await readAt(fh, offset, 32 + HEX[this.algorithm] / 2);
     let c = head[0]!, i = 1, size = c & 0x0f, shift = 4;
     const kind = (c >> 4) & 7;
@@ -242,9 +336,9 @@ class ObjectStore {
       if (i >= head.length) refuse('corrupt-object', `${id}: pack entry header too long in ${pack.name}`, id, at);
       c = head[i++]!; size += (c & 0x7f) * 2 ** shift; shift += 7;
     }
-    if (size > this.maxObjectBytes) refuse('corrupt-object', `${id}: pack entry declares ${size} bytes`, id, at);
-    if (kind in PACK_TYPES) return { type: PACK_TYPES[kind]!, body: await this.inflateAt(fh, offset + i, size, id, at) };
-    let base: { readonly type: GitObjectType; readonly body: Uint8Array };
+    if (size > this.limits.objectBytes) refuse('corrupt-object', `${id}: pack entry declares ${size} bytes`, id, at);
+    if (kind in PACK_TYPES) return { type: PACK_TYPES[kind]!, body: await this.inflateAt(fh, end, offset + i, size, id, at) };
+    let base: RawObject;
     if (kind === OFS_DELTA) {
       c = head[i++]!;
       let back = c & 0x7f;
@@ -261,23 +355,23 @@ class ObjectStore {
     } else {
       return refuse('corrupt-object', `${id}: pack entry of unknown type ${kind} in ${pack.name}`, id, at);
     }
-    return { type: base.type, body: applyDelta(base.body, await this.inflateAt(fh, offset + i, size, id, at), id, at, this.maxObjectBytes) };
+    const delta = await this.inflateAt(fh, end, offset + i, size, id, at);
+    return { type: base.type, body: applyDelta(base.body, delta, id, at, this.limits.objectBytes, n => this.charge(n, id, at)) };
   }
 
-  private async rawForDelta(baseId: string, id: string, at: string | null, depth: number): Promise<{ readonly type: GitObjectType; readonly body: Uint8Array }> {
+  private async rawForDelta(baseId: string, id: string, at: string | null, depth: number): Promise<RawObject> {
     for (const pack of this.packs) {
       const offset = lookup(pack, baseId, this.algorithm);
       if (offset !== null) return this.packed(pack, offset, id, at, depth + 1);
     }
-    let stored: Buffer | null = null;
-    try { stored = await readFile(path.join(this.objects, baseId.slice(0, 2), baseId.slice(2))); } catch { stored = null; }
+    const stored = await this.looseStored(baseId, at);
     if (stored !== null) return this.loose(stored, baseId, at);
     return refuse('object-missing', `${id}: delta base ${baseId} is not in this clone`, id, at);
   }
 
-  private async inflateAt(fh: FileHandle, start: number, size: number, id: string, at: string | null): Promise<Buffer> {
-    const end = (await fh.stat()).size;
-    for (let window = size + (size >> 3) + 1024; ; window *= 2) {
+  private async inflateAt(fh: FileHandle, end: number, start: number, size: number, id: string, at: string | null): Promise<Buffer> {
+    this.charge(size, id, at);
+    for (let window = storedBound(size); ; window *= 2) {
       const chunk = await readAt(fh, start, Math.min(window, end - start));
       try {
         const out = inflateSync(chunk, { maxOutputLength: size + 1 });
@@ -290,14 +384,40 @@ class ObjectStore {
     }
   }
 
-  private async handle(pack: PackIndex): Promise<FileHandle> {
-    let fh = this.handles.get(pack.name);
-    if (fh === undefined) {
-      try { fh = await open(path.join(this.objects, 'pack', `${pack.name}.pack`), 'r'); } catch { return refuse('invalid-pack-index', `${pack.name}.idx has no readable pack`); }
-      this.handles.set(pack.name, fh);
+  private async handle(pack: PackIndex): Promise<Pack> {
+    let open_ = this.handles.get(pack.name);
+    if (open_ === undefined) {
+      const fh = await openRegular(this.gitDir, path.join(this.objects!, 'pack', `${pack.name}.pack`));
+      if (fh === null) return refuse('invalid-pack-index', `${pack.name}.idx has no readable pack`);
+      open_ = { fh, size: (await fh.stat()).size };
+      this.handles.set(pack.name, open_);
     }
-    return fh;
+    return open_;
   }
+}
+
+/** Whether `dir` is a directory, reached without following a symbolic link at its last step. Absent is false; a link, a file or a
+ * special file refuses. */
+async function realDirectory(gitDir: string, dir: string): Promise<boolean> {
+  let stat;
+  try { stat = await lstat(dir); } catch (e) { if (errorCode(e) === 'ENOENT') return false; throw e; }
+  if (!stat.isDirectory()) refuse('unsafe-store-entry', `${path.relative(gitDir, dir)} is not a directory; nothing under .git is read through a link`);
+  return true;
+}
+
+/** `file` opened for reading if it is a regular file reached without a symbolic link; null when absent. A link (refused by
+ * `O_NOFOLLOW`), a directory or a special file (refused after opening; `O_NONBLOCK` keeps a FIFO from blocking the open) refuses. */
+async function openRegular(gitDir: string, file: string): Promise<FileHandle | null> {
+  const rel = path.relative(gitDir, file);
+  let fh: FileHandle;
+  try { fh = await open(file, OPEN_FLAGS); } catch (e) {
+    if (errorCode(e) === 'ENOENT') return null;
+    if (errorCode(e) === 'ELOOP') return refuse('unsafe-store-entry', `${rel} is a symbolic link, never followed`);
+    throw e;
+  }
+  let regular = false;
+  try { regular = (await fh.stat()).isFile(); } finally { if (!regular) await fh.close(); }
+  return regular ? fh : refuse('unsafe-store-entry', `${rel} is not a regular file`);
 }
 
 async function readAt(fh: FileHandle, offset: number, length: number): Promise<Buffer> {
@@ -317,6 +437,7 @@ function parseIndex(idx: Buffer, name: string, algorithm: HashAlgorithm): PackIn
   const small = Array.from({ length: count }, (_, k) => idx.readUInt32BE(offsetsAt + k * 4));
   const large = small.filter(o => o & 0x80000000).length;
   if (idx.length !== largeAt + large * 8 + 2 * width) bad(`size ${idx.length} fits no ${count}-entry index`);
+  if (small.some(o => o & 0x80000000 && (o & 0x7fffffff) >= large)) bad('a large offset lies past the large-offset table');
   const offsets = small.map(o => (o & 0x80000000 ? Number(idx.readBigUInt64BE(largeAt + (o & 0x7fffffff) * 8)) : o));
   return { name, ids: idx.subarray(idsAt, idsAt + count * width), offsets, count };
 }
@@ -332,7 +453,7 @@ function lookup(pack: PackIndex, id: string, algorithm: HashAlgorithm): number |
   return null;
 }
 
-function applyDelta(base: Uint8Array, delta: Buffer, id: string, at: string | null, maxObjectBytes: number): Buffer {
+function applyDelta(base: Uint8Array, delta: Buffer, id: string, at: string | null, maxObjectBytes: number, charge: (bytes: number) => void): Buffer {
   let i = 0;
   const varint = (): number => {
     let value = 0, shift = 0, c: number;
@@ -345,6 +466,7 @@ function applyDelta(base: Uint8Array, delta: Buffer, id: string, at: string | nu
   const sourceSize = varint(), targetSize = varint();
   if (sourceSize !== base.length) refuse('corrupt-object', `${id}: delta expects a ${sourceSize}-byte base, got ${base.length}`, id, at);
   if (targetSize > maxObjectBytes) refuse('corrupt-object', `${id}: delta declares ${targetSize} bytes`, id, at);
+  charge(targetSize);
   const out = Buffer.alloc(targetSize);
   let o = 0;
   while (i < delta.length) {
