@@ -63,9 +63,10 @@ describe('ingestTestArtifact', () => {
     expect(result.kind).toBe('captured');
     if (result.kind !== 'captured') throw new Error('unreachable');
     expect(result.record).toEqual({
+      provenance: 'operator-reported',
       command: ['python3', '-m', 'pytest', SCOPE, '-q'],
       exitCode: 0,
-      capturedAt: '2026-08-30T08:00:00Z',
+      ingestedAt: '2026-08-30T08:00:00Z',
       repositoryCommit: COMMIT,
       scope: SCOPE,
       digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/) as unknown as string,
@@ -92,8 +93,38 @@ describe('ingestTestArtifact', () => {
     const result = ingestTestArtifact({ ...BASE, readFile: () => FAILING_JUNIT });
     expect(result).toEqual({
       kind: 'failed',
-      reason: 'the reported exit status is 0 but the artifact records 1 failed and 0 errored',
+      reason: 'exit status 0 was reported, but the result file records 1 failed and 0 errored',
     });
+  });
+
+  it('refuses a reported exit status of 0 beside a run that collected no tests', () => {
+    const empty = '<testsuites><testsuite name="pytest" tests="0" failures="0" errors="0" skipped="0" /></testsuites>';
+    const result = ingestTestArtifact({ ...BASE, readFile: () => empty });
+    expect(result).toEqual({
+      kind: 'failed',
+      reason: 'exit status 0 was reported, but the result file records zero tests; a run that collected nothing verifies nothing',
+    });
+  });
+
+  // `failures="-1" errors="1"` summed to zero and slipped past the status-0
+  // check; `failures="x"` read as zero (round-1 note 4).
+  it.each([
+    ['a negative count', 'tests="2" failures="-1" errors="1"'],
+    ['a non-numeric count', 'tests="2" failures="x"'],
+    ['a fractional count', 'tests="2" failures="0.5"'],
+    ['counts above the total', 'tests="1" failures="1" errors="1"'],
+  ])('refuses %s as unreadable rather than reading it as zero', (_label, attrs) => {
+    const result = ingestTestArtifact({ ...BASE, readFile: () => `<testsuite name="pytest" ${attrs}>` });
+    expect(result.kind).toBe('failed');
+    if (result.kind !== 'failed') throw new Error('unreachable');
+    expect(result.reason).toContain('non-negative integer counts');
+  });
+
+  it('prints, for an agent session, that step 2 needs the owner\'s recorded SEC-3 choice, and that the tree is not checked', () => {
+    const text = operatorInstructions({ repoRoot: '/r', scope: SCOPE, python: 'python3', junitPath: '/j.xml', stateDir: '/s' });
+    expect(text).toContain('For the owner or a human operator. An agent session must not run step 2\nunless the owner has recorded a SEC-3 choice for that run.');
+    expect(text).toContain('It does not check the working tree for uncommitted changes');
+    expect(text).toContain('as operator-reported (report-fact), never as Verified.');
   });
 
   it.each(['', '-1', '256', '1.0', '01', 'zero'])('refuses the reported exit status %j', (code) => {

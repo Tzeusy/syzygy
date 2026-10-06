@@ -8,14 +8,39 @@ import { join } from 'node:path';
 // content (AC5). The raw JUnit artifact bytes are hashed for provenance;
 // their content is never stored or re-derivable from this record.
 
-export interface TestArtifactRecord {
+interface TestArtifactRecordFields {
   readonly command: readonly string[];
   readonly exitCode: number;
-  readonly capturedAt: string;
   readonly repositoryCommit: string;
   readonly scope: string;
   readonly digest: string;
   readonly summary: string;
+}
+
+/** A run whose exit status and capture instant the capturing process
+ * observed itself. */
+export interface ObservedRunTestArtifactRecord extends TestArtifactRecordFields {
+  readonly capturedAt: string;
+}
+
+/**
+ * A run the operator performed and reported (owner direction
+ * REDIS-LOCAL-AGENT-SITTING-2026-10-07 item 4). Syzygy observed only the
+ * result file's digest and root totals and that HEAD equalled
+ * `repositoryCommit` at `ingestedAt`; that the run happened, at that commit,
+ * on a clean tree, with `exitCode`, is the operator's report. There is no
+ * capture instant: `ingestedAt` is when Syzygy read the file, not when the
+ * tests ran.
+ */
+export interface OperatorReportedTestArtifactRecord extends TestArtifactRecordFields {
+  readonly provenance: 'operator-reported';
+  readonly ingestedAt: string;
+}
+
+export type TestArtifactRecord = ObservedRunTestArtifactRecord | OperatorReportedTestArtifactRecord;
+
+export function isOperatorReported(record: TestArtifactRecord): record is OperatorReportedTestArtifactRecord {
+  return 'provenance' in record && record.provenance === 'operator-reported';
 }
 
 // --- File-backed record state --------------------------------------------
@@ -43,10 +68,14 @@ function isTestArtifactRecord(value: unknown): value is TestArtifactRecord {
     return false;
   }
   const record = value as Record<string, unknown>;
+  const timing =
+    record.provenance === undefined
+      ? typeof record.capturedAt === 'string' && record.ingestedAt === undefined
+      : record.provenance === 'operator-reported' && typeof record.ingestedAt === 'string' && record.capturedAt === undefined;
   return (
+    timing &&
     isStringArray(record.command) &&
     typeof record.exitCode === 'number' &&
-    typeof record.capturedAt === 'string' &&
     typeof record.repositoryCommit === 'string' &&
     typeof record.scope === 'string' &&
     typeof record.digest === 'string' &&
@@ -95,43 +124,85 @@ export interface JUnitRootTotals {
   readonly time: number | null;
 }
 
-// Matches only the exact `testsuite` tag (requiring whitespace right after
-// the tag name) so it never matches the plural `testsuites` wrapper tag,
-// which pytest emits with no totals of its own (`<testsuites name="pytest
-// tests">`) around one or more real `<testsuite ...>` elements that do
-// carry them.
-const TESTSUITE_TAG_PATTERN = /<testsuite\s+([^>]*?)\/?>/i;
-const TESTSUITES_TAG_PATTERN = /<testsuites\s+([^>]*?)\/?>/i;
-const ATTR_PATTERN = /(\w+)="([^"]*)"/g;
+/** The largest JUnit artifact any reader accepts. The bytes come from
+ * running observed code, so they are untrusted; a focused pytest scope's
+ * report is a few kilobytes. */
+export const MAX_JUNIT_ARTIFACT_BYTES = 4 * 1024 * 1024;
 
+/**
+ * The attribute text of the first opening tag named exactly `name`
+ * (whitespace required right after the name, so `testsuite` never matches
+ * the plural `testsuites` wrapper, which pytest emits with no totals of its
+ * own around the real `<testsuite ...>` elements). One forward pass: a
+ * candidate followed by anything but whitespace is skipped without looking
+ * further, and the first candidate with no closing `>` ends the scan, since
+ * no later candidate can close either. Linear in the input on any bytes.
+ */
+function firstOpeningTagBody(rawXml: string, lowerXml: string, name: string): string | null {
+  const opener = `<${name}`;
+  let from = 0;
+  for (;;) {
+    const start = lowerXml.indexOf(opener, from);
+    if (start === -1) return null;
+    const after = start + opener.length;
+    if (!/\s/.test(rawXml.charAt(after))) {
+      from = after;
+      continue;
+    }
+    const end = rawXml.indexOf('>', after);
+    if (end === -1) return null;
+    const body = rawXml.slice(after, end);
+    return body.endsWith('/') ? body.slice(0, -1) : body;
+  }
+}
+
+const NAME_CHAR = /[A-Za-z0-9_:.-]/;
+
+/** `name="value"` pairs in one tag body, by a single forward pass. */
 function parseTagAttrs(tagBody: string): Map<string, string> {
   const attrs = new Map<string, string>();
-  ATTR_PATTERN.lastIndex = 0;
-  let attrMatch: RegExpExecArray | null;
-  while ((attrMatch = ATTR_PATTERN.exec(tagBody)) !== null) {
-    attrs.set(attrMatch[1] as string, attrMatch[2] as string);
+  let i = 0;
+  while (i < tagBody.length) {
+    if (!NAME_CHAR.test(tagBody.charAt(i))) {
+      i += 1;
+      continue;
+    }
+    const nameStart = i;
+    while (i < tagBody.length && NAME_CHAR.test(tagBody.charAt(i))) i += 1;
+    const name = tagBody.slice(nameStart, i);
+    if (tagBody.charAt(i) !== '=' || tagBody.charAt(i + 1) !== '"') continue;
+    const valueEnd = tagBody.indexOf('"', i + 2);
+    if (valueEnd === -1) break;
+    attrs.set(name, tagBody.slice(i + 2, valueEnd));
+    i = valueEnd + 1;
   }
   return attrs;
 }
 
+const COUNT = /^(?:0|[1-9][0-9]{0,8})$/;
+
+/** Every count present must be a non-negative integer, or the totals are
+ * unreadable: a non-numeric or negative count never reads as zero. */
 function totalsFromAttrs(attrs: Map<string, string>): JUnitRootTotals | null {
-  if (!attrs.has('tests')) {
+  const tests = attrs.get('tests');
+  if (tests === undefined) {
     return null;
   }
-  const tests = Number(attrs.get('tests'));
-  if (!Number.isFinite(tests)) {
+  const counts = [tests, attrs.get('failures') ?? '0', attrs.get('errors') ?? '0', attrs.get('skipped') ?? '0'];
+  if (!counts.every((count) => COUNT.test(count))) {
     return null;
   }
-  const failures = Number(attrs.get('failures') ?? '0');
-  const errors = Number(attrs.get('errors') ?? '0');
-  const skipped = Number(attrs.get('skipped') ?? '0');
+  const [total, failures, errors, skipped] = counts.map(Number) as [number, number, number, number];
+  if (failures + errors + skipped > total) {
+    return null;
+  }
   const timeRaw = attrs.get('time');
   const time = timeRaw === undefined ? null : Number(timeRaw);
   return {
-    tests,
-    failures: Number.isFinite(failures) ? failures : 0,
-    errors: Number.isFinite(errors) ? errors : 0,
-    skipped: Number.isFinite(skipped) ? skipped : 0,
+    tests: total,
+    failures,
+    errors,
+    skipped,
     time: time !== null && Number.isFinite(time) ? time : null,
   };
 }
@@ -144,16 +215,15 @@ function totalsFromAttrs(attrs: Map<string, string>): JUnitRootTotals | null {
  * test-body content is never parsed out of the raw artifact (AC5).
  */
 export function parseJUnitRootTotals(rawXml: string): JUnitRootTotals | null {
-  const suiteMatch = TESTSUITE_TAG_PATTERN.exec(rawXml);
-  if (suiteMatch !== null) {
-    const totals = totalsFromAttrs(parseTagAttrs(suiteMatch[1] ?? ''));
-    if (totals !== null) {
-      return totals;
-    }
+  if (rawXml.length > MAX_JUNIT_ARTIFACT_BYTES) {
+    return null;
   }
-  const suitesMatch = TESTSUITES_TAG_PATTERN.exec(rawXml);
-  if (suitesMatch !== null) {
-    const totals = totalsFromAttrs(parseTagAttrs(suitesMatch[1] ?? ''));
+  // ASCII-only folding keeps every index equal between the two strings;
+  // String#toLowerCase can change the length (U+0130 becomes two units).
+  const lowerXml = rawXml.replace(/[A-Z]+/g, (run) => run.toLowerCase());
+  for (const name of ['testsuite', 'testsuites']) {
+    const body = firstOpeningTagBody(rawXml, lowerXml, name);
+    const totals = body === null ? null : totalsFromAttrs(parseTagAttrs(body));
     if (totals !== null) {
       return totals;
     }
@@ -176,9 +246,16 @@ export interface BuildTestArtifactRecordInput {
   readonly scope: string;
 }
 
-export type BuildTestArtifactRecordResult =
-  | { readonly kind: 'built'; readonly record: TestArtifactRecord }
+export type BuildTestArtifactRecordResult<R extends TestArtifactRecord = ObservedRunTestArtifactRecord> =
+  | { readonly kind: 'built'; readonly record: R }
   | { readonly kind: 'unparseable'; readonly reason: string };
+
+const UNPARSEABLE_REASON =
+  'the artifact does not contain a recognizable JUnit <testsuite> root element with non-negative integer counts';
+
+function junitDigest(rawJUnitXml: string): string {
+  return `sha256:${createHash('sha256').update(rawJUnitXml, 'utf8').digest('hex')}`;
+}
 
 /** The one seam that ever reads raw JUnit artifact bytes. Everything past
  * this function operates only on the resulting safe {@link TestArtifactRecord}. */
@@ -187,12 +264,8 @@ export function buildTestArtifactRecordFromJUnit(
 ): BuildTestArtifactRecordResult {
   const totals = parseJUnitRootTotals(input.rawJUnitXml);
   if (totals === null) {
-    return {
-      kind: 'unparseable',
-      reason: 'the artifact does not contain a recognizable JUnit <testsuite> root element',
-    };
+    return { kind: 'unparseable', reason: UNPARSEABLE_REASON };
   }
-  const digest = `sha256:${createHash('sha256').update(input.rawJUnitXml, 'utf8').digest('hex')}`;
   return {
     kind: 'built',
     record: {
@@ -201,7 +274,61 @@ export function buildTestArtifactRecordFromJUnit(
       capturedAt: input.capturedAt,
       repositoryCommit: input.repositoryCommit,
       scope: input.scope,
-      digest,
+      digest: junitDigest(input.rawJUnitXml),
+      summary: summarizeJUnitTotals(totals),
+    },
+  };
+}
+
+export interface BuildOperatorReportedRecordInput {
+  readonly rawJUnitXml: string;
+  readonly command: readonly string[];
+  readonly reportedExitCode: number;
+  readonly ingestedAt: string;
+  readonly repositoryCommit: string;
+  readonly scope: string;
+}
+
+export type BuildOperatorReportedRecordResult =
+  | BuildTestArtifactRecordResult<OperatorReportedTestArtifactRecord>
+  | { readonly kind: 'inconsistent'; readonly reason: string };
+
+/**
+ * Builds an operator-reported record, parsing the root totals once. The
+ * reported exit status must agree with the file: status 0 beside a failure
+ * or error, or beside zero tests (pytest exits 5 when it collects nothing),
+ * is refused rather than recorded. The operator can edit the bytes, so this
+ * is a consistency check, never a proof the run happened.
+ */
+export function buildOperatorReportedTestArtifactRecord(
+  input: BuildOperatorReportedRecordInput,
+): BuildOperatorReportedRecordResult {
+  const totals = parseJUnitRootTotals(input.rawJUnitXml);
+  if (totals === null) {
+    return { kind: 'unparseable', reason: UNPARSEABLE_REASON };
+  }
+  if (input.reportedExitCode === 0 && totals.failures + totals.errors > 0) {
+    return {
+      kind: 'inconsistent',
+      reason: `exit status 0 was reported, but the result file records ${totals.failures} failed and ${totals.errors} errored`,
+    };
+  }
+  if (input.reportedExitCode === 0 && totals.tests === 0) {
+    return {
+      kind: 'inconsistent',
+      reason: 'exit status 0 was reported, but the result file records zero tests; a run that collected nothing verifies nothing',
+    };
+  }
+  return {
+    kind: 'built',
+    record: {
+      provenance: 'operator-reported',
+      command: input.command,
+      exitCode: input.reportedExitCode,
+      ingestedAt: input.ingestedAt,
+      repositoryCommit: input.repositoryCommit,
+      scope: input.scope,
+      digest: junitDigest(input.rawJUnitXml),
       summary: summarizeJUnitTotals(totals),
     },
   };
@@ -209,9 +336,23 @@ export function buildTestArtifactRecordFromJUnit(
 
 // --- Verification -----------------------------------------------------
 
+/**
+ * RFC5-19 (`.syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md`
+ * lines 140-150): "Consuming evidence produced outside Syzygy … is
+ * observation, not execution — no profile is required to read a report" and
+ * "This boundary governs whether a profile is required; it confers no tier.
+ * … an artifact of unverifiable origin caps at `report-fact` however
+ * retained, well-formed, and revision-bound it is. Reading is free; being
+ * believed is not."
+ */
+export const OPERATOR_REPORTED_DISCLOSURE =
+  'Reported by the operator, not verified by Syzygy. Syzygy observed the result file\'s digest and totals, and that HEAD was this commit when the file was ingested. That the tests ran, at this commit, on a clean working tree, with exit status 0, is the operator\'s report, and the working tree\'s state is not checked. RFC5-19: "an artifact of unverifiable origin caps at report-fact however retained, well-formed, and revision-bound it is."';
+
 export type TestArtifactVerificationResult =
   | { readonly kind: 'unknown'; readonly reason: string }
-  | { readonly kind: 'verified'; readonly record: TestArtifactRecord };
+  | { readonly kind: 'verified'; readonly record: ObservedRunTestArtifactRecord }
+  /** Never Verified: an operator-reported run caps at `report-fact` (RFC5-19). */
+  | { readonly kind: 'reported'; readonly tier: 'report-fact'; readonly record: OperatorReportedTestArtifactRecord; readonly disclosure: string };
 
 export interface ResolveTestArtifactVerificationInput {
   readonly record: TestArtifactRecord | null;
@@ -257,25 +398,36 @@ export function resolveTestArtifactVerification(
       reason: `test artifact reports a non-zero exit status (${input.record.exitCode})`,
     };
   }
-  const capturedAtMs = Date.parse(input.record.capturedAt);
-  if (Number.isNaN(capturedAtMs)) {
-    return { kind: 'unknown', reason: 'test artifact capture time is not a valid instant' };
+  // An operator-reported record has no capture instant, only the ingest
+  // instant. The same two refusals apply to it (an ingest before the commit
+  // existed, or after this evaluation, is impossible honest evidence), but
+  // passing them says nothing about when the tests ran.
+  const reported = isOperatorReported(input.record);
+  const instantName = reported ? 'ingest time' : 'capture time';
+  const instantMs = Date.parse(reported ? input.record.ingestedAt : input.record.capturedAt);
+  if (Number.isNaN(instantMs)) {
+    return { kind: 'unknown', reason: `test artifact ${instantName} is not a valid instant` };
   }
   const evaluationAsOfMs = Date.parse(input.evaluationAsOf);
-  if (!Number.isNaN(evaluationAsOfMs) && capturedAtMs > evaluationAsOfMs) {
+  if (!Number.isNaN(evaluationAsOfMs) && instantMs > evaluationAsOfMs) {
     return {
       kind: 'unknown',
-      reason: 'test artifact capture time is after this evaluation (future-dated evidence is treated as stale)',
+      reason: `test artifact ${instantName} is after this evaluation (future-dated evidence is treated as stale)`,
     };
   }
   if (input.commitAuthoredAt !== null) {
     const commitAuthoredAtMs = Date.parse(input.commitAuthoredAt);
-    if (!Number.isNaN(commitAuthoredAtMs) && capturedAtMs < commitAuthoredAtMs) {
+    if (!Number.isNaN(commitAuthoredAtMs) && instantMs < commitAuthoredAtMs) {
       return {
         kind: 'unknown',
-        reason: 'test artifact was captured before the commit it claims to verify existed',
+        reason: reported
+          ? 'test artifact was ingested before the commit it claims to verify existed'
+          : 'test artifact was captured before the commit it claims to verify existed',
       };
     }
+  }
+  if (isOperatorReported(input.record)) {
+    return { kind: 'reported', tier: 'report-fact', record: input.record, disclosure: OPERATOR_REPORTED_DISCLOSURE };
   }
   return { kind: 'verified', record: input.record };
 }
