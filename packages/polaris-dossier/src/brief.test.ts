@@ -239,6 +239,8 @@ describe('syzygy dossier brief', () => {
     const result = await cli(['brief', run, '--json']);
     expect(result.code).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({ command: 'brief', outcome: 'issued', pinnedRevision: REV, executionRule: { arm: 'sec-3' } });
+    // The CLI wires the permitting arm's ports but never switches the arm on.
+    expect(JSON.parse(result.stdout).executionRule.notPermittedBecause).toEqual(['the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution']);
   });
 
   it('exits 1 on a refusal and 2 on malformed arguments', async () => {
