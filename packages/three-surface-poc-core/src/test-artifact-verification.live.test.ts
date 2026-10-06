@@ -1,18 +1,20 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { buildPocModel } from './model.js';
 import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
-import { buildTestArtifactRecordFromJUnit, parseJUnitRootTotals } from './test-artifact-verification.js';
+import {
+  buildOperatorReportedTestArtifactRecord,
+  OPERATOR_REPORTED_DISCLOSURE,
+  readBoundedRegularFile,
+} from './test-artifact-verification.js';
 
 // Gated exactly like the existing SYZYGY_POC_BUTLERS_REPO-gated live
 // checks (work-items.live.test.ts): the default suite stays hermetic, but
 // this proves the real end-to-end path on demand — a real JUnit artifact
-// from the real, configured Butlers checkout, and a real "verified" render
-// through the full shared model (syzygy-0r9 AC1: a real focused Butlers
-// test artifact captured outside Syzygy, ingested, and only then shown
-// verified).
+// from the real, configured Butlers checkout, ingested and composed through
+// the full shared model (syzygy-0r9 AC1: a real focused Butlers test
+// artifact captured outside Syzygy, then ingested).
 //
 // Syzygy never runs the observed test suite, here or anywhere (SEC-3,
 // RFC5-18; syzygy-hjuz, under the owner's syzygy-4mbu direction "print the
@@ -24,6 +26,13 @@ import { buildTestArtifactRecordFromJUnit, parseJUnitRootTotals } from './test-a
 //   SYZYGY_POC_BUTLERS_PYTHON        the interpreter it used (default python3)
 // With the repository set and the result missing, the test fails and names
 // the command to run, rather than skipping or running it.
+//
+// The commit, the exit status and the run itself are the operator's report
+// (syzygy-4mbu round 1, finding 1): Syzygy observes only the file's bytes and
+// that HEAD is the reported commit when it reads them. So the record is
+// operator-reported, and the full model must resolve it to `reported`,
+// capped at report-fact (RFC5-19), never to `verified`. The file is read
+// through the same bounded, regular-file-only reader as the capture tool.
 const BUTLERS_REPO = process.env.SYZYGY_POC_BUTLERS_REPO;
 const PYTHON = process.env.SYZYGY_POC_BUTLERS_PYTHON ?? 'python3';
 const JUNIT = process.env.SYZYGY_POC_BUTLERS_JUNIT;
@@ -36,39 +45,40 @@ const SCOPE = 'tests/connectors/test_whatsapp_user_client.py';
 describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gated)', () => {
   const repoRoot = BUTLERS_REPO as string;
 
-  it('ingests one real, passing operator-run focused-pytest artifact and renders Verified through the full model (AC1/AC3)', () => {
+  it('ingests one real, passing operator-reported focused-pytest artifact and resolves it to report-fact, never Verified, through the full model (AC1/AC3, RFC5-19)', () => {
     if (JUNIT === undefined || JUNIT_COMMIT === undefined || JUNIT_EXIT === undefined) {
       throw new Error(
-        'Syzygy does not run the Butlers test suite. In your own shell, run\n' +
+        'Syzygy does not run the Butlers test suite. For the owner or a human operator: an agent session must not run ' +
+          'the pytest command below unless the owner has recorded a SEC-3 choice for that run. In your own shell, run\n' +
           `  git -C ${repoRoot} rev-parse HEAD\n` +
           `  cd ${repoRoot} && ${PYTHON} -m pytest ${SCOPE} -q --junitxml=<file>; echo "exit $?"\n` +
           'then set SYZYGY_POC_BUTLERS_JUNIT=<file>, SYZYGY_POC_BUTLERS_JUNIT_COMMIT=<commit> and ' +
           'SYZYGY_POC_BUTLERS_JUNIT_EXIT=<status>, and run this test again.',
       );
     }
-    expect(JUNIT_EXIT).toBe('0');
+    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');
 
     const repositoryCommit = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], {
       encoding: 'utf8',
     }).trim();
-    // A run at one commit is never ingested against another.
-    expect(repositoryCommit).toBe(JUNIT_COMMIT);
+    // A run reported at one commit is never ingested against another.
+    expect(repositoryCommit, 'HEAD at ingest against the operator-reported commit (SYZYGY_POC_BUTLERS_JUNIT_COMMIT)').toBe(JUNIT_COMMIT);
 
-    const rawJUnitXml = readFileSync(JUNIT, 'utf8');
-    const totals = parseJUnitRootTotals(rawJUnitXml);
-    expect(totals).not.toBeNull();
-    expect({ failures: totals?.failures, errors: totals?.errors }).toEqual({ failures: 0, errors: 0 });
+    const rawJUnitXml = readBoundedRegularFile(JUNIT);
     {
-      const built = buildTestArtifactRecordFromJUnit({
+      // Refuses a status 0 beside failing, erroring or zero tests, and any
+      // count that is not a non-negative integer.
+      const built = buildOperatorReportedTestArtifactRecord({
         rawJUnitXml,
         command: [PYTHON, '-m', 'pytest', SCOPE, '-q'],
-        exitCode: Number(JUNIT_EXIT),
-        capturedAt: new Date().toISOString(),
+        reportedExitCode: Number(JUNIT_EXIT),
+        ingestedAt: new Date().toISOString(),
         repositoryCommit,
         scope: SCOPE,
       });
-      expect(built.kind).toBe('built');
+      expect(built.kind, 'the operator-reported result file').toBe('built');
       if (built.kind !== 'built') throw new Error('unreachable');
+      expect(built.record.provenance).toBe('operator-reported');
       expect(built.record.summary).toMatch(/passed/);
       expect(built.record.summary).not.toContain('Traceback');
 
@@ -112,7 +122,7 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
           if (args[0] === 'symbolic-ref') return 'refs/remotes/origin/main';
           if (args[0] === 'rev-parse') return repositoryCommit;
           if (args[0] === 'log') {
-            const format = `${repositoryCommit}\x1f${built.record.capturedAt}\x1flive capture [bu-live-capture-1]`;
+            const format = `${repositoryCommit}\x1f${built.record.ingestedAt}\x1flive capture [bu-live-capture-1]`;
             return `${format}\n`;
           }
           if (args[0] === 'merge-base') return '';
@@ -125,7 +135,12 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
       expect(model.workerChange.kind).toBe('observed');
       if (model.workerChange.kind !== 'observed') throw new Error('unreachable');
       expect(model.workerChange.state).toBe('changed-or-merged');
-      expect(model.testArtifactVerification.kind).toBe('verified');
+      expect(model.testArtifactVerification).toEqual({
+        kind: 'reported',
+        tier: 'report-fact',
+        record: built.record,
+        disclosure: OPERATOR_REPORTED_DISCLOSURE,
+      });
     }
   }, 120_000);
 });
