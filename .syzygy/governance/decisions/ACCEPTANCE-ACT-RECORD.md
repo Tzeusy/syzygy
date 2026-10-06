@@ -1189,3 +1189,21 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.0 -->
+
+<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.1 -->
+## Versioned sign-off — polaris-dossier-local-agent-mode — v1.1 — recorded 2026-10-07
+
+The owner signed off version 1.1 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification delta |
+| Review outcome | `docs/reviews/R-POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/POLARIS-DOSSIER-LOCAL-AGENT-MODE-V1-1-REVIEW-NOTES.md` |
+| Recording | `.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md`; annotated tag `polaris-dossier-local-agent-mode-v1.1` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.1 -->

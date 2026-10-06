@@ -1,7 +1,9 @@
 # Design: the operator-agent mode and the `syzygy dossier` commands
 
-> **Candidate — binds nothing.** Explains the candidate requirements in
-> proposed/polaris-generation/spec.md; not adopted, and not an
+> **Version 1.1.** Explains the requirements in
+> specs/polaris-generation/spec.md; version 1.0 was signed off by the owner
+> on 2026-10-06, and this text binds only by the owner's sign-off of
+> version 1.1. It is not an
 > implementation. It contains no code. The command surface below is a design
 > for implementation after the owner's sign-off (direction item 5); the
 > requirements are the controlling text, and doctrine, accepted contracts,
@@ -176,34 +178,45 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
 8. **Execution follows SEC-3; Syzygy never runs anything.** The owner
    chose to let the agent build and run the observed project on the host,
    and directed a SEC-3 amendment to permit it before this change is signed
-   (review-1 rulings, item 1); it is drafted as D9 (draft PR #357). `brief`
+   (review-1 rulings, item 1); the owner adopted it as D9 on 2026-10-06. `brief`
    writes the execution rule in force. It carries D9's permission only when
    D9 is adopted and in force, the operator is the owner attending the
    authoring session the owner started on the owner's host, the operator
    has personally run `syzygy dossier allow-execution <run> --revision
-   <pinned>` before the brief, and, where D9 as adopted carries its
+   <pinned>` before the brief, declaring there that the owner started the
+   authoring session on the owner's own host and attends it, and, where D9 as adopted carries its
    credential condition, Syzygy's own read attempt, as the operator's user,
    finds no adapter credential its configuration holds readable. That
    command is the only source of the choice: it covers one run and its
    pinned revision, `run.json`, earlier runs and standing records never
-   count, and the skill and Codex texts never run it. Syzygy cannot see who
-   typed it, so the owner's authorship is Inferred and disclosed, and its
-   record sits in the state directory with every other record (R1). The
+   count, and the skill and Codex texts never run it and never grant
+   execution themselves: they defer to the rule in `brief.md`. The choice
+   is not an execution consent (RFC5-12; the base change's
+   `SOURCE-POLICY.md`) and approves no execution profile. Syzygy cannot see
+   who typed it, and the authoring agent could run it or write its record
+   itself, which Syzygy cannot tell apart, so the owner's authorship and the
+   declaration are Inferred and disclosed, and the record sits in the state
+   directory with every other record (R1). The
    permitting brief goes to the authoring session only, never to the
    inventory brief, a packet or a printed session prompt. It says the
    permission lapses if the owner leaves the session under automatic
    approval or permission bypass while away, keeps the agent's subagents
    under the same rule, asks for no process that outlives the session, and
    has the agent stop every process it started (a background service
-   included) before the session ends. The credential read is repeated at
-   every `check` and at `close`; a breach becomes a finding telling the
-   agent to run nothing further, and a tool's deny rule never passes it.
-   The run record cites the choice and states D9's cost (the session runs
-   with the owner's own credentials and network, including Syzygy's
-   endpoints and any Syzygy credential readable on the host, and can change
-   any file the owner can, the clone included). In every other case it
-   carries SEC-3's own rule, quoted, with no invitation to run the project
-   outside an execution profile. Syzygy never asks for the choice before D9
+   included) before the session ends. From a permitting brief on, Syzygy
+   holds and writes no typed-adapter credential the operator's user can
+   read, and repeats the credential read at every step it takes (`check`,
+   `inventory-check`, `review-check`, `render`, `close`), taking the list
+   from a source the disclosure names and says is within the sessions'
+   reach; a breach becomes a finding telling the agent to run nothing
+   further, a tool's deny rule never passes it, and readability between
+   reads, after `close` or through privilege escalation is Inferred and
+   disclosed. The run record cites the choice and the declaration and
+   quotes D9's cost bullet as adopted in `security.md`. In every other case
+   the brief quotes SEC-3's head sentence as adopted, cites SEC-3 and tells
+   the agent in its own words not to build or run the project outside an
+   explicit, opt-in execution profile, with no invitation to run it
+   outside one. Syzygy never asks for the choice before D9
    is in
    force. Either way every command the agent reports goes in
    the draft's `executions` list and is disclosed, whether or not a claim
@@ -265,7 +278,7 @@ usage error.
 | `syzygy dossier session-prompt <run> <inventory\|review> [--kind fidelity\|design]` | agent, at a hand-over | Makes the role's session directory (inventory brief only, or the packet), prints the fixed prompt and a ready command that starts the session there, and records the prompt's digest, so the authoring session does not write it | — | the prompt texts; the session directories |
 | `syzygy dossier launch-form <run> <role> terminal\|bang` | agent, on the operator's answer | Records the launch form the operator declares for that session, operator-declared and Inferred; refuses any other value | — | the record |
 | `syzygy dossier init <clone> --url <repo-url> --config <run.json>` | agent, on the operator's answer, or the operator | Reads the observation consent, registry entry and policy acts; verifies HEAD is a consented revision; decides governed or not from the project input and the pinned tree's paths, and for a governed or silent subject requires the per-project statement; checks the config's declared tool, provider, model and limits; writes `run.json` in the state directory | consent reader (`packages/polaris-generation-consent`: `inForceRecords`, `createConsentPorts`, `withConsent`; on `main` since PR #263); `evaluateBodyReadAuthority` (`packages/three-surface-poc-core/src/body-read-authority.ts`); `parseGithubUrl` (`dossier-trigger.ts`) | HEAD-to-consent comparison (the trigger's `pinRevision` reads `ls-remote`, not a local clone); isolated, re-hashing object reads; the governed predicate; config validation |
-| `syzygy dossier allow-execution <run> --revision <rev>` | operator, personally, only | Records the owner's execution choice for that one run and its pinned revision, operator-declared and Inferred as to who entered it; refuses while D9 is not in force, after the brief, or for another run or revision | — | the record |
+| `syzygy dossier allow-execution <run> --revision <rev>` | operator, personally, only | Records the owner's execution choice for that one run and its pinned revision, with the operator's declaration that the owner started and attends the authoring session on the owner's own host, operator-declared and Inferred as to who entered them; never an execution consent; refuses while D9 is not in force, after the brief, or for another run or revision | — | the record |
 | `syzygy dossier brief <run>` | agent | Writes `brief.md` and `draft.schema.json`, with the execution rule in force; starts the deadline clock | `promptForStage(stage, 'dossier')` (`prompts.ts`); `OWNER_TOPICS` (`dossier-evaluation.ts`); `DOSSIER_READER_QUESTIONS` (`dossier-profile.ts`) | the local-agent schema (claims cite path + line range, not `sourceIds`); brief text for labels, quotation and clarification rules |
 | `syzygy dossier check <run> [--draft <file>]` | agent | Freezes the draft as revision N; runs schema, path, range, quotation and label checks; writes `<run>/checks/rev-N.json`; refuses past the repair limit or deadline | `checkBlockQuotes` / `inspectBlockQuotes` / `normaliseForQuote` (`quote-fidelity.ts`); `validateStage` / `validateDraftRecord` (`provider-draft.ts`); `readGitBlobsBatch`; screening from `public-source-screening.ts` and `classifySource` / `detectSecrets` / `scanActiveContent` | line-range restriction; a normalisation offset map so a normalised match yields a byte range; per-path citations; label and citation rules by block kind; the understanding record; cycle counting |
 | `syzygy dossier inventory-brief <run>` / `inventory-check <run> --inventory <file>` | inventory session | Brief without the draft; checks and freezes the inventory like a draft; refuses an inventory declared under the authoring session's identifier | as `brief` / `check`; `ProviderInventory` types | inventory schema with path + line-range citations |
@@ -364,7 +377,7 @@ requirements and Syzygy's checks decide what counts.
 ```markdown
 ---
 name: polaris-dossier
-description: Write a Polaris dossier (a multi-page explanatory site) for a public repository with the syzygy binary. Use when the operator asks for a Polaris dossier of a repository URL, or invokes /polaris-dossier <url>. Also used, with a role, by the fresh inventory and review sessions the loop launches.
+description: Write a Polaris dossier (a multi-page explanatory site) for any repository the operator holds the consents for, with the syzygy binary. Use when the operator asks for a Polaris dossier of a repository URL, or invokes /polaris-dossier <url>. Also used, with a role, by the fresh inventory and review sessions the loop launches.
 ---
 
 # Polaris dossier

@@ -1,6 +1,6 @@
 # Polaris dossier local-agent mode
 
-> **Candidate — binds nothing.** Drafted 2026-10-05 under the owner direction
+> **Version 1.1.** Drafted 2026-10-05 under the owner direction
 > `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`),
 > which authorizes drafting and review only, and relies on the owner's
@@ -12,11 +12,11 @@
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-DIRECTION.md`)
 > and `POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-2026-10-05`
 > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`).
-> It is not adopted, performs no act, and grants no read, egress, write or
-> execution. Effect comes only from the owner's sign-off of the exact
-> reviewed bytes (VIS-4), which may not be given until the owner has adopted
-> the SEC-3 amendment that the review-1 rulings direct (item 1), drafted as
-> doctrine amendment D9.
+> The owner signed off version 1.0 on 2026-10-06, after adopting the SEC-3
+> amendment that the review-1 rulings direct (item 1) as doctrine amendment
+> D9 the same day; these bytes bind only by the owner's sign-off of version
+> 1.1 (VIS-4). It grants no read, egress, write or execution beyond what
+> its requirements state.
 
 **A Polaris dossier can be written by the operator's own Claude Code or Codex
 session over a local clone, while Syzygy checks every quotation against the
@@ -59,9 +59,11 @@ through one reviewed CC-REV-2 delta.
   - 036 Self-reported discovery and in-session clarification.
 - **Modified in effect, not in bytes:** for an operator-agent run the new
   requirements displace or read named text of REQ-polaris-generation-001,
-  002, 005, 006, 017, 018, 020, 022, 030 and 031, and of the base change's
-  `INTERFACES.md`
-  (Provider bullet; "Budget and retry decisions"). Each displaced sentence is
+  002, 005, 006, 017, 018, 020, 021, 022, 030 and 031, and of the base
+  change's `INTERFACES.md` (Provider bullet; "Budget and retry
+  decisions"), `OWNER-FLOW.md` ("Resolve warranted work"; "Materialize
+  once, then execute") and `SECURITY-CONTRACT.md` (the paragraph that
+  begins "The trail resides outside the governed plane"). Each displaced sentence is
   quoted in the semantic delta. For a provider-mode run nothing changes.
 - **RFC7-20, by the owner's reading, not by edit:** the owner ruled that
   RFC7-20's consent condition governs drafts Syzygy computes, and that an
@@ -71,18 +73,18 @@ through one reviewed CC-REV-2 delta.
   accordingly in 033. The first review found the reading changes the
   clause's effect; the owner kept the ruling and directed that the finding be
   preserved for the owner, not resolved (review-1 rulings, item 3).
-- **Execution follows SEC-3 until it is amended.** The owner chose to let
+- **Execution follows SEC-3 as amended by D9.** The owner chose to let
   the agent build and run the observed project on the host and directed a
-  SEC-3 amendment to permit it (review-1 rulings, item 1), drafted as D9.
+  SEC-3 amendment to permit it (review-1 rulings, item 1), adopted as D9.
   The brief invites execution only when D9 is in force, the operator is the
   owner attending the authoring session the owner started on the owner's
   host, the operator personally records the owner's choice for that one run
   and revision before the brief (never a configuration value or standing
   record), and any credential check D9 requires passes; only the authoring
   brief carries it, and it asks for no process that outlives the session.
-  Otherwise it quotes SEC-3 and
-  invites nothing outside an execution profile, and this change may not be
-  signed before D9 is adopted. Claims the agent marks as resting on
+  Otherwise it quotes SEC-3's head sentence, tells the agent not to build
+  or run the project outside an explicit, opt-in execution profile, and
+  invites nothing outside one. Claims the agent marks as resting on
   execution are Inferred and shown with the commands they name, every
   reported command is disclosed, and Syzygy itself executes and launches no
   observed code.
@@ -110,10 +112,10 @@ through one reviewed CC-REV-2 delta.
   whichever of the two is adopted second reconciles the two definitions. A Redis
   dossier needs both. The numbers 033 to 036 follow 032; if 032 is never
   adopted the gap stays, because identifiers are never renumbered.
-- **The candidate delta is held in `proposed/`, not `specs/`,** for the reason
-  the profile change gives: `scripts/count_polaris_effective_scenarios.py`
-  requires exactly one base and one overlay. Placing it in `specs/` is a step
-  of adoption, taken with that script's generalization (`tasks.md`).
+- **The candidate delta was held in `proposed/`, not `specs/`,** for the
+  reason the profile change gives: `scripts/count_polaris_effective_scenarios.py`
+  required exactly one base and one overlay. The v1.0 sign-off placed it in
+  `specs/`, after that script's generalization (`tasks.md`).
 - Never archive or sync this as an unrelated competing change.
 
 ## Scope and preserved boundaries
