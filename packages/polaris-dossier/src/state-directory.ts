@@ -15,6 +15,7 @@ import * as path from 'node:path';
 export const RUN_LAYOUT = Object.freeze({
   config: 'run.json',
   brief: 'brief.md',
+  briefRecord: 'brief.json',
   draftSchema: 'draft.schema.json',
   drafts: 'drafts',
   checks: 'checks',

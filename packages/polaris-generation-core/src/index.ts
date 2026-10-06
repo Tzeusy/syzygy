@@ -29,7 +29,7 @@ export {
   type DiscoveryMapRequest, type DiscoveryReduceRequest, type DiscoveryReplyClaim, type DiscoveryEnvelope, type DiscoveryProviderFailure,
 } from './discovery-provider.js';
 export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
-export { SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateDiscoveryReply, DISCOVERY_CLAIM_MAX_LENGTH, DISCOVERY_RELEVANCE_MAX, validateDraftRecord, validateRequestedAssets, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
+export { SOURCE_ID_PATTERN, SOURCE_ID_MIN_LENGTH, SOURCE_ID_MAX_LENGTH, SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateDiscoveryReply, DISCOVERY_CLAIM_MAX_LENGTH, DISCOVERY_RELEVANCE_MAX, validateDraftRecord, validateRequestedAssets, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
 export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';
 export { renderedDesignVerdict, renderedDesignSubjectDigest } from './rendered-design.js';
 export type { RenderedDesignReview, RenderedDesignRelationship, RenderedDesignFinding, RenderedDesignRule, RenderedDesignVerdict, RelationshipJudgment, RelationshipSupport } from './rendered-design.js';

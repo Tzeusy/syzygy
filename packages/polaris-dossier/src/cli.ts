@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { issueBrief } from './brief.js';
 import { createPackageGateSources, type GateSources } from './gate-sources.js';
 import { initRun } from './init.js';
 import { preflight } from './preflight.js';
@@ -32,6 +33,11 @@ Commands:
                       revision, decide whether the subject is governed, and make the
                       run directory under the state root (or $${STATE_ROOT_ENV});
                       there is no default state root
+  brief <run>         re-verify the pinned revision and issue the authoring brief
+                      (brief.md) and the draft schema (draft.schema.json) in the run
+                      directory, starting the deadline clock; a run is briefed once.
+                      The brief carries SEC-3's execution rule, quoted from the
+                      adopted security.md
   status <run>        report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -97,6 +103,13 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const result = await preflight(rest[0]!, sources(), now());
     if (!result.ok) return refused({ command: 'preflight', outcome: 'refused', reason: result.reason });
     return report(result.report, result.report.outcome === 'ready' ? EXIT.clean : EXIT.refused);
+  }
+  if (command === 'brief') {
+    const flag = rest.find((arg) => arg.startsWith('-'));
+    if (flag !== undefined) return usageError(`unknown option for brief: ${flag}`);
+    if (rest.length !== 1) return usageError('brief takes exactly one argument, the run directory');
+    const result = await issueBrief(rest[0]!, { sources: sources(), now });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'init') {
     const options = parseOptions(rest, ['--url', '--config', '--state-root']);
