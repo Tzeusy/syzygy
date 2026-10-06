@@ -1,9 +1,9 @@
 {
   "subject": "syzygy-hjuz live test runs no observed code, reads bounded, expects report-fact; #383 round-2 constructor and computed-key rule",
-  "commit": "c4c2f921da5b727194d3018c91638e8928e008de",
+  "commit": "86364b2aa6c849b59bb7504e00b23427239c6b4a",
   "subjectDigests": {
     "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts": "sha256:b251ae99e7d0b375b12617a03b2de8b4923e1692a7acaa1e981659e6e0edd1fd",
-    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": "sha256:1de43308be4d5f7057cc716d2044728a886a91c61e433248a2eeade568beb372",
+    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": "sha256:b58f467bb409dcdfdff80e1edc6a19cb8f7f66b84223549b386d2909b3ca82a5",
     "apps/three-surface-poc/src/sync-child-process-guard.test.ts": "sha256:a0774fc807a836c0693829b183b11a3ec37616d2388ad9ef049a0e6b4cff4062",
     "packages/three-surface-poc-core/src/worker-change-observation.ts": "sha256:cb66a5ff0ddcb16ded19fdb3212f79906de036ea4aeb8340f591f4cfe4e585a7",
     "packages/three-surface-poc-core/src/authority-artifact-fields.ts": "sha256:01fc903901fc09082ce4923bf7bdcf4937b492ef93e62058be5a7c04ca87395e",
@@ -26,7 +26,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -44,7 +44,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
@@ -69,7 +69,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader",
@@ -88,7 +88,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -106,7 +106,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -133,7 +133,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -151,7 +151,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -168,7 +168,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -185,7 +185,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
         "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
@@ -208,7 +208,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reads the operator-reported result named by the environment, through the bounded reader"
       ],
@@ -225,7 +225,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -242,7 +242,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
       ],
@@ -259,9 +259,45 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H16-git-binding-call-runs-sh",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+          "old": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n",
+          "new": "    expect(JUNIT_EXIT, 'the operator-reported exit status (SYZYGY_POC_BUTLERS_JUNIT_EXIT)').toBe('0');\n    execFileSync.call(null, 'sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED-HJUZ']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 32,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "H17-imported-observer-git-binding-alias",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/worker-change-observation.ts",
+          "old": "  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {",
+          "new": "  const run = execFileSync;\n  return run('git', ['--no-optional-locks', '-C', repoRoot, ...args], {"
+        }
+      ],
+      "exit": 1,
+      "tests": 32,
+      "failed": [
+        "the live verification test, and every module it imports, runs no observed code reaches the model, its observers and the verification module, and no file in that closure can start anything but git or bd",
+        "suite child processes and the vitest worker RPC runs only short local tools synchronously in a suite test file or any module it imports"
       ],
       "killed": true,
       "shSentinelWritten": false
@@ -276,7 +312,7 @@
         }
       ],
       "exit": 0,
-      "tests": 29,
+      "tests": 32,
       "failed": [],
       "killed": false,
       "shSentinelWritten": false
@@ -291,7 +327,7 @@
         }
       ],
       "exit": 1,
-      "tests": 29,
+      "tests": 32,
       "failed": [
         "the live verification test, and every module it imports, runs no observed code builds an operator-reported record and expects report-fact, never Verified"
       ],
