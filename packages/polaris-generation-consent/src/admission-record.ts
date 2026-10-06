@@ -16,6 +16,9 @@ export interface AdmissionRecord {
   readonly repositoryId: string | null;
   /** Egress: the provider. Observation: null. */
   readonly providerId: string | null;
+  /** Observation: the record's `Upstream:` URL, configuration and never repository identity; null when the record states none.
+   * Egress: null. */
+  readonly upstream: string | null;
   /** SHA-256 of the exact record bytes the owner act bound. */
   readonly digest: string;
   /** Instant (epoch ms) the owner act took effect; null while still a candidate. */
@@ -45,7 +48,7 @@ export class AdmissionRecordError extends Error {
   constructor(readonly code: 'invalid-records') { super(code); this.name = 'AdmissionRecordError'; }
 }
 
-const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'supersessionAt', 'admittedRevisions', 'revisionLabels', 'admittedRepositories', 'contentClasses'];
+const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'upstream', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'supersessionAt', 'admittedRevisions', 'revisionLabels', 'admittedRepositories', 'contentClasses'];
 const isText = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length <= 256;
 const isNullableText = (v: unknown): v is string | null => v === null || isText(v);
 const isInstant = (v: unknown): v is number | null => v === null || (typeof v === 'number' && Number.isSafeInteger(v) && v >= 0);
@@ -62,7 +65,7 @@ export function parseAdmissionRecords(value: unknown): readonly AdmissionRecord[
     const r = item as Record<string, unknown>;
     if (Object.keys(r).length !== KEYS.length || !KEYS.every(key => key in r)) throw new AdmissionRecordError('invalid-records');
     const ok = isText(r.recordId) && isText(r.version) && (r.class === 'observation' || r.class === 'egress') && isText(r.project)
-      && isNullableText(r.repositoryId) && isNullableText(r.providerId) && typeof r.digest === 'string' && /^[0-9a-f]{64}$/.test(r.digest)
+      && isNullableText(r.repositoryId) && isNullableText(r.providerId) && isNullableText(r.upstream) && typeof r.digest === 'string' && /^[0-9a-f]{64}$/.test(r.digest)
       && isInstant(r.inForceAt) && isInstant(r.withdrawnAt) && isNullableText(r.supersedes) && isInstant(r.supersessionAt) && (r.supersedes !== null || r.supersessionAt === null)
       && isTextList(r.admittedRevisions) && isTextList(r.revisionLabels) && isTextList(r.admittedRepositories) && isTextList(r.contentClasses);
     if (!ok) throw new AdmissionRecordError('invalid-records');
@@ -71,7 +74,7 @@ export function parseAdmissionRecords(value: unknown): readonly AdmissionRecord[
     const shapeOk = observation
       ? record.repositoryId !== null && record.providerId === null && record.admittedRepositories.length === 0 && record.contentClasses.length === 0
         && record.revisionLabels.length === record.admittedRevisions.length && new Set(record.revisionLabels).size === record.revisionLabels.length && new Set(record.admittedRevisions).size === record.admittedRevisions.length
-      : record.providerId !== null && record.repositoryId === null && record.admittedRevisions.length === 0 && record.revisionLabels.length === 0;
+      : record.providerId !== null && record.repositoryId === null && record.upstream === null && record.admittedRevisions.length === 0 && record.revisionLabels.length === 0;
     if (!shapeOk) throw new AdmissionRecordError('invalid-records');
     return Object.freeze({ ...record, admittedRevisions: Object.freeze([...record.admittedRevisions]), revisionLabels: Object.freeze([...record.revisionLabels]), admittedRepositories: Object.freeze([...record.admittedRepositories]), contentClasses: Object.freeze([...record.contentClasses]) });
   });

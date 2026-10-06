@@ -183,7 +183,7 @@ describe('consented revisions for a repository', () => {
     expect(await port(world({ [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-X-WITHDRAWAL.md`]: 'x' }), AT).consentedRevisionsFor('redis-redis')).toEqual([]);
   });
   it('is empty when records in force disagree: one label for two commits, or one commit under two labels', async () => {
-    const records = (rows: Array<{ label: string; id: string }>) => rows.map((r, i) => ({ recordId: `R${i}`, version: '1', class: 'observation' as const, project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, digest: '1'.repeat(64), inForceAt: 1, withdrawnAt: null, supersedes: null, supersessionAt: null, admittedRevisions: [r.id], revisionLabels: [r.label], admittedRepositories: [], contentClasses: [] }));
+    const records = (rows: Array<{ label: string; id: string }>) => rows.map((r, i) => ({ recordId: `R${i}`, version: '1', class: 'observation' as const, project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, upstream: null, digest: '1'.repeat(64), inForceAt: 1, withdrawnAt: null, supersedes: null, supersessionAt: null, admittedRevisions: [r.id], revisionLabels: [r.label], admittedRepositories: [], contentClasses: [] }));
     const of = (rows: Array<{ label: string; id: string }>) => createAdmissionRecordsPort({ reader: { read: async () => records(rows) }, now: () => 5 });
     expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'b', id: OTHER_REV }]).consentedRevisionsFor('redis-redis')).toHaveLength(2);
     expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'a', id: OTHER_REV }]).consentedRevisionsFor('redis-redis')).toEqual([]);
@@ -699,7 +699,7 @@ describe('round-3 review notes', () => {
   });
   it('refuses labels that differ only in case, in one table and across records (N-5)', async () => {
     await expect(reader(obsWith(obsText({ rows: `| \`v8.10.2\` | \`${REDIS_REV}\` |\n| \`V8.10.2\` | \`${OTHER_REV}\` |` }))).read()).rejects.toBeInstanceOf(AdmissionRecordError);
-    const records = [['v1', REDIS_REV], ['V1', OTHER_REV]].map(([label, id], i) => ({ recordId: `R${i}`, version: '1', class: 'observation' as const, project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, digest: '1'.repeat(64), inForceAt: 1, withdrawnAt: null, supersedes: null, supersessionAt: null, admittedRevisions: [id!], revisionLabels: [label!], admittedRepositories: [], contentClasses: [] }));
+    const records = [['v1', REDIS_REV], ['V1', OTHER_REV]].map(([label, id], i) => ({ recordId: `R${i}`, version: '1', class: 'observation' as const, project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, upstream: null, digest: '1'.repeat(64), inForceAt: 1, withdrawnAt: null, supersedes: null, supersessionAt: null, admittedRevisions: [id!], revisionLabels: [label!], admittedRepositories: [], contentClasses: [] }));
     expect(await createAdmissionRecordsPort({ reader: { read: async () => records }, now: () => 5 }).consentedRevisionsFor('redis-redis')).toEqual([]);
   });
 });

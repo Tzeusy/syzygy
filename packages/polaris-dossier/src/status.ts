@@ -22,6 +22,9 @@ export interface StatusReport {
   readonly mode: 'operator-agent';
   readonly route: typeof NO_ROUTE;
   readonly principal: RecordedRunConfig['principal'];
+  /** What init recorded: the repository, the pinned revision, the start gates' records, the governed decision, the statement relied
+   * on and the absent work item. Which revision the run was pinned to is shown, not verified, here; later steps verify it. */
+  readonly subject: RecordedRunConfig['subject'];
   readonly state: RunState;
   readonly configuration: {
     readonly declaredBy: 'operator';
@@ -123,6 +126,7 @@ export function runStatus(runDir: string): StatusResult {
       mode: 'operator-agent',
       route: NO_ROUTE,
       principal: record.record.principal,
+      subject: record.record.subject,
       state,
       configuration: { declaredBy: 'operator', label: 'Inferred', values, modelVersionProvider: record.record.modelVersionProvider },
       steps,

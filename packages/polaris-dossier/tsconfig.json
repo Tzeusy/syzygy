@@ -9,6 +9,9 @@
   "references": [
     {
       "path": "../polaris-generation-core"
+    },
+    {
+      "path": "../polaris-generation-consent"
     }
   ]
 }

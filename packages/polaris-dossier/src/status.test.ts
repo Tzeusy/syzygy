@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { parseRunConfig } from './run-config.js';
-import { encodeRunRecord } from './run-record.js';
+import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { runStatus } from './status.js';
 
 // `syzygy dossier status`: everything it reports is read from files the agent sessions can write, so
@@ -13,12 +13,20 @@ const CONFIG = {
   deadline: 'PT3H', agentTurnBudget: 300, maxRepairCycles: 2, maxQuestions: 0, audience: 'a new contributor',
   operatorIsOwner: false,
 };
+const SUBJECT: RunSubject = {
+  repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
+  pinnedRevision: { commit: '498ecd0d6d007db11ddb3aea9428552598a78622', label: '8.10.2', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },
+  startGates: { registryEntry: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-07', screeningPolicy: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' },
+  governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
+  providerStatement: null,
+  workItem: { identity: null, reason: NO_WORK_ITEM_REASON },
+};
 let runDir: string;
 beforeEach(() => {
   runDir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-status-')));
   const parsed = parseRunConfig(JSON.stringify(CONFIG));
   if (!parsed.ok) throw new Error('fixture configuration refused');
-  fs.writeFileSync(path.join(runDir, 'run.json'), encodeRunRecord(parsed.config));
+  fs.writeFileSync(path.join(runDir, 'run.json'), encodeRunRecord(parsed.config, SUBJECT));
 });
 afterEach(() => fs.rmSync(runDir, { recursive: true, force: true }));
 
@@ -43,6 +51,7 @@ describe('status (REQ-polaris-generation-033)', () => {
       mode: 'operator-agent',
       route: 'none: the dossier commands serve no route, accept no network request and hold no credential that authenticates to Syzygy',
       principal: { name: 'Tzeusy', declaredBy: 'operator', credentialIdentity: 'Unknown' },
+      subject: SUBJECT,
       state: 'configured',
       configuration: {
         declaredBy: 'operator',
@@ -125,7 +134,14 @@ describe('status (REQ-polaris-generation-033)', () => {
     ['a fabricated credential identity', (record: Record<string, any>) => { record['principal']['credentialIdentity'] = 'token-abc'; }, 'run.json principal must be the declared operator, operator-declared, with credential identity Unknown'],
     ['a principal other than the operator', (record: Record<string, any>) => { record['principal']['name'] = 'someone-else'; }, 'run.json principal must be the declared operator, operator-declared, with credential identity Unknown'],
     ['an execution choice smuggled into the record', (record: Record<string, any>) => { record['declared']['executionChoice'] = 'allow'; }, 'run.json declares an invalid run configuration'],
-    ['an extra top-level field', (record: Record<string, any>) => { record['observed'] = true; }, 'run.json carries fields declared, declaredBy, format, label, mode, modelVersionProvider, observed, principal; expected declared, declaredBy, format, label, mode, modelVersionProvider, principal'],
+    ['an extra top-level field', (record: Record<string, any>) => { record['observed'] = true; }, 'run.json carries fields declared, declaredBy, format, label, mode, modelVersionProvider, observed, principal, subject; expected declared, declaredBy, format, label, mode, modelVersionProvider, principal, subject'],
+    ['the subject removed', (record: Record<string, any>) => { delete record['subject']; }, 'run.json carries fields declared, declaredBy, format, label, mode, modelVersionProvider, principal; expected declared, declaredBy, format, label, mode, modelVersionProvider, principal, subject'],
+    ['a pinned revision that is not a full commit id', (record: Record<string, any>) => { record['subject']['pinnedRevision']['commit'] = '498ecd0'; }, 'run.json subject is invalid: the pinned commit is not a full commit identifier'],
+    ['a governed subject citing no statement', (record: Record<string, any>) => { record['subject']['governed']['kind'] = 'governed'; }, 'run.json subject is invalid: a governed subject must cite the per-project statement it relies on'],
+    ['an unstated subject citing no statement', (record: Record<string, any>) => { record['subject']['governed']['kind'] = 'unstated'; }, 'run.json subject is invalid: an unstated subject must cite the per-project statement it relies on'],
+    ['a work item identity filled in', (record: Record<string, any>) => { record['subject']['workItem']['identity'] = 'WI-1'; }, 'run.json subject is invalid: workItem must record an absent identity with its reason'],
+    ['a repository URL with a ref', (record: Record<string, any>) => { record['subject']['repository']['url'] = 'https://github.com/redis/redis/tree/8.0'; }, 'run.json subject is invalid: repository url or repositoryId is malformed'],
+    ['a pinning instant that is not UTC', (record: Record<string, any>) => { record['subject']['pinnedRevision']['pinnedAt'] = '2026-10-07 10:00'; }, 'run.json subject is invalid: pinnedAt is not a UTC instant'],
   ])('re-validates the stored record and refuses %s', (_label, mutate, reason) => {
     const file = path.join(runDir, 'run.json');
     const record = JSON.parse(fs.readFileSync(file, 'utf8')) as Record<string, any>;
