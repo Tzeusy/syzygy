@@ -308,6 +308,11 @@ CAMPAIGNS = (
         "Redis local-agent sitting brief",
         r"R-REDIS-LOCAL-AGENT-SITTING-BRIEF-.*\.md",
     ),
+    campaign(
+        "capture-test-artifact-no-spawn",
+        "Capture test-artifact no-spawn",
+        r"R-CAPTURE-TEST-ARTIFACT-NO-SPAWN-.*\.md",
+    ),
 )
 
 
