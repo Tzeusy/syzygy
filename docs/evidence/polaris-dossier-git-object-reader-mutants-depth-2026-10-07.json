@@ -1,0 +1,124 @@
+{
+  "subject": {
+    "commit": "338a79184b39b77c1c1ee9ed75e79fd5261c775f",
+    "branch": "agent/dossier-reader-path-depth",
+    "fileSha256": {
+      "packages/polaris-dossier/src/git-object-reader.ts": "e3a5880323244cc300be77c9a4c4deddf8dced7b6392852e596932946e78984a"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/git-object-reader.test.ts": "9a0fc6aa91a98a0765bda15628d1c3f16a4b10e285bd95bd857fd7d48c8953fb"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-06T18:37:08+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "const MAX_TREE_DEPTH = 4096;",
+      "new": "const MAX_TREE_DEPTH = 4096;",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 60,
+      "note": "control: unchanged source, must survive"
+    },
+    {
+      "id": "D1-path-cap-removed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (segments.length > MAX_TREE_DEPTH) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "readBlobs walks a path of any depth"
+    },
+    {
+      "id": "D2-path-cap-inclusive",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (segments.length > MAX_TREE_DEPTH) refuse(",
+      "new": "if (segments.length >= MAX_TREE_DEPTH) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "a path of exactly 4,096 segments refuses"
+    },
+    {
+      "id": "D3-tree-cap-removed",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "if (e.mode === '40000' && depth >= MAX_TREE_DEPTH) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "listTree descends past the cap"
+    },
+    {
+      "id": "D4-tree-cap-one-late",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "depth >= MAX_TREE_DEPTH) refuse(",
+      "new": "depth > MAX_TREE_DEPTH) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "listTree lists one level past the cap"
+    },
+    {
+      "id": "D5-tree-depth-not-incremented",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "await this.list(e.id, p, out, depth + 1);",
+      "new": "await this.list(e.id, p, out, depth);",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "listTree never counts depth"
+    },
+    {
+      "id": "D6-tree-depth-starts-at-zero",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "out: TreeEntry[] = [], depth = 1)",
+      "new": "out: TreeEntry[] = [], depth = 0)",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "root entries counted at depth 0: one level too many allowed"
+    },
+    {
+      "id": "D7-prefix-not-accumulated",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "at = i === 0 ? name : `${at}/${name}`;",
+      "new": "at = name;",
+      "tests": [
+        "packages/polaris-dossier/src/git-object-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "note": "a refusal names the last segment, not the path to it"
+    }
+  ],
+  "summary": "7 of 8 mutants killed at 338a79184b39b77c1c1ee9ed75e79fd5261c775f (syzygy-qkea.20, R-POLARIS-DOSSIER-S2-READER-3 note 1); not killed: ['X-noop-control']. One mutant per predicate: the path cap and its bound (D1, D2), the tree cap, its bound, its increment and its origin (D3-D6), and the accumulated prefix (D7). Not mutated: restoring the per-level re-join of every segment, which yields the same strings and differs only in time; under the 4,096 cap its quadratic cost is about 16 million characters per path, which no unit test can tell apart reliably."
+}
