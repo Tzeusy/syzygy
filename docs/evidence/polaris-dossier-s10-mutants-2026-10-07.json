@@ -1,11 +1,11 @@
 {
-  "record": "Rule-6 mutants for the polaris-dossier S10 slice (syzygy-qkea.11): close, operator-declared usage and the no-egress proof (REQ-polaris-generation-033, scenarios \"Agent usage is not observed\" and \"No provider call and no egress record\"; tasks \"Prove no provider call and no transmission\" and \"Limits\"). Usage: a zero figure accepted (U1), undeclared usage recorded as a declared figure (U2), declared usage labelled Observed (U3). Close: a second close accepted (C1), a close that fails re-verification of the pinned revision proceeding (C2), the adapter-credential check skipped at close (C3), the reported commands copied unscreened (R1), a withheld command kept without its digest (R4), the working directory left unscreened (R5), withheld commands left out of the count (R6), the brief body copied into the record (R2), the record overwritten rather than written once (R3). Status: undeclared usage shown as zero (S1), the record ignored (S2), the deadline not measured (S3), the deadline's end instant not counted as passed (S4), the CLI not passing its clock (S5), no reason given for a record the deadline forecloses (S6). No egress: close sending one loopback datagram (E1), the capture predicate blind to Internet-family sockets (E2). No credential: close writing the environment, which holds sentinel credentials, into the run directory (K1). Not authority.",
+  "record": "Rule-6 mutants for the polaris-dossier S10 slice (syzygy-qkea.11): close, operator-declared usage and the no-egress proof (REQ-polaris-generation-033, scenarios \"Agent usage is not observed\" and \"No provider call and no egress record\"; tasks \"Prove no provider call and no transmission\" and \"Limits\"). Usage: a zero figure accepted (U1), undeclared usage recorded as a declared figure (U2), declared usage labelled Observed (U3). Close: a second close accepted (C1), a close that fails re-verification of the pinned revision proceeding (C2), the adapter-credential check skipped at close (C3), the reported commands copied unscreened (R1), a withheld command keeping an unkeyed sha256 of its text (R4) or a base64 sha1 of its fields (R9), its id (R8), or losing its position (R7), the working directory left unscreened (R5), withheld commands left out of the count (R6), the brief body copied into the record (R2), the record overwritten rather than written once (R3). Status: undeclared usage shown as zero (S1), the record ignored (S2), the deadline not measured (S3), the deadline's end instant not counted as passed (S4), the CLI not passing its clock (S5), no reason given for a record the deadline forecloses (S6). No egress: close sending one loopback datagram (E1), the capture predicate blind to Internet-family sockets (E2). No credential: close writing the environment, which holds sentinel credentials, into the run directory (K1). Not authority.",
   "measuredOn": {
-    "commit": "898e0bb0339c86a159e40af8c1ade250e75446c5",
+    "commit": "9fd099314bb0aa55014361acf89d35e42b9158df",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/close.ts",
-        "sha256": "940cd8cdf70fc5e6555ff6d718610b5e8c7407bb857c2c4e45c69b0f2b9ff392"
+        "sha256": "2112ff307f5b88f8f0ffee3cad8e64cae486f9646ddcb55f55d07396da40ad8f"
       },
       {
         "path": "packages/polaris-dossier/src/status.ts",
@@ -17,7 +17,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/close.test.ts",
-        "sha256": "c42299ad22e71590065f79198848455cf0d5ef8178167d36d174925844c74ed9"
+        "sha256": "f4f2d3d9ba3e15090d5beff47cff2dc990822afb48b44e0df686c08088074e11"
       },
       {
         "path": "packages/polaris-dossier/src/no-egress.test.ts",
@@ -38,11 +38,11 @@
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S10 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero. The no-egress test runs under strace on the measuring host (strace present), so E1 and E2 were judged with the capture active.",
-  "history": "A first run at an earlier commit of the same branch left R3 surviving: the closed-once check before it made the write-once flag reachable only by a close racing another. The test \"never overwrites a record that appears while it closes\" was added for that case, the feature commit amended, and the set re-run (14 of 14 killed at 7ce7c500). After review, R1 was re-targeted to the new screen and R4-R6 and S3-S6 added for the withheld-command digest and the deadline statement in status; the branch was rebased onto main after S9b merged, and the whole set re-run at `commit`. Under CI=true the no-egress test fails, never skips, without strace: that branch is test code and was checked by hand (strace off PATH, CI=true: 1 failed), not by a mutant.",
+  "history": "A first run at an earlier commit of the same branch left R3 surviving: the closed-once check before it made the write-once flag reachable only by a close racing another. The test \"never overwrites a record that appears while it closes\" was added for that case, the feature commit amended, and the set re-run (14 of 14 killed at 7ce7c500). After review, R1 was re-targeted to the new screen and R4-R6 and S3-S6 added for withheld commands and the deadline statement in status, and the branch was rebased onto main after S9b merged (21 of 21 killed at 898e0bb0, when a withheld command kept a sha256 of its fields). The lead then ruled that a withheld command keeps its position, the count and the reason only, never a digest, since a digest of a short secret can be reversed by guessing; R4 now injects a digest instead of removing one, R7-R9 were added, and the whole set re-run at `commit`. Under CI=true the no-egress test fails, never skips, without strace: that branch is test code and was checked by hand (strace off PATH, CI=true: 1 failed), not by a mutant.",
   "command": "npx vitest run packages/polaris-dossier/src/close.test.ts packages/polaris-dossier/src/no-egress.test.ts packages/polaris-dossier/src/status.test.ts",
   "result": {
-    "killed": 21,
-    "total": 21
+    "killed": 24,
+    "total": 24
   },
   "mutants": [
     {
@@ -102,10 +102,34 @@
       "failedTests": 1
     },
     {
-      "id": "R4-withheld-without-digest",
+      "id": "R4-withheld-keeps-unkeyed-digest",
       "file": "packages/polaris-dossier/src/close.ts",
-      "old": "{ withheld: WITHHELD_TEXT, sha256: createHash('sha256').update(JSON.stringify([id, command, workingDirectory])).digest('hex') }",
-      "new": "{ withheld: WITHHELD_TEXT }",
+      "old": "{ position: index + 1, withheld: WITHHELD_TEXT, reason: 'secret-detector-match' }",
+      "new": "{ position: index + 1, withheld: WITHHELD_TEXT, reason: 'secret-detector-match', sha256: createHash('sha256').update(command).digest('hex') }",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R7-withheld-without-position",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "? { position: index + 1, withheld: WITHHELD_TEXT,",
+      "new": "? { withheld: WITHHELD_TEXT,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R8-withheld-keeps-id",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "? { position: index + 1, withheld: WITHHELD_TEXT,",
+      "new": "? { position: index + 1, id, withheld: WITHHELD_TEXT,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "R9-withheld-keeps-tuple-digest-base64",
+      "file": "packages/polaris-dossier/src/close.ts",
+      "old": "reason: 'secret-detector-match' }",
+      "new": "reason: 'secret-detector-match', d: createHash('sha1').update(JSON.stringify([id, command, workingDirectory])).digest('base64') }",
       "outcome": "killed",
       "failedTests": 1
     },
