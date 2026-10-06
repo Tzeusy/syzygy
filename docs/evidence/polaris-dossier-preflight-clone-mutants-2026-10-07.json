@@ -1,0 +1,56 @@
+{
+  "record": "Rule-6 mutants for preflight's clone commands (syzygy-qkea.24): a full clone printed again (Q1), the fetch taking the commit's history (Q2), the default branch fetched in place of the consented commit (Q3), every revision fetched into one directory (Q4). Not authority.",
+  "measuredOn": {
+    "commit": "976b9975b3739502eb40d94da7f36e4303b09f89",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/preflight.ts",
+        "sha256": "5b6cb3409f17ccb9af711d7c5bf759aa5317ea5327dbc0edc01d1383be0eb924"
+      },
+      {
+        "path": "packages/polaris-dossier/src/start-gates.test.ts",
+        "sha256": "9cce51f19538d0c1138fd610179c1b3ae7fe08937756ae3691d76b011908c387"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, by a function replacer so `$` sequences in `new` are literal) in the file at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied, the command exits nonzero and at least one test fails; a nonzero exit with no failed test is recorded as `error`.",
+  "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/start-gates.test.ts -t preflight",
+  "result": {
+    "killed": 4,
+    "total": 4
+  },
+  "mutants": [
+    {
+      "id": "Q1-full-clone",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git init <dir>   # ${r.label}: a new, empty directory for this revision alone`,\n        `git -C <dir> fetch --depth=1 ${url} ${r.commitId}`,\n        'git -C <dir> checkout --detach FETCH_HEAD',",
+      "new": "`git clone ${url} <dir>   # ${r.label}: a new, empty directory for this revision alone`,\n        `git -C <dir> fetch ${url} ${r.commitId}`,\n        `git -C <dir> checkout --detach ${r.commitId}`,",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q2-history-fetched",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`",
+      "new": "`git -C <dir> fetch ${url} ${r.commitId}`",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q3-default-branch-fetched",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`",
+      "new": "`git -C <dir> fetch --depth=1 ${url}`",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q4-one-directory-for-all",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "cloneCommands: revisions.flatMap(r => [",
+      "new": "cloneCommands: revisions.flatMap((r, i) => i > 0 ? [`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`] : [",
+      "outcome": "killed",
+      "failedTests": 2
+    }
+  ]
+}
