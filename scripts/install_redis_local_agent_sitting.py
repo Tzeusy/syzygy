@@ -60,6 +60,11 @@ manifest the owner's option names, never typed:
                    steps, this sitting's own registrations, and one battery
                    line per performed act in the status page and the hosted
                    workflow, with the count sentence re-derived (CG-26)
+  gate sweep       the gate package's real-tree tests (`GATE_TESTS`): every
+                   reader refuses an act a decisions/ file names without being
+                   its record, so a record or sitting log carrying a swept stem
+                   refuses the run (`--check` runs it too; run that again after
+                   adding a sitting log)
 
 Any refusal or failing recorder stops the run and stashes everything it wrote
 (`git stash push --include-untracked`), so the tree is clean again and the
@@ -185,8 +190,11 @@ def validate_answers(answers: dict) -> list[str]:
 
 def instants(answers: dict, n: int) -> list[str]:
     start = answers.get("start_instant")
+    # by default the last act is now, not n minutes ahead: an act whose instant is
+    # still ahead is not in force, so the gate check below would read it absent
     t = (datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") if start
-         else datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None, microsecond=0))
+         else datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None, microsecond=0)
+         - datetime.timedelta(minutes=n - 1))
     out = [(t + datetime.timedelta(minutes=k)).strftime("%Y-%m-%dT%H:%M:%SZ") for k in range(n)]
     if any(not i.startswith(answers["date"] + "T") for i in out):
         raise Refusal(f"the act instants {out[0]}..{out[-1]} leave the date {answers['date']}; "
@@ -526,6 +534,34 @@ def install(root: pathlib.Path, write: bool, steps: list[Step]) -> list[str]:
     return pending
 
 
+# ---- the gate's own sweeps (syzygy-s6xo) -----------------------------------
+
+#: Every gate reader refuses an act that a decisions/ file names without being
+#: its record: a withdrawal, or a form the reader does not define. A record,
+#: aggregate row or sitting log that carries a swept stem therefore refuses the
+#: act it was meant to record, silently, at the next run. The stems, their
+#: folding and the aggregate record's field-line exemption live in the gate
+#: package (`package-reader.ts`, the forms in `gate-sources.ts`); this check
+#: runs that package's real-tree tests rather than copying the list, so the two
+#: cannot drift. Each test asserts the state the records on this checkout
+#: establish, so a swept stem fails it as `refused`.
+GATE_TESTS = ("packages/polaris-generation-consent/src/real-tree.test.ts",
+              "packages/polaris-dossier/src/gate-acts.test.ts")
+
+
+def gate_sweep(root: pathlib.Path) -> str | None:
+    """None when the gate's readers accept every decisions/ file on this tree; else why."""
+    absent = [t for t in GATE_TESTS if not (root / t).is_file()]
+    if absent:
+        return f"{absent} absent: the gate's real-tree tests (PR #377) must be on this tree"
+    p = subprocess.run(["npx", "vitest", "run", *GATE_TESTS, "--reporter=dot"],
+                       cwd=root, capture_output=True, text=True)
+    if p.returncode:
+        return ("the gate's real-tree tests fail, so a decisions/ file names a swept stem or the "
+                f"records disagree with the gate: {(p.stdout + p.stderr).strip()[-1200:]}")
+    return None
+
+
 # ---- run -------------------------------------------------------------------
 
 def stash(root: pathlib.Path, why: str) -> None:
@@ -565,7 +601,14 @@ def record_and_install(root: pathlib.Path, answers: dict) -> int:
     if again:
         print(f"NOT IDEMPOTENT: a second pass would still change {again}")
         return 1
-    print("next: run the battery (PROJECT-STATUS.md, How to verify this page) and commit; nothing was committed")
+    swept = gate_sweep(root)
+    if swept:
+        print(f"REFUSED: {swept}")
+        stash(root, "the gate's real-tree tests fail")
+        return 2
+    print("gate sweep: the gate's readers accept every decisions/ file")
+    print("next: add any sitting log, re-run --check (it re-runs the gate sweep), run the battery "
+          "(PROJECT-STATUS.md, How to verify this page) and commit; nothing was committed")
     return 0
 
 
@@ -591,9 +634,11 @@ def check(root: pathlib.Path, answers: dict) -> int:
     except Refusal as exc:
         print(f"REFUSED: {exc}")
         return 2
+    swept = gate_sweep(root)
     print("recorder checks failing: " + (", ".join(failing) or "none"))
     print("not installed: " + (", ".join(pending) or "none"))
-    return 1 if failing or pending else 0
+    print("gate sweep: " + (swept or "the gate's readers accept every decisions/ file"))
+    return 1 if failing or pending or swept else 0
 
 
 # ---- selftest --------------------------------------------------------------
@@ -643,6 +688,15 @@ def selftest() -> int:
         ok.append(("instants that leave the date are refused", False))
     except Refusal:
         ok.append(("instants that leave the date are refused", True))
+    unstarted = dict(good, date=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"))
+    unstarted.pop("start_instant")
+    try:
+        last = instants(unstarted, 3)[-1]
+        now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        ok.append(("by default no act instant lies ahead of now", last <= now))
+    except Refusal:
+        # within two minutes of midnight UTC the default leaves the date and is refused
+        ok.append(("by default no act instant lies ahead of now", True))
     ok.append(("a battery command quotes multi-word text only",
                quoted(["python3", "x.py", "--check", "--selection-label", "Sign it"])
                == "python3 x.py --check --selection-label 'Sign it'"))
@@ -674,6 +728,8 @@ def selftest() -> int:
         ok.append(("a dirty tree is refused", any("not clean" in w for w in why)))
         ok.append(("absent recorders are refused", any("is absent" in w for w in why)))
         ok.append(("the entry without the reader of PR #367 is refused", any("#367" in w for w in why)))
+        ok.append(("a tree without the gate's real-tree tests fails the gate sweep",
+                   "absent" in (gate_sweep(root) or "")))
         ok.append(("a refusal of the answers writes nothing",
                    record_and_install(root, {"date": "x", "acts": {}}) == 2
                    and sorted(p.name for p in root.iterdir()) == [".git", ".syzygy", "m.txt"]))

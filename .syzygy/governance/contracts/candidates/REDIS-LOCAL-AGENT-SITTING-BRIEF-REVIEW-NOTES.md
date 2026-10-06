@@ -73,3 +73,25 @@ closed as a duplicate of `syzygy-fxro` (P1, open). Its scope was widened
 to cover the tree-framing package as one unit, both acts' review binding,
 and direction C's policy-role wording. Read `syzygy-fxro` wherever the
 brief says `syzygy-qggu`.
+
+### Note 6 — no decisions file may name a recorded act it is not the record of
+
+*(Added 2026-10-07, `syzygy-s6xo`.)* [Observed] Every gate reader refuses
+an act that a file under `decisions/` names without being its record. It
+reads such a file as a withdrawal, or as a form it does not define. Its
+needles are the act and identity stems, the statement record IDs and
+subject tuples, the sitting records' paths, and the entry sign-off's stems,
+tag and installed path. Each matches case-, underscore- and space-folded.
+`ACCEPTANCE-ACT-RECORD.md` is exempt except on its identity, record and
+subject field lines. So a sitting log, or a P-104 row edit, that names one
+of these refuses the act it describes, and the next run reads it as
+withdrawn. The P-104 row must also keep its `| P-104 |` prefix.
+
+Citing a record by its path does not avoid this. Each dedicated record's
+filename carries its act stem (`DOSSIER-LOCAL-AGENT-<stem>-ACT.md`), and the
+sitting records' paths are needles themselves. A sitting log should name
+the acts by this brief's item letters (A to I) and point to
+`ACCEPTANCE-ACT-RECORD.md` for the rest. Step 10's installer now runs the gate
+package's real-tree tests after installing, and its `--check` runs them
+again (`GATE_TESTS`). Re-run `--check` after writing any sitting log and
+before committing. The step adds no step order to the brief.

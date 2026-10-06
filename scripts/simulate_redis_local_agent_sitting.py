@@ -26,6 +26,7 @@ built or the real tree moved.
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import os
 import pathlib
@@ -222,7 +223,14 @@ def main(argv):
     ap.add_argument("--scratch")
     ap.add_argument("--vitest", action="store_true")
     ap.add_argument("--keep", action="store_true")
+    ap.add_argument("--start-instant", help="the first act's instant, YYYY-MM-DDTHH:MM:SSZ; its date is the "
+                    "acts' date. Give one already past: an act whose instant is ahead of the clock is not in "
+                    "force, so the real-tree tests read it absent and the suite passes for the wrong reason")
     a = ap.parse_args(argv)
+    if a.start_instant is not None:
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", a.start_instant):
+            ap.error("--start-instant is not YYYY-MM-DDTHH:MM:SSZ")
+        ANSWERS["date"], ANSWERS["start_instant"] = a.start_instant[:10], a.start_instant
     before = sim.real_state(ROOT)
     tmp = None
     if a.scratch is None:
@@ -246,6 +254,11 @@ def main(argv):
                     # v1.1 was signed and recorded on main (2026-10-07); never re-recorded
                     del given["acts"]["v1.1"]
                     r.step("answers", note="v1.1 already recorded on the base; dropped from the answers")
+                ahead = given["start_instant"] > datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                if ahead:
+                    r.step("answers", note=f"the acts start at {given['start_instant']}, ahead of the clock: until "
+                           "then they are not in force and the real-tree tests read them absent; pass "
+                           "--start-instant with a past instant")
                 answers.write_text(json.dumps(given, indent=2) + "\n")
                 installed = r.install(answers)
                 rec = r.checks("end")
@@ -261,7 +274,7 @@ def main(argv):
         r.green = green
         r.step("green", value=green, scratch_head=r.git("rev-parse", "HEAD", check=False).stdout.strip())
         pathlib.Path(a.report).write_text(json.dumps(
-            {"candidate": True, "bindsNothing": True, "date": DATE, "base": a.base, "baseHead": base_head,
+            {"candidate": True, "bindsNothing": True, "date": ANSWERS["date"], "base": a.base, "baseHead": base_head,
              "merged": a.merge or list(DEFAULT_MERGES), "answers": ANSWERS, "green": green,
              "steps": r.steps, "findings": r.findings}, indent=2) + "\n")
         print(f"report: {a.report}")

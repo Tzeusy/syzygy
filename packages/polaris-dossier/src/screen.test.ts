@@ -150,7 +150,14 @@ describe('the screen of the policy in force', () => {
     expect(await loadDossierScreen(recordsRoot(policyOf()), Date.UTC(2026, 9, 3))).toMatchObject({ ok: false });
   });
 
-  it('refuses this checkout today, whose policy declares no public-source scope', async () => {
-    expect(await loadDossierScreen(REAL_ROOT, NOW)).toMatchObject({ ok: false });
+  // syzygy-s6xo: this checkout's own state, read from the tree, so the pin holds on either side of the sitting that records the
+  // screening acts: refused while no screening-scope act is recorded, built once one is and the policy declares the scope.
+  it('builds the screen on this checkout exactly when a screening-scope act is recorded and the policy declares the scope', async () => {
+    const recorded = ['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md']
+      .some(file => fs.existsSync(path.join(REAL_ROOT, DECISIONS_DIR, file)));
+    const load = await loadDossierScreen(REAL_ROOT, Date.now());
+    if (!recorded) expect(load).toEqual({ ok: false, why: 'no screening policy is in force: no screening-scope policy act is recorded' });
+    else if (Object.hasOwn(LIVE, 'publicSourceScope')) expect(load).toMatchObject({ ok: true });
+    else expect(load).toEqual({ ok: false, why: 'the screening policy cannot be applied: it carries no publicSourceScope' });
   });
 });
