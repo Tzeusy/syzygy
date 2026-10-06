@@ -1,11 +1,11 @@
 {
   "record": "Rule-6 mutants for the polaris-dossier S7 slice (syzygy-qkea.8), the session hand-over and the inventory (REQ-polaris-generation-035): an inventory under the authoring session's identifier; failing closed when no draft is frozen or none declares an identifier; an inventory before any hand-over; an inventory counting without a launch form, under another form, under a launch record bound to another prompt, after its frozen bytes change, with findings, or under an identifier a draft declares; a launch form other than terminal or bang, recorded twice, or a refusal logged outside a run; the session directory under the run directory, a sessions root resolving inside the run directory or the clone, and either arm of that refusal alone (the lead's ruling 1: sessions in the sibling root `<state root>/<run id>.sessions/`); the interactive launch `claude '<prompt>'` / `codex '<prompt>'` against headless `-p` and `exec`, a shell-escape form for Codex, and a prompt carrying a single quote (ruling 2, a design deviation tracked in syzygy-qkea.18); after the rebase onto the step-guard repair, the guard's object reader and typed refusals reaching every hand-over step and command; the inventory brief's execution rule decided as the authoring session's, its prompt without SEC-3's rule, and its brief asking for executions; shell quoting of the printed command; the coverage account checked at the pinned revision; the deadline; quotations only in inferred entries; review sessions refused until S8; the stored brief compared with Syzygy's rendering; the draft's session identifier required by the schema and asked for by the brief; the shared check's rule on quotations in blocks that may not carry them; and the lead's conditions of 2026-10-07: every self-declared session identifier and launch form, and the inventory's independence and completeness, labelled Inferred wherever shown or recorded (never Observed), and an overridden tool, version or model recorded beside the run's declared values. Not authority.",
   "measuredOn": {
-    "commit": "2294c9223640c24cbae82056825b6966bb1ed9da",
+    "commit": "3e53122ed7387bdefa9fbbc332f3028ca4c9c1d3",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/brief.ts",
-        "sha256": "01a7540d1883e47a4ae0f913e305f64d7db79f25f221e3dfb72155a60681ebe4"
+        "sha256": "e8d8176ee9fd0656ab48434fb988ccdd96f20b211397062f0bc36b515d7ee3f6"
       },
       {
         "path": "packages/polaris-dossier/src/check.ts",
@@ -30,7 +30,7 @@
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S7 worktree at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied and the command exits nonzero.",
-  "history": "A first run at the pre-amend commit stopped at M23, whose fragment matched nothing, after M2 (no frozen draft) survived: with no draft frozen the next clause (no declared identifier) refuses at the same stage, and the test asserted only the stage. The test now asserts each refusal's own reason, the M23 fragment was corrected, the commit was amended and all 26 re-run and killed. The labelling conditions from the lead then added M27-M33 and changed the `form` of the launch record to a labelled value, so the fragment of M6 was updated; the commit was amended again and all 33 re-run and killed. The S7 rulings 1 and 2 of the lead then moved the session directory to the sibling sessions root and switched the printed launch to the interactive form: M12 was rewritten to move the directory back under `inventory/`, M34-M40 were added, the commit was amended a third time and all 40 re-run at `commit`. M21 was first written to add an `observed` label to an entry's allowed labels, an equivalent mutant because the label rule refuses Observed before it consults that list; it was replaced before any run. S7 was then rebased onto S6 after the step-guard repair (syzygy-qkea.23, PR #379): the guard now lists the pinned tree and returns typed refusals, so the hand-over steps take its object reader and carry its refusals, and M41-M49 were added for that threading (the reader passed through `openRun` and each command line, and the refusals carried by `openRun` and each step); all 49 were re-run at `commit`, after the rebase and the threading commit.",
+  "history": "A first run at the pre-amend commit stopped at M23, whose fragment matched nothing, after M2 (no frozen draft) survived: with no draft frozen the next clause (no declared identifier) refuses at the same stage, and the test asserted only the stage. The test now asserts each refusal's own reason, the M23 fragment was corrected, the commit was amended and all 26 re-run and killed. The labelling conditions from the lead then added M27-M33 and changed the `form` of the launch record to a labelled value, so the fragment of M6 was updated; the commit was amended again and all 33 re-run and killed. The S7 rulings 1 and 2 of the lead then moved the session directory to the sibling sessions root and switched the printed launch to the interactive form: M12 was rewritten to move the directory back under `inventory/`, M34-M40 were added, the commit was amended a third time and all 40 re-run at `commit`. M21 was first written to add an `observed` label to an entry's allowed labels, an equivalent mutant because the label rule refuses Observed before it consults that list; it was replaced before any run. S7 was then rebased onto S6 after the step-guard repair (syzygy-qkea.23, PR #379): the guard now lists the pinned tree and returns typed refusals, so the hand-over steps take its object reader and carry its refusals, and M41-M49 were added for that threading (the reader passed through `openRun` and each command line, and the refusals carried by `openRun` and each step); all 49 were re-run after the rebase and the threading commit. After #379 merged with its round-2 repair (which changes brief.ts, a subject here) and S6 was rebased onto main, S7 was rebased onto that S6 and all 49 were re-run at `commit`.",
   "result": {
     "killed": 49,
     "total": 49
@@ -44,7 +44,7 @@
       "new": "    if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -55,7 +55,7 @@
       "new": "    if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -66,7 +66,7 @@
       "new": "    if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -77,7 +77,7 @@
       "new": "    if (false) return { ok: false, stage: 'session'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -88,7 +88,7 @@
       "new": "  if (launch === undefined) return { counts: true, revision, file: frozen, sha256: inventory['sha256'] as string, session: number, sessionId, launchForm: 'terminal', label: 'Inferred' };\n  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -99,7 +99,7 @@
       "new": "  if (",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -110,7 +110,7 @@
       "new": ") {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -121,7 +121,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -132,7 +132,7 @@
       "new": "  if (false) return",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -143,7 +143,7 @@
       "new": "  if (false) return no(",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -154,7 +154,7 @@
       "new": "  if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "6 failed | 569 passed (575)",
+      "tests": "6 failed | 577 passed (583)",
       "killed": true
     },
     {
@@ -165,7 +165,7 @@
       "new": "  const directory = path.join(inventoryDir, `session-${session}`);",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "14 failed | 561 passed (575)",
+      "tests": "14 failed | 569 passed (583)",
       "killed": true
     },
     {
@@ -176,7 +176,7 @@
       "new": "    role: 'authoring', runDir: opened.run,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -187,7 +187,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 573 passed (575)",
+      "tests": "2 failed | 581 passed (583)",
       "killed": true
     },
     {
@@ -198,7 +198,7 @@
       "new": "    executionRuleSection(input.executionRule),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -209,7 +209,7 @@
       "new": "    logStep(target,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -220,7 +220,7 @@
       "new": "    fs.writeFileSync(path.join(run, file), `${JSON.stringify(record, null, 2)}\\n`, { mode: 0o600, flag: 'w' });",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -231,7 +231,7 @@
       "new": "`'${text}'`",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -242,7 +242,7 @@
       "new": "    account: { key: 'discovery', parts: ['excluded', 'deferred'] },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -253,7 +253,7 @@
       "new": "  if (false) return { ok: false, stage: 'deadline'",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -264,7 +264,7 @@
       "new": "      at: `$.entries[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: 'unknown',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "7 failed | 568 passed (575)",
+      "tests": "7 failed | 576 passed (583)",
       "killed": true
     },
     {
@@ -275,7 +275,7 @@
       "new": "  if (request.kind !== undefined)",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -286,7 +286,7 @@
       "new": "storedCopy: stored === undefined ? 'absent' : 'matches',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -297,7 +297,7 @@
       "new": "    title: text,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "12 failed | 563 passed (575)",
+      "tests": "12 failed | 571 passed (583)",
       "killed": true
     },
     {
@@ -308,7 +308,7 @@
       "new": "    '',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -319,7 +319,7 @@
       "new": "    if (false) {",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 573 passed (575)",
+      "tests": "2 failed | 581 passed (583)",
       "killed": true
     },
     {
@@ -330,7 +330,7 @@
       "new": "    sessionId: { value: sessionId, declaredBy: 'the inventory session', label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 573 passed (575)",
+      "tests": "2 failed | 581 passed (583)",
       "killed": true
     },
     {
@@ -341,7 +341,7 @@
       "new": "  const form: Declared<LaunchForm> = { value: request.form as LaunchForm, declaredBy: 'operator', label: 'Observed' };",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "4 failed | 571 passed (575)",
+      "tests": "4 failed | 579 passed (583)",
       "killed": true
     },
     {
@@ -352,7 +352,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -363,7 +363,7 @@
       "new": "    runDeclared: { agentTool: tool as AgentTool, agentToolVersion: toolVersion, model,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -374,7 +374,7 @@
       "new": "    independence: { label: 'Observed',",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -385,7 +385,7 @@
       "new": "session: { sessionId: declaredSessionId(checked.doc), declaredBy: 'the authoring session', label: 'Observed' },",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -396,7 +396,7 @@
       "new": "    completeness: { label: 'Observed', basis: INVENTORY_INFERRED.completeness },\n    label: 'Inferred',\n  }),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -407,7 +407,7 @@
       "new": "",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 573 passed (575)",
+      "tests": "2 failed | 581 passed (583)",
       "killed": true
     },
     {
@@ -418,7 +418,7 @@
       "new": "[['clone', realClone]] as const",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -429,7 +429,7 @@
       "new": "[['run directory', realRun]] as const",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -440,7 +440,7 @@
       "new": "tool === 'claude-code' ? `claude -p ${shellQuote(prompt)}`",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -451,7 +451,7 @@
       "new": ": `codex exec ${shellQuote(prompt)}`;",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -462,7 +462,7 @@
       "new": "    : { terminal, bang: `! ${terminal}`,",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -473,7 +473,7 @@
       "new": "Never open the run's drafts or checks.",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "2 failed | 573 passed (575)",
+      "tests": "2 failed | 581 passed (583)",
       "killed": true
     },
     {
@@ -484,7 +484,7 @@
       "new": "  const checked = await reverifyPinnedRevision(run, sources, now);",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -495,7 +495,7 @@
       "new": ", reasons: checked.reasons };",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 572 passed (575)",
+      "tests": "3 failed | 580 passed (583)",
       "killed": true
     },
     {
@@ -506,7 +506,7 @@
       "new": "disclosures: PROMPT_DISCLOSURES",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 572 passed (575)",
+      "tests": "3 failed | 580 passed (583)",
       "killed": true
     },
     {
@@ -517,7 +517,7 @@
       "new": "disclosures: LAUNCH_DISCLOSURES",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 572 passed (575)",
+      "tests": "3 failed | 580 passed (583)",
       "killed": true
     },
     {
@@ -528,7 +528,7 @@
       "new": "disclosures: BRIEF_DISCLOSURES",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "3 failed | 572 passed (575)",
+      "tests": "3 failed | 580 passed (583)",
       "killed": true
     },
     {
@@ -539,7 +539,7 @@
       "new": "    const result = await launchForm(run, { role, form }, { sources: sources(), now });",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -550,7 +550,7 @@
       "new": "    const result = await inventoryBrief(rest[0]!, { sources: sources(), now });",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -561,7 +561,7 @@
       "new": "{ inventoryFile }, {\n      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)),",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     },
     {
@@ -572,7 +572,7 @@
       "new": "    }, { sources: sources(), now });",
       "command": "npx vitest run --project @syzygy/polaris-dossier",
       "exit": 1,
-      "tests": "1 failed | 574 passed (575)",
+      "tests": "1 failed | 582 passed (583)",
       "killed": true
     }
   ]
