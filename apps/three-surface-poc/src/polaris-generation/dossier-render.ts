@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
-  DOSSIER_FORMAT, OWNER_TOPICS, checkDraftQuotes, diagramToMermaid, isDossierPagePath, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById,
+  DOSSIER_FORMAT, OWNER_TOPICS, checkDraftQuotes, diagramToMermaid, isDossierPagePath, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById, withoutReviewStatusRegion,
   validateDraftRecord, validateGenerationSources, validateRequestedAssets,
   type DossierManifest, type EpistemicMarking, type GenerationSource, type LocalPageItem, type LocalRenderInput, type LocalSegment, type OwnerTopic, type PipelineResult,
   type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph, type RequestedAsset,
@@ -421,7 +421,10 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
 
   const manifest = parseDossierManifest(JSON.stringify({ format: DOSSIER_FORMAT, title, entryPage: 'index.html', pages }));
   files.set('dossier.json', `${JSON.stringify(manifest, null, 2)}\n`);
-  const scanned = new Map(pages.map(p => [p.path, scanDossierPage(files.get(p.path)!)]));
+  // An operator-agent page is measured without its review-status region, so a render that changes only the region leaves the size
+  // report unchanged and a rendered-design review counted.
+  const measured = (html: string): string => (local === undefined ? html : withoutReviewStatusRegion(html) ?? html);
+  const scanned = new Map(pages.map(p => [p.path, scanDossierPage(measured(files.get(p.path)!))]));
   const cost = readerCost(manifest, scanned);
   files.set('size-report.json', `${JSON.stringify({ format: 'polaris-dossier-size-report-v1', ...cost }, null, 2)}\n`);
   const first = cost.firstReadingLevel;
@@ -430,7 +433,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
     + `<p>What a reader loads before choosing where to go: the first reading level of <a href="index.html">the overview</a>, ${count(first.bytesThroughFirstLevel)} bytes and ${count(first.words)} words, of an entry page of ${first.entryPageBytes} bytes. All ${cost.pages.length} pages: ${cost.pages.reduce((n, p) => n + p.bytes, 0)} bytes. No budget is declared, so nothing here is within or over one.</p>`
     + `<table><thead><tr><th>Link depth</th><th>Pages</th><th>Bytes</th><th>Words</th></tr></thead><tbody>${cost.perPageDepth.map(row => `<tr><td>${row.depth}</td><td>${row.pages}</td><td>${row.bytes}</td><td>${row.words}</td></tr>`).join('')}</tbody></table>`
     + `<table><thead><tr><th>Page</th><th>Depth</th><th>Bytes</th><th>Words</th></tr></thead><tbody>${cost.pages.map(row => `<tr><td><a href="${escape(row.path)}">${escape(row.path)}</a></td><td>${row.depth}</td><td>${row.bytes}</td><td>${Object.values(row.wordsByReadingLevel).reduce((n, w) => n + w, 0) + row.unlabelledWords}</td></tr>`).join('')}</tbody></table>`
-    + `<p>Measured from the rendered bytes by the evaluation harness's scanner. This page and size-report.json are not counted.</p></section>`, chrome));
+    + `<p>Measured from the rendered bytes by the evaluation harness's scanner. This page and size-report.json are not counted${local === undefined ? '' : ', and each page is measured without its review-status region'}.</p></section>`, chrome));
   if (local !== undefined) {
     // The machine channel of the same render: every claim it rendered with its label and page, the non-normative blocks, every
     // quotation with its anchor, the source anchors, the disclosure, the draft layer and the review-status region.

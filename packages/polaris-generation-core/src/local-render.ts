@@ -9,6 +9,24 @@ import type { EpistemicMarking, ProviderDraft } from './provider-draft.js';
  * label itself.
  */
 
+/** The one named region of every page that a later render may change without retiring a rendered-design review. */
+export const REVIEW_STATUS_REGION = 'review-status';
+/** The region's opening tag, exactly as the renderer writes it. */
+export const REVIEW_STATUS_REGION_OPEN = `<aside class="review-status" data-review-status-region="${REVIEW_STATUS_REGION}" aria-label="Review status">`;
+
+/**
+ * The page with its review-status region removed, or undefined unless the page
+ * holds exactly one. The region's items are escaped text, so its first
+ * `</aside>` closes it.
+ */
+export function withoutReviewStatusRegion(html: string): string | undefined {
+  const start = html.indexOf(REVIEW_STATUS_REGION_OPEN);
+  if (start === -1 || html.indexOf(REVIEW_STATUS_REGION_OPEN, start + 1) !== -1) return undefined;
+  const close = html.indexOf('</aside>', start);
+  if (close === -1) return undefined;
+  return html.slice(0, start) + html.slice(close + '</aside>'.length);
+}
+
 /** RFC7-10's anchor of a quotation or a source page: an evidence artifact identifier with integrity digest. */
 export interface EvidenceAnchor {
   readonly targetClass: 'evidence-artifact-identifier-with-integrity-digest';

@@ -7,6 +7,7 @@ import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOT
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
 import { INVENTORY_INFERRED, authoringSessionIds, errno, inventoryOfRecord, logStep, openRun, readRecord, sessionsRoot, type OpenedRun } from './inventory.js';
+import { buildDesignPacket, designBlocking, readLatestSite, validateDesignVerdict, type DesignPacketBuild } from './design-review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { loadDossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
@@ -26,7 +27,10 @@ import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
  * has the digest it names and its session's launch form is recorded (`reviewOfRecord`). A new draft or inventory revision changes the
  * packet, so it retires the verdicts bound to the old one.
  *
- * The rendered-design review's packet holds the rendered pages, which S9 (`render`) builds; until then `--kind design` is refused. */
+ * The rendered-design review (`--kind design`) works the same way over the latest rendered site: its packet is the rendered pages
+ * excluding the one named review-status region (`design-review.ts`), its verdict judges every page, and `render` decides the design review
+ * of record by building the packet from the pages it has just rendered, so a render that changes anything outside the region retires the
+ * review while one that changes only the region keeps it counted. */
 
 export const FIDELITY_PACKET_FORMAT = 'polaris-dossier-fidelity-packet/1';
 export const REVIEW_CHECK_FORMAT = 'polaris-dossier-review-check/1';
@@ -35,7 +39,7 @@ export const PACKET_DIGEST_FILE = 'packet.sha256';
 export const VERDICT_FILE = 'verdict.json';
 export const REVIEW_KINDS = Object.freeze(['fidelity', 'design'] as const);
 export type ReviewKind = (typeof REVIEW_KINDS)[number];
-export const DESIGN_NOT_IN_BUILD = 'the rendered-design review is not in this build: its packet holds the rendered pages, which syzygy-qkea.10 (S9, render) builds, so no design packet is built and no design verdict is checked';
+export const isReviewKind = (value: unknown): value is ReviewKind => (REVIEW_KINDS as readonly unknown[]).includes(value);
 /** Within `reviews/`: the verdicts' results. */
 export const REVIEW_CHECKS = path.join(RUN_LAYOUT.reviews, 'checks');
 export const packetDirName = (kind: ReviewKind, sha: string): string => `${kind}-packet-${sha}`;
@@ -242,8 +246,8 @@ function linesOf(raw: string): string[] {
 
 /** Write the packet under `reviews/` as `<kind>-packet-<digest>/{packet.json, packet.sha256}`; an existing copy is kept only when it is
  * byte-identical, and otherwise replaced, since it lies within the agent sessions' write reach. Returns the directory. */
-export function writePacket(run: string, built: Extract<PacketBuild, { ok: true }>): string {
-  const dir = path.join(run, RUN_LAYOUT.reviews, packetDirName('fidelity', built.sha256));
+export function writePacket(run: string, kind: ReviewKind, built: { readonly bytes: string; readonly sha256: string }): string {
+  const dir = path.join(run, RUN_LAYOUT.reviews, packetDirName(kind, built.sha256));
   fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   fs.writeFileSync(path.join(dir, PACKET_FILE), built.bytes, { mode: 0o600 });
   fs.writeFileSync(path.join(dir, PACKET_DIGEST_FILE), `${built.sha256}  ${PACKET_FILE}\n`, { mode: 0o600 });
@@ -257,25 +261,52 @@ const PACKET_DISCLOSURES = [
   `The inventory's completeness is Inferred: ${INVENTORY_INFERRED.completeness}.`,
 ];
 
+const DESIGN_PACKET_DISCLOSURES = [
+  RECORDS_WITHIN_REACH,
+  'Syzygy built this packet at this step from the files of the latest rendered site as it read them now, with the review-status region removed; the packet and its digest are Observed at this step.',
+  'The stored site lies within the agent sessions\' write reach, so that it holds the render\'s own bytes is Inferred here; a design review counts only while a render, at that render, reproduces these pages outside the region from the objects it reads.',
+  'The emitted packet lies within the agent sessions\' write reach, so that the review session read it unaltered is Inferred; the digest beside it lets the session re-hash it, a cheap check, not a proof.',
+];
+
+/** The design packet of the latest rendered site, as it reads now. */
+export function buildStoredDesignPacket(opened: Extract<OpenedRun, { ok: true }>): (DesignPacketBuild & { readonly site?: number }) | { readonly ok: false; readonly stage: 'site'; readonly reason: string } {
+  const site = readLatestSite(opened.run);
+  if (!site.ok) return { ok: false, stage: 'site', reason: site.reason };
+  const built = buildDesignPacket({ run: opened.run, runId: opened.runId, pinnedRevision: opened.subject.pinnedRevision.commit, files: site.files });
+  return built.ok ? { ...built, site: site.number } : built;
+}
+
 export type ReviewPacketResult =
   | { readonly ok: true; readonly report: { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] } }
+  | { readonly ok: true; readonly report: { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'design'; readonly packetSha256: string; readonly directory: string; readonly site: number; readonly pages: number; readonly label: 'Observed'; readonly disclosures: readonly string[] } }
   | { readonly ok: false; readonly refusal: { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
 
 /** `syzygy dossier review-packet <run> --kind fidelity|design`. */
 export async function reviewPacket(runDir: string, request: { readonly kind: string }, deps: ReviewDeps): Promise<ReviewPacketResult> {
   const now = deps.now();
+  const disclosures = request.kind === 'design' ? DESIGN_PACKET_DISCLOSURES : PACKET_DISCLOSURES;
   const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string, refusals?: readonly ReverifyRefusal[]): ReviewPacketResult => {
     if (run !== undefined) logStep(run, 'review-packet', now, { outcome: 'refused', stage, reason });
-    return { ok: false, refusal: { command: 'review-packet', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: PACKET_DISCLOSURES } };
+    return { ok: false, refusal: { command: 'review-packet', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures } };
   };
-  if (request.kind === 'design') return refuse('not-in-build', DESIGN_NOT_IN_BUILD);
-  if (request.kind !== 'fidelity') return refuse('kind', `--kind must be fidelity or design, not ${JSON.stringify(request.kind)}`);
+  if (!isReviewKind(request.kind)) return refuse('kind', `--kind must be fidelity or design, not ${JSON.stringify(request.kind)}`);
   const opened = await openRun(runDir, deps.sources, now, 'no review packet is built', deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);
+  if (request.kind === 'design') {
+    const design = buildStoredDesignPacket(opened);
+    if (!design.ok) return refuse(design.stage, design.reason, undefined, opened.run);
+    let directory: string;
+    try { directory = writePacket(opened.run, 'design', design); } catch (cause) { return refuse('write', `the packet could not be written (${errno(cause)})`, undefined, opened.run); }
+    logStep(opened.run, 'review-packet', now, { outcome: 'built', kind: 'design', packetSha256: design.sha256, site: design.site });
+    return { ok: true, report: {
+      command: 'review-packet', outcome: 'built', run: opened.run, kind: 'design', packetSha256: design.sha256, directory, site: design.site!, pages: design.pages.length,
+      label: 'Observed', disclosures,
+    } };
+  }
   const built = await buildFidelityPacket(opened, deps);
   if (!built.ok) return refuse(built.stage, built.reason, undefined, opened.run);
   let directory: string;
-  try { directory = writePacket(opened.run, built); } catch (cause) { return refuse('write', `the packet could not be written (${errno(cause)})`, undefined, opened.run); }
+  try { directory = writePacket(opened.run, 'fidelity', built); } catch (cause) { return refuse('write', `the packet could not be written (${errno(cause)})`, undefined, opened.run); }
   logStep(opened.run, 'review-packet', now, { outcome: 'built', kind: 'fidelity', packetSha256: built.sha256 });
   const admitted = built.spans.filter((span) => span.outcome === 'admitted').length;
   return { ok: true, report: {
@@ -287,7 +318,7 @@ export async function reviewPacket(runDir: string, request: { readonly kind: str
 
 export type ReviewProblemKind =
   | 'not-json' | 'schema' | 'stale-packet' | 'session-identity' | 'coverage-incomplete' | 'accuracy-incomplete' | 'support-incomplete'
-  | 'duplicate-entry' | 'unresolved-reference' | 'quotation-count' | 'quotation-span' | 'quotation-unverified' | 'inconsistent';
+  | 'page-review-incomplete' | 'duplicate-entry' | 'unresolved-reference' | 'quotation-count' | 'quotation-span' | 'quotation-unverified' | 'inconsistent';
 
 /** Why a verdict does not count. It never carries quoted text or any byte of a blob. */
 export interface ReviewProblem { readonly kind: ReviewProblemKind; readonly at: string; readonly detail: string }
@@ -295,12 +326,13 @@ export interface ReviewProblem { readonly kind: ReviewProblemKind; readonly at: 
 export interface ReviewCheckRecord {
   readonly format: typeof REVIEW_CHECK_FORMAT;
   readonly runId: string;
-  readonly kind: 'fidelity';
+  readonly kind: ReviewKind;
   readonly number: number;
   readonly checkedAt: string;
   readonly outcome: 'validated' | 'refused';
   readonly verdict: { readonly file: string; readonly sha256: string; readonly bytes: number; readonly packetSha256Named: string | null };
-  readonly packet: { readonly sha256: string; readonly draftRevision: number; readonly inventoryRevision: number };
+  /** The packet rebuilt at the check: from the frozen draft and inventory (fidelity), or from the latest site (design). */
+  readonly packet: { readonly sha256: string; readonly draftRevision: number; readonly inventoryRevision: number } | { readonly sha256: string; readonly site: number };
   readonly session: {
     readonly number: number; readonly sessionId: string | null; readonly declaredBy: 'the review session'; readonly label: 'Inferred';
     readonly distinctFrom: string;
@@ -335,22 +367,40 @@ const CHECK_DISCLOSURES = [
   'A verdict counts only while the packet rebuilt then has the digest it names and once the launch form of its session is recorded with `syzygy dossier launch-form`; passing this check does not make it count.',
 ];
 
-/** `syzygy dossier review-check <run> [--verdict <file>]`: validate the latest fidelity session's verdict against the packet rebuilt now,
- * freeze it as `reviews/fidelity-verdict-N.json` and record the result in `reviews/checks/`. A verdict that fails validation is recorded
- * and does not count. */
-export async function reviewCheck(runDir: string, request: { readonly verdictFile?: string }, deps: ReviewDeps): Promise<ReviewCheckResult> {
+/** What stays Inferred about a rendered-design review however its verdict validates. */
+export const DESIGN_REVIEW_INFERRED: readonly string[] = Object.freeze([
+  'the reviewer\'s reading of the emitted packet: every judgement, finding and readiness the verdict declares, which Syzygy checks for shape, completeness and consistency and never for truth',
+  'that the review session read the packet Syzygy emitted, unaltered',
+  'that the session was a top-level session the operator started, in the launch form declared, and not a subagent or process of the authoring session',
+  'that its context was fresh and that it saw nothing beyond its packet',
+  'that the verdict was written by the session declared for it, and the session identifier itself',
+]);
+
+const DESIGN_CHECK_DISCLOSURES = [
+  RECORDS_WITHIN_REACH,
+  'Syzygy rebuilt the packet at this step from the files of the latest rendered site as it read them now, with the review-status region removed; the rebuilt packet, its digest and whether the verdict names it are Observed. Everything else about the review is Inferred, as listed.',
+  'A design verdict counts only once the launch form of its session is recorded with `syzygy dossier launch-form`, and only while a render, at that render, builds from the pages it has just rendered a packet with the digest the verdict names; passing this check does not make it count.',
+];
+
+/** `syzygy dossier review-check <run> [--kind fidelity|design] [--verdict <file>]`: validate the latest session's verdict of the kind
+ * (fidelity by default) against the packet rebuilt now, freeze it as `reviews/<kind>-verdict-N.json` and record the result in
+ * `reviews/checks/`. A verdict that fails validation is recorded and does not count. */
+export async function reviewCheck(runDir: string, request: { readonly verdictFile?: string; readonly kind?: string }, deps: ReviewDeps): Promise<ReviewCheckResult> {
   const now = deps.now();
+  const kind = request.kind ?? 'fidelity';
+  const disclosures = kind === 'design' ? DESIGN_CHECK_DISCLOSURES : CHECK_DISCLOSURES;
   const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string, refusals?: readonly ReverifyRefusal[]): ReviewCheckResult => {
     if (run !== undefined) logStep(run, 'review-check', now, { outcome: 'refused', stage, reason });
-    return { ok: false, refusal: { command: 'review-check', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: CHECK_DISCLOSURES } };
+    return { ok: false, refusal: { command: 'review-check', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures } };
   };
+  if (!isReviewKind(kind)) return refuse('kind', `--kind must be fidelity or design, not ${JSON.stringify(kind)}`);
   const opened = await openRun(runDir, deps.sources, now, 'no verdict is checked', deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);
   const { run, runId } = opened;
-  const session = latestReviewSession(run, 'fidelity');
-  if (session === 0) return refuse('session', `no fidelity review session has been handed over: the operator starts it from \`syzygy dossier session-prompt ${run} review --kind fidelity\`, and a verdict from any other session is not checked`, undefined, run);
+  const session = latestReviewSession(run, kind);
+  if (session === 0) return refuse('session', `no ${kind} review session has been handed over: the operator starts it from \`syzygy dossier session-prompt ${run} review --kind ${kind}\`, and a verdict from any other session is not checked`, undefined, run);
 
-  const file = request.verdictFile === undefined ? path.join(reviewSessionDirectory(run, 'fidelity', session), VERDICT_FILE) : path.resolve(request.verdictFile);
+  const file = request.verdictFile === undefined ? path.join(reviewSessionDirectory(run, kind, session), VERDICT_FILE) : path.resolve(request.verdictFile);
   let bytes: Uint8Array;
   try {
     const stats = fs.statSync(file);
@@ -359,41 +409,54 @@ export async function reviewCheck(runDir: string, request: { readonly verdictFil
     bytes = new Uint8Array(fs.readFileSync(file));
   } catch (cause) { return refuse('verdict', `the verdict ${file} cannot be read (${errno(cause)})`, undefined, run); }
 
-  const built = await buildFidelityPacket(opened, deps);
-  if (!built.ok) return refuse(built.stage, `the packet cannot be rebuilt, so no verdict is checked: ${built.reason}`, undefined, run);
-
   const verdict = parseSubject(bytes);
-  const problems = verdict === undefined
-    ? [{ kind: 'not-json', at: '$', detail: 'the verdict is not one bounded UTF-8 JSON object' } as ReviewProblem]
-    : validateVerdict(verdict, built, authoringSessionIds(run).ids);
+  const notJson: ReviewProblem[] = [{ kind: 'not-json', at: '$', detail: 'the verdict is not one bounded UTF-8 JSON object' }];
+  let problems: ReviewProblem[], blockingOf: (doc: Readonly<Record<string, unknown>>) => boolean;
+  let packet: ReviewCheckRecord['packet'], distinctFrom: string, basis: string, counts: string;
+  if (kind === 'design') {
+    const built = buildStoredDesignPacket(opened);
+    if (!built.ok) return refuse(built.stage, `the packet cannot be rebuilt, so no verdict is checked: ${built.reason}`, undefined, run);
+    problems = verdict === undefined ? notJson : validateDesignVerdict(verdict, built, opened.subject.pinnedRevision.commit, authoringSessionIds(run).ids);
+    blockingOf = designBlocking;
+    packet = { sha256: built.sha256, site: built.site! };
+    distinctFrom = 'the authoring session\'s identifiers declared by the frozen draft revisions';
+    basis = 'the verdict\'s own rows: a blocking finding or a page not acceptable';
+    counts = `only once the launch form of design session ${session} is recorded, and only while a render builds from the pages it has just rendered a packet with the digest this verdict names`;
+  } else {
+    const built = await buildFidelityPacket(opened, deps);
+    if (!built.ok) return refuse(built.stage, `the packet cannot be rebuilt, so no verdict is checked: ${built.reason}`, undefined, run);
+    problems = verdict === undefined ? notJson : validateVerdict(verdict, built, authoringSessionIds(run).ids);
+    blockingOf = derivedBlocking;
+    packet = { sha256: built.sha256, draftRevision: built.draft.revision, inventoryRevision: built.inventory.revision };
+    distinctFrom = `the authoring session's identifiers declared by the frozen draft revisions, and the inventory session's of inventory revision ${built.inventory.revision}`;
+    basis = 'the verdict\'s own rows: a blocking finding, an entry neither represented nor justifiably omitted, an entry not accurate, or a block not supported';
+    counts = `only once the launch form of fidelity session ${session} is recorded, and only while the packet rebuilt then has the digest this verdict names`;
+  }
   const named = verdict !== undefined && typeof verdict['packetSha256'] === 'string' ? verdict['packetSha256'] : null;
-  const blocking = verdict === undefined || problems.some((problem) => problem.kind === 'schema') ? null : derivedBlocking(verdict);
+  const blocking = verdict === undefined || problems.some((problem) => problem.kind === 'schema') ? null : blockingOf(verdict);
   const declared = verdict !== undefined && (verdict['readiness'] === 'ready' || verdict['readiness'] === 'not-ready') ? verdict['readiness'] : null;
 
   const reviews = path.join(run, RUN_LAYOUT.reviews), checks = path.join(run, REVIEW_CHECKS);
-  const number = nextVerdictNumber(reviews);
-  const frozen = path.join(RUN_LAYOUT.reviews, verdictFileName('fidelity', number));
-  const checkFile = path.join(run, REVIEW_CHECKS, verdictFileName('fidelity', number));
+  const number = nextVerdictNumber(reviews, kind);
+  const frozen = path.join(RUN_LAYOUT.reviews, verdictFileName(kind, number));
+  const checkFile = path.join(run, REVIEW_CHECKS, verdictFileName(kind, number));
   const outcome = problems.length === 0 ? 'validated' : 'refused';
   const record: ReviewCheckRecord = {
     format: REVIEW_CHECK_FORMAT,
     runId,
-    kind: 'fidelity',
+    kind,
     number,
     checkedAt: isoOf(now),
     outcome,
     verdict: { file: frozen, sha256: sha256(bytes), bytes: bytes.byteLength, packetSha256Named: named },
-    packet: { sha256: built.sha256, draftRevision: built.draft.revision, inventoryRevision: built.inventory.revision },
+    packet,
     session: {
       number: session, sessionId: verdict === undefined ? null : declaredSessionId(verdict), declaredBy: 'the review session', label: 'Inferred',
-      distinctFrom: `the authoring session's identifiers declared by the frozen draft revisions, and the inventory session's of inventory revision ${built.inventory.revision}`,
+      distinctFrom,
     },
     problems,
-    readiness: {
-      declared, blocking, basis: 'the verdict\'s own rows: a blocking finding, an entry neither represented nor justifiably omitted, an entry not accurate, or a block not supported',
-      declaredBy: 'the review session', label: 'Inferred',
-    },
-    counts: outcome === 'validated' ? `only once the launch form of fidelity session ${session} is recorded, and only while the packet rebuilt then has the digest this verdict names` : 'never: the verdict failed validation',
+    readiness: { declared, blocking, basis, declaredBy: 'the review session', label: 'Inferred' },
+    counts: outcome === 'validated' ? counts : 'never: the verdict failed validation',
     label: 'Inferred',
   };
   try {
@@ -403,19 +466,20 @@ export async function reviewCheck(runDir: string, request: { readonly verdictFil
   } catch (cause) {
     return refuse('write', `verdict ${number} could not be frozen or its result written (${errno(cause)})`, undefined, run);
   }
-  logStep(run, 'review-check', now, { outcome, kind: 'fidelity', number, problems: problems.length });
+  logStep(run, 'review-check', now, { outcome, kind, number, problems: problems.length });
   return { ok: true, report: {
     command: 'review-check', run, checkFile, ...record,
-    observed: { packetSha256: built.sha256, verdictNamesPacket: named === built.sha256, label: 'Observed' },
-    inferred: { basis: REVIEW_INFERRED, label: 'Inferred' },
-    disclosures: CHECK_DISCLOSURES,
+    observed: { packetSha256: packet.sha256, verdictNamesPacket: named === packet.sha256, label: 'Observed' },
+    inferred: { basis: kind === 'design' ? DESIGN_REVIEW_INFERRED : REVIEW_INFERRED, label: 'Inferred' },
+    disclosures,
   } };
 }
 
-function nextVerdictNumber(reviews: string): number {
+function nextVerdictNumber(reviews: string, kind: ReviewKind): number {
   let names: string[];
   try { names = fs.readdirSync(reviews); } catch { return 0; }
-  const numbers = names.flatMap((name) => { const match = /^fidelity-verdict-(0|[1-9][0-9]*)\.json$/u.exec(name); return match === null ? [] : [Number(match[1])]; });
+  const pattern = new RegExp(`^${kind}-verdict-(0|[1-9][0-9]*)\\.json$`, 'u');
+  const numbers = names.flatMap((name) => { const match = pattern.exec(name); return match === null ? [] : [Number(match[1])]; });
   return numbers.length === 0 ? 0 : Math.max(...numbers) + 1;
 }
 
@@ -533,40 +597,57 @@ export type ReviewOfRecord =
   }
   | { readonly counts: false; readonly why: string };
 
-/** The fidelity review that counts, if any: the latest checked verdict, validated, its frozen bytes unchanged, naming the packet Syzygy
- * rebuilds now from the current frozen subject, under an identifier neither the authoring nor the inventory session declares, written in
- * a session whose launch form is recorded against that session's prompt. */
-export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, deps: ReviewDeps): Promise<ReviewOfRecord> {
-  const { run } = opened;
-  const no = (why: string): ReviewOfRecord => ({ counts: false, why });
-  const number = nextVerdictNumber(path.join(run, RUN_LAYOUT.reviews)) - 1;
-  if (number < 0) return no('no fidelity verdict has been checked');
-  const check = readRecord(path.join(run, REVIEW_CHECKS, verdictFileName('fidelity', number)));
-  if (check === undefined || check['format'] !== REVIEW_CHECK_FORMAT || check['number'] !== number) return no(`the result of fidelity verdict ${number} cannot be read`);
-  if (check['outcome'] !== 'validated') return no(`fidelity verdict ${number} failed validation`);
-  const frozen = path.join(RUN_LAYOUT.reviews, verdictFileName('fidelity', number));
+type CheckedVerdict =
+  | { readonly ok: true; readonly number: number; readonly session: number; readonly verdict: Readonly<Record<string, unknown>>; readonly form: 'terminal' | 'bang' }
+  | { readonly ok: false; readonly why: string };
+
+/** The latest checked verdict of a kind, validated, its frozen bytes unchanged, written in a session whose launch form is recorded against
+ * that session's prompt. Whether it still names the packet rebuilt now is the caller's. */
+function latestCheckedVerdict(run: string, kind: ReviewKind, packetCheck: (verdict: Readonly<Record<string, unknown>>, number: number) => string | undefined): CheckedVerdict {
+  const no = (why: string): CheckedVerdict => ({ ok: false, why });
+  const number = nextVerdictNumber(path.join(run, RUN_LAYOUT.reviews), kind) - 1;
+  if (number < 0) return no(`no ${kind} verdict has been checked`);
+  const check = readRecord(path.join(run, REVIEW_CHECKS, verdictFileName(kind, number)));
+  if (check === undefined || check['format'] !== REVIEW_CHECK_FORMAT || check['number'] !== number) return no(`the result of ${kind} verdict ${number} cannot be read`);
+  if (check['outcome'] !== 'validated') return no(`${kind} verdict ${number} failed validation`);
+  const frozen = path.join(RUN_LAYOUT.reviews, verdictFileName(kind, number));
   let bytes: Uint8Array;
   try { bytes = new Uint8Array(fs.readFileSync(path.join(run, frozen))); } catch (cause) { return no(`the frozen verdict ${frozen} cannot be read (${errno(cause)})`); }
   const recorded = isObj(check['verdict']) ? check['verdict'] : {};
   if (recorded['file'] !== frozen || recorded['sha256'] !== sha256(bytes)) return no(`the frozen verdict ${frozen} is not the bytes its check recorded`);
   const verdict = parseSubject(bytes);
   if (verdict === undefined) return no(`the frozen verdict ${frozen} is not one bounded JSON object`);
-  const built = await buildFidelityPacket(opened, deps);
-  if (!built.ok) return no(`the packet cannot be rebuilt now: ${built.reason}`);
-  const problems = validateVerdict(verdict, built, authoringSessionIds(run).ids);
-  if (problems.length > 0) return no(`fidelity verdict ${number} no longer validates against the packet rebuilt now (${problems.map((problem) => problem.kind).join(', ')}); a revision of the draft or the inventory retires it`);
+  const stale = packetCheck(verdict, number);
+  if (stale !== undefined) return no(stale);
   const sessionRecord = isObj(check['session']) ? check['session'] : {};
   const session = sessionRecord['number'];
-  if (typeof session !== 'number' || !Number.isSafeInteger(session) || session < 1) return no(`the result of fidelity verdict ${number} names no session`);
-  const prompt = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewPromptRecordName('fidelity', session)));
+  if (typeof session !== 'number' || !Number.isSafeInteger(session) || session < 1) return no(`the result of ${kind} verdict ${number} names no session`);
+  const prompt = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewPromptRecordName(kind, session)));
   const promptSha = prompt !== undefined && typeof prompt['prompt'] === 'string' ? sha256(prompt['prompt']) : undefined;
-  if (promptSha === undefined || prompt!['promptSha256'] !== promptSha) return no(`the prompt record of fidelity session ${session} cannot be read or does not match its own digest`);
-  const launch = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewLaunchRecordName('fidelity', session)));
-  if (launch === undefined) return no(`no launch form is recorded for fidelity session ${session}: run \`syzygy dossier launch-form ${run} review terminal|bang\` with the operator's answer`);
+  if (promptSha === undefined || prompt!['promptSha256'] !== promptSha) return no(`the prompt record of ${kind} session ${session} cannot be read or does not match its own digest`);
+  const launch = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewLaunchRecordName(kind, session)));
+  if (launch === undefined) return no(`no launch form is recorded for ${kind} session ${session}: run \`syzygy dossier launch-form ${run} review terminal|bang${kind === 'design' ? ' --kind design' : ''}\` with the operator's answer`);
   const form = isObj(launch['form']) ? launch['form'] : {};
-  if ((form['value'] !== 'terminal' && form['value'] !== 'bang') || form['declaredBy'] !== 'operator' || form['label'] !== 'Inferred' || launch['role'] !== 'review' || launch['kind'] !== 'fidelity' || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
-    return no(`the launch-form record of fidelity session ${session} is not a terminal or bang launch of that session's prompt`);
+  if ((form['value'] !== 'terminal' && form['value'] !== 'bang') || form['declaredBy'] !== 'operator' || form['label'] !== 'Inferred' || launch['role'] !== 'review' || launch['kind'] !== kind || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
+    return no(`the launch-form record of ${kind} session ${session} is not a terminal or bang launch of that session's prompt`);
   }
+  return { ok: true, number, session, verdict, form: form['value'] };
+}
+
+/** The fidelity review that counts, if any: the latest checked verdict, validated, its frozen bytes unchanged, naming the packet Syzygy
+ * rebuilds now from the current frozen subject, under an identifier neither the authoring nor the inventory session declares, written in
+ * a session whose launch form is recorded against that session's prompt. */
+export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, deps: ReviewDeps): Promise<ReviewOfRecord> {
+  const { run } = opened;
+  if (nextVerdictNumber(path.join(run, RUN_LAYOUT.reviews), 'fidelity') === 0) return { counts: false, why: 'no fidelity verdict has been checked' };
+  const built = await buildFidelityPacket(opened, deps);
+  const checked = latestCheckedVerdict(run, 'fidelity', (verdict, number) => {
+    if (!built.ok) return `the packet cannot be rebuilt now: ${built.reason}`;
+    const problems = validateVerdict(verdict, built, authoringSessionIds(run).ids);
+    return problems.length === 0 ? undefined : `fidelity verdict ${number} no longer validates against the packet rebuilt now (${problems.map((problem) => problem.kind).join(', ')}); a revision of the draft or the inventory retires it`;
+  });
+  if (!checked.ok || !built.ok) return { counts: false, why: checked.ok ? 'the packet cannot be rebuilt now' : checked.why };
+  const { number, session, verdict, form } = checked;
   return {
     counts: true, kind: 'fidelity', number, session, packetSha256: built.sha256,
     verdict: {
@@ -575,9 +656,42 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
       declaredBy: 'the review session', label: 'Inferred',
     },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
-    launchForm: { value: form['value'], declaredBy: 'operator', label: 'Inferred' },
+    launchForm: { value: form, declaredBy: 'operator', label: 'Inferred' },
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
     inferred: { basis: REVIEW_INFERRED, label: 'Inferred' },
+    label: 'Inferred',
+  };
+}
+
+export type DesignReviewOfRecord =
+  | {
+    readonly counts: true; readonly kind: 'design'; readonly number: number; readonly session: number; readonly packetSha256: string;
+    readonly verdict: { readonly readiness: 'ready' | 'not-ready'; readonly blocking: boolean; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
+    readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
+    readonly launchForm: { readonly value: 'terminal' | 'bang'; readonly declaredBy: 'operator'; readonly label: 'Inferred' };
+    readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
+  }
+  | { readonly counts: false; readonly why: string };
+
+/** The rendered-design review that counts for `built`, the design packet of the pages a render has just produced: the latest checked
+ * design verdict, validated, its frozen bytes unchanged, still valid against that packet (so naming its digest), under an identifier the
+ * authoring session does not declare, written in a session whose launch form is recorded. Any change to the pages outside the
+ * review-status region changes the packet, so it retires the review. */
+export function designReviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, built: Extract<DesignPacketBuild, { ok: true }>): DesignReviewOfRecord {
+  const { run } = opened;
+  const checked = latestCheckedVerdict(run, 'design', (verdict, number) => {
+    const problems = validateDesignVerdict(verdict, built, opened.subject.pinnedRevision.commit, authoringSessionIds(run).ids);
+    return problems.length === 0 ? undefined : `design verdict ${number} no longer validates against the packet built from these pages (${problems.map((problem) => problem.kind).join(', ')}); a change to the pages outside the review-status region retires it`;
+  });
+  if (!checked.ok) return { counts: false, why: checked.why };
+  const { number, session, verdict, form } = checked;
+  return {
+    counts: true, kind: 'design', number, session, packetSha256: built.sha256,
+    verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: designBlocking(verdict), declaredBy: 'the review session', label: 'Inferred' },
+    sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
+    launchForm: { value: form, declaredBy: 'operator', label: 'Inferred' },
+    observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
+    inferred: { basis: DESIGN_REVIEW_INFERRED, label: 'Inferred' },
     label: 'Inferred',
   };
 }

@@ -117,7 +117,7 @@ describe('no route and no credential', () => {
   const sources = fs.readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
 
   it('sweeps a non-empty population of source files', async () => {
-    expect(sources).toEqual(['brief.ts', 'check.ts', 'cli.ts', 'clone-head.ts', 'credential-probe.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-rule.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'preflight.ts', 'render.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'state-directory.ts', 'status.ts']);
+    expect(sources).toEqual(['brief.ts', 'check.ts', 'cli.ts', 'clone-head.ts', 'credential-probe.ts', 'design-review.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-rule.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'preflight.ts', 'render.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'state-directory.ts', 'status.ts']);
   });
 
   it.each(sources.map((name) => [name]))('%s imports no network module', (name) => {

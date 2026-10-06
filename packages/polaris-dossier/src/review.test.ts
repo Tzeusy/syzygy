@@ -291,7 +291,7 @@ describe('review-packet --kind fidelity', () => {
   });
 
   it.each<[string, (run: string) => Promise<void> | void, string, string]>([
-    ['the rendered-design review, until render exists', () => undefined, 'not-in-build', 'the rendered-design review is not in this build'],
+    ['the rendered-design review before any site is rendered', () => undefined, 'site', 'no site has been rendered'],
     ['before the inventory counts', (run) => fs.rmSync(path.join(run, 'inventory', 'session-1.launch.json')), 'inventory', 'no inventory counts, so no fidelity packet is built: no launch form is recorded for inventory session 1'],
     ['when the latest draft revision has findings', (run) => submitDraft(run, { ...draft(), title: '' }), 'draft', 'draft revision 1, the latest checked, has open findings'],
     ['when the frozen draft changed after its check', (run) => fs.appendFileSync(path.join(run, 'drafts', 'rev-0.json'), ' '), 'draft', 'the frozen draft drafts/rev-0.json is not the bytes its check recorded'],
@@ -328,7 +328,7 @@ describe('session-prompt review --kind fidelity', () => {
   });
 
   it.each<[Parameters<typeof sessionPrompt>[1], string]>([
-    [{ role: 'review', kind: 'design' }, 'not-in-build'],
+    [{ role: 'review', kind: 'design' }, 'site'],
     [{ role: 'review' }, 'role'],
     [{ role: 'review', kind: 'other' }, 'role'],
   ])('refuses %j', async (request, stage) => {

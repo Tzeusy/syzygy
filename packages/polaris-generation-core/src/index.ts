@@ -50,3 +50,4 @@ export { validateReaderQuestions, ReaderQuestionsError, READER_QUESTION_TOPICS, 
 export { QUOTE_LEAD_IN, checkBlockQuotes, checkDraftQuotes, draftBlocks, inspectBlockQuotes, normaliseForQuote, quoteFindingAsReviewFinding, sourceTextById, type QuoteBlock, type QuoteFinding, type QuoteFindingKind } from './quote-fidelity.js';
 export { leadInQuotationSpans, leadInQuotations, lineCount, locateQuote, normaliseTracked, type LeadInQuotation, type LeadInQuotationSpan, type QuoteLocation, type TrackedText } from './quote-locate.js';
 export type { EvidenceAnchor, LocalBlock, LocalDisclosureItem, LocalDraftLayer, LocalPage, LocalPageGroup, LocalPageItem, LocalRenderInput, LocalSegment } from './local-render.js';
+export { REVIEW_STATUS_REGION, REVIEW_STATUS_REGION_OPEN, withoutReviewStatusRegion } from './local-render.js';

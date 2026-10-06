@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans, newGenerationRunKey,
+  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans,
   type EpistemicMarking, type EvidenceAnchor, type GenerationExclusionReason, type GenerationSource, type LocalBlock,
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type ProviderBlock, type ProviderDraft, type ProviderParagraph,
@@ -14,7 +14,8 @@ import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader } from './git-object-reader.js';
 import { errno, logStep, openRun, readRecord, type OpenedRun } from './inventory.js';
-import { latestPassedDraft, reviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
+import { buildDesignPacket } from './design-review.js';
+import { designReviewOfRecord, latestPassedDraft, reviewOfRecord, type DesignReviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { NO_WORK_ITEM_REASON } from './run-record.js';
 import { loadDossierScreen, type DossierScreen, type ScreenExclusion } from './screen.js';
@@ -26,7 +27,9 @@ import { RUN_LAYOUT } from './state-directory.js';
  * adapter-credential check runs where the brief permitted execution; the latest checked draft revision must have passed and be the bytes
  * its check recorded; the screening policy in force is loaded and every check re-derived from Git objects read now at the pinned
  * revision and re-hashed, which must find nothing; the fidelity review of record is decided by rebuilding its packet now. Then the draft
- * renders through the existing multi-page dossier renderer, through the injected port, into a new numbered `site/<n>/`.
+ * renders through the existing multi-page dossier renderer, through the injected port, into a new numbered `site/<n>/`. The rendered-design
+ * review of record is decided from the pages this render draws: it counts only while their design packet, the pages outside the one named
+ * review-status region, has the digest its verdict names, and the region alone states it.
  *
  * Every rendered quotation is the span Syzygy located at this render in a blob it read and verified, never the agent's copy and never a
  * stored byte range; a source page exists only for a cited blob read now and admitted by screening; each anchor is RFC7-10's evidence
@@ -79,6 +82,8 @@ export interface RenderReport {
   readonly draftRevision: number;
   readonly draftLayer: { readonly state: 'editorial-draft' } | { readonly state: 'unknown'; readonly reason: 'unconsented-source-or-provider'; readonly why: readonly string[] };
   readonly fidelityReview: { readonly counts: true; readonly packetSha256: string; readonly label: 'Observed' } | { readonly counts: false; readonly why: string };
+  /** The rendered-design review, decided from the design packet of these pages; its digest is what a design verdict must name. */
+  readonly designReview: { readonly counts: true; readonly packetSha256: string; readonly label: 'Observed' } | { readonly counts: false; readonly packetSha256: string; readonly why: string };
   readonly pages: number;
   readonly quotations: { readonly rendered: number; readonly withheld: number; readonly label: 'Observed' };
   readonly sources: { readonly admitted: number; readonly excluded: number };
@@ -115,7 +120,7 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   if (deps.renderer === undefined) return refuse('renderer', NO_RENDERER);
   const opened = await openRun(runDir, deps.sources, now, 'nothing is rendered', deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, { ...(opened.reasons ? { reasons: opened.reasons } : {}), ...(opened.refusals ? { refusals: opened.refusals } : {}) });
-  const { run, subject, declared } = opened;
+  const { run, runId, subject, declared } = opened;
   logRun = run;
   const pinned = subject.pinnedRevision.commit;
 
@@ -154,11 +159,24 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   const built = buildLocalInput({ opened, doc, derived, review, ruling, screen, credential, algorithm: reader.algorithm });
   if (!built.ok) return refuse(built.stage, built.reason);
 
-  let files: ReadonlyMap<string, string>;
-  try {
-    files = deps.renderer({ local: built.local, sources: built.sources }).files;
-  } catch (cause) {
-    return refuse('render', `the renderer refused the run: ${cause instanceof Error ? cause.message : 'unknown'}`);
+  const renderer = deps.renderer;
+  const draw = (local: LocalRenderInput): ReadonlyMap<string, string> | string => {
+    try { return renderer({ local, sources: built.sources }).files; } catch (cause) { return `the renderer refused the run: ${cause instanceof Error ? cause.message : 'unknown'}`; }
+  };
+  // The rendered-design review of record is decided from the pages this render draws, outside the review-status region, which is where
+  // the decision is stated: draw once with the decision pending, decide it from those pages, then draw again with it stated, and refuse
+  // unless the second drawing equals the first outside the region.
+  const pending = draw(built.local);
+  if (typeof pending === 'string') return refuse('render', pending);
+  const reviewed = buildDesignPacket({ run, runId, pinnedRevision: pinned, files: pending });
+  if (!reviewed.ok) return refuse('render', `the rendered pages cannot be compared outside the review-status region: ${reviewed.reason}`);
+  const design = designReviewOfRecord(opened, reviewed);
+  const local: LocalRenderInput = { ...built.local, reviewStatus: built.local.reviewStatus.map((item) => (item.id === 'review-status/design' ? designStatusItem(design) : item)) };
+  const files = draw(local);
+  if (typeof files === 'string') return refuse('render', files);
+  const published = buildDesignPacket({ run, runId, pinnedRevision: pinned, files });
+  if (!published.ok || published.sha256 !== reviewed.sha256) {
+    return refuse('render', 'stating the rendered-design review in the review-status region changed the pages outside that region, so the review of record cannot be decided from them');
   }
   // The first RFC7-20 condition, checked on the output itself: the disclosure on every page and in the machine view.
   const pagesMissing = [...files].filter(([file, html]) => file.endsWith('.html') && !html.includes('class="run-disclosure"')).map(([file]) => file);
@@ -178,6 +196,7 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
     draftRevision: draftRev.revision,
     draftLayer: built.local.draftLayer.state === 'editorial-draft' ? { state: 'editorial-draft' } : built.local.draftLayer,
     fidelityReview: review.counts ? { counts: true, packetSha256: review.packetSha256, label: 'Observed' } : { counts: false, why: review.why },
+    designReview: design.counts ? { counts: true, packetSha256: design.packetSha256, label: 'Observed' } : { counts: false, packetSha256: reviewed.sha256, why: design.why },
     pages: [...files.keys()].filter((file) => file.endsWith('.html')).length,
     quotations: { rendered: built.local.draftLayer.state === 'editorial-draft' ? rendered : 0, withheld: withheldQuotes, label: 'Observed' },
     sources: { admitted: built.sources.filter((source) => !source.exclusion.excluded).length, excluded: built.sources.filter((source) => source.exclusion.excluded).length },
@@ -218,6 +237,8 @@ interface BuildInputs {
   readonly doc: Readonly<Record<string, unknown>>;
   readonly derived: Derived;
   readonly review: ReviewOfRecord;
+  /** The rendered-design review of record; absent while it is not yet decided, before the pages it is decided from are rendered. */
+  readonly design?: DesignReviewOfRecord;
   readonly ruling: Awaited<ReturnType<RenderDeps['sources']['rfc720Ruling']>>;
   readonly screen: DossierScreen;
   readonly credential: CredentialStepResult;
@@ -228,7 +249,7 @@ type Built = { readonly ok: true; readonly local: LocalRenderInput; readonly sou
 
 /** The adapter from the checked local draft to the renderer's operator-agent input. */
 export function buildLocalInput(inputs: BuildInputs): Built {
-  const { opened, doc, derived, review, ruling, screen, credential, algorithm } = inputs;
+  const { opened, doc, derived, review, design, ruling, screen, credential, algorithm } = inputs;
   const { run, runId, subject, declared } = opened;
   const pinned = subject.pinnedRevision.commit;
   const clean = (value: string): string => (screen.screenBody(value) === 'secret-detector-match' ? WITHHELD_TEXT : value);
@@ -244,7 +265,10 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     pieces.set(repositoryPath, [...own]);
     sources.push(...own);
   }
-  const runKey = newGenerationRunKey();
+  // The excluded rows' identifiers are keyed by the run and its pinned revision, not by a fresh key per render, so a later render of the
+  // same subject names them alike and a rendered-design review of these pages survives it. The key hides nothing the page does not show:
+  // each such row names its path, and no row is written for a path a secret detector matches.
+  const runKey = createHash('sha256').update(`polaris-dossier excluded-source key\u0000${runId}\u0000${pinned}`).digest();
   for (const cited of derived.citedBlobs) {
     if (cited.outcome === 'admitted' || cited.path === null || cited.objectId === null) continue;
     sources.push({
@@ -428,7 +452,8 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     intro: 'The fidelity review of record. Only the packet Syzygy rebuilt, its digest and that the verdict names it are Observed; everything the verdict says is the review session\'s, Inferred. That the session read the packet unaltered, or had nothing else, is not observable.',
     groups: [
       { id: 'review-fidelity', heading: 'Fidelity review', note: 'Rebuilt and bound at this render.', empty: 'None.', items: reviewItems },
-      { id: 'review-design', heading: 'Rendered-design review', note: 'Of these rendered pages, excluding the review-status region.', empty: 'None.', items: [{ id: 'review/design/none', marking: 'unknown', unknownReason: 'missing-evidence', title: 'Rendered-design review', text: 'No rendered-design review of these pages is recorded.', details: [], sourceIds: [] }] },
+      // This page is part of what the design review reviews, so it never states that review's status: only the region does.
+      { id: 'review-design', heading: 'Rendered-design review', note: 'Of these rendered pages, excluding the review-status region.', empty: DESIGN_REVIEW_WHERE, items: [] },
     ],
   };
 
@@ -447,7 +472,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     review.counts
       ? { id: 'review-status/fidelity', text: `Fidelity review: one counts, bound to packet ${review.packetSha256} rebuilt at this render; its verdict, ${review.verdict.readiness}, is the review session's.`, label: 'Inferred' }
       : { id: 'review-status/fidelity', text: `Fidelity review: none counts (${review.why}).`, label: 'Unknown' },
-    { id: 'review-status/design', text: 'Rendered-design review: none recorded.', label: 'Unknown' },
+    designStatusItem(design),
   ];
 
   const editorial = draftLayer.state === 'editorial-draft';
@@ -460,6 +485,16 @@ export function buildLocalInput(inputs: BuildInputs): Built {
       sourceAnchors, pages, reviewStatus,
     },
   };
+}
+
+const DESIGN_REVIEW_WHERE = 'Whether a rendered-design review counts for these pages is stated in the review-status region at the foot of every page, the only part of a page a later render may change without retiring that review; this page is part of what that review reviews, so it does not repeat it.';
+
+/** The review-status region's line for the rendered-design review. */
+export function designStatusItem(design: DesignReviewOfRecord | undefined): LocalDisclosureItem {
+  if (design === undefined) return { id: 'review-status/design', text: 'Rendered-design review: not yet decided at this render.', label: 'Unknown' };
+  return design.counts
+    ? { id: 'review-status/design', text: `Rendered-design review: one counts, bound to packet ${design.packetSha256}, which Syzygy built at this render from these pages outside this region; its verdict, ${design.verdict.readiness}${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's.`, label: 'Inferred' }
+    : { id: 'review-status/design', text: `Rendered-design review: none counts (${design.why}).`, label: 'Unknown' };
 }
 
 const UNDERSTANDING_HEADINGS: Readonly<Record<(typeof UNDERSTANDING_ITEMS)[number], string>> = {
