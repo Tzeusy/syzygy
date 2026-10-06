@@ -250,7 +250,7 @@ def preconditions(root: pathlib.Path, answers: dict) -> list[str]:
     for p in (ENTRY_REVIEW, ENTRY_NOTES, DOSSIER_MANIFEST) if "entry-v1.0" in acts else ():
         if not (root / p).is_file():
             why.append(f"{p} is absent")
-    return why
+    return why + register_check(root)
 
 
 # ---- the recorders ---------------------------------------------------------
@@ -562,6 +562,23 @@ def gate_sweep(root: pathlib.Path) -> str | None:
     return None
 
 
+P104 = "| P-104 |"
+
+
+def register_check(root: pathlib.Path) -> list[str]:
+    """The sitting resolves P-104 in place in the register; it never moves to DECISION-HISTORY.md,
+    where the registry gate refuses it."""
+    why = []
+    pending = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
+    rows = [ln for ln in pending.read_text(encoding="utf-8").splitlines() if ln.startswith(P104)] if pending.is_file() else []
+    if len(rows) != 1:
+        why.append(f"PENDING-OWNER-DECISIONS.md carries {len(rows)} P-104 rows, not exactly one")
+    history = root / DECISIONS / "DECISION-HISTORY.md"
+    if history.is_file() and P104 in history.read_text(encoding="utf-8"):
+        why.append("DECISION-HISTORY.md carries a P-104 row: P-104 is resolved in place, never moved")
+    return why
+
+
 # ---- run -------------------------------------------------------------------
 
 def stash(root: pathlib.Path, why: str) -> None:
@@ -635,10 +652,12 @@ def check(root: pathlib.Path, answers: dict) -> int:
         print(f"REFUSED: {exc}")
         return 2
     swept = gate_sweep(root)
+    register = register_check(root)
     print("recorder checks failing: " + (", ".join(failing) or "none"))
     print("not installed: " + (", ".join(pending) or "none"))
     print("gate sweep: " + (swept or "the gate's readers accept every decisions/ file"))
-    return 1 if failing or pending or swept else 0
+    print("register: " + ("; ".join(register) or "P-104 stays one row of PENDING-OWNER-DECISIONS.md"))
+    return 1 if failing or pending or swept or register else 0
 
 
 # ---- selftest --------------------------------------------------------------
@@ -730,6 +749,12 @@ def selftest() -> int:
         ok.append(("the entry without the reader of PR #367 is refused", any("#367" in w for w in why)))
         ok.append(("a tree without the gate's real-tree tests fails the gate sweep",
                    "absent" in (gate_sweep(root) or "")))
+        ok.append(("a register with no P-104 row is refused", any("0 P-104 rows" in w for w in why)))
+        (root / DECISIONS / "PENDING-OWNER-DECISIONS.md").write_text("| P-104 | open |\n")
+        ok.append(("one P-104 row in the register and none in the history passes", register_check(root) == []))
+        (root / DECISIONS / "DECISION-HISTORY.md").write_text("| P-104 | moved |\n")
+        ok.append(("a P-104 row moved into DECISION-HISTORY.md is refused",
+                   any("never moved" in w for w in register_check(root))))
         ok.append(("a refusal of the answers writes nothing",
                    record_and_install(root, {"date": "x", "acts": {}}) == 2
                    and sorted(p.name for p in root.iterdir()) == [".git", ".syzygy", "m.txt"]))

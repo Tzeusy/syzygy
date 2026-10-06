@@ -95,3 +95,10 @@ the acts by this brief's item letters (A to I) and point to
 package's real-tree tests after installing, and its `--check` runs them
 again (`GATE_TESTS`). Re-run `--check` after writing any sitting log and
 before committing. The step adds no step order to the brief.
+
+The sitting resolves P-104 [Observed: its rows 1 to 5 are this brief's
+acts A, E, F, G and H], so its row is resolved in place, in the form P-53
+took (`| P-104 | [Observed] **Resolved <date>:** …`), naming the acts by
+item letter. It is never moved to `DECISION-HISTORY.md`, where the registry
+gate refuses it. The installer refuses, before installing and in `--check`,
+unless the register carries exactly one P-104 row and the history none.
