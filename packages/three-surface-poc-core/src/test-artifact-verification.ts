@@ -403,7 +403,7 @@ export function liveTestOperatorInstructions(repoRoot: string, python: string, s
     'Syzygy does not run the Butlers test suite. For the owner or a human operator: an agent session must not run ' +
     'the pytest command below unless the owner has recorded a SEC-3 choice for that run. In your own shell, run\n' +
     `  git -C ${repo} rev-parse HEAD\n` +
-    `  cd ${repo} && ${posixShellWord(python)} -m pytest ${posixShellWord(scope)} -q --junitxml=<file>; echo "exit $?"\n` +
+    `  cd -- ${repo} && ${posixShellWord(python)} -m pytest ${posixShellWord(scope)} -q --junitxml=<file>; echo "exit $?"\n` +
     'then set SYZYGY_POC_BUTLERS_JUNIT=<file>, SYZYGY_POC_BUTLERS_JUNIT_COMMIT=<commit> and ' +
     'SYZYGY_POC_BUTLERS_JUNIT_EXIT=<status>, and run this test again.'
   );
