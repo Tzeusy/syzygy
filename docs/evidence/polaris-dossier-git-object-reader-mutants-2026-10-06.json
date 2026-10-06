@@ -1,9 +1,9 @@
 {
   "subject": {
-    "commit": "db012c05b263e966c480965cd8a7b50b5cbe0545",
+    "commit": "c5480b2289e1722febd35ca2cb09d9c97f7a64d6",
     "branch": "agent/dossier-s2-object-reader",
     "fileSha256": {
-      "packages/polaris-dossier/src/git-object-reader.ts": "0a0ba3d2b2bbb12d18c7395551ffb03237540451ee3eee03ab8bc66b175c5d91"
+      "packages/polaris-dossier/src/git-object-reader.ts": "42e83e3e052c70300dc5029dc84addb10c25b8ecbabe3a34a12bd645ddb2716f"
     },
     "testFileSha256": {
       "packages/polaris-dossier/src/git-object-reader.test.ts": "fe85654fb2bb17d7032b64cdf12abf4c626ab81b4f28e02e3ecd69a1b699c221"
@@ -13,7 +13,7 @@
   "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-dossier",
-  "ranAt": "2026-10-06T01:02:16+00:00",
+  "ranAt": "2026-10-06T01:07:43+00:00",
   "mutants": [
     {
       "id": "X-noop-control",
@@ -148,7 +148,7 @@
     {
       "id": "L2-loose-skipped",
       "file": "packages/polaris-dossier/src/git-object-reader.ts",
-      "old": "    if (deflated !== null) return this.loose(deflated, id, at);\n    for (const pack of this.packs) {\n      const offset = lookup(pack, id, this.algorithm);\n      if (offset !== null) return this.packed(pack, offset, id, at, 0);\n    }\n",
+      "old": "    if (stored !== null) return this.loose(stored, id, at);\n    for (const pack of this.packs) {\n      const offset = lookup(pack, id, this.algorithm);\n      if (offset !== null) return this.packed(pack, offset, id, at, 0);\n    }\n",
       "new": "    for (const pack of this.packs) {\n      const offset = lookup(pack, id, this.algorithm);\n      if (offset !== null) return this.packed(pack, offset, id, at, 0);\n    }\n",
       "tests": [
         "packages/polaris-dossier/src/git-object-reader.test.ts"
@@ -328,6 +328,6 @@
       "note": "a tree entry name with a slash accepted"
     }
   ],
-  "ranAtCommit": "db012c05b263e966c480965cd8a7b50b5cbe0545",
-  "summary": "23 of 24 mutants killed at db012c05b263e966c480965cd8a7b50b5cbe0545; not killed: ['X-noop-control'] (the control). A first run at the reader commit (before the hand-built-store tests) left five alive: P4-ofs-base-range-unchecked, D1-delta-source-size-unchecked, D2-delta-target-size-unchecked, W5-commit-tree-line-any-width and W6-tree-entry-name-slash. Each guards a malformation git never writes, so the fixture clones never reached it; hand-built stores now do, and all five are killed. Not mutated, because no code exists to mutate: the reader has no path that reads a ref, config, hook, alternates file, grafts, shallow file or replace ref, and the tests show each planted one is refused or ignored."
+  "ranAtCommit": "c5480b2289e1722febd35ca2cb09d9c97f7a64d6",
+  "summary": "23 of 24 mutants killed at c5480b2289e1722febd35ca2cb09d9c97f7a64d6; not killed: ['X-noop-control'] (the control). An earlier run of this same set at db012c05, before the variable rename that only changed L2-loose-skipped's fragment, also killed 23. A first run at the reader commit 6221e58f, before the hand-built-store tests, left five alive: P4-ofs-base-range-unchecked, D1-delta-source-size-unchecked, D2-delta-target-size-unchecked, W5-commit-tree-line-any-width and W6-tree-entry-name-slash. Each guards a malformation git never writes, so the fixture clones never reached it; hand-built stores now do, and all five are killed. Not mutated, because no code exists to mutate: the reader has no path that reads a ref, config, hook, alternates file, grafts, shallow file or replace ref, and the tests show each planted one is refused or ignored."
 }
