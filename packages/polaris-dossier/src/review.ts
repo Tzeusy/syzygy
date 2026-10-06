@@ -7,6 +7,7 @@ import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOT
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
 import { INVENTORY_INFERRED, authoringSessionIds, errno, inventoryOfRecord, logStep, openRun, readRecord, sessionsRoot, type OpenedRun } from './inventory.js';
+import type { ReverifyRefusal } from './reverify.js';
 import { loadDossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
 
@@ -258,19 +259,19 @@ const PACKET_DISCLOSURES = [
 
 export type ReviewPacketResult =
   | { readonly ok: true; readonly report: { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly disclosures: readonly string[] } };
+  | { readonly ok: false; readonly refusal: { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
 
 /** `syzygy dossier review-packet <run> --kind fidelity|design`. */
 export async function reviewPacket(runDir: string, request: { readonly kind: string }, deps: ReviewDeps): Promise<ReviewPacketResult> {
   const now = deps.now();
-  const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string): ReviewPacketResult => {
+  const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string, refusals?: readonly ReverifyRefusal[]): ReviewPacketResult => {
     if (run !== undefined) logStep(run, 'review-packet', now, { outcome: 'refused', stage, reason });
-    return { ok: false, refusal: { command: 'review-packet', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: PACKET_DISCLOSURES } };
+    return { ok: false, refusal: { command: 'review-packet', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: PACKET_DISCLOSURES } };
   };
   if (request.kind === 'design') return refuse('not-in-build', DESIGN_NOT_IN_BUILD);
   if (request.kind !== 'fidelity') return refuse('kind', `--kind must be fidelity or design, not ${JSON.stringify(request.kind)}`);
-  const opened = await openRun(runDir, deps.sources, now, 'no review packet is built');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons);
+  const opened = await openRun(runDir, deps.sources, now, 'no review packet is built', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);
   const built = await buildFidelityPacket(opened, deps);
   if (!built.ok) return refuse(built.stage, built.reason, undefined, opened.run);
   let directory: string;
@@ -312,7 +313,7 @@ export interface ReviewCheckRecord {
 
 export type ReviewCheckResult =
   | { readonly ok: true; readonly report: ReviewCheckRecord & { readonly command: 'review-check'; readonly run: string; readonly checkFile: string; readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'review-check'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly disclosures: readonly string[] } };
+  | { readonly ok: false; readonly refusal: { readonly command: 'review-check'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
 
 /** What this step observed: the packet Syzygy rebuilt, its digest and whether the verdict names it. */
 export interface ReviewObserved { readonly packetSha256: string; readonly verdictNamesPacket: boolean; readonly label: 'Observed' }
@@ -339,12 +340,12 @@ const CHECK_DISCLOSURES = [
  * and does not count. */
 export async function reviewCheck(runDir: string, request: { readonly verdictFile?: string }, deps: ReviewDeps): Promise<ReviewCheckResult> {
   const now = deps.now();
-  const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string): ReviewCheckResult => {
+  const refuse = (stage: string, reason: string, reasons?: readonly string[], run?: string, refusals?: readonly ReverifyRefusal[]): ReviewCheckResult => {
     if (run !== undefined) logStep(run, 'review-check', now, { outcome: 'refused', stage, reason });
-    return { ok: false, refusal: { command: 'review-check', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), disclosures: CHECK_DISCLOSURES } };
+    return { ok: false, refusal: { command: 'review-check', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: CHECK_DISCLOSURES } };
   };
-  const opened = await openRun(runDir, deps.sources, now, 'no verdict is checked');
-  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons);
+  const opened = await openRun(runDir, deps.sources, now, 'no verdict is checked', deps.openReader ? { openReader: deps.openReader } : {});
+  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, undefined, opened.refusals);
   const { run, runId } = opened;
   const session = latestReviewSession(run, 'fidelity');
   if (session === 0) return refuse('session', `no fidelity review session has been handed over: the operator starts it from \`syzygy dossier session-prompt ${run} review --kind fidelity\`, and a verdict from any other session is not checked`, undefined, run);

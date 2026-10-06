@@ -209,7 +209,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (options.positional.length !== 1) return usageError('review-packet takes exactly one positional argument, the run directory');
     const kind = options.values.get('--kind');
     if (kind === undefined) return usageError('review-packet requires --kind fidelity|design');
-    const result = await reviewPacket(options.positional[0]!, { kind }, { sources: sources(), now, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    const result = await reviewPacket(options.positional[0]!, { kind }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'review-check') {
@@ -217,7 +217,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     if (typeof options === 'string') return usageError(options);
     if (options.positional.length !== 1) return usageError('review-check takes exactly one positional argument, the run directory');
     const verdictFile = options.values.get('--verdict');
-    const result = await reviewCheck(options.positional[0]!, verdictFile === undefined ? {} : { verdictFile }, { sources: sources(), now, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    const result = await reviewCheck(options.positional[0]!, verdictFile === undefined ? {} : { verdictFile }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     if (!result.ok) return refused(result.refusal);
     return report(result.report, result.report.outcome === 'validated' ? EXIT.clean : EXIT.refused);
   }
