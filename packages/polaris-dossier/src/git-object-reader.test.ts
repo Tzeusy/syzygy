@@ -253,11 +253,11 @@ describe('the hash algorithm comes from the consented identifier, never from the
   it('a SHA-256 clone under a 40-digit identifier refuses, loose and packed', async () => {
     expect(await refusal(reader(S, C2).tree())).toMatchObject({ reason: 'object-missing', objectId: C2 });
     expect(await refusal(reader(S, S2.slice(0, 40)).tree())).toMatchObject({ reason: 'object-missing', objectId: S2.slice(0, 40) });
-    expect(await refusal(reader(SP, S2.slice(0, 40)).tree())).toMatchObject({ reason: 'invalid-pack-index' });
+    expect(await refusal(reader(SP, S2.slice(0, 40)).tree())).toMatchObject({ reason: 'invalid-pack-index', message: expect.stringMatching(/^pack-[0-9a-f]+\.idx is not a version-2 sha1 pack index: size \d+ fits no \d+-entry index$/) });
   });
   it('a SHA-1 clone under a 64-digit identifier refuses', async () => {
     expect(await refusal(reader(L, S2).tree())).toMatchObject({ reason: 'object-missing', objectId: S2 });
-    expect(await refusal(reader(OFS, S2).tree())).toMatchObject({ reason: 'invalid-pack-index' });
+    expect(await refusal(reader(OFS, S2).tree())).toMatchObject({ reason: 'invalid-pack-index', message: expect.stringMatching(/^pack-[0-9a-f]+\.idx is not a version-2 sha256 pack index: truncated$/) });   // 11 entries read 64 digits wide overrun the file
   });
 });
 
@@ -506,6 +506,8 @@ describe('every malformed store ends in a typed refusal (finding 1)', () => {
     expect(await refusal(reader(junk, commit.id).tree())).toMatchObject({ reason: 'invalid-pack-index', message: 'pack-z.idx is not a version-2 sha1 pack index: bad header' });
     const versionThree = handBuilt('idx-v3', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx => { const out = Buffer.from(idx); out.writeUInt32BE(3, 4); return out; });
     expect((await refusal(reader(versionThree, commit.id).tree())).message).toBe('pack-x.idx is not a version-2 sha1 pack index: bad header');
+    const short = handBuilt('idx-short', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx => idx.subarray(0, 100));   // magic and version right, fan-out cut
+    expect((await refusal(reader(short, commit.id).tree())).message).toBe('pack-x.idx is not a version-2 sha1 pack index: bad header');
     const truncated = handBuilt('idx-truncated', [tree, commit], [{ id: blob.id, entry: whole(blob.body) }], idx => idx.subarray(0, offsetsAt));
     expect((await refusal(reader(truncated, commit.id).tree())).message).toBe('pack-x.idx is not a version-2 sha1 pack index: truncated');
   });
