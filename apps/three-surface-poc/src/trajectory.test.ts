@@ -3,7 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, workerChangeVerificationId, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, UNMARKED_RECORD_REASON, workerChangeVerificationId, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
 
 import { renderTrajectoryPage } from './trajectory.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -192,7 +192,7 @@ describe('Trajectory', () => {
   });
 
   it.each(['REQ-alternate-governing-intent-007', 'REQ-alternate-governing-intent-008'] as const)(
-    'renders Verified on the card only once a real matching test artifact is ingested for governing intent %s (AC3, syzygy-0r9)',
+    'renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent %s (AC3/AC4, syzygy-0r9, syzygy-4mbu)',
     (workerChangeIntentId) => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
     writeWorkerChangeSeam(repoRoot, 'x = 1\n');
@@ -240,7 +240,8 @@ describe('Trajectory', () => {
       digest: 'sha256:' + '2'.repeat(64),
       summary: '4 passed, 0 failed, 0 errored, 0 skipped in 0.5s',
     };
-    const build = (seeds: typeof BUTLERS_POC_SEEDS, testArtifactRecord: TestArtifactRecord = { ...passing, capturedAt }) => buildPocModel({
+    const reported: TestArtifactRecord = { ...passing, provenance: 'operator-reported', ingestedAt: capturedAt };
+    const build = (seeds: typeof BUTLERS_POC_SEEDS, testArtifactRecord: TestArtifactRecord = reported) => buildPocModel({
       seeds,
       repoRoot,
       repositoryRevision: changedRevision,
@@ -251,16 +252,15 @@ describe('Trajectory', () => {
         sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
       testArtifactRecord,
     });
-    const model = build(alternateSeeds);
-    expect(model.testArtifactVerification.kind).toBe('verified');
-
-    const html = renderTrajectoryPage(model);
-    const card = cardBody(html, 'bu-verified-1');
-    expect(card).toContain('Verification: Verified');
-    expect(card).toContain('4 passed, 0 failed, 0 errored, 0 skipped in 0.5s');
-    expect(card).toContain(`the governing intent ${alternateSeeds.workerChangeIntentId}`);
-    expect(card).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
-    expect(card).not.toContain('Verification: Not verified');
+    // Round-2 note 2: a passing, binding record with no provenance (the
+    // retired spawning capture's shape, or a hand-written file) fails closed.
+    const unmarkedModel = build(alternateSeeds, { ...passing, capturedAt });
+    expect(unmarkedModel.testArtifactVerification).toEqual({ kind: 'unknown', reason: UNMARKED_RECORD_REASON });
+    const unmarkedCard = cardBody(renderTrajectoryPage(unmarkedModel), 'bu-verified-1');
+    expect(unmarkedCard).toContain('Verification: Not verified.');
+    expect(unmarkedCard).not.toContain('Verification: Verified');
+    expect(unmarkedCard).not.toContain('4 passed, 0 failed, 0 errored, 0 skipped in 0.5s');
+    expect(unmarkedModel.unknownSubjects.find((subject) => subject.id === workerChangeVerificationId('bu-verified-1'))?.epistemic.label).toBe('Unknown');
 
     // Built, not spread: the verification Unknown and its route are model
     // facts under the disclosure's id (M4 slice 1).
@@ -275,9 +275,13 @@ describe('Trajectory', () => {
     // Round-1 finding 1: the same passing run, reported by the operator,
     // caps at report-fact (RFC5-19). It renders with the declared Unknown
     // encoding and its disclosure, never Observed and never "Verified".
-    const reportedModel = build(alternateSeeds, { ...passing, provenance: 'operator-reported', ingestedAt: capturedAt });
+    const reportedModel = build(alternateSeeds);
     expect(reportedModel.testArtifactVerification.kind).toBe('reported');
-    expect(reportedModel.unknownSubjects.find((subject) => subject.id === workerChangeVerificationId('bu-verified-1'))?.epistemic.label).toBe('Unknown');
+    const reportedSubject = reportedModel.unknownSubjects.find((subject) => subject.id === workerChangeVerificationId('bu-verified-1'));
+    expect(reportedSubject?.epistemic.label).toBe('Unknown');
+    // Round-2 note 4: present but not believed, because the run that would
+    // count (one Syzygy launches under a profile) does not launch (RFC5-18).
+    expect(reportedSubject?.epistemic.closedReason).toBe('execution-blocked');
     const reportedCard = cardBody(renderTrajectoryPage(reportedModel), 'bu-verified-1');
     const badge = /<span class="epistemic [^"]*" data-parity-field="worker-change-verification"[^>]*>/.exec(reportedCard)?.[0] ?? '';
     expect(badge).toContain('class="epistemic epistemic-unknown"');

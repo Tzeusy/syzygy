@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { buildPocModel } from './model.js';
 import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
-import { buildTestArtifactRecordFromJUnit } from './test-artifact-verification.js';
+import { buildOperatorReportedTestArtifactRecord } from './test-artifact-verification.js';
 
 // Gated exactly like the existing SYZYGY_POC_BUTLERS_REPO-gated live
 // checks (work-items.live.test.ts): the default suite stays hermetic, but
@@ -35,15 +35,15 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
       expect(proc.error).toBeUndefined();
       expect(proc.status).toBe(0);
 
-      const rawJUnitXml = readFileSync(junitPath, 'utf8');
+      const rawJUnit = readFileSync(junitPath);
       const repositoryCommit = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], {
         encoding: 'utf8',
       }).trim();
-      const built = buildTestArtifactRecordFromJUnit({
-        rawJUnitXml,
+      const built = buildOperatorReportedTestArtifactRecord({
+        rawJUnit,
         command: [PYTHON, '-m', 'pytest', SCOPE, '-q'],
-        exitCode: proc.status ?? 1,
-        capturedAt: new Date().toISOString(),
+        reportedExitCode: proc.status ?? 1,
+        ingestedAt: new Date().toISOString(),
         repositoryCommit,
         scope: SCOPE,
       });
@@ -92,7 +92,7 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
           if (args[0] === 'symbolic-ref') return 'refs/remotes/origin/main';
           if (args[0] === 'rev-parse') return repositoryCommit;
           if (args[0] === 'log') {
-            const format = `${repositoryCommit}\x1f${built.record.capturedAt}\x1flive capture [bu-live-capture-1]`;
+            const format = `${repositoryCommit}\x1f${built.record.ingestedAt}\x1flive capture [bu-live-capture-1]`;
             return `${format}\n`;
           }
           if (args[0] === 'merge-base') return '';
@@ -105,7 +105,9 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
       expect(model.workerChange.kind).toBe('observed');
       if (model.workerChange.kind !== 'observed') throw new Error('unreachable');
       expect(model.workerChange.state).toBe('changed-or-merged');
-      expect(model.testArtifactVerification.kind).toBe('verified');
+      // There is no Verified result: a run this test reports caps at
+      // report-fact (RFC5-19).
+      expect(model.testArtifactVerification.kind).toBe('reported');
     } finally {
       rmSync(junitDir, { recursive: true, force: true });
     }

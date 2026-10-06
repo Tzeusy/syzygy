@@ -29,9 +29,13 @@ interface TestArtifactRecordFields {
   readonly summary: string;
 }
 
-/** A run whose exit status and capture instant the capturing process
- * observed itself. */
-export interface ObservedRunTestArtifactRecord extends TestArtifactRecordFields {
+/**
+ * The shape the retired spawning capture wrote: a capture instant and no
+ * `provenance`. Nothing produces it any more, and Syzygy cannot tell such a
+ * file from one written by hand, so it is read and never believed: it
+ * resolves Unknown, never Verified.
+ */
+export interface UnmarkedTestArtifactRecord extends TestArtifactRecordFields {
   readonly capturedAt: string;
 }
 
@@ -49,7 +53,7 @@ export interface OperatorReportedTestArtifactRecord extends TestArtifactRecordFi
   readonly ingestedAt: string;
 }
 
-export type TestArtifactRecord = ObservedRunTestArtifactRecord | OperatorReportedTestArtifactRecord;
+export type TestArtifactRecord = UnmarkedTestArtifactRecord | OperatorReportedTestArtifactRecord;
 
 export function isOperatorReported(record: TestArtifactRecord): record is OperatorReportedTestArtifactRecord {
   return 'provenance' in record && record.provenance === 'operator-reported';
@@ -176,8 +180,9 @@ function firstOpeningTagBody(rawXml: string, lowerXml: string, name: string): st
  * anything is opened; the open never follows a link and never blocks; and
  * the opened file must be the one `lstat` saw. At most `maxBytes + 1`
  * bytes are ever read, so a file that grows after the check is refused too.
+ * Returns the bytes undecoded, so the recorded digest is the file's own.
  */
-export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNIT_ARTIFACT_BYTES): string {
+export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNIT_ARTIFACT_BYTES): Buffer {
   const seen = lstatSync(path);
   if (!seen.isFile()) {
     throw new Error('it is not a regular file (a symlink, FIFO, device or directory is refused)');
@@ -201,7 +206,7 @@ export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNI
         throw new Error(`it grew past the ${maxBytes}-byte ceiling while being read`);
       }
     }
-    return buffer.subarray(0, length).toString('utf8');
+    return buffer.subarray(0, length);
   } finally {
     closeSync(fd);
   }
@@ -209,8 +214,10 @@ export function readBoundedRegularFile(path: string, maxBytes: number = MAX_JUNI
 
 const NAME_CHAR = /[A-Za-z0-9_:.-]/;
 
-/** `name="value"` pairs in one tag body, by a single forward pass. */
-function parseTagAttrs(tagBody: string): Map<string, string> {
+/** `name="value"` pairs in one tag body, by a single forward pass. A
+ * repeated attribute makes the whole tag unreadable (null): last-wins would
+ * let `failures="1" … failures="0"` read as zero. */
+function parseTagAttrs(tagBody: string): Map<string, string> | null {
   const attrs = new Map<string, string>();
   let i = 0;
   while (i < tagBody.length) {
@@ -224,6 +231,7 @@ function parseTagAttrs(tagBody: string): Map<string, string> {
     if (tagBody.charAt(i) !== '=' || tagBody.charAt(i + 1) !== '"') continue;
     const valueEnd = tagBody.indexOf('"', i + 2);
     if (valueEnd === -1) break;
+    if (attrs.has(name)) return null;
     attrs.set(name, tagBody.slice(i + 2, valueEnd));
     i = valueEnd + 1;
   }
@@ -274,7 +282,10 @@ export function parseJUnitRootTotals(rawXml: string): JUnitRootTotals | null {
   const lowerXml = rawXml.replace(/[A-Z]+/g, (run) => run.toLowerCase());
   for (const name of ['testsuite', 'testsuites']) {
     const body = firstOpeningTagBody(rawXml, lowerXml, name);
-    const totals = body === null ? null : totalsFromAttrs(parseTagAttrs(body));
+    if (body === null) continue;
+    const attrs = parseTagAttrs(body);
+    if (attrs === null) return null;
+    const totals = totalsFromAttrs(attrs);
     if (totals !== null) {
       return totals;
     }
@@ -288,51 +299,18 @@ export function summarizeJUnitTotals(totals: JUnitRootTotals): string {
   return `${passed} passed, ${totals.failures} failed, ${totals.errors} errored, ${totals.skipped} skipped${timeText}`;
 }
 
-export interface BuildTestArtifactRecordInput {
-  readonly rawJUnitXml: string;
-  readonly command: readonly string[];
-  readonly exitCode: number;
-  readonly capturedAt: string;
-  readonly repositoryCommit: string;
-  readonly scope: string;
-}
-
-export type BuildTestArtifactRecordResult<R extends TestArtifactRecord = ObservedRunTestArtifactRecord> =
-  | { readonly kind: 'built'; readonly record: R }
-  | { readonly kind: 'unparseable'; readonly reason: string };
-
 const UNPARSEABLE_REASON =
   'the artifact does not contain a recognizable JUnit <testsuite> root element with non-negative integer counts';
 
-function junitDigest(rawJUnitXml: string): string {
-  return `sha256:${createHash('sha256').update(rawJUnitXml, 'utf8').digest('hex')}`;
-}
-
-/** The one seam that ever reads raw JUnit artifact bytes. Everything past
- * this function operates only on the resulting safe {@link TestArtifactRecord}. */
-export function buildTestArtifactRecordFromJUnit(
-  input: BuildTestArtifactRecordInput,
-): BuildTestArtifactRecordResult {
-  const totals = parseJUnitRootTotals(input.rawJUnitXml);
-  if (totals === null) {
-    return { kind: 'unparseable', reason: UNPARSEABLE_REASON };
-  }
-  return {
-    kind: 'built',
-    record: {
-      command: input.command,
-      exitCode: input.exitCode,
-      capturedAt: input.capturedAt,
-      repositoryCommit: input.repositoryCommit,
-      scope: input.scope,
-      digest: junitDigest(input.rawJUnitXml),
-      summary: summarizeJUnitTotals(totals),
-    },
-  };
+/** The digest of the file's own bytes, so it equals `sha256sum` of the
+ * handed-in file even when those bytes are not valid UTF-8. */
+function junitDigest(rawJUnit: Uint8Array): string {
+  return `sha256:${createHash('sha256').update(rawJUnit).digest('hex')}`;
 }
 
 export interface BuildOperatorReportedRecordInput {
-  readonly rawJUnitXml: string;
+  /** The result file's bytes, undecoded. */
+  readonly rawJUnit: Uint8Array;
   readonly command: readonly string[];
   readonly reportedExitCode: number;
   readonly ingestedAt: string;
@@ -341,11 +319,14 @@ export interface BuildOperatorReportedRecordInput {
 }
 
 export type BuildOperatorReportedRecordResult =
-  | BuildTestArtifactRecordResult<OperatorReportedTestArtifactRecord>
+  | { readonly kind: 'built'; readonly record: OperatorReportedTestArtifactRecord }
+  | { readonly kind: 'unparseable'; readonly reason: string }
   | { readonly kind: 'inconsistent'; readonly reason: string };
 
 /**
- * Builds an operator-reported record, parsing the root totals once. The
+ * The one seam that ever reads raw JUnit artifact bytes; everything past it
+ * operates only on the resulting safe record. Builds an operator-reported
+ * record, parsing the root totals once. The
  * reported exit status must agree with the file: status 0 beside a failure
  * or error, or beside zero tests (pytest exits 5 when it collects nothing),
  * is refused rather than recorded. The operator can edit the bytes, so this
@@ -354,7 +335,10 @@ export type BuildOperatorReportedRecordResult =
 export function buildOperatorReportedTestArtifactRecord(
   input: BuildOperatorReportedRecordInput,
 ): BuildOperatorReportedRecordResult {
-  const totals = parseJUnitRootTotals(input.rawJUnitXml);
+  const totals =
+    input.rawJUnit.byteLength > MAX_JUNIT_ARTIFACT_BYTES
+      ? null
+      : parseJUnitRootTotals(Buffer.from(input.rawJUnit).toString('utf8'));
   if (totals === null) {
     return { kind: 'unparseable', reason: UNPARSEABLE_REASON };
   }
@@ -379,7 +363,7 @@ export function buildOperatorReportedTestArtifactRecord(
       ingestedAt: input.ingestedAt,
       repositoryCommit: input.repositoryCommit,
       scope: input.scope,
-      digest: junitDigest(input.rawJUnitXml),
+      digest: junitDigest(input.rawJUnit),
       summary: summarizeJUnitTotals(totals),
     },
   };
@@ -399,11 +383,19 @@ export function buildOperatorReportedTestArtifactRecord(
 export const OPERATOR_REPORTED_DISCLOSURE =
   'Reported by the operator, not verified by Syzygy. Syzygy observed the result file\'s digest and totals, and that HEAD was this commit when the file was ingested. That the tests ran, at this commit, on a clean working tree, with exit status 0, is the operator\'s report, and the working tree\'s state is not checked. RFC5-19: "an artifact of unverifiable origin caps at report-fact however retained, well-formed, and revision-bound it is."';
 
+/**
+ * There is no Verified result. Every record Syzygy can read was written
+ * outside a run Syzygy launched or observed, so the best it supports is
+ * `report-fact` (RFC5-19); a Verified result needs a producer whose
+ * provenance Syzygy observes, and none exists.
+ */
 export type TestArtifactVerificationResult =
   | { readonly kind: 'unknown'; readonly reason: string }
-  | { readonly kind: 'verified'; readonly record: ObservedRunTestArtifactRecord }
   /** Never Verified: an operator-reported run caps at `report-fact` (RFC5-19). */
   | { readonly kind: 'reported'; readonly tier: 'report-fact'; readonly record: OperatorReportedTestArtifactRecord; readonly disclosure: string };
+
+export const UNMARKED_RECORD_REASON =
+  'test artifact record carries no provenance (written by the retired spawning capture, or by hand); Syzygy cannot tell who ran it, so it is not verified';
 
 export interface ResolveTestArtifactVerificationInput {
   readonly record: TestArtifactRecord | null;
@@ -414,10 +406,11 @@ export interface ResolveTestArtifactVerificationInput {
 }
 
 /**
- * Verified appears only when a captured artifact passes and binds to the
- * exact observed changed-or-merged commit (AC3). Missing, mismatched,
- * failed, future-dated, or unreadable evidence renders Unknown — it never
- * upgrades a git-observed change into satisfaction on its own (AC4).
+ * An operator-reported artifact that passes and binds to the exact observed
+ * changed-or-merged commit resolves `reported`, capped at `report-fact`.
+ * Missing, mismatched, failed, future-dated, unmarked or unreadable evidence
+ * renders Unknown; nothing upgrades a git-observed change into satisfaction
+ * (AC4).
  */
 export function resolveTestArtifactVerification(
   input: ResolveTestArtifactVerificationInput,
@@ -480,5 +473,7 @@ export function resolveTestArtifactVerification(
   if (isOperatorReported(input.record)) {
     return { kind: 'reported', tier: 'report-fact', record: input.record, disclosure: OPERATOR_REPORTED_DISCLOSURE };
   }
-  return { kind: 'verified', record: input.record };
+  // Round-2 note 2: an unmarked record fails closed, after the checks above
+  // so a mismatched or failing one still names its own defect.
+  return { kind: 'unknown', reason: UNMARKED_RECORD_REASON };
 }

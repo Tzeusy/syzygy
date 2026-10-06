@@ -71,9 +71,8 @@ function verificationBadge(
   verification: TestArtifactVerificationResult,
   governingIntentId: string | null,
 ): string {
-  if (verification.kind === 'verified' && governingIntentId !== null) {
-    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(governingIntentId)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
-  }
+  // There is no Verified arm: the core resolver has no Verified result,
+  // since no record Syzygy reads comes from a run it launched or observed.
   const id = workerChangeVerificationId(beadId);
   const unknown = unknownSubject(model, id);
   if (verification.kind === 'reported' && governingIntentId !== null) {
@@ -83,7 +82,7 @@ function verificationBadge(
     // never the Observed one and never the word Verified.
     return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" data-evidence-tier="report-fact"${unknownMarker(id, unknown)} title="${escapeHtml(verification.disclosure)}">Verification: Not verified by Syzygy — operator-reported (report-fact): ${escapeHtml(verification.record.summary)}. ${escapeHtml(verification.disclosure)} ${unknownRoute(unknown)}</span>`;
   }
-  if (verification.kind === 'verified' || verification.kind === 'reported') {
+  if (verification.kind === 'reported') {
     return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable. ${unknownRoute(unknown)}</span>`;
   }
   return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="${escapeHtml(verification.reason)}">Verification: Not verified. ${unknownRoute(unknown)}</span>`;

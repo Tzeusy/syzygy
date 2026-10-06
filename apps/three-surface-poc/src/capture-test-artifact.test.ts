@@ -23,7 +23,7 @@ const BASE = {
   junitPath: '/tmp/artifact.xml',
   reportedCommit: COMMIT,
   reportedExitCode: '0',
-  readFile: () => PASSING_JUNIT,
+  readFile: () => Buffer.from(PASSING_JUNIT),
   resolveCommit: () => COMMIT,
   now: () => '2026-08-30T08:00:00Z',
 };
@@ -75,7 +75,7 @@ describe('ingestTestArtifact', () => {
   });
 
   it('records a non-zero exit status faithfully rather than swallowing it', () => {
-    const result = ingestTestArtifact({ ...BASE, reportedExitCode: '1', readFile: () => FAILING_JUNIT });
+    const result = ingestTestArtifact({ ...BASE, reportedExitCode: '1', readFile: () => Buffer.from(FAILING_JUNIT) });
     expect(result.kind).toBe('captured');
     if (result.kind !== 'captured') throw new Error('unreachable');
     expect(result.record.exitCode).toBe(1);
@@ -90,7 +90,7 @@ describe('ingestTestArtifact', () => {
   });
 
   it('refuses a reported exit status of 0 beside failing tests', () => {
-    const result = ingestTestArtifact({ ...BASE, readFile: () => FAILING_JUNIT });
+    const result = ingestTestArtifact({ ...BASE, readFile: () => Buffer.from(FAILING_JUNIT) });
     expect(result).toEqual({
       kind: 'failed',
       reason: 'exit status 0 was reported, but the result file records 1 failed and 0 errored',
@@ -99,7 +99,7 @@ describe('ingestTestArtifact', () => {
 
   it('refuses a reported exit status of 0 beside a run that collected no tests', () => {
     const empty = '<testsuites><testsuite name="pytest" tests="0" failures="0" errors="0" skipped="0" /></testsuites>';
-    const result = ingestTestArtifact({ ...BASE, readFile: () => empty });
+    const result = ingestTestArtifact({ ...BASE, readFile: () => Buffer.from(empty) });
     expect(result).toEqual({
       kind: 'failed',
       reason: 'exit status 0 was reported, but the result file records zero tests; a run that collected nothing verifies nothing',
@@ -114,7 +114,7 @@ describe('ingestTestArtifact', () => {
     ['a fractional count', 'tests="2" failures="0.5"'],
     ['counts above the total', 'tests="1" failures="1" errors="1"'],
   ])('refuses %s as unreadable rather than reading it as zero', (_label, attrs) => {
-    const result = ingestTestArtifact({ ...BASE, readFile: () => `<testsuite name="pytest" ${attrs}>` });
+    const result = ingestTestArtifact({ ...BASE, readFile: () => Buffer.from(`<testsuite name="pytest" ${attrs}>`) });
     expect(result.kind).toBe('failed');
     if (result.kind !== 'failed') throw new Error('unreachable');
     expect(result.reason).toContain('non-negative integer counts');
@@ -152,7 +152,7 @@ describe('ingestTestArtifact', () => {
   });
 
   it('fails when the artifact has no recognizable JUnit root', () => {
-    const result = ingestTestArtifact({ ...BASE, readFile: () => 'not junit xml' });
+    const result = ingestTestArtifact({ ...BASE, readFile: () => Buffer.from('not junit xml') });
     expect(result.kind).toBe('failed');
   });
 });

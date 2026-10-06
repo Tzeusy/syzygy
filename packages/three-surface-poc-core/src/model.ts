@@ -567,8 +567,12 @@ function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknown
       if (verification.kind === 'unknown') add(workerChangeVerificationId(change.beadId), verification.reason, 'missing-evidence');
       else if (verification.kind === 'reported' && input.governingIntentId !== null) {
         // RFC5-19: an operator-reported run caps at report-fact, so the
-        // verification relationship stays Unknown with its disclosure.
-        add(workerChangeVerificationId(change.beadId), verification.disclosure, 'missing-evidence');
+        // verification relationship stays Unknown with its disclosure. The
+        // evidence is present but not believed: what would make it count is
+        // a run Syzygy launches under an approved execution profile, and
+        // without one that run does not launch, which RFC5-18 names
+        // `execution-blocked` (RFC2-24 #12), not `missing-evidence`.
+        add(workerChangeVerificationId(change.beadId), verification.disclosure, 'execution-blocked');
       } else if (input.governingIntentId === null) {
         add(workerChangeVerificationId(change.beadId), 'The captured test artifact has no governing intent identity in this evaluation.', 'reference-unresolvable');
       }
