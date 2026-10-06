@@ -1,0 +1,213 @@
+{
+  "record": "Rule-6 mutants for the polaris-dossier S1 slice (syzygy-qkea.2): the run-configuration, state-directory, run-record, status and CLI predicates, and the daemon entry dispatch guard. Not authority.",
+  "measuredOn": {
+    "commit": "876c7ce45860bf17c0026d4512ce9136f1c45a89",
+    "subjects": [
+      {
+        "path": "apps/syzygy/src/main.ts",
+        "sha256": "f2d347992ff7570499c5ee39dba91133318a205486facb3ba8daf4f99ee988ff"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "da9aa6d7092cd46883600f987911692274814a80638b4c5b6eb8c6907f75b083"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-config.ts",
+        "sha256": "25978fa8d926a588ff127b4c0ed914b613ca13b9f54b84ae31fd60ee0b7e18b2"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-record.ts",
+        "sha256": "2546c888905bec2e01cefc6cd51117211944781faf7490b9ddab27d43c6de43f"
+      },
+      {
+        "path": "packages/polaris-dossier/src/state-directory.ts",
+        "sha256": "8ca1229da7a24083962e1b37c761c93fe217051d94c7149c135eba54ba6655ed"
+      },
+      {
+        "path": "packages/polaris-dossier/src/status.ts",
+        "sha256": "4a8055028836235de0f02d01c4e97c03dcbb5d55c60c0c9a15c78ff42a3a678f"
+      },
+      {
+        "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+        "sha256": "4075ac243ef2bc53636ffdf55b5849122d8e5d49dad87ed886427613a254bbf8"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.test.ts",
+        "sha256": "254e6355abb36ae52ba187aa62cd46397e42a531e89fce15b6ccc6d70c94accd"
+      },
+      {
+        "path": "packages/polaris-dossier/src/run-config.test.ts",
+        "sha256": "ff0c4f9c8f3ea6ceb51852bf9b201e847e4111701fe2151476cdd410bab00763"
+      },
+      {
+        "path": "packages/polaris-dossier/src/state-directory.test.ts",
+        "sha256": "8e51a7c11a65d596a251bbaf2455b8f0c549821d163914e2d1092e6ac0116b4e"
+      },
+      {
+        "path": "packages/polaris-dossier/src/status.test.ts",
+        "sha256": "ef6568961623841314ea39791382f7ed8c8841b05aa1cdc3d1ef003d4fbbe095"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in one file of the S1 worktree at `commit`, runs `command` from the worktree root, then restores the file. A mutant is killed only when the replacement applied and the command exits nonzero. System mutants rebuild first, because the system test runs the compiled entry.",
+  "result": {
+    "killed": 14,
+    "total": 14
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "suite": "system",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "if (argv[0] === 'dossier') {",
+      "new": "if (argv.includes('dossier')) {",
+      "command": "npm run build --silent && npx vitest run --config packages/cap1-system/vitest.config.ts daemon-entry-unchanged",
+      "exit": 1,
+      "tests": "2 failed | 11 passed (13)",
+      "killed": true
+    },
+    {
+      "id": "M2",
+      "suite": "system",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "  --help              print this usage and exit\n`;",
+      "new": "  --help              print this usage and exit.\n`;",
+      "command": "npm run build --silent && npx vitest run --config packages/cap1-system/vitest.config.ts daemon-entry-unchanged",
+      "exit": 1,
+      "tests": "9 failed | 4 passed (13)",
+      "killed": true
+    },
+    {
+      "id": "M3",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "limit(fields, 'agentTokenBudget', { optional: true, zeroAllowed: false }",
+      "new": "limit(fields, 'agentTokenBudget', { optional: true, zeroAllowed: true }",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 115 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M4",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "if (value === null || (typeof value === 'string' && UNLIMITED_WORDS.has(value.trim().toLowerCase()))) {\n    refuse('unlimited', field,",
+      "new": "if (false) {\n    refuse('unlimited', field,",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "4 failed | 113 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M5",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "    if (key === 'executionChoice') {",
+      "new": "    if (key === 'executionChoiceX') {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 116 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M6",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "if (!Number.isSafeInteger(value)) { refuse('non-integer'",
+      "new": "if (!Number.isFinite(value)) { refuse('non-integer'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "5 failed | 112 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M7",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "  if (total === 0) { refuse('zero', 'deadline'",
+      "new": "  if (total < 0) { refuse('zero', 'deadline'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 115 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M8",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "old": "rule: { readonly optional: boolean; readonly zeroAllowed: boolean }, refuse: Refuse): number | undefined {\n  if (!Object.hasOwn(fields, field)) {\n    if (!rule.optional) refuse(",
+      "new": "rule: { readonly optional: boolean; readonly zeroAllowed: boolean }, refuse: Refuse): number | undefined {\n  if (!Object.hasOwn(fields, field)) {\n    if (false) refuse(",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 115 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M9",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/state-directory.ts",
+      "old": "  if (within(root.realPath, repo.realPath)) {",
+      "new": "  if (false) {",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "5 failed | 112 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M10",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/state-directory.ts",
+      "old": "  const root = resolvePathIntent(stateRoot);",
+      "new": "  const root = { resolved: true as const, realPath: path.resolve(stateRoot) };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 115 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M11",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": "|| principal['declaredBy'] !== 'operator' || principal['credentialIdentity'] !== 'Unknown'",
+      "new": "|| principal['declaredBy'] !== 'operator'",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 116 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M12",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "old": "    || fields['label'] !== 'Inferred' ",
+      "new": "    ",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "1 failed | 116 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M13",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "    return EXIT.usage;\n  };",
+      "new": "    return EXIT.refused;\n  };",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "8 failed | 109 passed (117)",
+      "killed": true
+    },
+    {
+      "id": "M14",
+      "suite": "unit",
+      "file": "packages/polaris-dossier/src/status.ts",
+      "old": "      label: 'Inferred',\n      basis:",
+      "new": "      label: 'Observed' as 'Inferred',\n      basis:",
+      "command": "npx vitest run --project @syzygy/polaris-dossier",
+      "exit": 1,
+      "tests": "2 failed | 115 passed (117)",
+      "killed": true
+    }
+  ]
+}

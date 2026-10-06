@@ -1,0 +1,300 @@
+{
+  "record": "Golden capture for the polaris-dossier S1 daemon-entry test (syzygy-qkea.2): the built apps/syzygy entry observed from outside, before the dossier dispatch guard and after it. The literals in packages/cap1-system/src/daemon-entry-unchanged.system.test.ts are copied from `before`. Not authority.",
+  "method": "`captureScript` below, run with node against each built checkout: `before` is a clean worktree at the base commit after `npm ci && npm run build`; `after` is the S1 worktree after `npm run build`. Environment variables named SYZYGY_* are removed. Temporary directories are masked as <TMP>, the working directory as <BASE> or <CWD>, the state directory as <STATE> and the bound port as <PORT>.",
+  "before": {
+    "commit": "55daf6ceafe9e3622653beb4110284729e82d911",
+    "results": {
+      "help": {
+        "args": [
+          "--help"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "help-short": {
+        "args": [
+          "-h"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "dossier": {
+        "args": [
+          "dossier"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "dossier-status": {
+        "args": [
+          "dossier",
+          "status",
+          "x"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "unknown-flag": {
+        "args": [
+          "--bogus"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: --bogus\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "help-then-dossier": {
+        "args": [
+          "--help",
+          "dossier"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "dossier-not-first": {
+        "args": [
+          "--port",
+          "0",
+          "dossier"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "dossier-uppercase": {
+        "args": [
+          "Dossier"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: Dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "port-missing-value": {
+        "args": [
+          "--port"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: --port requires a value\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "port-out-of-range": {
+        "args": [
+          "--port",
+          "70000"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: port must be an integer in [0, 65535]; got `70000`\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "state-in-governed": {
+        "args": [
+          "--root",
+          "<TMP>/root",
+          "--state-dir",
+          "<TMP>/root/.syzygy/x"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: state directory <BASE>/root/.syzygy/x lies inside the governed plane (<BASE>/root/.syzygy); choose a location outside openspec/ and .syzygy/\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "no-arguments": {
+        "args": [],
+        "env": {
+          "SYZYGY_PORT": "0"
+        },
+        "rootStatus": 200,
+        "exit": 0,
+        "stdout": "syzygy daemon listening at http://127.0.0.1:<PORT>/\nobserved root: <CWD>\nmachine credential (minted) at: <STATE>/machine-credential.token\nthe credential value is never printed; read the file to authenticate machine requests.\nsyzygy daemon: SIGINT received, shutting down\n",
+        "stderr": "",
+        "stateWhileRunning": [
+          "f 600 machine-credential.token"
+        ],
+        "stateAfterExit": [
+          "f 600 machine-credential.token"
+        ]
+      },
+      "explicit-flags": {
+        "args": [
+          "--root",
+          "<TMP>/root",
+          "--state-dir",
+          "<TMP>/state",
+          "--port",
+          "0"
+        ],
+        "env": {},
+        "rootStatus": 200,
+        "exit": 0,
+        "stdout": "syzygy daemon listening at http://127.0.0.1:<PORT>/\nobserved root: <CWD>/root\nmachine credential (minted) at: <STATE>/machine-credential.token\nthe credential value is never printed; read the file to authenticate machine requests.\nsyzygy daemon: SIGINT received, shutting down\n",
+        "stderr": "",
+        "stateWhileRunning": [
+          "f 600 machine-credential.token"
+        ],
+        "stateAfterExit": [
+          "f 600 machine-credential.token"
+        ]
+      }
+    }
+  },
+  "after": {
+    "commit": "876c7ce45860bf17c0026d4512ce9136f1c45a89",
+    "note": "the S1 code commit; the after build is the working tree at that commit",
+    "results": {
+      "help": {
+        "args": [
+          "--help"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "help-short": {
+        "args": [
+          "-h"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "dossier": {
+        "args": [
+          "dossier"
+        ],
+        "status": 2,
+        "stdout": "",
+        "stderr": "syzygy dossier: a command is required\n\nsyzygy dossier — operator-agent dossier runs\n\nUsage: syzygy dossier <command> [--json] [arguments]\n\nCommands:\n  status <run>        report a run's state, limits spent, open findings and\n                      reviews still required, from its run directory\n  help                print this usage and exit\n\nEvery value status reports comes from files the agent sessions can write,\nand is labelled Inferred. --json prints the same content as one JSON document.\nExit status: 0 clean, 1 refusal, 2 usage error.\n"
+      },
+      "dossier-status": {
+        "args": [
+          "dossier",
+          "status",
+          "x"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "command: status\noutcome: refused\nreason: run directory <BASE>/x cannot be read (ENOENT)\n"
+      },
+      "unknown-flag": {
+        "args": [
+          "--bogus"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: --bogus\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "help-then-dossier": {
+        "args": [
+          "--help",
+          "dossier"
+        ],
+        "status": 0,
+        "stdout": "syzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n",
+        "stderr": ""
+      },
+      "dossier-not-first": {
+        "args": [
+          "--port",
+          "0",
+          "dossier"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "dossier-uppercase": {
+        "args": [
+          "Dossier"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: unknown argument: Dossier\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "port-missing-value": {
+        "args": [
+          "--port"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: --port requires a value\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "port-out-of-range": {
+        "args": [
+          "--port",
+          "70000"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: port must be an integer in [0, 65535]; got `70000`\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "state-in-governed": {
+        "args": [
+          "--root",
+          "<TMP>/root",
+          "--state-dir",
+          "<TMP>/root/.syzygy/x"
+        ],
+        "status": 1,
+        "stdout": "",
+        "stderr": "syzygy daemon: state directory <BASE>/root/.syzygy/x lies inside the governed plane (<BASE>/root/.syzygy); choose a location outside openspec/ and .syzygy/\n\nsyzygy — Capability 1 local daemon\n\nUsage: node apps/syzygy/dist/main.js [options]\n\nOptions:\n  --root <dir>        observed repository root (env SYZYGY_OBSERVED_ROOT; default: cwd)\n  --state-dir <dir>   daemon state directory (env SYZYGY_STATE_DIR;\n                      default: <root>/.syzygy-daemon-state);\n                      refused if inside <root>/openspec or <root>/.syzygy\n  --port <n>          TCP port, 0 for ephemeral (env SYZYGY_PORT; default: 7477)\n  --help              print this usage and exit\n"
+      },
+      "no-arguments": {
+        "args": [],
+        "env": {
+          "SYZYGY_PORT": "0"
+        },
+        "rootStatus": 200,
+        "exit": 0,
+        "stdout": "syzygy daemon listening at http://127.0.0.1:<PORT>/\nobserved root: <CWD>\nmachine credential (minted) at: <STATE>/machine-credential.token\nthe credential value is never printed; read the file to authenticate machine requests.\nsyzygy daemon: SIGINT received, shutting down\n",
+        "stderr": "",
+        "stateWhileRunning": [
+          "f 600 machine-credential.token"
+        ],
+        "stateAfterExit": [
+          "f 600 machine-credential.token"
+        ]
+      },
+      "explicit-flags": {
+        "args": [
+          "--root",
+          "<TMP>/root",
+          "--state-dir",
+          "<TMP>/state",
+          "--port",
+          "0"
+        ],
+        "env": {},
+        "rootStatus": 200,
+        "exit": 0,
+        "stdout": "syzygy daemon listening at http://127.0.0.1:<PORT>/\nobserved root: <CWD>/root\nmachine credential (minted) at: <STATE>/machine-credential.token\nthe credential value is never printed; read the file to authenticate machine requests.\nsyzygy daemon: SIGINT received, shutting down\n",
+        "stderr": "",
+        "stateWhileRunning": [
+          "f 600 machine-credential.token"
+        ],
+        "stateAfterExit": [
+          "f 600 machine-credential.token"
+        ]
+      }
+    }
+  },
+  "comparison": {
+    "help": "identical",
+    "help-short": "identical",
+    "dossier": "differs",
+    "dossier-status": "differs",
+    "unknown-flag": "identical",
+    "help-then-dossier": "identical",
+    "dossier-not-first": "identical",
+    "dossier-uppercase": "identical",
+    "port-missing-value": "identical",
+    "port-out-of-range": "identical",
+    "state-in-governed": "identical",
+    "no-arguments": "identical",
+    "explicit-flags": "identical"
+  },
+  "captureScriptSha256": "70f32fc12f04626a3e0810072103f69130c1db2a025202c917cda5d407105290",
+  "captureScript": "// Capture the daemon entry's observable behaviour from a BUILT checkout.\n// Usage: node capture-goldens.mjs <repo-root-with-built-apps/syzygy>\nimport { spawn, spawnSync } from 'node:child_process';\nimport { mkdtempSync, mkdirSync, writeFileSync, readdirSync, statSync, rmSync } from 'node:fs';\nimport { tmpdir } from 'node:os';\nimport * as path from 'node:path';\n\nconst repo = path.resolve(process.argv[2]);\nconst entry = path.join(repo, 'apps', 'syzygy', 'dist', 'main.js');\nconst env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('SYZYGY_')));\n\nfunction fixture(root) {\n  mkdirSync(path.join(root, '.syzygy', 'governance', 'decisions'), { recursive: true });\n  mkdirSync(path.join(root, '.syzygy', 'intent'), { recursive: true });\n  mkdirSync(path.join(root, 'openspec'), { recursive: true });\n  writeFileSync(path.join(root, 'README.md'), '# fixture readme\\n');\n}\nfunction sweep(dir, base = dir) {\n  const out = [];\n  for (const name of readdirSync(dir).sort()) {\n    const p = path.join(dir, name); const s = statSync(p);\n    const rel = path.relative(base, p);\n    out.push(`${s.isDirectory() ? 'd' : 'f'} ${(s.mode & 0o777).toString(8)} ${rel}`);\n    if (s.isDirectory()) out.push(...sweep(p, base));\n  }\n  return out;\n}\nconst mask = (t, map) => {\n  for (const [k, v] of map) t = t.split(k).join(v);\n  return t.replace(/127\\.0\\.0\\.1:\\d+/g, '127.0.0.1:<PORT>');\n};\nconst results = {};\nfunction sync(name, args, cwd) {\n  const r = spawnSync(process.execPath, [entry, ...args], { cwd, env, encoding: 'utf8' });\n  results[name] = { args, status: r.status, stdout: mask(r.stdout, [[cwd, '<BASE>']]), stderr: mask(r.stderr, [[cwd, '<BASE>']]) };\n}\nconst base = mkdtempSync(path.join(tmpdir(), 'syz-golden-'));\nconst root = path.join(base, 'root'); fixture(root);\nsync('help', ['--help'], base);\nsync('help-short', ['-h'], base);\nsync('dossier', ['dossier'], base);\nsync('dossier-status', ['dossier', 'status', 'x'], base);\nsync('unknown-flag', ['--bogus'], base);\nsync('help-then-dossier', ['--help', 'dossier'], base);\nsync('dossier-not-first', ['--port', '0', 'dossier'], base);\nsync('dossier-uppercase', ['Dossier'], base);\nsync('port-missing-value', ['--port'], base);\nsync('port-out-of-range', ['--port', '70000'], base);\nsync('state-in-governed', ['--root', root, '--state-dir', path.join(root, '.syzygy', 'x')], base);\n\nasync function run(name, args, cwd, extraEnv, stateDir) {\n  const child = spawn(process.execPath, [entry, ...args], { cwd, env: { ...env, ...extraEnv }, stdio: ['ignore', 'pipe', 'pipe'] });\n  let out = '', err = '';\n  child.stdout.setEncoding('utf8').on('data', (c) => (out += c));\n  child.stderr.setEncoding('utf8').on('data', (c) => (err += c));\n  const exited = new Promise((r) => child.once('exit', r));\n  const deadline = Date.now() + 30000;\n  while (!/listening at http:\\/\\/127\\.0\\.0\\.1:\\d+\\//.test(out)) {\n    if (Date.now() > deadline) throw new Error(`no announce: ${out}\\n${err}`);\n    await new Promise((r) => setTimeout(r, 50));\n  }\n  const port = /127\\.0\\.0\\.1:(\\d+)/.exec(out)[1];\n  const status = (await fetch(`http://127.0.0.1:${port}/`)).status;\n  const whileRunning = sweep(stateDir);\n  child.kill('SIGINT');\n  const code = await exited;\n  results[name] = { args, env: extraEnv, rootStatus: status, exit: code,\n    stdout: mask(out, [[stateDir, '<STATE>'], [cwd, '<CWD>']]), stderr: mask(err, [[stateDir, '<STATE>'], [cwd, '<CWD>']]),\n    stateWhileRunning: whileRunning, stateAfterExit: sweep(stateDir) };\n}\nawait run('no-arguments', [], root, { SYZYGY_PORT: '0' }, path.join(root, '.syzygy-daemon-state'));\nconst sd = path.join(base, 'state');\nawait run('explicit-flags', ['--root', root, '--state-dir', sd, '--port', '0'], base, {}, sd);\nrmSync(base, { recursive: true, force: true });\nprocess.stdout.write(JSON.stringify({ repoHead: spawnSync('git', ['-C', repo, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), results }, null, 2) + '\\n');\n"
+}
