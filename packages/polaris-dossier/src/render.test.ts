@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { evaluateDossier, parseDossierManifest, scanDossierPage } from '@syzygy/polaris-generation-core';
+import { evaluateDossier, excludedSourceId, parseDossierManifest, scanDossierPage } from '@syzygy/polaris-generation-core';
 import { issueBrief } from './brief.js';
 import { checkDraft, type CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
@@ -704,6 +704,20 @@ describe('rendered-design review (S9b)', () => {
     expect(first.report.sources.excluded).toBe(1);
     expect(outside(readSite(second.report.site))).toEqual(outside(readSite(first.report.site)));
     expect(second.report.designReview.packetSha256).toBe(first.report.designReview.packetSha256);
+  });
+
+  it('keys an excluded cited file by the run, the pinned revision and its path alone, never its body or object', async () => {
+    const doc = draft();
+    doc.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: 'The project states: "Deploy notes."', citations: [cite('c-p2', 'docs/deploy.md', 1, 1)], quotations: ['c-p2'], children: [] };
+    const run = await prepared(doc, false);
+    const { renderer, inputs } = capturing();
+    const result = await renderRun(run, renderDeps({ renderer }));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    const excluded = inputs[0].sources.filter((source) => source.exclusion.excluded);
+    expect(excluded.map((source) => source.path)).toEqual(['docs/deploy.md']);
+    const key = createHash('sha256').update(`polaris-dossier excluded-source key\u0000${RUN_ID}\u0000${commit}`).digest();
+    expect(excluded[0].sourceId).toBe(excludedSourceId(key, 'docs/deploy.md'));
+    expect(excluded[0].sourceId).not.toBe(excludedSourceId(key, `docs/deploy.md\u0000${objectIds['docs/deploy.md']}`));
   });
 
   it('drives the design review through the CLI', async () => {
