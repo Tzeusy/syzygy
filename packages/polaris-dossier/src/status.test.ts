@@ -72,7 +72,7 @@ describe('status (REQ-polaris-generation-033)', () => {
         repairCycles: '0 checked revisions recorded of 2 repair cycles declared',
         questions: 'not recorded of 0 declared',
         deadline: 'PT3H; not started (no brief recorded)',
-        agentUsage: 'not recorded; Syzygy cannot observe the agent sessions\' usage',
+        agentUsage: 'not recorded; Syzygy cannot observe the agent sessions\' usage, and the run is not closed',
       },
       openFindings: 'not recorded',
       reviewsStillRequired: ['inventory', 'fidelity review', 'rendered-design review'],

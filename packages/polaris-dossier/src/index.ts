@@ -85,3 +85,7 @@ export {
   stateRootViolation, type CreateRunResult, type RunPorts,
 } from './state-directory.js';
 export { NOT_RECORDED, NO_ROUTE, runStatus, type RunState, type StatusReport, type StatusResult } from './status.js';
+export {
+  EXECUTION_RECORD_FORMAT, NO_CREDENTIAL_ISSUED, NO_PROVIDER_CALL, USAGE_NOT_RECORDED, closeRun, parseUsageFigure,
+  type AgentUsage, type CloseDeps, type CloseReport, type CloseRequest, type CloseResult, type CloseStage,
+} from './close.js';
