@@ -124,15 +124,29 @@ describe('close (S10)', () => {
     const text = fs.readFileSync(path.join(run, 'record.json'), 'utf8');
     const record = JSON.parse(text);
     expect(record.reportedCommands).toMatchObject({ draftRevision: 0, reportedBy: 'the authoring agent', label: 'Inferred', count: 3, withheld: 2 });
-    // A withheld command stays counted, by the digest of what the agent reported, computed here from the fixture's own literals.
-    const digest = (...fields: string[]): string => createHash('sha256').update(JSON.stringify(fields)).digest('hex');
+    // A withheld command stays counted by its position and the reason, and nothing else of it is kept.
     const WITHHELD = '[withheld: a secret detector matches this text]';
     expect(record.reportedCommands.commands).toEqual([
-      { id: 'x-1', command: 'git log --oneline -1', workingDirectory: 'the clone' },
-      { withheld: WITHHELD, sha256: digest('x-2', `curl -H 'Authorization: token ${PLANTED_SECRET}' https://api.github.com/user`, 'the clone') },
-      { withheld: WITHHELD, sha256: digest('x-3', 'ls', `/tmp/${PLANTED_SECRET}`) },
+      { position: 1, id: 'x-1', command: 'git log --oneline -1', workingDirectory: 'the clone' },
+      { position: 2, withheld: WITHHELD, reason: 'secret-detector-match' },
+      { position: 3, withheld: WITHHELD, reason: 'secret-detector-match' },
     ]);
     expect(text).not.toContain(PLANTED_SECRET);
+    // No byte of a withheld command, and no unkeyed digest of it, appears anywhere in the record: its fields one by one, joined, as a
+    // JSON tuple, and the secret alone, each under every common hash in hex and base64. The ids are distinctive enough to sweep as
+    // bytes; 'ls' and 'the clone' are not, since the admitted command's row carries the latter.
+    const withheld = [
+      ['x-2', `curl -H 'Authorization: token ${PLANTED_SECRET}' https://api.github.com/user`, 'the clone'],
+      ['x-3', 'ls', `/tmp/${PLANTED_SECRET}`],
+    ];
+    const inputs = [PLANTED_SECRET, ...withheld.flatMap((fields) => [...fields, fields.join(''), fields.join(' '), fields.join('\u0000'), JSON.stringify(fields)])];
+    const digests = inputs.flatMap((input) => ['sha256', 'sha1', 'md5', 'sha512', 'sha384'].flatMap((algorithm) => {
+      const raw = createHash(algorithm).update(input).digest();
+      return [raw.toString('hex'), raw.toString('base64'), raw.toString('base64url')];
+    }));
+    expect(digests).toHaveLength(inputs.length * 15);
+    expect(digests.filter((value) => text.includes(value))).toEqual([]);
+    expect(withheld.flatMap(([id, command, workingDirectory]) => [id!, command!, workingDirectory!]).filter((value) => value.length > 9 || value.startsWith('x-')).filter((value) => text.includes(value))).toEqual([]);
     // No body of a prompt, brief or packet Syzygy wrote: no line of eight words or more from any of them appears in the record, except
     // the adopted doctrine the execution rule quotes, which the run record must carry verbatim.
     const quoted = JSON.stringify(record.executionRule);
