@@ -527,6 +527,9 @@ export interface DigestBoundActForm {
   /** Stems a decisions file carries when it names this act: any other file that carries one, or the artifact path, refuses the read
    * (a withdrawal, or a form this reader does not define). The aggregate acceptance record is exempt except on its field lines. */
   readonly stems: readonly string[];
+  /** For an artifact that binds other files' bytes in turn (an in-force record): the files its one `| File | SHA-256 |` table must
+   * list, exactly and in order. The act then counts only while each listed file still hashes to its row. */
+  readonly bound?: readonly string[];
 }
 export type DigestBoundAct = { readonly act: ParsedAct; readonly artifactDigest: string; readonly artifactText: string };
 
@@ -541,13 +544,47 @@ export const REGISTRY_GIT_SOURCE_ACT_FORM: DigestBoundActForm = Object.freeze({
   stems: Object.freeze(['public-admission-registry-git-source']),
 });
 
-function namesDigestBoundAct(form: DigestBoundActForm, rel: string, text: string): boolean {
+function namesDigestBoundAct(form: { readonly stems: readonly string[] }, artifact: string, rel: string, text: string): boolean {
   if (form.stems.some(stem => carries(rel, stem))) return true;
-  if (rel !== AGGREGATE_RECORD && [...form.stems, form.artifact].some(needle => carries(text, needle))) return true;
+  if (rel !== AGGREGATE_RECORD && [...form.stems, artifact].some(needle => carries(text, needle))) return true;
   return fold(text).split('\n').some(line => {
     const field = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity)\s*\**\s*:\s*(.*)$/u.exec(line);
-    return field !== null && [...form.stems, form.artifact].some(needle => carries(field[2]!, needle));
+    return field !== null && [...form.stems, artifact].some(needle => carries(field[2]!, needle));
   });
+}
+
+/** The one record a form names, after the withdrawal sweep over every other decisions file: its text, null when absent, or why the
+ * sweep refuses. */
+async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[] }, artifact: string): Promise<{ readonly text: string | null } | { readonly why: string }> {
+  const files = await walk(fs, path.join(root, DECISIONS_DIR)), swept = sweepText(fs, root);
+  let found: string | null = null;
+  for (const rel of files) {
+    let text: string;
+    try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
+    if (rel === form.file) { found = text; continue; }
+    if (namesDigestBoundAct(form, artifact, rel, await swept(rel, text))) return { why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define` };
+  }
+  return { text: found };
+}
+
+/** Why the artifact's bound-files table does not hold for `bound`, or null when every listed file still hashes to its row. */
+async function boundMismatch(fs: PackageReaderFs, root: string, artifact: string, bound: readonly string[]): Promise<string | null> {
+  const HEAD = '| File | SHA-256 |';
+  const lines = outsideFences(artifact).split('\n'), at = lines.flatMap((line, i) => (line === HEAD ? [i] : []));
+  if (at.length !== 1 || artifact.split('\n').filter(line => line === HEAD).length !== 1 || lines[at[0]! + 1] !== '|---|---|') return 'the act\'s artifact does not carry exactly one bound-files table';
+  const rows: (readonly [string, string])[] = [];
+  for (const line of lines.slice(at[0]! + 2)) {
+    const row = /^\| `([^`\n]+)` \| `([0-9a-f]{64})` \|$/.exec(line);
+    if (row === null) break;
+    rows.push([row[1]!, row[2]!]);
+  }
+  if (rows.length !== bound.length || rows.some(([file], i) => file !== bound[i])) return `the act's artifact binds ${rows.map(([file]) => file).join(', ') || 'no file'}, not exactly ${bound.join(', ')}`;
+  for (const [file, digest] of rows) {
+    let text: string;
+    try { text = await fs.readFile(path.join(root, file)); } catch { return `the bound file ${file} cannot be read`; }
+    if (sha256(text) !== digest) return `the bytes of ${file} differ from the digest the act's artifact binds`;
+  }
+  return null;
 }
 
 /** The act `form` describes, cross-checked at `now` under RFC3-16(a): `ok` when its record exists in the recorder's form, binds the
@@ -556,16 +593,10 @@ function namesDigestBoundAct(form: DigestBoundActForm, rel: string, text: string
 export function readDigestBoundActState(options: StrictReadOptions & { readonly form: DigestBoundActForm }): Promise<ActState<DigestBoundAct>> {
   return strict<DigestBoundAct>(async () => {
     const fs = options.fs ?? nodeFs, form = options.form;
-    const files = await walk(fs, path.join(options.root, DECISIONS_DIR)), swept = sweepText(fs, options.root);
-    let found: string | null = null;
-    for (const rel of files) {
-      let text: string;
-      try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, rel)); } catch { return refuse(); }
-      if (rel === form.file) { found = text; continue; }
-      if (namesDigestBoundAct(form, rel, await swept(rel, text))) return { state: 'refused', why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define` };
-    }
-    if (found === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
-    const text = found;
+    const found = await findActRecord(fs, options.root, form, form.artifact);
+    if ('why' in found) return { state: 'refused', why: found.why };
+    if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
+    const text = found.text;
     if (!text.startsWith(`${form.title}\n`)) refuse();
     const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), identity = one(text, /^Act identity: `([^`\n]+)`$/gm), type = one(text, /^Act type: `([^`\n]+)`$/gm);
     const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
@@ -575,7 +606,60 @@ export function readDigestBoundActState(options: StrictReadOptions & { readonly 
     let artifactText: string;
     try { artifactText = await fs.readFile(path.join(options.root, form.artifact)); } catch { return { state: 'refused', why: `the act's artifact ${form.artifact} cannot be read` }; }
     if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.artifact} differ from the act's argument` };
+    const unbound = form.bound === undefined ? null : await boundMismatch(fs, options.root, artifactText, form.bound);
+    if (unbound !== null) return { state: 'refused', why: unbound };
     if (act.recordedAt > options.now) return { state: 'absent', why: `the act ${identity} is not in force yet` };
+    return { state: 'ok', act, artifactDigest: digest, artifactText };
+  });
+}
+
+/** A registry entry signed off by version tag (scripts/record_versioned_signoff.py, Scope A as the owner extends it): the one decisions
+ * record the recorder writes for the package at one version, and the entry it installs. The record names the installed entry and the
+ * SHA-256 of its installed bytes; that is the argument the cross-check holds the entry to. */
+export interface VersionedSignoffForm {
+  readonly file: string;
+  readonly title: string;
+  readonly packageKey: string;
+  readonly version: string;
+  readonly kind: string;
+  readonly installed: string;
+  /** As `DigestBoundActForm.stems`; the installed entry's path is swept too. */
+  readonly stems: readonly string[];
+}
+
+/** The local-agent public Git source-acquisition entry, version 1.0 of its package (row 2 of the local-agent Redis sitting). */
+export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = Object.freeze({
+  file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md',
+  title: '# Public Git source acquisition, local-agent version — version-tagged sign-off v1.0',
+  packageKey: 'public-git-source-acquisition-local-agent',
+  version: '1.0',
+  kind: 'registry entry',
+  installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
+  stems: Object.freeze(['public-git-source-acquisition-local-agent-signoff']),
+});
+
+/** The sign-off `form` describes, cross-checked at `now` under RFC3-16(a) as `readDigestBoundActState` does: `ok` when the record
+ * exists in the recorder's form, names the form's package, version, tag and installed entry, the entry's current bytes hash to the
+ * SHA-256 it records, and its instant is not after `now`. The act's identity is the tag. */
+export function readVersionedSignoffState(options: StrictReadOptions & { readonly form: VersionedSignoffForm }): Promise<ActState<DigestBoundAct>> {
+  return strict<DigestBoundAct>(async () => {
+    const fs = options.fs ?? nodeFs, form = options.form;
+    const found = await findActRecord(fs, options.root, form, form.installed);
+    if ('why' in found) return { state: 'refused', why: found.why };
+    if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
+    const text = found.text, tag = `${form.packageKey}-v${form.version}`;
+    if (!text.startsWith(`${form.title}\n`)) refuse();
+    const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), day = Date.parse(`${date}T00:00:00Z`);
+    const fields = [one(text, /^Package: (.+)$/gm), one(text, /^Version: (.+)$/gm), one(text, /^Tag: (.+)$/gm), one(text, /^Kind: (.+)$/gm), one(text, /^Installed entry: (.+)$/gm)];
+    one(text, /^Review verdict: (CONFIRM|CONFIRM WITH EXCEPTIONS)$/gm);
+    const type = one(text, /^Act type: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Installed entry SHA-256: ([0-9a-f]{64})$/gm);
+    if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date || type !== 'adopt-registry-entry'
+      || fields.join('\n') !== [form.packageKey, form.version, tag, form.kind, form.installed].join('\n')) refuse();
+    const act: ParsedAct = { file: form.file, identity: tag, type, artifact: form.installed, project, digest, date, recordedAt: actInstant(text, date), supersession: supersessionText(text), text };
+    let artifactText: string;
+    try { artifactText = await fs.readFile(path.join(options.root, form.installed)); } catch { return { state: 'refused', why: `the signed entry ${form.installed} cannot be read` }; }
+    if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.installed} differ from the SHA-256 the sign-off records` };
+    if (act.recordedAt > options.now) return { state: 'absent', why: `the sign-off ${tag} is not in force yet` };
     return { state: 'ok', act, artifactDigest: digest, artifactText };
   });
 }

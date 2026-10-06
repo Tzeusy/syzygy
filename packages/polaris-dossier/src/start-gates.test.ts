@@ -4,8 +4,8 @@ import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DECISIONS_DIR, INSTANCES_DIR, POLICY_PATH, REGISTRY_GIT_SOURCE_ACT_FORM } from '@syzygy/polaris-generation-consent';
-import { renderPolicyAct, renderRecorderAct, renderRegistryAct } from '@syzygy/polaris-generation-consent/testing';
+import { DECISIONS_DIR, INSTANCES_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, POLICY_PATH } from '@syzygy/polaris-generation-consent';
+import { renderDossierLocalAgentAct, renderLocalAgentSignoff, renderPolicyAct, renderRecorderAct } from '@syzygy/polaris-generation-consent/testing';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { runDossierCli } from './cli.js';
 import { createPackageGateSources, type ProjectInputSource, type ProviderStatementRecord, type ProviderStatementSource } from './gate-sources.js';
@@ -95,8 +95,22 @@ const ENTRY = `${JSON.stringify({ entries: [{ observerId: 'polaris-dossier-reade
 const POLICY = `${JSON.stringify({ policyId: 'fixture', publicSourceScope: { classes: ['code-content'] } }, null, 2)}\n`;
 const CONSENT_PATH = `${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md`;
 const CONSENT_ACT = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
-const REGISTRY_ACT = `${DECISIONS_DIR}/${REGISTRY_GIT_SOURCE_ACT_FORM.file}`;
+const ENTRY_PATH = LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.installed;
+const REGISTRY_ACT = `${DECISIONS_DIR}/${LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.file}`;
 const POLICY_ACT = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`;
+
+/** The local-agent entry's v1.0 sign-off record as the recorder renders it over `entry` installed. */
+const signoffs = new Map<string, string>();
+const signoffOver = (entry: string): string => {
+  const hit = signoffs.get(entry);
+  if (hit !== undefined) return hit;
+  const scratch = tempDir('dossier-signoff-');
+  fs.mkdirSync(path.dirname(path.join(scratch, ENTRY_PATH)), { recursive: true });
+  fs.writeFileSync(path.join(scratch, ENTRY_PATH), entry);
+  const text = renderLocalAgentSignoff(scratch, '2026-10-05', '2026-10-05T09:30:00Z');
+  signoffs.set(entry, text);
+  return text;
+};
 
 /** The records every gate needs, in force at NOW; `over` replaces or (with null) removes a file, `rows` replaces the consented revisions. */
 const records = (over: Record<string, string | null> = {}, rows?: readonly [string, string][]): string => {
@@ -104,8 +118,8 @@ const records = (over: Record<string, string | null> = {}, rows?: readonly [stri
   const files: Record<string, string | null> = {
     [CONSENT_PATH]: consent,
     [CONSENT_ACT]: renderRecorderAct('redis-observation', sha(consent), '2026-10-04', '2026-10-04T09:30:00Z'),
-    [REGISTRY_GIT_SOURCE_ACT_FORM.artifact]: ENTRY,
-    [REGISTRY_ACT]: renderRegistryAct(sha(ENTRY), '2026-10-05', '2026-10-05T09:30:00Z'),
+    [ENTRY_PATH]: ENTRY,
+    [REGISTRY_ACT]: signoffOver(ENTRY),
     [POLICY_PATH]: POLICY,
     [POLICY_ACT]: renderPolicyAct(sha(POLICY), '2026-10-04', '2026-10-04T10:00:00Z'),
     ...over,
@@ -158,7 +172,7 @@ describe('init: a run that passes every start gate', () => {
       repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
       clone: { path: clone, declaredBy: 'operator', label: 'Inferred', use: 'read' },
       pinnedRevision: { commit: commits.A, label: 'fixture-a', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T12:00:00.000Z' },
-      startGates: { registryEntry: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05', screeningPolicy: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' },
+      startGates: { registryEntry: 'public-git-source-acquisition-local-agent-v1.0', screeningPolicy: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' },
       governed: { kind: 'non-governed', because: ['the project input PROJECT-INPUT-REDIS@1 states that no kernel evidence drawer exists, and the pinned tree lists no openspec/ or .syzygy/ path'] },
       providerStatement: null,
       workItem: { identity: null, reason: 'the operator-agent run makes no provider dispatch and no scheduler effect, so no scheduler work item, Proposal or materialization record exists for it; it is rendered as unattributed execution under RFC4-19, never dropped' },
@@ -234,21 +248,21 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
   });
 
   it.each([
-    ['absent', { [REGISTRY_ACT]: null }, /^a start gate is not in force: source-acquisition registry entry: no owner-act record .*PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT\.md exists$/],
-    ['ineffective: the entry changed after the act', { [REGISTRY_GIT_SOURCE_ACT_FORM.artifact]: ENTRY.replace('0.1.0', '0.2.0') }, /^a start gate is not in force: source-acquisition registry entry: the bytes of .* differ from the act's argument$/],
-    ['withdrawn: another decisions file names it', { [`${DECISIONS_DIR}/PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md`]: 'Revoked.\n' }, /^a start gate is not in force: source-acquisition registry entry: .*names the act without being its record/],
-    ['present only as a status word in the entry, no act (F8)', { [REGISTRY_ACT]: null, [REGISTRY_GIT_SOURCE_ACT_FORM.artifact]: JSON.stringify({ status: 'in force', entries: [] }) }, /no owner-act record/],
+    ['absent', { [REGISTRY_ACT]: null }, /^a start gate is not in force: source-acquisition registry entry: no owner-act record .*PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1\.0\.md exists$/],
+    ['ineffective: the entry changed after the sign-off', { [ENTRY_PATH]: ENTRY.replace('0.1.0', '0.2.0') }, /^a start gate is not in force: source-acquisition registry entry: the bytes of .* differ from the SHA-256 the sign-off records$/],
+    ['withdrawn: another decisions file names it', { [`${DECISIONS_DIR}/PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-REVOCATION.md`]: 'Revoked.\n' }, /^a start gate is not in force: source-acquisition registry entry: .*names the act without being its record/],
+    ['present only as a status word in the entry, no act (F8)', { [REGISTRY_ACT]: null, [ENTRY_PATH]: JSON.stringify({ status: 'in force', entries: [] }) }, /no owner-act record/],
   ])('refuses before any object read when the registry entry is %s', async (_name, over, reason) => {
     await expectRefused({ root: records(over) }, 'start-gates', reason, false);
   });
 
-  it('refuses when the bound registry entry names another implementation or no implementation version', async () => {
+  it('refuses when the signed registry entry names another implementation or no implementation version', async () => {
     const other = ENTRY.replace('"polaris-dossier/git-object-reader"', '"polaris-generation/public-git-source-acquisition"');
-    await expectRefused({ root: records({ [REGISTRY_GIT_SOURCE_ACT_FORM.artifact]: other, [REGISTRY_ACT]: renderRegistryAct(sha(other), '2026-10-05', '2026-10-05T09:30:00Z') }) },
-      'start-gates', 'a start gate is not in force: source-acquisition registry entry: the registry entry bound by PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05 names the implementation "polaris-generation/public-git-source-acquisition", not polaris-dossier/git-object-reader', false);
+    await expectRefused({ root: records({ [ENTRY_PATH]: other, [REGISTRY_ACT]: signoffOver(other) }) },
+      'start-gates', 'a start gate is not in force: source-acquisition registry entry: the registry entry bound by public-git-source-acquisition-local-agent-v1.0 names the implementation "polaris-generation/public-git-source-acquisition", not polaris-dossier/git-object-reader', false);
     const unknown = ENTRY.replace('"0.1.0"', 'null');
-    await expectRefused({ root: records({ [REGISTRY_GIT_SOURCE_ACT_FORM.artifact]: unknown, [REGISTRY_ACT]: renderRegistryAct(sha(unknown), '2026-10-05', '2026-10-05T09:30:00Z') }) },
-      'start-gates', 'a start gate is not in force: source-acquisition registry entry: the registry entry bound by PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05 has no implementation version (Unknown), so RFC4-3 admits no output from it', false);
+    await expectRefused({ root: records({ [ENTRY_PATH]: unknown, [REGISTRY_ACT]: signoffOver(unknown) }) },
+      'start-gates', 'a start gate is not in force: source-acquisition registry entry: the registry entry bound by public-git-source-acquisition-local-agent-v1.0 has no implementation version (Unknown), so RFC4-3 admits no output from it', false);
   });
 
   it.each([
@@ -408,7 +422,7 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
 
   it('reads no object when a gate fails', async () => {
     const { runDir, root } = await started();
-    fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md'), 'Revoked.\n');
+    fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-REVOCATION.md'), 'Revoked.\n');
     const opened: string[] = [];
     expect(codes(await guard(runDir, root, { opened }))).toEqual(['registry']);
     expect(opened).toEqual([]);
@@ -452,7 +466,7 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
 
   it.each([
     ['the observation consent is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-OBS-REDIS-WITHDRAWAL.md'), 'Withdrawn: PUBLIC-OBS-REDIS-2026-10-03.\n'), ['consent-ids', 'revision-unnamed']],
-    ['the registry entry is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-REVOCATION.md'), 'Revoked.\n'), ['registry']],
+    ['the registry entry is withdrawn', (root: string) => fs.writeFileSync(path.join(root, DECISIONS_DIR, 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-REVOCATION.md'), 'Revoked.\n'), ['registry']],
     ['the policy changes after its act', (root: string) => fs.writeFileSync(path.join(root, POLICY_PATH), POLICY.replace('fixture', 'edited')), ['policy']],
   ])('refuses every later step when %s', async (_name, mutate, expected) => {
     const { runDir, root } = await started();
@@ -588,7 +602,7 @@ describe('preflight', () => {
       url: URL_,
       repository: { repositoryId: 'redis-redis' },
       consentedRevisions: [{ label: 'fixture-a', commit: commits.A }, { label: 'fixture-b', commit: commits.B }, { label: 'fixture-c', commit: commits.C }],
-      startGates: { registryEntry: { state: 'ok', record: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05' }, screeningPolicy: { state: 'ok' } },
+      startGates: { registryEntry: { state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' }, screeningPolicy: { state: 'ok' } },
       missing: [],
       cloneCommands: [`git clone ${URL_} <dir>`, `git -C <dir> checkout --detach ${commits.A}   # fixture-a`, `git -C <dir> checkout --detach ${commits.B}   # fixture-b`, `git -C <dir> checkout --detach ${commits.C}   # fixture-c`],
     });
@@ -613,12 +627,23 @@ describe('preflight', () => {
     expect(result.ok && result.report.d9.state).toBe('absent');
     expect(result.ok && result.report.rfc720Ruling.state).toBe('absent');
   });
-  it('would establish D9 through the same cross-check once an act form exists, and only while the act binds the bytes', async () => {
-    const root = records();
-    const d9 = (r: string) => createPackageGateSources({ root: r, now: () => NOW, d9Form: REGISTRY_GIT_SOURCE_ACT_FORM }).d9();
-    expect(await d9(root)).toEqual({ state: 'ok', record: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-05' });
-    fs.writeFileSync(path.join(root, REGISTRY_GIT_SOURCE_ACT_FORM.artifact), `${ENTRY}\n`);
-    expect((await d9(root)).state).toBe('refused');
+  it('reports D9 and the RFC7-20 reading established once the sitting\'s acts bind their records, and only while the bound bytes hold', async () => {
+    const sitting = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force';
+    const copied = [`${sitting}/D9-IN-FORCE-RECORD.md`, `${sitting}/RFC7-20-READING-IN-FORCE-RECORD.md`, '.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md', `${DECISIONS_DIR}/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`];
+    const real = (rel: string): string => fs.readFileSync(path.join(REAL_ROOT, rel), 'utf8');
+    const root = records({
+      ...Object.fromEntries(copied.map(rel => [rel, real(rel)])),
+      [`${DECISIONS_DIR}/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-ACT.md`]: renderDossierLocalAgentAct('d9-in-force', sha(real(copied[0]!)), '2026-10-06', '2026-10-06T09:30:00Z'),
+      [`${DECISIONS_DIR}/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`]: renderDossierLocalAgentAct('rfc7-20-reading-in-force', sha(real(copied[1]!)), '2026-10-06', '2026-10-06T09:30:00Z'),
+    });
+    const ready = await run(root);
+    expect(ready.ok && [ready.report.d9, ready.report.rfc720Ruling]).toEqual([
+      { state: 'ok', record: 'D9-IN-FORCE-OPERATOR-AGENT-2026-10-06' }, { state: 'ok', record: 'RFC7-20-READING-IN-FORCE-OPERATOR-AGENT-2026-10-06' },
+    ]);
+    fs.appendFileSync(path.join(root, '.syzygy/governance/doctrine/security.md'), '\nedit\n');
+    const edited = await run(root);
+    expect(edited.ok && edited.report.d9).toEqual({ state: 'refused', why: 'the bytes of .syzygy/governance/doctrine/security.md differ from the digest the act\'s artifact binds' });
+    expect(edited.ok && edited.report.rfc720Ruling.state).toBe('ok');
   });
   it('refuses a URL it cannot parse, and never fetches', async () => {
     expect(await run(records(), 'https://github.com/redis/redis/tree/unstable')).toMatchObject({ ok: false });

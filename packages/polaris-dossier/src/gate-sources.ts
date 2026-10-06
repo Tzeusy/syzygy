@@ -1,6 +1,6 @@
 import {
-  REGISTRY_GIT_SOURCE_ACT_FORM, createPackageAdmissionRecordsPort, readDigestBoundActState, readPolicyActChain,
-  type ConsentedRevision, type DigestBoundActForm, type PackageReaderFs,
+  LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, createPackageAdmissionRecordsPort, readDigestBoundActState, readPolicyActChain, readVersionedSignoffState,
+  type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type PackageReaderFs, type VersionedSignoffForm,
 } from '@syzygy/polaris-generation-consent';
 import type { DrawerStatement } from './governed.js';
 
@@ -17,8 +17,8 @@ export type GateState =
 
 export type ConsentAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
 
-/** A per-project statement (SEC-2's explicit, recorded, per-project consent) as the gate needs it. No record of this kind is defined
- * yet (syzygy-qkea.14); a source implements this from whatever record and act the owner adopts. */
+/** A per-project statement (SEC-2's explicit, recorded, per-project consent) as the gate needs it. The package source reads it from
+ * the agent-provider records of the local-agent sitting and their acts (`STATEMENT_FORMS`). */
 export interface ProviderStatementRecord {
   readonly recordId: string;
   readonly version: string;
@@ -58,30 +58,94 @@ export interface GateSources {
   readonly providerStatements: ProviderStatementSource;
 }
 
-/** The implementation the source-acquisition registry entry must name for the dossier's reads (git-object-reader.ts). The adopted
- * entry version that names it is governance work (syzygy-qkea.14); until then the gate refuses. */
+/** The implementation the source-acquisition registry entry must name for the dossier's reads (git-object-reader.ts): the local-agent
+ * entry, signed off by version tag (`LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM`), names it with implementation version 1.0.0. */
 export const DOSSIER_READER_IMPLEMENTATION_ID = 'polaris-dossier/git-object-reader';
 
+const UNSTATED_WHY = 'no admitted project input record (REQ-polaris-generation-001) for this subject exists, so whether a kernel evidence drawer exists is not stated';
 export const NO_PROJECT_INPUT: ProjectInputSource = Object.freeze({
-  drawerFor: async (): Promise<DrawerStatement> => ({
-    stated: false,
-    why: 'no admitted project input record (REQ-polaris-generation-001) for this subject exists, so whether a kernel evidence drawer exists is not stated',
-  }),
+  drawerFor: async (): Promise<DrawerStatement> => ({ stated: false, why: UNSTATED_WHY }),
 });
 export const NO_PROVIDER_STATEMENTS: ProviderStatementSource = Object.freeze({ statementsFor: async () => [] });
 
-/** No owner-act record binds a digest of D9's text: D9 was adopted by the owner's words recorded in the doctrine amendment log, and
- * its review notes say "D9 binds no act digest". Under RFC3-16(a) that is not an act cross-check, so D9 is not established in force
- * here, and no log row is read as one. A recorder's form goes here once an act exists.
- * TODO(syzygy-qkea.14): G5 drafts the D9 act form; its merge fills in this constant and nothing else. */
-export const D9_ACT_FORM: DigestBoundActForm | null = null;
-/** The owner direction POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, item 1 (the RFC7-20 reading), binds no artifact digest either. */
-export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm | null = null;
+/** The local-agent sitting's records (scripts/build_dossier_local_agent_acts.py) and the acts over them, each a dedicated decisions
+ * record written by scripts/record_dossier_local_agent_acts.py: `DOSSIER-LOCAL-AGENT-<stem>-ACT.md`, titled `# Owner act — <title>`,
+ * identity `<identity stem>-<date>`, binding the record's exact bytes. */
+const SITTING_INSTANCES = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances';
+const sittingForm = (stem: string, title: string, type: string, identityStem: string, artifact: string, bound?: readonly string[]): DigestBoundActForm => Object.freeze({
+  file: `DOSSIER-LOCAL-AGENT-${stem}-ACT.md`,
+  title: `# Owner act — ${title}`,
+  type,
+  identity: (date: string) => `${identityStem}-${date}`,
+  artifact: `${SITTING_INSTANCES}/${artifact}`,
+  stems: Object.freeze([`dossier-local-agent-${stem.toLowerCase()}`, identityStem.toLowerCase()]),
+  ...(bound === undefined ? {} : { bound: Object.freeze([...bound]) }),
+});
+
+/** D9 was adopted by the owner's words, logged in the doctrine amendment log with no digest, which RFC3-16(a) does not read as an
+ * act. Its in-force record binds the whole-file bytes of `security.md` and `v1.md`, and the act binds the record: D9 counts only
+ * while the act binds the record's bytes and both files still hash to the record's rows. */
+export const D9_ACT_FORM: DigestBoundActForm = sittingForm('D9-IN-FORCE', 'D9 in force for operator-agent runs', 'bind-exact-bytes',
+  'D9-IN-FORCE-OPERATOR-AGENT', 'in-force/D9-IN-FORCE-RECORD.md', ['.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md']);
+/** Item 1 of the owner direction POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05 (the RFC7-20 reading), in force the same way over the
+ * direction file's bytes. */
+export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm = sittingForm('RFC7-20-READING-IN-FORCE', 'the owner\'s RFC7-20 reading in force for operator-agent runs',
+  'bind-exact-bytes', 'RFC7-20-READING-IN-FORCE-OPERATOR-AGENT', 'in-force/RFC7-20-READING-IN-FORCE-RECORD.md',
+  ['.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md']);
+/** Row 3: the project-input statement that no kernel evidence drawer exists, per repository id. */
+export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object.freeze({
+  'redis-redis': sittingForm('REDIS-NO-EVIDENCE-DRAWER', 'no kernel evidence drawer for redis/redis', 'state-project-input', 'NO-EVIDENCE-DRAWER-REDIS', 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md'),
+});
+/** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the provider it consents to. */
+export const STATEMENT_FORMS: Readonly<Record<string, readonly { readonly provider: string; readonly recordId: string; readonly form: DigestBoundActForm }[]>> = Object.freeze({
+  'redis-redis': Object.freeze([
+    { provider: 'anthropic', recordId: 'AGENT-PROVIDER-redis-redis-anthropic', form: sittingForm('REDIS-AGENT-ANTHROPIC', 'agent-provider statement for redis/redis: Claude Code with Anthropic', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-ANTHROPIC', 'redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md') },
+    { provider: 'openai', recordId: 'AGENT-PROVIDER-redis-redis-openai', form: sittingForm('REDIS-AGENT-OPENAI', 'agent-provider statement for redis/redis: Codex with OpenAI', 'consent-agent-provider', 'AGENT-PROVIDER-REDIS-OPENAI', 'redis/AGENT-PROVIDER-STATEMENT-OPENAI.md') },
+  ]),
+});
 
 const notEstablished = (what: string): GateState => ({
   state: 'absent',
   why: `no owner-act record binds a digest of ${what}, so the act cross-check of RFC3-16(a) cannot establish it in force; a status word, a log row or a file's presence is not read as one`,
 });
+
+/** The record's one `<label>: \`value\`` field, or null when it has none or several. */
+const field = (text: string, label: string): string | null => {
+  const all = [...text.matchAll(new RegExp(`^${label}: \`([^\`\\n]+)\`$`, 'gm'))];
+  return all.length === 1 ? all[0]![1]! : null;
+};
+
+/** The drawer statement an in-force act puts in the project input for `repositoryId`. Unstated, with the reader's reason, unless the
+ * act binds the record's bytes, is in force and the record states no drawer for exactly this subject. */
+function drawerStatement(state: ActState<DigestBoundAct>, repositoryId: string): DrawerStatement {
+  if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return { stated: false, why: UNSTATED_WHY };
+  if (state.state !== 'ok') return { stated: false, why: `the project-input statement for this subject is not in force: ${state.why}` };
+  const text = state.artifactText, recordId = field(text, 'Record ID'), version = field(text, 'Record version');
+  const states = text.split('\n').filter(line => line.startsWith('Statement: ')).join('\n') === 'Statement: no kernel evidence drawer (RFC-0006 §3.5) exists for this';
+  if (recordId === null || version === null || field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId})` || !states) {
+    return { stated: false, why: `the record ${state.act.identity} binds does not state, for exactly this subject, that no kernel evidence drawer exists` };
+  }
+  return { stated: true, drawer: 'absent', record: `${recordId}@${version}` };
+}
+
+/** One provider statement as the gate reads it; null when no act is recorded or in force yet, so an unrecorded statement is no
+ * statement at all. A record whose act does not bind it, or whose bytes do not name exactly this subject and provider, carries
+ * `act: null`. */
+function providerStatement(state: ActState<DigestBoundAct>, repositoryId: string, provider: string, recordId: string): ProviderStatementRecord | null {
+  if (state.state === 'absent') return null;
+  const unbound: ProviderStatementRecord = { recordId, version: 'unestablished', digest: '', provider, contentClasses: [], withdrawn: false, act: null };
+  if (state.state !== 'ok') return unbound;
+  const text = state.artifactText, version = field(text, 'Record version');
+  const lines = text.split('\n'), at = lines.findIndex(line => line.startsWith('Content classes the provider may receive'));
+  const classes: string[] = [];
+  for (const line of at < 0 ? [] : lines.slice(at + 2)) {
+    const m = /^- `([a-z-]+)`$/.exec(line);
+    if (m === null) break;
+    classes.push(m[1]!);
+  }
+  if (field(text, 'Record ID') !== recordId || version === null || field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId}, agent-provider:${provider})`) return unbound;
+  return { recordId, version, digest: state.artifactDigest, provider, contentClasses: classes, withdrawn: false, act: { identity: state.act.identity, inForceAt: state.act.recordedAt } };
+}
 
 /** The statement gate: exactly one in-force statement for the subject that names `provider` and at least one content class. */
 export function providerStatementGate(records: readonly ProviderStatementRecord[], provider: string, now: number): GateState {
@@ -100,21 +164,37 @@ export interface PackageGateSourceOptions {
   readonly fs?: PackageReaderFs;
   readonly projectInput?: ProjectInputSource;
   readonly providerStatements?: ProviderStatementSource;
-  readonly registryForm?: DigestBoundActForm;
+  readonly registryForm?: VersionedSignoffForm;
   readonly d9Form?: DigestBoundActForm | null;
   readonly rfc720Form?: DigestBoundActForm | null;
 }
 
-/** The gate sources over one Syzygy checkout: the consent package's readers for the observation consents, the policy chain and the
- * registry entry act; D9 and the RFC7-20 ruling through the same cross-check once a form exists; the drawer and the statement through
- * their injectable sources, which in production state nothing and hold nothing. */
+/** The gate sources over one Syzygy checkout, every one an act cross-check through the consent package's readers: the observation
+ * consents, the policy chain, the registry entry's version-tagged sign-off, D9 and the RFC7-20 reading, and the drawer and provider
+ * statements of the local-agent sitting. With no act recorded each states nothing: D9 and the reading are not established, the
+ * drawer is unstated and no statement exists. `projectInput` and `providerStatements` replace the package sources (tests). */
 export function createPackageGateSources(options: PackageGateSourceOptions): GateSources {
   const fsOption = options.fs === undefined ? {} : { fs: options.fs };
   const port = createPackageAdmissionRecordsPort({ root: options.root, now: options.now, ...fsOption });
+  const read = (form: DigestBoundActForm) => readDigestBoundActState({ root: options.root, now: options.now(), form, ...fsOption });
   const crossCheck = async (form: DigestBoundActForm | null | undefined, what: string): Promise<GateState> => {
     if (form === null || form === undefined) return notEstablished(what);
-    const state = await readDigestBoundActState({ root: options.root, now: options.now(), form, ...fsOption });
+    const state = await read(form);
+    if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return notEstablished(what);
     return state.state === 'ok' ? { state: 'ok', record: state.act.identity } : state;
+  };
+  const projectInput: ProjectInputSource = {
+    drawerFor: async repositoryId => {
+      const form = Object.hasOwn(DRAWER_FORMS, repositoryId) ? DRAWER_FORMS[repositoryId]! : null;
+      return form === null ? NO_PROJECT_INPUT.drawerFor(repositoryId) : drawerStatement(await read(form), repositoryId);
+    },
+  };
+  const providerStatements: ProviderStatementSource = {
+    statementsFor: async repositoryId => {
+      const forms = Object.hasOwn(STATEMENT_FORMS, repositoryId) ? STATEMENT_FORMS[repositoryId]! : [];
+      const found = await Promise.all(forms.map(async s => providerStatement(await read(s.form), repositoryId, s.provider, s.recordId)));
+      return found.filter((r): r is ProviderStatementRecord => r !== null);
+    },
   };
   return {
     recordsRoot: options.root,
@@ -126,7 +206,7 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
       return answer.satisfied ? { satisfied: true, record: answer.record } : { satisfied: false, why: answer.why };
     },
     registryEntry: async () => {
-      const state = await readDigestBoundActState({ root: options.root, now: options.now(), form: options.registryForm ?? REGISTRY_GIT_SOURCE_ACT_FORM, ...fsOption });
+      const state = await readVersionedSignoffState({ root: options.root, now: options.now(), form: options.registryForm ?? LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, ...fsOption });
       if (state.state !== 'ok') return state;
       return registryEntryUsable(state.artifactText, state.act.identity);
     },
@@ -136,8 +216,8 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
     },
     d9: () => crossCheck(options.d9Form === undefined ? D9_ACT_FORM : options.d9Form, 'the D9 text (SEC-3 amendment)'),
     rfc720Ruling: () => crossCheck(options.rfc720Form === undefined ? RFC7_20_RULING_ACT_FORM : options.rfc720Form, 'the RFC7-20 reading (POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, item 1)'),
-    projectInput: options.projectInput ?? NO_PROJECT_INPUT,
-    providerStatements: options.providerStatements ?? NO_PROVIDER_STATEMENTS,
+    projectInput: options.projectInput ?? projectInput,
+    providerStatements: options.providerStatements ?? providerStatements,
   };
 }
 
