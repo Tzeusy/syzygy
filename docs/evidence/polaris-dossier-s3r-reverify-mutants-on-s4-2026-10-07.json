@@ -1,0 +1,277 @@
+{
+  "subject": {
+    "commit": "9bf0293ffe0da16c461b72dedd19a6957b74ff0a",
+    "branch": "fix/polaris-dossier-s3-reverify",
+    "fileSha256": {
+      "packages/polaris-dossier/src/brief.ts": "dc9e9c34e281d6c90c5375647a01f5f2cefeee8429c040bc80d5d2c7e8e392ae",
+      "packages/polaris-dossier/src/governed.ts": "82538513c2b3c95561e0802441abe8bb6af99292a6d6f0027b01bf85d637963f",
+      "packages/polaris-dossier/src/init.ts": "bfebd95ee4d65d647ed381bbf48628b207bd29c7b0e0a6df1c506195a7458568",
+      "packages/polaris-dossier/src/reverify.ts": "b226375e9b3333a37d2cd347011f37ea3741bb5eccc96f7840281e0ec25c2e91",
+      "packages/polaris-generation-consent/src/consent-ports.ts": "44dcaf5ae547d72c92885a9bd44dec33e2c6e7dd43bec599db54ff79afb69b15",
+      "packages/polaris-generation-consent/src/package-reader.ts": "8bb3a74b1d83ccdbcd730281f05d3c301d1f40f61dadc4a439c56ce3c44d7eae"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/brief.test.ts": "6b19669e8e5ddd447f31c18f8c2586679cc87b66e9c29b0ae3e933cc0ba6be63",
+      "packages/polaris-dossier/src/gate-parts.test.ts": "2a722f6ba6fccb8ce0ee63ccdc35ed0122b936df6e656b4fa2c8453ba9256b03",
+      "packages/polaris-dossier/src/start-gates.test.ts": "f788b20da5c43980b4270a69c9ce39aa12e23190a2bff9168a788fa12333eedc",
+      "packages/polaris-generation-consent/src/consent-ports.test.ts": "544a2986b1b100e60c653fa04cdff2b2d9dfaf5f7fdae7b1b8aed2d562de0697",
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "f41b234b9f9ab0bb132941d74066faa86083f7a203dc8aa0e25cf35aecd0c466"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-06T19:39:17+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "const DISCLOSURES = [",
+      "new": "const DISCLOSURES = [",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 70,
+      "note": "control: unchanged source, must survive"
+    },
+    {
+      "id": "G1-kind-unchecked",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "if (governed.kind !== subject.governed.kind) {",
+      "new": "if (false) {",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 70,
+      "note": "finding 1: a recomputed kind that differs from the recorded one is accepted"
+    },
+    {
+      "id": "G2-statement-need-from-record",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "if (governed.statementRequired) {",
+      "new": "if (subject.governed.kind !== 'non-governed') {",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 70,
+      "note": "finding 1(b): whether a statement is needed is read from the run record"
+    },
+    {
+      "id": "G3-statement-identity-unchecked",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "} else if (statement.record !== subject.providerStatement) {",
+      "new": "} else if (false) {",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 70,
+      "note": "a statement other than the one the run relies on is accepted"
+    },
+    {
+      "id": "G4-drawer-not-live",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "governedSubject(await sources.projectInput.drawerFor(repositoryId), paths)",
+      "new": "governedSubject({ stated: true, drawer: 'absent', record: 'fixed' }, paths)",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 70,
+      "note": "the project input in force now is not consulted"
+    },
+    {
+      "id": "G5-listing-ignored",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "paths = (await reader.listTree()).map(entry => entry.path);",
+      "new": "paths = [];",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 70,
+      "note": "finding 1(a): the pinned tree is not listed, so a moved pin is decided on no paths"
+    },
+    {
+      "id": "G6-read-despite-failed-gate",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "if (refusals.length > 0 || !consent.satisfied) return refuse();",
+      "new": "if (!consent.satisfied) return refuse();",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 70,
+      "note": "an object is read while the registry entry or policy is not in force"
+    },
+    {
+      "id": "L1-label-from-record",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "const label = labels.size === 1 ? [...labels][0]! : null;",
+      "new": "const label = subject.pinnedRevision.label;",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts",
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 84,
+      "note": "finding 2: the label is the run record's copy"
+    },
+    {
+      "id": "L2-consent-record-from-record",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "revision: { commit, label, consentRecord: consent.record },",
+      "new": "revision: { commit, label, consentRecord: subject.pinnedRevision.consentRecord },",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 70,
+      "note": "finding 2: the consent record is the run record's copy"
+    },
+    {
+      "id": "L3-brief-label-from-record",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "revisionLabel: checked.revision.label",
+      "new": "revisionLabel: subject.pinnedRevision.label",
+      "tests": [
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 14,
+      "note": "finding 2: the brief shows the run record's label"
+    },
+    {
+      "id": "C1-code-swapped",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "refusals.push({ code: 'governed-changed',",
+      "new": "refusals.push({ code: 'statement',",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 70,
+      "note": "finding 3: a refusal carries the wrong machine code"
+    },
+    {
+      "id": "C2-refusal-disclosures-dropped",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "refusals, ...extra, disclosures: DISCLOSURES })",
+      "new": "refusals, ...extra, disclosures: [] })",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 70,
+      "note": "note 10: a refusal omits the write-reach disclosures"
+    },
+    {
+      "id": "R1-init-absence-dropped",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "as its Upstream${ports.sources.consentAbsenceFor === undefined ? '' : `: ${await ports.sources.consentAbsenceFor(url.url)}`}`",
+      "new": "as its Upstream`",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 70,
+      "note": "note 4: init's consent refusal no longer says why"
+    },
+    {
+      "id": "R2-guard-absence-dropped",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "const why = ids.length === 0 && sources.consentAbsenceFor !== undefined ? await sources.consentAbsenceFor(url)",
+      "new": "const why = false ? ''",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 70,
+      "note": "note 4: the guard's consent refusal no longer says why"
+    },
+    {
+      "id": "P1-no-unicode-fold",
+      "file": "packages/polaris-dossier/src/governed.ts",
+      "old": "s.normalize('NFKC').toUpperCase().toLowerCase()",
+      "new": "s.toLowerCase()",
+      "tests": [
+        "packages/polaris-dossier/src/gate-parts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 50,
+      "note": "note 7: compatibility and long-s spellings are not counted"
+    },
+    {
+      "id": "P2-no-trailing-strip",
+      "file": "packages/polaris-dossier/src/governed.ts",
+      "old": ".replace(/[. ]+$/u, '')",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-parts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 50,
+      "note": "note 7: trailing dots and spaces are not dropped"
+    },
+    {
+      "id": "K1-superseded-unnamed",
+      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+      "old": "for (const r of records) if (!kept.has(r) && !out.has(r)) out.set(r, 'superseded');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/consent-ports.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 58,
+      "note": "note 4: a superseded record is not named"
+    },
+    {
+      "id": "K2-in-force-said-not-in-force",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "return naming.every(r => why.has(r)) ?",
+      "new": "return true ?",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "a record in force is reported under 'not in force'"
+    },
+    {
+      "id": "K3-reason-text-swapped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "'future-dated': 'is not in force yet',",
+      "new": "'future-dated': 'is withdrawn',",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "note 4: a not-yet-in-force record reads as withdrawn"
+    }
+  ],
+  "summary": "18 of 18 mutants killed at 9bf0293ffe0da16c461b72dedd19a6957b74ff0a, the control survived (syzygy-qkea.23, R-POLARIS-DOSSIER-S3-GATES-1). One mutant per predicate: finding 1, the governed decision made again at every step (G1-G6); finding 2, the label and consent record from the live consent (L1-L3); finding 3 and note 10, the machine codes and the disclosures (C1, C2); note 4, the consent refusal reasons (R1, R2, K1-K3); note 7, the folded segment compare (P1, P2). Not killed: []."
+}
