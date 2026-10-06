@@ -70,7 +70,8 @@ export const NO_PROVIDER_STATEMENTS: ProviderStatementSource = Object.freeze({ s
 
 /** No owner-act record binds a digest of D9's text: D9 was adopted by the owner's words recorded in the doctrine amendment log, and
  * its review notes say "D9 binds no act digest". Under RFC3-16(a) that is not an act cross-check, so D9 is not established in force
- * here, and no log row is read as one. A recorder's form goes here once an act exists. */
+ * here, and no log row is read as one. A recorder's form goes here once an act exists.
+ * TODO(syzygy-qkea.14): G5 drafts the D9 act form; its merge fills in this constant and nothing else. */
 export const D9_ACT_FORM: DigestBoundActForm | null = null;
 /** The owner direction POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, item 1 (the RFC7-20 reading), binds no artifact digest either. */
 export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm | null = null;
