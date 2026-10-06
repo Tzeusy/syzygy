@@ -4,6 +4,7 @@ import path from 'node:path';
 import { AdmissionRecordError, COMMIT_OBJECT_ID, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
 import { inForceRecords, notInForceRecords, type NotInForce } from './consent-ports.js';
 import { CITATION_ALLOWLIST } from './citation-allowlist.js';
+import { SLOT, recorderTemplate, templateFields, type RecorderTemplate } from './recorder-template.js';
 
 /** Reads admission records from the public-repo-admission package layout.
  *
@@ -529,16 +530,26 @@ export interface DigestBoundActForm {
   /** Stems a decisions file carries when it names this act: any other file that carries one, or the artifact path, refuses the read
    * (a withdrawal, or a form this reader does not define). The aggregate acceptance record is exempt except on its field lines. */
   readonly stems: readonly string[];
+  /** Needles read only on a decisions file's `Artifact identity`, `Act identity`, `Record ID` or `Subject` field lines: a value that
+   * prose elsewhere names for other reasons (a subject tuple an act's Effect quotes). */
+  readonly fieldStems?: readonly string[];
   /** For an artifact that binds other files' bytes in turn (an in-force record): the files its one `| File | SHA-256 |` table must
    * list, exactly and in order. The act then counts only while each listed file still hashes to its row. */
   readonly bound?: readonly string[];
   /** The record's one `Scope:` line, exactly, for a recorder that writes one. */
   readonly scope?: string;
-  /** Rows the sweep reads past: in the decisions file `file`, each line that starts with `prefix` (a register row that cites the act
-   * by name before it exists). The rest of that file is swept as any other. */
+  /** Lines the sweep reads past: in the decisions file `file`, one line whose bytes (without its newline) hash to `sha256`, such as a
+   * register row that cites the act by name before it exists. Every other line of that file, a second copy of the same line included,
+   * is swept as any other; an edited line no longer matches and is swept too. */
   readonly citedRows?: readonly CitedRow[];
+  /** The record as its recorder renders it: the record counts only when the slots read out of it render the template back to the
+   * record, byte for byte. */
+  readonly template?: RecorderTemplate;
 }
-export interface CitedRow { readonly file: string; readonly prefix: string }
+export interface CitedRow { readonly file: string; readonly sha256: string }
+
+/** The P-104 row of `PENDING-OWNER-DECISIONS.md` as it stands before the local-agent sitting: it names the registry sign-off's tag. */
+const P104_ROW_SHA256 = '05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb';
 export type DigestBoundAct = { readonly act: ParsedAct; readonly artifactDigest: string; readonly artifactText: string };
 
 /** The public Git-hosting source-acquisition registry entry act (scripts/record_public_admission_registry_entries_acts.py, key
@@ -552,32 +563,52 @@ export const REGISTRY_GIT_SOURCE_ACT_FORM: DigestBoundActForm = Object.freeze({
   stems: Object.freeze(['public-admission-registry-git-source']),
 });
 
-function namesDigestBoundAct(form: { readonly stems: readonly string[] }, artifact: string, rel: string, text: string): boolean {
+/** `value` with backticks dropped and the whitespace around each `:` and `,` removed, so a tuple reads the same however it is spaced
+ * or quoted: `(project: syzygy, …)` and ``(`project:syzygy`, …)`` both read `(project:syzygy,…)`. */
+const loose = (value: string): string => value.replace(/`/g, '').replace(/\s*([:,])\s*/g, '$1');
+/** Whether `text` carries `needle` as written or once both are read `loose`. */
+const carriesLoosely = (text: string, needle: string): boolean => carries(text, needle) || carries(loose(text), loose(needle));
+
+function namesDigestBoundAct(form: { readonly stems: readonly string[]; readonly fieldStems?: readonly string[] }, artifact: string, rel: string, text: string): boolean {
   if (form.stems.some(stem => carries(rel, stem))) return true;
-  if (rel !== AGGREGATE_RECORD && [...form.stems, artifact].some(needle => carries(text, needle))) return true;
+  if (rel !== AGGREGATE_RECORD && [...form.stems, artifact].some(needle => carriesLoosely(text, needle))) return true;
   return fold(text).split('\n').some(line => {
     const field = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity|record\s+id|subject)\s*\**\s*:\s*(.*)$/u.exec(line);
-    return field !== null && [...form.stems, artifact].some(needle => carries(field[2]!, needle));
+    return field !== null && [...form.stems, ...(form.fieldStems ?? []), artifact].some(needle => carriesLoosely(field[2]!, needle));
   });
+}
+
+/** `text` with, for each pinned digest, the first line whose bytes hash to it blanked; every other line kept. */
+function withoutCitedRows(text: string, pins: readonly string[]): string {
+  if (pins.length === 0) return text;
+  const lines = text.split('\n'), left = [...pins];
+  return lines.map(line => { const i = left.indexOf(sha256(line)); if (i < 0) return line; left.splice(i, 1); return ''; }).join('\n');
 }
 
 /** The one record a form names, after the withdrawal sweep over every other decisions file: its text, null when absent, or why the
  * sweep refuses and the file that named the act. */
 type FoundRecord = { readonly text: string | null } | { readonly why: string; readonly namedBy: string };
-async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly citedRows?: readonly CitedRow[] }, artifact: string): Promise<FoundRecord> {
+async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly fieldStems?: readonly string[]; readonly citedRows?: readonly CitedRow[] }, artifact: string): Promise<FoundRecord> {
   const files = await walk(fs, path.join(root, DECISIONS_DIR)), swept = sweepText(fs, root);
   let found: string | null = null;
   for (const rel of files) {
     let text: string;
     try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
     if (rel === form.file) { found = text; continue; }
-    const cited = (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.prefix);
-    const read = cited.length === 0 ? text : text.split('\n').filter(line => !cited.some(prefix => line.startsWith(prefix))).join('\n');
+    const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));
     if (namesDigestBoundAct(form, artifact, rel, await swept(rel, read))) {
       return { why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define`, namedBy: `${DECISIONS_DIR}/${rel}` };
     }
   }
   return { text: found };
+}
+
+/** The record's slots when it is exactly what `template` renders from them; refuses otherwise, and when an owner-selection slot
+ * (`opening`, `label`, `description`, `quote`) carries a 64-hex token, which the recorders never write there. */
+function fromTemplate(template: RecorderTemplate, text: string): Readonly<Record<string, string>> {
+  const fields = templateFields(template, text);
+  if (fields === null || ['opening', 'label', 'description', 'quote'].some(slot => /[0-9a-fA-F]{64}/.test(fields[slot] ?? ''))) return refuse();
+  return fields;
 }
 
 /** The lines every recorder of these acts writes for RFC3-16(b) items 7 and 9 (owner, provenance state, the explicit A1 absence), and
@@ -621,6 +652,7 @@ export function readDigestBoundActState(options: StrictReadOptions & { readonly 
     const text = found.text;
     if (!text.startsWith(`${form.title}\n`)) refuse();
     recorderLines(text, form.scope);
+    if (form.template !== undefined) fromTemplate(form.template, text);
     const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), identity = one(text, /^Act identity: `([^`\n]+)`$/gm), type = one(text, /^Act type: `([^`\n]+)`$/gm);
     const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
     const day = Date.parse(`${date}T00:00:00Z`);
@@ -651,11 +683,96 @@ export interface VersionedSignoffForm {
   /** As `DigestBoundActForm.scope` and `.citedRows`. */
   readonly scope: string;
   readonly citedRows?: readonly CitedRow[];
+  /** The record as the recorder renders it (`render_record` with `installed_lines`), slots `date`, `quote`, `review`, `commit`,
+   * `verdict`, `disposition`, `instant` and `sha`. */
+  readonly template: RecorderTemplate;
 }
 
-/** The local-agent public Git source-acquisition entry, version 1.0 of its package (row 2 of the local-agent Redis sitting). The sweep
- * reads the tag, the act's identity, and the package named as signed off in either spelling; the one place they are cited before the
- * sign-off exists, the P-104 row of the pending-decisions register, is read past, and only that row. */
+/** scripts/record_versioned_signoff.py `render_record` for a package that installs a registry entry and declares no options. */
+function registrySignoffTemplate(o: { readonly title: string; readonly packageKey: string; readonly version: string; readonly installed: string; readonly candidate: string }): RecorderTemplate {
+  const tag = `${o.packageKey}-v${o.version}`;
+  return recorderTemplate(`# ${o.title} — version-tagged sign-off v${o.version}
+
+Date: {date}
+
+Owner: Tzeusy
+
+Package: ${o.packageKey}
+
+Version: ${o.version}
+
+Tag: ${tag}
+
+Kind: registry entry
+
+Owner selection: {quote}
+
+Review: {review}
+
+Reviewed commit: {commit}
+
+Review verdict: {verdict}
+
+Disposition: {disposition}
+
+Recorded at (UTC): {instant}
+
+Act type: \`adopt-registry-entry\`
+
+Project identity: \`project:syzygy\`
+
+Installed entry: ${o.installed}
+
+Installed entry SHA-256: {sha}
+
+Scope: the entry's own subject and read authority, nothing wider
+
+Scope A extension: the owner's selection quoted above names it ("Extend Scope A"); the extension is a plain owner direction and this record is its only record
+
+Supersession / revocation: supersedes nothing; revoked only by a later
+exact owner act naming it
+
+Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1),
+the owner's option selection quoted above
+
+A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**
+
+Signed under \`.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md\`: the owner's selection of an option naming this package and version is the sign-off; no phrase or digest argument exists.
+
+## What this records
+
+The owner signed off version ${o.version} of \`${o.candidate}\` by the
+selection quoted above. The review named above read the package bytes this
+sign-off applies; the recorder confirmed that the package directory still
+equals the package at the reviewed commit (disposition records excepted) and
+that the package's own builder check passed before its patches were applied
+through the builder.
+
+The binding is the annotated tag \`${tag}\` on the commit that
+carries this record and the applied result. A later edit to the package is a
+new version signed separately; it does not retire this one.
+
+## What this does not do
+
+It approves the registry entry named above at exactly the SHA-256 above and
+no other byte: a later edit at that path is unsigned. It is one of the
+separate acts a read needs; it gives no observation consent, adopts no
+classification or screening policy, widens no egress, write or execution,
+and authorizes no implementation. Every exclusion of the acts in force
+stands.
+`, { date: SLOT.date, quote: SLOT.line, review: SLOT.line, commit: SLOT.commit, verdict: SLOT.verdict, disposition: SLOT.line, instant: SLOT.instant, sha: SLOT.sha256 });
+}
+
+/** The local-agent public Git source-acquisition entry, version 1.0 of its package (row 2 of the local-agent Redis sitting).
+ *
+ * Hard-wired to v1.0: a later sign-off of this package (`…-SIGNOFF-v1.1.md`) carries the `…-signoff` stem, so this reader takes it
+ * for a withdrawal of v1.0 and refuses, though the recorder says a new version never retires an earlier one. The commit that records a
+ * later version must change this form in the same commit (R-POLARIS-DOSSIER-GATE-SOURCES-2 note 6).
+ *
+ * The sweep reads the package key (and so the tag, the act's identity, the record's file name and the installed entry's basename), the
+ * record's title and the installed entry's path. The one place these are cited before the sign-off exists, the P-104 row of the pending-decisions
+ * register, is read past only while that line's bytes hash to the pinned digest, and only one such line; the commit that edits or
+ * moves the row re-pins it here, and until then the gate refuses. */
 export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = Object.freeze({
   file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md',
   title: '# Public Git source acquisition, local-agent version — version-tagged sign-off v1.0',
@@ -663,9 +780,15 @@ export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = Object.
   version: '1.0',
   kind: 'registry entry',
   installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
-  stems: Object.freeze(['public-git-source-acquisition-local-agent-signoff', 'public-git-source-acquisition-local-agent-sign-off', 'public-git-source-acquisition-local-agent-v1.0']),
+  // The bare package key carries the tag, both sign-off spellings, the record's file name and the installed entry's basename.
+  stems: Object.freeze(['public-git-source-acquisition-local-agent', 'public git source acquisition, local-agent version — version-tagged sign-off']),
   scope: 'the entry\'s own subject and read authority, nothing wider',
-  citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', prefix: '| P-104 |' })]),
+  citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', sha256: P104_ROW_SHA256 })]),
+  template: registrySignoffTemplate({
+    title: 'Public Git source acquisition, local-agent version', packageKey: 'public-git-source-acquisition-local-agent', version: '1.0',
+    installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
+    candidate: '.syzygy/governance/contracts/candidates/public-git-source-acquisition-local-agent',
+  }),
 });
 
 /** The sign-off `form` describes, cross-checked at `now` under RFC3-16(a) as `readDigestBoundActState` does: `ok` when the record
@@ -680,6 +803,10 @@ export function readVersionedSignoffState(options: StrictReadOptions & { readonl
     const text = found.text, tag = `${form.packageKey}-v${form.version}`;
     if (!text.startsWith(`${form.title}\n`)) refuse();
     recorderLines(text, form.scope);
+    // The recorder's own input checks (validate_inputs, validate_disposition): the selection names the Scope A extension, and a
+    // CONFIRM WITH EXCEPTIONS names the disposition record that clears its notes.
+    const slots = fromTemplate(form.template, text);
+    if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')) refuse();
     const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), day = Date.parse(`${date}T00:00:00Z`);
     const fields = [one(text, /^Package: (.+)$/gm), one(text, /^Version: (.+)$/gm), one(text, /^Tag: (.+)$/gm), one(text, /^Kind: (.+)$/gm), one(text, /^Installed entry: (.+)$/gm)];
     one(text, /^Review verdict: (CONFIRM|CONFIRM WITH EXCEPTIONS)$/gm);

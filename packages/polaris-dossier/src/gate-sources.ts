@@ -1,6 +1,7 @@
 import {
   LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, createPackageAdmissionRecordsPort, readDigestBoundActState, readPolicyActChain, readVersionedSignoffState,
-  type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type PackageReaderFs, type VersionedSignoffForm,
+  SLOT, recorderTemplate,
+  type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type PackageReaderFs, type RecorderTemplate, type VersionedSignoffForm,
 } from '@syzygy/polaris-generation-consent';
 import type { DrawerStatement } from './governed.js';
 
@@ -71,35 +72,145 @@ export const NO_PROJECT_INPUT: ProjectInputSource = Object.freeze({
 export const NO_PROVIDER_STATEMENTS: ProviderStatementSource = Object.freeze({ statementsFor: async () => [] });
 
 /** The local-agent sitting's records (scripts/build_dossier_local_agent_acts.py) and the acts over them, each a dedicated decisions
- * record written by scripts/record_dossier_local_agent_acts.py: `DOSSIER-LOCAL-AGENT-<stem>-ACT.md`, titled `# Owner act — <title>`,
- * identity `<identity stem>-<date>`, binding the record's exact bytes. */
-const SITTING_INSTANCES = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances';
-const sittingForm = (stem: string, title: string, type: string, identityStem: string, artifact: string, scope: string, more: { readonly bound?: readonly string[]; readonly stems?: readonly string[] } = {}): DigestBoundActForm => Object.freeze({
-  file: `DOSSIER-LOCAL-AGENT-${stem}-ACT.md`,
-  title: `# Owner act — ${title}`,
-  type,
-  identity: (date: string) => `${identityStem}-${date}`,
-  artifact: `${SITTING_INSTANCES}/${artifact}`,
-  stems: Object.freeze([`dossier-local-agent-${stem.toLowerCase()}`, identityStem.toLowerCase(), ...(more.stems ?? [])]),
-  scope,
+ * record written by scripts/record_dossier_local_agent_acts.py (`ACTS`, `render_act`): `DOSSIER-LOCAL-AGENT-<stem>-ACT.md`, titled
+ * `# Owner act — <title>`, identity `<identity stem>-<date>`, binding the record's exact bytes. An act counts only when its record is
+ * byte for byte what `render_act` writes from the record's own date, instant, argument, owner selection and review provenance; the
+ * port of the template is held to the recorder's output by a test over every act (R-POLARIS-DOSSIER-GATE-SOURCES-2 finding 2). */
+const SITTING_PACKAGE = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts';
+const SITTING_INSTANCES = `${SITTING_PACKAGE}/instances`;
+interface SittingAct {
+  /** `Act.key`, `.label`, `.stem`, `.identity_stem`, `.title`, `.act_type`, `.scope` and `.effect` in the recorder; `artifact` is
+   * `.subject` under the sitting's instances. */
+  readonly key: string; readonly label: string; readonly stem: string; readonly identityStem: string; readonly title: string;
+  readonly type: string; readonly artifact: string; readonly scope: string; readonly effect: string;
+}
+/** scripts/record_dossier_local_agent_acts.py `render_act`, slots `date`, `instant`, `argument`, the owner's selection (`opening`,
+ * `label`, `description`) and the confirming review's provenance (`manifest`, `frozen`, `verdict`, `reviewed`). */
+function sittingTemplate(a: SittingAct): RecorderTemplate {
+  return recorderTemplate(`# Owner act — ${a.title}
+
+Date: {date}
+
+Recorded at (UTC): {instant}
+
+Owner: Tzeusy
+
+Act identity: \`${a.identityStem}-{date}\`
+
+Act type: \`${a.type}\`
+
+Project identity: \`project:syzygy\`
+
+Artifact identity: \`${SITTING_INSTANCES}/${a.artifact}\`
+
+Exact digest (SHA-256): \`{argument}\`
+
+Scope: ${a.scope}
+
+Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1),
+explicitly selected by the owner's option selection recorded below
+
+Supersession / revocation: supersedes nothing; revoked only by a later exact
+owner act naming it.
+
+A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**
+
+## Ceremony
+
+The owner was presented the confirmed packet at
+\`${SITTING_PACKAGE}/OWNER-SITTING-PACKET.md\`, which by design carries no digest. The act takes
+this phrase, whose argument is this record's row of the sitting manifest:
+
+\`\`\`text
+${a.label}: {argument}
+\`\`\`
+
+The owner did not type the phrase. On {date} the owner answered a structured
+question in the Claude Code CLI that opened "{opening}" by selecting the
+option below; the selection is the instruction, and it names the record "at
+the manifest row". The label and description, verbatim:
+
+| Label | Description |
+|---|---|
+| "{label}" | "{description}" |
+
+The argument was read from this record's row of
+\`${SITTING_PACKAGE}/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt\` at the frozen commit and matched the record on
+disk at recording. A swapped argument would have been refused: the recorder
+rejects an argument that is not this record's row.
+
+Frozen provenance:
+
+- frozen subject (package bytes): \`{frozen}\`;
+- the sitting manifest file hashes to \`{manifest}\` (a container digest,
+  no act's argument; worded so CG-7e's bare-heading pass does not read it as
+  a stale copy of this act's argument);
+- confirmation review: \`${SITTING_PACKAGE}/reviews/R-DOSSIER-LOCAL-AGENT-SITTING-3-RAW.md\`, verdict
+  \`{verdict}\`, its head bound to the manifest file's SHA-256 above; notes, if
+  any, are dispositioned in \`${SITTING_PACKAGE}/ROUND-3-DISPOSITIONS.md\`; the raw names
+  reviewed commit \`{reviewed}\` [Observed — the raw's own line; binding is by
+  digest]; and
+- recording tag: \`dossier-local-agent-${a.key}-signed-{date}\`, on the commit carrying this act record.
+
+## Effect
+
+${a.effect}
+
+## What this act does not authorize
+
+This act satisfies only its own authority; the sitting's other acts each take
+their own act and none implies another (REQ-polaris-generation-025). It gives
+no observation consent, adopts no registry entry or screening policy, amends
+no doctrine, contract or specification, and grants no read, egress, write,
+execution, deployment, release, autonomous or multi-user authority beyond
+what its Effect states. It proves no read, screening, generation or answer
+result.
+`, {
+    date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line,
+    frozen: SLOT.commit, manifest: SLOT.sha256, verdict: SLOT.verdict, reviewed: SLOT.commit,
+  });
+}
+/** The form of one sitting act. Its sweep reads the record's file stem, the act identity, the artifact's path and basename, the
+ * phrase label and the record's title, plus `more.stems` (prose) and `more.fieldStems` (field lines only). */
+const sittingForm = (a: SittingAct, more: { readonly bound?: readonly string[]; readonly stems?: readonly string[]; readonly fieldStems?: readonly string[] } = {}): DigestBoundActForm => Object.freeze({
+  file: `DOSSIER-LOCAL-AGENT-${a.stem}-ACT.md`,
+  title: `# Owner act — ${a.title}`,
+  type: a.type,
+  identity: (date: string) => `${a.identityStem}-${date}`,
+  artifact: `${SITTING_INSTANCES}/${a.artifact}`,
+  stems: Object.freeze([`dossier-local-agent-${a.stem.toLowerCase()}`, a.identityStem.toLowerCase(), a.artifact.split('/').pop()!, a.label, a.title, ...(more.stems ?? [])]),
+  ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
+  scope: a.scope,
+  template: sittingTemplate(a),
   ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
 });
 
 /** D9 was adopted by the owner's words, logged in the doctrine amendment log with no digest, which RFC3-16(a) does not read as an
  * act. Its in-force record binds the whole-file bytes of `security.md` and `v1.md`, and the act binds the record: D9 counts only
  * while the act binds the record's bytes and both files still hash to the record's rows. */
-export const D9_ACT_FORM: DigestBoundActForm = sittingForm('D9-IN-FORCE', 'D9 in force for operator-agent runs', 'bind-exact-bytes',
-  'D9-IN-FORCE-OPERATOR-AGENT', 'in-force/D9-IN-FORCE-RECORD.md', 'REQ-polaris-generation-033\'s execution rule only',
-  { bound: ['.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md'] });
+export const D9_ACT_FORM: DigestBoundActForm = sittingForm({
+  key: 'd9-in-force', label: 'BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS', stem: 'D9-IN-FORCE', identityStem: 'D9-IN-FORCE-OPERATOR-AGENT',
+  title: 'D9 in force for operator-agent runs', type: 'bind-exact-bytes', artifact: 'in-force/D9-IN-FORCE-RECORD.md',
+  scope: 'REQ-polaris-generation-033\'s execution rule only',
+  effect: 'The record binds D9, adopted 2026-10-06, to the exact whole-file bytes of `security.md` and `v1.md` it lists, so the act cross-check of RFC3-16(a) may treat D9 as in force for REQ-polaris-generation-033\'s execution rule while both files hash to those digests, and not otherwise.',
+}, { bound: ['.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md'] });
 /** Item 1 of the owner direction POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05 (the RFC7-20 reading), in force the same way over the
  * direction file's bytes. */
-export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm = sittingForm('RFC7-20-READING-IN-FORCE', 'the owner\'s RFC7-20 reading in force for operator-agent runs',
-  'bind-exact-bytes', 'RFC7-20-READING-IN-FORCE-OPERATOR-AGENT', 'in-force/RFC7-20-READING-IN-FORCE-RECORD.md',
-  'item 1 of the direction, for REQ-polaris-generation-033\'s draft-layer rule only', { bound: ['.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md'] });
-/** Row 3: the project-input statement that no kernel evidence drawer exists, per repository id. */
+export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm = sittingForm({
+  key: 'rfc7-20-reading-in-force', label: 'BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS', stem: 'RFC7-20-READING-IN-FORCE',
+  identityStem: 'RFC7-20-READING-IN-FORCE-OPERATOR-AGENT', title: 'the owner\'s RFC7-20 reading in force for operator-agent runs', type: 'bind-exact-bytes',
+  artifact: 'in-force/RFC7-20-READING-IN-FORCE-RECORD.md', scope: 'item 1 of the direction, for REQ-polaris-generation-033\'s draft-layer rule only',
+  effect: 'The record binds item 1 of the owner direction `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05` to the exact bytes of its file, so the act cross-check of RFC3-16(a) may treat that reading as in force for REQ-polaris-generation-033\'s draft-layer rule while the file hashes to that digest, and not otherwise.',
+}, { bound: ['.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md'] });
+/** Row 3: the project-input statement that no kernel evidence drawer exists, per repository id. Its Subject tuple is swept on field
+ * lines only: the statements' acts quote the same tuple in their Effect. */
 export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object.freeze({
-  'redis-redis': sittingForm('REDIS-NO-EVIDENCE-DRAWER', 'no kernel evidence drawer for redis/redis', 'state-project-input', 'NO-EVIDENCE-DRAWER-REDIS', 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md',
-    'the drawer half of REQ-polaris-generation-033\'s governed predicate for this one repository'),
+  'redis-redis': sittingForm({
+    key: 'redis-no-evidence-drawer', label: 'STATE NO KERNEL EVIDENCE DRAWER FOR REDIS-REDIS', stem: 'REDIS-NO-EVIDENCE-DRAWER', identityStem: 'NO-EVIDENCE-DRAWER-REDIS',
+    title: 'no kernel evidence drawer for redis/redis', type: 'state-project-input', artifact: 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md',
+    scope: 'the drawer half of REQ-polaris-generation-033\'s governed predicate for this one repository',
+    effect: 'The record is the owner\'s statement, in the admitted project input, that no kernel evidence drawer exists for (`project:syzygy`, `repository:redis-redis`). With the pinned tree holding no `openspec/**` and no `.syzygy/` path, the subject is non-governed under REQ-polaris-generation-033 and a brief needs no agent-provider statement.',
+  }, { stems: ['no-evidence-drawer-redis-redis'], fieldStems: ['(project:syzygy, repository:redis-redis)'] }),
 });
 /** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the tool (its run-configuration id and
  * the name its record's `Agent tool:` line opens with) and the provider it consents to. A statement's record says it is withdrawn by
@@ -109,9 +220,12 @@ const statementForm = (agentTool: string, toolName: string, provider: string, pr
   const recordId = `AGENT-PROVIDER-${repositoryId}-${provider}`;
   return Object.freeze({
     agentTool, toolName, provider, recordId,
-    form: sittingForm(stem, `agent-provider statement for ${repositoryId.replace('-', '/')}: ${toolName} with ${providerName}`, 'consent-agent-provider', identityStem, artifact,
-      'operator-agent runs over this one repository with this one tool and provider',
-      { stems: [recordId.toLowerCase(), `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`] }),
+    form: sittingForm({
+      key: `redis-agent-${provider}`, label: `CONSENT TO AGENT PROVIDER ${provider.toUpperCase()} FOR ${repositoryId.toUpperCase()}`, stem, identityStem,
+      title: `agent-provider statement for ${repositoryId.replace('-', '/')}: ${toolName} with ${providerName}`, type: 'consent-agent-provider', artifact,
+      scope: 'operator-agent runs over this one repository with this one tool and provider',
+      effect: `The record is the owner's explicit, recorded, per-project consent (SEC-2) that the operator's ${toolName} sessions, with ${providerName}, may receive the content classes it lists from (\`project:syzygy\`, \`repository:${repositoryId}\`) in an operator-agent run, so a brief may issue for that repository even when it counts as governed.`,
+    }, { stems: [recordId.toLowerCase(), `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`] }),
   });
 };
 export const STATEMENT_FORMS: Readonly<Record<string, readonly StatementForm[]>> = Object.freeze({

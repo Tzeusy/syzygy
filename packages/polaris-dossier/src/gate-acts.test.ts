@@ -3,10 +3,10 @@ import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM } from '@syzygy/polaris-generation-consent';
-import { renderDossierLocalAgentAct, renderLocalAgentSignoff, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
+import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, type DigestBoundActForm } from '@syzygy/polaris-generation-consent';
+import { recorderRecordPaths, renderDossierLocalAgentAct, renderLocalAgentSignoff, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createPackageGateSources, providerStatementGate } from './gate-sources.js';
+import { D9_ACT_FORM, DRAWER_FORMS, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS, createPackageGateSources, providerStatementGate } from './gate-sources.js';
 
 // syzygy-qkea.21: the gate sources read the local-agent sitting's acts (scripts/record_dossier_local_agent_acts.py) and the
 // version-tagged sign-off of the local-agent registry entry (scripts/record_versioned_signoff.py). Act text comes from the real
@@ -254,21 +254,115 @@ describe('the sitting\'s acts fail closed', () => {
     write(root, `${DECISIONS_DIR}/WITHDRAW.md`, withdrawal);
     expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/WITHDRAW.md names the act without being its record: a withdrawal or a form this reader does not define` });
   });
-  it('read past the P-104 register row that cites the sign-off\'s tag, and that row only', async () => {
+  // R-POLARIS-DOSSIER-GATE-SOURCES-2 finding 1: the P-104 row is read past at its exact bytes, once, in the register only.
+  it('read past the P-104 register row that cites the sign-off\'s tag at its exact bytes, once, and nothing else', async () => {
     const register = `${DECISIONS_DIR}/PENDING-OWNER-DECISIONS.md`;
     const row = real(register).split('\n').find(line => line.startsWith('| P-104 |'))!;
     expect(row).toContain('public-git-source-acquisition-local-agent-v1.0');
     const root = world([], true);
+    const named = (rel: string) => ({ state: 'refused', why: `${rel} names the act without being its record: a withdrawal or a form this reader does not define` });
     write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n`);
     expect((await sources(root).registryEntry()).state).toBe('ok');
-    write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n| P-105 | Withdraw public-git-source-acquisition-local-agent-v1.0 |\n`);
-    expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${register} names the act without being its record: a withdrawal or a form this reader does not define` });
-    write(root, register, `# Register\n\n${row.replace('| P-104 |', '| P-1040 |')}\n`);
-    expect((await sources(root).registryEntry()).state).toBe('refused');
-    write(root, `${DECISIONS_DIR}/OTHER.md`, `${row}\n`);
+    for (const extra of [
+      row,
+      '| P-104 | Withdrawn by the owner: public-git-source-acquisition-local-agent-v1.0 |',
+      `| P-104 | Withdrawn: ${INSTALLED_ENTRY} |`,
+      '| P-105 | Withdraw public-git-source-acquisition-local-agent-v1.0 |',
+    ]) {
+      write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n${extra}\n`);
+      expect(await sources(root).registryEntry(), extra.slice(0, 40)).toEqual(named(register));
+    }
+    for (const edited of [`${row} Withdrawn.`, row.replace('| P-104 |', '| P-1040 |'), row.replace('owner acts:', 'owner acts (withdrawn):')]) {
+      write(root, register, `# Register\n\n${edited}\n`);
+      expect(await sources(root).registryEntry(), edited.slice(-40)).toEqual(named(register));
+    }
     write(root, register, '# Register\n');
-    expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/OTHER.md names the act without being its record: a withdrawal or a form this reader does not define` });
+    write(root, `${DECISIONS_DIR}/DECISION-HISTORY.md`, `# History\n\n${row}\n`);
+    expect(await sources(root).registryEntry()).toEqual(named(`${DECISIONS_DIR}/DECISION-HISTORY.md`));
   });
+  // Finding 2: a record counts only when it is byte for byte what its recorder renders from its own fields.
+  it.each([
+    ['its supersession line removed', (t: string) => t.replace(/^Supersession \/ revocation: .*\n.*\n\n/m, '')],
+    ['another supersession', (t: string) => t.replace('supersedes nothing', 'supersedes the earlier act')],
+    ['its phrase removed', (t: string) => t.replace(/```text\n.*\n```\n\n/, '')],
+    ['a phrase whose argument is not the exact digest', (t: string) => t.replace(/^([A-Z0-9 -]+: )[0-9a-f]{64}$/m, `$1${'0'.repeat(64)}`)],
+    ['another second provenance line', (t: string) => t.replace('explicitly selected by the owner\'s option selection recorded below', 'selected by an agent')],
+    ['a second provenance state', (t: string) => t.replace(/^(A1 audit-record identity .*)$/m, 'Provenance state: `agent-asserted`\n\n$1')],
+    ['another effect', (t: string) => t.replace('## Effect\n\n', '## Effect\n\nWidened. ')],
+    ['"Withdrawn by this record." appended', (t: string) => `${t}\nWithdrawn by this record.\n`],
+    ['a digest in the owner\'s selection', (t: string) => t.replace('| "label" |', `| "${'a'.repeat(64)}" |`)],
+    ['a recording tag for another date', (t: string) => t.replace(/-signed-(\d{4}-\d{2}-\d{2})`/, '-signed-2026-01-01`')],
+  ])('refuse every sitting act whose record has %s', async (_name, mutate) => {
+    const root = world(KEYS);
+    for (const key of KEYS) {
+      const text = fs.readFileSync(path.join(root, ACTS[key].file), 'utf8'), mutated = mutate(text);
+      expect(mutated, key).not.toBe(text);
+      write(root, ACTS[key].file, mutated);
+    }
+    const s = sources(root);
+    expect((await s.d9()).state).toBe('refused');
+    expect((await s.rfc720Ruling()).state).toBe('refused');
+    expect((await s.projectInput.drawerFor('redis-redis')).stated).toBe(false);
+    expect((await s.providerStatements.statementsFor('redis-redis')).map(r => r.act)).toEqual([null, null]);
+  });
+  it.each([
+    ['no Owner selection line', (t: string) => t.replace(/^Owner selection: .*\n\n/m, '')],
+    ['no Review line', (t: string) => t.replace(/^Review: .*\n\n/m, '')],
+    ['no Reviewed commit line', (t: string) => t.replace(/^Reviewed commit: .*\n\n/m, '')],
+    ['no Disposition line', (t: string) => t.replace(/^Disposition: .*\n\n/m, '')],
+    ['no Scope A extension line', (t: string) => t.replace(/^Scope A extension: .*\n\n/m, '')],
+    ['no "What this does not do" section', (t: string) => t.replace(/\n## What this does not do\n[\s\S]*$/, '\n')],
+    ['its supersession line removed', (t: string) => t.replace(/^Supersession \/ revocation: .*\n.*\n\n/m, '')],
+    ['another second provenance line', (t: string) => t.replace('the owner\'s option selection quoted above\n', 'an agent\'s selection\n')],
+    ['"Withdrawn by this record." appended', (t: string) => `${t}\nWithdrawn by this record.\n`],
+    ['a selection that does not name the Scope A extension', (t: string) => t.replace(/^Owner selection: .*$/m, 'Owner selection: Sign off v1.0')],
+    ['a digest in the selection', (t: string) => t.replace(/^Owner selection: (.*)$/m, `Owner selection: $1 ${'a'.repeat(64)}`)],
+    ['CONFIRM WITH EXCEPTIONS and no disposition record', (t: string) => t.replace(/^Review verdict: CONFIRM$/m, 'Review verdict: CONFIRM WITH EXCEPTIONS')],
+  ])('refuse the registry sign-off whose record has %s', async (_name, mutate) => {
+    const root = world([], true);
+    const text = fs.readFileSync(path.join(root, SIGNOFF), 'utf8'), mutated = mutate(text);
+    expect(mutated).not.toBe(text);
+    write(root, SIGNOFF, mutated);
+    expect((await sources(root).registryEntry()).state).toBe('refused');
+  });
+  it('count a CONFIRM WITH EXCEPTIONS sign-off that names its disposition record', async () => {
+    const root = world([], true);
+    const text = fs.readFileSync(path.join(root, SIGNOFF), 'utf8');
+    write(root, SIGNOFF, text.replace(/^Review verdict: CONFIRM$/m, 'Review verdict: CONFIRM WITH EXCEPTIONS').replace(/^Disposition: none$/m, 'Disposition: pkg/ROUND-1-DISPOSITIONS.md'));
+    expect(await sources(root).registryEntry()).toEqual({ state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' });
+  });
+  // Note 3: the other ways a decisions file names one of these records.
+  it.each([
+    ['the statement\'s governance-relative path', 'Withdrawn: contracts/candidates/dossier-local-agent-acts/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md', 'anthropic'],
+    ['the statement\'s basename', 'Withdrawn: AGENT-PROVIDER-STATEMENT-ANTHROPIC.md', 'anthropic'],
+    ['the statement act\'s phrase label', 'Withdrawn: CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS', 'anthropic'],
+    ['the statement act\'s title', 'Withdrawn: agent-provider statement for redis/redis: Claude Code with Anthropic', 'anthropic'],
+    ['the Subject spaced after its colons', 'Withdrawn: (project: syzygy, repository: redis-redis, agent-provider: anthropic)', 'anthropic'],
+    ['the Subject with each part quoted', 'Withdrawn: (`project:syzygy`, `repository:redis-redis`, `agent-provider:anthropic`)', 'anthropic'],
+    ['the D9 record\'s relative path', 'Withdrawn: in-force/D9-IN-FORCE-RECORD.md', 'd9'],
+    ['the D9 act\'s phrase label', 'Withdrawn: BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS', 'd9'],
+    ['the reading record\'s basename', 'Withdrawn: RFC7-20-READING-IN-FORCE-RECORD.md', 'rfc720'],
+    ['the drawer record\'s basename', 'Withdrawn: NO-EVIDENCE-DRAWER-STATEMENT.md', 'drawer'],
+    ['the drawer\'s Subject on a field line', 'Subject: `(project:syzygy, repository:redis-redis)` drawer statement withdrawn', 'drawer'],
+    ['the installed entry\'s basename', 'Withdrawn: POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json', 'registry'],
+    ['the package as signed off at a version', 'The public-git-source-acquisition-local-agent entry, signed off at 1.0, is withdrawn.', 'registry'],
+    ['the sign-off record\'s title', 'Withdrawn: Public Git source acquisition, local-agent version — version-tagged sign-off v1.0', 'registry'],
+  ])('withdraw what a decisions file names by %s', async (_name, withdrawal, which) => {
+    const root = world(KEYS, true);
+    write(root, `${DECISIONS_DIR}/WITHDRAW.md`, `${withdrawal}\n`);
+    const s = sources(root);
+    const state = {
+      d9: (await s.d9()).state, rfc720: (await s.rfc720Ruling()).state, drawer: (await s.projectInput.drawerFor('redis-redis')).stated ? 'ok' : 'refused',
+      anthropic: (await s.providerStatements.statementsFor('redis-redis'))[0]!.withdrawn ? 'refused' : 'ok', registry: (await s.registryEntry()).state,
+    };
+    expect(state).toEqual({ d9: 'ok', rfc720: 'ok', drawer: 'ok', anthropic: 'ok', registry: 'ok', [which]: 'refused' });
+  });
+  it('leave the drawer stated when its Subject tuple appears only in prose, as the statements\' Effect quotes it', async () => {
+    const root = world(KEYS);
+    write(root, `${DECISIONS_DIR}/NOTE.md`, 'The consent covers (`project:syzygy`, `repository:redis-redis`) only.\n');
+    expect((await sources(root).projectInput.drawerFor('redis-redis')).stated).toBe(true);
+  });
+
   // Note 4: the lines every recorder writes for RFC3-16(b) items 7 and 9.
   it.each([
     ['no owner', (t: string) => t.replace(/^Owner: Tzeusy\n/m, '')],
@@ -362,5 +456,32 @@ describe('the registry entry\'s version-tagged sign-off', () => {
   });
   it('is the form the recorder writes for this package', () => {
     expect(LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM).toMatchObject({ file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md', installed: INSTALLED_ENTRY });
+  });
+});
+
+// The readers' ports of the recorders' templates and file names, held to the recorders themselves (R-POLARIS-DOSSIER-GATE-SOURCES-2
+// finding 2 and note 8): a drifted template refuses every record, and a drifted file name would read a recorded act as absent.
+describe('the gate forms against the recorders', () => {
+  const FORMS: Record<DossierLocalAgentActKey, DigestBoundActForm> = {
+    'redis-no-evidence-drawer': DRAWER_FORMS['redis-redis']!, 'redis-agent-anthropic': STATEMENT_FORMS['redis-redis']![0]!.form,
+    'redis-agent-openai': STATEMENT_FORMS['redis-redis']![1]!.form, 'd9-in-force': D9_ACT_FORM, 'rfc7-20-reading-in-force': RFC7_20_RULING_ACT_FORM,
+  };
+  it('read each record at the path its recorder writes it', () => {
+    const paths = recorderRecordPaths();
+    expect(Object.fromEntries(KEYS.map(key => [key, `${DECISIONS_DIR}/${FORMS[key].file}`]))).toEqual(paths.acts);
+    expect(Object.fromEntries(KEYS.map(key => [key, ACTS[key].file]))).toEqual(paths.acts);
+    expect(`${DECISIONS_DIR}/${LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.file}`).toBe(paths.signoff);
+  });
+  it('render each act record byte for byte as render_act does, from the same fields', () => {
+    for (const key of KEYS) {
+      const argument = sha(real(ACTS[key].record));
+      const fields = { date: DATE, instant: INSTANT, argument, opening: 'opening', label: 'label', description: 'description', frozen: 'f'.repeat(40), manifest: 'b'.repeat(64), verdict: 'CONFIRM', reviewed: 'c'.repeat(40) };
+      expect(FORMS[key].template!.render(fields), key).toBe(renderDossierLocalAgentAct(key, argument, DATE, INSTANT));
+    }
+  });
+  it('render the sign-off record byte for byte as render_record does, from the same fields', () => {
+    const root = world([], true);
+    const fields = { date: DATE, quote: 'Extend Scope A and sign off v1.0', review: 'docs/reviews/R-STUB-RAW.md', commit: 'c'.repeat(40), verdict: 'CONFIRM', disposition: 'none', instant: INSTANT, sha: sha(real(PROPOSED_ENTRY)) };
+    expect(LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.template.render(fields)).toBe(renderLocalAgentSignoff(root, DATE, INSTANT));
   });
 });
