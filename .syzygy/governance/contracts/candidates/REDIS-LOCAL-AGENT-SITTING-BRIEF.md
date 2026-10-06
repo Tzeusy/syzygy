@@ -90,13 +90,24 @@ option label and description verbatim, so the words given below are the
 words that would be recorded.
 
 *(Added 2026-10-07: "Your words" below gives only the option label for A to
-H. The asker composes each question's opening and the option's description
+H, except E, which is a quote. The asker composes each question's opening and the option's description
 when the question is put, and the recorder writes those as offered. Every
 opening, label and description must be one line with no digest. For every
 item except E, the installer
 (`scripts/install_redis_local_agent_sitting.py`) also refuses any that
 contains ": ", " #" or an apostrophe, because a battery line cannot carry
 it. E is recorded from your quoted words instead.)*
+
+**What declining does to the sitting** *(added 2026-10-07)*. Each
+"Declining costs" line below says what declining does to the dossier. What
+it does to the sitting is separate: [Observed] the installer
+(`scripts/install_redis_local_agent_sitting.py`, `REQUIRED`) refuses
+before writing anything unless it has answers for A, B, E, H and I, and for
+one of F's options. Declining any of those means step 10 records no act at
+this sitting, not only that one; the others wait for a later sitting or a
+changed installer. C, D and G may be declined without that effect, except
+that signing D while declining C is refused (D's policy maps a class only C
+defines).
 
 ### A. Redis observation consent
 
@@ -139,7 +150,9 @@ at all, and what it withholds. The local-agent mode refuses a run without it
     Syzygy sends no request, so the carrier is not on this run's path.
 - **To know:** signing B and D stales P-95 act A, which must then be
   re-derived over the v2 policy bytes before it can be performed.
-  - **Why** [Observed in the 2026-10-07 rehearsal]: B supersedes the
+  - **Why** [Observed in rehearsal 4, reported in the message of
+    `a3ef4d98` on `main`, and in `scripts/check_spec_reconciliation.py`,
+    which skips this package once B is recorded and says so]: B supersedes the
     2026-10-02 policy re-pin act that the P-95 tree-framing re-pin package
     (`pwb-behavior-contract-repin-tree-framing/`) re-pins its policy from. D
     then moves the policy again. After the sitting, that package's builder
@@ -215,7 +228,10 @@ configuration honoured, no process started, every object re-hashed.
 
 - **Signing unlocks:** the reader becomes the one registered adapter; without
   it every read is refused before an object is opened.
-- **Declining costs:** no read; a later sitting for this one act.
+- **Declining costs:** no read. *(Corrected 2026-10-07: this said "a later
+  sitting for this one act". Under the installer as merged, declining E
+  means step 10 records nothing at this sitting; see "What declining does
+  to the sitting" above A.)*
 - **To know** (PR #370 row 2): signing extends the Scope A direction of
   2026-10-02 to a public-source entry for the first time. It also approves
   declarations (source limits, screening, failure display) that belong to the
@@ -251,11 +267,32 @@ configuration honoured, no process started, every object re-hashed.
   includes `8422119c`. [Inferred] (b) matches what the entry is for, a
   registration of the reader Syzygy actually runs. (a) is the stricter
   reading of the clause. Either way, any reader change after your sign-off is
-  a new version. The recommendation below is unchanged; this question is
-  asked first.
-- **Recommended:** sign, once PR #367 has merged.
-- **Your words:** option "Extend Scope A to this entry and sign v1.0". The
-  recorder refuses a label that does not contain "Extend Scope A".
+  a new version. This question is asked first.
+- **What each answer does at this sitting** *(added 2026-10-07)*:
+  - **(b):** sign v1.0 as recommended below. The reader on `main`, with
+    `8422119c`, is what v1.0 describes.
+  - **(a):** v1.0 does not describe the reader on `main`, and no entry
+    v1.1 exists yet (`syzygy-stgw` drafts one only if you answer (a)).
+    [Observed] Nothing would stop a v1.0 sign-off admitting the newer
+    reader: the gate (`registryEntryUsable` in
+    `packages/polaris-dossier/src/gate-sources.ts`) checks only that the
+    entry names the reader and carries a non-blank implementation version,
+    never the reader's bytes. So under (a) the honest course is to hold E.
+    Holding E holds the whole installer run (see "What declining does to
+    the sitting" above A): the sitting waits for the v1.1 entry, its review
+    and an installer change to sign it.
+  - **If you sign**, let the option you select name your reading, for
+    example "Extend Scope A to this entry and sign v1.0; as merged means
+    the reader on main when signed". E has no label field: the installer
+    passes your selection as one quoted line, and the recorder
+    (`scripts/record_versioned_signoff.py`) writes it verbatim after
+    "Owner selection:", so the record shows which reading the sign-off was
+    given under.
+- **Recommended:** sign, once PR #367 has merged, if you answer (b); hold E
+  if you answer (a).
+- **Your words:** the selection quoted as "Extend Scope A to this entry and
+  sign v1.0", with your reading added as above. The recorder refuses a quote
+  that does not contain "Extend Scope A".
 
 ### F. The drawer statement
 
@@ -341,6 +378,9 @@ local-agent mode). Cleared at review round 3 with notes only.
   limitations stand." The recorder refuses a description carrying a digest.
 
 ### J. Rulings with no bytes
+
+*(Settled 2026-10-07 by direction; not asked again. The text below is kept
+as offered.)*
 
 Plain directions; no review needed; each has a lawful default.
 
@@ -515,10 +555,12 @@ retained as `docs/evidence/redis-local-agent-sitting-rehearsal-2026-10-07.json`.
   performs no act: the records it wrote were the scratch's own and were
   discarded. One case in the 0 is skipped, not passed: once B is recorded,
   the reconciliation selftest no longer builds the P-95 package, and says so
-  in its output (see B).
+  in its output (see B). The retained report does not hold that output;
+  the skip and its message are in `scripts/check_spec_reconciliation.py`.
 
-An earlier run found six failing battery lines with four causes. PR #376
-repaired three of them before this run:
+An earlier run (rehearsal 4, reported in the message of `a3ef4d98` on
+`main`) found six failing battery lines with four causes. PR #376 repaired
+three of them before this run:
 
 - the context-budget report was not regenerated after RFC-0005 changed (the
   base installer);
@@ -533,6 +575,7 @@ The superseded sentence, kept as written before the rehearsal: "[Unknown]
 Steps 3 to 10 have not been rehearsed together, and the existing rehearsal
 (`scripts/simulate_redis_sitting.py`) covers neither PR #370's recorders nor
 version 1.1. Rehearse in a scratch clone before the sitting."
+
 The order of steps 1 and 9 matters for the status page's composition figure:
 the installer's profile step already handles a profile installed after a
 signed dossier addition, which is why version 1.1 goes first.
