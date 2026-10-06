@@ -7,7 +7,9 @@
 > said here. Pull-request states are as of 2026-10-07 and go stale; the pull
 > request owns its state. Nothing here may be offered until a fresh-context
 > review of these bytes returns CONFIRM, or CONFIRM WITH EXCEPTIONS with notes
-> only, and that review waits for PR #370's round 3 to settle.
+> only. PR #370's package was cleared at `d19ec98b` by its round 3
+> (CONFIRM WITH EXCEPTIONS, notes only; its `ROUND-3-DISPOSITIONS.md` carries
+> the notes); this page routes to those bytes.
 
 ## What one sitting can and cannot do
 
@@ -31,8 +33,9 @@ run work by itself:
   sitting gives none of those, so that installer refuses as it stands. A
   local-agent variant is engineering work, not an act, tracked as
   `syzygy-qkea.16`.
-- [Observed] PR #370 (the local-agent acts, head `d19ec98b`) is in its third
-  review round; its rows cannot be offered before that review clears.
+- [Observed, 2026-10-07] PR #370 (the local-agent acts) cleared review round
+  3 over its package at `d19ec98b`, notes only, and is not yet merged; its
+  rows are offered from those bytes, in its table order, consent first.
 
 Everything provider-mode stays parked and is not asked: PR #260 rows 2a and
 2b (route and API key), 3a and 3b (the fetching Git adapter, replaced by
@@ -165,9 +168,15 @@ configuration honoured, no process started, every object re-hashed.
   signing now is safe in that sense, but any change the gate forces into the
   entry needs a new version and a new sign-off. The install refuses until PR
   #367 merges.
-- **Recommended:** [Inferred] sign now; the cost of re-signing a changed entry
-  is one question, the cost of waiting is a sitting.
-- **Your words:** option "Extend Scope A to this entry and sign v1.0".
+- **Offered only after PR #367 merges.** Round 3 of PR #370's review (note
+  4) found that the entry's implementation version names the reader "as
+  merged" but is bound to no reader bytes, and the reader changed under it
+  before merge. Signing before the merge would approve a version whose code
+  is still moving. If PR #367 has not merged by the sitting, this row waits;
+  nothing else in this brief depends on its timing except step 7 below.
+- **Recommended:** sign, once PR #367 has merged.
+- **Your words:** option "Extend Scope A to this entry and sign v1.0". The
+  recorder refuses a label that does not contain "Extend Scope A".
 
 ### F. The drawer statement
 
@@ -197,7 +206,11 @@ governed, so something must be signed either way.
 - **To know** (PR #370 rows 4 and 5): it binds the whole current
   `security.md` and `v1.md`, so any later edit to either, even an unrelated
   one, unmatches the record and briefs fall back to SEC-3's rule until you
-  sign a new version. Two readings are new: that your words adopted D9 and
+  sign a new version. Wider still (PR #370 round 3, note 1): once any act of
+  that package is recorded, an edit to any file a record binds turns every
+  one of its recorders' `--check` red, not only the record it touches, until
+  a successor package is drafted; the failure is closed. Two readings are
+  new: that your words adopted D9 and
   this act only binds it to bytes for the check, and that an act over a
   record listing digests binds the files it lists.
 - **Recommended:** sign, in keeping with your choice of D9; it costs nothing
@@ -339,7 +352,7 @@ bead waits on your direction and no code may change before it.
 "Accept every recommendation in the Redis local-agent sitting brief: run
 round 7 on screening scope version 2 now; at the sitting sign A, B with Q2 to
 Q8 as recommended, C at the manifest row with the SOURCE-POLICY.md successor,
-D variant none, E extending Scope A, F no drawer, G, H, and I as recommended;
+D variant none, E extending Scope A once PR #367 has merged, F no drawer, G, H, and I as recommended;
 10a no ruling, 10b maintainer-stated only, 10c after the first run; 1.1
 signed off with N6, N1 and N2 as recommended; 4mbu: print the command."
 
@@ -374,6 +387,10 @@ chain, `--instant`; give instants in increasing order. Every recorder has a
 8. **Local-agent records** (F, G, H): the recorder
    record_dossier_local_agent_acts.py, which lands with PR #370, with keys
    `redis-no-evidence-drawer`, `d9-in-force` and `rfc7-20-reading-in-force`.
+   Never run that package's builder with `--write` once any of its acts is
+   recorded (round 3, note 1). The recorder's printed "add the
+   performed-act registration" line is stale (note 3): run
+   `scripts/check_governance.py` instead.
 9. **Narrative profile** (I): `scripts/record_narrative_profile_adoption.py --record`.
 10. **Install, one commit with every record from steps 3 to 9:** the
     local-agent installer (to be written), doing what the existing
