@@ -1,17 +1,17 @@
 {
-  "subject": "syzygy-4mbu no-spawn, read bounds, counts and report-fact rendering",
-  "commit": "bbf9dd1f99afeeaed4dba502d89a829502fd6641",
+  "subject": "syzygy-4mbu no-spawn, read bounds, counts, report-fact rendering, and the round-2 repairs (constructor and computed-key evasion, unmarked records, consumer sweep, reason code, byte digest, repeated attributes)",
+  "commit": "64d4d8abadd559595720eef2c94654e9a81d2986",
   "subjectDigests": {
-    "apps/three-surface-poc/src/capture-test-artifact-main.ts": "sha256:49d033568bb7513c322d6da3745d0f9c43a025de6c854dc05e0ea6d0e30d6916",
-    "apps/three-surface-poc/src/capture-test-artifact.ts": "sha256:828fc37095669c7d8e3a2104ee894e5633f565b356409cc8e05aabdf689519b1",
-    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:f0ee4eb0f5312e2dbd82cd85c919f048d5118f6f64ee92f3861713acb410599f",
-    "apps/three-surface-poc/src/trajectory.ts": "sha256:bb7fe37b2648fd38d5764b295cce5d32fe54b6366449437fb36285b09a7bbc9a",
-    "packages/three-surface-poc-core/src/model.ts": "sha256:1ab087f3af28400decdc3b87afae4d7156715e4efed170cd1cd786828a37648f",
-    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts": "sha256:14036696b0b0703998907d19db197ed8549510915aca59388679986a0e90c0e6",
-    "apps/three-surface-poc/src/capture-test-artifact.test.ts": "sha256:e0026976161b831285cbd139d1b9ebb4998b2af945ffcb0000f296e240ff1dce",
-    "packages/three-surface-poc-core/src/test-artifact-verification.test.ts": "sha256:31232da5a0ce8e5623ad2b83cd53ded6dcea6c67fc2d9747a9af47b2363fde03",
-    "apps/three-surface-poc/src/trajectory.test.ts": "sha256:c07c18e5399cb6e1a0b3d84996737b28e413f61cdc1181f9a7238a271e5b2ece",
-    "apps/three-surface-poc/src/test-artifact-verification-consumers.test.ts": "sha256:5d27f6b3cc8b71f837e216b68ccf245d115e59f58b9107e394e8ec52bec57e34"
+    "apps/three-surface-poc/src/capture-test-artifact-main.ts": "sha256:c913063d5abd06162e09685d54de06fea6f21e093981bc919cc2ecd3b6d1c1c8",
+    "apps/three-surface-poc/src/capture-test-artifact.ts": "sha256:d56544de8b001742664e17fed8867f1fc31ddc1d332992dc9d0d499e2be2bc9e",
+    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:8fdd94651253959bdfc8774f283047780a91598cbd99bd4bf1192ce241d508b8",
+    "apps/three-surface-poc/src/trajectory.ts": "sha256:2fc5fd683af5c1c3fdbc2a1d572f6e536acc93310c987182eaa6b5bbc9e2accb",
+    "packages/three-surface-poc-core/src/model.ts": "sha256:119fe69c19f3cdbd1d288a54222f85c0316e2693822abcdf5c8ff533e07d312e",
+    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts": "sha256:20caf50602840a472b4e5885cb6b773350672d3ec01c69f1fc0c248ac2d9f1cc",
+    "apps/three-surface-poc/src/capture-test-artifact.test.ts": "sha256:b4aa6b80668cb5d833420ee369e7f8e5e54e5fad9e8bde2b2d0443369be9bc07",
+    "packages/three-surface-poc-core/src/test-artifact-verification.test.ts": "sha256:6f51a195126d0bc98681c2599097f8f8ad37e43f9e0b04565dcc526b94979a53",
+    "apps/three-surface-poc/src/trajectory.test.ts": "sha256:680f144060f23dfe8379b1bf3e22ca5dc62389d1ceef698078e3e2aeb79d13c2",
+    "apps/three-surface-poc/src/test-artifact-verification-consumers.test.ts": "sha256:a66754b0c16bc0ee00693ada0c4ac9fd8830ec2308f2d0707ca27c08595c75c4"
   },
   "command": "npx vitest run apps/three-surface-poc/src/capture-test-artifact-main.test.ts apps/three-surface-poc/src/capture-test-artifact.test.ts packages/three-surface-poc-core/src/test-artifact-verification.test.ts apps/three-surface-poc/src/trajectory.test.ts apps/three-surface-poc/src/test-artifact-verification-consumers.test.ts",
   "mutants": [
@@ -30,7 +30,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls",
@@ -54,7 +54,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls",
@@ -79,7 +79,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
         "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
@@ -97,7 +97,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) runs exactly one command, the literal git",
         "capture-test-artifact never starts the observed project (run check) print writes the command for the operator and runs nothing"
@@ -120,7 +120,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls",
@@ -139,7 +139,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) imports the process module only in the entry point, and only the git runner",
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls",
@@ -158,7 +158,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls"
       ],
@@ -175,7 +175,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls"
       ],
@@ -192,7 +192,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (run check) refuses a FIFO without opening it, so a pipe nobody writes cannot hang the ingest",
         "capture-test-artifact never starts the observed project (run check) refuses a symlink, even to a well-formed result file"
@@ -210,7 +210,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "capture-test-artifact never starts the observed project (run check) refuses a file over the ceiling before reading it",
         "capture-test-artifact never starts the observed project (run check) reads a file at exactly the ceiling"
@@ -228,7 +228,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "ingestTestArtifact refuses a negative count as unreadable rather than reading it as zero"
       ],
@@ -245,7 +245,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "buildOperatorReportedTestArtifactRecord refuses status 0 beside a failure, and beside zero tests",
         "ingestTestArtifact refuses a reported exit status of 0 beside a run that collected no tests"
@@ -263,11 +263,11 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "resolveTestArtifactVerification never renders an operator-reported run as Verified: it caps at report-fact with its disclosure (RFC5-19)",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-007 (AC3, syzygy-0r9)",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-008 (AC3, syzygy-0r9)"
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
       ],
       "killed": true,
       "shSentinelWritten": false
@@ -282,11 +282,11 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
-        "every consumer of the test-artifact verification kind treats `reported` as not verified finds exactly the listed `verified` comparisons and switch arms, and none of them admits `reported`",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-007 (AC3, syzygy-0r9)",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-008 (AC3, syzygy-0r9)"
+        "every consumer of the test-artifact verification treats `reported` as not verified finds no `verified` comparison or switch arm anywhere, since no such kind exists",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
       ],
       "killed": true,
       "shSentinelWritten": false
@@ -301,28 +301,187 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
-        "every consumer of the test-artifact verification kind treats `reported` as not verified finds exactly the listed `verified` comparisons and switch arms, and none of them admits `reported`"
+        "every consumer of the test-artifact verification treats `reported` as not verified finds no `verified` comparison or switch arm anywhere, since no such kind exists"
       ],
       "killed": true,
       "shSentinelWritten": false
     },
     {
-      "id": "M17-reported-falls-through-to-verified",
+      "id": "M17-verified-arm-restored",
       "edits": [
         {
           "file": "apps/three-surface-poc/src/trajectory.ts",
-          "old": "  if (verification.kind === 'verified' && governingIntentId !== null) {\n",
-          "new": "  if ((verification.kind === 'verified' || verification.kind === 'reported') && governingIntentId !== null) {\n"
+          "old": "  const id = workerChangeVerificationId(beadId);\n",
+          "new": "  if ((verification as { kind: string }).kind === 'verified') return 'Verification: Verified';\n  const id = workerChangeVerificationId(beadId);\n"
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
-        "every consumer of the test-artifact verification kind treats `reported` as not verified finds exactly the listed `verified` comparisons and switch arms, and none of them admits `reported`",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-007 (AC3, syzygy-0r9)",
-        "Trajectory renders Verified on the card only once a real matching test artifact is ingested for governing intent REQ-alternate-governing-intent-008 (AC3, syzygy-0r9)"
+        "every consumer of the test-artifact verification treats `reported` as not verified finds no `verified` comparison or switch arm anywhere, since no such kind exists"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M18-reviewer-constructor-evasion-runs-sh",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    const g = (process.stdout.constructor as unknown as { constructor: (s: string) => () => Record<string, (n: string) => Record<string, (...a: unknown[]) => unknown>> }).constructor('return this.process')();\n    g[['get', 'Builtin', 'Module'].join('')]?.(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls"
+      ],
+      "killed": true,
+      "shSentinelWritten": true
+    },
+    {
+      "id": "M19-split-constructor-key-runs-sh",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "old": "  if (mode === 'print') {\n",
+          "new": "  if (mode === 'print') {\n    const k = ['constr', 'uctor'].join('');\n    const s = process.stdout as unknown as Record<string, Record<string, (s: string) => () => Record<string, (n: string) => Record<string, (...a: unknown[]) => unknown>>>>;\n    const g = s[k]![k]!('return this.process')();\n    g[['get', 'Builtin', 'Module'].join('')]?.(['child', 'process'].join('_'))[['spawn', 'Sync'].join('')]?.('sh', ['-c', 'touch /tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/lane-doctrine/EVADED']);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "capture-test-artifact never starts the observed project (source check) names no other way to start a process, in the tool or the core module it calls"
+      ],
+      "killed": true,
+      "shSentinelWritten": true
+    },
+    {
+      "id": "M20-unmarked-resolves-reported",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+          "old": "  return { kind: 'unknown', reason: UNMARKED_RECORD_REASON };\n",
+          "new": "  return { kind: 'reported', tier: 'report-fact', record: input.record as never, disclosure: OPERATOR_REPORTED_DISCLOSURE };\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "resolveTestArtifactVerification fails closed on a record with no provenance: Unknown, never Verified, even when it passes and binds",
+        "resolveTestArtifactVerification fails closed on an unmarked record read back from the state file",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M21-destructuring-consumer",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/orrery.ts",
+          "old": "import { escapeHtml } from '@syzygy/cap1-daemon';\n",
+          "new": "import { escapeHtml } from '@syzygy/cap1-daemon';\nexport function probe(model: { testArtifactVerification: unknown }): unknown { const { testArtifactVerification: v } = model; return v; }\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "every consumer of the test-artifact verification treats `reported` as not verified finds exactly the listed consumers, by name and by whole-model serialization"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M22-whole-model-serializer",
+      "edits": [
+        {
+          "file": "apps/three-surface-poc/src/orrery.ts",
+          "old": "import { escapeHtml } from '@syzygy/cap1-daemon';\n",
+          "new": "import { escapeHtml } from '@syzygy/cap1-daemon';\nexport const probe = (model: unknown): string => JSON.stringify(model);\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "every consumer of the test-artifact verification treats `reported` as not verified finds exactly the listed consumers, by name and by whole-model serialization"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M23-reported-reason-missing-evidence",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/model.ts",
+          "old": "        add(workerChangeVerificationId(change.beadId), verification.disclosure, 'execution-blocked');\n",
+          "new": "        add(workerChangeVerificationId(change.beadId), verification.disclosure, 'missing-evidence');\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+        "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M24-digest-of-decoded-text",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+          "old": "  return `sha256:${createHash('sha256').update(rawJUnit).digest('hex')}`;\n",
+          "new": "  return `sha256:${createHash('sha256').update(Buffer.from(rawJUnit).toString('utf8'), 'utf8').digest('hex')}`;\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "buildOperatorReportedTestArtifactRecord digests the file's own bytes, which equal sha256sum even when they are not valid UTF-8"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M25-no-byte-ceiling",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+          "old": "    input.rawJUnit.byteLength > MAX_JUNIT_ARTIFACT_BYTES\n",
+          "new": "    false\n"
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "buildOperatorReportedTestArtifactRecord measures the ceiling in bytes, not decoded characters"
+      ],
+      "killed": true,
+      "shSentinelWritten": false
+    },
+    {
+      "id": "M26-repeated-attribute-last-wins",
+      "edits": [
+        {
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+          "old": "    if (attrs.has(name)) return null;\n",
+          "new": ""
+        }
+      ],
+      "exit": 1,
+      "tests": 111,
+      "failed": [
+        "parseJUnitRootTotals refuses a repeated count rather than reading either value",
+        "parseJUnitRootTotals refuses a repeated total rather than reading either value",
+        "parseJUnitRootTotals refuses a repeated attribute on the wrapper rather than reading either value",
+        "parseJUnitRootTotals refuses a repeated attribute on the nested suite even when the wrapper carries totals",
+        "buildOperatorReportedTestArtifactRecord rejects an artifact with no recognizable JUnit root, or a repeated count attribute"
       ],
       "killed": true,
       "shSentinelWritten": false
@@ -337,7 +496,7 @@
         }
       ],
       "exit": 1,
-      "tests": 94,
+      "tests": 111,
       "failed": [
         "resolveTestArtifactVerification checks an operator-reported record against its ingest time, and says so"
       ],
