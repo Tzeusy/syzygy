@@ -9,7 +9,7 @@ import { renderDossierLocalAgentAct, renderLocalAgentSignoff, renderPolicyAct, r
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { runDossierCli } from './cli.js';
 import { createPackageGateSources, type ProjectInputSource, type ProviderStatementRecord, type ProviderStatementSource } from './gate-sources.js';
-import { cloneGitDirShape } from './clone-shape.js';
+import { cloneGitDirShape, cloneStoreShape } from './clone-shape.js';
 import { openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { initRun, type InitResult } from './init.js';
 import { preflight } from './preflight.js';
@@ -391,6 +391,29 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
       make(clone);
       await refusedShape(clone, `${rel} is a symbolic link; nothing under .git is followed`, false);
     }
+  });
+
+  it('refuses an allowed name of the wrong kind', async () => {
+    const hooks = cloneAt(commits.A);
+    fs.rmSync(dotGit(hooks, 'hooks'), { recursive: true });
+    fs.writeFileSync(dotGit(hooks, 'hooks'), '');
+    await refusedShape(hooks, 'hooks is not a directory', false);
+    const index = cloneAt(commits.A);
+    fs.rmSync(dotGit(index, 'index'));
+    fs.mkdirSync(dotGit(index, 'index'));
+    await refusedShape(index, 'index is not a regular file', false);
+  });
+
+  it('reads shallow without following a link, and only as a regular file', () => {
+    const none = { parents: [], stored: 1, reachable: 1, beyondCount: 0, beyond: [] };
+    const linked = cloneAt(commits.A);
+    fs.rmSync(dotGit(linked, 'shallow'));
+    fs.symlinkSync(dotGit(cloneAt(commits.B), 'shallow'), dotGit(linked, 'shallow'));
+    expect(cloneStoreShape(dotGit(linked), commits.A, none)).toEqual({ ok: false, reason: `shallow is a symbolic link; nothing under .git is followed; ${SHAPE}` });
+    const directory = cloneAt(commits.A);
+    fs.rmSync(dotGit(directory, 'shallow'));
+    fs.mkdirSync(dotGit(directory, 'shallow'));
+    expect(cloneStoreShape(dotGit(directory), commits.A, none)).toEqual({ ok: false, reason: `shallow is not a regular file; ${SHAPE}` });
   });
 
   it('refuses a file over its bound, and a .git with more entries than the walk\'s bound', async () => {
