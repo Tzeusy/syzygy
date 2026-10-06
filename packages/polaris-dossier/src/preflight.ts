@@ -70,10 +70,13 @@ export async function preflight(input: string, sources: GateSources, now: number
       d9,
       rfc720Ruling,
       missing,
-      cloneCommands: revisions.length === 0 ? [] : [
-        `git clone ${url} <dir>`,
-        ...revisions.map(r => `git -C <dir> checkout --detach ${r.commitId}   # ${r.label}`),
-      ],
+      // One consented commit fetched alone into an empty repository, never a full clone: the agent reads whatever the clone holds,
+      // and a full clone would hand it every commit the consent does not name. One block per revision, each in its own new directory.
+      cloneCommands: revisions.flatMap(r => [
+        `git init <dir>   # ${r.label}: a new, empty directory for this revision alone`,
+        `git -C <dir> fetch --depth=1 ${url} ${r.commitId}`,
+        'git -C <dir> checkout --detach FETCH_HEAD',
+      ]),
       disclosures: [
         'the URL was parsed, not fetched; Syzygy made no network request and read no repository object',
         RECORDS_WITHIN_REACH,

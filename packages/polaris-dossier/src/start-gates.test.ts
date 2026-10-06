@@ -622,8 +622,30 @@ describe('preflight', () => {
       consentedRevisions: [{ label: 'fixture-a', commit: commits.A }, { label: 'fixture-b', commit: commits.B }, { label: 'fixture-c', commit: commits.C }],
       startGates: { registryEntry: { state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' }, screeningPolicy: { state: 'ok' } },
       missing: [],
-      cloneCommands: [`git clone ${URL_} <dir>`, `git -C <dir> checkout --detach ${commits.A}   # fixture-a`, `git -C <dir> checkout --detach ${commits.B}   # fixture-b`, `git -C <dir> checkout --detach ${commits.C}   # fixture-c`],
+      cloneCommands: [
+        'git init <dir>   # fixture-a: a new, empty directory for this revision alone', `git -C <dir> fetch --depth=1 ${URL_} ${commits.A}`, 'git -C <dir> checkout --detach FETCH_HEAD',
+        'git init <dir>   # fixture-b: a new, empty directory for this revision alone', `git -C <dir> fetch --depth=1 ${URL_} ${commits.B}`, 'git -C <dir> checkout --detach FETCH_HEAD',
+        'git init <dir>   # fixture-c: a new, empty directory for this revision alone', `git -C <dir> fetch --depth=1 ${URL_} ${commits.C}`, 'git -C <dir> checkout --detach FETCH_HEAD',
+      ],
     });
+    expect(result.report.cloneCommands.some((command) => /\bgit clone\b/u.test(command))).toBe(false);
+  });
+  it('prints clone commands that leave the consented commit alone in the clone', async () => {
+    const result = await run(records());
+    if (!result.ok) throw new Error(result.reason);
+    // A local stand-in for the upstream, holding the consented commits and others; the printed commands run against it with the URL
+    // replaced, and the clone they make must hold exactly the one commit fetched.
+    const upstream = path.join(tempDir('preflight-upstream-'), 'redis.git');
+    const dir = path.join(tempDir('preflight-clone-'), 'redis');
+    execFileSync('git', ['clone', '-q', '--bare', '--no-local', origin, upstream], { env: GIT_ENV });
+    execFileSync('git', ['-C', upstream, 'config', 'uploadpack.allowAnySHA1InWant', 'true'], { env: GIT_ENV });
+    for (const line of result.report.cloneCommands.slice(3, 6)) {
+      const argv = line.replace(/\s+#.*$/u, '').replaceAll('<dir>', dir).replace(URL_, `file://${upstream}`).split(' ');
+      expect(argv[0]).toBe('git');
+      execFileSync('git', argv.slice(1), { env: GIT_ENV, stdio: 'pipe' });
+    }
+    expect(execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8', env: GIT_ENV }).trim()).toBe(commits.B);
+    expect(execFileSync('git', ['-C', dir, 'rev-list', '--all'], { encoding: 'utf8', env: GIT_ENV }).trim().split('\n')).toEqual([commits.B]);
   });
   it('names each missing record and is not ready', async () => {
     const result = await run(records({ [CONSENT_ACT]: null, [POLICY_ACT]: null }));
