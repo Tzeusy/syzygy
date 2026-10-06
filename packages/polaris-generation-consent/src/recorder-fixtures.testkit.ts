@@ -78,6 +78,17 @@ sys.stdout.write(m.render_record(pkg, '1.0', '${date}', 'Extend Scope A and sign
   return run.stdout;
 }
 
+/** Where the recorders write each record, relative to the repository root: the five sitting acts (`Act.record`) and the v1.0
+ * sign-off (`record_rel`). A reader keyed on another file name would read a recorded act as absent. */
+export function recorderRecordPaths(): { readonly acts: Readonly<Record<DossierLocalAgentActKey, string>>; readonly signoff: string } {
+  const py = `import json, sys; sys.path.insert(0, 'scripts'); import record_dossier_local_agent_acts as m, record_versioned_signoff as vs
+pkg = vs.real_packages()['public-git-source-acquisition-local-agent']
+sys.stdout.write(json.dumps({'acts': {k: a.record.as_posix() for k, a in m.ACT_BY_KEY.items()}, 'signoff': vs.record_rel(pkg, '1.0').as_posix()}))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder paths failed: ${run.stderr}`);
+  return JSON.parse(run.stdout) as { acts: Record<DossierLocalAgentActKey, string>; signoff: string };
+}
+
 /** The public Git-hosting source-acquisition registry entry act as scripts/record_public_admission_registry_entries_acts.py renders it
  * (key `git-source-acquisition`). */
 export function renderRegistryAct(argument: string, date: string, instant: string): string {

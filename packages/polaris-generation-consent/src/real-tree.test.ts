@@ -27,7 +27,7 @@ const reads = (fs: PackageReaderFs, now = Date.now()) => ({
   port: createPackageAdmissionRecordsPort({ root: ROOT, now: () => now, fs }),
 });
 const exists = async (rel: string): Promise<boolean> => { try { await readFile(path.join(ROOT, rel)); return true; } catch { return false; } };
-const KINDS =['observation-consent', 'egress-consent', 'public-source-policy'] as const;
+const KINDS = ['observation-consent', 'egress-consent', 'public-source-policy'] as const;
 const TIMEOUT = 120_000;   // each read walks the whole decisions tree
 
 describe('the readers over this checkout\'s decisions directory', () => {
