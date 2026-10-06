@@ -354,18 +354,44 @@ def verify_manifest(text: str, expected: str, paths: list[str]) -> list[str]:
     return []
 
 
-def applied(root: pathlib.Path) -> bool:
-    """Every manifest row already equals both current mirrors (post-adoption)."""
+def later_links() -> list[tuple[str, str]]:
+    """(subject manifest, act record) of each link after the restyle in
+    CG-7h's contract successor chain, in act order."""
+    governance = _governance()
+    chain = [(label, subject, act)
+             for label, subject, act, *_ in governance.CONTRACT_SUCCESSOR_CHAIN]
+    labels = [label for label, _subject, _act in chain]
+    if governance.CONTRACT_RESTYLE_LABEL not in labels:
+        return []
+    return [(subject, act) for _label, subject, act
+            in chain[labels.index(governance.CONTRACT_RESTYLE_LABEL) + 1:]]
+
+
+def later_rows(root: pathlib.Path, links=None) -> dict[str, str]:
+    """Rows of the performed later links, by path, the latest act winning. A
+    module a later act amended hashes to that act's row, not the restyle's."""
+    out: dict[str, str] = {}
+    for subject, act in later_links() if links is None else links:
+        if (root / act).is_file() and (root / subject).is_file():
+            out.update({path: sha for sha, path in
+                        manifest_rows((root / subject).read_text(encoding="utf-8"))})
+    return out
+
+
+def applied(root: pathlib.Path, links=None) -> bool:
+    """Every manifest row already equals both current mirrors (post-adoption),
+    or, for a module a later performed contract act amended, that act's row."""
     target = root / MANIFEST
     if not target.is_file():
         return False
     rows = manifest_rows(target.read_text(encoding="utf-8"))
     if [path for _sha, path in rows] != population(root):
         return False
+    later = later_rows(root, links)
     for sha, path in rows:
         for base in (CONTRACTS, CANDIDATES):
             file = root / base / path
-            if not file.is_file() or sha256(file.read_bytes()) != sha:
+            if not file.is_file() or sha256(file.read_bytes()) != later.get(path, sha):
                 return False
     return True
 
@@ -660,6 +686,23 @@ def selftest() -> int:
         (passed if done == 0 and applied(root) else failures).append(
             "apply --at-adoption after a valid record installs manifest bytes on "
             "both mirrors")
+        # a later contract act amends one restyled module on both mirrors: the
+        # package stays applied only through that act's own row
+        link = ("later/MANIFEST.txt", "later/ACT.md")
+        amended = (root / CONTRACTS / first).read_bytes() + b"later amendment\n"
+        for base in (CONTRACTS, CANDIDATES):
+            (root / base / first).write_bytes(amended)
+        (root / link[0]).parent.mkdir(parents=True, exist_ok=True)
+        (root / link[0]).write_text(f"{sha256(amended)}  {first}\n")
+        unperformed = applied(root, [link])
+        (root / link[1]).write_text("# later act\n")
+        through_later = applied(root, [link])
+        (root / link[0]).write_text(f"{sha256(b'other')}  {first}\n")
+        wrong_row = applied(root, [link])
+        (passed if not unperformed and through_later and not wrong_row
+         else failures).append(
+            "a module a later act amended is applied only through that performed "
+            "act's own row")
         absent = scratch / "absent"
         absent.mkdir()
         code, message = check_command(absent)
@@ -694,8 +737,11 @@ def check_command(root: pathlib.Path) -> tuple[int, str]:
         return 0, (f"contract readability-restyle package absent: "
                    f"{PACKAGE.as_posix()} does not exist; nothing to verify")
     if applied(root):
+        later = set(later_rows(root)) & set(population(root))
         return 0, (f"contract readability-restyle package applied: all "
-                   f"{len(population(root))} manifest rows equal both current mirrors")
+                   f"{len(population(root))} manifest rows equal both current mirrors"
+                   + (f" ({len(later)} through a later contract act's row: "
+                      + ", ".join(sorted(later)) + ")" if later else ""))
     findings = check(root)
     if findings:
         return 1, "contract readability-restyle package does not verify:\n" + "\n".join(

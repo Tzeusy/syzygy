@@ -96,6 +96,24 @@ LATER_SPEC_SIGNOFFS = (
                   "pwb-tree-framing-amendment/proposed/spec.md.patch")),
 )
 
+#: Acts performed after the re-pin acts that superseded a subject again, per
+#: subject key, in act order: (act record, its patch to the subject). A
+#: `{variant}` in the patch path is the record's `Chosen variant:` line. The
+#: subject as the re-pin left it is the tree with these patches reversed,
+#: newest first, each from its own act's exact digest (`subject_at_act`).
+LATER_SUBJECT_ACTS: dict[str, tuple[tuple[pathlib.Path, pathlib.Path], ...]] = {
+    "policy": (
+        (DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
+         pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope/"
+                      "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.patch")),
+        (DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
+         pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/"
+                      "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json."
+                      "{variant}.patch")),
+    ),
+}
+CHOSEN_VARIANT_RE = re.compile(r"^Chosen variant: `([a-z]+)`\.?\s*$", re.MULTILINE)
+
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 EXACT_DIGEST_RE = re.compile(
     r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`\s*$", re.MULTILINE)
@@ -210,13 +228,46 @@ def spec_at_pin(root: pathlib.Path) -> bytes:
     return body
 
 
+def _later_patch(root: pathlib.Path, record: pathlib.Path, patch: pathlib.Path) -> pathlib.Path:
+    if "{variant}" not in patch.as_posix():
+        return patch
+    found = CHOSEN_VARIANT_RE.findall(read(root, record).decode())
+    if len(found) != 1:
+        raise ValueError(f"{record.as_posix()} does not name exactly one chosen variant")
+    return pathlib.Path(patch.as_posix().replace("{variant}", found[0]))
+
+
+def subject_at_act(root: pathlib.Path, subject: Subject) -> bytes:
+    """The subject as the act this package offers left it: the tree with the
+    patch of every later performed act reversed, newest first. Each reversal
+    starts from that act's own exact digest; a move no later act explains is
+    refused."""
+    body = read(root, subject.path)
+    for record, patch in reversed(LATER_SUBJECT_ACTS.get(subject.key, ())):
+        if not (root / record).is_file():
+            continue
+        found = EXACT_DIGEST_RE.findall(read(root, record).decode())
+        if len(found) != 1:
+            raise ValueError(f"{record.as_posix()} does not carry exactly one exact "
+                             "digest line")
+        if sha256(body) != found[0]:
+            raise ValueError(
+                f"{subject.key}: the subject with the later patches reversed so far "
+                f"hashes to {sha256(body)}, not the argument {found[0]} of "
+                f"{record.as_posix()}")
+        body = _git_apply(root, _later_patch(root, record, patch), subject.path, body,
+                          reverse=True)
+    return body
+
+
 def base_bytes(root: pathlib.Path, subject: Subject) -> bytes:
     """The bytes the patch applies to: the act in force's argument.
 
     Before the act, the tree. After it, the tree with the patch reversed;
     either way the result must hash to the predecessor act's exact digest.
+    Later acts that superseded the subject again are reversed first.
     """
-    live = read(root, subject.path)
+    live = subject_at_act(root, subject)
     body = _apply(root, subject, live, reverse=True) if performed(root, subject) else live
     want = predecessor_digest(root, subject)
     if sha256(body) != want:
@@ -346,7 +397,7 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
         proposed[subject.key] = body
         findings.extend(structure_findings(root, subject, base, body))
         if performed(root, subject):
-            if read(root, subject.path) != body:
+            if subject_at_act(root, subject) != body:
                 findings.append(f"{subject.key}: the act is performed but the subject "
                                 "is not the proposed bytes")
         else:
@@ -576,6 +627,50 @@ def selftest() -> int:
             refused = apply(False, ("registry",), clean)
         results.append(("--apply without --at-adoption refuses", refused == 2))
 
+        # A later act superseded the performed policy again: the package still
+        # verifies by reversing that act's patch from that act's own argument.
+        import difflib
+        superseded = pathlib.Path(tmp) / "superseded"
+        shutil.copytree(clean, superseded)
+        with contextlib.redirect_stdout(io.StringIO()):
+            apply(True, ("registry", "policy"), superseded)
+        for subject in SUBJECTS:
+            add_record(subject)(superseded)
+        old = (superseded / policy.path).read_text()
+        new = old.replace('\n  "policyId"', '\n  "laterField": true,\n  "policyId"', 1)
+        assert new != old
+        later_record = DECISIONS / "SYNTHETIC-LATER-POLICY-ACT.md"
+        later_patch = pathlib.Path("later/policy.{variant}.patch")
+        (superseded / "later").mkdir()
+        (superseded / "later/policy.none.patch").write_text("".join(difflib.unified_diff(
+            old.splitlines(keepends=True), new.splitlines(keepends=True),
+            f"a/{policy.path.as_posix()}", f"b/{policy.path.as_posix()}")))
+        (superseded / later_record).write_text(
+            f"Exact digest (SHA-256): `{sha256(new.encode())}`\n\nChosen variant: `none`.\n")
+        (superseded / policy.path).write_text(new)
+        saved_later = LATER_SUBJECT_ACTS.get("policy", ())
+        LATER_SUBJECT_ACTS["policy"] = ((later_record, later_patch),)
+        try:
+            results.append(("later act: the superseded policy reverses to the "
+                            "re-pin's bytes and verifies", check(superseded) == []))
+            for name, mutate, expect in (
+                    ("the later record names another digest", _edit(
+                        later_record, f"`{sha256(new.encode())}`", "`" + "0" * 64 + "`"),
+                     "not the argument"),
+                    ("the later record names no variant", _edit(
+                        later_record, "Chosen variant", "Variant"), "chosen variant"),
+                    ("the later record absent", lambda root: (root / later_record).unlink(),
+                     "policy")):
+                tree = pathlib.Path(tmp) / re.sub(r"\W+", "-", "later " + name)
+                shutil.copytree(superseded, tree)
+                mutate(tree)
+                got = check(tree)
+                results.append((f"later act fails: {name}", any(expect in f for f in got)))
+                if not any(expect in f for f in got):
+                    print(f"  ({name}: got {got or 'nothing'})")
+        finally:
+            LATER_SUBJECT_ACTS["policy"] = saved_later
+
         # The replay itself: with the later sign-offs present the current
         # spec.md reverses to exactly the pinned bytes; a move no later
         # sign-off explains, or a missing sign-off record, is refused.
@@ -657,9 +752,16 @@ def main(argv: list[str]) -> int:
             for finding in findings:
                 print(f"  {finding}")
             return 1
-        states = ", ".join(
-            f"{s.key}: {'performed, subject = proposed bytes' if performed(ROOT, s) else 'patch applies to the act-in-force bytes'}"
-            for s in SUBJECTS)
+        def state(s: Subject) -> str:
+            if not performed(ROOT, s):
+                return "patch applies to the act-in-force bytes"
+            later = sum((ROOT / record).is_file()
+                        for record, _patch in LATER_SUBJECT_ACTS.get(s.key, ()))
+            return ("performed, subject = proposed bytes" if not later else
+                    f"performed, subject with {later} later act patch(es) reversed = "
+                    "proposed bytes")
+
+        states = ", ".join(f"{s.key}: {state(s)}" for s in SUBJECTS)
         print(f"PWB behaviour-contract re-pin manifest matches its 2 proposed subjects "
               f"(pin = the {SIGNING_TAG} spec.md row); {states}")
         return 0
