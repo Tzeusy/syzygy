@@ -9,7 +9,8 @@ import { issueBrief } from './brief.js';
 import { checkDraft, type CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
 import { verdictSchemaDocument } from './draft-schema.js';
-import { NO_PROJECT_INPUT, NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { checkInventory, openRun } from './inventory.js';
 import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
@@ -85,13 +86,14 @@ const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
 const sources = (): GateSources => ({
   recordsRoot: REAL_ROOT,
   repositoryIdsFor: async () => ['redis-redis'],
-  consentedRevisionsFor: async () => [],
+  consentedRevisionsFor: async () => [{ label: 'fixture', commitId: commit }],
   observationConsentFor: async (_id, revision) => (revision === commit ? { satisfied: true, record: 'PUBLIC-OBS-FIXTURE@1' } : { satisfied: false, why: 'the consent does not name it' }),
   registryEntry: async () => OK,
   screeningPolicy: async () => OK,
   d9: async () => OK,
   rfc720Ruling: async () => OK,
-  projectInput: NO_PROJECT_INPUT,
+  // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
@@ -523,6 +525,51 @@ describe('review-check', () => {
       expect(text).toContain('the inventory\'s completeness over the clone and its preparation from the whole source population, which are the inventory session\'s self-report and never verified');
       expect(text).toContain('that the review session read the packet Syzygy emitted, unaltered');
     }
+  });
+});
+
+describe('the step guard runs before every review step (syzygy-qkea.23)', () => {
+  const withdrawn: Partial<GateSources> = { observationConsentFor: async () => ({ satisfied: false, why: 'withdrawn' }) };
+  const drawer: Partial<GateSources> = { projectInput: { drawerFor: async () => ({ stated: true, drawer: 'present', record: 'PROJECT-INPUT-FIXTURE@2' }) } };
+  it.each([
+    ['the consent stops naming the pinned revision', withdrawn, ['revision-unnamed']],
+    ['the project input now records a drawer', drawer, ['governed-changed', 'statement']],
+  ])('refuses review-packet, review-check and the review hand-over when %s, with the guard\'s codes', async (_name, over, codes) => {
+    const run = await prepared();
+    const dir = await reviewSessionOf(run);
+    writeVerdict(dir, verdict(sha256(expectedPacket(run))));
+    const changed = { ...deps(), sources: { ...sources(), ...over } };
+    const steps = [
+      ['review-packet', () => reviewPacket(run, { kind: 'fidelity' }, changed)],
+      ['review-check', () => reviewCheck(run, {}, changed)],
+      ['session-prompt', () => sessionPrompt(run, { role: 'review', kind: 'fidelity' }, changed)],
+      ['launch-form', () => launchForm(run, { role: 'review', form: 'terminal' }, changed)],
+    ] as const;
+    for (const [command, step] of steps) {
+      const result = await step();
+      expect(result, command).toMatchObject({ ok: false, refusal: { command, stage: 'reverify' } });
+      expect(!result.ok && result.refusal.refusals?.map((r) => r.code), command).toEqual(codes);
+    }
+    expect(fs.existsSync(path.join(run, 'reviews', 'fidelity-verdict-0.json'))).toBe(false);
+  });
+
+  it('lists the pinned tree with the object reader it is given, on review-packet and review-check', async () => {
+    const run = await prepared();
+    await reviewSessionOf(run);
+    const opened: string[] = [];
+    const openReader = (options: PinnedObjectReaderOptions) => {
+      opened.push(options.gitDir);
+      return { listTree: async () => [{ path: 'openspec/specs/x.md' }] } as unknown as PinnedObjectReader;
+    };
+    const out: string[] = [];
+    const io = { stdout: (text: string) => { out.push(text); }, stderr: () => {} };
+    const ports = { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, openReader };
+    for (const argv of [['review-packet', run, '--kind', 'fidelity'], ['review-check', run]]) {
+      out.length = 0;
+      expect(await runDossierCli([...argv, '--json'], io, ports), argv[0]).toBe(1);
+      expect(JSON.parse(out.join('')), argv[0]).toMatchObject({ command: argv[0], stage: 'reverify', refusals: [{ code: 'governed-changed' }, { code: 'statement' }] });
+    }
+    expect(opened.length).toBe(2);
   });
 });
 
