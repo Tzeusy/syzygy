@@ -1,7 +1,7 @@
 {
   "record": "Rule-6 mutants for the polaris-dossier S9b slice (syzygy-qkea.10), the rendered-design review (REQ-polaris-generation-035, scenario \"Design review survives its status region\"; design decision 5): the region not removed from a page (D1), a page with two regions accepted (D2), a page with no region accepted unchanged (D10), or the strip range widened past the region by one tag (D11) or through a sibling aside after it (D12);the machine view keeping its reviewStatus member (D3) or re-serialized so a layout change outside it passes unseen (D4); a design verdict naming another packet (D5), omitting a page (D6), carrying a quotation (D7), declaring ready beside a deficient page (D8) or declared under the authoring session's identifier (D9) accepted; render not checking that its second drawing equals the first outside the region (R1), not stating its decision in the region (R2), keying excluded sources afresh per render (R3), feeding the excluded-source key anything but the path alone, whether the path with its object identifier (R5) or the object identifier, the blob's content digest, alone (R6), or labelling the design verdict it states Observed (R4); the size report measuring the region (V1); a design session handed the fidelity packet (H1); a design launch form recorded as the fidelity session's (H2); review-check ignoring --kind (C1); design and fidelity verdicts numbered together (C2). Not authority.",
   "measuredOn": {
-    "commit": "299b25c3b0ea36995577a82f097471a977703e85",
+    "commit": "d379b6899bb47f63630a9ee64c3ecde6ed58d541",
     "subjects": [
       {
         "path": "packages/polaris-generation-core/src/local-render.ts",
@@ -29,7 +29,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/render.test.ts",
-        "sha256": "d2b19ec1cb07044ef5d39a398733eac55ab0edda9927059a130e2557ce785b2b"
+        "sha256": "0b2db3e5b291db81d9eeb443d3656cb367e195e6763da18eadbf333fdaff2563"
       },
       {
         "path": "packages/polaris-dossier/src/design-review.test.ts",
