@@ -28,11 +28,11 @@ const PACKAGE_ENTRIES: Readonly<Record<string, string>> = {
   '@syzygy/three-surface-poc-core': 'packages/three-surface-poc-core/src/index.ts',
 };
 const SHORT_COMMANDS = new Set(['git', 'mkfifo', 'bd', 'which', 'ss']);
-// Kept, not converted: the file is skipped unless SYZYGY_POC_BUTLERS_REPO is
-// set, so it never runs in the default suite, and its one call runs a focused
-// Butlers pytest file. Converting it could only be confirmed by running
-// Butlers' tests, which is an operator's act, not a suite run's.
-const EXEMPT = new Set(['packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:31']);
+// Empty since syzygy-hjuz: the one exemption was the live test's spawn of
+// Butlers' pytest, and that test now reads a JUnit file the operator
+// produced instead (SEC-3, RFC5-18). Syzygy runs no observed test suite, so
+// no entry here may name one.
+const EXEMPT = new Set<string>();
 const SELF = 'apps/three-surface-poc/src/sync-child-process-guard.test.ts';
 const SYNC_FUNCTIONS = ['execFileSync', 'execSync', 'spawnSync'];
 const MODULE_SPECIFIER = /(?:\bfrom|\bimport)\s*\(?\s*['"]([^'"]+)['"]/g;
