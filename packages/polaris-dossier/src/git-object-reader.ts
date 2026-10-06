@@ -94,6 +94,23 @@ export interface PinnedObjectReader {
   /** Every non-tree entry under the pinned commit's tree, by path in tree order, every tree re-hashed (blobs are not read). Not
    * every entry is a readable blob: a submodule (mode `160000`) lists its commit identifier, and `readBlobs` refuses it. */
   listTree(): Promise<readonly TreeEntry[]>;
+  /** What the object store holds beside the pinned revision: the pinned commit's parents, from its re-hashed body, and every
+   * identifier the store names that is neither the pinned commit nor a tree or blob under its tree. */
+  inventory(): Promise<StoreInventory>;
+}
+
+/** The store's identifiers are the names it gives: each loose object's file name and each pack index entry, counted without reading
+ * the object. A pack entry its `.idx` omits, or an object only an alternate would supply, is not named and not counted. Submodule
+ * entries name commits of another repository and are not reachable here. */
+export interface StoreInventory {
+  readonly parents: readonly string[];
+  /** Distinct identifiers the store names. */
+  readonly stored: number;
+  /** The pinned commit, and each distinct tree and blob under its tree. */
+  readonly reachable: number;
+  /** Stored identifiers outside the reachable set: their count, and the first ten in identifier order. */
+  readonly beyondCount: number;
+  readonly beyond: readonly string[];
 }
 
 export interface PinnedObjectReaderOptions {
@@ -143,6 +160,13 @@ export function openPinnedObjectReader(options: PinnedObjectReaderOptions): Pinn
       return out;
     }),
     listTree: () => step(async walk => walk.list(await walk.rootTree(), '')),
+    inventory: () => step(async walk => {
+      const parents = await walk.parents();
+      const reachable = await walk.reachable();
+      const stored = await walk.storedIds();
+      const beyond = [...stored].filter(id => !reachable.has(id)).sort();
+      return { parents, stored: stored.size, reachable: reachable.size, beyondCount: beyond.length, beyond: beyond.slice(0, 10) };
+    }),
   };
 }
 
@@ -166,6 +190,44 @@ class Walk {
     const text = Buffer.from(body).toString('latin1');
     const tree = new RegExp(`^tree ([0-9a-f]{${HEX[this.store.algorithm]}})\n`).exec(text);
     return tree === null ? refuse('malformed-commit', `commit ${this.revision} does not open with a tree line in the consented hash`, this.revision) : tree[1]!;
+  }
+
+  /** The pinned commit's parents: the `parent` lines that follow its tree line, in order, from its re-hashed body. */
+  async parents(): Promise<string[]> {
+    await this.rootTree();
+    const text = Buffer.from(await this.store.verified(this.revision, 'commit', null)).toString('latin1');
+    const header = text.slice(0, text.indexOf('\n\n') < 0 ? text.length : text.indexOf('\n\n'));
+    const out: string[] = [];
+    const line = new RegExp(`^parent ([0-9a-f]{${HEX[this.store.algorithm]}})$`);
+    for (const row of header.split('\n').slice(1)) {
+      const m = line.exec(row);
+      if (m === null) break;
+      out.push(m[1]!);
+    }
+    return out;
+  }
+
+  /** The pinned commit and each distinct tree and blob under its tree, every tree re-hashed. Submodule entries are left out. */
+  async reachable(): Promise<Set<string>> {
+    const out = new Set<string>([this.revision]);
+    const visit = async (tree: string, at: string | null, depth: number): Promise<void> => {
+      if (out.has(tree)) return;
+      out.add(tree);
+      for (const e of await this.tree(tree, at)) {
+        const p = at === null ? e.name : `${at}/${e.name}`;
+        this.store.count(e.id, p);
+        if (e.mode === '160000') continue;
+        if (e.mode !== '40000') { out.add(e.id); continue; }
+        if (depth >= MAX_TREE_DEPTH) refuse('malformed-tree', `tree ${tree} nests trees deeper than git's core.maxTreeDepth (${MAX_TREE_DEPTH})`, tree);
+        await visit(e.id, p, depth + 1);
+      }
+    };
+    await visit(await this.rootTree(), null, 1);
+    return out;
+  }
+
+  storedIds(): Promise<Set<string>> {
+    return this.store.ids();
   }
 
   async blob(target: string): Promise<VerifiedBlob> {
@@ -292,6 +354,30 @@ class ObjectStore {
   async close(): Promise<void> {
     for (const h of this.handles.values()) await h.fh.close();
     this.handles.clear();
+  }
+
+  /** Every identifier the store names: each loose object's fan-out directory and file name, and each entry of each pack index, each
+   * counted against the call's budget. No object is read. Any other name under `objects/` is not an object and is passed over. */
+  async ids(): Promise<Set<string>> {
+    const out = new Set<string>();
+    if (this.objects === null) return out;
+    const rest = new RegExp(`^[0-9a-f]{${HEX[this.algorithm] - 2}}$`);
+    for (const fan of (await readdir(this.objects)).filter(n => /^[0-9a-f]{2}$/.test(n)).sort()) {
+      if (!(await realDirectory(this.gitDir, path.join(this.objects, fan)))) continue;
+      for (const name of (await readdir(path.join(this.objects, fan))).filter(n => rest.test(n))) {
+        this.count(`${fan}${name}`, null);
+        out.add(`${fan}${name}`);
+      }
+    }
+    const width = HEX[this.algorithm] / 2;
+    for (const pack of this.packs) {
+      for (let k = 0; k < pack.count; k += 1) {
+        const id = pack.ids.subarray(k * width, (k + 1) * width).toString('hex');
+        this.count(id, null);
+        out.add(id);
+      }
+    }
+    return out;
   }
 
   /** Counts one object read or tree entry listed against the call's budget. */

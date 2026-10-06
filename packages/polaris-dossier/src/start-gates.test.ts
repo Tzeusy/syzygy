@@ -69,9 +69,22 @@ beforeAll(() => {
 });
 afterAll(() => fs.rmSync(origin, { recursive: true, force: true }));
 
-/** A clone of the origin checked out (detached) at `commit`. */
+/** A clone made as the consent states: `commit` fetched alone, shallow, into a new empty repository, HEAD detached at it. */
 const cloneAt = (commit: string): string => {
   const dir = path.join(tempDir('dossier-clone-'), 'redis');
+  execFileSync('git', ['-C', origin, 'config', 'uploadpack.allowAnySHA1InWant', 'true'], { env: GIT_ENV });
+  execFileSync('git', ['init', '-q', dir], { env: GIT_ENV });
+  fetchInto(dir, commit);
+  execFileSync('git', ['-C', dir, 'checkout', '-q', '--detach', 'FETCH_HEAD'], { env: GIT_ENV });
+  return dir;
+};
+/** Fetches `commit` alone into `clone` (after a run started, to give a test's rewritten pin its objects). */
+const fetchInto = (clone: string, commit: string, depth = 1): void => {
+  execFileSync('git', ['-C', clone, 'fetch', '-q', `--depth=${depth}`, `file://${origin}`, commit], { env: GIT_ENV });
+};
+/** A full clone of the origin, every branch and commit, checked out (detached) at `commit`. */
+const fullCloneAt = (commit: string): string => {
+  const dir = path.join(tempDir('dossier-full-clone-'), 'redis');
   execFileSync('git', ['clone', '-q', '--no-hardlinks', origin, dir], { env: GIT_ENV });
   execFileSync('git', ['-C', dir, 'checkout', '-q', '--detach', commit], { env: GIT_ENV });
   return dir;
@@ -204,11 +217,94 @@ describe('init: a run that passes every start gate', () => {
     expect(result.ok && result.report.subject.clone).toEqual({ path: fs.realpathSync(clone), declaredBy: 'operator', label: 'Inferred', use: 'read' });
   });
 
-  it('follows HEAD on a branch to a consented commit', async () => {
+  it('starts from a clone of a commit with a parent, shallow at exactly that commit', async () => {
+    const clone = cloneAt(commits.B);
+    expect(fs.readFileSync(path.join(clone, '.git', 'shallow'), 'utf8')).toBe(`${commits.B}\n`);
+    const { result } = await init({ clone, providerStatements: statements(STATEMENT) });
+    expect(result.ok && result.report.subject.pinnedRevision.commit).toBe(commits.B);
+  });
+
+  it('starts from a clone of a root commit shallow at it, or with no shallow file: a root commit has no parent to cut', async () => {
     const clone = cloneAt(commits.A);
-    execFileSync('git', ['-C', clone, 'checkout', '-q', '-B', 'pinned', commits.A], { env: GIT_ENV });
-    const { result } = await init({ clone });
-    expect(result.ok && result.report.subject.pinnedRevision.commit).toBe(commits.A);
+    expect(fs.readFileSync(path.join(clone, '.git', 'shallow'), 'utf8')).toBe(`${commits.A}\n`);
+    expect(fs.readFileSync(path.join(clone, '.git', 'FETCH_HEAD'), 'utf8')).toContain(commits.A);
+    expect((await init({ clone })).result.ok).toBe(true);
+    fs.rmSync(path.join(clone, '.git', 'shallow'));
+    expect((await init({ clone })).result.ok).toBe(true);
+  });
+});
+
+describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', () => {
+  const SHAPE = 'the clone must hold the consented commit alone, fetched into an empty repository (git init, git fetch --depth=1 <url> <commit>, git checkout --detach FETCH_HEAD)';
+  const refusedShape = async (clone: string, reason: string, objectsRead: boolean, setup: Partial<Setup> = {}) => {
+    const run = await init({ clone, ...setup });
+    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: `${reason}; ${SHAPE}`, objectsRead });
+    expect(fs.existsSync(run.stateRoot)).toBe(false);
+  };
+  const git = (clone: string, ...args: string[]): string => execFileSync('git', ['-C', clone, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
+
+  it('refuses a full clone, before reading any object', async () => {
+    const clone = fullCloneAt(commits.A);
+    const run = await init({ clone });
+    expect(refusal(run.result)?.stage).toBe('clone-shape');
+    expect(refusal(run.result)?.reason).toMatch(/^refs\/\S+ is a ref or not a directory, and the clone may hold no ref but HEAD; /u);
+    expect(refusal(run.result)?.objectsRead).toBe(false);
+    expect(run.readerOpened).toBe(false);
+  });
+
+  it('refuses HEAD on a branch at the consented commit: the branch is a ref', async () => {
+    const clone = cloneAt(commits.A);
+    git(clone, 'checkout', '-q', '-B', 'pinned', commits.A);
+    await refusedShape(clone, `HEAD is not detached at ${commits.A}`, false);
+  });
+
+  it('refuses an extra ref, loose or packed', async () => {
+    const tagged = cloneAt(commits.A);
+    git(tagged, 'update-ref', 'refs/tags/extra', commits.A);
+    await refusedShape(tagged, 'refs/tags/extra is a ref or not a directory, and the clone may hold no ref but HEAD', false);
+    git(tagged, 'pack-refs', '--all');
+    expect(fs.existsSync(path.join(tagged, '.git', 'refs', 'tags', 'extra'))).toBe(false);
+    await refusedShape(tagged, 'packed-refs holds a ref, and the clone may hold no ref but HEAD', false);
+  });
+
+  it('refuses a pseudo-ref naming another commit, and a linked worktree', async () => {
+    const clone = cloneAt(commits.A);
+    fs.writeFileSync(path.join(clone, '.git', 'ORIG_HEAD'), `${commits.B}\n`);
+    await refusedShape(clone, `ORIG_HEAD names an object other than ${commits.A}`, false);
+    fs.writeFileSync(path.join(clone, '.git', 'ORIG_HEAD'), `${commits.A}\n`);
+    expect((await init({ clone })).result.ok).toBe(true);
+    const linked = cloneAt(commits.A);
+    fs.mkdirSync(path.join(linked, '.git', 'worktrees', 'other'), { recursive: true });
+    await refusedShape(linked, 'the clone has a linked worktree, whose HEAD is another ref', false);
+  });
+
+  it('refuses a two-commit shallow clone, and a clone shallow at another commit or not shallow', async () => {
+    const two = path.join(tempDir('dossier-clone-'), 'redis');
+    git(origin, 'config', 'uploadpack.allowAnySHA1InWant', 'true');
+    execFileSync('git', ['init', '-q', two], { env: GIT_ENV });
+    fetchInto(two, commits.C, 2);
+    git(two, 'checkout', '-q', '--detach', 'FETCH_HEAD');
+    await refusedShape(two, `the clone is shallow at 1 commit(s), not at ${commits.C} alone`, true, { providerStatements: statements(STATEMENT) });
+
+    const elsewhere = cloneAt(commits.C);
+    fs.writeFileSync(path.join(elsewhere, '.git', 'shallow'), `${commits.C}\n${commits.B}\n`);
+    await refusedShape(elsewhere, `the clone is shallow at 2 commit(s), not at ${commits.C} alone`, true, { providerStatements: statements(STATEMENT) });
+    fs.rmSync(path.join(elsewhere, '.git', 'shallow'));
+    await refusedShape(elsewhere, `the clone is not shallow, and ${commits.C} has 1 parent(s)`, true, { providerStatements: statements(STATEMENT) });
+  });
+
+  it('refuses an object store that names an object beyond the pinned commit and its tree', async () => {
+    const clone = cloneAt(commits.A);
+    const loose = (repo: string, id: string): string => path.join(repo, '.git', 'objects', id.slice(0, 2), id.slice(2));
+    fs.mkdirSync(path.dirname(loose(clone, commits.U)), { recursive: true });
+    fs.copyFileSync(loose(origin, commits.U), loose(clone, commits.U));
+    await refusedShape(clone, `the object store names 1 object(s) that are neither ${commits.A} nor under its tree (first: ${commits.U})`, true);
+
+    // The same object named only by a pack index.
+    const packed = cloneAt(commits.A);
+    execFileSync('git', ['-C', origin, 'pack-objects', '-q', path.join(packed, '.git', 'objects', 'pack', 'pack')], { input: `${commits.U}\n`, env: GIT_ENV });
+    expect(fs.readdirSync(path.join(packed, '.git', 'objects', 'pack')).some(name => name.endsWith('.idx'))).toBe(true);
+    await refusedShape(packed, `the object store names 1 object(s) that are neither ${commits.A} nor under its tree (first: ${commits.U})`, true);
   });
 
   it('never reads the working tree: an uncommitted change does not change the listing or the decision', async () => {
@@ -294,11 +390,11 @@ describe('init: every refusal arm (REQ-polaris-generation-033 scenarios "Clone a
 
   it('refuses a listing whose object no longer hashes to its identifier (scenario "Object store altered after pinning")', async () => {
     const clone = cloneAt(commits.A);
-    // The clone keeps the origin's loose objects (copied, never hardlinked): overwrite the pinned commit's file with commit B's bytes.
-    const looseOf = (id: string): string => path.join(clone, '.git', 'objects', id.slice(0, 2), id.slice(2));
-    expect(fs.existsSync(looseOf(commits.A)) && fs.existsSync(looseOf(commits.B))).toBe(true);
-    fs.chmodSync(looseOf(commits.A), 0o644);
-    fs.copyFileSync(looseOf(commits.B), looseOf(commits.A));
+    // A small fetch is unpacked into loose objects: overwrite the pinned commit's loose file with commit B's (the origin's) bytes.
+    const looseOf = (repo: string, id: string): string => path.join(repo, '.git', 'objects', id.slice(0, 2), id.slice(2));
+    expect(fs.existsSync(looseOf(clone, commits.A)) && fs.existsSync(looseOf(origin, commits.B))).toBe(true);
+    fs.chmodSync(looseOf(clone, commits.A), 0o644);
+    fs.copyFileSync(looseOf(origin, commits.B), looseOf(clone, commits.A));
     const run = await init({ clone });
     expect(refusal(run.result)?.stage).toBe('listing');
     expect(refusal(run.result)?.objectRead).toMatchObject({ reason: 'identifier-mismatch', objectId: commits.A });
@@ -576,7 +672,8 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
 
   // R-POLARIS-DOSSIER-S3-GATES-1 finding 1(a): the pin moved, with no other edit, from non-governed A to governed, consented C.
   it('refuses a pin moved from a non-governed to a governed consented revision', async () => {
-    const { runDir, root } = await started();
+    const { runDir, root, clone } = await started();
+    fetchInto(clone, commits.C);   // after init: the clone was the pinned commit alone when the run started
     rewritePin(runDir, commits.C);
     const opened: string[] = [];
     const result = await guard(runDir, root, { opened });
@@ -603,7 +700,8 @@ describe('reverifyPinnedRevision: the guard every later step calls (scenario "Re
 
   it('passes a pin moved between non-governed consented revisions, and shows the live label of the revision now pinned', async () => {
     const root = records({}, [['fixture-a', commits.A], ['fixture-a2', commits.A2]]);
-    const { runDir } = await started({ root });
+    const { runDir, clone } = await started({ root });
+    fetchInto(clone, commits.A2);   // after init: the clone was the pinned commit alone when the run started
     rewritePin(runDir, commits.A2);
     expect(await guard(runDir, root)).toMatchObject({ ok: true, revision: { commit: commits.A2, label: 'fixture-a2' }, governed: { kind: 'non-governed' } });
   });

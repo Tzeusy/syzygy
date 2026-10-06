@@ -39,8 +39,9 @@ Always:
 With a URL (the author, driving the loop):
 1. `syzygy dossier preflight <url>`. If it refuses, tell the operator which
    record is missing and stop.
-2. Clone the repository and check out a revision the preflight names, into
-   a directory the operator agrees.
+2. Make the clone with the commands preflight prints, for a revision it
+   names, in a new empty directory the operator agrees: that one commit,
+   fetched alone, never a full clone. `init` refuses a clone that holds more.
 3. Ask the operator, in one AskUserQuestion, for the deadline, a token or
    turn budget, the repair-cycle limit, the question limit and the model.
    Offer presets; never pick for them. Advise a generous deadline: it runs
