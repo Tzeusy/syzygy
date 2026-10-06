@@ -118,15 +118,29 @@ export type LeadInQuotation =
  * last straight quote before the next lead-in or the end of the text, the quote check's lead-in rule. A lead-in not followed by a
  * straight quote, and one whose quote never closes, are reported in place. Quoted text without the lead-in is not a quotation here. */
 export function leadInQuotations(text: string, leadIn: string = QUOTE_LEAD_IN): LeadInQuotation[] {
-  const out: LeadInQuotation[] = [];
+  return scanLeadIns(text, leadIn).map(({ found }) => found);
+}
+
+/** A terminated quotation with where it sits in the text: `inner` is `text.slice(open + 1, close)`, between the straight quotes at
+ * `open` and `close`. */
+export interface LeadInQuotationSpan { readonly inner: string; readonly open: number; readonly close: number }
+
+/** The terminated quotations of `leadInQuotations`, in the same order and by the same rule, each with its position, so a renderer can
+ * put Syzygy's own bytes where the agent's copy stood. A lead-in without a quote, or whose quote never closes, has no span. */
+export function leadInQuotationSpans(text: string, leadIn: string = QUOTE_LEAD_IN): LeadInQuotationSpan[] {
+  return scanLeadIns(text, leadIn).flatMap(({ found, open, close }) => (found.terminated ? [{ inner: found.inner, open, close }] : []));
+}
+
+function scanLeadIns(text: string, leadIn: string): { found: LeadInQuotation; open: number; close: number }[] {
+  const out: { found: LeadInQuotation; open: number; close: number }[] = [];
   for (let at = text.indexOf(leadIn); at !== -1;) {
     const open = /^\s*"/u.exec(text.slice(at + leadIn.length));
-    if (open === null) { out.push({ terminated: false, kind: 'lead-in-without-quote' }); at = text.indexOf(leadIn, at + leadIn.length); continue; }
+    if (open === null) { out.push({ found: { terminated: false, kind: 'lead-in-without-quote' }, open: -1, close: -1 }); at = text.indexOf(leadIn, at + leadIn.length); continue; }
     const start = at + leadIn.length + open[0].length - 1;
     const next = text.indexOf(leadIn, start);
     const limit = next === -1 ? text.length : next;
     const last = text.lastIndexOf('"', limit - 1);
-    out.push(last <= start ? { terminated: false, kind: 'quotation-unterminated' } : { terminated: true, inner: text.slice(start + 1, last) });
+    out.push(last <= start ? { found: { terminated: false, kind: 'quotation-unterminated' }, open: start, close: -1 } : { found: { terminated: true, inner: text.slice(start + 1, last) }, open: start, close: last });
     at = next;
   }
   return out;

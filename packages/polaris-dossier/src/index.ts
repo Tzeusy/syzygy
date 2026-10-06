@@ -19,6 +19,10 @@ export {
   type ReviewPacketResult, type ReviewProblem, type ReviewProblemKind,
 } from './review.js';
 export {
+  NO_RENDERER, RENDER_REPORT_FORMAT, buildLocalInput, renderRun,
+  type DossierRenderer, type DossierRendererInput, type RenderDeps, type RenderRefusal, type RenderReport, type RenderResult, type RenderStage,
+} from './render.js';
+export {
   LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, inventoryPrompt, launchForm, reviewPrompt, sessionCommands, sessionPrompt, shellQuote,
   type LaunchFormResult, type SessionPromptResult,
 } from './session-handover.js';

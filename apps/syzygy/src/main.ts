@@ -251,10 +251,15 @@ async function main(): Promise<number> {
   const argv = process.argv.slice(2);
   if (argv[0] === 'dossier') {
     const { runDossierCli } = await import('@syzygy/polaris-dossier');
+    // `render` draws through the existing multi-page dossier renderer, injected
+    // here and loaded only on this branch, so the daemon path never loads the
+    // POC app. TODO(syzygy-qkea.19): import it from a renderer package once
+    // the renderer stack moves out of apps/three-surface-poc.
+    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');
     return runDossierCli(argv.slice(1), {
       stdout: (text) => process.stdout.write(text),
       stderr: (text) => process.stderr.write(text),
-    });
+    }, { renderer: renderDossier });
   }
 
   let parsed = parseCli(process.argv.slice(2), process.env);

@@ -16,7 +16,7 @@
 // dossier" (exit 1) and now reaches the dossier family.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -183,5 +183,30 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
       stderr: 'command: status\noutcome: refused\nreason: run directory <BASE>/absent cannot be read (ENOENT)\n',
     });
     expect(sweep(dir)).toEqual(before);
+  });
+
+  // syzygy-qkea.10: the composition root injects the multi-page dossier
+  // renderer into `render`, importing the POC app only on this branch. A
+  // missing run is refused at the run, which `render` reaches only once a
+  // renderer is wired (with none it refuses at stage `renderer` first).
+  it('`dossier render <missing>` reaches the run with the renderer injected, and starts no daemon', () => {
+    const { base: dir } = base();
+    const before = sweep(dir);
+    const result = runSync(['dossier', 'render', path.join(dir, 'absent'), '--json'], dir);
+    expect(result.status).toBe(1);
+    expect(JSON.parse(result.stdout)).toMatchObject({ command: 'render', outcome: 'refused', stage: 'run' });
+    expect(result.stderr).not.toContain('syzygy daemon');
+    expect(sweep(dir)).toEqual(before);
+  });
+
+  it('the daemon path never loads the POC app: its one import is dynamic and inside the `dossier` branch', () => {
+    const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
+    const mentions = main.split('\n').filter((line) => line.includes('three-surface-poc-app'));
+    expect(mentions).toEqual(["    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');"]);
+    const branch = main.indexOf("if (argv[0] === 'dossier') {");
+    const at = main.indexOf(mentions[0]!);
+    expect(branch).toBeGreaterThan(-1);
+    expect(at).toBeGreaterThan(branch);
+    expect(at).toBeLessThan(main.indexOf('let parsed = parseCli('));
   });
 });
