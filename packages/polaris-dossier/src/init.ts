@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { resolveCloneHead } from './clone-head.js';
+import { cloneRefShape, cloneStoreShape } from './clone-shape.js';
 import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { dossierRepositoryUrl } from './github-url.js';
@@ -13,13 +14,14 @@ import { createRunDirectory, stateRootViolation, type RunPorts } from './state-d
  *
  * Syzygy's start gates pass before it reads any object for the run: the observation consent found by the URL, the source-acquisition
  * registry entry and the classification and screening policy, each in force by its act. Then the clone's HEAD must be a revision the
- * consent names; it becomes the pinned revision. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
+ * consent names; it becomes the pinned revision. The clone must hold that commit alone (clone-shape.ts): no ref but a detached HEAD,
+ * shallow at that commit, and no object beyond its tree. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
  * decide whether the subject is governed; a governed subject, or one whose project input is silent, needs the per-project statement.
  * Any failure refuses the run with its reason in human and machine form, and nothing is written. On success the run directory is made
  * under the state root, never inside or around the clone, and holds only `run.json`, which records the clone's real path as the one
  * location every later step reads objects from. */
 
-export type InitStage = 'url' | 'config' | 'state-root' | 'repository' | 'start-gates' | 'head' | 'revision' | 'listing' | 'statement' | 'write';
+export type InitStage = 'url' | 'config' | 'state-root' | 'repository' | 'start-gates' | 'head' | 'revision' | 'clone-shape' | 'listing' | 'statement' | 'write';
 
 export interface InitRefusal {
   readonly command: 'init';
@@ -109,10 +111,16 @@ export async function initRun(request: InitRequest, ports: InitPorts): Promise<I
     return refuse('revision', `the clone's HEAD ${head.commit} (${head.via}) is not a revision the in-force observation consent for ${repositoryId} names${consent.satisfied ? '' : `: ${consent.why}`}`, { consentedRevisions: revisions });
   }
 
+  const refShape = cloneRefShape(head.gitDir, head.commit);
+  if (!refShape.ok) return refuse('clone-shape', refShape.reason);
+
   let paths: readonly string[];
   try {
     objectsRead = true;
-    paths = (await (ports.openReader ?? openPinnedObjectReader)({ gitDir: head.gitDir, revision: head.commit }).listTree()).map(entry => entry.path);
+    const reader = (ports.openReader ?? openPinnedObjectReader)({ gitDir: head.gitDir, revision: head.commit });
+    const storeShape = cloneStoreShape(head.gitDir, head.commit, await reader.inventory());
+    if (!storeShape.ok) return refuse('clone-shape', storeShape.reason);
+    paths = (await reader.listTree()).map(entry => entry.path);
   } catch (cause) {
     if (cause instanceof GitObjectReadRefusal) return refuse('listing', `the pinned tree could not be listed: ${cause.message}`, { objectRead: cause.toJSON() });
     throw cause;

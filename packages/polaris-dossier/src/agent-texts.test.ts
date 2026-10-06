@@ -159,6 +159,12 @@ function deadlineFaults(text: string): string[] {
   return faults;
 }
 
+/** The clone is made in the consent's form (syzygy-qkea.24): preflight's commands, one commit fetched alone, never a full clone. */
+function cloneFormFaults(text: string): string[] {
+  return /Make the clone with the commands preflight prints, for a revision it names, in a new empty directory[^.]*: that one commit, fetched alone, never a full clone\./u.test(text.replace(/\s+/gu, ' '))
+    ? [] : ['the text does not say to make the clone with preflight\'s commands, one commit fetched alone, never a full clone'];
+}
+
 /** The description triggers on the operator's plain request. */
 function triggerFaults(text: string): string[] {
   return (frontmatter(text)['description'] ?? '').includes('"generate me a Polaris dossier for <url>"') ? [] : ['the description does not name the request "generate me a Polaris dossier for <url>"'];
@@ -166,7 +172,7 @@ function triggerFaults(text: string): string[] {
 
 const lint = (text: string): string[] => [
   ...commandFaults(text), ...grantingSentences(text).map((s) => `grants execution: ${s}`), ...allowExecutionFaults(text).map((b) => `allow-execution not the operator's: ${b}`),
-  ...descriptionFaults(text), ...deferralFaults(text), ...runScopeFaults(text), ...commandReportFaults(text), ...deadlineFaults(text), ...triggerFaults(text),
+  ...descriptionFaults(text), ...deferralFaults(text), ...runScopeFaults(text), ...commandReportFaults(text), ...deadlineFaults(text), ...cloneFormFaults(text), ...triggerFaults(text),
 ];
 
 describe('agent texts (S11)', () => {
@@ -213,6 +219,8 @@ describe('agent texts (S11)', () => {
     expect(deadlineFaults(swap('Advise a generous deadline', 'Suggest a deadline'))).toHaveLength(1);
     expect(deadlineFaults(swap('Close before the deadline passes', 'Close when done'))).toHaveLength(1);
     expect(triggerFaults(swap('for example "generate me a Polaris dossier for <url>", ', ''))).toHaveLength(1);
+    expect(cloneFormFaults(swap('fetched alone, never a full clone', 'or a full clone'))).toHaveLength(1);
+    expect(cloneFormFaults(swap('Make the clone with the commands preflight prints', 'Clone the repository'))).toHaveLength(1);
   });
 
   it('the description lint holds the trigger phrase against the Codex text too', () => {

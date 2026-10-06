@@ -32,6 +32,16 @@ const KESTREL = [
 ].join('\n');
 const FILES: Record<string, string> = { 'src/kestrel.c': KESTREL, 'docs/notes.txt': 'Snapshots are written periodically.\n', 'README.md': '# Kestrel\n' };
 
+/** A clone made as the consent states and preflight prints: `commit` fetched alone, shallow, into a new empty repository at `clone`,
+ * HEAD detached at it. `origin` must allow fetching any commit by identifier (set here). */
+export function consentedClone(origin: string, commit: string, clone: string): string {
+  execFileSync('git', ['-C', origin, 'config', 'uploadpack.allowAnySHA1InWant', 'true'], { env: GIT_ENV });
+  execFileSync('git', ['init', '-q', clone], { env: GIT_ENV });
+  execFileSync('git', ['-C', clone, 'fetch', '-q', '--depth=1', `file://${origin}`, commit], { env: GIT_ENV });
+  execFileSync('git', ['-C', clone, 'checkout', '-q', '--detach', 'FETCH_HEAD'], { env: GIT_ENV });
+  return clone;
+}
+
 /** A committed fixture repository and a clone of it, both under `dir`. */
 export function makeClone(dir: string): { readonly clone: string; readonly commit: string } {
   const origin = path.join(dir, 'origin');
@@ -44,9 +54,8 @@ export function makeClone(dir: string): { readonly clone: string; readonly commi
   }
   git('add', '-A');
   git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-m', 'fixture');
-  const clone = path.join(dir, 'kestrel');
-  execFileSync('git', ['clone', '-q', '--no-hardlinks', origin, clone], { env: GIT_ENV });
-  return { clone, commit: git('rev-parse', 'HEAD') };
+  const commit = git('rev-parse', 'HEAD');
+  return { clone: consentedClone(origin, commit, path.join(dir, 'kestrel')), commit };
 }
 
 const LIVE_POLICY = JSON.parse(fs.readFileSync(path.join(REAL_ROOT, '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json'), 'utf8'));
