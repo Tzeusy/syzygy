@@ -670,17 +670,15 @@ export function readDigestBoundActState(options: StrictReadOptions & { readonly 
  * SHA-256 of its installed bytes; that is the argument the cross-check holds the entry to. */
 export interface VersionedSignoffForm {
   readonly file: string;
-  readonly title: string;
   readonly packageKey: string;
   readonly version: string;
-  readonly kind: string;
   readonly installed: string;
   /** As `DigestBoundActForm.stems`; the installed entry's path is swept too. */
   readonly stems: readonly string[];
   /** As `DigestBoundActForm.citedRows`. */
   readonly citedRows?: readonly CitedRow[];
-  /** The record as the recorder renders it (`render_record` with `installed_lines`), slots `date`, `quote`, `review`, `commit`,
-   * `verdict`, `disposition`, `instant` and `sha`. */
+  /** The record as the recorder renders it (`render_record` with `installed_lines`) for this package, version and installed entry,
+   * slots `date`, `quote`, `review`, `commit`, `verdict`, `disposition`, `instant` and `sha`. */
   readonly template: RecorderTemplate;
 }
 
@@ -769,22 +767,23 @@ stands.
  * record's title and the installed entry's path. The one place these are cited before the sign-off exists, the P-104 row of the pending-decisions
  * register, is read past only while that line's bytes hash to the pinned digest, and only one such line; the commit that edits or
  * moves the row re-pins it here, and until then the gate refuses. */
-export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = Object.freeze({
-  file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md',
-  title: '# Public Git source acquisition, local-agent version — version-tagged sign-off v1.0',
-  packageKey: 'public-git-source-acquisition-local-agent',
-  version: '1.0',
-  kind: 'registry entry',
-  installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
-  // The bare package key carries the tag, both sign-off spellings, the record's file name and the installed entry's basename.
-  stems: Object.freeze(['public-git-source-acquisition-local-agent', 'public git source acquisition, local-agent version — version-tagged sign-off']),
-  citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', sha256: P104_ROW_SHA256 })]),
-  template: registrySignoffTemplate({
+export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = (() => {
+  const entry = {
     title: 'Public Git source acquisition, local-agent version', packageKey: 'public-git-source-acquisition-local-agent', version: '1.0',
     installed: '.syzygy/governance/declarations/adapter-registry/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json',
     candidate: '.syzygy/governance/contracts/candidates/public-git-source-acquisition-local-agent',
-  }),
-});
+  } as const;
+  return Object.freeze({
+    file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md',
+    packageKey: entry.packageKey,
+    version: entry.version,
+    installed: entry.installed,
+    // The bare package key carries the tag, both sign-off spellings, the record's file name and the installed entry's basename.
+    stems: Object.freeze([entry.packageKey, `${entry.title.toLowerCase()} — version-tagged sign-off`]),
+    citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', sha256: P104_ROW_SHA256 })]),
+    template: registrySignoffTemplate(entry),
+  });
+})();
 
 /** The sign-off `form` describes, cross-checked at `now` under RFC3-16(a) as `readDigestBoundActState` does: `ok` when the record
  * exists in the recorder's form, names the form's package, version, tag and installed entry, the entry's current bytes hash to the
@@ -796,18 +795,14 @@ export function readVersionedSignoffState(options: StrictReadOptions & { readonl
     if ('why' in found) return { state: 'refused', why: found.why, namedBy: found.namedBy };
     if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
     const text = found.text, tag = `${form.packageKey}-v${form.version}`;
-    if (!text.startsWith(`${form.title}\n`)) refuse();
-    // The template fixes the owner, provenance, A1 and scope lines. The recorder's own input checks (validate_inputs, validate_disposition): the selection names the Scope A extension, and a
-    // CONFIRM WITH EXCEPTIONS names the disposition record that clears its notes.
+    // The template, built from this form, fixes every literal line: the title, package, version, tag, kind, installed entry, act type,
+    // project, owner, provenance, A1 and scope. The recorder's own input checks (validate_inputs, validate_disposition) follow: the
+    // selection names the Scope A extension, and a CONFIRM WITH EXCEPTIONS names the disposition record that clears its notes.
     const slots = fromTemplate(form.template, text);
     if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')) refuse();
-    const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), day = Date.parse(`${date}T00:00:00Z`);
-    const fields = [one(text, /^Package: (.+)$/gm), one(text, /^Version: (.+)$/gm), one(text, /^Tag: (.+)$/gm), one(text, /^Kind: (.+)$/gm), one(text, /^Installed entry: (.+)$/gm)];
-    one(text, /^Review verdict: (CONFIRM|CONFIRM WITH EXCEPTIONS)$/gm);
-    const type = one(text, /^Act type: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Installed entry SHA-256: ([0-9a-f]{64})$/gm);
-    if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date || type !== 'adopt-registry-entry'
-      || fields.join('\n') !== [form.packageKey, form.version, tag, form.kind, form.installed].join('\n')) refuse();
-    const act: ParsedAct = { file: form.file, identity: tag, type, artifact: form.installed, project, digest, date, recordedAt: actInstant(text, date), supersession: supersessionText(text), text };
+    const date = slots['date']!, digest = slots['sha']!, day = Date.parse(`${date}T00:00:00Z`);
+    if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date) refuse();
+    const act: ParsedAct = { file: form.file, identity: tag, type: 'adopt-registry-entry', artifact: form.installed, project: 'project:syzygy', digest, date, recordedAt: actInstant(text, date), supersession: supersessionText(text), text };
     let artifactText: string;
     try { artifactText = await fs.readFile(path.join(options.root, form.installed)); } catch { return { state: 'refused', why: `the signed entry ${form.installed} cannot be read` }; }
     if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.installed} differ from the SHA-256 the sign-off records` };
