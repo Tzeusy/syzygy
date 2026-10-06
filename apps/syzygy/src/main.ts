@@ -20,6 +20,10 @@
 //                       (env SYZYGY_PORT; default: 7477)
 //   --help              print usage and exit
 //
+// One exception to all of the above: an exact first argument `dossier`
+// hands the rest of argv to the dossier command family instead
+// (packages/polaris-dossier), which starts no daemon.
+//
 // This file is the composition root: the ONE place a clock is read (the
 // evaluation's as-of instant, injected into the pipeline — RFC2-3) and
 // the one place process signals are handled (clean shutdown on
@@ -239,6 +243,20 @@ function governedPlaneViolation(root: string, stateDir: string): string | null {
 }
 
 async function main(): Promise<number> {
+  // `syzygy dossier …` is the operator-agent dossier command family
+  // (packages/polaris-dossier; REQ-polaris-generation-033): a local
+  // program that serves no route and starts no daemon. Only an exact
+  // first argument `dossier` reaches it; every other argv takes the
+  // daemon path below unchanged.
+  const argv = process.argv.slice(2);
+  if (argv[0] === 'dossier') {
+    const { runDossierCli } = await import('@syzygy/polaris-dossier');
+    return runDossierCli(argv.slice(1), {
+      stdout: (text) => process.stdout.write(text),
+      stderr: (text) => process.stderr.write(text),
+    });
+  }
+
   let parsed = parseCli(process.argv.slice(2), process.env);
   if (parsed.kind === 'run') {
     // Symlink reality (RTF-1): the pure lexical check in parseCli

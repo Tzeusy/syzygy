@@ -7,6 +7,7 @@ export default defineConfig({
       '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent/testing': fileURLToPath(new URL('./packages/polaris-generation-consent/src/testing.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent': fileURLToPath(new URL('./packages/polaris-generation-consent/src/index.ts', import.meta.url)),
+      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),
       '@syzygy/cap1-core': fileURLToPath(
         new URL('./packages/cap1-core/src/index.ts', import.meta.url),
       ),
@@ -37,6 +38,13 @@ export default defineConfig({
         test: {
           name: '@syzygy/polaris-generation-consent',
           include: ['packages/polaris-generation-consent/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: '@syzygy/polaris-dossier',
+          include: ['packages/polaris-dossier/src/**/*.test.ts'],
         },
       },
       {
