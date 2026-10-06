@@ -1,0 +1,495 @@
+import { execFileSync } from 'node:child_process';
+import * as fs from 'node:fs';
+import { tmpdir } from 'node:os';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { issueBrief } from './brief.js';
+import { checkDraft, type CheckDeps, type CheckResult } from './check.js';
+import { runDossierCli } from './cli.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
+import { parseRunConfig } from './run-config.js';
+import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
+import { buildDossierScreen } from './screen.js';
+
+// syzygy-qkea.7 (S6): `syzygy dossier check` (REQ-polaris-generation-033, 034, 036). The clone is a real Git repository built here
+// with the git CLI (the code under test runs no process); the screening policy is this checkout's detectors and denied paths with a
+// fixture code-content scope. Expected byte ranges come from a plain byte search of the committed fixture text; expected findings,
+// kinds and paths are literals written before the checker ran, never imported from the module under test.
+
+const REAL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };
+const NOW = Date.UTC(2026, 9, 7, 12, 0, 0);
+const LATER = NOW + 60_000;
+const RUN_ID = `run-${'c'.repeat(32)}`;
+
+const KESTREL = [
+  '/* Kestrel keeps every key in memory.',
+  ' * Each command **runs to completion** before',
+  ' * the next one starts. */',
+  'int main(void) { return 0; }',
+  '// Café über: snapshots are written periodically.',
+  '',
+].join('\n');
+const NOTES = 'Café notes.\nSnapshots are written periodically.\n';
+const README = '# Kestrel\nKestrel is a key-value server.\n';
+const TYPES = 'export type Names = Array<string>;\n// Names are kept in order.\n';
+const SECRET = `${'s3cr'.repeat(3)}`;
+const CONFIG = `// ${['pass', 'word'].join('')} = "${SECRET}"\n// The port is fixed.\nint port = 6379;\n`;
+/** A path a secret detector matches (a token format), composed so no literal token sits in this file. */
+const SECRET_PATH = `docs/${['gh', 'p_'].join('')}${'k'.repeat(24)}.txt`;
+const FILES: Record<string, string> = {
+  'src/kestrel.c': KESTREL, 'docs/notes.txt': NOTES, 'README.md': README, 'src/types.ts': TYPES, 'src/config.c': CONFIG, '.env': 'X=1\n',
+  [SECRET_PATH]: 'Plain words.\n',
+};
+const bytesOf = (raw: string, span: string): [number, number] => {
+  const at = Buffer.from(raw, 'utf8').indexOf(Buffer.from(span, 'utf8'));
+  if (at < 0) throw new Error(`fixture: ${span} not found`);
+  return [at, at + Buffer.byteLength(span, 'utf8')];
+};
+
+// The screening policy: this checkout's detectors and denied-path rules, and a fixture code-content scope.
+const LIVE_POLICY = JSON.parse(fs.readFileSync(path.join(REAL_ROOT, '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json'), 'utf8'));
+const POLICY = new TextEncoder().encode(JSON.stringify({
+  policyId: 'fixture-public-source', policyVersion: '1', detectors: LIVE_POLICY.detectors, sourceAdmission: LIVE_POLICY.sourceAdmission,
+  publicSourceScope: { contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c', '.h', '.ts', '.txt'] }] } },
+}));
+const SCREEN = buildDossierScreen(POLICY);
+
+let origin: string, commit: string, other: string;
+beforeAll(() => {
+  origin = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-check-origin-')));
+  const git = (...args: string[]): string => execFileSync('git', ['-C', origin, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
+  git('init', '-q', '-b', 'main');
+  for (const [file, body] of Object.entries(FILES)) {
+    fs.mkdirSync(path.dirname(path.join(origin, file)), { recursive: true });
+    fs.writeFileSync(path.join(origin, file), body);
+  }
+  git('add', '-A');
+  git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-m', 'fixture');
+  commit = git('rev-parse', 'HEAD');
+  fs.writeFileSync(path.join(origin, 'src/kestrel.c'), KESTREL.replace('memory', 'flash'));
+  git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-am', 'later');
+  other = git('rev-parse', 'HEAD');
+});
+afterAll(() => fs.rmSync(origin, { recursive: true, force: true }));
+
+const cleanups: (() => void)[] = [];
+afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });
+const tempDir = (prefix: string): string => {
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), prefix)));
+  cleanups.push(() => fs.rmSync(dir, { recursive: true, force: true }));
+  return dir;
+};
+
+/** A clone at the pinned commit whose working tree differs from it in the quoted file. */
+const cloneOf = (): string => {
+  const dir = path.join(tempDir('dossier-check-clone-'), 'kestrel');
+  execFileSync('git', ['clone', '-q', '--no-hardlinks', origin, dir], { env: GIT_ENV });
+  execFileSync('git', ['-C', dir, 'checkout', '-q', '--detach', commit], { env: GIT_ENV });
+  fs.writeFileSync(path.join(dir, 'src/kestrel.c'), KESTREL.replace('every key', 'no key'));
+  return dir;
+};
+
+const subject = (clone: string): RunSubject => ({
+  repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
+  clone: { path: clone, declaredBy: 'operator', label: 'Inferred', use: 'read' },
+  pinnedRevision: { commit, label: 'fixture', consentRecord: 'PUBLIC-OBS-FIXTURE@1', pinnedAt: '2026-10-07T11:00:00.000Z' },
+  startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },
+  governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
+  providerStatement: null,
+  workItem: { identity: null, reason: NO_WORK_ITEM_REASON },
+});
+const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
+let consentNames: () => string = () => commit;
+const sources = (): GateSources => ({
+  recordsRoot: REAL_ROOT,
+  repositoryIdsFor: async () => ['redis-redis'],
+  consentedRevisionsFor: async () => [{ label: 'fixture', commitId: consentNames() }],
+  observationConsentFor: async (_id, revision) => (revision === consentNames() ? { satisfied: true, record: 'PUBLIC-OBS-FIXTURE@1' } : { satisfied: false, why: 'the consent does not name it' }),
+  registryEntry: async () => OK,
+  screeningPolicy: async () => OK,
+  d9: async () => OK,
+  rfc720Ruling: async () => OK,
+  // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
+  providerStatements: NO_PROVIDER_STATEMENTS,
+});
+afterEach(() => { consentNames = () => commit; });
+
+/** A briefed run directory, whose run record names a fresh clone. */
+async function briefedRun(over: Record<string, unknown> = {}, clone: string = cloneOf()): Promise<string> {
+  const root = tempDir('dossier-check-state-');
+  const run = path.join(root, RUN_ID);
+  fs.mkdirSync(run);
+  const parsed = parseRunConfig(JSON.stringify({
+    operator: 'Tzeusy', agentTool: 'claude-code', agentToolVersion: '2.1.0', agentProvider: 'anthropic', model: 'claude-opus-5-5',
+    deadline: 'PT1H', agentTokenBudget: 100_000, maxRepairCycles: 3, maxQuestions: 1, audience: 'an operator', operatorIsOwner: true, ...over,
+  }));
+  if (!parsed.ok) throw new Error('fixture configuration refused');
+  fs.writeFileSync(path.join(run, 'run.json'), encodeRunRecord(parsed.config, subject(clone)));
+  const brief = await issueBrief(run, { sources: sources(), now: () => NOW });
+  if (!brief.ok) throw new Error(`fixture brief refused: ${brief.refusal.reason}`);
+  return run;
+}
+
+type Draft = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) => ({ id, path: file, startLine, endLine });
+const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
+const valid = (): Draft => ({
+  schemaVersion: 'polaris-dossier-local-draft-v1',
+  pinnedRevision: commit,
+  title: 'Kestrel',
+  introduction: { id: 'intro', label: 'inferred', basis: 'source', text: 'The project states: "Kestrel keeps every key in memory." So it is fast.', citations: [cite('c-intro', 'src/kestrel.c', 1, 1)], quotations: ['c-intro'] },
+  understanding: Object.fromEntries(UNDERSTANDING.map((key) => [key, [{ id: `u-${key}`, label: 'inferred', statement: 'A statement.', scope: 'The server.', citations: [cite(`u-${key}-c`)] }]])),
+  sections: [{
+    id: 'core-ideas', title: 'Core ideas',
+    paragraphs: [
+      { id: 'p1', label: 'inferred', basis: 'source', text: 'The project states: "Each command runs to completion before the next one starts."', citations: [cite('c-p1', 'src/kestrel.c', 2, 3)], quotations: ['c-p1'], children: [
+        { id: 'p1a', label: 'unknown', reason: 'missing-evidence', text: 'No source says how keys expire.', citations: [] },
+        { id: 'p1b', label: 'non-normative', text: 'Read on.' },
+        { id: 'p1c', label: 'inferred', basis: 'execution', executionIds: ['e1'], text: 'The build passes.', citations: [cite('c-p1c', 'src/kestrel.c', 4, 4)], quotations: [] },
+      ] },
+      { id: 'p2', label: 'inferred', basis: 'source', text: 'The project states: "Snapshots are written periodically."', citations: [cite('c-p2', 'docs/notes.txt', 2, 2)], quotations: ['c-p2'], children: [] },
+    ],
+    disposition: { kind: 'produced', assetIds: ['core-ideas'] },
+  }],
+  diagrams: [],
+  deepDives: [],
+  unresolved: [],
+  discovery: { inspected: ['src/kestrel.c', 'README.md'], selected: [{ path: 'src/kestrel.c', reason: 'The server.' }], excluded: [], unresolved: [], deferred: [], stoppingReason: 'Topics answered.' },
+  clarifications: [],
+  executions: [{ id: 'e1', command: 'make', workingDirectory: '.', purpose: 'Build.' }],
+});
+const mutate = (change: (draft: Draft) => void): Draft => { const draft = structuredClone(valid()); change(draft); return draft; };
+const writeDraft = (run: string, draft: unknown, name = 'next.json'): string => {
+  fs.mkdirSync(path.join(run, 'drafts'), { recursive: true });
+  const file = path.join(run, 'drafts', name);
+  fs.writeFileSync(file, typeof draft === 'string' ? draft : JSON.stringify(draft, null, 2));
+  return file;
+};
+const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
+const deps = (over: Partial<CheckDeps> = {}): CheckDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN, ...over });
+const report = (result: CheckResult) => { if (!result.ok) throw new Error(`refused at ${result.refusal.stage}: ${result.refusal.reason}`); return result.report; };
+const read = (run: string, rel: string): string => fs.readFileSync(path.join(run, rel), 'utf8');
+
+describe('check: a draft that follows every rule', () => {
+  it('freezes revision 0, verifies every quotation against the committed blob and records its byte range', async () => {
+    const run = await briefedRun();
+    const draftText = JSON.stringify(valid(), null, 2);
+    writeDraft(run, draftText);
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.findings).toEqual([]);
+    expect(result).toMatchObject({ command: 'check', outcome: 'passed', revision: 0, supersedes: null, pinnedRevision: commit, checkedAt: '2026-10-07T12:01:00.000Z', label: 'Inferred' });
+    expect(result.quotations.map((q) => [q.blockId, q.citationId, q.path, q.byteRange])).toEqual([
+      ['intro', 'c-intro', 'src/kestrel.c', [bytesOf(KESTREL, 'Kestrel')[0], bytesOf(KESTREL, 'memory.')[1]]],
+      ['p1', 'c-p1', 'src/kestrel.c', [bytesOf(KESTREL, 'Each command')[0], bytesOf(KESTREL, 'one starts.')[1]]],
+      ['p2', 'c-p2', 'docs/notes.txt', bytesOf(NOTES, 'Snapshots are written periodically.')],
+    ]);
+    const blobId = (file: string): string => execFileSync('git', ['-C', origin, 'rev-parse', `${commit}:${file}`], { encoding: 'utf8', env: GIT_ENV }).trim();
+    expect(result.quotations.map((q) => [q.objectId, q.algorithm])).toEqual([[blobId('src/kestrel.c'), 'sha1'], [blobId('src/kestrel.c'), 'sha1'], [blobId('docs/notes.txt'), 'sha1']]);
+    expect(result.excludedContent).toEqual([]);
+    expect(read(run, 'drafts/rev-0.json')).toBe(draftText);
+    const stored = JSON.parse(read(run, 'checks/rev-0.json'));
+    expect(stored).toMatchObject({ format: 'polaris-dossier-check/1', runId: RUN_ID, revision: 0, outcome: 'passed', draft: { file: 'drafts/rev-0.json', bytes: Buffer.byteLength(draftText) } });
+    expect(stored.limits).toEqual({
+      repairCycles: { declared: 3, thisRevision: 0, label: 'Inferred', basis: 'the frozen draft revisions in the run directory' },
+      questions: { declared: 1, recorded: 0 },
+      deadline: { endsAt: '2026-10-07T13:00:00.000Z', label: 'Inferred', basis: 'the issue instant the brief record states, plus the declared deadline' },
+    });
+    expect(stored.credential).toEqual({ required: false, why: 'the brief carried SEC-3\'s rule and permits no execution' });
+    for (const rel of ['drafts/rev-0.json', 'checks/rev-0.json']) expect(fs.statSync(path.join(run, rel)).mode & 0o777).toBe(0o600);
+    expect(read(run, 'steps.jsonl').trim().split('\n').map((entry) => JSON.parse(entry))).toEqual([
+      { format: 'polaris-dossier-step/1', step: 'check', at: '2026-10-07T12:01:00.000Z', outcome: 'passed', revision: 0, findings: 0 },
+    ]);
+  });
+
+  it('never reads the working tree: a quotation of the uncommitted text fails', async () => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => { d.introduction.text = 'The project states: "Kestrel keeps no key in memory."'; }));
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.findings).toEqual([{ kind: 'quotation-not-in-cited-file', at: '$.introduction.text', blockId: 'intro', citationId: 'c-intro', detail: 'quotation 1 is not one contiguous run of the cited file after normalisation: it is altered or joins separate spans (citation "c-intro")' }]);
+  });
+});
+
+describe('check: each rule refuses its own violation', () => {
+  const kestrel = (d: Draft) => d.sections[0].paragraphs[0];
+  it.each<[string, (d: Draft) => void, { kind: string; at: string; blockId?: string; citationId?: string }]>([
+    ['an altered quotation', (d) => { d.introduction.text = 'The project states: "Kestrel keeps every key on disk."'; }, { kind: 'quotation-not-in-cited-file', at: '$.introduction.text', blockId: 'intro', citationId: 'c-intro' }],
+    ['an elided quotation', (d) => { d.introduction.text = 'The project states: "Kestrel keeps ... in memory."'; }, { kind: 'quotation-elided', at: '$.introduction.text', blockId: 'intro', citationId: 'c-intro' }],
+    ['a joined quotation', (d) => { kestrel(d).text = 'The project states: "Each command runs to completion before snapshots are written periodically."'; kestrel(d).citations[0].endLine = 5; },
+      { kind: 'quotation-not-in-cited-file', at: '$.sections[0].paragraphs[0].text', blockId: 'p1', citationId: 'c-p1' }],
+    ['a quotation outside its cited range', (d) => { d.introduction.citations[0].startLine = 4; d.introduction.citations[0].endLine = 5; }, { kind: 'quotation-outside-range', at: '$.introduction.text', blockId: 'intro', citationId: 'c-intro' }],
+    ['a cited path absent at the pinned revision', (d) => { d.introduction.citations[0].path = 'src/missing.c'; }, { kind: 'path-absent', at: '$.introduction.citations[0].path', citationId: 'c-intro' }],
+    ['a directory cited as a file', (d) => { d.introduction.citations[0].path = 'src'; }, { kind: 'path-absent', at: '$.introduction.citations[0].path', citationId: 'c-intro' }],
+    ['a range beyond the blob', (d) => { d.introduction.citations[0].endLine = 6; }, { kind: 'range-beyond-blob', at: '$.introduction.citations[0].endLine', citationId: 'c-intro' }],
+    ['a range that runs backwards', (d) => { d.introduction.citations[0].startLine = 3; d.introduction.citations[0].endLine = 2; }, { kind: 'range-invalid', at: '$.introduction.citations[0]', citationId: 'c-intro' }],
+    ['a claim the agent labels Observed', (d) => { d.introduction.label = 'observed'; }, { kind: 'label', at: '$.introduction.label', blockId: 'intro' }],
+    ['a claim with no label', (d) => { delete kestrel(d).children[1].label; }, { kind: 'label', at: '$.sections[0].paragraphs[0].children[1].label', blockId: 'p1b' }],
+    ['an understanding item labelled non-normative', (d) => { d.understanding.limits[0].label = 'non-normative'; }, { kind: 'label', at: '$.understanding.limits[0].label', blockId: 'u-limits' }],
+    ['an inferred claim with no citation', (d) => { kestrel(d).children[2].citations = []; }, { kind: 'citation-by-kind', at: '$.sections[0].paragraphs[0].children[2].citations', blockId: 'p1c' }],
+    ['a non-normative block with a citation', (d) => { kestrel(d).children[1].citations = [cite('c-x')]; }, { kind: 'citation-by-kind', at: '$.sections[0].paragraphs[0].children[1]', blockId: 'p1b' }],
+    ['an Unknown block with no reason from the closed list', (d) => { kestrel(d).children[0].reason = 'agent-unsure'; }, { kind: 'unknown-reason', at: '$.sections[0].paragraphs[0].children[0].reason', blockId: 'p1a' }],
+    ['a claim resting on execution with no reported command', (d) => { kestrel(d).children[2].executionIds = ['e9']; }, { kind: 'execution-marking', at: '$.sections[0].paragraphs[0].children[2].executionIds[0]', blockId: 'p1c' }],
+    ['a claim resting on execution that names none', (d) => { kestrel(d).children[2].executionIds = []; }, { kind: 'execution-marking', at: '$.sections[0].paragraphs[0].children[2].executionIds', blockId: 'p1c' }],
+    ['an understanding record missing an item', (d) => { delete d.understanding.tradeOffs; }, { kind: 'understanding-missing', at: '$.understanding.tradeOffs' }],
+    ['more clarifications than the declared limit', (d) => { d.clarifications = ['q1', 'q2'].map((id) => ({ id, question: 'Audience?', evidence: [], consequence: 'Tone.', options: [], answer: 'Operators', answerKind: 'free-text', attribution: 'operator' })); },
+      { kind: 'question-limit', at: '$.clarifications' }],
+    ['a draft naming another revision', (d) => { d.pinnedRevision = other; }, { kind: 'wrong-revision', at: '$.pinnedRevision' }],
+    ['a repeated identity', (d) => { kestrel(d).children[1].id = 'p1a'; }, { kind: 'duplicate-id', at: '$.sections[0].paragraphs[0].children[1]' }],
+    ['a disposition naming another asset', (d) => { d.sections[0].disposition.assetIds = ['elsewhere']; }, { kind: 'unresolved-reference', at: '$.sections[0].disposition.assetIds[0]' }],
+    ['a quotation naming a citation of another block', (d) => { d.introduction.quotations = ['c-p1']; }, { kind: 'quotation-citation', at: '$.introduction.quotations[0]', blockId: 'intro' }],
+    ['more quotations than named citations', (d) => { d.introduction.quotations = []; }, { kind: 'quotation-count', at: '$.introduction.quotations', blockId: 'intro' }],
+    ['a quotation in a non-normative block', (d) => { kestrel(d).children[1].text = 'The project states: "Read on."'; }, { kind: 'quotation-in-unquotable-block', at: '$.sections[0].paragraphs[0].children[1]', blockId: 'p1b' }],
+    ['a lead-in with no quotation', (d) => { d.introduction.text = 'The project states: nothing.'; d.introduction.quotations = []; }, { kind: 'lead-in-without-quote', at: '$.introduction.text', blockId: 'intro' }],
+    ['a self-reported path absent at the pinned revision', (d) => { d.discovery.inspected.push('src/gone.c'); }, { kind: 'discovery-path-absent', at: '$.discovery.inspected[2]' }],
+    ['a self-reported selection absent at the pinned revision', (d) => { d.discovery.deferred.push({ path: 'docs', reason: 'Later.' }); }, { kind: 'discovery-path-absent', at: '$.discovery.deferred[0].path' }],
+  ])('reports %s', async (_name, change, expected) => {
+    const run = await briefedRun();
+    writeDraft(run, mutate(change));
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.outcome).toBe('findings');
+    expect(result.findings.filter((finding) => finding.kind !== 'schema').map(({ detail: _detail, ...rest }) => rest)).toEqual([expected]);
+  });
+
+  it('reports a draft that is not JSON, and still freezes it as a revision', async () => {
+    const run = await briefedRun();
+    writeDraft(run, '{"title": ');
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.findings).toEqual([{ kind: 'not-json', at: '$', detail: 'the draft is not one bounded UTF-8 JSON document' }]);
+    expect(read(run, 'drafts/rev-0.json')).toBe('{"title": ');
+  });
+
+  it('reports schema faults beside every other finding in one submission', async () => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => { d.introduction.label = 'observed'; d.title = 7; d.introduction.citations[0].path = 'src/missing.c'; }));
+    const kinds = report(await checkDraft(run, {}, deps())).findings.map((finding) => finding.kind);
+    expect(new Set(kinds)).toEqual(new Set(['schema', 'label', 'path-absent']));
+  });
+});
+
+describe('check: a quotation from an excluded file', () => {
+  it.each<[string, string, string, number]>([
+    ['a file outside the code-content extensions', 'README.md', 'Kestrel is a key-value server.', 2],
+    ['a file whose body holds active content', 'src/types.ts', 'Names are kept in order.', 2],
+    ['a file whose body a secret detector matches', 'src/config.c', 'The port is fixed.', 2],
+    ['a denied path', '.env', 'X=1', 1],
+  ])('renders its block Unknown (excluded-content) for %s, with no finding and none of its bytes', async (_name, file, quote, lineNo) => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => {
+      d.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: `The project states: "${quote}"`, citations: [cite('c-p2', file, lineNo, lineNo)], quotations: ['c-p2'], children: [] };
+    }));
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.findings).toEqual([]);
+    expect(result.excludedContent).toEqual([{ blockId: 'p2', at: '$.sections[0].paragraphs[1]', index: 0, citationId: 'c-p2', unknownReason: 'excluded-content' }]);
+    expect(result.quotations.map((q) => q.blockId)).toEqual(['intro', 'p1']);
+    const stored = read(run, 'checks/rev-0.json');
+    for (const excluded of [README, TYPES, CONFIG]) for (const piece of excluded.split('\n').filter((row) => row.length > 4)) expect(stored).not.toContain(piece);
+    expect(stored).not.toContain(SECRET);
+  });
+
+  it('records each cited blob with its screening outcome, and reads no blob a path rule excludes', async () => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => {
+      d.unresolved = ['README.md', 'src/types.ts', 'src/config.c', '.env'].map((file, i) => ({ id: `q${i}`, question: 'Why?', reason: 'Not stated.', citations: [cite(`c-q${i}`, file, 1, 1)] }));
+    }));
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.findings).toEqual([]);
+    expect(result.citedBlobs.map(({ objectId: _id, ...rest }) => rest)).toEqual([
+      { path: 'src/kestrel.c', read: true, outcome: 'admitted' },
+      { path: 'docs/notes.txt', read: true, outcome: 'admitted' },
+      { path: 'README.md', read: false, outcome: 'unknown-extraction-class' },
+      { path: 'src/types.ts', read: true, outcome: 'active-content' },
+      { path: 'src/config.c', read: true, outcome: 'secret-detector-match' },
+      { path: '.env', read: false, outcome: 'denied-path' },
+    ]);
+  });
+
+  it('names a path a secret detector matches by neither path nor object identifier, in the record or a finding', async () => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => {
+      d.unresolved = [{ id: 'q0', question: 'Why?', reason: 'Not stated.', citations: [cite('c-q0', SECRET_PATH, 1, 1)] }];
+      d.discovery.inspected.push(SECRET_PATH.replace('docs/', 'gone/'));
+    }));
+    const result = report(await checkDraft(run, {}, deps()));
+    expect(result.citedBlobs.at(-1)).toEqual({ path: null, objectId: null, read: false, outcome: 'secret-detector-match' });
+    expect(result.findings).toEqual([{ kind: 'discovery-path-absent', at: '$.discovery.inspected[2]', detail: 'the cited path names no file at the pinned revision' }]);
+    expect(read(run, 'checks/rev-0.json')).not.toContain('k'.repeat(24));
+  });
+});
+
+describe('check: limits Syzygy enforces', () => {
+  it('counts each resubmission against the repair-cycle limit and refuses past it, writing nothing', async () => {
+    const run = await briefedRun({ maxRepairCycles: 1 });
+    writeDraft(run, valid());
+    expect(report(await checkDraft(run, {}, deps())).revision).toBe(0);
+    const second = report(await checkDraft(run, {}, deps()));
+    expect([second.revision, second.supersedes]).toEqual([1, 0]);
+    const third = await checkDraft(run, {}, deps());
+    expect(third).toMatchObject({ ok: false, refusal: { stage: 'repair-limit', reason: 'revision 2 would be repair cycle 2 of the 1 declared; the repair-cycle limit is spent' } });
+    expect(fs.readdirSync(path.join(run, 'drafts')).sort()).toEqual(['next.json', 'rev-0.json', 'rev-1.json']);
+    expect(fs.readdirSync(path.join(run, 'checks')).sort()).toEqual(['rev-0.json', 'rev-1.json']);
+  });
+
+  it('accepts a zero repair-cycle limit and refuses the first resubmission', async () => {
+    const run = await briefedRun({ maxRepairCycles: 0 });
+    writeDraft(run, valid());
+    expect((await checkDraft(run, {}, deps())).ok).toBe(true);
+    expect(await checkDraft(run, {}, deps())).toMatchObject({ ok: false, refusal: { stage: 'repair-limit' } });
+  });
+
+  it('refuses every check after the deadline, on Syzygy\'s clock from the brief, and records the refusal with its instant', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const result = await checkDraft(run, {}, deps({ now: () => NOW + 3_600_000 }));
+    expect(result).toMatchObject({ ok: false, refusal: { stage: 'deadline', at: '2026-10-07T13:00:00.000Z', reason: 'the deadline PT1H from the brief ended at 2026-10-07T13:00:00.000Z on Syzygy\'s clock; no step runs after it' } });
+    expect(fs.existsSync(path.join(run, 'checks'))).toBe(false);
+    expect(fs.readdirSync(path.join(run, 'drafts'))).toEqual(['next.json']);
+    expect(JSON.parse(read(run, 'steps.jsonl'))).toMatchObject({ step: 'check', at: '2026-10-07T13:00:00.000Z', outcome: 'refused', stage: 'deadline' });
+  });
+
+  it('accepts a zero question limit and reports the first recorded question', async () => {
+    const run = await briefedRun({ maxQuestions: 0 });
+    writeDraft(run, mutate((d) => { d.clarifications = [{ id: 'q1', question: 'Audience?', evidence: [], consequence: 'Tone.', options: [], answer: 'Operators', answerKind: 'free-text', attribution: 'operator' }]; }));
+    const findings = report(await checkDraft(run, {}, deps())).findings;
+    expect(findings.filter((finding) => finding.kind === 'question-limit')).toEqual([{ kind: 'question-limit', at: '$.clarifications', detail: 'the draft records 1 clarification questions; the declared limit is 0' }]);
+  });
+
+  it('refuses a run that was never briefed', async () => {
+    const run = await briefedRun();
+    fs.rmSync(path.join(run, 'brief.json'));
+    writeDraft(run, valid());
+    expect(await checkDraft(run, {}, deps())).toMatchObject({ ok: false, refusal: { stage: 'not-briefed' } });
+  });
+});
+
+describe('check: nothing Observed rests on a stored record', () => {
+  it('re-derives every result: an altered stored range, check result or frozen draft changes nothing the next check reports', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const first = report(await checkDraft(run, {}, deps()));
+    const stored = JSON.parse(read(run, 'checks/rev-0.json'));
+    stored.quotations = stored.quotations.map((q: { byteRange: number[] }) => ({ ...q, byteRange: [0, 3] }));
+    stored.outcome = 'findings';
+    stored.citedBlobs = [];
+    fs.writeFileSync(path.join(run, 'checks/rev-0.json'), JSON.stringify(stored));
+    fs.writeFileSync(path.join(run, 'drafts/rev-0.json'), '{}');
+    const second = report(await checkDraft(run, {}, deps()));
+    expect(second.revision).toBe(1);
+    expect([second.outcome, second.quotations, second.citedBlobs]).toEqual([first.outcome, first.quotations, first.citedBlobs]);
+  });
+
+  it('refuses the step and reads no object when the consent stops naming the pinned revision', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    consentNames = () => other;
+    let opened = false;
+    const result = await checkDraft(run, {}, deps({ openReader: (o: PinnedObjectReaderOptions) => { opened = true; return openPinnedObjectReader(o); } }));
+    expect(result).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
+    expect(opened).toBe(false);
+    expect(fs.existsSync(path.join(run, 'checks'))).toBe(false);
+  });
+
+  it('refuses the step when the recorded pinned revision is altered to another commit in the clone', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    fs.writeFileSync(path.join(run, 'run.json'), read(run, 'run.json').replace(commit, other));
+    expect(await checkDraft(run, {}, deps())).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
+  });
+
+  it('reads objects only from the clone the run record names, and refuses a record that names none', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const recorded = JSON.parse(read(run, 'run.json')).subject.clone.path;
+    let gitDir = '';
+    expect((await checkDraft(run, {}, deps({ openReader: (o: PinnedObjectReaderOptions) => { gitDir = o.gitDir; return openPinnedObjectReader(o); } }))).ok).toBe(true);
+    expect(gitDir).toBe(path.join(recorded, '.git'));
+    const record = JSON.parse(read(run, 'run.json'));
+    delete record.subject.clone;
+    fs.writeFileSync(path.join(run, 'run.json'), JSON.stringify(record));
+    expect(await checkDraft(run, {}, deps())).toMatchObject({ ok: false, refusal: { stage: 'reverify' } });
+  });
+
+  it('refuses the step when the recorded clone holds no object store, freezing nothing', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const record = JSON.parse(read(run, 'run.json'));
+    record.subject.clone.path = tempDir('dossier-check-empty-');
+    fs.writeFileSync(path.join(run, 'run.json'), JSON.stringify(record));
+    // The step guard lists the pinned tree from the recorded clone before anything else, so it refuses there.
+    const result = await checkDraft(run, {}, deps());
+    expect(result).toMatchObject({ ok: false, refusal: { stage: 'reverify', refusals: [{ code: 'listing' }] } });
+    expect(!result.ok && result.refusal.objectRead).toBeDefined();
+    expect(fs.readdirSync(path.join(run, 'drafts'))).toEqual(['next.json']);
+  });
+
+  it('refuses the step when an object cannot be read and verified, freezing nothing', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const refusing = (o: PinnedObjectReaderOptions) => {
+      const reader = openPinnedObjectReader(o);
+      return { ...reader, readBlobs: async () => { throw new GitObjectReadRefusal('identifier-mismatch', 'the blob does not hash to its identifier', 'f'.repeat(40), 'src/kestrel.c'); } };
+    };
+    const result = await checkDraft(run, {}, deps({ openReader: refusing }));
+    expect(result).toMatchObject({ ok: false, refusal: { stage: 'object-read', objectRead: { reason: 'identifier-mismatch', path: 'src/kestrel.c' } } });
+    expect(fs.readdirSync(path.join(run, 'drafts'))).toEqual(['next.json']);
+  });
+
+  it('refuses the step when no screening policy can be applied', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    expect(await checkDraft(run, {}, deps({ loadScreen: async () => ({ ok: false, why: 'no screening policy is in force: fixture' }) })))
+      .toMatchObject({ ok: false, refusal: { stage: 'screen', reason: 'no screening policy is in force: fixture' } });
+  });
+});
+
+describe('check: the adapter-credential check after a permitting brief', () => {
+  it('reports a readable credential as a finding of the step, telling the agent to run nothing further, and logs it', async () => {
+    const run = await briefedRun();
+    const record = JSON.parse(read(run, 'brief.json'));
+    fs.writeFileSync(path.join(run, 'brief.json'), JSON.stringify({ ...record, executionRule: { arm: 'permitting' } }));
+    writeDraft(run, valid());
+    const failing = { probe: async () => ({ passed: false as const, why: 'adapter credentials readable by the operator\'s user: /fixture/token' }) };
+    const result = report(await checkDraft(run, {}, deps({ probe: failing })));
+    expect(result.findings).toEqual([{ kind: 'adapter-credential-readable', at: '$', detail: 'adapter credentials readable by the operator\'s user: /fixture/token. Run no further observed code: the permission to build and run the observed project has lapsed for this run.' }]);
+    expect(JSON.parse(read(run, 'credential-breaches.jsonl'))).toMatchObject({ kind: 'adapter-credential-readable', step: 'check' });
+    expect(result.disclosures).toContain('The adapter-credential check is an operating-system read attempt as the operator\'s user at the instant of each step; its list comes from the source it names, which the agent sessions can write. That no process the session started could read a credential between checks, after close or through privilege escalation is Inferred. An agent tool\'s permission or deny rule does not satisfy it.');
+  });
+});
+
+describe('check: the command', () => {
+  const io = () => { const out: string[] = [], err: string[] = []; return { out, err, io: { stdout: (t: string) => { out.push(t); }, stderr: (t: string) => { err.push(t); } } }; };
+
+  it('exits 0 on a passing draft and 1 on findings, printing the same document with --json', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const a = io();
+    expect(await runDossierCli(['check', run, '--json'], a.io, { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN })).toBe(0);
+    expect(JSON.parse(a.out.join(''))).toMatchObject({ command: 'check', outcome: 'passed', revision: 0 });
+    const other = writeDraft(run, mutate((d) => { d.introduction.label = 'observed'; }), 'other.json');
+    const b = io();
+    expect(await runDossierCli(['check', run, '--draft', other], b.io, { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN })).toBe(1);
+    expect(b.out.join('')).toContain('findings.1.kind: label\nfindings.1.at: $.introduction.label');
+    expect(read(run, 'drafts/rev-1.json')).toBe(read(run, 'drafts/other.json'));
+  });
+
+  it('loads the policy in force from the records root by default, and refuses when it declares no public-source scope', async () => {
+    const run = await briefedRun();
+    writeDraft(run, valid());
+    const a = io();
+    expect(await runDossierCli(['check', run, '--json'], a.io, { sources: sources(), now: () => LATER })).toBe(1);
+    expect(JSON.parse(a.out.join(''))).toMatchObject({ command: 'check', outcome: 'refused', stage: 'screen' });
+  });
+
+  it.each<[string[], string]>([
+    [['check'], 'check takes exactly one positional argument, the run directory'],
+    [['check', '/tmp/x', '--draft'], '--draft requires a value'],
+    [['check', '/tmp/x', '--clone', '/c'], 'unknown option: --clone'],
+    [['check', '/tmp/x', '--revision', 'r'], 'unknown option: --revision'],
+  ])('is a usage error: %j', async (argv, message) => {
+    const a = io();
+    expect(await runDossierCli(argv, a.io, { sources: sources(), now: () => LATER })).toBe(2);
+    expect(a.err.join('')).toContain(`syzygy dossier: ${message}`);
+  });
+});

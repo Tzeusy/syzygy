@@ -48,3 +48,4 @@ export { DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
 export type { ClarificationInput, ClarificationQuestion, ClarificationRecord, OwnerAnswer } from './dossier-profile.js';
 export { validateReaderQuestions, ReaderQuestionsError, READER_QUESTION_TOPICS, READER_QUESTIONS_MAX, READER_QUESTION_TEXT_MAX, type ReaderQuestionTopic } from './reader-questions.js';
 export { QUOTE_LEAD_IN, checkBlockQuotes, checkDraftQuotes, draftBlocks, inspectBlockQuotes, normaliseForQuote, quoteFindingAsReviewFinding, sourceTextById, type QuoteBlock, type QuoteFinding, type QuoteFindingKind } from './quote-fidelity.js';
+export { leadInQuotations, lineCount, locateQuote, normaliseTracked, type LeadInQuotation, type QuoteLocation, type TrackedText } from './quote-locate.js';

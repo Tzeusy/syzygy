@@ -18,6 +18,7 @@ export const RUN_LAYOUT = Object.freeze({
   briefRecord: 'brief.json',
   executionChoice: 'execution-choice.json',
   credentialBreaches: 'credential-breaches.jsonl',
+  steps: 'steps.jsonl',
   draftSchema: 'draft.schema.json',
   drafts: 'drafts',
   checks: 'checks',

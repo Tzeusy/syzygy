@@ -46,8 +46,6 @@ export interface QuoteFinding {
 }
 export interface QuoteBlock { readonly id: string; readonly text: string; readonly sourceIds: readonly string[] }
 
-const LEADER = /^[ \t]*(?:\/\*+|\*+\/|\*+(?=[ \t]|$)|\/\/+|#+)[ \t]?/u;
-const TRAILING_CLOSE = /[ \t]*\*+\/[ \t]*$/u;
 const NAMED_ENTITIES: Readonly<Record<string, string>> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' };
 
 function decodeEntity(whole: string, body: string): string {
@@ -56,22 +54,65 @@ function decodeEntity(whole: string, body: string): string {
   return Number.isInteger(code) && code > 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff) ? String.fromCodePoint(code) : whole;
 }
 
-/** The comparison form of a quote or a source; see the file comment. */
-export function normaliseForQuote(text: string): string {
-  const unleadered = text.split(/\r\n|\r|\n/u).map(line => line.replace(LEADER, '').replace(TRAILING_CLOSE, '')).join('\n');
-  const unlinked = unleadered.replace(/!?\[([^\]\n]*)\]\([^)\n]*\)/gu, '$1').replace(/!?\[([^\]\n]*)\]\[[^\]\n]*\]/gu, '$1');
-  return unlinked
-    .replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/gu, decodeEntity)
-    .replace(/\\([!-/:-@[-`{-~])/gu, '$1')
-    .replace(/`/gu, '')
-    .replace(EMPHASIS, '$2').replace(EMPHASIS, '$2')
-    .replace(/[\u2018\u2019]/gu, "'").replace(/[\u201c\u201d]/gu, '"')
-    .replace(/\u2026/gu, '...')
-    .replace(/\s+/gu, ' ').trim();
+/** One piece a normalisation step puts in place of a match: `keep` is the index, in the step's input, of text carried over unchanged;
+ * a piece without it is new text standing for the whole match. */
+export interface NormalisationPiece { readonly text: string; readonly keep?: number }
+/** One step of the normalisation: a global pattern that never matches the empty string, and the pieces each match becomes. */
+export interface NormalisationStep { readonly pattern: RegExp; readonly replace: (match: RegExpExecArray) => readonly NormalisationPiece[] }
+
+const keepGroup = (match: RegExpExecArray, index: number): NormalisationPiece => ({ text: match[index]!, keep: match.indices![index]![0] });
+const dropMatch = (): readonly NormalisationPiece[] => [];
+/** Emphasis only as a pair at word edges (`*x*`, `_x_`, `**x**`, `__x__`) on one line: an unpaired or intraword `*` or `_` (`active_expire`, `*p`) is the source's own character. */
+const EMPHASIS = /(?<![\p{L}\p{N}])(\*\*|__|\*|_)([^\n]*?[^\s])\1(?![\p{L}\p{N}])/dgu;
+
+/** The normalisation of the file comment, in order, written once: `normaliseForQuote` applies it to text, and the byte-range locator
+ * (`quote-locate.ts`) applies the same steps while keeping where each character came from. Line edges are lookarounds on LF, never the
+ * `m` flag, whose `^` and `$` also break at U+2028 and U+2029; line breaks are LF from the first step on. After the last step, one
+ * leading and one trailing space are trimmed. */
+export const QUOTE_NORMALISATION: readonly NormalisationStep[] = Object.freeze<NormalisationStep[]>([
+  { pattern: /\r\n|\r/gu, replace: () => [{ text: '\n' }] },
+  // One comment leader per line start, then one block-comment close per line end.
+  { pattern: /(?<![^\n])[ \t]*(?:\/\*+|\*+\/|\*+(?![^ \t\n])|\/\/+|#+)[ \t]?/gu, replace: dropMatch },
+  { pattern: /[ \t]*\*+\/[ \t]*(?![^\n])/gu, replace: dropMatch },
+  { pattern: /!?\[([^\]\n]*)\]\([^)\n]*\)/dgu, replace: (m) => [keepGroup(m, 1)] },
+  { pattern: /!?\[([^\]\n]*)\]\[[^\]\n]*\]/dgu, replace: (m) => [keepGroup(m, 1)] },
+  { pattern: /&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/gu, replace: (m) => {
+    const decoded = decodeEntity(m[0], m[1]!);
+    return decoded === m[0] ? [{ text: m[0], keep: m.index }] : [{ text: decoded }];
+  } },
+  { pattern: /\\([!-/:-@[-`{-~])/dgu, replace: (m) => [keepGroup(m, 1)] },
+  { pattern: /`/gu, replace: dropMatch },
+  { pattern: EMPHASIS, replace: (m) => [keepGroup(m, 2)] },
+  { pattern: EMPHASIS, replace: (m) => [keepGroup(m, 2)] },
+  { pattern: /[\u2018\u2019]/gu, replace: () => [{ text: "'" }] },
+  { pattern: /[\u201c\u201d]/gu, replace: () => [{ text: '"' }] },
+  { pattern: /\u2026/gu, replace: () => [{ text: '...' }] },
+  { pattern: /\s+/gu, replace: () => [{ text: ' ' }] },
+]);
+
+/** Every match of a step in `text`, in order; a step that matches the empty string is a defect, never a loop. */
+export function* stepMatches(step: NormalisationStep, text: string): Generator<RegExpExecArray> {
+  const pattern = new RegExp(step.pattern.source, step.pattern.flags);
+  for (let match = pattern.exec(text); match !== null; match = pattern.exec(text)) {
+    if (match[0].length === 0) throw new Error('quote normalisation: a step matched the empty string');
+    yield match;
+  }
 }
 
-/** Emphasis only as a pair at word edges (`*x*`, `_x_`, `**x**`, `__x__`) on one line: an unpaired or intraword `*` or `_` (`active_expire`, `*p`) is the source's own character. */
-const EMPHASIS = /(?<![\p{L}\p{N}])(\*\*|__|\*|_)([^\n]*?[^\s])\1(?![\p{L}\p{N}])/gu;
+/** The comparison form of a quote or a source; see the file comment. */
+export function normaliseForQuote(text: string): string {
+  let out = text;
+  for (const step of QUOTE_NORMALISATION) {
+    let next = '', last = 0;
+    for (const match of stepMatches(step, out)) {
+      next += out.slice(last, match.index) + step.replace(match).map(piece => piece.text).join('');
+      last = match.index + match[0].length;
+    }
+    out = next + out.slice(last);
+  }
+  const from = out.startsWith(' ') ? 1 : 0;
+  return out.slice(from, out.length - (out.length > from && out.endsWith(' ') ? 1 : 0));
+}
 const NORMALISED = new Map<string, string>();
 /** `normaliseForQuote` of a source, memoised: one draft checks many blocks against the same few texts. */
 function normaliseSource(text: string): string {
