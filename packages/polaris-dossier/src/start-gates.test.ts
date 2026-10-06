@@ -170,6 +170,16 @@ describe('init: a run that passes every start gate', () => {
     expect(status.ok && status.report.subject.pinnedRevision.commit).toBe(commits.A);
   });
 
+  it('records the clone by its real path, not the path typed: a symlink or a `..` segment is resolved (R-POLARIS-DOSSIER-S3-GATES-2 note 12)', async () => {
+    const clone = cloneAt(commits.A);
+    const link = path.join(tempDir('dossier-clone-link-'), 'via-link');
+    fs.symlinkSync(clone, link);
+    const linked = await init({ clone: link });
+    expect(linked.result.ok && linked.result.report.subject.clone.path).toBe(clone);
+    const dotted = await init({ clone: path.join(clone, 'src', '..') });
+    expect(dotted.result.ok && dotted.result.report.subject.clone.path).toBe(clone);
+  });
+
   it('follows HEAD on a branch to a consented commit', async () => {
     const clone = cloneAt(commits.A);
     execFileSync('git', ['-C', clone, 'checkout', '-q', '-B', 'pinned', commits.A], { env: GIT_ENV });
