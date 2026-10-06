@@ -683,7 +683,7 @@ describe('pack and delta malformations, each predicate (finding 5)', () => {
 });
 
 /** A zlib stream of `body` (at most 65,535 bytes) that inflates exactly, padded with `blocks` empty non-final stored blocks of five
- * bytes each: 14 + 5 × `blocks` + `body.length` bytes in all (the reviewer's padding construction). */
+ * bytes each: 11 + 5 × `blocks` + `body.length` bytes in all (the reviewer's padding construction). */
 function padded(body: Buffer, blocks: number): Buffer {
   const pad = Buffer.alloc(5 * blocks);
   for (let k = 0; k < blocks; k += 1) { pad[5 * k + 3] = 0xff; pad[5 * k + 4] = 0xff; }
@@ -696,23 +696,27 @@ function padded(body: Buffer, blocks: number): Buffer {
 
 describe('stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1)', () => {
   const { blob, tree, commit } = oneFile('abc');
-  it('a pack entry reads up to the stored bound git writes for its size (1,027 bytes for 3) and refuses one block past it', async () => {
-    const at = (blocks: number): string => handBuilt(`pad-pack-${blocks}`, [tree, commit], [{ id: blob.id, entry: Buffer.concat([entryHead(3, 3), padded(blob.body, blocks)]) }]);
-    expect(text((await reader(at(202), commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abc');   // 1,027 stored bytes
-    expect(await refusal(reader(at(203), commit.id).readBlobs(['f']))).toEqual({
-      reason: 'corrupt-object', objectId: blob.id, path: 'f', message: `${blob.id}: pack entry does not inflate within the 1027 stored bytes git writes for its size`,
+  // Exactly at the bound: 11 + 5 × 203 + n = storedBound(n) = n + ⌊n/8⌋ + 1024 holds for n from 16 to 23.
+  it('a pack entry stored in exactly the bound git writes for its size (1,042 bytes for 16) reads; one block more refuses', async () => {
+    const sixteen = oneFile('abcdefghijklmnop');
+    const at = (blocks: number): string => handBuilt(`pad-pack-${blocks}`, [sixteen.tree, sixteen.commit], [{ id: sixteen.blob.id, entry: Buffer.concat([entryHead(3, 16), padded(sixteen.blob.body, blocks)]) }]);
+    expect(padded(sixteen.blob.body, 203)).toHaveLength(1042);
+    expect(text((await reader(at(203), sixteen.commit.id).readBlobs(['f']))[0]!.bytes)).toBe('abcdefghijklmnop');
+    expect(await refusal(reader(at(204), sixteen.commit.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: sixteen.blob.id, path: 'f', message: `${sixteen.blob.id}: pack entry does not inflate within the 1042 stored bytes git writes for its size`,
     });
   });
-  it('a loose object reads up to the stored bound for its inflated size (1,069 bytes for 40) and refuses one block past it', async () => {
-    const thirtyTwo = oneFile('x'.repeat(32));   // "blob 32\0" and 32 bytes: 40 inflated
+  it('a loose object stored in exactly the bound for its inflated size (1,046 bytes for 20) reads; one block more refuses', async () => {
+    const twelve = oneFile('x'.repeat(12)), inflated = Buffer.from(`blob 12\0${'x'.repeat(12)}`, 'latin1');   // 20 inflated
     const at = (blocks: number): string => {
-      const repo = handBuilt(`pad-loose-${blocks}`, [thirtyTwo.blob, thirtyTwo.tree, thirtyTwo.commit]);
-      overwrite(looseFile(repo, thirtyTwo.blob.id), padded(Buffer.from(`blob 32\0${'x'.repeat(32)}`, 'latin1'), blocks));
+      const repo = handBuilt(`pad-loose-${blocks}`, [twelve.blob, twelve.tree, twelve.commit]);
+      overwrite(looseFile(repo, twelve.blob.id), padded(inflated, blocks));
       return repo;
     };
-    expect(text((await reader(at(203), thirtyTwo.commit.id).readBlobs(['f']))[0]!.bytes)).toBe('x'.repeat(32));   // 1,069 stored bytes
-    expect(await refusal(reader(at(204), thirtyTwo.commit.id).readBlobs(['f']))).toEqual({
-      reason: 'corrupt-object', objectId: thirtyTwo.blob.id, path: 'f', message: `loose object ${thirtyTwo.blob.id} is stored in more bytes than git writes for its size`,
+    expect(padded(inflated, 203)).toHaveLength(1046);
+    expect(text((await reader(at(203), twelve.commit.id).readBlobs(['f']))[0]!.bytes)).toBe('x'.repeat(12));
+    expect(await refusal(reader(at(204), twelve.commit.id).readBlobs(['f']))).toEqual({
+      reason: 'corrupt-object', objectId: twelve.blob.id, path: 'f', message: `loose object ${twelve.blob.id} is stored in more bytes than git writes for its size`,
     });
   });
   it('a loose object with bytes after its zlib stream refuses', async () => {
