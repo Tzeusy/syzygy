@@ -1,13 +1,13 @@
 {
   "subject": "syzygy-4mbu no-spawn, read bounds, counts and report-fact rendering",
-  "commit": "4ce553ed1564d8a444dc138484b69b32d3732c69",
+  "commit": "bbf9dd1f99afeeaed4dba502d89a829502fd6641",
   "subjectDigests": {
-    "apps/three-surface-poc/src/capture-test-artifact-main.ts": "sha256:7ce4982a038ea5fbb074669a35e9ee6cc56eefca6a4e59979244986a8d5e3261",
+    "apps/three-surface-poc/src/capture-test-artifact-main.ts": "sha256:49d033568bb7513c322d6da3745d0f9c43a025de6c854dc05e0ea6d0e30d6916",
     "apps/three-surface-poc/src/capture-test-artifact.ts": "sha256:828fc37095669c7d8e3a2104ee894e5633f565b356409cc8e05aabdf689519b1",
-    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:f21597470886753f7a47ff96f0394b8e49395c769bded39d3c540cbdeb9c2d9e",
+    "packages/three-surface-poc-core/src/test-artifact-verification.ts": "sha256:f0ee4eb0f5312e2dbd82cd85c919f048d5118f6f64ee92f3861713acb410599f",
     "apps/three-surface-poc/src/trajectory.ts": "sha256:bb7fe37b2648fd38d5764b295cce5d32fe54b6366449437fb36285b09a7bbc9a",
     "packages/three-surface-poc-core/src/model.ts": "sha256:1ab087f3af28400decdc3b87afae4d7156715e4efed170cd1cd786828a37648f",
-    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts": "sha256:da75b5b44b7fb59935719506524831050d797de4915152f96d9170f074685a95",
+    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts": "sha256:14036696b0b0703998907d19db197ed8549510915aca59388679986a0e90c0e6",
     "apps/three-surface-poc/src/capture-test-artifact.test.ts": "sha256:e0026976161b831285cbd139d1b9ebb4998b2af945ffcb0000f296e240ff1dce",
     "packages/three-surface-poc-core/src/test-artifact-verification.test.ts": "sha256:31232da5a0ce8e5623ad2b83cd53ded6dcea6c67fc2d9747a9af47b2363fde03",
     "apps/three-surface-poc/src/trajectory.test.ts": "sha256:c07c18e5399cb6e1a0b3d84996737b28e413f61cdc1181f9a7238a271e5b2ece",
@@ -186,7 +186,7 @@
       "id": "M9-no-regular-file-check",
       "edits": [
         {
-          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
           "old": "  if (!seen.isFile()) {\n",
           "new": "  if (false) {\n"
         }
@@ -204,7 +204,7 @@
       "id": "M10-no-size-check-before-read",
       "edits": [
         {
-          "file": "apps/three-surface-poc/src/capture-test-artifact-main.ts",
+          "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
           "old": "  if (seen.size > maxBytes) {\n",
           "new": "  if (false) {\n"
         }
