@@ -79,8 +79,12 @@ function verificationBadge(
     // The declared table has Observed and Unknown only (POC-REQ-060). An
     // operator-reported run caps at report-fact (RFC5-19), so it takes the
     // Unknown encoding with the operator's summary and its disclosure,
-    // never the Observed one and never the word Verified.
-    return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" data-evidence-tier="report-fact"${unknownMarker(id, unknown)} title="${escapeHtml(verification.disclosure)}">Verification: Not verified by Syzygy — operator-reported (report-fact): ${escapeHtml(verification.record.summary)}. ${escapeHtml(verification.disclosure)} ${unknownRoute(unknown)}</span>`;
+    // never the Observed one and never the word Verified. The element is the
+    // verification relationship, which is Unknown; RFC2-25 places
+    // `report-fact` inside Observed, as a fact about the report, so the tier
+    // is named only in the text and disclosure, never as this element's
+    // tier attribute (#383 round 3, note 4).
+    return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="${escapeHtml(verification.disclosure)}">Verification: Not verified by Syzygy — operator-reported (report-fact): ${escapeHtml(verification.record.summary)}. ${escapeHtml(verification.disclosure)} ${unknownRoute(unknown)}</span>`;
   }
   if (verification.kind === 'reported') {
     return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable. ${unknownRoute(unknown)}</span>`;

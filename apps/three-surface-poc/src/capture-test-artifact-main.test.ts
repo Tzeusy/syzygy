@@ -21,7 +21,8 @@ import { REAL_IO, runCaptureTestArtifactCli, type CaptureCliIo } from './capture
 // nothing ran the operator's python. The source check is a guard against
 // future edits, and a static guard against a determined edit cannot be
 // complete: JavaScript reaches the global object and the module table by
-// too many routes (round 2 found `.constructor.constructor`). It refuses
+// too many routes (round 2 found `.constructor.constructor`; round 3
+// found the permitted git binding reused through `.call`). It refuses
 // every route found so far and every computed member access whose key it
 // cannot read, so a new route has to be spelled out where a reviewer sees
 // it; it does not prove no route exists.
@@ -148,23 +149,48 @@ function sourceViolations(fileName: string, text: string): string[] {
     if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'process') {
       violations.push('bracket access on process');
     }
+    // Round-3 note 1: the git runner invoked through `.call(null, 'sh', …)`,
+    // or an alias of the binding, ran any command past every check. The one permitted process
+    // starter may appear only as its own import, unrenamed, and as the
+    // callee of a direct call whose first argument is the literal 'git'.
+    if (ts.isImportSpecifier(node) && (node.propertyName ?? node.name).text === RUN_GIT && node.propertyName !== undefined) {
+      violations.push(`renames ${RUN_GIT} on import`);
+    }
+    if (ts.isIdentifier(node) && node.text === RUN_GIT && !ts.isImportSpecifier(node.parent)) {
+      const call = node.parent;
+      const first = ts.isCallExpression(call) && call.expression === node ? call.arguments.at(0) : undefined;
+      if (first === undefined || !ts.isStringLiteral(first) || first.text !== 'git') {
+        violations.push(`uses ${RUN_GIT} other than as a direct call starting the literal git`);
+      }
+    }
     ts.forEachChild(node, visit);
   };
   visit(file);
   return violations;
 }
 
-/** The named imports `fileText` takes from the core package. */
-function coreImports(fileName: string, fileText: string): string[] {
+/** The exported names `fileText` imports from the core package, read by
+ * their exported name, never the local alias (round-3 note 2), and every
+ * import form that would reach the whole barrel without naming an export. */
+function coreImports(fileName: string, fileText: string): { readonly names: string[]; readonly refused: string[] } {
   const file = ts.createSourceFile(fileName, fileText, ts.ScriptTarget.Latest, true);
   const names: string[] = [];
+  const refused: string[] = [];
   for (const statement of file.statements) {
-    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (statement.moduleSpecifier.text !== '@syzygy/three-surface-poc-core') continue;
+    if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
+    const specifier = statement.moduleSpecifier;
+    if (specifier === undefined || !ts.isStringLiteral(specifier) || specifier.text !== '@syzygy/three-surface-poc-core') continue;
+    if (ts.isExportDeclaration(statement)) {
+      refused.push('re-exports from the core package');
+      continue;
+    }
+    if (statement.importClause === undefined) refused.push('side-effect import of the core package');
+    if (statement.importClause?.name !== undefined) refused.push('default import of the core package');
     const bindings = statement.importClause?.namedBindings;
-    if (bindings !== undefined && ts.isNamedImports(bindings)) names.push(...bindings.elements.map((element) => element.name.text));
+    if (bindings !== undefined && ts.isNamespaceImport(bindings)) refused.push('namespace import of the core package');
+    if (bindings !== undefined && ts.isNamedImports(bindings)) names.push(...bindings.elements.map((element) => (element.propertyName ?? element.name).text));
   }
-  return names;
+  return { names, refused };
 }
 
 /** The names `fileText` exports from its own top-level declarations. */
@@ -232,6 +258,13 @@ describe('capture-test-artifact never starts the observed project (source check)
     ["Object.getOwnPropertyDescriptor(process.stdout, 'x');", 'reaches getOwnPropertyDescriptor'],
     ["({}).__proto__;", 'reaches __proto__'],
     ["(() => 0).prototype;", 'reaches prototype'],
+    // Round-3 note 1: the permitted binding, reached without a direct call.
+    [`${RUN_GIT}.call(null, 'sh', []);`, `uses ${RUN_GIT} other than`],
+    [`${RUN_GIT}.apply(null, ['sh', []]);`, `uses ${RUN_GIT} other than`],
+    [`const r = ${RUN_GIT}; r('sh');`, `uses ${RUN_GIT} other than`],
+    [`${RUN_GIT}('sh', []);`, `uses ${RUN_GIT} other than`],
+    [`const cmd = 'git'; ${RUN_GIT}(cmd, []);`, `uses ${RUN_GIT} other than`],
+    [`import { ${RUN_GIT} as run } from 'node:fs';`, `renames ${RUN_GIT} on import`],
   ])('the tree check refuses %s', (fragment, violation) => {
     const violations = sourceViolations(MODULE_SOURCE, `${text(MODULE_SOURCE)}\n${fragment}\n`);
     expect(violations.some((entry) => entry.startsWith(violation)), violations.join('; ')).toBe(true);
@@ -239,14 +272,32 @@ describe('capture-test-artifact never starts the observed project (source check)
 
   it('calls into the core package only through the module the check covers', () => {
     const exported = ownExports(CORE_SOURCE, text(CORE_SOURCE));
-    const used = [...coreImports(MAIN_SOURCE, text(MAIN_SOURCE)), ...coreImports(MODULE_SOURCE, text(MODULE_SOURCE))];
+    const main = coreImports(MAIN_SOURCE, text(MAIN_SOURCE));
+    const module = coreImports(MODULE_SOURCE, text(MODULE_SOURCE));
+    const used = [...main.names, ...module.names];
     expect(used.length).toBeGreaterThan(0);
     expect(used.filter((name) => !exported.has(name))).toEqual([]);
+    expect([...main.refused, ...module.refused]).toEqual([]);
   });
 
-  it('runs exactly one command, the literal git', () => {
+  // Round-3 note 2: the check read the local name, so an alias or a
+  // namespace import reached every barrel export.
+  it.each([
+    ["import { focusedTestCommand as readBoundedRegularFile } from '@syzygy/three-surface-poc-core';", 'names', 'focusedTestCommand'],
+    ["import * as core from '@syzygy/three-surface-poc-core';", 'refused', 'namespace import of the core package'],
+    ["import core from '@syzygy/three-surface-poc-core';", 'refused', 'default import of the core package'],
+    ["import '@syzygy/three-surface-poc-core';", 'refused', 'side-effect import of the core package'],
+    ["export * from '@syzygy/three-surface-poc-core';", 'refused', 're-exports from the core package'],
+  ] as const)('the core-import check reads %s', (fragment, field, entry) => {
+    expect(coreImports(MODULE_SOURCE, `${fragment}\n${text(MODULE_SOURCE)}`)[field]).toContain(entry);
+  });
+
+  it('runs exactly one command, the literal git, through one direct call', () => {
     const calls = [...text(MAIN_SOURCE).matchAll(new RegExp(String.raw`\b${RUN_GIT}\s*\(\s*([^,)]*)`, 'g'))].map((match) => match[1]?.trim());
     expect(calls).toEqual(["'git'"]);
+    // The tree check, not this regex, holds the binding to direct calls:
+    // `.call`, `.apply`, an alias or a rename fails `sourceViolations`.
+    expect(sourceViolations(MAIN_SOURCE, text(MAIN_SOURCE))).toEqual([]);
   });
 });
 

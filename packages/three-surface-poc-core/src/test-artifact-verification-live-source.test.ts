@@ -112,6 +112,13 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
       if (ts.isElementAccessExpression(node) && !isLiteralKey(node.argumentExpression)) add('computed access with a non-literal key');
       if (ts.isComputedPropertyName(node) && !isLiteralKey(node.expression)) add('computed property name with a non-literal key');
     }
+    // #383 round 3, note 1: the git runner reached through `.call`, `.apply`
+    // or an alias starts any command. Outside its import it may appear only
+    // as the callee of a direct call, whose command the rule above checks.
+    if (ts.isIdentifier(node) && node.text === RUN_GIT && !ts.isImportSpecifier(node.parent)) {
+      const call = node.parent;
+      if (!ts.isCallExpression(call) || call.expression !== node) add(`uses ${RUN_GIT} other than as a direct call`);
+    }
     if (ts.isIdentifier(node)) {
       if (FORBIDDEN_IDENTIFIERS.has(node.text)) add(`names ${node.text}`);
       if (node.text === 'process') {
@@ -190,6 +197,10 @@ describe('the live verification test, and every module it imports, runs no obser
     ["Object.getOwnPropertyDescriptor(process.stdout, 'x');", 'reaches getOwnPropertyDescriptor'],
     ["({}).__proto__;", 'reaches __proto__'],
     ["(() => 0).prototype;", 'reaches prototype'],
+    // #383 round 3, note 1: the permitted binding, reached without a direct call.
+    [`${RUN_GIT}.call(null, 'sh', []);`, `uses ${RUN_GIT} other than as a direct call`],
+    [`${RUN_GIT}.apply(null, ['sh', []]);`, `uses ${RUN_GIT} other than as a direct call`],
+    [`const r = ${RUN_GIT}; r('sh');`, `uses ${RUN_GIT} other than as a direct call`],
   ])('the tree check refuses %s', (fragment, violation) => {
     const { violations } = closure(LIVE, { [LIVE]: `${fragment}\n` });
     expect(violations.some((entry) => entry.file === LIVE && entry.reason.startsWith(violation)), JSON.stringify(violations)).toBe(true);
