@@ -1,4 +1,4 @@
-/** Test support. Owner-act text rendered by the real recorders (scripts/record_public_repo_admission_acts.py and
+/** Test support. Owner-act text rendered by the real recorders (scripts/record_public_repo_admission_acts.py, the registry-entry recorder and
  * scripts/record_public_egress_v2_act.py), so a reader's expected forms are tested against what the writer writes. */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -46,6 +46,20 @@ export function renderClassAct(argument: string, date: string, instant: string):
   if (hit !== undefined) return hit;
   const py = `import sys; sys.path.insert(0, 'scripts'); import record_rfc5_project_documentation_act as m
 sys.stdout.write(m.render_act('${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}'))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  cache.set(id, run.stdout);
+  return run.stdout;
+}
+
+/** The public Git-hosting source-acquisition registry entry act as scripts/record_public_admission_registry_entries_acts.py renders it
+ * (key `git-source-acquisition`). */
+export function renderRegistryAct(argument: string, date: string, instant: string): string {
+  const id = ['registry', argument, date, instant].join('|');
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_admission_registry_entries_acts as m
+sys.stdout.write(m.render_act(m.ACT_BY_KEY['git-source-acquisition'], '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}'))`;
   const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
   if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
   cache.set(id, run.stdout);

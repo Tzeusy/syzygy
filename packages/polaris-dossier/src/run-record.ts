@@ -1,4 +1,6 @@
 import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { dossierRepositoryUrl } from './github-url.js';
+import type { GovernedKind } from './governed.js';
 import { validateRunConfig, type RunConfig, type RunConfigRefusal } from './run-config.js';
 
 /** The run configuration as the run directory stores it (`run.json`).
@@ -7,10 +9,28 @@ import { validateRunConfig, type RunConfig, type RunConfigRefusal } from './run-
  * and Syzygy observed none of it, so every value is Inferred. The principal of the commands is the
  * operator, operator-declared; the commands hold no credential that authenticates to Syzygy, so the
  * credential identity is Unknown, never fabricated. No provider-reported model version exists in
- * this mode, and the record says so. */
+ * this mode, and the record says so.
+ *
+ * The subject block records what `init` established: the repository, the pinned revision and the consent that named it, the start
+ * gates' records, the governed decision and the per-project statement it relied on. Read back, every one of these is Inferred: it is
+ * which revision the run was pinned to, not that the revision is consented, which every later step verifies again
+ * (`reverifyPinnedRevision`). The run makes no provider dispatch and no scheduler effect, so it has no work item; the record says why,
+ * and the run is rendered as unattributed execution under RFC4-19. */
 
 export const RUN_RECORD_FORMAT = 'polaris-dossier-run/1' as const;
 export const NO_PROVIDER_MODEL_VERSION = 'no provider-reported model version is available in the operator-agent mode';
+
+export const NO_WORK_ITEM_REASON = 'the operator-agent run makes no provider dispatch and no scheduler effect, so no scheduler work item, Proposal or materialization record exists for it; it is rendered as unattributed execution under RFC4-19, never dropped';
+
+export interface RunSubject {
+  readonly repository: { readonly url: string; readonly repositoryId: string };
+  readonly pinnedRevision: { readonly commit: string; readonly label: string; readonly consentRecord: string; readonly pinnedAt: string };
+  readonly startGates: { readonly registryEntry: string; readonly screeningPolicy: string };
+  readonly governed: { readonly kind: GovernedKind; readonly because: readonly string[] };
+  /** The per-project statement the run relies on (`recordId@version`); null only for a non-governed subject. */
+  readonly providerStatement: string | null;
+  readonly workItem: { readonly identity: null; readonly reason: typeof NO_WORK_ITEM_REASON };
+}
 
 export interface RecordedRunConfig {
   readonly format: typeof RUN_RECORD_FORMAT;
@@ -20,9 +40,10 @@ export interface RecordedRunConfig {
   readonly label: 'Inferred';
   readonly modelVersionProvider: typeof NO_PROVIDER_MODEL_VERSION;
   readonly principal: { readonly name: string; readonly declaredBy: 'operator'; readonly credentialIdentity: 'Unknown' };
+  readonly subject: RunSubject;
 }
 
-export function recordRunConfig(config: RunConfig): RecordedRunConfig {
+export function recordRunConfig(config: RunConfig, subject: RunSubject): RecordedRunConfig {
   return {
     format: RUN_RECORD_FORMAT,
     mode: 'operator-agent',
@@ -31,6 +52,7 @@ export function recordRunConfig(config: RunConfig): RecordedRunConfig {
     label: 'Inferred',
     modelVersionProvider: NO_PROVIDER_MODEL_VERSION,
     principal: { name: config.operator, declaredBy: 'operator', credentialIdentity: 'Unknown' },
+    subject,
   };
 }
 
@@ -49,8 +71,8 @@ function declaredInput(config: RunConfig): Record<string, unknown> {
   return input;
 }
 
-export function encodeRunRecord(config: RunConfig): string {
-  const record = recordRunConfig(config);
+export function encodeRunRecord(config: RunConfig, subject: RunSubject): string {
+  const record = recordRunConfig(config, subject);
   return `${JSON.stringify({ ...record, declared: declaredInput(config) }, null, 2)}\n`;
 }
 
@@ -58,8 +80,8 @@ export type ReadRunRecordResult =
   | { readonly ok: true; readonly record: RecordedRunConfig }
   | { readonly ok: false; readonly detail: string; readonly refusals?: readonly RunConfigRefusal[] };
 
-const RECORD_JSON_LIMITS = Object.freeze({ maxBytes: 32_768, maxNodes: 128, maxDepth: 3 });
-const RECORD_KEYS = ['declared', 'declaredBy', 'format', 'label', 'mode', 'modelVersionProvider', 'principal'];
+const RECORD_JSON_LIMITS = Object.freeze({ maxBytes: 65_536, maxNodes: 256, maxDepth: 4 });
+const RECORD_KEYS = ['declared', 'declaredBy', 'format', 'label', 'mode', 'modelVersionProvider', 'principal', 'subject'];
 
 /** Read a stored record back. The record lies within the agent sessions' write reach, so it is
  * re-validated in full; whatever it says stays Inferred. */
@@ -90,5 +112,42 @@ export function readRunRecord(text: string): ReadRunRecordResult {
     || Object.keys(principal).length !== 3) {
     return { ok: false, detail: 'run.json principal must be the declared operator, operator-declared, with credential identity Unknown' };
   }
-  return { ok: true, record: recordRunConfig(config.config) };
+  const subject = readSubject(fields['subject']);
+  if (typeof subject === 'string') return { ok: false, detail: `run.json subject is invalid: ${subject}` };
+  return { ok: true, record: recordRunConfig(config.config, subject) };
+}
+
+type Fields = Readonly<Record<string, unknown>>;
+const isObject = (value: unknown): value is Fields => value !== null && typeof value === 'object' && !Array.isArray(value);
+const hasKeys = (value: Fields, keys: readonly string[]): boolean => Object.keys(value).sort().join(',') === [...keys].sort().join(',');
+const isText = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '' && value.length <= 512;
+const INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
+const GOVERNED_KINDS: readonly GovernedKind[] = ['governed', 'non-governed', 'unstated'];
+
+/** The subject block, validated in full; a description of the first fault otherwise. */
+function readSubject(value: unknown): RunSubject | string {
+  if (!isObject(value) || !hasKeys(value, ['repository', 'pinnedRevision', 'startGates', 'governed', 'providerStatement', 'workItem'])) return 'it must carry exactly repository, pinnedRevision, startGates, governed, providerStatement and workItem';
+  const { repository, pinnedRevision, startGates, governed, providerStatement, workItem } = value;
+  if (!isObject(repository) || !hasKeys(repository, ['url', 'repositoryId']) || !isText(repository['url']) || !isText(repository['repositoryId'])) return 'repository must carry a url and a repositoryId';
+  const url = dossierRepositoryUrl(repository['url']);
+  if (!url.ok || url.url !== repository['url'] || !/^[a-z0-9][a-z0-9-]*$/.test(repository['repositoryId'])) return 'repository url or repositoryId is malformed';
+  if (!isObject(pinnedRevision) || !hasKeys(pinnedRevision, ['commit', 'label', 'consentRecord', 'pinnedAt'])) return 'pinnedRevision must carry commit, label, consentRecord and pinnedAt';
+  if (typeof pinnedRevision['commit'] !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(pinnedRevision['commit'])) return 'the pinned commit is not a full commit identifier';
+  if (!isText(pinnedRevision['label']) || !isText(pinnedRevision['consentRecord'])) return 'the pinned revision must name its label and consent record';
+  if (typeof pinnedRevision['pinnedAt'] !== 'string' || !INSTANT.test(pinnedRevision['pinnedAt']) || Number.isNaN(Date.parse(pinnedRevision['pinnedAt']))) return 'pinnedAt is not a UTC instant';
+  if (!isObject(startGates) || !hasKeys(startGates, ['registryEntry', 'screeningPolicy']) || !isText(startGates['registryEntry']) || !isText(startGates['screeningPolicy'])) return 'startGates must cite the registry entry and screening policy records';
+  if (!isObject(governed) || !hasKeys(governed, ['kind', 'because']) || !GOVERNED_KINDS.includes(governed['kind'] as GovernedKind)
+    || !Array.isArray(governed['because']) || governed['because'].length === 0 || !governed['because'].every(isText)) return 'governed must carry a kind and its reasons';
+  const kind = governed['kind'] as GovernedKind;
+  if (providerStatement !== null && !isText(providerStatement)) return 'providerStatement must be a record citation or null';
+  if (kind !== 'non-governed' && providerStatement === null) return `${kind === 'unstated' ? 'an unstated' : 'a governed'} subject must cite the per-project statement it relies on`;
+  if (!isObject(workItem) || !hasKeys(workItem, ['identity', 'reason']) || workItem['identity'] !== null || workItem['reason'] !== NO_WORK_ITEM_REASON) return 'workItem must record an absent identity with its reason';
+  return {
+    repository: { url: repository['url'], repositoryId: repository['repositoryId'] },
+    pinnedRevision: { commit: pinnedRevision['commit'], label: pinnedRevision['label'], consentRecord: pinnedRevision['consentRecord'], pinnedAt: pinnedRevision['pinnedAt'] },
+    startGates: { registryEntry: startGates['registryEntry'], screeningPolicy: startGates['screeningPolicy'] },
+    governed: { kind, because: [...(governed['because'] as string[])] },
+    providerStatement: providerStatement as string | null,
+    workItem: { identity: null, reason: NO_WORK_ITEM_REASON },
+  };
 }

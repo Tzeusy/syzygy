@@ -1,3 +1,9 @@
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { createPackageGateSources, type GateSources } from './gate-sources.js';
+import { initRun } from './init.js';
+import { preflight } from './preflight.js';
+import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
 import { runStatus } from './status.js';
 
 /** The `syzygy dossier` command family (design "Command surface").
@@ -9,11 +15,23 @@ import { runStatus } from './status.js';
 
 export const EXIT = Object.freeze({ clean: 0, refused: 1, usage: 2 });
 
+export const STATE_ROOT_ENV = 'SYZYGY_DOSSIER_STATE_ROOT';
+
 export const DOSSIER_USAGE = `syzygy dossier — operator-agent dossier runs
 
 Usage: syzygy dossier <command> [--json] [arguments]
 
 Commands:
+  preflight <url>     report whether the observation consent, the source-acquisition
+                      registry entry and the classification and screening policy are
+                      in force for the repository, the revisions the consent names,
+                      any per-project statement, and whether D9 and the RFC7-20
+                      reading are in force; the URL is parsed, never fetched
+  init <clone> --url <url> --config <run.json> [--state-root <dir>]
+                      check the start gates, pin the clone's HEAD to a consented
+                      revision, decide whether the subject is governed, and make the
+                      run directory under the state root (or $${STATE_ROOT_ENV});
+                      there is no default state root
   status <run>        report a run's state, limits spent, open findings and
                       reviews still required, from its run directory
   help                print this usage and exit
@@ -28,12 +46,34 @@ export interface CliIo {
   readonly stderr: (text: string) => void;
 }
 
-export function runDossierCli(argv: readonly string[], io: CliIo): number {
+/** What the commands read besides their arguments. The defaults are the process environment, the system clock and the records in
+ * this Syzygy checkout. */
+export interface CliPorts {
+  readonly env?: Readonly<Record<string, string | undefined>>;
+  readonly now?: () => number;
+  readonly sources?: GateSources;
+}
+
+/** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
+const RECORDS_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
+
+export async function runDossierCli(argv: readonly string[], io: CliIo, ports: CliPorts = {}): Promise<number> {
   const json = argv.includes('--json');
   const args = argv.filter((arg) => arg !== '--json');
+  const now = ports.now ?? Date.now;
+  const sources = (): GateSources => ports.sources ?? createPackageGateSources({ root: RECORDS_ROOT, now });
   const usageError = (detail: string): number => {
     io.stderr(`syzygy dossier: ${detail}\n\n${DOSSIER_USAGE}`);
     return EXIT.usage;
+  };
+  const refused = (document: object): number => {
+    if (json) io.stdout(`${JSON.stringify(document, null, 2)}\n`);
+    io.stderr(renderHuman(document));
+    return EXIT.refused;
+  };
+  const report = (document: object, exit: number): number => {
+    io.stdout(json ? `${JSON.stringify(document, null, 2)}\n` : renderHuman(document));
+    return exit;
   };
   const [command, ...rest] = args;
   if (command === undefined) return usageError('a command is required');
@@ -47,16 +87,62 @@ export function runDossierCli(argv: readonly string[], io: CliIo): number {
     if (flag !== undefined) return usageError(`unknown option for status: ${flag}`);
     if (rest.length !== 1) return usageError('status takes exactly one argument, the run directory');
     const result = runStatus(rest[0]!);
-    if (!result.ok) {
-      const document = { command: 'status', outcome: 'refused', reason: result.reason, ...(result.refusals ? { refusals: result.refusals } : {}) };
-      if (json) io.stdout(`${JSON.stringify(document, null, 2)}\n`);
-      io.stderr(renderHuman(document));
-      return EXIT.refused;
+    if (!result.ok) return refused({ command: 'status', outcome: 'refused', reason: result.reason, ...(result.refusals ? { refusals: result.refusals } : {}) });
+    return report(result.report, EXIT.clean);
+  }
+  if (command === 'preflight') {
+    const flag = rest.find((arg) => arg.startsWith('-'));
+    if (flag !== undefined) return usageError(`unknown option for preflight: ${flag}`);
+    if (rest.length !== 1) return usageError('preflight takes exactly one argument, the repository URL');
+    const result = await preflight(rest[0]!, sources(), now());
+    if (!result.ok) return refused({ command: 'preflight', outcome: 'refused', reason: result.reason });
+    return report(result.report, result.report.outcome === 'ready' ? EXIT.clean : EXIT.refused);
+  }
+  if (command === 'init') {
+    const options = parseOptions(rest, ['--url', '--config', '--state-root']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('init takes exactly one positional argument, the clone directory');
+    const url = options.values.get('--url'), configPath = options.values.get('--config');
+    if (url === undefined || configPath === undefined) return usageError('init requires --url <url> and --config <run.json>');
+    const env = ports.env ?? process.env;
+    const stateRoot = options.values.get('--state-root') ?? env[STATE_ROOT_ENV];
+    if (stateRoot === undefined || stateRoot === '') {
+      return refused({ command: 'init', outcome: 'refused', stage: 'state-root', reason: `no state root: pass --state-root <dir> or set ${STATE_ROOT_ENV}; there is no default, and none is derived from the clone`, objectsRead: false });
     }
-    io.stdout(json ? `${JSON.stringify(result.report, null, 2)}\n` : renderHuman(result.report));
-    return EXIT.clean;
+    const configText = readBounded(configPath, RUN_CONFIG_JSON_LIMITS.maxBytes);
+    if (typeof configText !== 'string') return refused({ command: 'init', outcome: 'refused', stage: 'config', reason: configText.reason, objectsRead: false });
+    const result = await initRun({ clone: options.positional[0]!, url, configText, stateRoot }, { sources: sources(), now });
+    return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   return usageError(`unknown dossier command: ${command}`);
+}
+
+/** `--name value` pairs (each at most once) and positional arguments; a description of the fault otherwise. */
+function parseOptions(args: readonly string[], names: readonly string[]): { readonly values: ReadonlyMap<string, string>; readonly positional: readonly string[] } | string {
+  const values = new Map<string, string>();
+  const positional: string[] = [];
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index]!;
+    if (!arg.startsWith('-')) { positional.push(arg); continue; }
+    if (!names.includes(arg)) return `unknown option: ${arg}`;
+    if (values.has(arg)) return `${arg} given more than once`;
+    const value = args[index + 1];
+    if (value === undefined || value.startsWith('-')) return `${arg} requires a value`;
+    values.set(arg, value);
+    index++;
+  }
+  return { values, positional };
+}
+
+function readBounded(file: string, limit: number): string | { readonly reason: string } {
+  try {
+    const stats = fs.statSync(file);
+    if (!stats.isFile()) return { reason: `${file} is not a regular file` };
+    if (stats.size > limit) return { reason: `${file} is larger than the ${limit}-byte configuration bound` };
+    return fs.readFileSync(file, 'utf8');
+  } catch (cause) {
+    return { reason: `${file} cannot be read (${(cause as NodeJS.ErrnoException).code ?? 'unknown-error'})` };
+  }
 }
 
 /** One `key: value` line per leaf of the document, in document order, keys joined by dots. */

@@ -176,6 +176,15 @@ function sectionList(source: string, heading: string): string[] {
   return body.slice(start, stop).filter(line => line.startsWith('- '));
 }
 
+/** The observation record's one `Upstream:` URL (the template writes `Upstream: <url> (public; configuration, not repository
+ * identity)`), or null when the record has no such line. The URL is configuration that lets a caller find the record for a URL; it is
+ * never the repository's identity. A repeated line, one that counts differently once fences are ignored, or one whose value is not a
+ * plain https URL refuses the read. */
+function upstreamOf(text: string): string | null {
+  if ([...text.matchAll(/^Upstream:/gm)].length === 0) return null;
+  return one(text, /^Upstream: (https:\/\/[A-Za-z0-9.-]+\/[^\s()`]+?)(?: \([^\n]*\))?$/gm);
+}
+
 function parseInstance(text: string, act: Act, inForceAt: number | null): AdmissionRecord {
   const recordId = one(text, /^Record ID: `([^`\n]+)`$/gm);
   const version = one(text, /^Record version: `([^`\n]+)`$/gm);
@@ -200,14 +209,14 @@ function parseInstance(text: string, act: Act, inForceAt: number | null): Admiss
     }
     // A label names one commit and a commit has one label: a duplicate of either (a label in any case) is ambiguous, so the table is unreadable.
     if (revisions.length === 0 || !revisions.every(id => COMMIT_OBJECT_ID.test(id)) || new Set(labels.map(fold)).size !== labels.length || new Set(revisions).size !== revisions.length) refuse();
-    return Object.freeze({ ...base, class: 'observation', repositoryId: m![1]!, providerId: null, admittedRevisions: Object.freeze(revisions), revisionLabels: Object.freeze(labels), admittedRepositories: Object.freeze([]), contentClasses: Object.freeze([]) });
+    return Object.freeze({ ...base, class: 'observation', repositoryId: m![1]!, providerId: null, upstream: upstreamOf(text), admittedRevisions: Object.freeze(revisions), revisionLabels: Object.freeze(labels), admittedRepositories: Object.freeze([]), contentClasses: Object.freeze([]) });
   }
   const m = /^\(project:syzygy, provider:([a-z0-9][a-z0-9-]*)\)$/.exec(subject) ?? refuse();
   // Only the Scope section lists admitted repositories: a bullet naming one elsewhere ("not admitted", an example) is not a grant.
   const repositories = sectionList(text, '## Scope').map(line => /^- `\(project:syzygy, repository:([a-z0-9][a-z0-9-]*)\)`$/.exec(line)?.[1]).filter((id): id is string => id !== undefined);
   const classes = bullets(text, /^Permitted content classes/m).map(line => /^`([a-z-]+)`$/.exec(line)?.[1] ?? refuse());
   if (repositories.length === 0 || classes.length === 0 || new Set(repositories).size !== repositories.length) refuse();
-  return Object.freeze({ ...base, class: 'egress', repositoryId: null, providerId: m![1]!, admittedRevisions: Object.freeze([]), revisionLabels: Object.freeze([]), admittedRepositories: Object.freeze(repositories), contentClasses: Object.freeze(classes) });
+  return Object.freeze({ ...base, class: 'egress', repositoryId: null, providerId: m![1]!, upstream: null, admittedRevisions: Object.freeze([]), revisionLabels: Object.freeze([]), admittedRepositories: Object.freeze(repositories), contentClasses: Object.freeze(classes) });
 }
 
 /** The RFC5-14 content-class amendment that version 2's `project-documentation` class depends on (scripts/record_rfc5_project_documentation_act.py):
@@ -505,6 +514,72 @@ export function readInForceEgress(options: StrictReadOptions): Promise<ActState<
   });
 }
 
+/** One digest-bound owner act outside the admission and policy families, as its recorder writes it: the one decisions file, the
+ * title, the act type, the identity it renders for a date, the one artifact it binds, and the stems that name it. The cross-check is
+ * RFC3-16(a)'s: the act counts only when its record exists in exactly this form, its argument is the sha256 of the artifact's current
+ * bytes and its instant is not after `now`. A status word in the artifact, or the artifact's presence, never counts. */
+export interface DigestBoundActForm {
+  readonly file: string;
+  readonly title: string;
+  readonly type: string;
+  readonly identity: (date: string) => string;
+  readonly artifact: string;
+  /** Stems a decisions file carries when it names this act: any other file that carries one, or the artifact path, refuses the read
+   * (a withdrawal, or a form this reader does not define). The aggregate acceptance record is exempt except on its field lines. */
+  readonly stems: readonly string[];
+}
+export type DigestBoundAct = { readonly act: ParsedAct; readonly artifactDigest: string; readonly artifactText: string };
+
+/** The public Git-hosting source-acquisition registry entry act (scripts/record_public_admission_registry_entries_acts.py, key
+ * `git-source-acquisition`). The act binds the proposed entry file at its manifest row. */
+export const REGISTRY_GIT_SOURCE_ACT_FORM: DigestBoundActForm = Object.freeze({
+  file: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md',
+  title: '# Owner act — public Git-hosting source-acquisition registry entry',
+  type: 'adopt-registry-entry',
+  identity: (date: string) => `PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-${date}`,
+  artifact: '.syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json',
+  stems: Object.freeze(['public-admission-registry-git-source']),
+});
+
+function namesDigestBoundAct(form: DigestBoundActForm, rel: string, text: string): boolean {
+  if (form.stems.some(stem => carries(rel, stem))) return true;
+  if (rel !== AGGREGATE_RECORD && [...form.stems, form.artifact].some(needle => carries(text, needle))) return true;
+  return fold(text).split('\n').some(line => {
+    const field = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity)\s*\**\s*:\s*(.*)$/u.exec(line);
+    return field !== null && [...form.stems, form.artifact].some(needle => carries(field[2]!, needle));
+  });
+}
+
+/** The act `form` describes, cross-checked at `now` under RFC3-16(a): `ok` when its record exists in the recorder's form, binds the
+ * artifact's current bytes and took effect no later than `now`; `absent` when no record exists or it is not in force yet; `refused` for a
+ * bad form, bytes that differ from the argument, or another decisions file that names the act. */
+export function readDigestBoundActState(options: StrictReadOptions & { readonly form: DigestBoundActForm }): Promise<ActState<DigestBoundAct>> {
+  return strict<DigestBoundAct>(async () => {
+    const fs = options.fs ?? nodeFs, form = options.form;
+    const files = await walk(fs, path.join(options.root, DECISIONS_DIR)), swept = sweepText(fs, options.root);
+    let found: string | null = null;
+    for (const rel of files) {
+      let text: string;
+      try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, rel)); } catch { return refuse(); }
+      if (rel === form.file) { found = text; continue; }
+      if (namesDigestBoundAct(form, rel, await swept(rel, text))) return { state: 'refused', why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define` };
+    }
+    if (found === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };
+    const text = found;
+    if (!text.startsWith(`${form.title}\n`)) refuse();
+    const date = one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm), identity = one(text, /^Act identity: `([^`\n]+)`$/gm), type = one(text, /^Act type: `([^`\n]+)`$/gm);
+    const artifact = one(text, /^Artifact identity: `([^`\n]+)`$/gm), project = one(text, /^Project identity: `(project:syzygy)`$/gm), digest = one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm);
+    const day = Date.parse(`${date}T00:00:00Z`);
+    if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date || identity !== form.identity(date) || type !== form.type || artifact !== form.artifact) refuse();
+    const act: ParsedAct = { file: form.file, identity, type, artifact, project, digest, date, recordedAt: actInstant(text, date), supersession: supersessionText(text), text };
+    let artifactText: string;
+    try { artifactText = await fs.readFile(path.join(options.root, form.artifact)); } catch { return { state: 'refused', why: `the act's artifact ${form.artifact} cannot be read` }; }
+    if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.artifact} differ from the act's argument` };
+    if (act.recordedAt > options.now) return { state: 'absent', why: `the act ${identity} is not in force yet` };
+    return { state: 'ok', act, artifactDigest: digest, artifactText };
+  });
+}
+
 /** Structurally the poc:dossier trigger's `AdmissionRecordsPort`. */
 export interface AdmissionRequirementLike { readonly kind: 'observation-consent' | 'public-source-policy' | 'egress-consent'; readonly repositoryId: string; readonly revision: string }
 export interface ConsentedRevision { readonly label: string; readonly commitId: string }
@@ -515,6 +590,9 @@ export interface AdmissionRecordsPortLike {
   /** The owner's consented revisions for a repository id: label and full commit id, from the observation records in force now. Fails closed to
    * an empty list when records cannot be read, or when labels and commits are not one-to-one across the records in force. */
   readonly consentedRevisionsFor: (repositoryId: string) => Promise<readonly ConsentedRevision[]>;
+  /** The repository ids of the observation records in force now whose `Upstream:` is exactly `url`, sorted and distinct. The caller
+   * never derives an id from the URL: it takes the one id this returns, and refuses on none or several. Empty when records cannot be read. */
+  readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
 }
 
 /** Answers each requirement from the reader, fresh on every call, with the same
@@ -529,6 +607,11 @@ export function createPackageAdmissionRecordsPort(options: { readonly root: stri
 export function createAdmissionRecordsPort(options: { readonly reader: AdmissionRecordReader; readonly policy?: PolicyActReader; readonly now: () => number }): AdmissionRecordsPortLike {
   return {
     source: 'public-repo-admission act records (owner acts over the instance records)',
+    repositoryIdsFor: async url => {
+      let live: readonly AdmissionRecord[];
+      try { live = inForceRecords(await options.reader.read(), options.now()); } catch { return []; }
+      return Object.freeze([...new Set(live.filter(r => r.class === 'observation' && r.upstream === url).map(r => r.repositoryId!))].sort());
+    },
     consentedRevisionsFor: async repositoryId => {
       let live: readonly AdmissionRecord[];
       try { live = inForceRecords(await options.reader.read(), options.now()); } catch { return []; }
