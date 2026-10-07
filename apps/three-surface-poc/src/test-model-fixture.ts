@@ -83,6 +83,8 @@ function committedFixtureRepo(): FixtureRepo {
     writeFileSync(absolutePath, contents, 'utf8');
   }
   git(root, ['init', '-q']);
+  git(root, ['config', 'gc.auto', '0']);
+  git(root, ['config', 'maintenance.auto', 'false']);
   git(root, ['config', 'user.email', 'poc-test@example.invalid']);
   git(root, ['config', 'user.name', 'POC Test']);
   git(root, ['add', '-A']);

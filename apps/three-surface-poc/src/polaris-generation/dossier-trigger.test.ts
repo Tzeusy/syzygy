@@ -87,7 +87,7 @@ describe('with every record satisfied', () => {
   beforeAll(() => {
     repo = mkdtempSync(join(tmpdir(), 'syzygy-trigger-repo-'));
     const run = (...a: string[]): string => execFileSync('git', ['-C', repo, ...a], { encoding: 'utf8' }).trim();
-    run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+    run('init', '-q'); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
     for (const [p, body] of Object.entries({ 'README.md': '# Fixture\nIt does a thing.\n', 'src/core.c': 'int core(void) { return 1; }\n', 'bin/blob': 'x' })) {
       mkdirSync(dirname(join(repo, p)), { recursive: true }); writeFileSync(join(repo, p), body);
     }
@@ -316,7 +316,7 @@ describe('with every record satisfied', () => {
   describe('a poisoned caller environment', () => {
     it('reads the pinned fixture through the whole trigger while GIT_DIR and object variables point at another repository', async () => {
       const other = mkdtempSync(join(tmpdir(), 'syzygy-trigger-other-')); cleanups.push(other);
-      execFileSync('git', ['-C', other, 'init', '-q']); writeFileSync(join(other, 'OTHER.md'), 'OTHER REPO\n');
+      execFileSync('git', ['-C', other, 'init', '-q']); execFileSync('git', ['-C', other, 'config', 'gc.auto', '0']); execFileSync('git', ['-C', other, 'config', 'maintenance.auto', 'false']); writeFileSync(join(other, 'OTHER.md'), 'OTHER REPO\n');
       execFileSync('git', ['-C', other, 'add', '-A']); execFileSync('git', ['-C', other, '-c', 'user.email=o@example.invalid', '-c', 'user.name=O', 'commit', '-qm', 'o']);
       const saved = { ...process.env };
       Object.assign(process.env, { GIT_DIR: join(other, '.git'), GIT_OBJECT_DIRECTORY: join(other, 'nowhere'), GIT_ALTERNATE_OBJECT_DIRECTORIES: join(other, '.git', 'objects') });
@@ -361,7 +361,7 @@ describe('command', () => {
   beforeAll(() => {
     repo = mkdtempSync(join(tmpdir(), 'syzygy-trigger-cmd-'));
     const run = (...a: string[]): string => execFileSync('git', ['-C', repo, ...a], { encoding: 'utf8' }).trim();
-    run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+    run('init', '-q'); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
     writeFileSync(join(repo, 'README.md'), '# Fixture\nIt does a thing.\n'); writeFileSync(join(repo, 'a.c'), 'int a;\n');
     run('add', '-A'); run('commit', '-qm', 'fixture'); commit = run('rev-parse', 'HEAD');
   });

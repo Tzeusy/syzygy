@@ -193,7 +193,7 @@ export function redisShapedFiles(options: RedisShapedOptions = {}): Map<string, 
 export function buildRedisShapedFixture(dir: string, options: RedisShapedOptions = {}): RedisShapedFixture {
   const git = (...args: string[]): string => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim();
   mkdirSync(dir, { recursive: true });
-  git('init', '-q'); git('config', 'user.email', 'f@example.invalid'); git('config', 'user.name', 'F');
+  git('init', '-q'); git('config', 'gc.auto', '0'); git('config', 'maintenance.auto', 'false'); git('config', 'user.email', 'f@example.invalid'); git('config', 'user.name', 'F');
   const files = redisShapedFiles(options);
   for (const [path, text] of files) { mkdirSync(dirname(join(dir, path)), { recursive: true }); writeFileSync(join(dir, path), text); }
   git('add', '-A'); git('commit', '-qm', 'synthetic fixture');

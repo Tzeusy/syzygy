@@ -59,6 +59,8 @@ beforeAll(async () => {
   origin = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-render-origin-')));
   const git = (...args: string[]): string => execFileSync('git', ['-C', origin, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
   git('init', '-q', '-b', 'main');
+  git('config', 'gc.auto', '0');
+  git('config', 'maintenance.auto', 'false');
   for (const [file, body] of Object.entries(FILES)) {
     fs.mkdirSync(path.dirname(path.join(origin, file)), { recursive: true });
     fs.writeFileSync(path.join(origin, file), body);

@@ -53,6 +53,8 @@ describe('zero-egress Syzygy self-corpus proof', () => {
     const root = mkdtempSync(join(tmpdir(), 'syzygy-self-corpus-fixture-'));
     cleanups.push(root);
     execFileSync('git', ['init', '-q', root]);
+    execFileSync('git', ['-C', root, 'config', 'gc.auto', '0']);
+    execFileSync('git', ['-C', root, 'config', 'maintenance.auto', 'false']);
     execFileSync('git', ['-C', root, 'config', 'user.email', 'fixture@example.invalid']);
     execFileSync('git', ['-C', root, 'config', 'user.name', 'Fixture']);
     const tracked = '.syzygy/governance/doctrine/vision.md';

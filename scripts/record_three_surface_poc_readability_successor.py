@@ -285,6 +285,8 @@ def selftest():
     with tempfile.TemporaryDirectory() as directory:
         base = Path(directory) / "repo"
         subprocess.run(["git", "clone", "-q", str(ROOT), str(base)], check=True)
+        subprocess.run(["git", "-C", str(base), "config", "gc.auto", "0"], check=True)
+        subprocess.run(["git", "-C", str(base), "config", "maintenance.auto", "false"], check=True)
         for rel in (BUILDER, "scripts/record_three_surface_poc_readability_successor.py"):
             shutil.copyfile(ROOT / rel, base / rel)
         review = "docs/reviews/R-SELFTEST-RAW.md"

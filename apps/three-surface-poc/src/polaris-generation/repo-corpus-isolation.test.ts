@@ -25,7 +25,7 @@ interface Fixture { readonly dir: string; readonly commit: string; readonly run:
 function makeRepo(files: Record<string, string | Buffer>, init: string[] = []): Fixture {
   const dir = mkdtempSync(join(tmpdir(), 'syzygy-iso-')); scratch.push(dir);
   const run = (...args: string[]): string => realExecFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim();
-  run('init', '-q', ...init); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+  run('init', '-q', ...init); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
   for (const [path, body] of Object.entries(files)) { mkdirSync(dirname(join(dir, path)), { recursive: true }); writeFileSync(join(dir, path), body); }
   run('add', '-A'); run('commit', '-qm', 'fixture');
   return { dir, commit: run('rev-parse', 'HEAD'), run };

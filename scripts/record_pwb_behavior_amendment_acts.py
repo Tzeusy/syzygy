@@ -1100,6 +1100,8 @@ def selftest_disposition() -> list[tuple[str, bool]]:
 
         (root / rel_packet).write_text(f"# Packet\n\n{phrase_for(act, argument)}\n")
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "config", "gc.auto", "0"], cwd=root, check=True)
+        subprocess.run(["git", "config", "maintenance.auto", "false"], cwd=root, check=True)
         subprocess.run(["git", "config", "user.email", "fixture@example.invalid"],
                        cwd=root, check=True)
         subprocess.run(["git", "config", "user.name", "Fixture"], cwd=root, check=True)

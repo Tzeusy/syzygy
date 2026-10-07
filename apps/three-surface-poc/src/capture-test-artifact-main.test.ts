@@ -61,6 +61,8 @@ function trap(): Trap {
   writeFileSync(python, `#!/bin/sh\necho "$@" > '${sentinel}'\n`);
   chmodSync(python, 0o755);
   execFileSync('git', ['init', '-q', repo]);
+  execFileSync('git', ['-C', repo, 'config', 'gc.auto', '0']);
+  execFileSync('git', ['-C', repo, 'config', 'maintenance.auto', 'false']);
   writeFileSync(join(repo, 'a.txt'), 'a\n');
   execFileSync('git', ['-C', repo, 'add', 'a.txt']);
   execFileSync('git', ['-C', repo, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'a']);

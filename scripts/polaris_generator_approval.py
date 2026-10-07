@@ -358,6 +358,8 @@ def selftest() -> None:
         def git(*args):
             return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True).stdout.decode().strip()
         git("init", "--quiet")
+        git("config", "gc.auto", "0")
+        git("config", "maintenance.auto", "false")
         git("add", ".syzygy")
         tree = git("write-tree")
         assert len(governing(root, tree)) == 1

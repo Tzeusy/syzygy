@@ -83,6 +83,8 @@ describe('the clone\'s HEAD', () => {
     const dir = tempDir('dossier-head-git-');
     const git = (...args: string[]): string => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8', env: { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null' } }).trim();
     git('init', '-q', '-b', 'main');
+    git('config', 'gc.auto', '0');
+    git('config', 'maintenance.auto', 'false');
     fs.writeFileSync(path.join(dir, 'a.txt'), 'a\n');
     git('add', 'a.txt');
     git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-m', 'a');
