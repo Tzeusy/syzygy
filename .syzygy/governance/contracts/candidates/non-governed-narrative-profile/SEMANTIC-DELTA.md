@@ -4,7 +4,7 @@
 > `contracts/candidates/policy-candidates/SEMANTIC-DELTA-TEMPLATE.md`. An agent
 > drafted it; adoption belongs to the owner.
 
-**Artifact(s):**         `openspec/changes/polaris-non-governed-narrative-profile/proposed/polaris-generation/spec.md` (new); no existing file is edited
+**Artifact(s):**         `openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md` (new); no existing file is edited
 **Stable IDs affected:**  REQ-polaris-generation-032 (new). REQ-polaris-generation-004 (as amended by the tree-form adoption) is affected in effect, not in bytes: for a non-governed subject the new requirement displaces the text of 004 listed under "Displaced text" below, so 004 alone no longer states the rule for that class. REQ-polaris-generation-019 is relied on for the anchor form. Read against RFC1-14, RFC7-2, RFC7-6, RFC7-10, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-19, RFC7-33. No RFC and no byte of 004 is edited.
 **Change class:**         Normative
 **Author:**               lane-d drafting agent (Claude Opus 5.5)
@@ -251,7 +251,7 @@ For a non-governed subject only, the requirement displaces this text of REQ-pola
 ## Proposed meaning
 
 The whole text of the proposed requirement is in
-`openspec/changes/polaris-non-governed-narrative-profile/proposed/polaris-generation/spec.md`
+`openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md`
 (requirement 032 and its twelve scenarios). Three readings, in short:
 
 - **(a)** For an observed non-governed repository a capability is declared only where an admitted source the maintainers wrote, and that is not generated from code, states it in a form the run's frozen profile fixed before discovery, outside the producer. "Maintainer-written, not generated" is made observable by the profile's authored-documentation path classes and generated-file markers. Code, tests, comments, layout and generated reference text alone never declare.

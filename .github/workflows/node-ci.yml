@@ -103,6 +103,9 @@ jobs:
       - name: public egress v2 builder --check
         run: python3 scripts/build_public_egress_v2.py --check
 
+      - name: redis-observation --check
+        run: python3 scripts/record_public_repo_admission_acts.py --check redis-observation a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4 --date 2026-10-07 --question-opening 'Do you sign the Redis observation consent, redis/OBSERVATION-CONSENT.md at its row of the public-repo admission manifest?' --selection-label 'Sign it' --selection-description 'Syzygy may read the Git objects of the four consented Redis commits and nothing else of Redis.'
+
       # Unit and conformance suites: the pure domain model against the
       # adopted Capability 1 requirements.
       - name: unit + conformance tests (npm test)

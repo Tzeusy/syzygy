@@ -44,12 +44,15 @@ authority and no model yet called on the current path.
   - It extends seven generator requirements and adds discovery and owner
     clarification as 030/031.
   - Read the predecessor together with
-    [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
-    31 requirements and 182 scenarios without the signed-off
+    [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md)
+    and the adopted
+    [non-governed narrative profile](openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md)
+    ([adoption record](.syzygy/governance/decisions/POLARIS-NON-GOVERNED-NARRATIVE-PROFILE-ADOPTION.md)):
+    32 requirements and 194 scenarios without the signed-off
     [dossier local-agent addition](openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md)
     ([v1.0 sign-off](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.0.md);
     [v1.1 sign-off](.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md)), and
-    35 requirements and 232 scenarios in the effective composition with it.
+    36 requirements and 244 scenarios in the effective composition with it.
   - Its `spec.md` keeps its reviewed candidate-era banner; its proposal and
     design carry present-tense status since the 2026-09-29
     [readability successor](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md).
@@ -394,11 +397,11 @@ python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check   # re
 python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
 python3 scripts/record_pwb_registry_currency_amendment.py --check 2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a --date 2026-09-30  # registry act record and aggregate block regenerate exactly
 python3 scripts/record_pwb_registry_currency_amendment.py --selftest
-python3 scripts/build_pwb_behavior_contract_repin.py --check   # behaviour-contract re-pin, performed 2026-10-02: both subjects = proposed bytes
 python3 scripts/build_pwb_behavior_contract_repin.py --selftest
-python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy 66cd41ee626efb11d666d19c0cd42c6d001ec4482837b71475c42f661f1d936c --date 2026-10-02   # policy re-pin act: record, aggregate block and applied subject
 python3 scripts/record_pwb_behavior_contract_repin_acts.py --check registry ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa --date 2026-10-02   # registry re-pin act: record, aggregate block and applied subject
 python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
+python3 scripts/record_public_source_screening_scope_v2_act.py --check 98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49 --date 2026-10-07 --question-opening 'Do you sign screening scope version 2 at the row of its variant none in the version 2 manifest?' --selection-label 'Sign it, variant none' --selection-description 'README, changelog, contribution, licence files and top-level docs guides become readable, with Q3 to Q5 at the packet defaults.'   # screening-scope policy act: record, aggregate block and applied subject
+python3 scripts/record_public_source_screening_scope_v2_act.py --selftest
 python3 scripts/check_polaris_response_ceiling_reading.py --check   # P-77 Q2 reading: quotes intact, compression only under the 2026-09-30 direction
 python3 scripts/check_polaris_response_ceiling_reading.py --selftest
 python3 scripts/build_contract_readability_restyle.py --check   # restyle package: manifest = exact regeneration, applied
@@ -428,9 +431,16 @@ DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMIN
 python3 scripts/validate_launch_administration.py $DR
 python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
+python3 scripts/record_rfc5_project_documentation_act.py --check a69a606cc7c14da5de03ec26aaec435af2fee3fa4c7bfb8a92fc30deefa40c91 --date 2026-10-07 --question-opening 'Do you sign the RFC5-14 project-documentation class amendment at its row of the contract amendment manifest?' --selection-label 'Sign it, at the manifest row; direct the SOURCE-POLICY.md readability successor' --selection-description 'Act form 1, which makes screening scope version 2 performable; the six-class sentence in SOURCE-POLICY.md gets a readability successor.'   # rfc5 --check
+python3 scripts/record_versioned_signoff.py --check public-git-source-acquisition-local-agent --version 1.0   # public-git-source-acquisition-local-agent v1.0 --check
+python3 scripts/record_dossier_local_agent_acts.py --check redis-agent-anthropic fbbcd3c0e3d49aab3384a4ab18bf35816dbd8fb952e658d1edbac3d1c50e48a7 --date 2026-10-07 --question-opening 'Which statement do you sign for Redis at its row of the dossier local-agent acts manifest?' --selection-label 'Anthropic provider statement' --selection-description 'Claude Code may receive Redis content even if Redis counts as governed.'   # redis-agent-anthropic --check
+python3 scripts/record_dossier_local_agent_acts.py --check d9-in-force 41fdfaea8cbde4cd8220910113fb5b376c7834a470d8c2d9badd9ab0fec9ac66 --date 2026-10-07 --question-opening 'Do you sign the D9 in-force record at its row of the dossier local-agent acts manifest?' --selection-label 'Sign it' --selection-description 'Binds D9 to the current security.md and v1.md bytes; it runs nothing until a choice for one run is recorded.'   # d9-in-force --check
+python3 scripts/record_dossier_local_agent_acts.py --check rfc7-20-reading-in-force f0725a204b6e6ccbccb211441e26e139502ef42a6447d0f4a40df2d09062f3d9 --date 2026-10-07 --question-opening 'Do you sign the RFC7-20 reading in-force record at its row of the dossier local-agent acts manifest?' --selection-label 'Sign it' --selection-description 'The agent draft renders as an editorial draft; it binds item 1 of the direction, whole-file.'   # rfc7-20-reading-in-force --check
+python3 scripts/record_narrative_profile_adoption.py --check --date 2026-10-07 --question-opening 'Do you adopt the non-governed narrative profile, requirement 032, at its row of the profile manifest?' --selection-label 'Adopt as recommended' --selection-description 'O1 to O7 as the packet recommends; Scope A is not read to cover it; the two known limitations stand.'   # narrative profile --check
+python3 scripts/record_rfc5_project_documentation_act.py --selftest   # rfc5 --selftest
 ```
 
-The eighty-three checks above are the same eighty-three the hosted workflow runs
+The ninety checks above are the same ninety the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

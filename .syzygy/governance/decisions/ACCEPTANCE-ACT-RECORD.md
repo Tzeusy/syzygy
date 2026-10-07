@@ -1207,3 +1207,218 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.1 -->
+
+## Public-source screening scope act — approve-policy — performed 2026-10-07
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: d42defcaf4dbb9b4e815f988ef8ba62be1dad081aa851d430b427b35c42f346b
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the row of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `02c37988264d77d7a3114895a49c34795aba45b7` |
+| Manifest | `.syzygy/governance/contracts/candidates/public-source-screening-scope/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt`, SHA-256 `1cbf45a0da07a4cf769a17b6ac98960c6ae214c2d88a4f974e7b9d5026bc4f83` |
+| Review outcome | `.syzygy/governance/contracts/candidates/public-source-screening-scope/reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:47:25Z` |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`; annotated tag `pwb-approve-policy-public-source-scope-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
+consent, read or egress, and the read gate is re-pointed by a separate change.
+
+## RFC5-14 project-documentation amendment act — contract-amendment — performed 2026-10-07
+
+Act instant: 2026-10-07T17:48:25Z
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+AMEND RFC5-14 WITH THE PROJECT-DOCUMENTATION CONTENT CLASS: a69a606cc7c14da5de03ec26aaec435af2fee3fa4c7bfb8a92fc30deefa40c91
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `contract-amendment` / `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md` |
+| Argument | SHA-256 of the patched module: the one row of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `dff2f0dc5cf6b8a876c4d4233cb0bef8e3e7dce4` |
+| Manifest | `.syzygy/governance/contracts/candidates/rfc5-project-documentation-class/CONTRACT-AMENDMENT-MANIFEST.txt`, file SHA-256 `361d1948fb7c3e06a0fbb9cae71e5ecdaabfaefb45cb29531b8d4bfd2135cb6f` |
+| Review outcome | `.syzygy/governance/contracts/candidates/rfc5-project-documentation-class/reviews/R-RFC5-PROJECT-DOCUMENTATION-CLASS-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recording | `.syzygy/governance/decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`; annotated tag `rfc5-project-documentation-amendment-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only; the patch
+takes effect in the change that installs it.
+
+<!-- PWB-POLICY-SCOPE-V2:BEGIN -->
+## Public-source screening scope version 2 act — approve-policy — performed 2026-10-07
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the chosen row (variant `none`) of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `7327259c293263e64599988b9785e6c3ecd058a3` |
+| Manifest | `.syzygy/governance/contracts/candidates/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt`, SHA-256 `7757e70c4d0e8e65c19c77f4970853967456cdd7f225077feac1f91e16200e1e` |
+| Review outcome | `.syzygy/governance/contracts/candidates/public-source-screening-scope-v2/reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-7-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:49:25Z` |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`; annotated tag `pwb-approve-policy-public-source-scope-v2-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
+consent, read or egress, and the read gate is re-pointed by a separate change.
+<!-- PWB-POLICY-SCOPE-V2:END -->
+
+## Public-repository admission act — consent-observation — redis-observation — performed 2026-10-07
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+CONSENT TO PUBLIC OBSERVATION OF REDIS-REDIS: a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `consent-observation` / `.syzygy/governance/contracts/candidates/public-repo-admission/instances/redis/OBSERVATION-CONSENT.md` |
+| Argument | SHA-256 of the artifact itself: its row of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `7704b4a575acf29de93e3872ff549a856e6395ec` |
+| Manifest | `.syzygy/governance/contracts/candidates/public-repo-admission/PUBLIC-REPO-ADMISSION-MANIFEST.txt`, SHA-256 `51f70c07ed1bb5ea081c08fc2c06dd61b865f0c6888ae3f0faf17e8bf50bc649` |
+| Review outcome | `.syzygy/governance/contracts/candidates/public-repo-admission/reviews/R-PUBLIC-ADMISSION-7-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:50:25Z` |
+| Recording | `.syzygy/governance/decisions/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`; annotated tag `public-admission-redis-observation-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. The package's
+other records remain separate acts.
+
+<!-- versioned-signoff:public-git-source-acquisition-local-agent:v1.0 -->
+## Versioned sign-off — public-git-source-acquisition-local-agent — v1.0 — recorded 2026-10-07
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | registry entry |
+| Review outcome | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/reviews/R-DOSSIER-LOCAL-AGENT-SITTING-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/ROUND-3-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md`; annotated tag `public-git-source-acquisition-local-agent-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off approves the registry entry its dedicated record names, at the
+SHA-256 recorded there, under the Scope A extension the owner's selection
+names. That is one of the separate acts a read needs. It gives no observation
+consent, widens no write, egress or execution, authorizes no implementation,
+and a later version of the package is signed separately.
+<!-- /versioned-signoff:public-git-source-acquisition-local-agent:v1.0 -->
+
+## Dossier local-agent act — consent-agent-provider — redis-agent-anthropic — performed 2026-10-07
+
+Act instant: 2026-10-07T17:52:25Z
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS: fbbcd3c0e3d49aab3384a4ab18bf35816dbd8fb952e658d1edbac3d1c50e48a7
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `consent-agent-provider` / `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md` |
+| Scope | operator-agent runs over this one repository with this one tool and provider |
+| Argument | SHA-256 of the artifact itself: its row of the sitting manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `d19ec98bb3bfb9c83f48919715cb5b8c7710ede8` |
+| Manifest | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt`, SHA-256 `ecf916c4f67c2ba8c8a33739653eef75a36874b925bd28e08852219243f1fb56` |
+| Review outcome | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/reviews/R-DOSSIER-LOCAL-AGENT-SITTING-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:52:25Z` |
+| Recording | `.syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-REDIS-AGENT-ANTHROPIC-ACT.md`; annotated tag `dossier-local-agent-redis-agent-anthropic-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. The sitting's
+other acts remain separate.
+
+## Dossier local-agent act — bind-exact-bytes — d9-in-force — performed 2026-10-07
+
+Act instant: 2026-10-07T17:53:25Z
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS: 41fdfaea8cbde4cd8220910113fb5b376c7834a470d8c2d9badd9ab0fec9ac66
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `bind-exact-bytes` / `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force/D9-IN-FORCE-RECORD.md` |
+| Scope | REQ-polaris-generation-033's execution rule only |
+| Argument | SHA-256 of the artifact itself: its row of the sitting manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `d19ec98bb3bfb9c83f48919715cb5b8c7710ede8` |
+| Manifest | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt`, SHA-256 `ecf916c4f67c2ba8c8a33739653eef75a36874b925bd28e08852219243f1fb56` |
+| Review outcome | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/reviews/R-DOSSIER-LOCAL-AGENT-SITTING-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:53:25Z` |
+| Recording | `.syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-ACT.md`; annotated tag `dossier-local-agent-d9-in-force-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. The sitting's
+other acts remain separate.
+
+## Dossier local-agent act — bind-exact-bytes — rfc7-20-reading-in-force — performed 2026-10-07
+
+Act instant: 2026-10-07T17:54:25Z
+
+**Phrase the act takes (given 2026-10-07 by option selection, not typed; see the
+dedicated record):**
+
+```text
+BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS: f0725a204b6e6ccbccb211441e26e139502ef42a6447d0f4a40df2d09062f3d9
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `bind-exact-bytes` / `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force/RFC7-20-READING-IN-FORCE-RECORD.md` |
+| Scope | item 1 of the direction, for REQ-polaris-generation-033's draft-layer rule only |
+| Argument | SHA-256 of the artifact itself: its row of the sitting manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `d19ec98bb3bfb9c83f48919715cb5b8c7710ede8` |
+| Manifest | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/DOSSIER-LOCAL-AGENT-SITTING-MANIFEST.txt`, SHA-256 `ecf916c4f67c2ba8c8a33739653eef75a36874b925bd28e08852219243f1fb56` |
+| Review outcome | `.syzygy/governance/contracts/candidates/dossier-local-agent-acts/reviews/R-DOSSIER-LOCAL-AGENT-SITTING-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-07T17:54:25Z` |
+| Recording | `.syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`; annotated tag `dossier-local-agent-rfc7-20-reading-in-force-signed-2026-10-07` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. The sitting's
+other acts remain separate.

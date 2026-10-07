@@ -1,12 +1,12 @@
 # Reading governed narrative obligations for an observed repository
 
 > **Candidate — binds nothing.** Explains the placement of the candidate
-> requirement in `proposed/polaris-generation/spec.md`; not adopted.
+> requirement in `specs/polaris-generation/spec.md`; not adopted.
 
 **A non-governed subject keeps every altitude and every honesty obligation;
 it changes only what counts as a declaration, which bands exist and what the
 exact-source terminus quotes.** This file explains the placement. Observable
-commitments live in `proposed/polaris-generation/spec.md`. Source doctrine,
+commitments live in `specs/polaris-generation/spec.md`. Source doctrine,
 accepted contracts and the adopted requirements remain controlling.
 
 ## The problem in three places

@@ -141,6 +141,7 @@ content-class vocabulary is closed at this RFC (amend to extend):
 | `governance-text` | Doctrine, spec, decision, policy text |
 | `code-structure` | Identifiers, paths, symbols, structural graph — no bodies |
 | `code-content` | Source and test bodies |
+| `project-documentation` | A project's own prose that describes, explains or accompanies the project for its readers and does not govern its development: README, user and developer guides, tutorials, how-to and overview documents, changelogs and release notes, contribution guides, and licence and notice files, ordinarily; the declared policy decides each file |
 | `work-history` | Work items, run summaries, telemetry, cost data |
 | `evidence-content` | Evidence artifact contents (reports, logs) |
 | `derived-composites` | Prompts, summaries, embeddings composed from the above |
@@ -148,6 +149,22 @@ content-class vocabulary is closed at this RFC (amend to extend):
 - A composite inherits the **highest** class of any content it embeds;
   `derived-composites` consent alone never launders an unconsented class into
   an egress.
+- **`project-documentation` is a class of its own, decided by the declared
+  policy, per file.**
+  - A document the project's declared classification policy places as
+    doctrine, spec, decision or policy text is `governance-text`, not
+    `project-documentation`; source and test bodies, and comments or
+    docstrings inside them, are `code-content`.
+  - A file the policy cannot place in exactly one class is undeterminable and
+    fails closed (RFC5-15); a file extension, a directory name or a file's
+    own claim about itself places a file in this class only through a rule of
+    the declared policy, never on its own.
+  - A consent record that does not list `project-documentation` does not
+    permit its egress, and no consent granted before this class existed is
+    read as covering it.
+  - The class adds no ordering among classes and changes neither the composite
+    rule above nor secret screening at ingest (RFC5-16), which applies to it
+    in full.
 - The vocabulary is closed here, but the **declared policy that classifies
   concrete content into it** is a governance artifact honored **only under
   RFC3-16(a)** — a policy an untrusted writer could mint would classify

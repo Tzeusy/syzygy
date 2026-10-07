@@ -336,9 +336,9 @@ Owner-approved craft. 55 identifiers, defined across 8 files.
 | `RFC5-12` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:95 |
 | `RFC5-13` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:115 |
 | `RFC5-14` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:134 |
-| `RFC5-15` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:182 |
-| `RFC5-16` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:232 |
-| `RFC5-17` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:283 |
+| `RFC5-15` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:199 |
+| `RFC5-16` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:249 |
+| `RFC5-17` | — | `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`:300 |
 | `RFC5-18` | The gate | `.syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md`:91 |
 | `RFC5-19` | The trust distinction | `.syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md`:130 |
 | `RFC5-20` | Profile contents | `.syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md`:165 |
@@ -650,9 +650,9 @@ Candidate — **binds nothing.** RFC-0010 and RFC-0011, plus the candidate copie
 | `RFC5-12` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:95 |
 | `RFC5-13` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:115 |
 | `RFC5-14` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:134 |
-| `RFC5-15` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:182 |
-| `RFC5-16` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:232 |
-| `RFC5-17` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:283 |
+| `RFC5-15` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:199 |
+| `RFC5-16` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:249 |
+| `RFC5-17` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md`:300 |
 | `RFC5-18` | The gate | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/execution-profiles.md`:91 |
 | `RFC5-19` | The trust distinction | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/execution-profiles.md`:130 |
 | `RFC5-20` | Profile contents | `.syzygy/governance/contracts/candidates/rfcs/RFC-0005/execution-profiles.md`:165 |

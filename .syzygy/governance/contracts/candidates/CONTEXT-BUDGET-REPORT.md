@@ -148,7 +148,7 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 130,155 words.** The ~7,000-word per-module
+**39 modules, 130,356 words.** The ~7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
@@ -173,7 +173,7 @@ module over it when it counts more than 7,000 words.
 | `rfcs/RFC-0004/named-adapters.md` | 3,930 | — |
 | `rfcs/RFC-0005/README.md` | 2,371 | — |
 | `rfcs/RFC-0005/admission-and-boundary.md` | 4,374 | — |
-| `rfcs/RFC-0005/consent-egress-secrets.md` | 2,856 | — |
+| `rfcs/RFC-0005/consent-egress-secrets.md` | 3,057 | — |
 | `rfcs/RFC-0005/execution-profiles.md` | 2,506 | — |
 | `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 5,748 | — |
 | `rfcs/RFC-0007/README.md` | 2,669 | — |

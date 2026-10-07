@@ -252,7 +252,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
         expect(e.redactionClass).toBe(expected.redactionClass);
         expect(e.repositoryRelativePath).toBe(r.record.path);
         expect(e.policyId).toBe('polaris-butlers-project-shape-secrets');
-        expect(e.policyVersion).toBe('1.1.0-candidate.1');
+        expect(e.policyVersion).toBe('1.3.0-public-source-candidate.1.none');
         expect(e.detectorId).toBe(expected.detectorId);
         expect(e.exclusionReason).toBe(expected.exclusionReason);
         expect(e.contentDigest !== undefined, `${r.record.path} digest presence`).toBe(expected.digest);
@@ -283,7 +283,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     expect(result.exclusions).toHaveLength(15);
     expect(new Set(result.exclusions.map((e) => e.redactionClass))).toEqual(new Set(['excluded-artifact', 'unclassifiable-excluded']));
     expect(result.policyId).toBe('polaris-butlers-project-shape-secrets');
-    expect(result.policyVersion).toBe('1.1.0-candidate.1');
+    expect(result.policyVersion).toBe('1.3.0-public-source-candidate.1.none');
   });
 
   it('hands a body only to the consumer, and only for classified sources', () => {
@@ -403,7 +403,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
           exclusionReason: 'denied-path',
           detail,
           policyId: 'polaris-butlers-project-shape-secrets',
-          policyVersion: '1.1.0-candidate.1',
+          policyVersion: '1.3.0-public-source-candidate.1.none',
         });
       }
     }
@@ -471,7 +471,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       contentDigest: `sha256:${sha256Hex(BYTES[member.path] as Uint8Array)}`,
       extractionClasses: ['principle'],
       policyId: 'polaris-butlers-project-shape-secrets',
-      policyVersion: '1.1.0-candidate.1',
+      policyVersion: '1.3.0-public-source-candidate.1.none',
       detectorsRun: 4,
       basis: 'body',
     });
@@ -485,7 +485,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
         contentDigest: classified.record.contentDigest,
         exclusionReason: 'parse-failure',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.1.0-candidate.1',
+        policyVersion: '1.3.0-public-source-candidate.1.none',
       },
       unknown: { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'Excluded content', unknownReason: 'excluded-content' },
     });
