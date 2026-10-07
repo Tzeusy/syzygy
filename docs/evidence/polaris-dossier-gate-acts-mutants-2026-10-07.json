@@ -1,0 +1,985 @@
+{
+  "subject": {
+    "commit": "a6157cb06accd49b1fd841c92678b27bcac3550b",
+    "branch": "agent/dossier-gate-acts",
+    "fileSha256": {
+      "packages/polaris-dossier/src/gate-sources.ts": "8b6b474378e3574d870aaba23ec574c2457e1413db1054ded28facbf3f20d722",
+      "packages/polaris-dossier/src/init.ts": "8da0f6667528fefdd30dce04916521b50fc1b4b074fee6b4962be6d854e7186b",
+      "packages/polaris-dossier/src/reverify.ts": "83733e8a42a447e505c2692a9471b2366b9ac4172d2db3d97e37ae18df058acd",
+      "packages/polaris-generation-consent/src/package-reader.ts": "f2023ddffc5d91e70ed51b08ad55a5044511a3dbeaa840e3ed87efa146d040ef",
+      "packages/polaris-generation-consent/src/recorder-template.ts": "3057e573bcf094ea5db80b6d5fd6fb95c760e313820f779c00cb87548d3ebae8"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "4199def5df8bb3f70ec3aa2123533875e1622a5846713049568bce7b51c741e9",
+      "packages/polaris-dossier/src/gate-parts.test.ts": "4ffd59929b83462a33dbe2e9cf60876b0fe94bf1cbd60f13efcb597528710aa5",
+      "packages/polaris-dossier/src/start-gates.test.ts": "e3a445ac49e23744dfd480de56a9dfadda3f056c3ef9b7c8c142122723b0b989",
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "829c55973110a9ced8226204a95be0fa44a6c25fdc3dcf4567c061d0749d62b5",
+      "packages/polaris-generation-consent/src/real-tree.test.ts": "77cc8a081cea5ba5aee23c8c79ab5e941413da60951c3b9e0a29db2ee034b55d",
+      "packages/polaris-generation-consent/src/recorder-template.test.ts": "685957051b58babc42f87e92c41e20cdd2a19192733de1599a7e93da65048f9d"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-06T22:59:42+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "const SITTING_INSTANCES = ",
+      "new": "const SITTING_INSTANCES = ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 103,
+      "note": "control: unchanged source, must survive"
+    },
+    {
+      "id": "B1-bound-check-skipped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const unbound = form.bound === undefined ? null : await boundMismatch(fs, options.root, artifactText, form.bound);",
+      "new": "const unbound = null as string | null;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 103,
+      "note": "an act over an in-force record counts after a bound file changes"
+    },
+    {
+      "id": "B2-bound-row-count",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (rows.length !== bound.length || rows.some(",
+      "new": "if (rows.some(",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a table binding fewer files than the form names is accepted"
+    },
+    {
+      "id": "B3-bound-row-paths",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (rows.length !== bound.length || rows.some(([file], i) => file !== bound[i])) return",
+      "new": "if (rows.length !== bound.length) return",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a table binding other files than the form names is accepted"
+    },
+    {
+      "id": "B4-bound-digest",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (sha256(text) !== digest) return `the bytes of ${file} differ",
+      "new": "if (false) return `the bytes of ${file} differ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a bound file's bytes are not compared"
+    },
+    {
+      "id": "B5-bound-one-table",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (at.length !== 1 || artifact.split('\\n').filter(line => line === HEAD).length !== 1 ||",
+      "new": "if (at.length === 0 ||",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a record with two bound-files tables is read by its first"
+    },
+    {
+      "id": "B6-bound-unreadable",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "try { text = await fs.readFile(path.join(root, file)); } catch { return `the bound file ${file} cannot be read`; }",
+      "new": "try { text = await fs.readFile(path.join(root, file)); } catch { continue; }",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a missing bound file is skipped"
+    },
+    {
+      "id": "V4-signoff-entry-digest",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (sha256(artifactText) !== digest) return { state: 'refused', why: `the bytes of ${form.installed}",
+      "new": "if (false) return { state: 'refused', why: `the bytes of ${form.installed}",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts",
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 184,
+      "note": "the installed entry's bytes are not compared"
+    },
+    {
+      "id": "V5-signoff-instant",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (act.recordedAt > options.now) return { state: 'absent', why: `the sign-off",
+      "new": "if (false) return { state: 'absent', why: `the sign-off",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a sign-off counts before its instant"
+    },
+    {
+      "id": "V6-signoff-entry-sweep",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "await findActRecord(fs, options.root, form, form.installed);",
+      "new": "await findActRecord(fs, options.root, form, form.file);",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 103,
+      "note": "a decisions file naming the installed entry is not a withdrawal",
+      "equivalent": "the sign-off's package-key stem already carries the installed entry's basename (POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json folds to text containing public-git-source-acquisition-local-agent), so any citation of the installed path is refused by the stem; the path needle is redundant"
+    },
+    {
+      "id": "V8-signoff-unreadable-entry",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "catch { return { state: 'refused', why: `the signed entry ${form.installed} cannot be read` }; }",
+      "new": "catch { artifactText = ''; }",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a missing installed entry is read as empty"
+    },
+    {
+      "id": "G1-not-established-text",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return notEstablished(what);",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts",
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 184,
+      "note": "with no record, D9 and the reading report another text than before"
+    },
+    {
+      "id": "G2-drawer-subject",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "|| field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId})` ||",
+      "new": "||",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a drawer statement for another subject is read for this one"
+    },
+    {
+      "id": "G3-drawer-statement",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "repository:${repositoryId})` || !states)",
+      "new": "repository:${repositoryId})`)",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a record stating anything is read as no drawer"
+    },
+    {
+      "id": "G4-drawer-unstated-text",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return { stated: false, why: UNSTATED_WHY };",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 103,
+      "note": "with no record, the drawer reports another text than before"
+    },
+    {
+      "id": "G5-drawer-repository",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "const form = Object.hasOwn(DRAWER_FORMS, repositoryId) ? DRAWER_FORMS[repositoryId]! : null;",
+      "new": "const form = DRAWER_FORMS['redis-redis']!;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the redis drawer is stated for every repository"
+    },
+    {
+      "id": "G6-statement-absent-is-none",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "  if (state.state === 'absent') return null;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts",
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 17,
+      "totalTests": 184,
+      "note": "an unrecorded statement is listed with no act"
+    },
+    {
+      "id": "G7-statement-subject",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "version === null || field(text, 'Subject') !== `(project:syzygy, repository:${repositoryId}, agent-provider:${provider})`",
+      "new": "version === null",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 103,
+      "note": "a statement for another provider or repository carries the act"
+    },
+    {
+      "id": "G8-statement-record-id",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (field(text, 'Record ID') !== recordId || version === null ||",
+      "new": "if (version === null ||",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a statement under another record id carries the act"
+    },
+    {
+      "id": "G9-statement-instant",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "inForceAt: state.act.recordedAt }",
+      "new": "inForceAt: 0 }",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the statement's in-force instant is not the act's"
+    },
+    {
+      "id": "G10-d9-bound-list",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "['.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md']",
+      "new": "['.syzygy/governance/doctrine/security.md']",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 103,
+      "note": "D9 is held to security.md alone"
+    },
+    {
+      "id": "G11-rfc720-bound-dropped",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "{ bound: ['.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md'] });",
+      "new": "{});",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the reading counts after the direction file changes"
+    },
+    {
+      "id": "G12-statement-classes",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "    classes.push(m[1]!);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a statement's content classes are not read"
+    },
+    {
+      "id": "T1-gate-tool-dropped",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "const named = records.filter(r => r.agentTool === agentTool && r.provider === provider);",
+      "new": "const named = records.filter(r => r.provider === provider);",
+      "tests": [
+        "packages/polaris-dossier/src/gate-parts.test.ts",
+        "packages/polaris-dossier/src/gate-acts.test.ts",
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 238,
+      "note": "the statement gate matches the provider alone: a Codex run with Anthropic passes on the Claude Code statement"
+    },
+    {
+      "id": "T2-record-tool-dropped",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "\n    || tools.length !== 1 || !tools[0]!.startsWith(`Agent tool: ${s.toolName}, `)) return unbound;",
+      "new": ") return unbound;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a statement record naming another tool carries the act"
+    },
+    {
+      "id": "T3-record-one-tool-line",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "|| tools.length !== 1 || !tools[0]!",
+      "new": "|| !tools[0]!",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a record with a second agent tool line is read by its first"
+    },
+    {
+      "id": "T4-init-tool-ignored",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "config.config.agentTool, config.config.agentProvider",
+      "new": "'claude-code', config.config.agentProvider",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 81,
+      "note": "init checks the statement against Claude Code whatever tool the run declares"
+    },
+    {
+      "id": "T5-reverify-tool-ignored",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "declared.agentTool, declared.agentProvider",
+      "new": "'claude-code', declared.agentProvider",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 81,
+      "note": "reverify checks the statement against Claude Code whatever tool the run declared"
+    },
+    {
+      "id": "W1-field-lines-record-id-subject",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "(artifact\\s+identity|act\\s+identity|record\\s+id|subject)\\s*\\**\\s*:\\s*(.*)$/u.exec(line);\n    return field !== null && [...form.stems",
+      "new": "(artifact\\s+identity|act\\s+identity)\\s*\\**\\s*:\\s*(.*)$/u.exec(line);\n    return field !== null && [...form.stems",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "the aggregate record's Record ID and Subject field lines are not swept"
+    },
+    {
+      "id": "W2-statement-record-id-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "{ stems: [recordId.toLowerCase(), ",
+      "new": "{ stems: [",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 103,
+      "note": "a statement's Record ID is not a withdrawal stem"
+    },
+    {
+      "id": "W3-statement-subject-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": ", `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`] }",
+      "new": "] }",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 103,
+      "note": "a statement's Subject is not a withdrawal stem"
+    },
+    {
+      "id": "W4-statement-withdrawn-flag",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (state.state === 'refused' && state.namedBy !== undefined) return { ...unbound, withdrawn: true };",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 103,
+      "note": "a named statement is reported unbound, not withdrawn"
+    },
+    {
+      "id": "W5-named-by-dropped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if ('why' in found) return { state: 'refused', why: found.why, namedBy: found.namedBy };\n    if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };\n    const text = found.text;",
+      "new": "if ('why' in found) return { state: 'refused', why: found.why };\n    if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };\n    const text = found.text;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 103,
+      "note": "the digest-bound reader does not say which file named the act"
+    },
+    {
+      "id": "W11-gate-state-strips-named-by",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "return state.state === 'ok' ? { state: 'ok', record: state.act.identity } : { state: state.state, why: state.why };",
+      "new": "return state.state === 'ok' ? { state: 'ok', record: state.act.identity } : state;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the gate state carries the reader's namedBy field"
+    },
+    {
+      "id": "R1-owner-line",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^(Owner: Tzeusy)$/gm);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 40,
+      "note": "a record without the owner line counts"
+    },
+    {
+      "id": "R2-provenance-line",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^(Provenance state: `owner-adopted \\(bootstrap, uncorrelated\\)` — state \\(1\\),)$/gm);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 40,
+      "note": "a record without the provenance state counts"
+    },
+    {
+      "id": "R3-a1-line",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^(A1 audit-record identity \\(RFC3-16\\(b\\) item 9\\): \\*\\*explicitly absent\\*\\*)$/gm);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 40,
+      "note": "a record without the explicit A1 absence counts"
+    },
+    {
+      "id": "P1-pin-gate-acts-absent-reads-ok",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return notEstablished(what);",
+      "new": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return { state: 'ok', record: what };",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 103,
+      "note": "the gate-acts real-tree pin: an unrecorded act reads established"
+    },
+    {
+      "id": "P2-pin-preflight-absent-reads-ok",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return notEstablished(what);",
+      "new": "if (state.state === 'absent' && state.why.startsWith('no owner-act record ')) return { state: 'ok', record: what };",
+      "tests": [
+        "packages/polaris-dossier/src/start-gates.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 81,
+      "note": "the preflight real-tree pin: an unrecorded act reads established"
+    },
+    {
+      "id": "P4-pin-drawer-established",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "return { stated: true, drawer: 'absent', record: `${recordId}@${version}` };",
+      "new": "return { stated: false, why: UNSTATED_WHY };",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 16,
+      "totalTests": 103,
+      "note": "the tree-following pin: a recorded drawer act states nothing"
+    },
+    {
+      "id": "B7-bound-row-extra",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (rows.length !== bound.length || rows.some(",
+      "new": "if (rows.length < bound.length || rows.slice(0, bound.length).some(",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a third bound row is accepted"
+    },
+    {
+      "id": "P3-pin-real-tree-signoff-absent",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (found.text === null) return { state: 'absent', why: `no owner-act record ${DECISIONS_DIR}/${form.file} exists` };\n    const text = found.text, tag",
+      "new": "if (found.text === null) return { state: 'absent', why: `no sign-off for ${form.file}` };\n    const text = found.text, tag",
+      "tests": [
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 3,
+      "note": "the consent package's real-tree pin: the absent sign-off's reason changes"
+    },
+    {
+      "id": "R5-untemplated-recorder-lines",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (form.template === undefined) recorderLines(text);\n",
+      "new": "    if (form.template === undefined) {}\n",
+      "tests": [
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 40,
+      "note": "an untemplated act record skips the recorder lines"
+    },
+    {
+      "id": "W6-signoff-package-key-stem",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "stems: Object.freeze([entry.packageKey, ",
+      "new": "stems: Object.freeze([",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 8,
+      "totalTests": 103,
+      "note": "the package key (tag, record name, installed basename) is not swept"
+    },
+    {
+      "id": "W7-signoff-title-stem",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": ", `${entry.title.toLowerCase()} — version-tagged sign-off`]),",
+      "new": "]),",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the sign-off record's title is not swept"
+    },
+    {
+      "id": "W8-cited-row-not-read-past",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));",
+      "new": "const read = text;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "the P-104 row refuses the read"
+    },
+    {
+      "id": "W8r-cited-row-not-read-past-real-tree",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));",
+      "new": "const read = text;",
+      "tests": [
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 3,
+      "note": "the real register's P-104 row refuses the real-tree read"
+    },
+    {
+      "id": "W9-cited-row-whole-file",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));",
+      "new": "const read = (form.citedRows ?? []).some(row => row.file === rel) ? '' : text;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the register is exempt as a whole file"
+    },
+    {
+      "id": "W10-cited-row-every-copy",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "left.splice(i, 1); return '';",
+      "new": "return '';",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "every copy of the pinned row is read past"
+    },
+    {
+      "id": "W12-cited-row-any-file",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": ".filter(row => row.file === rel).map(row => row.sha256)",
+      "new": ".map(row => row.sha256)",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the pinned row is read past in any decisions file"
+    },
+    {
+      "id": "W13-cited-row-by-prefix",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const i = left.indexOf(sha256(line));",
+      "new": "const i = line.startsWith('| P-104 |') ? 0 : -1;",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a line is read past by its P-104 cell, not its bytes"
+    },
+    {
+      "id": "M1-act-template-skipped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    else fromTemplate(form.template, text);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 103,
+      "note": "a sitting act record is not held to its recorder's render"
+    },
+    {
+      "id": "M3-selection-digest-allowed",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (fields === null || ['opening', 'label', 'description', 'quote'].some(slot => /[0-9a-fA-F]{64}/.test(fields[slot] ?? ''))) return refuse();",
+      "new": "if (fields === null) return refuse();",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a digest in the owner's selection is accepted"
+    },
+    {
+      "id": "M4-template-unanchored",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "const re = new RegExp(`${source}$`, 'u');",
+      "new": "const re = new RegExp(source, 'u');",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 8,
+      "note": "the template parse is not anchored at the end"
+    },
+    {
+      "id": "M5-template-no-render-back",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "return fields !== null && template.render(fields) === text ? fields : null;",
+      "new": "return fields;",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 8,
+      "note": "the slots are not rendered back to the text"
+    },
+    {
+      "id": "M6-template-repeat-free",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "source += seen.has(part) ? `\\\\k<${part}>` : `(?<${part}>${pattern})`;",
+      "new": "source += seen.has(part) ? `(?:${pattern})` : `(?<${part}>${pattern})`;",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 8,
+      "note": "a repeated slot may carry another value"
+    },
+    {
+      "id": "M7-template-parens-unescaped",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "literal.replace(/[.*+?^${}()|[\\]\\\\/]/g, '\\\\$&')",
+      "new": "literal.replace(/[*+?^${}|[\\]\\\\/]/g, '\\\\$&')",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 8,
+      "note": "the template's literal dots and parentheses read as a pattern"
+    },
+    {
+      "id": "M8-sha-slot-uppercase",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "sha256: '[0-9a-f]{64}',",
+      "new": "sha256: '[0-9a-fA-F]{64}',",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 8,
+      "note": "a digest slot takes upper-case hex"
+    },
+    {
+      "id": "M9-signoff-no-scope-a",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (!slots['quote']!.includes('Extend Scope A') || (slots",
+      "new": "if ((slots",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a sign-off whose selection does not name the Scope A extension counts"
+    },
+    {
+      "id": "M10-signoff-cwe-no-disposition",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": " || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')) refuse();",
+      "new": ") refuse();",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "a CONFIRM WITH EXCEPTIONS sign-off with no disposition counts"
+    },
+    {
+      "id": "M11-signoff-calendar-date",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date) refuse();\n    const act: ParsedAct = { file: form.file, identity: tag",
+      "new": "    const act: ParsedAct = { file: form.file, identity: tag",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 103,
+      "note": "a sign-off dated on no calendar day counts",
+      "equivalent": "actInstant already refuses unless the Recorded at instant's date equals Date: and the instant round-trips through ISO 8601, so a Date: on no calendar day is refused there"
+    },
+    {
+      "id": "TP1-sitting-template-literal",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "Supersession / revocation: supersedes nothing; revoked only by a later exact",
+      "new": "Supersession / revocation: supersedes nothing; revoked by a later exact",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 39,
+      "totalTests": 103,
+      "note": "the TS port of render_act drifts from the recorder"
+    },
+    {
+      "id": "TP2-signoff-template-literal",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "Scope: the entry's own subject and read authority, nothing wider",
+      "new": "Scope: the entry's own subject and read authority",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 103,
+      "note": "the TS port of render_record drifts from the recorder"
+    },
+    {
+      "id": "FP1-sitting-record-file",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "file: `DOSSIER-LOCAL-AGENT-${a.stem}-ACT.md`,",
+      "new": "file: `DOSSIER-LOCAL-AGENT-${a.stem}.md`,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 40,
+      "totalTests": 103,
+      "note": "a sitting form reads another file than its recorder writes"
+    },
+    {
+      "id": "FP2-signoff-record-file",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md',",
+      "new": "file: 'PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-1.0.md',",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 26,
+      "totalTests": 103,
+      "note": "the sign-off form reads another file than its recorder writes"
+    },
+    {
+      "id": "N1-loose-matching",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "=> carries(text, needle) || carries(loose(text), loose(needle));",
+      "new": "=> carries(text, needle);",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "a Subject spaced or quoted otherwise is not seen"
+    },
+    {
+      "id": "N2-field-stems-unread",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "[...form.stems, ...(form.fieldStems ?? []), artifact].some(needle => carriesLoosely(field[2]!, needle))",
+      "new": "[...form.stems, artifact].some(needle => carriesLoosely(field[2]!, needle))",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "the drawer's Subject on a field line is not seen"
+    },
+    {
+      "id": "N3-field-stems-in-prose",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (rel !== AGGREGATE_RECORD && [...form.stems, artifact].some(",
+      "new": "if (rel !== AGGREGATE_RECORD && [...form.stems, ...(form.fieldStems ?? []), artifact].some(",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 18,
+      "totalTests": 103,
+      "note": "the drawer's Subject in prose (the statements' Effect) withdraws the drawer"
+    },
+    {
+      "id": "S1-sitting-basename-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "a.artifact.split('/').pop()!, ",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 103,
+      "note": "an act's artifact basename is not swept"
+    },
+    {
+      "id": "S2-sitting-label-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": ", a.label, a.title, ",
+      "new": ", a.title, ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 103,
+      "note": "an act's phrase label is not swept"
+    },
+    {
+      "id": "S3-sitting-title-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": ", a.label, a.title, ",
+      "new": ", a.label, ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "an act record's title is not swept"
+    },
+    {
+      "id": "S4-sitting-identity-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "a.identityStem.toLowerCase(), ",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 103,
+      "note": "an act's identity stem is not swept"
+    },
+    {
+      "id": "S5-sitting-file-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "`dossier-local-agent-${a.stem.toLowerCase()}`, ",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 103,
+      "note": "an act record's file stem is not swept"
+    }
+  ],
+  "summary": "69 of 72 non-control mutants killed at a6157cb06accd49b1fd841c92678b27bcac3550b (syzygy-qkea.21, spec-4, the head round 3 of the review read); the no-op control survived. Not killed: ['V6-signoff-entry-sweep', 'M11-signoff-calendar-date', 'S5-sitting-file-stem']. V6 and M11 are equivalent (see each mutant's `equivalent`). S5 (the sitting forms' file stem dropped) is a test gap: no test names a decisions file for the act with a body that names nothing, reported to the lead. Predicates: the in-force record's bound-files table (B1-B7), the sign-off reader (V4-V8), the gate sources (G1-G12), tool and provider pairing (T1-T5), the withdrawal sweep and the P-104 pin (W1-W13), the untemplated recorder lines (R1-R3, R5), the tree-following pins (P1-P4), the recorder template and its ports (M1-M11, TP1-TP2, FP1-FP2), and the sweep's needles (N1-N3, S1-S5). Retired from spec-3 with the code they mutated: V1-V3, V7, R4, R6. Earlier: spec-3 at 014545fc killed all but B7 (equivalent, re-targeted here) with P3 errored on the wrong project (fixed here)."
+}
