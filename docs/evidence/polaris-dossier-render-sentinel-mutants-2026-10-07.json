@@ -1,0 +1,59 @@
+{
+  "subject": {
+    "commit": "e2af4f23d4c8db19e662e72e25fbc50f2503e2d1",
+    "branch": "agent/render-sentinel",
+    "fileSha256": {
+      "packages/polaris-dossier/src/render.ts": "81626605b49f1a2e3c4860969777adcbaa49658ea44a965586f720844d855c44"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/render.test.ts": "13860e4390230d398b69ff3e2112b3240ef18c5eb8a80283219fc8769933fc43"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-07T00:28:30+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "const understandingPage: LocalPage = {",
+      "new": "const understandingPage: LocalPage = {",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 37,
+      "note": "control: no change"
+    },
+    {
+      "id": "U1-withheld-understanding-rendered",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": ": [discoveryPage, executionsPage, reviewPage];",
+      "new": ": [understandingPage, discoveryPage, executionsPage, reviewPage];",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37,
+      "note": "a withheld draft layer still renders the understanding page"
+    },
+    {
+      "id": "U2-understanding-statement-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "text: clean(text(record['statement']) ?? ''), details: [`Scope:",
+      "new": "text: '', details: [`Scope:",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37,
+      "note": "the understanding page omits each statement: the positive sentinel check fails"
+    }
+  ],
+  "summary": "2 of 2 non-control mutants killed at e2af4f23d4c8db19e662e72e25fbc50f2503e2d1 (syzygy-j0qf); the no-op control survived. U1 renders the understanding page under a withheld draft layer (killed by the withheld-draft test); U2 drops each understanding statement from the page (killed by the new positive sentinel check, which keeps the withheld test's absence check from passing vacuously)."
+}
