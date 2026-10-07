@@ -17,7 +17,11 @@ import { buildDossierScreen } from './screen.js';
 export const FULL_RUN_ROOT_ENV = 'SYZYGY_FULL_RUN_ROOT';
 export const REAL_ROOT = process.env[FULL_RUN_ROOT_ENV] ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const FIXTURE_URL = 'https://github.com/redis/redis';
-export const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };
+/** No automatic gc or maintenance in any fixture repository: a detached `git maintenance run --auto` after a commit or fetch can
+ * still be writing when the fixture is removed (syzygy-y733). Set through the environment, never the repository's config, which
+ * init's clone check admits only as `git init` writes it. */
+export const NO_MAINTENANCE = { GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'gc.auto', GIT_CONFIG_VALUE_0: '0', GIT_CONFIG_KEY_1: 'maintenance.auto', GIT_CONFIG_VALUE_1: 'false' };
+export const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', ...NO_MAINTENANCE, GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };
 export const NOW = Date.UTC(2026, 9, 7, 12, 0, 0);
 export const LATER = NOW + 60_000;
 /** A credential-shaped string the fixture's own agent writes into its draft's reported commands; a sweep must not find it stored. */
