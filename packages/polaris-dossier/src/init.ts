@@ -15,7 +15,7 @@ import { createRunDirectory, stateRootViolation, type RunPorts } from './state-d
  * Syzygy's start gates pass before it reads any object for the run: the observation consent found by the URL, the source-acquisition
  * registry entry and the classification and screening policy, each in force by its act. Then the clone's HEAD must be a revision the
  * consent names; it becomes the pinned revision. The clone's `.git` must hold that commit alone (clone-shape.ts): only the entries the
- * consented form leaves there, no ref but a detached HEAD, shallow at that commit, and no object beyond its tree. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
+ * consented form leaves there, a config `git init` could have written, no ref but a detached HEAD, shallow at that commit, and no object beyond its tree. Only then does Syzygy list the pinned tree, through the re-hashing object reader, to
  * decide whether the subject is governed; a governed subject, or one whose project input is silent, needs the per-project statement.
  * Any failure refuses the run with its reason in human and machine form, and nothing is written. On success the run directory is made
  * under the state root, never inside or around the clone, and holds only `run.json`, which records the clone's real path as the one
@@ -68,7 +68,7 @@ export interface InitPorts extends RunPorts {
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,
   'HEAD was read from the clone\'s own .git files, which the agent sessions can write; it is compared with the revisions the consent names, and every object at the pinned revision is read by identifier and re-hashed',
-  'the clone\'s .git was checked at init to hold the consented commit alone, and is not checked again; the working tree outside .git is not inspected, though the agent reads the checked-out files, so anything placed there, a nested repository included, is not seen by that check',
+  'the clone\'s .git was checked at init to hold the consented commit alone, and is not checked again; the working tree outside .git is not inspected, though the agent reads the checked-out files, so anything placed there, a nested repository included, is not seen by that check; nor is the content of the hook samples, info/exclude, description and index, or FETCH_HEAD\'s text other than identifiers; the clone\'s own config was checked, but global, system and environment git configuration (~/.gitconfig, /etc/gitconfig, GIT_CONFIG_*) is on the operator\'s host and was not',
   'the dossier commands serve no route, accept no network request and hold no credential that authenticates to Syzygy; the principal is the operator, operator-declared, with credential identity Unknown',
 ];
 
