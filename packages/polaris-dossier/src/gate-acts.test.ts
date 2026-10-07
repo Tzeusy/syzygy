@@ -256,15 +256,25 @@ describe('the sitting\'s acts fail closed', () => {
     write(root, `${DECISIONS_DIR}/WITHDRAW.md`, withdrawal);
     expect(await sources(root).registryEntry()).toEqual({ state: 'refused', why: `${DECISIONS_DIR}/WITHDRAW.md names the act without being its record: a withdrawal or a form this reader does not define` });
   });
-  // R-POLARIS-DOSSIER-GATE-SOURCES-2 finding 1: the P-104 row is read past at its exact bytes, once, in the register only.
+  // R-POLARIS-DOSSIER-GATE-SOURCES-2 finding 1: the P-104 row is read past at its exact bytes, once, in the register only. The pin
+  // follows the tree: while P-104 is open its real row is the pinned one; once the sitting's install resolves it in place, the row names
+  // no swept stem and the pin matches nothing (its removal is syzygy-kgv5).
   it('read past the P-104 register row that cites the sign-off\'s tag at its exact bytes, once, and nothing else', async () => {
     const register = `${DECISIONS_DIR}/PENDING-OWNER-DECISIONS.md`;
-    const row = real(register).split('\n').find(line => line.startsWith('| P-104 |'))!;
-    expect(row).toContain('public-git-source-acquisition-local-agent-v1.0');
+    const rows = real(register).split('\n').filter(line => line.startsWith('| P-104 |'));
+    expect(rows).toHaveLength(1);
+    const row = rows[0]!;
     const root = world([], true);
     const named = (rel: string) => ({ state: 'refused', why: `${rel} names the act without being its record: a withdrawal or a form this reader does not define` });
     write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n`);
     expect((await sources(root).registryEntry()).state).toBe('ok');
+    if (!row.includes('public-git-source-acquisition-local-agent-v1.0')) {
+      // Resolved: the installer's stem-free form, read as any other line (an edit to it is swept like the rest of the register).
+      expect(row.startsWith('| P-104 | [Observed] **Resolved ')).toBe(true);
+      write(root, register, `# Register\n\n| ID | Question |\n|---|---|\n${row}\n| P-105 | Withdraw public-git-source-acquisition-local-agent-v1.0 |\n`);
+      expect(await sources(root).registryEntry()).toEqual(named(register));
+      return;
+    }
     for (const extra of [
       row,
       '| P-104 | Withdrawn by the owner: public-git-source-acquisition-local-agent-v1.0 |',
