@@ -1,7 +1,7 @@
 {
   "record": "Rule-6 mutants for preflight's clone commands and init's .git allowlist (syzygy-qkea.24), after the R-POLARIS-DOSSIER-CLONE-SHAPE-2 repairs; supersedes polaris-dossier-clone-allowlist-mutants-2026-10-07.json for the repaired bytes. Q1-Q4 the printed commands; A1-A2 alternates; T1-T3 the top-level allowlist and its kinds; H1 HEAD; F1 FETCH_HEAD; R1 refs; O1-O3 hooks, info and logs entries; L1 logs/HEAD identifiers; S1-S5 the object store layout; Y1-Y3 links and kinds read; Z1-Z2 the file and walk bounds; C6-C11 shallow, the inventory and the reader naming; G1-G15 the config allowlist (sections, promisor remotes, includes, extensions, keys, hooksPath, fsmonitor, worktree, repeats, values, continuations, lines outside [core]); N1-N2 upper-case and run-on identifiers; B1-B2 an empty branches/; M1 the re-create hint; I1-I5 init calling both checks and its disclosures; K1-K4 the skill texts. Not authority.",
   "measuredOn": {
-    "commit": "0b16e1ec3bda077826cdbe5bc7c25c3b6fa7cbc9",
+    "commit": "e3bde30c8c7ef694fdcc0e37e26669c9bb486054",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/preflight.ts",
@@ -17,7 +17,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/init.ts",
-        "sha256": "3a0014cf8409bf45e22ce80c446b9efffcd5c6822cb6f02ce642981246c97034"
+        "sha256": "47448429baa40bd76dfb0c1f3a08c07bc74953370012f06f1aba8e6a237d99ad"
       },
       {
         "path": ".claude/skills/polaris-dossier/SKILL.md",
@@ -29,7 +29,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/start-gates.test.ts",
-        "sha256": "2f088ff1084d028861d88f39890cbbb4f8db612dfa2aaf720e103d69c68b5ab0"
+        "sha256": "68b4ab0b931c31a9438782f9384c476c93aedcb15449f3a98d3ec4a1a8706256"
       },
       {
         "path": "packages/polaris-dossier/src/agent-texts.test.ts",
