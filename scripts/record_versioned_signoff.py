@@ -789,6 +789,11 @@ def make_fixture(tmp: pathlib.Path, review_text=None, disposition_text=None,
         subprocess.run(["git", "-C", str(tmp), "-c", "user.email=t@t", "-c", "user.name=t",
                         *args], check=True, capture_output=True)
     run("init", "-q")
+    # No automatic gc or maintenance in the fixture: git may detach one after a commit, and it then writes under objects/ while
+    # TemporaryDirectory removes the tree ("Directory not empty: 'objects'" in hosted CI, syzygy-y733). Set in the repository's own
+    # config, so every later git command in it, the recorder's included, honours it.
+    run("config", "gc.auto", "0")
+    run("config", "maintenance.auto", "false")
     (tmp / STUB_DIR).mkdir(parents=True)
     (tmp / STUB_DIR / "manifest.txt").write_text("package bytes\n")
     (tmp / STUB_ALSO).mkdir(parents=True)
