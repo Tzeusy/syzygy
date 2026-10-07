@@ -15,13 +15,21 @@ signed agent-provider statement; Redis took a whole sitting.
 
 ## Why
 
-The owner's direction, verbatim as relayed:
+**Warrant:** the owner direction `ARBITRARY-PUBLIC-REPO-DOSSIER-2026-10-07`
+(`decisions/ARBITRARY-PUBLIC-REPO-DOSSIER-DIRECTION.md`), a plain owner
+direction that directs this draft and performs no act. It records the
+owner's words, of which this is the central part:
 
 > "I want to apply this even to repositories that I don't own, part of the
 > point is an expedited learning curve for any arbitrary git repository.
 > Assume we can easily fork and maintain our own fork locally, but may not
 > necessarily have 'authoritative knowledge' on the motivations behind the
-> creation of the repository."
+> creation of the repository"
+
+Its point 2 says reconstruction may draw on "the code and its history".
+This draft keeps history off by default and offers it as packet Q2, because
+reading history changes REQ-033's one-commit rule; that trade-off is the
+owner's.
 
 Two things block that today:
 

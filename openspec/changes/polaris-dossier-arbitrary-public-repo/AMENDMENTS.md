@@ -141,8 +141,11 @@ Lines 62-64 become:
 
 ## Warrant
 
-The owner's direction of 2026-10-07 (quoted in `proposal.md`) to run on
-"any arbitrary git repository" without per-repository acts; round 1 of this
+The owner direction `ARBITRARY-PUBLIC-REPO-DOSSIER-2026-10-07`
+(`decisions/ARBITRARY-PUBLIC-REPO-DOSSIER-DIRECTION.md`), which directs a
+draft for "any arbitrary git repository" without per-repository acts and
+leaves "any reading or amendment of the per-repository consent clauses" to
+the owner's sign-off; round 1 of this
 change's review (`docs/reviews/R-ARBITRARY-PUBLIC-REPO-1-RAW.md`), finding B1,
 which found that no reading could meet the current text.
 
