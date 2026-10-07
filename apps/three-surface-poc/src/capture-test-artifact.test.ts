@@ -42,12 +42,18 @@ describe('focusedTestCommand and operatorInstructions', () => {
     expect(text).toContain('Syzygy does not run this test suite.');
     expect(text).toContain('1. git -C /home/op/butlers rev-parse HEAD');
     expect(text).toContain(
-      `2. cd /home/op/butlers && .venv/bin/python -m pytest ${SCOPE} -q '--junitxml=/tmp/out dir/a.xml'; echo "exit $?"`,
+      `2. cd -- /home/op/butlers && .venv/bin/python -m pytest ${SCOPE} -q '--junitxml=/tmp/out dir/a.xml'; echo "exit $?"`,
     );
     expect(text).toContain(
       "3. npm run poc:capture-test-artifact -- ingest --repo /home/op/butlers --scope " +
         `${SCOPE} --python .venv/bin/python --junit '/tmp/out dir/a.xml' --state-dir /tmp/state`,
     );
+  });
+
+  // #386 round 3, note 3: a checkout path that begins with `-` is not read as an option of cd.
+  it('ends cd\'s options before a checkout path that begins with a dash', () => {
+    const text = operatorInstructions({ repoRoot: '-repo', scope: SCOPE, python: 'python', junitPath: '/tmp/a.xml', stateDir: '/tmp/state' });
+    expect(text).toContain('2. cd -- -repo && python -m pytest');
   });
 
   it('quotes a word carrying shell syntax so the printed line cannot run anything else', () => {
