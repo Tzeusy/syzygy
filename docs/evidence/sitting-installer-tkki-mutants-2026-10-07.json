@@ -1,0 +1,190 @@
+{
+  "subject": "syzygy-tkki: R-REDIS-SITTING-INSTALLER-PINS-1 notes 1-3 and 5 in the local-agent sitting installer",
+  "commit": "c662fee71348b417ab77205a4c4535c1324620a4",
+  "subjectDigests": {
+    "scripts/install_redis_local_agent_sitting.py": "095f4d481a71945888f18d4719f5357d4602059558053811e7eaf77177d37930"
+  },
+  "command": "python3 scripts/install_redis_local_agent_sitting.py --selftest, once per mutant",
+  "killed": 14,
+  "total": 14,
+  "mutants": [
+    {
+      "id": "T1-utc-date-check-dropped",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "if answers[\"date\"] > today:",
+      "new": "if False:",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "a local date ahead of the UTC date is refused before writing, naming UTC",
+        "so is that date with no start_instant",
+        "a recording run dated ahead of the UTC date is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T2-future-instant-check-dropped",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "    if out[-1] > clock:",
+      "new": "    if False:",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an act instant ahead of the clock is refused before writing, naming the latest start"
+      ]
+    },
+    {
+      "id": "T3-clock-instant-refused",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "    if out[-1] > clock:",
+      "new": "    if out[-1] >= clock:",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "a start whose last instant is the clock itself is accepted",
+        "by default the instants end at the clock and are accepted"
+      ]
+    },
+    {
+      "id": "T4-timing-not-wired",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "why = timing(answers, len(act_order(answers)), utc_now()) + preconditions(root, answers)",
+      "new": "why = preconditions(root, answers)",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "a recording run dated ahead of the UTC date is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T5-message-names-no-utc",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "is ahead of today's UTC date, {today}",
+      "new": "is ahead of today, {today}",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "a local date ahead of the UTC date is refused before writing, naming UTC",
+        "a recording run dated ahead of the UTC date is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T6-stash-claims-a-stash-on-a-clean-tree",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "    if not git(root, \"status\", \"--porcelain\").stdout.strip():",
+      "new": "    if False:",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "a refusal with nothing written says so and stashes nothing"
+      ]
+    },
+    {
+      "id": "T7-already-recorded-never-finds",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "            done.append(s.label)",
+      "new": "            pass",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an act whose recorder --check already passes reads as already recorded, and only it; a versioned sign-off's 'not performed' (exit 0) is not recorded"
+      ]
+    },
+    {
+      "id": "T13-not-performed-read-as-recorded",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "        if p.returncode == 0 and not (p.stdout + p.stderr).strip().endswith(\": not performed\"):",
+      "new": "        if p.returncode == 0:",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an act whose recorder --check already passes reads as already recorded, and only it; a versioned sign-off's 'not performed' (exit 0) is not recorded"
+      ]
+    },
+    {
+      "id": "T8-p104-install-step-by-prefix",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "    if hashlib.sha256(lines[at[0]].encode(\"utf-8\")).hexdigest() != P104_OPEN_SHA256:",
+      "new": "    if not lines[at[0]].startswith(\"| P-104 | The local-agent Redis sitting\"):",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an open P-104 row with text appended is refused, never overwritten",
+        "an open P-104 row with text appended is refused before anything is written",
+        "an open P-104 row with one cell edited is refused, never overwritten",
+        "an open P-104 row with one cell edited is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T9-p104-not-checked-up-front",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "    return why + register_check(root) + p104_check(root, answers)",
+      "new": "    return why + register_check(root)",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an open P-104 row with text appended is refused before anything is written",
+        "an open P-104 row with one cell edited is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T10-p104-up-front-by-prefix",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "            hashlib.sha256(rows[0].encode(\"utf-8\")).hexdigest() != P104_OPEN_SHA256:",
+      "new": "            not rows[0].startswith(\"| P-104 | The local-agent Redis sitting\"):",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "an open P-104 row with text appended is refused before anything is written",
+        "an open P-104 row with one cell edited is refused before anything is written"
+      ]
+    },
+    {
+      "id": "T11-pinned-digest-drifts",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "P104_OPEN_SHA256 = \"05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb\"",
+      "new": "P104_OPEN_SHA256 = \"15385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb\"",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [],
+      "tail": "File \"/home/tze/GitHub/syzygy/.worktrees/parallel-agents/sitting-tkki/scripts/install_redis_local_agent_sitting.py\", line 633, in step_p104\n    raise Refusal(\"the P-104 row is neither the open row the gate pins (by its exact bytes) nor this \"\ninstall_redis_sitting.Refusal: the P-104 row is neither the open row the gate pins (by its exact bytes) nor this sitting's resolved form: resolve it by hand\n"
+    },
+    {
+      "id": "T12-rows-joined-by-and",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "old": "f\"F (row{'s' if len(row3) > 1 else ''} {and_list(row3)})\"",
+      "new": "f\"F (row{'s' if len(row3) > 1 else ''} {' and '.join(row3)})\"",
+      "exit": 1,
+      "killed": true,
+      "failedPredicates": [
+        "all three statements are rows 3, 3a and 3b"
+      ]
+    },
+    {
+      "id": "T14-already-recorded-unwired",
+      "file": "scripts/install_redis_local_agent_sitting.py",
+      "mutation": "record_and_install with already_recorded replaced by lambda root, steps: []",
+      "original": {
+        "exit": 2,
+        "predicateHolds": true,
+        "output": [
+          "REFUSED (nothing written):",
+          "  already recorded: rfc5, screening-v2, redis-observation, public-git-source-acquisition-local-agent v1.0, redis-no-evidence-drawer, d9-in-force, rfc7-20-reading-in-force, narrative profile; this sitting was installed before, so run --check, never --answers again"
+        ]
+      },
+      "mutant": {
+        "exit": 2,
+        "predicateHolds": false,
+        "output": [
+          "REFUSED: screening-v1 --record exited 1: FAILED: dedicated act already exists: .syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
+          "nothing was written: the tree is unchanged, and nothing was stashed"
+        ]
+      },
+      "killed": true,
+      "ranOn": "the rehearsal's installed scratch, a second recording run (the second-run predicate)",
+      "scratchHead": "890cc713cf08d85f3213d211212a71691ce634df",
+      "installerSha256": "095f4d481a71945888f18d4719f5357d4602059558053811e7eaf77177d37930",
+      "command": "python3 wiring_mutant.py SCRATCH ANSWERS.json: record_and_install once as is, once with already_recorded monkeypatched to return []"
+    }
+  ],
+  "note": "T1-T13 run the installer's --selftest once per source mutant at the commit named; T11 is killed by an uncaught Refusal (exit 1 with no FAIL line). T14 unwires the already-recorded refusal, which the selftest cannot reach (it needs real recorders); it is run on the rehearsal's installed scratch, and the original installer's run is recorded beside it."
+}
