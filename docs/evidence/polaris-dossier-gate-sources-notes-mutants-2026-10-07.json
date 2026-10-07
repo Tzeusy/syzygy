@@ -1,0 +1,153 @@
+{
+  "subject": {
+    "commit": "f8d5b794955d5838d68403f720be8efe7cbd4ecb",
+    "branch": "agent/gate-sources-notes",
+    "fileSha256": {
+      "packages/polaris-dossier/src/gate-sources.ts": "90533aad47cafb06662fa122ad53cb6a6f48027765f2cfdebc93f1138e13223b",
+      "packages/polaris-generation-consent/src/package-reader.ts": "eb59d261d6fe7a7a7a6730f44d81e199b8c31f49e16b3c2905d8366c036d4f1c",
+      "packages/polaris-generation-consent/src/recorder-template.ts": "0066184f855f42f2674b0e3d9d6990e10d091082869c3786ecf2f9a88d92c0c2"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "af64b7fc3ea7b6b22804f8631e6181f696b4a5053367bef11301a0a5abd4197e",
+      "packages/polaris-generation-consent/src/recorder-template.test.ts": "8cd7baa906d1c77959fa358e16bf5358f16806bac4b3d435190a3c51a7b88134"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-07T00:20:36+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "const SITTING_INSTANCES = ",
+      "new": "const SITTING_INSTANCES = ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 113,
+      "note": "control: no change"
+    },
+    {
+      "id": "S5-sitting-file-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "`dossier-local-agent-${a.stem.toLowerCase()}`, ",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 113,
+      "note": "an act record's file stem is not swept (survived at a6157cb0)"
+    },
+    {
+      "id": "H1-heading-stem",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "a.artifact.split('/').pop()!, a.heading, ",
+      "new": "a.artifact.split('/').pop()!, ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 113,
+      "note": "an artifact's own heading is not swept"
+    },
+    {
+      "id": "H2-heading-text",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "heading: 'D9 for operator-agent runs — exact-bytes record',",
+      "new": "heading: 'D9 for operator-agent runs',",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 113,
+      "note": "a form's heading differs from its artifact's H1"
+    },
+    {
+      "id": "D1-confirm-with-disposition",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "(slots['verdict'] === 'CONFIRM WITH EXCEPTIONS') !== (slots['disposition'] !== 'none')",
+      "new": "(slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 113,
+      "note": "CONFIRM with a disposition record counts"
+    },
+    {
+      "id": "D2-cwe-without-disposition",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "(slots['verdict'] === 'CONFIRM WITH EXCEPTIONS') !== (slots['disposition'] !== 'none')",
+      "new": "(slots['verdict'] === 'CONFIRM' && slots['disposition'] !== 'none')",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 113,
+      "note": "CONFIRM WITH EXCEPTIONS with none counts"
+    },
+    {
+      "id": "L1-line-blank",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "line: '[^\\\\r\\\\n]*\\\\S[^\\\\r\\\\n]*',",
+      "new": "line: '[^\\\\n]+',",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 113,
+      "note": "a blank selection slot is read"
+    },
+    {
+      "id": "L1c-line-blank",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "line: '[^\\\\r\\\\n]*\\\\S[^\\\\r\\\\n]*',",
+      "new": "line: '[^\\\\n]+',",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9,
+      "note": "a blank line slot is read"
+    },
+    {
+      "id": "L2-line-cr",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "line: '[^\\\\r\\\\n]*\\\\S[^\\\\r\\\\n]*',",
+      "new": "line: '[^\\\\n]*\\\\S[^\\\\n]*',",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 113,
+      "note": "a carriage return in a selection slot is read"
+    },
+    {
+      "id": "L2c-line-cr",
+      "file": "packages/polaris-generation-consent/src/recorder-template.ts",
+      "old": "line: '[^\\\\r\\\\n]*\\\\S[^\\\\r\\\\n]*',",
+      "new": "line: '[^\\\\n]*\\\\S[^\\\\n]*',",
+      "tests": [
+        "packages/polaris-generation-consent/src/recorder-template.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9,
+      "note": "a carriage return in a line slot is read"
+    }
+  ],
+  "summary": "9 of 9 non-control mutants killed at f8d5b794955d5838d68403f720be8efe7cbd4ecb (syzygy-7x39); the no-op control survived; not killed: []. S5 re-runs #377's surviving mutant (the sitting forms' file stem), recorded as a test gap in docs/evidence/polaris-dossier-gate-acts-mutants-2026-10-07.json; H1-H2 the artifact heading stems (R-POLARIS-DOSSIER-GATE-SOURCES-3 note 2); D1-D2 the disposition-iff-CWE rule and L1-L2 the line slot (note 3), each line-slot mutant run against the dossier gate tests and the consent template tests."
+}
