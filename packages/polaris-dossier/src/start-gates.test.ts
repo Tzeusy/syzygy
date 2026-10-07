@@ -70,11 +70,12 @@ beforeAll(() => {
 });
 afterAll(() => fs.rmSync(origin, { recursive: true, force: true }));
 
-/** A clone made as the consent states: `commit` fetched alone, shallow, into a new empty repository, HEAD detached at it. */
-const cloneAt = (commit: string): string => {
+/** A clone made as the consent states: `commit` fetched alone, shallow, into a new empty repository, HEAD detached at it; `initArgs`
+ * go to `git init` (a template, say). */
+const cloneAt = (commit: string, initArgs: readonly string[] = []): string => {
   const dir = path.join(tempDir('dossier-clone-'), 'redis');
   execFileSync('git', ['-C', origin, 'config', 'uploadpack.allowAnySHA1InWant', 'true'], { env: GIT_ENV });
-  execFileSync('git', ['init', '-q', dir], { env: GIT_ENV });
+  execFileSync('git', ['init', '-q', ...initArgs, dir], { env: GIT_ENV });
   fetchInto(dir, commit);
   execFileSync('git', ['-C', dir, 'checkout', '-q', '--detach', 'FETCH_HEAD'], { env: GIT_ENV });
   return dir;
@@ -237,9 +238,11 @@ describe('init: a run that passes every start gate', () => {
 
 describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', () => {
   const SHAPE = 'the clone must hold the consented commit alone, fetched into an empty repository (git init, git fetch --depth=1 <url> <commit>, git checkout --detach FETCH_HEAD)';
+  const REMAKE = 'make it again in a new directory with git init --template= <dir> (an empty template, so no template or global init configuration adds anything), then the printed fetch and checkout';
+  // A .git refusal (before any object is read) also says how to make the clone again; a store refusal does not.
   const refusedShape = async (clone: string, reason: string, objectsRead: boolean, setup: Partial<Setup> = {}) => {
     const run = await init({ clone, ...setup });
-    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: `${reason}; ${SHAPE}`, objectsRead });
+    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: objectsRead ? `${reason}; ${SHAPE}` : `${reason}; ${SHAPE}; ${REMAKE}`, objectsRead });
     expect(fs.existsSync(run.stateRoot)).toBe(false);
   };
   const git = (clone: string, ...args: string[]): string => execFileSync('git', ['-C', clone, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
@@ -276,7 +279,7 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
   it('refuses a full clone, before reading any object', async () => {
     const clone = fullCloneAt(commits.A);
     const run = await init({ clone });
-    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: `${never('packed-refs')}; ${SHAPE}`, objectsRead: false });
+    expect(refusal(run.result)).toMatchObject({ stage: 'clone-shape', reason: `${never('packed-refs')}; ${SHAPE}; ${REMAKE}`, objectsRead: false });
     expect(run.readerOpened).toBe(false);
   });
 
@@ -423,7 +426,7 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     const clone = cloneAt(commits.A);
     const entries = fs.readdirSync(dotGit(clone), { recursive: true }).length;
     expect(cloneGitDirShape(dotGit(clone), commits.A, { maxEntries: entries })).toEqual({ ok: true });
-    expect(cloneGitDirShape(dotGit(clone), commits.A, { maxEntries: entries - 1 })).toEqual({ ok: false, reason: `.git holds more than ${entries - 1} entries; ${SHAPE}` });
+    expect(cloneGitDirShape(dotGit(clone), commits.A, { maxEntries: entries - 1 })).toEqual({ ok: false, reason: `.git holds more than ${entries - 1} entries; ${SHAPE}; ${REMAKE}` });
   });
 
   it('refuses a two-commit shallow clone, and a clone shallow at another commit or not shallow', async () => {
@@ -455,6 +458,91 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     await refusedShape(packed, `the object store names 1 object(s) that are neither ${commits.A} nor under its tree (first: ${commits.U})`, true);
   });
 
+  it('reads config bounded and without following a link, and admits the [core] keys git init writes on each mainstream platform', async () => {
+    const clone = cloneAt(commits.A);
+    expect(fs.readFileSync(dotGit(clone, 'config'), 'utf8')).toBe('[core]\n\trepositoryformatversion = 0\n\tfilemode = true\n\tbare = false\n\tlogallrefupdates = true\n');
+    // macOS adds ignorecase and precomposeunicode, Windows symlinks and ignorecase; comments and blank lines are not settings.
+    fs.writeFileSync(dotGit(clone, 'config'), '# made by git init\n[core]\n\trepositoryformatversion = 0\n\tfilemode = false\n\tbare = false\n\tlogallrefupdates = true\n\n\tsymlinks = false\n\tignorecase = true\n\tprecomposeunicode = true\n; end\n');
+    expect((await init({ clone })).result.ok).toBe(true);
+    // Absent, git takes every default: nothing is configured.
+    fs.rmSync(dotGit(clone, 'config'));
+    expect((await init({ clone })).result.ok).toBe(true);
+
+    const big = cloneAt(commits.A);
+    fs.appendFileSync(dotGit(big, 'config'), `# ${'x'.repeat(1024 * 1024)}\n`);
+    await refusedShape(big, 'config is larger than 1048576 bytes', false);
+    const linked = cloneAt(commits.A);
+    fs.rmSync(dotGit(linked, 'config'));
+    fs.symlinkSync(dotGit(cloneAt(commits.B), 'config'), dotGit(linked, 'config'));
+    await refusedShape(linked, 'config is a symbolic link; nothing under .git is followed', false);
+  });
+
+  it('refuses config naming a remote, a promisor, an include or a command the agent\'s git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)', async () => {
+    const cases: [string, (clone: string) => void][] = [
+      // Probe 03b: a promisor remote lets a plain read fetch any object lazily.
+      ['config holds a [remote "up"] section, and the config git init writes holds [core] alone', clone => { git(clone, 'config', 'remote.up.url', `file://${origin}`); git(clone, 'config', 'remote.up.promisor', 'true'); }],
+      // Probe 03: a partial clone needs format version 1 and the extension.
+      ['config sets core.repositoryformatversion to a value git init never writes there', clone => { git(clone, 'config', 'core.repositoryformatversion', '1'); git(clone, 'config', 'extensions.partialClone', 'origin'); }],
+      ['config holds a [extensions] section, and the config git init writes holds [core] alone', clone => git(clone, 'config', 'extensions.partialClone', 'origin')],
+      // Note 7: a named remote, even one the consent's fetch could have used.
+      ['config holds a [remote "origin"] section, and the config git init writes holds [core] alone', clone => git(clone, 'remote', 'add', 'origin', `file://${origin}`)],
+      // Probes 03c and 03d: configuration from a file outside the clone.
+      ['config holds a [include] section, and the config git init writes holds [core] alone', clone => git(clone, 'config', 'include.path', '/elsewhere/gitconfig')],
+      ['config holds a [includeIf "gitdir:/"] section, and the config git init writes holds [core] alone', clone => git(clone, 'config', 'includeIf.gitdir:/.path', '/elsewhere/gitconfig')],
+      // Probes 12a and 12b, and note 6: settings that run a command or move the working tree.
+      ['config sets core.hooksPath, which git init never writes', clone => git(clone, 'config', 'core.hooksPath', '/elsewhere/hooks')],
+      ['config sets core.fsmonitor, which git init never writes', clone => git(clone, 'config', 'core.fsmonitor', '/elsewhere/monitor')],
+      ['config sets core.worktree, which git init never writes', clone => git(clone, 'config', 'core.worktree', '/elsewhere')],
+      ['config sets core.bare to a value git init never writes there', clone => git(clone, 'config', 'core.bare', 'true')],
+      ['config sets core.filemode to a value git init never writes there', clone => git(clone, 'config', 'core.filemode', 'maybe')],
+      // An inherited name is not a key git init writes, and is refused rather than looked up.
+      ['config sets core.constructor, which git init never writes', clone => fs.appendFileSync(dotGit(clone, 'config'), '\tconstructor = true\n')],
+      ['config sets core.FileMode more than once', clone => fs.appendFileSync(dotGit(clone, 'config'), '\tFileMode = true\n')],
+      ['config line 6 continues onto the next line, which the config git init writes never does', clone => fs.appendFileSync(dotGit(clone, 'config'), '\tsymlinks = tr\\\nue\n')],
+      ['config line 1 is not a [core] key = value line the config git init writes', clone => fs.writeFileSync(dotGit(clone, 'config'), `filemode = true\n${fs.readFileSync(dotGit(clone, 'config'), 'utf8')}`)],
+      ['config line 6 is not a [core] key = value line the config git init writes', clone => fs.appendFileSync(dotGit(clone, 'config'), '\tsymlinks\n')],
+    ];
+    for (const [reason, make] of cases) {
+      const clone = cloneAt(commits.A);
+      make(clone);
+      await refusedShape(clone, reason, false);
+    }
+  });
+
+  it('starts from a clone made with an older git\'s template, which leaves an empty branches/, or an empty one; refuses anything in branches/', async () => {
+    // Gits older than about 2.49 copy branches/ from their default template (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 2).
+    const template = tempDir('dossier-template-');
+    for (const dir of ['branches', 'hooks', 'info']) fs.mkdirSync(path.join(template, dir));
+    fs.writeFileSync(path.join(template, 'description'), 'Unnamed repository; edit this file \'description\' to name the repository.\n');
+    fs.writeFileSync(path.join(template, 'hooks', 'pre-commit.sample'), '#!/bin/sh\n', { mode: 0o755 });
+    fs.writeFileSync(path.join(template, 'info', 'exclude'), '# git ls-files --others --exclude-from=.git/info/exclude\n');
+    const older = cloneAt(commits.A, [`--template=${template}`]);
+    expect(fs.readdirSync(dotGit(older)).sort()).toEqual(['FETCH_HEAD', 'HEAD', 'branches', 'config', 'description', 'hooks', 'index', 'info', 'logs', 'objects', 'refs', 'shallow']);
+    expect(fs.readdirSync(dotGit(older, 'branches'))).toEqual([]);
+    expect((await init({ clone: older })).result.ok).toBe(true);
+    fs.writeFileSync(dotGit(older, 'branches', 'origin'), `file://${origin}#main\n`);
+    await refusedShape(older, 'branches/origin is not allowed: an older git\'s template leaves branches/ empty, and an entry there names a remote', false);
+
+    // The remedy every .git refusal prints: an empty template leaves no hooks, info or description.
+    const empty = cloneAt(commits.A, ['--template=']);
+    expect(fs.readdirSync(dotGit(empty)).sort()).toEqual(['FETCH_HEAD', 'HEAD', 'config', 'index', 'logs', 'objects', 'refs', 'shallow']);
+    expect((await init({ clone: empty })).result.ok).toBe(true);
+  });
+
+  it('refuses an identifier in FETCH_HEAD or logs/HEAD in upper case or run on, even the pinned commit\'s', async () => {
+    const fetchHead = cloneAt(commits.A);
+    const fetched = fs.readFileSync(dotGit(fetchHead, 'FETCH_HEAD'), 'latin1');
+    fs.writeFileSync(dotGit(fetchHead, 'FETCH_HEAD'), `${commits.B.toUpperCase()}\t\tpasted\n${fetched}`);
+    await refusedShape(fetchHead, `FETCH_HEAD names an object other than ${commits.A}`, false);
+    fs.writeFileSync(dotGit(fetchHead, 'FETCH_HEAD'), fetched.replace(commits.A, commits.A.toUpperCase()));
+    await refusedShape(fetchHead, `FETCH_HEAD names an object other than ${commits.A}`, false);
+    fs.writeFileSync(dotGit(fetchHead, 'FETCH_HEAD'), `${commits.A}${commits.B.slice(0, 4)}\n`);
+    await refusedShape(fetchHead, `FETCH_HEAD names an object other than ${commits.A}`, false);
+    const log = cloneAt(commits.A);
+    fs.appendFileSync(dotGit(log, 'logs', 'HEAD'), `${commits.A} ${commits.B.toUpperCase()} t <t@example.invalid> 1791330124 +0000\tcheckout: moving\n`);
+    await refusedShape(log, `logs/HEAD names ${commits.B.toUpperCase()}, an object other than ${commits.A}`, false);
+  });
+
   it('never reads the working tree: an uncommitted change, or a nested repository, does not change the listing or the decision', async () => {
     const clone = cloneAt(commits.A);
     fs.mkdirSync(path.join(clone, '.syzygy'));
@@ -466,6 +554,9 @@ describe('init: the clone holds the consented commit alone (syzygy-qkea.24)', ()
     expect(result.ok && result.report.subject.governed.kind).toBe('non-governed');
     // The residual is disclosed: the working tree outside .git is not inspected.
     expect(result.ok && result.report.disclosures.some(d => d.includes('the working tree outside .git is not inspected, though the agent reads the checked-out files'))).toBe(true);
+    // So are the content .git's admitted files hold, and the host's own git configuration (R-POLARIS-DOSSIER-CLONE-SHAPE-2 notes 1 and 5).
+    expect(result.ok && result.report.disclosures.some(d => d.includes('nor is the content of the hook samples, info/exclude, description and index, or FETCH_HEAD\'s text other than identifiers'))).toBe(true);
+    expect(result.ok && result.report.disclosures.some(d => d.includes('global, system and environment git configuration (~/.gitconfig, /etc/gitconfig, GIT_CONFIG_*) is on the operator\'s host and was not'))).toBe(true);
   });
 });
 
