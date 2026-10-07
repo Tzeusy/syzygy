@@ -988,6 +988,9 @@ def selftest() -> int:
         # note 2: a refusal on a clean tree claims no stash
         root = pathlib.Path(t)
         subprocess.run(["git", "init", "-q", str(root)], check=True)
+        # this fixture commits: no automatic maintenance may outlive it (syzygy-y733)
+        git(root, "config", "gc.auto", "0")
+        git(root, "config", "maintenance.auto", "false")
         (root / "a").write_text("a")
         git(root, "add", "a")
         git(root, "-c", "user.name=t", "-c", "user.email=t@invalid", "commit", "-qm", "a")
