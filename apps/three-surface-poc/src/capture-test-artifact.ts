@@ -51,7 +51,7 @@ export function operatorInstructions(input: OperatorInstructionsInput): string {
     'unless the owner has recorded a SEC-3 choice for that run.',
     '',
     `  1. git -C ${shellQuote(input.repoRoot)} rev-parse HEAD`,
-    `  2. cd ${shellQuote(input.repoRoot)} && ${run}; echo "exit $?"`,
+    `  2. cd -- ${shellQuote(input.repoRoot)} && ${run}; echo "exit $?"`,
     '',
     'Then hand the result back, at the same commit, without switching the',
     'checkout in between:',

@@ -30,8 +30,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
 // an alias in a config file the closure wrote). The static check bounds only
 // the capture tool's one pinned call (its own source check holds it to
 // `rev-parse HEAD`). Here it refuses a few spellings, as literals: `-c`,
-// `--config-env`, `--exec-path`, any `alias.` string, any write to
-// process.env, and an `env` key on any git or bd call's options. It does
+// `--config-env`, `--exec-path`, any `alias.` string, and any write to
+// process.env. A git or bd call's options may carry only `encoding`,
+// `maxBuffer` and `stdio`, so neither `env` nor `shell` (which runs the
+// joined line under /bin/sh, git never involved) can pass. It does
 // not enumerate git's surface. The expected survivors are H23 (an option
 // assembled from pieces at run time) and the round-2 reviewer's probes A and
 // B (H26, H27); probe D's `env` key is refused (H24). Nor can the check see what git
@@ -120,6 +122,10 @@ const ALLOWED_PACKAGES = new Set([PROCESS_MODULE, 'node:fs', 'node:path', 'node:
  * and hooks. `vi` is not among them (#386 round 2, finding 2). */
 const VITEST_IMPORTS = new Set(['describe', 'it', 'expect', 'beforeAll', 'afterAll', 'beforeEach', 'afterEach']);
 
+/** The only option keys a git or bd call in the closure may pass (#386
+ * round 3, finding 1): `shell`, `env` and every other key are refused. */
+const RUN_OPTIONS = new Set(['encoding', 'maxBuffer', 'stdio']);
+
 interface Violation {
   readonly file: string;
   readonly reason: string;
@@ -159,6 +165,10 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
     // module specifier above and no `require` identifier, since the keyword
     // is a token; it reached `createRequire` and started `sh`.
     if (ts.isImportEqualsDeclaration(node)) add('import = require');
+    // #386 round 3, finding 2: Vite turns `import.meta.glob` into static
+    // imports this scan never sees, so a refused package loads anyway.
+    // No module in the closure uses `import.meta` at all.
+    if (ts.isMetaProperty(node) && node.keywordToken === ts.SyntaxKind.ImportKeyword) add('uses import.meta');
     // #386 round 1, finding 2: git runs programs named by its own options,
     // so a literal `git` alone does not keep it from starting a shell.
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node)) {
@@ -177,8 +187,10 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
           add(`starts ${command?.getText() ?? 'nothing'}, not a literal ${[...COMMANDS].join(' or ')}`);
         }
         // #386 round 2, finding 1: a call's own `env` option can point git
-        // at a configuration the closure wrote. The options must be one
-        // object literal whose keys the check reads, none of them `env`.
+        // at a configuration the closure wrote; round 3, finding 1: `shell`
+        // runs the joined command line under /bin/sh, git never involved.
+        // The options must be one object literal whose keys the check reads,
+        // each from the allow-list.
         const options = node.arguments[2];
         if (node.arguments.length > 3) add(`passes ${RUN_GIT} more than a command, its arguments and its options`);
         if (options !== undefined && !ts.isObjectLiteralExpression(options)) add(`passes ${RUN_GIT} options other than an object literal`);
@@ -186,7 +198,7 @@ function scan(file: string, text: string): { readonly violations: Violation[]; r
           for (const property of options.properties) {
             const key = property.name !== undefined && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : undefined;
             if (key === undefined) add(`passes ${RUN_GIT} an option key it cannot read`);
-            else if (key === 'env') add(`passes ${RUN_GIT} an env option`);
+            else if (!RUN_OPTIONS.has(key)) add(`passes ${RUN_GIT} the option ${key}, not one of ${[...RUN_OPTIONS].join(', ')}`);
           }
         }
       }
@@ -308,9 +320,17 @@ describe('the live verification test, and every module it imports, runs no obser
     ["Object.assign(process.env, { PATH: '/tmp' });", 'uses process.env other than reading one named variable'],
     ["const { PATH } = process.env;", 'uses process.env other than reading one named variable'],
     // #386 round 2, finding 1: the reviewer's probe D, and the option shapes that would hide an env key.
-    [`${RUN_GIT}('git', ['probe'], { env: { GIT_CONFIG_GLOBAL: '/tmp/cfg' }, encoding: 'utf8' });`, `passes ${RUN_GIT} an env option`],
-    [`${RUN_GIT}('bd', ['list'], { 'env': {} });`, `passes ${RUN_GIT} an env option`],
-    [`const env = {}; ${RUN_GIT}('git', ['status'], { env });`, `passes ${RUN_GIT} an env option`],
+    [`${RUN_GIT}('git', ['probe'], { env: { GIT_CONFIG_GLOBAL: '/tmp/cfg' }, encoding: 'utf8' });`, `passes ${RUN_GIT} the option env,`],
+    [`${RUN_GIT}('bd', ['list'], { 'env': {} });`, `passes ${RUN_GIT} the option env,`],
+    [`const env = {}; ${RUN_GIT}('git', ['status'], { env });`, `passes ${RUN_GIT} the option env,`],
+    // #386 round 3, finding 1: the reviewer's probe E, a shell path, and an unlisted key.
+    [`${RUN_GIT}('git', ['--version;', 'touch', '/tmp/x'], { shell: true, encoding: 'utf8' });`, `passes ${RUN_GIT} the option shell,`],
+    [`${RUN_GIT}('git', ['status'], { shell: '/bin/x' });`, `passes ${RUN_GIT} the option shell,`],
+    [`${RUN_GIT}('git', ['status'], { cwd: '/tmp' });`, `passes ${RUN_GIT} the option cwd,`],
+    // #386 round 3, finding 2: the reviewer's probe F, and import.meta's other members.
+    ["const globbed = import.meta.glob('/node_modules/tinyexec/dist/main.js', { eager: true });\nvoid globbed;", 'uses import.meta'],
+    ["void import.meta.globEager('/x.js');", 'uses import.meta'],
+    ["void import.meta.url;", 'uses import.meta'],
     [`const o = {}; ${RUN_GIT}('git', ['status'], o);`, `passes ${RUN_GIT} options other than an object literal`],
     [`const o = {}; ${RUN_GIT}('git', ['status'], { ...o });`, `passes ${RUN_GIT} an option key it cannot read`],
     [`${RUN_GIT}('git', ['status'], {}, {});`, `passes ${RUN_GIT} more than a command`],
