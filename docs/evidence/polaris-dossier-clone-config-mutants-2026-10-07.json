@@ -1,0 +1,540 @@
+{
+  "record": "Rule-6 mutants for preflight's clone commands and init's .git allowlist (syzygy-qkea.24), after the R-POLARIS-DOSSIER-CLONE-SHAPE-2 repairs; supersedes polaris-dossier-clone-allowlist-mutants-2026-10-07.json for the repaired bytes. Q1-Q4 the printed commands; A1-A2 alternates; T1-T3 the top-level allowlist and its kinds; H1 HEAD; F1 FETCH_HEAD; R1 refs; O1-O3 hooks, info and logs entries; L1 logs/HEAD identifiers; S1-S5 the object store layout; Y1-Y3 links and kinds read; Z1-Z2 the file and walk bounds; C6-C11 shallow, the inventory and the reader naming; G1-G15 the config allowlist (sections, promisor remotes, includes, extensions, keys, hooksPath, fsmonitor, worktree, repeats, values, continuations, lines outside [core]); N1-N2 upper-case and run-on identifiers; B1-B2 an empty branches/; M1 the re-create hint; I1-I5 init calling both checks and its disclosures; K1-K4 the skill texts. Not authority.",
+  "measuredOn": {
+    "commit": "0b16e1ec3bda077826cdbe5bc7c25c3b6fa7cbc9",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/preflight.ts",
+        "sha256": "5b6cb3409f17ccb9af711d7c5bf759aa5317ea5327dbc0edc01d1383be0eb924"
+      },
+      {
+        "path": "packages/polaris-dossier/src/clone-shape.ts",
+        "sha256": "dec99bd7f8cb719c94da388a7680608faf42c61b5733b83e6d86bd04cdc51c55"
+      },
+      {
+        "path": "packages/polaris-dossier/src/git-object-reader.ts",
+        "sha256": "9f33e5fbbf464b1df28b79c3fcf5016b8ad7db1910041734c5fb8e4a790998f3"
+      },
+      {
+        "path": "packages/polaris-dossier/src/init.ts",
+        "sha256": "3a0014cf8409bf45e22ce80c446b9efffcd5c6822cb6f02ce642981246c97034"
+      },
+      {
+        "path": ".claude/skills/polaris-dossier/SKILL.md",
+        "sha256": "9a33f20a99c335e12209f5d4ebfbef665108fbb444a59e67b8fa9748b88572ce"
+      },
+      {
+        "path": ".codex/skills/polaris-dossier/SKILL.md",
+        "sha256": "3d769eebb365dc3edb9454cf6fea75f8169c7d713de2ea196b384bc54b855fa3"
+      },
+      {
+        "path": "packages/polaris-dossier/src/start-gates.test.ts",
+        "sha256": "2f088ff1084d028861d88f39890cbbb4f8db612dfa2aaf720e103d69c68b5ab0"
+      },
+      {
+        "path": "packages/polaris-dossier/src/agent-texts.test.ts",
+        "sha256": "4418979f8955af05d893d07b82857728b3684a1266efcd095b6d9046702d0a13"
+      },
+      {
+        "path": "packages/polaris-dossier/src/full-run.testkit.ts",
+        "sha256": "fa911ccf0bcad81bcecb6d5879337ddff62b20098667eb3ae18b0c28492bd9a5"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, by a function replacer so `$` sequences in `new` are literal) in the file at `commit`, runs `command` from the worktree root, then restores the file; the tree was clean after the run. A mutant is killed only when the replacement applied, the command exits nonzero and at least one test fails; a nonzero exit with no failed test is recorded as `error`.",
+  "command": "node node_modules/vitest/vitest.mjs run packages/polaris-dossier/src/start-gates.test.ts packages/polaris-dossier/src/agent-texts.test.ts",
+  "result": {
+    "killed": 61,
+    "total": 61
+  },
+  "mutants": [
+    {
+      "id": "Q1-full-clone",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git init <dir>   # ${r.label}: a new, empty directory for this revision alone`,\n        `git -C <dir> fetch --depth=1 ${url} ${r.commitId}`,\n        'git -C <dir> checkout --detach FETCH_HEAD',",
+      "new": "`git clone ${url} <dir>   # ${r.label}: a new, empty directory for this revision alone`,\n        `git -C <dir> fetch ${url} ${r.commitId}`,\n        `git -C <dir> checkout --detach ${r.commitId}`,",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q2-history-fetched",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`",
+      "new": "`git -C <dir> fetch ${url} ${r.commitId}`",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q3-default-branch-fetched",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`",
+      "new": "`git -C <dir> fetch --depth=1 ${url}`",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Q4-one-directory-for-all",
+      "file": "packages/polaris-dossier/src/preflight.ts",
+      "old": "cloneCommands: revisions.flatMap(r => [",
+      "new": "cloneCommands: revisions.flatMap((r, i) => i > 0 ? [`git -C <dir> fetch --depth=1 ${url} ${r.commitId}`] : [",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "A1-alternates-not-refused",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "for (const name of ['alternates', 'http-alternates']) {",
+      "new": "for (const name of [] as string[]) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "A2-http-alternates-not-refused",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "for (const name of ['alternates', 'http-alternates']) {",
+      "new": "for (const name of ['alternates']) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "T1-allowlist-dropped",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (kind === undefined) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "T2-allowlist-widened",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "FETCH_HEAD: 'file', HEAD: 'file',",
+      "new": "FETCH_HEAD: 'file', HEAD: 'file', ORIG_HEAD: 'file', BISECT_EXPECTED_REV: 'file', commondir: 'file', gitdir: 'file', 'packed-refs': 'file', modules: 'directory', worktrees: 'directory', 'rebase-merge': 'directory',",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "T3-kind-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (kind === 'file' ? !stats.isFile() : !stats.isDirectory()) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "H1-head-detachment-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (head!.replace(/\\n$/u, '') !== commit) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "F1-fetch-head-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (fetchHead !== null && namesOnly(",
+      "new": "if (false && namesOnly(",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "R1-refs-walk-skipped",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "  while (pending.length > 0) {",
+      "new": "  while (pending.length > 99) {",
+      "outcome": "killed",
+      "failedTests": 3
+    },
+    {
+      "id": "O1-any-hook",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "(name, stats) => stats.isFile() && name.endsWith('.sample')",
+      "new": "(name, stats) => stats.isFile()",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "O2-any-info-file",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "(name, stats) => stats.isFile() && name === 'exclude'",
+      "new": "(name, stats) => stats.isFile()",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "O3-any-log",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "(name, stats) => stats.isFile() && name === 'HEAD'",
+      "new": "() => true",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "L1-log-ids-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (other !== undefined) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "S1-objects-info-not-empty",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (held.length > 0) refused(",
+      "new": "if (held.length > 99) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S2-pack-extensions-widened",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "\\\\.(pack|idx|rev)$",
+      "new": "\\\\.(pack|idx|rev|promisor|keep|bitmap)$",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S3-pack-without-idx",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (!kinds.has('pack') || !kinds.has('idx')) refused(",
+      "new": "if (!kinds.has('pack')) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S4-loose-names-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (!loose.test(file.name) || !file.stats.isFile()) refused(",
+      "new": "if (!file.stats.isFile()) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S5-other-store-names-pass",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "    } else {\n      refused(`objects/${name} is not an entry",
+      "new": "    } else if (false) {\n      refused(`objects/${name} is not an entry",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "Y1-listing-follows-links",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (stats.isSymbolicLink()) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Y2-read-follows-links",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK",
+      "new": "fs.constants.O_RDONLY | fs.constants.O_NONBLOCK",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "Y3-read-any-kind",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (!stats.isFile()) return refused(`${rel} is not a regular file`);",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "Z1-file-bound-raised",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "const MAX_FILE_BYTES = 1024 * 1024;",
+      "new": "const MAX_FILE_BYTES = 4 * 1024 * 1024;",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "Z2-walk-bound-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (budget.left < 0) refused(",
+      "new": "if (budget.left < -99) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C6-shallow-any-single-commit",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "(rows.length !== 1 || rows[0] !== commit)",
+      "new": "(rows.length !== 1)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C7-unshallow-with-parents-passes",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "(inventory.parents.length > 0 || shallow !== null)",
+      "new": "(shallow !== null)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C8-objects-beyond-ignored",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (inventory.beyondCount > 0) {",
+      "new": "if (false) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C9-pack-ids-not-named",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "    const width = HEX[this.algorithm] / 2;\n    for (const pack of this.packs) {",
+      "new": "    const width = HEX[this.algorithm] / 2;\n    for (const pack of [] as PackIndex[]) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C10-loose-ids-not-named",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "for (const fan of (await readdir(this.objects)).filter(n => /^[0-9a-f]{2}$/.test(n)).sort()) {",
+      "new": "for (const fan of [] as string[]) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "C11-parents-not-read",
+      "file": "packages/polaris-dossier/src/git-object-reader.ts",
+      "old": "const parents = await walk.parents();",
+      "new": "const parents: string[] = [];",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "I1-init-skips-store-shape",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "    if (!storeShape.ok) return refuse('clone-shape', storeShape.reason);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "I2-init-skips-git-dir-shape",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "  if (!gitDirShape.ok) return refuse('clone-shape', gitDirShape.reason);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 16
+    },
+    {
+      "id": "I3-working-tree-undisclosed",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "the working tree outside .git is not inspected, though the agent reads the checked-out files, so anything placed there, a nested repository included, is not seen by that check",
+      "new": "nothing else is disclosed",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G1-config-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (config !== null) checkConfig(config);",
+      "new": "if (false) checkConfig(config!);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G2-any-section",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (header[1]!.toLowerCase() !== 'core') refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G3-promisor-remote-section",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (header[1]!.toLowerCase() !== 'core') refused(",
+      "new": "if (header[1]!.toLowerCase() !== 'core' && !header[1]!.startsWith('remote')) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G4-include-sections",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (header[1]!.toLowerCase() !== 'core') refused(",
+      "new": "if (header[1]!.toLowerCase() !== 'core' && !header[1]!.toLowerCase().startsWith('include')) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G5-extensions-section",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (header[1]!.toLowerCase() !== 'core') refused(",
+      "new": "if (header[1]!.toLowerCase() !== 'core' && header[1] !== 'extensions') refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G6-any-core-key",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (values === undefined) refused(",
+      "new": "if (values === undefined) return; if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G7-hookspath-fsmonitor-keys",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "['symlinks', BOOLEAN],\n]);",
+      "new": "['symlinks', BOOLEAN], ['hookspath', /^.*$/u], ['fsmonitor', /^.*$/u],\n]);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G8-worktree-key",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "['symlinks', BOOLEAN],\n]);",
+      "new": "['symlinks', BOOLEAN], ['worktree', /^.*$/u],\n]);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G9-repeated-key",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (seen.has(key.toLowerCase())) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G10-values-unchecked",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (!values!.test(value)) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G11-bare-true",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "['bare', /^(?:false|no|off|0)$/iu]",
+      "new": "['bare', BOOLEAN]",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G12-format-version-1",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "['repositoryformatversion', /^0$/u]",
+      "new": "['repositoryformatversion', /^[01]$/u]",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G13-continuation-admitted",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (line.endsWith('\\\\')) refused(",
+      "new": "if (false) refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G14-key-outside-section",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (pair === null || !inCore) return refused(",
+      "new": "if (pair === null) return refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "G15-unparsed-line-skipped",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "if (pair === null || !inCore) return refused(",
+      "new": "if (pair === null) return; if (!inCore) return refused(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "N1-lower-case-only",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "`(?<![0-9A-Fa-f])[0-9A-Fa-f]{${width},}(?![0-9A-Fa-f])`",
+      "new": "`(?<![0-9a-f])[0-9a-f]{${width},}(?![0-9a-f])`",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "N2-exact-width-only",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "[0-9A-Fa-f]{${width},}",
+      "new": "[0-9A-Fa-f]{${width}}",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "B1-branches-not-admitted",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "branches: 'directory', ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "B2-branches-entries-admitted",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "only('branches', () => false,",
+      "new": "only('branches', () => true,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M1-remake-hint-dropped",
+      "file": "packages/polaris-dossier/src/clone-shape.ts",
+      "old": "reason: `${cause.message}; ${SHAPE}; ${REMAKE}`",
+      "new": "reason: `${cause.message}; ${SHAPE}`",
+      "outcome": "killed",
+      "failedTests": 16
+    },
+    {
+      "id": "I4-template-content-undisclosed",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "; nor is the content of the hook samples, info/exclude, description and index, or FETCH_HEAD\\'s text other than identifiers",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "I5-host-config-undisclosed",
+      "file": "packages/polaris-dossier/src/init.ts",
+      "old": "; the clone\\'s own config was checked, but global, system and environment git configuration (~/.gitconfig, /etc/gitconfig, GIT_CONFIG_*) is on the operator\\'s host and was not",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "K1-claude-skill-allows-full-clone",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "fetched alone, never a full clone.",
+      "new": "fetched alone, or a full clone.",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "K2-codex-skill-allows-full-clone",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "fetched alone, never\n  a full clone.",
+      "new": "fetched alone, or\n  a full clone.",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "K3-claude-skill-working-tree",
+      "file": ".claude/skills/polaris-dossier/SKILL.md",
+      "old": "read, so put nothing else in that directory.",
+      "new": "read.",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "K4-codex-skill-whole-clone",
+      "file": ".codex/skills/polaris-dossier/SKILL.md",
+      "old": "`init` refuses a `.git` that holds more than the commit.",
+      "new": "`init` refuses a clone that holds more.",
+      "outcome": "killed",
+      "failedTests": 1
+    }
+  ]
+}
