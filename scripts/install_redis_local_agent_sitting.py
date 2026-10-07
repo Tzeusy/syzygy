@@ -64,7 +64,9 @@ manifest the owner's option names, never typed:
   10 install       the existing installer's rfc5, policy, profile and reconcile
                    steps, this sitting's own registrations, and one battery
                    line per performed act in the status page and the hosted
-                   workflow, with the count sentence re-derived (CG-26)
+                   workflow, with the count sentence re-derived (CG-26); an
+                   act whose --check needs node (NODE_CHECKS) gets a node-ci
+                   step instead
   gate sweep       the gate package's real-tree tests (`GATE_TESTS`): every
                    reader refuses an act a decisions/ file names without being
                    its record, so a record or sitting log carrying a swept stem
@@ -366,8 +368,10 @@ def plan(root: pathlib.Path, answers: dict, recording: bool = True) -> list[Step
         sel = selection_args(ans)
         rec = [py, f"scripts/{script}.py", "--record", *head, "--date", date, "--instant", at[key], *sel]
         chk = ["python3", f"scripts/{script}.py", "--check", *head, "--date", date, *sel]
-        # the policy acts' battery lines are the existing installer's policy step
-        steps.append(Step(key, key, rec, chk, None if key.startswith("screening-") else chk))
+        # the policy acts' battery lines are the existing installer's policy step; the
+        # admission recorder's --check builds the generator, so it runs in node-ci instead
+        steps.append(Step(key, key, rec, chk,
+                          None if key.startswith("screening-") or key in NODE_CHECKS else chk))
     return steps
 
 
@@ -425,7 +429,7 @@ BATTERY_COPIES_CODE = f'''
 def {BATTERY_MARK}():
     """Install change: the battery's recorder lines pass each recorded local-agent act's argument."""
     pairs = list(DOSSIER_LOCAL_AGENT_ACT_RECORDS.items())
-    pairs.append(({REDIS_OBSERVATION[0]}, f"{{DECISIONS}}/{REDIS_OBSERVATION[1]}"))
+    # the Redis observation consent's line is in node-ci, not here (NODE_CHECKS)
     # the RFC5-14 constants exist only once that act's chain link is installed; the
     # name is split so this text never carries the chain step's install mark
     rfc5 = globals().get("RFC5_" "CLASS_LABEL")
@@ -559,6 +563,38 @@ def battery_text(status: str, workflow: str, lines: list[tuple[str, str]]) -> tu
     return status, workflow
 
 
+#: Acts whose recorder `--check` needs node and the compiled packages: the
+#: admission recorder rebuilds the egress records' carried-content table from the
+#: generator (`build_public_repo_admission.py`), which the stdlib-only governance
+#: battery cannot run (hosted run of PR #399). Like that builder's own `--check`,
+#: the line goes in the node-ci workflow and in neither CG-26 list.
+NODE_CHECKS = ("redis-observation",)
+NODE_CI = ".github/workflows/node-ci.yml"
+NODE_CI_ANCHOR = ("      - name: public egress v2 builder --check\n"
+                  "        run: python3 scripts/build_public_egress_v2.py --check\n")
+
+
+def node_ci_text(workflow: str, lines: list[tuple[str, str]]) -> str:
+    """Add each (name, command) not yet present as a node-ci step after the egress v2 builder."""
+    add = "".join(f"\n      - name: {name}\n        run: {cmd}\n" for name, cmd in lines
+                  if f"        run: {cmd}\n" not in workflow)
+    if not add:
+        return workflow
+    i = base.once(workflow, NODE_CI_ANCHOR, "node-ci admission builder steps") + len(NODE_CI_ANCHOR)
+    return workflow[:i] + add + workflow[i:]
+
+
+def step_node_ci(root: pathlib.Path, write: bool, steps: list[Step]) -> bool:
+    lines = [(f"{s.label} --check", quoted(s.check)) for s in steps if s.key in NODE_CHECKS]
+    text = (root / NODE_CI).read_text()
+    new = node_ci_text(text, lines)
+    if new == text:
+        return False
+    if write:
+        base.J.write(root / NODE_CI, new)
+    return True
+
+
 def step_battery(root: pathlib.Path, write: bool, steps: list[Step]) -> bool:
     lines = [(f"{s.label} --check", quoted(s.battery)) for s in steps if s.battery]
     if (root / base.RFC5_ACT).is_file():
@@ -648,6 +684,8 @@ def install(root: pathlib.Path, write: bool, steps: list[Step], answers: dict) -
             pending.append(name)
     if step_battery(root, write, steps):
         pending.append("battery")
+    if step_node_ci(root, write, steps):
+        pending.append("node-ci")
     if step_p104(root, write, answers):
         pending.append("p-104")
     return pending
@@ -891,6 +929,13 @@ def selftest() -> int:
                and nw.endswith("      - name: b --check\n        run: python3 b.py --check 'x y'\n")))
     ok.append(("adding the same battery line twice changes nothing",
                battery_text(ns, nw, [("b --check", "python3 b.py --check 'x y'")]) == (ns, nw)))
+    nc = f"jobs:\n{NODE_CI_ANCHOR}\n      - name: unit\n        run: npm test\n"
+    nn = node_ci_text(nc, [("o --check", "python3 o.py --check 'x y'")])
+    ok.append(("a node check lands in node-ci after the egress v2 builder, before the tests",
+               nn.index("python3 o.py") > nn.index("build_public_egress_v2") and
+               nn.index("python3 o.py") < nn.index("npm test")))
+    ok.append(("adding the same node check twice changes nothing",
+               node_ci_text(nn, [("o --check", "python3 o.py --check 'x y'")]) == nn))
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t)
         (root / "m.txt").write_text(f"# x\n{'a' * 64}  p/one.md\n{'b' * 64}  p/two.md\n"
