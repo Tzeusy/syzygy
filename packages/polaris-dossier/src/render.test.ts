@@ -110,13 +110,16 @@ type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) => ({ id, path: file, startLine, endLine });
 const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
 const AGENT_ONLY = 'So it is fast 5512.';
+/** In every understanding statement and nowhere else: letters outside hex, so no digest or instant on a page can carry it by chance
+ * (a bare `8841` did, syzygy-j0qf). */
+const UNDERSTANDING_ONLY = 'qzxv-wren';
 const draft = (): Doc => ({
   schemaVersion: 'polaris-dossier-local-draft-v2',
   pinnedRevision: commit,
   sessionId: 'authoring-session-1',
   title: 'Kestrel',
   introduction: { id: 'intro', label: 'inferred', basis: 'source', text: `The project states: "Kestrel keeps every key in memory." ${AGENT_ONLY}`, citations: [cite('c-intro', 'src/kestrel.c', 1, 1)], quotations: ['c-intro'] },
-  understanding: Object.fromEntries(UNDERSTANDING.map((key) => [key, [{ id: `u-${key}`, label: 'inferred', statement: `Understanding of ${key} 8841.`, scope: 'The server.', citations: [cite(`u-${key}-c`)] }]])),
+  understanding: Object.fromEntries(UNDERSTANDING.map((key) => [key, [{ id: `u-${key}`, label: 'inferred', statement: `Understanding of ${key} ${UNDERSTANDING_ONLY}.`, scope: 'The server.', citations: [cite(`u-${key}-c`)] }]])),
   sections: [{
     id: 'core-ideas', title: 'Core ideas',
     paragraphs: [
@@ -279,6 +282,9 @@ describe('render', () => {
     const result = await renderRun(run, renderDeps());
     if (!result.ok) throw new Error(result.refusal.reason);
     const files = readSite(result.report.site);
+    // The sentinels the withheld-draft test looks for do render when the draft layer is in force.
+    expect(files.get('understanding.html')).toContain(UNDERSTANDING_ONLY);
+    expect([...files.values()].join('\n')).toContain(AGENT_ONLY);
     const tuples = html(files).flatMap(([file, page]) => scanDossierPage(page).claims.map((claim) => `${file} ${claim.id} ${claim.epistemic}`)).sort();
     const machine = JSON.parse(files.get('machine.json')!);
     const machineTuples = (machine.claims as { page: string; id: string; epistemic: string }[]).map((claim) => `${claim.page} ${claim.id} ${claim.epistemic}`).sort();
@@ -335,7 +341,7 @@ describe('render', () => {
     const files = readSite(result.report.site);
     const all = [...files.values()].join('\n');
     expect(all).not.toContain(AGENT_ONLY);
-    expect(all).not.toContain('8841');
+    expect(all).not.toContain(UNDERSTANDING_ONLY);
     expect(files.has('understanding.html')).toBe(false);
     expect(files.has('discovery.html')).toBe(true);
     expect(marked(files.get('index.html')!, 'draft-layer/policy-state')).toEqual({ epistemic: 'unknown', reason: 'unconsented-source-or-provider' });
