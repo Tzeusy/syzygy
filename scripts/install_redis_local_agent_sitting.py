@@ -40,7 +40,12 @@ Before anything is written it requires (exit 2, nothing written otherwise):
 - each recorder present, the dossier-acts recorder frozen on its confirming
   review (PR #370), the screening-v2 recorder frozen when screening-v2 is
   answered, and the in-process reader of PR #367 present for entry-v1.0;
-- selection text a battery line can carry: no ": ", " #" or "'".
+- selection text a battery line can carry: no ": ", " #" or "'";
+- `date` no later than today's UTC date, and every act instant at or before
+  the clock: both are UTC, and an act is not in force until its instant;
+- the open P-104 row byte for byte as the gate pins it (or this sitting's
+  resolved row), and no answered act already recorded: a second run is
+  refused here, and `--check` is the way to look at an installed tree.
 
 Then, in order, each step's recorder runs `--record` and then `--check` with
 the same arguments; the act's argument is its manifest row, read from the
@@ -66,14 +71,18 @@ manifest the owner's option names, never typed:
                    refuses the run (`--check` runs it too; run that again after
                    adding a sitting log)
 
-Any refusal or failing recorder stops the run and stashes everything it wrote
-(`git stash push --include-untracked`), so the tree is clean again and the
-partial state is kept for reading. Nothing is committed.
+Any later refusal or failing recorder stops the run and stashes everything it
+wrote (`git stash push --include-untracked`), so the tree is clean again and the
+partial state is kept for reading; when nothing was written it says so and
+stashes nothing. Nothing is committed.
 """
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime
+import hashlib
+import io
 import json
 import pathlib
 import re
@@ -188,18 +197,44 @@ def validate_answers(answers: dict) -> list[str]:
     return why
 
 
-def instants(answers: dict, n: int) -> list[str]:
+def utc_now() -> datetime.datetime:
+    return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None, microsecond=0)
+
+
+def instants(answers: dict, n: int, now: datetime.datetime | None = None) -> list[str]:
     start = answers.get("start_instant")
     # by default the last act is now, not n minutes ahead: an act whose instant is
     # still ahead is not in force, so the gate check below would read it absent
     t = (datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") if start
-         else datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None, microsecond=0)
-         - datetime.timedelta(minutes=n - 1))
+         else (now or utc_now()) - datetime.timedelta(minutes=n - 1))
     out = [(t + datetime.timedelta(minutes=k)).strftime("%Y-%m-%dT%H:%M:%SZ") for k in range(n)]
     if any(not i.startswith(answers["date"] + "T") for i in out):
         raise Refusal(f"the act instants {out[0]}..{out[-1]} leave the date {answers['date']}; "
                       "give a start_instant earlier in the day")
     return out
+
+
+def timing(answers: dict, n: int, now: datetime.datetime) -> list[str]:
+    """Why the n act instants cannot be recorded at `now`; empty when they can.
+
+    `date` and every instant are UTC. An act is not in force until its instant, so a
+    record dated ahead of the clock would pass every recorder and then fail the gate
+    sweep (R-REDIS-SITTING-INSTALLER-PINS-1 note 1). This refuses it before anything
+    is written. The owner sits at UTC+8, where the local date is a day ahead of the
+    UTC date for the first eight hours of each local day."""
+    today, clock = now.strftime("%Y-%m-%d"), now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if answers["date"] > today:
+        return [f"date {answers['date']} is ahead of today's UTC date, {today} (it is {clock}): the date "
+                "and every instant are UTC, and a local date east of UTC can be a day ahead; give the UTC date"]
+    try:
+        out = instants(answers, n, now)
+    except Refusal as exc:
+        return [str(exc)]
+    if out[-1] > clock:
+        latest = (now - datetime.timedelta(minutes=n - 1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        return [f"the last act instant, {out[-1]}, is ahead of the clock ({clock}, UTC): an act is not in "
+                f"force until its instant; give a UTC start_instant at or before {latest}, or none"]
+    return []
 
 
 # ---- the tree --------------------------------------------------------------
@@ -250,7 +285,17 @@ def preconditions(root: pathlib.Path, answers: dict) -> list[str]:
     for p in (ENTRY_REVIEW, ENTRY_NOTES, DOSSIER_MANIFEST) if "entry-v1.0" in acts else ():
         if not (root / p).is_file():
             why.append(f"{p} is absent")
-    return why + register_check(root)
+    return why + register_check(root) + p104_check(root, answers)
+
+
+def p104_check(root: pathlib.Path, answers: dict) -> list[str]:
+    pending = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
+    rows = [ln for ln in pending.read_text(encoding="utf-8").split("\n") if ln.startswith(P104)] if pending.is_file() else []
+    if len(rows) == 1 and rows[0] != p104_resolved_row(answers) and \
+            hashlib.sha256(rows[0].encode("utf-8")).hexdigest() != P104_OPEN_SHA256:
+        return ["the P-104 row is neither the open row the gate pins (by its exact bytes) nor this sitting's "
+                "resolved form: resolve it by hand"]
+    return []
 
 
 # ---- the recorders ---------------------------------------------------------
@@ -273,14 +318,21 @@ def quoted(argv: list[str]) -> str:
     return " ".join(out)
 
 
-def plan(root: pathlib.Path, answers: dict) -> list[Step]:
-    """The recorder runs, in the brief's order, for exactly the acts answered."""
-    acts, date = answers["acts"], answers["date"]
-    order = (["v1.1"] if "v1.1" in acts else []) + \
+def act_order(answers: dict) -> list[str]:
+    acts = answers["acts"]
+    return (["v1.1"] if "v1.1" in acts else []) + \
         [k for k, *_ in SELECTION_ACTS if k in acts] + \
         (["entry-v1.0"] if "entry-v1.0" in acts else []) + \
         [k for k, _ in STATEMENT_ACTS if k in acts] + ["profile"]
-    at = dict(zip(order, instants(answers, len(order))))
+
+
+def plan(root: pathlib.Path, answers: dict, recording: bool = True) -> list[Step]:
+    """The recorder runs, in the brief's order, for exactly the acts answered.
+    Only a recording run reads the instants: `--check` carries none, so it holds
+    on any later day without a start_instant."""
+    acts, date = answers["acts"], answers["date"]
+    order = act_order(answers)
+    at = dict(zip(order, instants(answers, len(order)) if recording else [""] * len(order)))
     py = sys.executable
     steps = []
     for key in order:
@@ -521,8 +573,31 @@ def step_battery(root: pathlib.Path, write: bool, steps: list[Step]) -> bool:
     return True
 
 
-#: P-104's open row, as the register carries it until the sitting resolves it.
-P104_OPEN = "| P-104 | The local-agent Redis sitting (`syzygy-qkea.14`): seven decisions"
+#: sha256 of P-104's open row, the whole line without its newline, as the register
+#: carries it until the sitting resolves it: the digest the gate pins
+#: (`package-reader.ts`, `P104_ROW_SHA256`). Matching the whole row means text an
+#: editor appends to it is refused, never silently overwritten
+#: (R-REDIS-SITTING-INSTALLER-PINS-1 note 3).
+P104_OPEN_SHA256 = "05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb"
+#: The open row itself, the selftest's fixture: its digest is asserted equal to the pin.
+P104_OPEN_ROW = (
+    '| P-104 | The local-agent Redis sitting (`syzygy-qkea.14`): seven decisions (rows 1 to 5, row 3 with'
+    ' options 3a and 3b), each a separate act and none implying another. (1) the Redis observation consen'
+    't, already prepared and reviewed; (2) the public Git source-acquisition entry 2.0.0-candidate.1, sig'
+    'ned by version tag `public-git-source-acquisition-local-agent-v1.0` under an extension of the 2026-1'
+    '0-02 Scope A direction; (3) "Redis has no kernel evidence drawer" (recommended), or one or both agen'
+    't-provider statements (Anthropic, OpenAI); (4) D9 bound to exact bytes for operator-agent runs; (5) '
+    'the RFC7-20 reading bound to exact bytes. Each act takes its record\'s label and its sitting-manifes'
+    't row, printed by script and never typed | owner acts: five phrase acts (rows 3, 3a, 3b, 4, 5), one '
+    'versioned sign-off (row 2) and the observation consent\'s own act (row 1) | a local-agent Redis doss'
+    'ier run needs 1, 2, one of 3 / 3a / 3b, and 5; 4 only if the agent is to build or run Redis; offered'
+    ' only once the round-3 review clears the bytes | `contracts/candidates/dossier-local-agent-acts/OWNE'
+    'R-SITTING-PACKET.md`; round dispositions beside it |'
+)
+
+
+def and_list(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else f"{', '.join(items[:-1])} and {items[-1]}"
 
 
 def p104_resolved_row(answers: dict) -> str:
@@ -533,13 +608,13 @@ def p104_resolved_row(answers: dict) -> str:
     acts = answers["acts"]
     row3 = [r for k, r in (("redis-no-evidence-drawer", "3"), ("redis-agent-anthropic", "3a"),
                            ("redis-agent-openai", "3b")) if k in acts]
-    taken = ["A (row 1)", "E (row 2)", f"F (row{'s' if len(row3) > 1 else ''} {' and '.join(row3)})"]
+    taken = ["A (row 1)", "E (row 2)", f"F (row{'s' if len(row3) > 1 else ''} {and_list(row3)})"]
     if "d9-in-force" in acts:
         taken.append("G (row 4)")
     taken.append("H (row 5)")
     untaken = "" if "d9-in-force" in acts else " Row 4 was not taken: the agent may not build or run Redis."
     return (f"| P-104 | [Observed] **Resolved {answers['date']}:** the local-agent Redis sitting recorded "
-            f"{', '.join(taken[:-1])} and {taken[-1]}, by the item letters of the sitting brief, each a separate "
+            f"{and_list(taken)}, by the item letters of the sitting brief, each a separate "
             f"act.{untaken} Each act's record is listed in `ACCEPTANCE-ACT-RECORD.md`. | owner acts recorded | "
             "a local-agent Redis dossier run, once the post-sitting install and battery pass | "
             "`contracts/candidates/REDIS-LOCAL-AGENT-SITTING-BRIEF.md` |")
@@ -554,8 +629,9 @@ def step_p104(root: pathlib.Path, write: bool, answers: dict) -> bool:
     new = p104_resolved_row(answers)
     if lines[at[0]] == new:
         return False
-    if not lines[at[0]].startswith(P104_OPEN):
-        raise Refusal("the P-104 row is neither its open form nor this sitting's resolved form: resolve it by hand")
+    if hashlib.sha256(lines[at[0]].encode("utf-8")).hexdigest() != P104_OPEN_SHA256:
+        raise Refusal("the P-104 row is neither the open row the gate pins (by its exact bytes) nor this "
+                      "sitting's resolved form: resolve it by hand")
     if write:
         lines[at[0]] = new
         base.J.write(path, "\n".join(lines))
@@ -625,23 +701,45 @@ def register_check(root: pathlib.Path) -> list[str]:
 # ---- run -------------------------------------------------------------------
 
 def stash(root: pathlib.Path, why: str) -> None:
+    if not git(root, "status", "--porcelain").stdout.strip():
+        # the run is refused before any write reached the tree (R-REDIS-SITTING-INSTALLER-PINS-1 note 2)
+        print("nothing was written: the tree is unchanged, and nothing was stashed")
+        return
     p = git(root, "stash", "push", "--include-untracked", "-m", f"local-agent sitting refused: {why[:80]}")
     print("the partial state is stashed (git stash list); the tree is clean again"
           if p.returncode == 0 else f"stash failed, the tree holds the partial state: {p.stderr.strip()}")
 
 
+def already_recorded(root: pathlib.Path, steps: list[Step]) -> list[str]:
+    """The answered acts whose recorder --check already passes: a second run over an
+    installed tree is refused here, before any write, not at its first recorder."""
+    return [s.label for s in steps
+            if subprocess.run([sys.executable] + s.check[1:], cwd=root, capture_output=True).returncode == 0]
+
+
+def refuse_unwritten(why: list[str]) -> int:
+    print("REFUSED (nothing written):")
+    for w in why:
+        print(f"  {w}")
+    return 2
+
+
 def record_and_install(root: pathlib.Path, answers: dict) -> int:
     why = validate_answers(answers)
     if not why:
-        why = preconditions(root, answers)
+        why = timing(answers, len(act_order(answers)), utc_now()) + preconditions(root, answers)
     if why:
-        print("REFUSED (nothing written):")
-        for w in why:
-            print(f"  {w}")
-        return 2
-    base.J = base.Journal()
+        return refuse_unwritten(why)
     try:
         steps = plan(root, answers)
+    except Refusal as exc:
+        return refuse_unwritten([str(exc)])
+    done = already_recorded(root, steps)
+    if done:
+        return refuse_unwritten([f"already recorded: {', '.join(done)}; this sitting was installed before, "
+                                 "so run --check, never --answers again"])
+    base.J = base.Journal()
+    try:
         for step in steps:
             run_recorder(root, step)
             if step.key == "v1.1":
@@ -681,7 +779,7 @@ def check(root: pathlib.Path, answers: dict) -> int:
     base.J = base.Journal()
     failing = []
     try:
-        steps = plan(root, answers)
+        steps = plan(root, answers, recording=False)
         for s in steps:
             # version 2 supersedes version 1 for the policy role: v1's --check then
             # fails by design ("the policy on disk is not the argued bytes")
@@ -759,6 +857,22 @@ def selftest() -> int:
     except Refusal:
         # within two minutes of midnight UTC the default leaves the date and is refused
         ok.append(("by default no act instant lies ahead of now", True))
+    # the owner at UTC+8, 07:00 local on 2026-10-08, is at 2026-10-07T23:00:00Z (note 1)
+    late = datetime.datetime(2026, 10, 7, 23, 0, 0)
+    local_date = dict(good, date="2026-10-08", start_instant="2026-10-08T06:55:00Z")
+    ok.append(("a local date ahead of the UTC date is refused before writing, naming UTC",
+               any("ahead of today's UTC date, 2026-10-07" in w for w in timing(local_date, 10, late))))
+    no_start = {k: v for k, v in local_date.items() if k != "start_instant"}
+    ok.append(("so is that date with no start_instant", any("UTC date" in w for w in timing(no_start, 10, late))))
+    ahead = dict(good, start_instant="2026-10-07T22:55:00Z")
+    ok.append(("an act instant ahead of the clock is refused before writing, naming the latest start",
+               any("ahead of the clock (2026-10-07T23:00:00Z, UTC)" in w and "at or before 2026-10-07T22:51:00Z" in w
+                   for w in timing(ahead, 10, late))))
+    ok.append(("a start whose last instant is the clock itself is accepted",
+               timing(dict(good, start_instant="2026-10-07T22:51:00Z"), 10, late) == []))
+    ok.append(("a past start on the UTC date is accepted", timing(good, 10, late) == []))
+    ok.append(("by default the instants end at the clock and are accepted",
+               timing({k: v for k, v in good.items() if k != "start_instant"}, 10, late) == []))
     ok.append(("a battery command quotes multi-word text only",
                quoted(["python3", "x.py", "--check", "--selection-label", "Sign it"])
                == "python3 x.py --check --selection-label 'Sign it'"))
@@ -805,13 +919,29 @@ def selftest() -> int:
         except Refusal:
             ok.append(("a P-104 row in neither form is refused, never overwritten", True))
         reg = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
-        reg.write_text(f"before\n{P104_OPEN} (rows 1 to 5) | acts | run | packet |\nafter\n")
+        ok.append(("the fixture is the open P-104 row the gate pins",
+                   hashlib.sha256(P104_OPEN_ROW.encode("utf-8")).hexdigest() == P104_OPEN_SHA256))
+        for name, row in (("text appended", P104_OPEN_ROW + " [stale 2026-10-08]"),
+                          ("one cell edited", P104_OPEN_ROW.replace("seven decisions", "six decisions"))):
+            reg.write_text(f"before\n{row}\nafter\n")
+            try:
+                step_p104(root, True, good)
+                ok.append((f"an open P-104 row with {name} is refused, never overwritten", False))
+            except Refusal:
+                ok.append((f"an open P-104 row with {name} is refused, never overwritten",
+                           reg.read_text() == f"before\n{row}\nafter\n"))
+            ok.append((f"an open P-104 row with {name} is refused before anything is written",
+                       any("P-104 row is neither" in w for w in preconditions(root, good))))
+        reg.write_text(f"before\n{P104_OPEN_ROW}\nafter\n")
+        ok.append(("the pinned open P-104 row passes the up-front check",
+                   not any("P-104 row is neither" in w for w in preconditions(root, good))))
         changed = step_p104(root, True, good)
         text = reg.read_text()
         ok.append(("the open P-104 row is resolved in place, the rows around it untouched",
                    changed and text.startswith("before\n| P-104 | [Observed] **Resolved 2026-10-07:**")
                    and text.endswith("\nafter\n") and text.count(P104) == 1))
         ok.append(("resolving P-104 twice changes nothing", step_p104(root, False, good) is False))
+        ok.append(("this sitting's resolved row passes the up-front check", p104_check(root, good) == []))
         row = p104_resolved_row(good)
         ok.append(("the resolved row names each act by item letter, row 4 taken",
                    all(s in row for s in ("A (row 1)", "E (row 2)", "F (row 3)", "G (row 4)", "and H (row 5)"))
@@ -823,9 +953,48 @@ def selftest() -> int:
         row = p104_resolved_row(no_d9)
         ok.append(("without D9 the row says row 4 was not taken; both provider statements are rows 3a and 3b",
                    "G (row 4)" not in row and "Row 4 was not taken" in row and "F (rows 3a and 3b)" in row))
+        all3 = json.loads(json.dumps(good))
+        all3["acts"].update({"redis-agent-anthropic": {}, "redis-agent-openai": {}})
+        ok.append(("all three statements are rows 3, 3a and 3b",
+                   "F (rows 3, 3a and 3b)" in p104_resolved_row(all3)))
         ok.append(("a refusal of the answers writes nothing",
                    record_and_install(root, {"date": "x", "acts": {}}) == 2
                    and sorted(p.name for p in root.iterdir()) == [".git", ".syzygy", "m.txt"]))
+        tomorrow = (utc_now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = record_and_install(root, dict(good, date=tomorrow, start_instant=f"{tomorrow}T00:00:00Z"))
+        ok.append(("a recording run dated ahead of the UTC date is refused before anything is written",
+                   code == 2 and "REFUSED (nothing written)" in out.getvalue()
+                   and f"date {tomorrow} is ahead of today's UTC date" in out.getvalue()
+                   and sorted(p.name for p in root.iterdir()) == [".git", ".syzygy", "m.txt"]))
+        (root / "scripts").mkdir()
+        (root / "scripts/passes.py").write_text("import sys\nsys.exit(0)\n")
+        (root / "scripts/fails.py").write_text("import sys\nsys.exit(1)\n")
+        steps = [Step("a", "act a", [], ["python3", "scripts/passes.py", "--check"], None),
+                 Step("b", "act b", [], ["python3", "scripts/fails.py", "--check"], None)]
+        ok.append(("an act whose recorder --check already passes reads as already recorded, and only it",
+                   already_recorded(root, steps) == ["act a"]))
+    with tempfile.TemporaryDirectory() as t:
+        # note 2: a refusal on a clean tree claims no stash
+        root = pathlib.Path(t)
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        (root / "a").write_text("a")
+        git(root, "add", "a")
+        git(root, "-c", "user.name=t", "-c", "user.email=t@invalid", "commit", "-qm", "a")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            stash(root, "nothing written")
+        ok.append(("a refusal with nothing written says so and stashes nothing",
+                   "nothing was written" in out.getvalue() and "stashed (git" not in out.getvalue()
+                   and git(root, "stash", "list").stdout == ""))
+        (root / "b").write_text("b")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            stash(root, "partial")
+        ok.append(("a refusal after a write stashes it and says so",
+                   "the partial state is stashed" in out.getvalue() and not (root / "b").exists()
+                   and git(root, "stash", "list").stdout.strip() != ""))
     failed = [n for n, g in ok if not g]
     for n, g in ok:
         print(("ok   " if g else "FAIL ") + n)

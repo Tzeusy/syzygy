@@ -155,7 +155,10 @@ class Rehearsal(sim.Sim):
         for rel in OVERLAY:
             shutil.copy(ROOT / rel, self.scratch / rel)
         self.commit("rehearsal: overlay the installer under test")
-        self.step("overlay", copied=list(OVERLAY))
+        # the overlay comes from the working directory, not a commit: its digests are
+        # what anchors the record to the bytes run (R-REDIS-SITTING-INSTALLER-PINS-1 note 5)
+        self.step("overlay", copied=list(OVERLAY),
+                  sha256={rel: sim.sha256(self.scratch / rel) for rel in OVERLAY})
 
     def synthetic_round7(self):
         """Screening scope v2 has no round 7 without the owner; the scratch gets a synthetic
@@ -190,7 +193,16 @@ class Rehearsal(sim.Sim):
         self.commit("rehearsal: the sitting's records and install")
         c = self.run([sys.executable, INSTALLER, "--answers", str(answers_path), "--check"], timeout=3000)
         self.step("install-check", exit=c.returncode, output=(c.stdout + c.stderr).strip().splitlines()[-4:])
-        return c.returncode == 0
+        # a second recording run over the installed tree is refused before any write
+        # (R-REDIS-SITTING-INSTALLER-PINS-1 note 2)
+        again = self.run([sys.executable, INSTALLER, "--answers", str(answers_path)], timeout=3000)
+        out = (again.stdout + again.stderr).strip()
+        unchanged = (not self.git("status", "--porcelain").stdout.strip()
+                     and not self.git("stash", "list").stdout.strip())
+        refused = again.returncode == 2 and "already recorded" in out and "REFUSED (nothing written)" in out
+        self.step("second-run", exit=again.returncode, refused_before_writing=refused, tree_unchanged=unchanged,
+                  output=out.splitlines()[-3:])
+        return c.returncode == 0 and refused and unchanged
 
     def battery(self):
         """Every python3 line of the scratch's published battery, as the page publishes it."""
@@ -223,9 +235,9 @@ def main(argv):
     ap.add_argument("--scratch")
     ap.add_argument("--vitest", action="store_true")
     ap.add_argument("--keep", action="store_true")
-    ap.add_argument("--start-instant", help="the first act's instant, YYYY-MM-DDTHH:MM:SSZ; its date is the "
-                    "acts' date. Give one already past: an act whose instant is ahead of the clock is not in "
-                    "force, so the real-tree tests read it absent and the suite passes for the wrong reason")
+    ap.add_argument("--start-instant", help="the first act's instant, YYYY-MM-DDTHH:MM:SSZ (UTC); its date is "
+                    "the acts' date. Give one already past: an act is not in force until its instant, and the "
+                    "installer refuses an instant ahead of the clock before it records anything")
     a = ap.parse_args(argv)
     if a.start_instant is not None:
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", a.start_instant):
@@ -256,9 +268,8 @@ def main(argv):
                     r.step("answers", note="v1.1 already recorded on the base; dropped from the answers")
                 ahead = given["start_instant"] > datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
                 if ahead:
-                    r.step("answers", note=f"the acts start at {given['start_instant']}, ahead of the clock: until "
-                           "then they are not in force and the real-tree tests read them absent; pass "
-                           "--start-instant with a past instant")
+                    r.step("answers", note=f"the acts start at {given['start_instant']}, ahead of the clock: the "
+                           "installer refuses that before recording; pass --start-instant with a past instant")
                 answers.write_text(json.dumps(given, indent=2) + "\n")
                 installed = r.install(answers)
                 rec = r.checks("end")
