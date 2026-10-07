@@ -45,6 +45,8 @@ function initRepo(): string {
   cleanups.push(root);
   writeSeam(root, 'x = 1\n');
   git(root, ['init', '-q', '-b', 'main']);
+  git(root, ['config', 'gc.auto', '0']);
+  git(root, ['config', 'maintenance.auto', 'false']);
   git(root, ['config', 'user.email', 'poc-test@example.invalid']);
   git(root, ['config', 'user.name', 'POC Test']);
   git(root, ['add', '-A']);
@@ -75,6 +77,8 @@ describe('worker-change observer', () => {
     cleanups.push(root);
     writeSeam(root, 'x = 1\n');
     git(root, ['init', '-q', '-b', 'main']);
+    git(root, ['config', 'gc.auto', '0']);
+    git(root, ['config', 'maintenance.auto', 'false']);
     git(root, ['config', 'user.email', 'poc-test@example.invalid']);
     git(root, ['config', 'user.name', 'POC Test']);
     git(root, ['add', '-A']);

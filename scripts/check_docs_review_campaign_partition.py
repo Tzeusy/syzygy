@@ -857,6 +857,8 @@ def selftest() -> None:
         fixture_review.write_text("CONFIRM\n", encoding="utf-8")
         fixture_helper.write_text("# helper\n", encoding="utf-8")
         subprocess.run(("git", "init", "-q"), cwd=fixture_root, check=True)
+        subprocess.run(("git", "config", "gc.auto", "0"), cwd=fixture_root, check=True)
+        subprocess.run(("git", "config", "maintenance.auto", "false"), cwd=fixture_root, check=True)
         subprocess.run(
             ("git", "config", "user.email", "selftest@example.invalid"),
             cwd=fixture_root,

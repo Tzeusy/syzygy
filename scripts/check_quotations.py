@@ -549,6 +549,8 @@ def selftest():
     # a rename between the commits, so `--follow` is what finds the old text.
     with tempfile.TemporaryDirectory() as tmp:
         _git(tmp, "init", "-q")
+        _git(tmp, "config", "gc.auto", "0")
+        _git(tmp, "config", "maintenance.auto", "false")
         _git(tmp, "config", "user.email", "selftest@example.invalid")
         _git(tmp, "config", "user.name", "selftest")
         #: Enough unchanged lines that git still sees one file renamed.

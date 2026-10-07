@@ -21,7 +21,7 @@ const scratch: string[] = [];
 beforeAll(() => {
   repo = mkdtempSync(join(tmpdir(), 'syzygy-trigger-iso-')); scratch.push(repo);
   const run = (...a: string[]): string => realExecFileSync('git', ['-C', repo, ...a], { encoding: 'utf8' }).trim();
-  run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+  run('init', '-q'); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
   writeFileSync(join(repo, 'a.txt'), 'a\n'); run('add', '-A'); run('commit', '-qm', 'x'); commit = run('rev-parse', 'HEAD');
 });
 afterAll(() => { for (const dir of scratch) rmSync(dir, { recursive: true, force: true }); });

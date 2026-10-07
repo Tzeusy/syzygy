@@ -1012,6 +1012,8 @@ def history_population_selftest():
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         git(root, 'init', '-q', '-b', 'main')
+        git(root, 'config', 'gc.auto', '0')
+        git(root, 'config', 'maintenance.auto', 'false')
         git(root, 'config', 'user.email', 'selftest@example.invalid')
         git(root, 'config', 'user.name', 'selftest')
         raw(root, 'HISTORY-REVIEW-1-RAW.md', 'Verdict: CONFIRM\n')
@@ -1088,6 +1090,8 @@ def history_population_selftest():
             with tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 git(root, 'init', '-q', '-b', 'main')
+                git(root, 'config', 'gc.auto', '0')
+                git(root, 'config', 'maintenance.auto', 'false')
                 git(root, 'config', 'user.email', 'selftest@example.invalid')
                 git(root, 'config', 'user.name', 'selftest')
                 raw(root, 'HISTORY-REVIEW-1-RAW.md', 'Verdict: CONFIRM\n')
@@ -1104,6 +1108,8 @@ def history_population_selftest():
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         git(root, 'init', '-q', '-b', 'main')
+        git(root, 'config', 'gc.auto', '0')
+        git(root, 'config', 'maintenance.auto', 'false')
         git(root, 'config', 'user.email', 'selftest@example.invalid')
         git(root, 'config', 'user.name', 'selftest')
         for n in (1, 2):

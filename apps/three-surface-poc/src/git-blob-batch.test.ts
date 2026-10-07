@@ -257,6 +257,8 @@ describe('batched reads over the real tree (oracle: one git cat-file blob per ob
     cleanups.push(root);
     const run = (args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
     run(['init', '-q']);
+    run(['config', 'gc.auto', '0']);
+    run(['config', 'maintenance.auto', 'false']);
     run(['config', 'user.email', 'fixture@example.invalid']);
     run(['config', 'user.name', 'Fixture']);
     const tracked = '.syzygy/governance/doctrine/vision.md';

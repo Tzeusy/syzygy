@@ -119,6 +119,8 @@ def selftest() -> int:
                                   cwd=repo, env={**os.environ, "COMMIT": commit})
 
         git("init", "-q")
+        git("config", "gc.auto", "0")
+        git("config", "maintenance.auto", "false")
         git("config", "user.email", "selftest@example.invalid")
         git("config", "user.name", "selftest")
         shutil.copy2(HELPER, repo / "scripts" / HELPER.name)

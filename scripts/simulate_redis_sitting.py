@@ -708,6 +708,8 @@ def build_scratch(repo, scratch, base):
         raise SystemExit(f"refusing: {scratch} already exists")
     subprocess.run(["git", "clone", "-q", "--shared", str(repo), str(scratch)], check=True)
     run = lambda *a: subprocess.run(["git", *a], cwd=scratch, check=True, capture_output=True, text=True)
+    run("config", "gc.auto", "0")   # no automatic maintenance in the scratch clone (syzygy-y733)
+    run("config", "maintenance.auto", "false")
     run("fetch", "-q", str(repo), "+refs/remotes/origin/*:refs/sim/*")
     run("fetch", "-q", str(repo), f"+{base}:refs/sim/main")   # separate: a base other than origin/main would collide with the first mapping
     run("checkout", "-q", "-B", "sim", "refs/sim/main")
@@ -824,6 +826,8 @@ def selftest():
         g = lambda *x: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *x],
                                       cwd=repo, check=True, capture_output=True, text=True)
         g("init", "-q")
+        g("config", "gc.auto", "0")
+        g("config", "maintenance.auto", "false")
         (repo / "f").write_text("1")
         g("add", "f")
         g("commit", "-qm", "c")

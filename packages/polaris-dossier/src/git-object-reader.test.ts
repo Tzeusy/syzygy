@@ -33,6 +33,8 @@ const at = (date: string): Record<string, string> => ({ GIT_AUTHOR_DATE: date, G
 function build(dir: string, format: 'sha1' | 'sha256'): void {
   mkdirSync(dir, { recursive: true });
   git(dir, ['init', '-q', '-b', 'main', `--object-format=${format}`]);
+  git(dir, ['config', 'gc.auto', '0']);
+  git(dir, ['config', 'maintenance.auto', 'false']);
   mkdirSync(path.join(dir, 'src'));
   writeFileSync(path.join(dir, 'README.md'), 'hello\n');
   writeFileSync(path.join(dir, 'src/quoted.txt'), QUOTED);

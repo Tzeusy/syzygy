@@ -48,6 +48,8 @@ function realGovernanceFixture(): string {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-pwb-governance-'));
   cleanups.push(root);
   git(root, ['init', '-q']);
+  git(root, ['config', 'gc.auto', '0']);
+  git(root, ['config', 'maintenance.auto', 'false']);
   git(root, ['config', 'user.email', 'pwb-test@example.invalid']);
   git(root, ['config', 'user.name', 'PWB Test']);
   for (const path of [...Object.values(PWB_AUTHORITY_ARTIFACTS), ...Object.values(PWB_ACT_RECORDS)]) {

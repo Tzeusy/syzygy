@@ -98,6 +98,8 @@ def main(argv):
     tmp = tempfile.mkdtemp(prefix="screening-scope-sim-")
     clone = pathlib.Path(tmp) / "clone"
     subprocess.run(["git", "clone", "-q", "--shared", str(ROOT), str(clone)], check=True)
+    subprocess.run(["git", "-C", str(clone), "config", "gc.auto", "0"], check=True)
+    subprocess.run(["git", "-C", str(clone), "config", "maintenance.auto", "false"], check=True)
     (clone / build.POLICY).write_text(proposed)
     subprocess.run(["git", "-c", "user.name=sim", "-c", "user.email=sim@example.invalid",
                     "commit", "-qam", "simulated act: proposed policy bytes"], cwd=clone, check=True)

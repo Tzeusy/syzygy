@@ -785,6 +785,8 @@ def _check_rev_pinned_enumeration_ignores_working_tree(failures: List[str]) -> N
             subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True, check=True)
 
         run("init", "-q")
+        run("config", "gc.auto", "0")
+        run("config", "maintenance.auto", "false")
         run("config", "user.email", "selftest@example.invalid")
         run("config", "user.name", "selftest")
         (repo / "docs" / "evidence").mkdir(parents=True)

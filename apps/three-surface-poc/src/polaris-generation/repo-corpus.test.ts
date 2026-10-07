@@ -26,7 +26,7 @@ beforeAll(() => {
   root = mkdtempSync(join(tmpdir(), 'syzygy-repo-corpus-'));
   // removed in afterAll
   const run = (...args: string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
-  run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+  run('init', '-q'); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
   const files: Record<string, string | Buffer> = { 'src/a.c': 'int a(void) { return 1; }\n', 'src/big.c': big, 'docs/readme.md': '# Readme\n',
     'vendor/dep/x.c': 'VENDOR\n', 'assets/logo.bin': Buffer.from([0, 1, 2, 3]), 'assets/latin1.txt': Buffer.from([0xe9, 0x0a]) };
   for (const [path, body] of Object.entries(files)) { mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), body); }
@@ -51,7 +51,7 @@ const sentinel = join(tmpdir(), `syzygy-fsmonitor-sentinel-${process.pid}`);
 beforeAll(() => {
   hostile = mkdtempSync(join(tmpdir(), 'syzygy-repo-hostile-'));
   const run = (...args: string[]): string => execFileSync('git', ['-C', hostile, ...args], { encoding: 'utf8' }).trim();
-  run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+  run('init', '-q'); run('config', 'gc.auto', '0'); run('config', 'maintenance.auto', 'false'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
   const files: Record<string, string | Buffer> = { 'bom.txt': Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from('hello\n')]), 'empty/__init__.py': '', 'we\\ird.txt': 'odd name\n', 'ok.md': '# ok\n' };
   for (const [path, body] of Object.entries(files)) { mkdirSync(dirname(join(hostile, path)), { recursive: true }); writeFileSync(join(hostile, path), body); }
   run('add', '-A');

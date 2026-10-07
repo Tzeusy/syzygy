@@ -2329,7 +2329,8 @@ def _selftest():
                 env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
                        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL":
                        "t@t", "PATH": os.environ.get("PATH", "")}
-                for cmd in (["init", "-q"], ["add", "-A"],
+                for cmd in (["init", "-q"], ["config", "gc.auto", "0"],
+                            ["config", "maintenance.auto", "false"], ["add", "-A"],
                             ["commit", "-qm", "x"]):
                     subprocess.run(["git", "-C", str(d)] + cmd,
                                    capture_output=True, env=env)
@@ -2406,7 +2407,8 @@ def _selftest():
                         capture_output=True, text=True, env=env
                     ).stdout.strip()
 
-                for cmd in (("init", "-q"), ("add", "-A"),
+                for cmd in (("init", "-q"), ("config", "gc.auto", "0"),
+                            ("config", "maintenance.auto", "false"), ("add", "-A"),
                             ("commit", "-qm", "x")):
                     _g(*cmd)
                 head = _g("rev-parse", "HEAD")
@@ -2527,7 +2529,8 @@ def _selftest():
                     inst_blob2)
                 (d2 / SCHEMA_NAME).write_text(schema_bytes2)
                 (d2 / "README.md").write_text("scratch\n")
-                for cmd in (("init", "-q"), ("add", "-A"),
+                for cmd in (("init", "-q"), ("config", "gc.auto", "0"),
+                            ("config", "maintenance.auto", "false"), ("add", "-A"),
                             ("commit", "-qm", "c0")):
                     _g2(*cmd)
                 c0 = _g2("rev-parse", "HEAD")
@@ -2925,6 +2928,9 @@ def _selftest():
 
             subprocess.run(["git", "init", "-q", str(d)], env=env,
                            check=True, capture_output=True)
+            for key, value in (("gc.auto", "0"), ("maintenance.auto", "false")):
+                subprocess.run(["git", "-C", str(d), "config", key, value], env=env,
+                               check=True, capture_output=True)
             commit_fixture()
             historical = bound_record("2.0")
             # Synthetic successor fixture: expected contract literals are
