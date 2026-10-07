@@ -80,9 +80,9 @@ const SITTING_PACKAGE = '.syzygy/governance/contracts/candidates/dossier-local-a
 const SITTING_INSTANCES = `${SITTING_PACKAGE}/instances`;
 interface SittingAct {
   /** `Act.key`, `.label`, `.stem`, `.identity_stem`, `.title`, `.act_type`, `.scope` and `.effect` in the recorder; `artifact` is
-   * `.subject` under the sitting's instances. */
+   * `.subject` under the sitting's instances, and `heading` its own H1 without the `# ` (R-POLARIS-DOSSIER-GATE-SOURCES-3 note 2). */
   readonly key: string; readonly label: string; readonly stem: string; readonly identityStem: string; readonly title: string;
-  readonly type: string; readonly artifact: string; readonly scope: string; readonly effect: string;
+  readonly type: string; readonly artifact: string; readonly heading: string; readonly scope: string; readonly effect: string;
 }
 /** scripts/record_dossier_local_agent_acts.py `render_act`, slots `date`, `instant`, `argument`, the owner's selection (`opening`,
  * `label`, `description`) and the confirming review's provenance (`manifest`, `frozen`, `verdict`, `reviewed`). */
@@ -170,15 +170,15 @@ result.
     frozen: SLOT.commit, manifest: SLOT.sha256, verdict: SLOT.verdict, reviewed: SLOT.commit,
   });
 }
-/** The form of one sitting act. Its sweep reads the record's file stem, the act identity, the artifact's path and basename, the
- * phrase label and the record's title, plus `more.stems` (prose) and `more.fieldStems` (field lines only). */
+/** The form of one sitting act. Its sweep reads the record's file stem, the act identity, the artifact's path, basename and heading,
+ * the phrase label and the record's title, plus `more.stems` (prose) and `more.fieldStems` (field lines only). */
 const sittingForm = (a: SittingAct, more: { readonly bound?: readonly string[]; readonly stems?: readonly string[]; readonly fieldStems?: readonly string[] } = {}): DigestBoundActForm => Object.freeze({
   file: `DOSSIER-LOCAL-AGENT-${a.stem}-ACT.md`,
   title: `# Owner act — ${a.title}`,
   type: a.type,
   identity: (date: string) => `${a.identityStem}-${date}`,
   artifact: `${SITTING_INSTANCES}/${a.artifact}`,
-  stems: Object.freeze([`dossier-local-agent-${a.stem.toLowerCase()}`, a.identityStem.toLowerCase(), a.artifact.split('/').pop()!, a.label, a.title, ...(more.stems ?? [])]),
+  stems: Object.freeze([`dossier-local-agent-${a.stem.toLowerCase()}`, a.identityStem.toLowerCase(), a.artifact.split('/').pop()!, a.heading, a.label, a.title, ...(more.stems ?? [])]),
   ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
   template: sittingTemplate(a),
   ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
@@ -190,6 +190,7 @@ const sittingForm = (a: SittingAct, more: { readonly bound?: readonly string[]; 
 export const D9_ACT_FORM: DigestBoundActForm = sittingForm({
   key: 'd9-in-force', label: 'BIND D9 TO EXACT BYTES FOR OPERATOR-AGENT RUNS', stem: 'D9-IN-FORCE', identityStem: 'D9-IN-FORCE-OPERATOR-AGENT',
   title: 'D9 in force for operator-agent runs', type: 'bind-exact-bytes', artifact: 'in-force/D9-IN-FORCE-RECORD.md',
+  heading: 'D9 for operator-agent runs — exact-bytes record',
   scope: 'REQ-polaris-generation-033\'s execution rule only',
   effect: 'The record binds D9, adopted 2026-10-06, to the exact whole-file bytes of `security.md` and `v1.md` it lists, so the act cross-check of RFC3-16(a) may treat D9 as in force for REQ-polaris-generation-033\'s execution rule while both files hash to those digests, and not otherwise.',
 }, { bound: ['.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md'] });
@@ -198,7 +199,7 @@ export const D9_ACT_FORM: DigestBoundActForm = sittingForm({
 export const RFC7_20_RULING_ACT_FORM: DigestBoundActForm = sittingForm({
   key: 'rfc7-20-reading-in-force', label: 'BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS', stem: 'RFC7-20-READING-IN-FORCE',
   identityStem: 'RFC7-20-READING-IN-FORCE-OPERATOR-AGENT', title: 'the owner\'s RFC7-20 reading in force for operator-agent runs', type: 'bind-exact-bytes',
-  artifact: 'in-force/RFC7-20-READING-IN-FORCE-RECORD.md', scope: 'item 1 of the direction, for REQ-polaris-generation-033\'s draft-layer rule only',
+  artifact: 'in-force/RFC7-20-READING-IN-FORCE-RECORD.md', heading: 'The owner\'s RFC7-20 reading for operator-agent runs — exact-bytes record', scope: 'item 1 of the direction, for REQ-polaris-generation-033\'s draft-layer rule only',
   effect: 'The record binds item 1 of the owner direction `POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05` to the exact bytes of its file, so the act cross-check of RFC3-16(a) may treat that reading as in force for REQ-polaris-generation-033\'s draft-layer rule while the file hashes to that digest, and not otherwise.',
 }, { bound: ['.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md'] });
 /** Row 3: the project-input statement that no kernel evidence drawer exists, per repository id. Its Subject tuple is swept on field
@@ -207,6 +208,7 @@ export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object
   'redis-redis': sittingForm({
     key: 'redis-no-evidence-drawer', label: 'STATE NO KERNEL EVIDENCE DRAWER FOR REDIS-REDIS', stem: 'REDIS-NO-EVIDENCE-DRAWER', identityStem: 'NO-EVIDENCE-DRAWER-REDIS',
     title: 'no kernel evidence drawer for redis/redis', type: 'state-project-input', artifact: 'redis/NO-EVIDENCE-DRAWER-STATEMENT.md',
+    heading: 'No kernel evidence drawer — redis-redis',
     scope: 'the drawer half of REQ-polaris-generation-033\'s governed predicate for this one repository',
     effect: 'The record is the owner\'s statement, in the admitted project input, that no kernel evidence drawer exists for (`project:syzygy`, `repository:redis-redis`). With the pinned tree holding no `openspec/**` and no `.syzygy/` path, the subject is non-governed under REQ-polaris-generation-033 and a brief needs no agent-provider statement.',
   }, { fieldStems: ['(project:syzygy, repository:redis-redis)'] }),
@@ -222,6 +224,7 @@ const statementForm = (agentTool: string, toolName: string, provider: string, pr
     form: sittingForm({
       key: `redis-agent-${provider}`, label: `CONSENT TO AGENT PROVIDER ${provider.toUpperCase()} FOR ${repositoryId.toUpperCase()}`, stem, identityStem,
       title: `agent-provider statement for ${repositoryId.replace('-', '/')}: ${toolName} with ${providerName}`, type: 'consent-agent-provider', artifact,
+      heading: `Agent-provider statement — ${repositoryId} to ${provider}`,
       scope: 'operator-agent runs over this one repository with this one tool and provider',
       effect: `The record is the owner's explicit, recorded, per-project consent (SEC-2) that the operator's ${toolName} sessions, with ${providerName}, may receive the content classes it lists from (\`project:syzygy\`, \`repository:${repositoryId}\`) in an operator-agent run, so a brief may issue for that repository even when it counts as governed.`,
     }, { stems: [recordId.toLowerCase(), `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`] }),

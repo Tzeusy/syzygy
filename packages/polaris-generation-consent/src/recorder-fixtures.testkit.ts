@@ -68,12 +68,13 @@ sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 
 }
 
 /** The version-tagged sign-off record of the local-agent source-acquisition entry, v1.0, as scripts/record_versioned_signoff.py renders
- * it over the entry installed under `root` (the record carries the SHA-256 of those bytes). Not cached: it reads `root`. */
-export function renderLocalAgentSignoff(root: string, date: string, instant: string): string {
-  const py = `import pathlib, sys; sys.path.insert(0, 'scripts'); import record_versioned_signoff as m
+ * it over the entry installed under `root` (the record carries the SHA-256 of those bytes), with the given verdict and disposition
+ * record (none when null). Not cached: it reads `root`. */
+export function renderLocalAgentSignoff(root: string, date: string, instant: string, verdict = 'CONFIRM', disposition: string | null = null): string {
+  const py = `import json, pathlib, sys; sys.path.insert(0, 'scripts'); import record_versioned_signoff as m
 pkg = m.real_packages()['public-git-source-acquisition-local-agent']
-sys.stdout.write(m.render_record(pkg, '1.0', '${date}', 'Extend Scope A and sign off v1.0', 'docs/reviews/R-STUB-RAW.md', 'c'*40, 'CONFIRM', None, root=pathlib.Path(sys.argv[1]), instant='${instant}'))`;
-  const run = spawnSync('python3', ['-c', py, root], { cwd: ROOT, encoding: 'utf8' });
+sys.stdout.write(m.render_record(pkg, '1.0', '${date}', 'Extend Scope A and sign off v1.0', 'docs/reviews/R-STUB-RAW.md', 'c'*40, sys.argv[2], json.loads(sys.argv[3]), root=pathlib.Path(sys.argv[1]), instant='${instant}'))`;
+  const run = spawnSync('python3', ['-c', py, root, verdict, JSON.stringify(disposition)], { cwd: ROOT, encoding: 'utf8' });
   if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
   return run.stdout;
 }

@@ -797,9 +797,10 @@ export function readVersionedSignoffState(options: StrictReadOptions & { readonl
     const text = found.text, tag = `${form.packageKey}-v${form.version}`;
     // The template, built from this form, fixes every literal line: the title, package, version, tag, kind, installed entry, act type,
     // project, owner, provenance, A1 and scope. The recorder's own input checks (validate_inputs, validate_disposition) follow: the
-    // selection names the Scope A extension, and a CONFIRM WITH EXCEPTIONS names the disposition record that clears its notes.
+    // selection names the Scope A extension, and a disposition record is named exactly when the verdict is CONFIRM WITH EXCEPTIONS
+    // (record() passes one only then; R-POLARIS-DOSSIER-GATE-SOURCES-3 note 3).
     const slots = fromTemplate(form.template, text);
-    if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS' && slots['disposition'] === 'none')) refuse();
+    if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict'] === 'CONFIRM WITH EXCEPTIONS') !== (slots['disposition'] !== 'none')) refuse();
     const date = slots['date']!, digest = slots['sha']!, day = Date.parse(`${date}T00:00:00Z`);
     if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date) refuse();
     const act: ParsedAct = { file: form.file, identity: tag, type: 'adopt-registry-entry', artifact: form.installed, project: 'project:syzygy', digest, date, recordedAt: actInstant(text, date), supersession: supersessionText(text), text };
