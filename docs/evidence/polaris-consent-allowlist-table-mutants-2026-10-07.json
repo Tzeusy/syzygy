@@ -1,0 +1,46 @@
+{
+  "subject": {
+    "commit": "b5e0e77b22b54f9245628f48202eac0814b8b590",
+    "branch": "agent/allowlist-test-cost",
+    "fileSha256": {
+      "packages/polaris-generation-consent/src/package-reader.ts": "eb59d261d6fe7a7a7a6730f44d81e199b8c31f49e16b3c2905d8366c036d4f1c"
+    },
+    "testFileSha256": {
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "a89ee2dc718f5af3a662a0603e0290241edfdb88b3550a5078821991550e0551"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-consent",
+  "ranAt": "2026-10-07T00:37:27+00:00",
+  "mutants": [
+    {
+      "id": "X-noop-control",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "/** Unicode-folded, case-folded, dash-folded:",
+      "new": "/** Unicode-folded, case-folded, dash-folded:",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 271,
+      "note": "control: no change"
+    },
+    {
+      "id": "F1-no-nfkc",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const fold = (value: string): string => value.normalize('NFKC').replace(",
+      "new": "const fold = (value: string): string => value.replace(",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 271,
+      "note": "the sweep stops folding compatibility forms: the fullwidth probe row must now fail in its own per-row case"
+    }
+  ],
+  "summary": "1 of 1 non-control mutant killed at b5e0e77b22b54f9245628f48202eac0814b8b590 (syzygy-786c); the no-op control survived. F1 drops NFKC from the sweep fold; it is killed by the per-row case for the fullwidth probe row alone, showing the 197-row table still runs and fails one row at a time after the split."
+}
