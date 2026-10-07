@@ -328,6 +328,11 @@ CAMPAIGNS = (
         "Redis sitting installer pins",
         r"R-REDIS-SITTING-INSTALLER-PINS-.*\.md",
     ),
+    campaign(
+        "arbitrary-public-repo",
+        "Arbitrary public-repository dossier spec",
+        r"R-ARBITRARY-PUBLIC-REPO-.*\.md",
+    ),
 )
 
 
