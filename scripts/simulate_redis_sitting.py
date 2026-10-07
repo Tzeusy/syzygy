@@ -322,8 +322,10 @@ class Sim:
             for f in files:   # one file per process, so the rerun is not itself loaded by the others
                 q = self.run(["npx", "vitest", "run", f], timeout=1800)
                 still += failing_tests(q.stdout + q.stderr)
+            # named, not only counted, so a flake can be told from a real failure later
+            # (R-REDIS-SITTING-INSTALLER-PINS-1 note 5)
             self.step(name + ":vitest-rerun", files=len(files), passed_on_rerun=len(failing) - len(still),
-                      still_failing=still)
+                      passed_on_rerun_tests=sorted(set(failing) - set(still)), still_failing=still)
             failing = still
         self.step(name + ":vitest", exit=p.returncode, summary=tail[-1:], failing=failing)
         return failing
