@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
 import { renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
@@ -836,10 +836,16 @@ describe('every stem counts wherever it sits, save exact tooling citations in an
     ['instances.md file', { [`${PKG}/public-repo-admission/instances.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/instances.md\n` }, AE],
     ['instance-x dir', { [`${PKG}/public-repo-admission/instance/x.md`]: '', [NOTE]: `Ends: ${PKG}/public-repo-admission/instance/x.md\n` }, AE],
   ];
-  it('with no file allowlisted, refuses every withdrawal the pre-#355 reader refused, the same reads each time', async () => {
+  // syzygy-786c: the first `full` spawns Python five times to render the recorders' acts (about 3 s of a cold 4.5 s run, by CPU
+  // profile), which landed inside this test's 5 s budget. Render them once here, under a budget of their own; the renders are cached.
+  // One case per row then keeps each read (about 20 ms) far from the budget whatever the suite load.
+  beforeAll(() => { full({}); }, 60_000);
+  it('with no file allowlisted, refuses nothing in the base world, and the table holds every row', async () => {
     expect(await allReads(full({}))).toEqual([]);
     expect(STILL_REFUSED.length + PROBE.length).toBe(50 + 147);   // R-361-1's control row is the line above
-    for (const [name, extra, expected] of [...STILL_REFUSED, ...PROBE]) expect(await allReads(full(extra)), name).toEqual(expected);
+  });
+  it.each([...STILL_REFUSED, ...PROBE])('with no file allowlisted, refuses the reads the pre-#355 reader refused: %s', async (name, extra, expected) => {
+    expect(await allReads(full(extra)), name).toEqual(expected);
   });
 
   // The allowlist (mocked above, empty everywhere else in this file): an entry is a path under the decisions directory and the
