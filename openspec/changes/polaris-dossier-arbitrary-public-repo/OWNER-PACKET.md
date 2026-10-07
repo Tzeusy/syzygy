@@ -9,7 +9,10 @@
 
 You asked to run Polaris on any public Git repository you can fork locally,
 including ones whose authors never wrote down why they built it the way they
-did. The draft does this with three additions to the Polaris spec:
+did (your direction of 2026-10-07, recorded as
+`ARBITRARY-PUBLIC-REPO-DOSSIER-2026-10-07` in
+`decisions/ARBITRARY-PUBLIC-REPO-DOSSIER-DIRECTION.md`). The draft does this
+with three additions to the Polaris spec:
 
 - **037:** one standing permission, signed once, to read any public
   repository you clone, at the one commit the run pins. No per-repository
@@ -84,7 +87,9 @@ repository needs you.
 
 **Recommended: no, not now.** Reads stay at the one pinned commit, as for
 Redis and as the one-commit clone check (open PR #392) enforces.
-Reconstructions rest on the code, tests and comments at that commit.
+Reconstructions rest on the code, tests and comments at that commit. Your
+direction mentioned reconstructing from "the code and its history"; this
+recommendation departs from that for now, and saying yes here restores it.
 
 *The option:* allow the pinned commit's ancestors' commit records (messages
 only; never older files). This changes REQ-033's rule that "every read … at
