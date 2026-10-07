@@ -304,6 +304,9 @@ describe('the sitting\'s acts fail closed', () => {
     ['"Withdrawn by this record." appended', (t: string) => `${t}\nWithdrawn by this record.\n`],
     ['a digest in the owner\'s selection', (t: string) => t.replace('| "label" |', `| "${'a'.repeat(64)}" |`)],
     ['a recording tag for another date', (t: string) => t.replace(/-signed-(\d{4}-\d{2}-\d{2})`/, '-signed-2026-01-01`')],
+    // R-POLARIS-DOSSIER-GATE-SOURCES-3 note 3: the recorders refuse a blank selection; a line break of either kind is never one line.
+    ['a blank selection label', (t: string) => t.replace('| "label" |', '| " " |')],
+    ['a carriage return in the selection', (t: string) => t.replace('| "label" |', '| "la\rbel" |')],
   ])('refuse every sitting act whose record has %s', async (_name, mutate) => {
     const root = world(KEYS);
     for (const key of KEYS) {
@@ -330,6 +333,7 @@ describe('the sitting\'s acts fail closed', () => {
     ['a selection that does not name the Scope A extension', (t: string) => t.replace(/^Owner selection: .*$/m, 'Owner selection: Sign off v1.0')],
     ['a digest in the selection', (t: string) => t.replace(/^Owner selection: (.*)$/m, `Owner selection: $1 ${'a'.repeat(64)}`)],
     ['CONFIRM WITH EXCEPTIONS and no disposition record', (t: string) => t.replace(/^Review verdict: CONFIRM$/m, 'Review verdict: CONFIRM WITH EXCEPTIONS')],
+    ['CONFIRM and a disposition record', (t: string) => t.replace(/^Disposition: none$/m, 'Disposition: pkg/ROUND-1-DISPOSITIONS.md')],
   ])('refuse the registry sign-off whose record has %s', async (_name, mutate) => {
     const root = world([], true);
     const text = fs.readFileSync(path.join(root, SIGNOFF), 'utf8'), mutated = mutate(text);
@@ -359,6 +363,11 @@ describe('the sitting\'s acts fail closed', () => {
     ['the installed entry\'s basename', 'Withdrawn: POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-CANDIDATE.json', 'registry'],
     ['the package as signed off at a version', 'The public-git-source-acquisition-local-agent entry, signed off at 1.0, is withdrawn.', 'registry'],
     ['the sign-off record\'s title', 'Withdrawn: Public Git source acquisition, local-agent version — version-tagged sign-off v1.0', 'registry'],
+    // R-POLARIS-DOSSIER-GATE-SOURCES-3 note 2: each artifact's own heading.
+    ['the D9 record\'s heading', 'Withdrawn: D9 for operator-agent runs — exact-bytes record', 'd9'],
+    ['the reading record\'s heading', 'Withdrawn: the owner\'s RFC7-20 reading for operator-agent runs — exact-bytes record', 'rfc720'],
+    ['the drawer record\'s heading', 'Withdrawn: No kernel evidence drawer — redis-redis', 'drawer'],
+    ['the statement\'s heading', 'Withdrawn: Agent-provider statement — redis-redis to anthropic', 'anthropic'],
   ])('withdraw what a decisions file names by %s', async (_name, withdrawal, which) => {
     const root = world(KEYS, true);
     write(root, `${DECISIONS_DIR}/WITHDRAW.md`, `${withdrawal}\n`);
@@ -368,6 +377,13 @@ describe('the sitting\'s acts fail closed', () => {
       anthropic: (await s.providerStatements.statementsFor('redis-redis'))[0]!.withdrawn ? 'refused' : 'ok', registry: (await s.registryEntry()).state,
     };
     expect(state).toEqual({ d9: 'ok', rfc720: 'ok', drawer: 'ok', anthropic: 'ok', registry: 'ok', [which]: 'refused' });
+  });
+  // Mutant S5 at a6157cb0: a decisions file named for the act refuses it whatever its body says.
+  it('withdraw D9 by a decisions file named for its act record, with a body that names nothing', async () => {
+    const root = world(KEYS, true);
+    write(root, `${DECISIONS_DIR}/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-WITHDRAWAL.md`, 'Withdrawn.\n');
+    const s = sources(root);
+    expect([(await s.d9()).state, (await s.rfc720Ruling()).state, (await s.registryEntry()).state]).toEqual(['refused', 'ok', 'ok']);
   });
   it('leave the drawer stated when its Subject tuple appears only in prose, as the statements\' Effect quotes it', async () => {
     const root = world(KEYS);
@@ -491,9 +507,23 @@ describe('the gate forms against the recorders', () => {
       expect(FORMS[key].template!.render(fields), key).toBe(renderDossierLocalAgentAct(key, argument, DATE, INSTANT));
     }
   });
-  it('render the sign-off record byte for byte as render_record does, from the same fields', () => {
+  // R-POLARIS-DOSSIER-GATE-SOURCES-3 note 4: both field sets render_record writes, with and without a disposition record.
+  it.each([
+    ['CONFIRM', null],
+    ['CONFIRM WITH EXCEPTIONS', 'pkg/ROUND-1-DISPOSITIONS.md'],
+  ] as const)('render the sign-off record byte for byte as render_record does, from the same fields: %s', async (verdict, disposition) => {
     const root = world([], true);
-    const fields = { date: DATE, quote: 'Extend Scope A and sign off v1.0', review: 'docs/reviews/R-STUB-RAW.md', commit: 'c'.repeat(40), verdict: 'CONFIRM', disposition: 'none', instant: INSTANT, sha: sha(real(PROPOSED_ENTRY)) };
-    expect(LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.template.render(fields)).toBe(renderLocalAgentSignoff(root, DATE, INSTANT));
+    const fields = { date: DATE, quote: 'Extend Scope A and sign off v1.0', review: 'docs/reviews/R-STUB-RAW.md', commit: 'c'.repeat(40), verdict, disposition: disposition ?? 'none', instant: INSTANT, sha: sha(real(PROPOSED_ENTRY)) };
+    const record = renderLocalAgentSignoff(root, DATE, INSTANT, verdict, disposition);
+    expect(LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.template.render(fields)).toBe(record);
+    write(root, SIGNOFF, record);
+    expect(await sources(root).registryEntry()).toEqual({ state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' });
+  });
+  // Note 2: each sitting form sweeps its artifact's own H1, read here from the artifact itself.
+  it('sweep each artifact by its own heading', () => {
+    for (const key of KEYS) {
+      const heading = /^# (.+)$/m.exec(real(ACTS[key].record))![1]!;
+      expect(FORMS[key].stems, key).toContain(heading);
+    }
   });
 });

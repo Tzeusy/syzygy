@@ -19,6 +19,11 @@ describe('a recorder template', () => {
     expect(t.fields(text)).toBeNull();
     expect(templateFields(t, text)).toBeNull();
   });
+  it('reads a line slot only when it holds a non-space character and no line break', () => {
+    const quote = recorderTemplate('Owner selection: {quote}\n', { quote: SLOT.line });
+    expect(templateFields(quote, 'Owner selection: Extend Scope A\n')).toEqual({ quote: 'Extend Scope A' });
+    for (const value of [' ', '\t', 'Extend\rScope A', '']) expect(templateFields(quote, `Owner selection: ${value}\n`), JSON.stringify(value)).toBeNull();
+  });
   it('refuses a template slot with no pattern', () => {
     expect(() => recorderTemplate('{date} {other}', { date: SLOT.date })).toThrow('template slot {other} has no pattern');
   });

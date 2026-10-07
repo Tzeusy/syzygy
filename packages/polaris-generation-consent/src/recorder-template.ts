@@ -34,12 +34,13 @@ export function templateFields(template: RecorderTemplate, text: string): Readon
   return fields !== null && template.render(fields) === text ? fields : null;
 }
 
-/** Slot patterns the recorders' values take. */
+/** Slot patterns the recorders' values take. A `line` holds a non-space character and no line break of either kind: the recorders
+ * refuse a blank selection (R-POLARIS-DOSSIER-GATE-SOURCES-3 note 3). */
 export const SLOT = Object.freeze({
   date: '\\d{4}-\\d{2}-\\d{2}',
   instant: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z',
   sha256: '[0-9a-f]{64}',
   commit: '[0-9a-f]{40}',
   verdict: 'CONFIRM WITH EXCEPTIONS|CONFIRM',
-  line: '[^\\n]+',
+  line: '[^\\r\\n]*\\S[^\\r\\n]*',
 });
