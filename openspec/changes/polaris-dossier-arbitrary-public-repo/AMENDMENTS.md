@@ -54,13 +54,14 @@ list for that run; it is not an act, not a consent record and grants nothing.
 | # | Delta | Artifact | Act type and form | Precedent |
 |---|---|---|---|---|
 | A1 | Doctrine: the standing form of observation consent | `doctrine/architecture.md` lines 27 and 62-64 | Doctrine amendment adoption: a new row of `decisions/DOCTRINE-AMENDMENT-LOG.md` (D10 if D7 and D8 keep their numbers), adopted in the owner's words over a confirmed package | D9 (`DOCTRINE-AMENDMENT-LOG.md:12`), package under `contracts/candidates/doctrine-amendment-sec3-attended-agent-session-d9/` |
+| A1b | Doctrine in force at exact bytes | the whole-file bytes of `architecture.md` after A1 | A `bind-exact-bytes` act, the digest-bound record REQ-037's RFC3-16 check reads; the log row alone is not that record | `decisions/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-ACT.md` (act type `bind-exact-bytes`), which REQ-033's gate reads for D9 |
 | A2 | Contracts: RFC1-2, RFC1-3, RFC1-4 | `contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` | One `contract-amendment` act per module, each over the one row of a package manifest holding the module with the patch applied; or one act over a multi-row manifest | `decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md` (act type `contract-amendment`); `CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md` (one act, many modules) |
 | A3 | Contracts: RFC3-6, RFC3-7, RFC3-30 | `contracts/rfcs/RFC-0003/manifests-and-namespace.md` | As A2 | As A2 |
 | A4 | Contracts: RFC5-12 | `contracts/rfcs/RFC-0005/consent-egress-secrets.md` | As A2 | As A2 |
-| A5 | The standing public-observation consent itself | a new record in `.syzygy/governance/decisions/` | A digest-bound consent act, like Redis's observation consent | `decisions/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md` |
+| A5 | The standing public-observation consent itself | a new record in `.syzygy/governance/decisions/` | A `consent-observation` act, digest-bound, like Redis's observation consent | `decisions/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md` (act type `consent-observation`) |
 
 A5 is not an amendment; it is the consent the amended texts permit, and it
-cannot be performed before A1 to A4. Packaging each delta as an installable
+cannot be performed before A1, A1b and A2 to A4. Packaging each delta as an installable
 patch with its manifest (as the RFC5-14 amendment was) is a step after this
 change's review, not part of it.
 
@@ -119,7 +120,10 @@ Lines 26-27 become:
 >   the owner's standing observation consent, which states the conditions
 >   every such repository meets and reaches each one through a recorded
 >   admission that names it. A standing consent never grants write or
->   execution, and never covers a repository that has its own record.
+>   execution, and is not for a repository that has its own record. Syzygy
+>   cannot establish provenance without a network request, so that a run's
+>   repository has no record of its own rests on the operator's declaration,
+>   checked offline as far as it can be, and is Inferred.
 
 Lines 62-64 become:
 
@@ -143,9 +147,14 @@ Lines 62-64 become:
 
 The owner direction `ARBITRARY-PUBLIC-REPO-DOSSIER-2026-10-07`
 (`decisions/ARBITRARY-PUBLIC-REPO-DOSSIER-DIRECTION.md`), which directs a
-draft for "any arbitrary git repository" without per-repository acts and
-leaves "any reading or amendment of the per-repository consent clauses" to
-the owner's sign-off; round 1 of this
+draft so that a dossier can be produced for any public repository "without a
+per-repository code change or review round", and leaves "any reading or
+amendment of the per-repository consent clauses it identifies" to the
+owner's sign-off. [Inferred] That the owner also wants no per-repository
+consent act is the lead's reading of the conversation the direction records
+(the owner was answering a list that included "its own consent act"); the
+direction does not say it, and packet Q0's alternative meets the direction
+as written. Round 1 of this
 change's review (`docs/reviews/R-ARBITRARY-PUBLIC-REPO-1-RAW.md`), finding B1,
 which found that no reading could meet the current text.
 
@@ -338,8 +347,23 @@ RFC3-7's first bullet's last sentence becomes:
 > record whose subject is the pair *(observing Project, every repository that
 > meets its stated conditions and none of its exclusions)*, whose scope is
 > observe only, and which reaches one repository at a time through a run
-> admission entry (RFC5-12). A repository with its own observation consent
-> record, in any state, is never reached by a standing one.
+> admission entry (RFC5-12). A standing one is not for a repository with its
+> own observation consent record in any state; whether a run's repository is
+> such a one is checked offline as far as it can be and otherwise rests on the
+> operator's declaration, Inferred.
+
+RFC3-7's opening sentence becomes:
+
+> **RFC3-7.** **Consent records** are governance acts stored in
+> `.syzygy/governance/decisions/`, referenced — never embedded — from the
+> declaration; a standing observation consent is referenced from the
+> observing Project's declaration in the same way, and the repositories it
+> reaches are not listed there. Two kinds:
+
+[Observed] No project declaration is tracked today, so neither Redis's
+consent nor a standing one is referenced from one. REQ-037 does not wait for
+that reference, as REQ-033 does not for Redis; the gap is disclosed here and
+in `design.md`, not repaired.
 
 RFC3-7's attribution paragraph is unchanged; a standing record carries the
 same fields and is revertable as a whole.
@@ -422,8 +446,11 @@ The observation bullet becomes:
 >   for one observing Project: its subject is the class of repositories that
 >   meet its stated conditions (publicly readable, a host rule, and none of its
 >   exclusions) and have no observation consent record of their own in any
->   state; its scope is read-only observation of the commit a run pins and,
->   only where it says so, that commit's ancestor commit objects. It grants no
+>   state, which the observing Project checks offline as far as it can and
+>   otherwise takes from the declaration of the operator who starts the run;
+>   its scope is read-only observation of the commit a run pins [history
+>   clause, kept only if the owner answers packet Q2 yes: and, only where it
+>   says so, that commit's ancestor commit objects]. It grants no
 >   write, execution or egress. It reaches one repository per run through a
 >   **run admission entry** that the observing Project's tooling writes before
 >   any read, naming the repository's declared identity, its locator hints, the
