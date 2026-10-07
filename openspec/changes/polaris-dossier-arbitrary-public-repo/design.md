@@ -57,35 +57,56 @@ brief. It is not an act, not a consent record and grants nothing; amended
 RFC5-12 (A4) defines it. Its pinned commit is HEAD at that moment, which is
 how REQ-033 already pins.
 
-*Alternatives:* a per-repository act signed quickly (rejected: the owner
-asked for none); a per-run owner confirmation command (packet Q7; not
-recommended).
+*Alternatives:* a per-repository act signed quickly, with one question per
+repository (not recommended, but it meets the recorded direction as
+written: the direction asks for no "per-repository code change or review
+round"; that the owner also wants no per-repository consent act is the
+lead's reading, [Inferred]); a per-run owner confirmation command (packet
+Q7; not recommended).
 
-### 2. Exclusions: by name and by content
+### 2. Exclusions: the operator's declaration, hardened offline
 
-Round 1 (B2) showed that an identity-only exclusion can be laundered: a
-repository whose consent was withdrawn could be re-admitted under a new
-identity and a mirror URL. REQ-037 now refuses the standing route when any
-of these match, with no network request:
+**Syzygy makes no network request, so it cannot prove where a clone came
+from, and no text in this change may claim it can.** Whether a run's
+repository is one that has its own consent, or that a project declares,
+rests on the operator's declaration and is Inferred. REQ-037 hardens that
+declaration as far as offline checks go (rounds 1 and 2, B2 and B1):
 
-- **identity**: any per-repository observation consent record naming it, in
-  any state; the exclusion list; any Syzygy project declaration;
-- **commits**: the pinned commit, and every parent identifier recorded in the
-  pinned commit object (read from that object, not fetched), against every
-  revision any per-repository consent record names, in any state, and the
-  exclusion list's commits; with history admitted, every reachable ancestor
-  too;
-- **URL**: the normalised upstream URL (scheme and host lower-cased; user
-  information, default port, trailing `/` and `.git` removed) against the
-  upstream and locator hints of consent records, declarations and the
-  exclusion list.
+- **Identity**: the declared identity against every compared record's
+  subject, the exclusion list and every project declaration.
+- **URL**: the declared upstream URL, normalised (scheme of any kind, user
+  information and port removed; `www.` removed; trailing `/` then `.git`
+  removed; host and whole path case-folded), against the upstream URLs and
+  locator hints of every compared record and the exclusion list. A record
+  whose only locator is a filesystem path (Butlers' consent names a local
+  checkout path and no upstream [Observed,
+  `decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md:17`]) is compared
+  with the declared clone location. Over-matching only refuses.
+- **Commit**: the pinned commit and its recorded parents against every named
+  revision. This catches re-use of a named revision; it is not a guarantee.
 
-[Inferred] **Residual:** a *different* commit of a withdrawn repository,
-whose recorded parents are not named in any record, reached through a URL
-that normalises differently (another host's mirror), is told apart only by
-the operator's declaration. Every page discloses it. Redis's consent names
-four commits; a later Redis commit through a mirror would pass the content
-checks, but the identity check would still catch `redis-redis` if declared.
+"Compared records" are every observation consent record Syzygy holds,
+performed, withdrawn, revoked, or prepared and never performed, and every
+consent instance they name.
+
+[Inferred] **Residuals, stated plainly:**
+
+- An operator who declares a URL that is not the clone's true upstream, with
+  a new identity, at an unnamed commit, bypasses every check. The operator
+  is the owner, consenting for themselves, so the mitigation is disclosure:
+  the admission entry and every page show the declared URL and pinned
+  commit.
+- A record with no upstream URL (Butlers) is matched only by identity and
+  its filesystem path; a clone elsewhere under a new identity passes.
+
+**The Redis case.** Redis's consent carries `Upstream:
+https://github.com/redis/redis` [Observed,
+`contracts/candidates/public-repo-admission/instances/redis/OBSERVATION-CONSENT.md:19`]
+and admits four commits. Under the standing route, a Redis commit outside
+the four, declared under that URL in any spelling the normalisation folds,
+is refused by the URL check (scenario "Consented repository at an
+unconsented commit under its own URL"). The same commit declared under
+another URL is the first residual.
 
 ### 3. No network request; publication is declared; one commit only
 
@@ -96,22 +117,25 @@ its own adapter (RFC4-1). So "public", "the pinned commit is published at
 the upstream URL" and "the fork reproduces it" are the operator's
 declarations, labelled Inferred.
 
-**Local commits (round 1 note on Q1c).** By default the clone must hold the
-pinned commit alone, the shape PR #392 adds to `init` (`.git/shallow` names
+**Local commits (Q1c).** By default the clone must hold the pinned commit
+alone, the shape open PR #392 would add to `init` (`.git/shallow` names
 exactly the pinned commit, and every object is that commit or under its
-tree). [Observed in #392's diff] A local commit on top of a fetched commit
-therefore makes two commits and is refused. [Inferred] A *single* locally
-authored commit with no parents, or a shallow commit whose parents were
-never fetched, cannot be told from a published one without the network; the
-publication declaration is what excludes it, and SEC-5 screening still
-applies to every blob.
+tree). [Observed in #392's diff; the PR is not merged] Once it merges, a
+clone that still holds the public parent of a local commit is refused by the
+clone-shape check. [Inferred] A local commit in a clone re-shallowed to that
+commit alone, and a locally authored root commit, satisfy the shape and
+cannot be told from a published one without the network; the publication
+declaration is what excludes them, and SEC-5 screening still applies to
+every blob. Under the history option the shape admits ancestors, so a local
+commit on top is not refused by shape at all.
 
 ### 4. The governed rule
 
 The drawer half comes from the standing record, labelled as the owner's
 statement made in advance; its truth for a given repository is Inferred
 from the exclusions (a repository with a drawer would have been onboarded,
-hence declared or consented, hence excluded).
+hence declared or consented, hence excluded as far as the offline checks
+and the operator's declaration reach).
 
 The tree half reuses the predicate the gate implements
 (`packages/polaris-dossier/src/governed.ts:4-11`): a path segment `openspec`
@@ -158,9 +182,20 @@ gives "sufficient premises" a checkable form:
   (round 1, B5): an unmarked block that states a motive, or any block that
   attributes an intention to the authors without a quotation that states it,
   is a blocking finding against the marking;
-- **vendored and third-party text is not maintainer-stated** (round 1 note):
-  authorship is Inferred from the path, using the frozen profile's path
-  classes; such text may still be a premise of a reconstruction;
+- **third-party text is not maintainer-stated** (round 1 note; round 2,
+  B2): REQ-038 defines the *third-party path class* itself, because no
+  frozen profile has one: directory segments `vendor`, `vendored`,
+  `third_party`, `third-party`, `thirdparty`, `3rdparty`, `deps`,
+  `external`, `extern`, `node_modules` (case-folded, any depth); submodule
+  paths; paths a `.gitattributes` marks `linguist-vendored`; and an optional
+  rule the frozen profile records. Everything outside is a maintainer
+  source, source comments and tests included, so every authored
+  documentation source REQ-032 already counts stays maintainer-stated and
+  10b advantages do not drop. A governed run with no frozen profile uses the
+  fixed list. Authorship either way is Inferred. Such text may still be a
+  premise of a reconstruction. [Inferred, general knowledge] Redis bundles
+  its dependencies under `deps/`, so a `deps/` README would not be
+  maintainer-stated while its root README would;
 - a reconstruction never replaces a maintainer statement, and a motive about
   people stays Unknown without one.
 
@@ -173,7 +208,17 @@ separate owner option (packet Q2) whose text names the REQ-033 sentences and
 falsifier arm it reads, admits ancestor *commit objects* only (re-hashed,
 never their trees or blobs), and withholds every author, committer and
 signature line hash-not-body, because names and email addresses are personal
-data the privacy posture has never been asked about.
+data the privacy posture has never been asked about. Round 2 (B3) found that
+identities also sit in message trailers, so an identity screen withholds,
+hash-not-body, every message line with an e-mail address pattern or a
+`Signed-off-by`, `Co-authored-by`, `Reviewed-by`, `Acked-by`, `Tested-by`,
+`Reported-by`, `Suggested-by` or `Cc` trailer, ignoring case. Names in free
+prose are a disclosed residual.
+
+**Answering Q2 no strikes the option, not just disables it** (round 2,
+note 4): every passage marked "history option (packet Q2)" in the spec, and
+A4's history clause, are removed before sign-off, so no later version of the
+standing record (a consent act, not an amendment) could switch history on.
 
 ### 7. Execution under the standing consent: refused by default
 
@@ -199,10 +244,12 @@ revisions do not change.
 ### 9. Ruling 10b and REQ-039
 
 Kept as the default: advantages stay maintainer-stated. REQ-039 is
-conditional on a recorded reversal, scope `v1-reserved` ("schema defined,
-implementation may stub", th-projects `spec-format.md:99`), and is struck
-before sign-off if 10b is kept. Its source check relies on the agent's
-marking; the fidelity review is the backstop.
+conditional on the owner answering packet Q6 yes, stated in words on its
+`Scope:` line (every adopted requirement in the repo is `v1-mandatory`), and
+is struck before sign-off otherwise. REQ-038 no longer refers to REQ-039, so
+striking it leaves no dangling reference; 038 keys its advantage rule on
+ruling 10b itself. Its source check relies on the agent's marking; the
+fidelity review is the backstop.
 
 ## What this change does not settle
 
@@ -210,10 +257,15 @@ marking; the fidelity review is the backstop.
   `*project.yaml` and `.syzygy/governance/declarations/*` lists only two
   adapter-registry entries), so Redis's identity too lives only in its
   consent record. A2 and A3 make that lawful for standing runs; Redis's own
-  position is not changed here.
+  position is not changed here. A3 says the standing record is referenced
+  from the observing Project's declaration like any consent record; with no
+  declaration tracked, neither it nor Redis's consent is referenced today,
+  and REQ-037 does not wait for that (round 2, note 8).
 - [Unknown] The exact form of the repository identity
   (`repository:<host>-<owner>-<name>` is the obvious candidate). Fixed in the
-  standing record.
+  standing record. Neither `redis-redis` nor `butlers-configured-poc` has
+  that form, so the identity check catches those two only under their legacy
+  spellings; the URL and locator checks are what reach them (round 2, B1).
 - **The source-acquisition entry.** Its subject reads "each (project:syzygy,
   repository) pair that has its own in-force observation consent naming the
   pinned revision", in the candidate package
@@ -230,11 +282,13 @@ marking; the fidelity review is the backstop.
 Each is one cohesive, separately verifiable outcome. None starts before the
 owner's acts are recorded.
 
-0. **The owner's 2026-10-07 direction**, recorded by the lead in a separate
-   PR as a plain owner direction.
+0. **The owner's 2026-10-07 direction**: done, recorded as
+   `ARBITRARY-PUBLIC-REPO-DOSSIER-2026-10-07`
+   (`decisions/ARBITRARY-PUBLIC-REPO-DOSSIER-DIRECTION.md`).
 1. **Amendment packages A1 to A4** (`AMENDMENTS.md`): patches, manifests,
-   reviews, acts, active-manifest regeneration; rebased over D7 and D8 if
-   those land first.
+   reviews, acts, active-manifest regeneration, and A1b's `bind-exact-bytes`
+   in-force record with a gate-sources form beside `D9_ACT_FORM`; rebased
+   over D7 and D8 if those land first.
 2. **Standing consent record and act (A5).** Template and instance in
    `scripts/build_public_repo_admission.py`; a recorder row; the phrase in
    `check_governance.py` `_act_subjects()` and the packet copy in
@@ -243,14 +297,15 @@ owner's acts are recorded.
    whose subject admits a standing-admitted pair; version-tagged sign-off.
 4. **Gate.** `gate-sources.ts`: per-repository forms first (Redis
    unchanged); otherwise the standing route, the admission entry, the
-   identity, commit and URL exclusions, and the drawer statement from the
+   identity, URL (with the normalisation), filesystem-locator and commit
+   exclusions over every compared record, and the drawer statement from the
    standing record. Generalize `DRAWER_FORMS` and `STATEMENT_FORMS` off the
    `redis-redis` key so a governed public tree can carry its own statement.
 5. **Run start and disclosures.** `init`/`preflight` take URL, fork,
    identity and the publication declaration; the one-commit clone shape
    stays; run record and pages disclose REQ-037's list. If the owner admits
-   history: the reader admits ancestor commit objects and withholds identity
-   lines.
+   history: the reader admits ancestor commit objects, withholds author,
+   committer and signature lines, and runs the message identity screen.
 6. **Draft schema, checker and renderer for REQ-038** (basis field, premise
    and trail, reconstructed marker, path-class check), and the fidelity
    verdict's per-block classification.

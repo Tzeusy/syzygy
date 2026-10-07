@@ -9,7 +9,10 @@
 
 **The operator should be able to point Polaris at any public Git repository,
 fork or clone it locally, and get an honest dossier without signing a new
-consent for that repository.** Today every repository needs its own signed
+consent for that repository.** The direction asks for no "per-repository
+code change or review round"; dropping the per-repository consent act too is
+the lead's reading [Inferred], and packet Q0 offers the alternative that
+keeps it. Today every repository needs its own signed
 observation consent and, unless a drawer statement is signed for it, its own
 signed agent-provider statement; Redis took a whole sitting.
 
@@ -67,9 +70,11 @@ mode:
 - **037, standing public-observation consent.** Admits no run until the
   amendments and the standing consent are in force. Then any public
   repository the operator clones is read at the one commit the run pins.
-  Repositories with their own consent, in any state, the owner's declared
-  repositories and the exclusion list are refused, matched by identity, by
-  commit and by URL. The governed check becomes a rule: the standing record
+  It is not for repositories with their own consent, in any state, the
+  owner's declared repositories or the exclusion list. With no network
+  request Syzygy cannot prove provenance, so that rests on the operator's
+  declaration, hardened offline by identity, normalised URL, local path and
+  named-commit checks, with the residual disclosed on every page. The governed check becomes a rule: the standing record
   states, in advance, that no evidence drawer exists, and the pinned tree is
   checked for `openspec` or `.syzygy` paths; a governed tree still needs a
   per-repository provider statement. History, and recording an execution
@@ -89,8 +94,10 @@ predecessor text it reads for its runs.
 ## Scope and preserved boundaries
 
 - **Redis keeps its admission.** Its consent, statements, admission basis and
-  pinned revisions do not change, and the standing consent never applies to
-  it. **REQ-038 does apply to Redis's runs**: its motivations and trade-offs
+  pinned revisions do not change. The standing consent is not for Redis: a
+  Redis commit declared under Redis's URL is refused, and one declared under
+  another URL and a new name rests on the operator's declaration, since
+  Syzygy cannot check provenance offline. **REQ-038 does apply to Redis's runs**: its motivations and trade-offs
   could then be reconstructed, which narrows ruling 10b and REQ-034's
   "maintainer-stated" topic for Redis. Advantages stay under 10b. Whether
   038 should reach Redis is an owner question (packet Q5).

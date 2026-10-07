@@ -56,6 +56,7 @@ What you would sign, each after its own review (drafts in `AMENDMENTS.md`):
 | Act | What it changes |
 |---|---|
 | Doctrine amendment (log row D10, if D7 and D8 keep their numbers) | Two sentences of `architecture.md` |
+| Doctrine in force at exact bytes (as D9 had) | Binds the amended `architecture.md` so Syzygy can check it is in force |
 | Contract amendment, RFC 0001 | Where a repository's identity, consent and membership come from (RFC1-2, RFC1-3, RFC1-4) |
 | Contract amendment, RFC 0003 | Repository entries, consent records, per-pair consent (RFC3-6, RFC3-7, RFC3-30) |
 | Contract amendment, RFC 0005 | Defines the standing form (RFC5-12) |
@@ -70,7 +71,10 @@ amendment queued after D9 touches the same clause.
 
 *Alternative:* keep per-repository consent and make signing one faster (a
 template and one question per repository). Simpler doctrine, but every new
-repository needs you.
+repository needs you. This alternative also meets your recorded direction as
+written, which asks for no per-repository "code change or review round"; it
+does not mention consent acts. Removing those too is the lead's reading of
+what you meant.
 
 ## Q1. What exactly does the standing permission cover?
 
@@ -78,15 +82,15 @@ repository needs you.
 |---|---|---|
 | a. Public only? | **Yes.** You declare that the repository is public and that the commit is published there; the page shows both as your declaration. | Syzygy contacts no server, so it cannot check. |
 | b. Which hosts? | **Any host**, over `https`. | Syzygy never talks to the host. An allow-list (GitHub, GitLab, Codeberg) is the stricter option. |
-| c. Your own local commits? | **Excluded.** The clone must hold the published commit alone; a commit you made on top of it is refused automatically. | A single commit you wrote from scratch looks identical to a published one, so for that case Syzygy relies on your declaration in (a). |
+| c. Your own local commits? | **Excluded.** The clone must hold the published commit alone. Once open PR #392 merges, a clone that still holds the public commit under your own is refused by its clone-shape check. | A local commit in a clone cut back to that one commit, or a commit you wrote from scratch, looks identical to a published one, so for those Syzygy relies on your declaration in (a). |
 | d. Exclusions | **Start empty.** Adding one later is a new version of the permission. It can name repositories, URLs or commits. | Lets you block one repository without revoking the rest. |
-| e. Repositories already handled | **Always excluded:** anything declared in a Syzygy project, and any repository with its own consent, signed or withdrawn. Matched by name, by commit and by URL, so a withdrawn repository cannot come back under a new name. | Some cases slip through: a later commit of a withdrawn repository, reached through a different mirror. Only your declaration separates those, and every page says so. |
+| e. Repositories already handled | **Excluded:** anything declared in a Syzygy project, and any repository with its own consent, signed or withdrawn. Syzygy cannot check where a clone came from without going online, so this rests on what you declare. It checks what it can offline: the name, the URL you give (ignoring letter case, `www.`, the scheme and a trailing `.git`), the local folder for a consent that names one, and whether the commit is one a consent names. For example, a Redis commit other than the four you consented to, declared under Redis's GitHub URL, is refused. | If you give a different URL and a new name, nothing offline can tell, and the run goes ahead. Butlers' consent names only a local folder, so a copy of it elsewhere under a new name also goes ahead. Since you are the one consenting, the safeguard is that every page shows the URL and commit you declared. |
 | f. May a run execute the repository's code? | **No by default.** Recording the per-run execution choice D9 allows is refused under the standing permission unless it says otherwise. | Under D9 that code runs with your own credentials and network, "and can change any file the owner can"; nothing contains it. For code from unknown authors that is a real risk. |
 
 ## Q2. Read commit history?
 
 **Recommended: no, not now.** Reads stay at the one pinned commit, as for
-Redis and as the one-commit clone check (open PR #392) enforces.
+Redis and as the one-commit clone check (open PR #392) would enforce.
 Reconstructions rest on the code, tests and comments at that commit. Your
 direction mentioned reconstructing from "the code and its history"; this
 recommendation departs from that for now, and saying yes here restores it.
@@ -94,8 +98,16 @@ recommendation departs from that for now, and saying yes here restores it.
 *The option:* allow the pinned commit's ancestors' commit records (messages
 only; never older files). This changes REQ-033's rule that "every read … at
 the pinned revision", which 037 would then name and reread. Author and
-committer names and email addresses would be withheld and never shown, since
-showing them is a privacy question of its own.
+committer lines would be withheld and never shown, since showing them is a
+privacy question of its own. Inside the messages, any line with an e-mail
+address, and any `Signed-off-by`, `Co-authored-by`, `Reviewed-by`,
+`Acked-by`, `Tested-by`, `Reported-by`, `Suggested-by` or `Cc` line, would
+be withheld too. A person's name written in ordinary sentences of a message
+would not be caught, and the page would say so.
+
+**If you answer no,** the history text is deleted from the spec and from the
+RFC 0005 amendment before you sign, so a later edit of the standing
+permission alone could not switch history on.
 
 ## Q3. What if the repository contains `openspec/` or `.syzygy/`?
 
@@ -117,7 +129,12 @@ top-level folder only.
 
 **Recommended: yes.** Where the authors explain themselves, their own words
 are quoted exactly. Text the repository merely bundles from someone else
-does not count as the authors' words. Where they don't explain, the agent
+does not count as the authors' words: anything under folders such as
+`vendor/`, `third_party/` or `deps/`, inside a submodule, or marked as
+vendored by the repository itself. For Redis, the root README counts as the
+authors' words and a README of a library under `deps/` does not. Everything
+else the authors wrote, code comments included, still counts, so no
+advantage you have today is lost. Where they don't explain, the agent
 may reconstruct the reason, but must list its evidence and reasoning, the
 page marks it "reconstructed — not the authors' stated intent", and an
 independent reviewer reads every inferred claim, marked or not, and blocks
@@ -144,7 +161,8 @@ read under the standing permission.
   your agent read, labelled as its unverified report, never in the opening,
   never anchored, and never counted as supported by the reviewer. Syzygy can
   only spot such claims if your agent marks them; the reviewer is the
-  backstop.
+  backstop. If you answer no, 039 is deleted and nothing else in the spec
+  refers to it.
 
 ## Q7. Does each run need anything from you?
 
@@ -156,8 +174,8 @@ step per repository, which is the cost this change removes.
 ## Q8. In what order do you sign?
 
 **Recommended:** after review, in this order, because each needs the one
-before: the doctrine amendment, the contract amendments, the standing
-permission, this spec by version tag
+before: the doctrine amendment and its exact-bytes in-force act, the
+contract amendments, the standing permission, this spec by version tag
 (`polaris-dossier-arbitrary-public-repo-v1.0`), and a new version of the
 source-acquisition entry naming the standing route. Nothing is read until
 all of them are recorded. They can share one sitting.
