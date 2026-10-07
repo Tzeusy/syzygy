@@ -557,8 +557,8 @@
       }
     },
     "POLARIS": {
-      "requirements": 35,
-      "scenarios": 232,
+      "requirements": 36,
+      "scenarios": 244,
       "members": {
         "REQ-polaris-generation-001": {
           "name": "Admitted project input",
@@ -895,6 +895,23 @@
             "Owner declines to establish purpose",
             "Owner supplies new purpose input",
             "Questions cannot become an endless interview"
+          ]
+        },
+        "REQ-polaris-generation-032": {
+          "name": "Non-governed narrative profile",
+          "scenarios": [
+            "Maintainer-declared capability",
+            "Generated reference is not a declaration",
+            "Declaration form fixed before discovery",
+            "Frozen forms are not the producer's",
+            "Predominantly Unknown catalog remains honest",
+            "Deep dive without governed bands",
+            "Applicable band with no content",
+            "Neither contract band nor reality band",
+            "Anchor terminus without a specification leaf",
+            "Governed subject keeps governed readings",
+            "Partly governed subject",
+            "Profile selected from the admitted record"
           ]
         },
         "REQ-polaris-generation-033": {

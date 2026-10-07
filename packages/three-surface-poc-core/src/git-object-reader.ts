@@ -40,7 +40,7 @@ import { createResourceLedger, ParsePassBudgetExceeded, type ParsePassCharge, ty
 
 export const PWB_POLICY_IDENTITY = {
   policyId: 'polaris-butlers-project-shape-secrets',
-  policyVersion: '1.1.0-candidate.1',
+  policyVersion: '1.3.0-public-source-candidate.1.none',
 } as const;
 
 export const PWB_DENIED_PATH_RULES = {

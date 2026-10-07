@@ -53,14 +53,16 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
 // changes only these pointers, identities, tags and targets. Nothing here
 // reads `governingBehaviorContract`, and the 2026-09-30 direction's bar on
 // the entry's currency and briefing fields still holds.
+// The policy act is the 2026-10-07 public-source screening-scope version 2 act, superseding the
+// 2026-10-07 version-1 act; the registry act is still its 2026-10-02 re-pin act.
 export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md',
-  policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
+  policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md',
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
 };
 
 export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
-  policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md',
+  policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md',
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md',
 };
 
@@ -78,7 +80,7 @@ function pwbSyzygyButlersExpectations(evaluationInstant: string): BodyReadAuthor
     contentClass: 'declared-project-shape-text',
     owner: 'Tzeusy',
     governanceHome: '.syzygy/governance/declarations/adapter-registry',
-    policyVersion: '1.1.0-candidate.1',
+    policyVersion: '1.3.0-public-source-candidate.1.none',
     evaluationInstant,
     // The PWB state-(1) amendment sign-off; earlier acts predate the
     // authority that makes state (1) acceptable for PWB-REQ-005.
@@ -95,11 +97,11 @@ function pwbSyzygyButlersExpectations(evaluationInstant: string): BodyReadAuthor
       },
       policy: {
         artifactPath: PWB_AUTHORITY_ARTIFACTS.policy,
-        actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-APPROVAL-BEHAVIOR-CONTRACT-REPIN-2026-10-02',
+        actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-07',
         actType: 'approve-policy',
         phrasePrefix: 'APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY',
-        recordingTag: 'pwb-approve-policy-signed-2026-10-02',
-        scopeAnchors: ['polaris-butlers-project-shape-secrets', '1.1.0-candidate.1', 'project:syzygy'],
+        recordingTag: 'pwb-approve-policy-public-source-scope-v2-signed-2026-10-07',
+        scopeAnchors: ['polaris-butlers-project-shape-secrets', '1.3.0-public-source-candidate.1.none', 'project:syzygy'],
         a1: { kind: 'absent' },
         supersession: { kind: 'supersedes', target: PWB_SUPERSEDED_ACT_RECORDS.policy },
       },

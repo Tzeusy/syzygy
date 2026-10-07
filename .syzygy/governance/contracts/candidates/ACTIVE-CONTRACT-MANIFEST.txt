@@ -19,7 +19,7 @@ e33ee089b455e658b75a6b9385cf53a9d7fb6fdc26c726b7f6d7264780495cd1  rfcs/RFC-0003/
 8c0cce7fdc682c1880f3e1317e294506b4f83c0b4b855668c5dc7b8a1a68f847  rfcs/RFC-0004/named-adapters.md
 2436a7bc5cfc5dcccb7b7543845bedacde6d439f9039ecbcda31a5127cd40bef  rfcs/RFC-0005/README.md
 a742a77fb14ee415d705f31d2e8733a94a51cffd6ccd5dca2f5d0cc1e3f533e0  rfcs/RFC-0005/admission-and-boundary.md
-786c66f85707c252c81825ffc1ad9359cccbd0c25eaa7c93b6595f5c62954382  rfcs/RFC-0005/consent-egress-secrets.md
+a69a606cc7c14da5de03ec26aaec435af2fee3fa4c7bfb8a92fc30deefa40c91  rfcs/RFC-0005/consent-egress-secrets.md
 4da6ff36e967264e867f0ff8715d908d5171e886b394e71c86470fdaf05d8277  rfcs/RFC-0005/execution-profiles.md
 aa83ae4f592639b03b354b2b8df57f600500fab1d8502163b2dace9cefc90f5d  rfcs/RFC-0006-cross-surface-selection-query-drawer.md
 eb63af0ca644dcb49dc0a05c7308babb074174e5f4381d06dc862d052d88dda3  rfcs/RFC-0007/README.md

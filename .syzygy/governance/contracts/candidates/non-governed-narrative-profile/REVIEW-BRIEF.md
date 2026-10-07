@@ -12,7 +12,7 @@ references and the acceptance criteria.
 
 **The artifact under review.**
 
-- `openspec/changes/polaris-non-governed-narrative-profile/proposed/polaris-generation/spec.md`
+- `openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md`
   (the subject), and in the same directory tree `proposal.md`, `design.md`,
   `tasks.md` and `GOVERNING-DEPENDENCIES.md`.
 - In `.syzygy/governance/contracts/candidates/non-governed-narrative-profile/`:

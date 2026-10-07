@@ -676,6 +676,16 @@ def _candidate_twin(installed_rel, all_paths):
     return candidate if candidate in all_paths else None
 
 
+#: A signed package's citation of a path that a later act moved. The package's
+#: bytes are what its version tag binds, so the citation is history, not a
+#: route: classified and printed under CG-1d, never silenced.
+SIGNED_PACKAGE_MOVED_TARGETS = {
+    (f"{CANDIDATES}/polaris-dossier-local-agent-mode-v1-1/IMPACT-LEDGER.md",
+     "openspec/changes/polaris-non-governed-narrative-profile/proposed/polaris-generation/spec.md"):
+        "signed v1.1 bytes; the narrative-profile adoption moved the spec to specs/",
+}
+
+
 def cg1_links(paths, res):
     all_paths = set(paths)
     n_links = n_paths = 0
@@ -711,6 +721,8 @@ def cg1_links(paths, res):
             dead_routes.append(f"{rel} -> {t}")
         elif _is_historical_packet(t):
             historical.append(f"{rel} -> {t}")
+        elif (rel, t) in SIGNED_PACKAGE_MOVED_TARGETS:
+            historical.append(f"{rel} -> {t} — {SIGNED_PACKAGE_MOVED_TARGETS[(rel, t)]}")
         elif _is_frozen_lane(rel):
             # CG-1a had no frozen-lane branch at all; these passed only
             # because `_resolve` absorbed them (review RD-7, finding E-1).
@@ -1569,6 +1581,9 @@ PWB_REGISTRY_CURRENCY_DIR = (
 #: superseding effect acts, one per row of its two-row manifest.
 PWB_BEHAVIOR_REPIN_DIR = f"{CANDIDATES}/pwb-behavior-contract-repin"
 PWB_BEHAVIOR_REPIN_MANIFEST = f"{PWB_BEHAVIOR_REPIN_DIR}/PWB-EFFECT-REPIN-MANIFEST.txt"
+PWB_SCOPE_DIR = f"{CANDIDATES}/public-source-screening-scope"
+PWB_SCOPE_MANIFEST = f"{PWB_SCOPE_DIR}/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt"
+PWB_SCOPE_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md"
 #: The public-repository admission package (`syzygy-mea`): three separate
 #: state-(1) acts, each over one record and each given by an option selection
 #: at that record's manifest row (packet Q5). Candidate registration only
@@ -1810,6 +1825,18 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
      "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a"),
+    # The public-source screening-scope act supersedes the 2026-10-02 re-pin
+    # act for the policy subject.
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
+     "66cd41ee626efb11d666d19c0cd42c6d001ec4482837b71475c42f661f1d936c"),
+    # The public-source screening-scope version-2 act supersedes the version-1 act for
+    # the policy subject (screening-scope v2 chain row).
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
+     "d42defcaf4dbb9b4e815f988ef8ba62be1dad081aa851d430b427b35c42f346b"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
@@ -1828,6 +1855,16 @@ PWB_EFFECT_AMENDMENT_OFFERINGS = {
     # its packet by design carries no digest.
     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md": {
         f"{CANDIDATES}/pwb-registry-currency-briefing-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
+    },    # The 2026-10-02 policy re-pin was offered as a row of the re-pin manifest;
+    # its packet by design carries no digest.
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md": {
+        PWB_BEHAVIOR_REPIN_MANIFEST: "row",
+    },
+
+    # The version-1 screening-scope act was offered as the one row of its manifest;
+    # its packet by design carries no digest.
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md": {
+        f"{CANDIDATES}/public-source-screening-scope/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt": "row",
     },
 }
 PWB_STATE1_SUBJECTS = tuple(sorted((
@@ -2503,7 +2540,7 @@ def _act_subjects():
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
     for label, subject, _act, _activate, _paths in CONTRACT_SUCCESSOR_CHAIN:
-        out.append((label, subject,
+        out.append((label, ROW_ARGUMENT_SUBJECTS.get(label, subject),
                     re.compile(re.escape(label)
                                + r"\s*:\s*`?([0-9a-f]{64})")))
     out.append((POLARIS_GENERATOR_APPROVAL_LABEL,
@@ -3098,6 +3135,33 @@ _apply_versioned_signoff_exemptions()
 #: write the same). A missing, malformed, duplicated or disagreeing instant,
 #: or an instant equal to a later link's, fails closed. Candidate manifests
 #: without both records never override anything.
+#: The RFC5-14 project-documentation amendment (one module). Its act takes the
+#: SHA-256 of the patched module, which is the manifest's one row, not the
+#: manifest file's digest, so the link is a row-argument link
+#: (`ROW_ARGUMENT_LINK_LABELS`): CG-7h reads the argument from the row.
+RFC5_CLASS_LABEL = "AMEND RFC5-14 WITH THE PROJECT-DOCUMENTATION CONTENT CLASS"
+RFC5_CLASS_DIR = f"{CANDIDATES}/rfc5-project-documentation-class"
+RFC5_CLASS_SUBJECT = f"{RFC5_CLASS_DIR}/CONTRACT-AMENDMENT-MANIFEST.txt"
+RFC5_CLASS_ACT = f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
+RFC5_CLASS_MODULE = ".syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md"
+RFC5_CLASS_PATHS = ("rfcs/RFC-0005/consent-egress-secrets.md",)
+ROW_ARGUMENT_LINK_LABELS = frozenset({RFC5_CLASS_LABEL})
+#: The file whose digest is the act argument of a row-argument link: the
+#: installed module, which the manifest row hashes in its proposed form.
+ROW_ARGUMENT_SUBJECTS = {RFC5_CLASS_LABEL: RFC5_CLASS_MODULE}
+
+
+def _activate_rfc5_class_act_copy_registry():
+    """Require both record copies and the manifest row once the record exists."""
+    if not os.path.isfile(os.path.join(ROOT, RFC5_CLASS_ACT)):
+        return
+    labels = ACT_DIGEST_COPY_FILES.get(PERFORMED_ACT_RECORD, ())
+    if RFC5_CLASS_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[PERFORMED_ACT_RECORD] = labels + (RFC5_CLASS_LABEL,)
+    ACT_DIGEST_COPY_FILES[RFC5_CLASS_ACT] = (RFC5_CLASS_LABEL,)
+    ACT_DIGEST_COPY_FILES[RFC5_CLASS_SUBJECT] = (RFC5_CLASS_LABEL,)
+
+
 CONTRACT_SUCCESSOR_CHAIN = (
     (POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
      POLARIS_NO_SIGNAL_ACT, _activate_polaris_no_signal_act_copy_registry,
@@ -3105,6 +3169,8 @@ CONTRACT_SUCCESSOR_CHAIN = (
     (CONTRACT_RESTYLE_LABEL, CONTRACT_RESTYLE_SUBJECT,
      CONTRACT_RESTYLE_ACT, _activate_contract_restyle_act_copy_registry,
      CONTRACT_RESTYLE_PATHS),
+    (RFC5_CLASS_LABEL, RFC5_CLASS_SUBJECT, RFC5_CLASS_ACT,
+     _activate_rfc5_class_act_copy_registry, RFC5_CLASS_PATHS),
 )
 for _label, _subject, _act_rel, _activate, _paths in CONTRACT_SUCCESSOR_CHAIN:
     _activate()
@@ -3250,9 +3316,29 @@ def _activate_pwb_behavior_repin_manifest_copy_registry():
     if os.path.isfile(os.path.join(ROOT, PWB_BEHAVIOR_REPIN_MANIFEST)):
         ACT_DIGEST_COPY_FILES[PWB_BEHAVIOR_REPIN_MANIFEST] = (
             PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[2][0])
+        # Once the screening-scope act supersedes the policy re-pin, the
+        # policy row is history (registered by the amendment registries).
+        if os.path.isfile(os.path.join(ROOT, PWB_SCOPE_ACT)):
+            ACT_DIGEST_COPY_FILES[PWB_BEHAVIOR_REPIN_MANIFEST] = (
+                PWB_EFFECT_ACTS[2][0],)
 
 
 _activate_pwb_behavior_repin_manifest_copy_registry()
+
+
+def _activate_pwb_scope_manifest_copy_registry():
+    """The screening-scope manifest carries the policy's proposed argument.
+
+    Existence-gated candidate file: a current copy of the policy argument
+    while it exists.
+    """
+    if (os.path.isfile(os.path.join(ROOT, PWB_SCOPE_MANIFEST))
+            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"))):
+        # once the version-2 act supersedes it, the version-1 manifest row is history
+        ACT_DIGEST_COPY_FILES[PWB_SCOPE_MANIFEST] = (PWB_EFFECT_ACTS[1][0],)
+
+
+_activate_pwb_scope_manifest_copy_registry()
 
 
 def _activate_public_admission_manifest_copy_registry():
@@ -3273,6 +3359,23 @@ def _activate_public_admission_manifest_copy_registry():
 
 
 _activate_public_admission_manifest_copy_registry()
+
+
+def _activate_redis_local_agent_performed_registries():
+    """Install change: each performed admission or registry record is an act-copy file."""
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, rel in (
+            (PUBLIC_ADMISSION_ACTS[1][0], f"{DECISIONS}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md"),
+    ):
+        if not os.path.isfile(os.path.join(ROOT, rel)):
+            continue
+        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in labels:
+            ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
+        ACT_DIGEST_COPY_FILES[rel] = (label,)
+
+
+_activate_redis_local_agent_performed_registries()
 
 
 def _activate_public_registry_manifest_copy_registry():
@@ -3663,6 +3766,10 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
      "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,
     (f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
      "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,
+    (f"{DECISIONS}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md", "manifest"): PUBLIC_ADMISSION_MANIFEST,
+    (f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md", "manifest file"): RFC5_CLASS_SUBJECT,
+    (PWB_SCOPE_ACT, "manifest"): PWB_SCOPE_MANIFEST,
+    (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,
 }
 
 
@@ -4547,6 +4654,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             link_dedicated = read_if_present(act_rel)
             link_body = read_if_present(subject)
             link_digest = current_digest(subject)
+            if label in ROW_ARGUMENT_LINK_LABELS:
+                rows_ = re.findall(r"^([0-9a-f]{64})  \S+$", link_body or "", re.M)
+                link_digest = rows_[0] if len(rows_) == 1 else None
         else:
             link_dedicated, link_body, link_digest = contract_chain_inputs.get(
                 label, ("", "", None))
@@ -4631,7 +4741,7 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                     f"successor record for `{label}`, found {len(values)}")
             require_latest(where, values, link_digest, subject)
         body_digest = hashlib.sha256(link_body.encode()).hexdigest()
-        if body_digest != link_digest:
+        if label not in ROW_ARGUMENT_LINK_LABELS and body_digest != link_digest:
             findings.append(f"{subject} — manifest body digest differs "
                             "from current subject digest")
         link_rows = manifest_rows(link_body, subject, len(link_paths))
@@ -8548,7 +8658,8 @@ def selftest():
                   and list(CONTRACT_RESTYLE_PATHS) == sorted(CONTRACT_RESTYLE_PATHS)
                   and set(POLARIS_NO_SIGNAL_PATHS) <= set(GENERAL_BOOTSTRAP_CONTRACT_PATHS)
                   and [link[4] for link in CONTRACT_SUCCESSOR_CHAIN]
-                  == [POLARIS_NO_SIGNAL_PATHS, CONTRACT_RESTYLE_PATHS]))
+                  == [POLARIS_NO_SIGNAL_PATHS, CONTRACT_RESTYLE_PATHS,
+                      RFC5_CLASS_PATHS]))
     row = _selftest_cg7h("restyle-valid")
     cases.append(("CG-7h 29-row restyle link alone passes at 108 "
                   "(no-signal gap allowed)",
@@ -10971,6 +11082,26 @@ def cg25_check_owners(res, reported=None, owners=None):
 
 
 # --------------------------------------------------------------- main
+
+
+def _activate_redis_local_agent_battery_copies():
+    """Install change: the battery's recorder lines pass each recorded local-agent act's argument."""
+    pairs = list(DOSSIER_LOCAL_AGENT_ACT_RECORDS.items())
+    # the Redis observation consent's line is in node-ci, not here (NODE_CHECKS)
+    # the RFC5-14 constants exist only once that act's chain link is installed; the
+    # name is split so this text never carries the chain step's install mark
+    rfc5 = globals().get("RFC5_" "CLASS_LABEL")
+    if rfc5 is not None:
+        pairs.append((rfc5, globals()["RFC5_" "CLASS_ACT"]))
+    present = ACT_DIGEST_COPY_FILES.get("PROJECT-STATUS.md", ())
+    for label, record in pairs:
+        if os.path.isfile(os.path.join(ROOT, record)) and label not in present:
+            present = present + (label,)
+    ACT_DIGEST_COPY_FILES["PROJECT-STATUS.md"] = present
+
+
+_activate_redis_local_agent_battery_copies()
+
 
 def main():
     ap = argparse.ArgumentParser(
