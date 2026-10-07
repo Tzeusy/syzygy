@@ -23,6 +23,8 @@ const sha = (text: string): string => createHash('sha256').update(text, 'utf8').
 const NOW = Date.UTC(2026, 9, 7, 12, 0, 0);
 const URL_ = 'https://github.com/redis/redis';
 const REAL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+// After the sitting the real-tree preflight reads every act record and sweeps every decisions file (about 4.4 s alone), past Vitest's 5 s default under load; gate-acts.test.ts gives its real-tree tests the same budget.
+const TREE_TIMEOUT = 60_000;
 const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };
 
 const cleanups: (() => void)[] = [];
@@ -643,7 +645,7 @@ describe('preflight', () => {
     const recorded = (stem: string): 'ok' | 'absent' => (fs.existsSync(path.join(REAL_ROOT, DECISIONS_DIR, `DOSSIER-LOCAL-AGENT-${stem}-ACT.md`)) ? 'ok' : 'absent');
     expect(result.ok && result.report.d9.state).toBe(recorded('D9-IN-FORCE'));
     expect(result.ok && result.report.rfc720Ruling.state).toBe(recorded('RFC7-20-READING-IN-FORCE'));
-  });
+  }, TREE_TIMEOUT);
   it('reports D9 and the RFC7-20 reading established once the sitting\'s acts bind their records, and only while the bound bytes hold', async () => {
     const sitting = '.syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/in-force';
     const copied = [`${sitting}/D9-IN-FORCE-RECORD.md`, `${sitting}/RFC7-20-READING-IN-FORCE-RECORD.md`, '.syzygy/governance/doctrine/security.md', '.syzygy/governance/doctrine/v1.md', `${DECISIONS_DIR}/POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-DIRECTION.md`];
