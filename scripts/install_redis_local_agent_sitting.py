@@ -712,9 +712,15 @@ def stash(root: pathlib.Path, why: str) -> None:
 
 def already_recorded(root: pathlib.Path, steps: list[Step]) -> list[str]:
     """The answered acts whose recorder --check already passes: a second run over an
-    installed tree is refused here, before any write, not at its first recorder."""
-    return [s.label for s in steps
-            if subprocess.run([sys.executable] + s.check[1:], cwd=root, capture_output=True).returncode == 0]
+    installed tree is refused here, before any write, not at its first recorder.
+    `record_versioned_signoff.py --check` exits 0 with "not performed" when no record
+    exists (its docstring), so that report is read as not recorded."""
+    done = []
+    for s in steps:
+        p = subprocess.run([sys.executable] + s.check[1:], cwd=root, capture_output=True, text=True)
+        if p.returncode == 0 and not (p.stdout + p.stderr).strip().endswith(": not performed"):
+            done.append(s.label)
+    return done
 
 
 def refuse_unwritten(why: list[str]) -> int:
@@ -971,9 +977,12 @@ def selftest() -> int:
         (root / "scripts").mkdir()
         (root / "scripts/passes.py").write_text("import sys\nsys.exit(0)\n")
         (root / "scripts/fails.py").write_text("import sys\nsys.exit(1)\n")
+        (root / "scripts/unperformed.py").write_text("print('pkg v1.0: not performed')\n")
         steps = [Step("a", "act a", [], ["python3", "scripts/passes.py", "--check"], None),
-                 Step("b", "act b", [], ["python3", "scripts/fails.py", "--check"], None)]
-        ok.append(("an act whose recorder --check already passes reads as already recorded, and only it",
+                 Step("b", "act b", [], ["python3", "scripts/fails.py", "--check"], None),
+                 Step("c", "act c", [], ["python3", "scripts/unperformed.py", "--check"], None)]
+        ok.append(("an act whose recorder --check already passes reads as already recorded, and only it; "
+                   "a versioned sign-off's 'not performed' (exit 0) is not recorded",
                    already_recorded(root, steps) == ["act a"]))
     with tempfile.TemporaryDirectory() as t:
         # note 2: a refusal on a clean tree claims no stash
