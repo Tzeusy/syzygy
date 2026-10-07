@@ -32,6 +32,8 @@ const WARRANT_FAMILIES = [
   DOSSIER_DECISION,
   /^(VIS|SEC|SDR|RFC\d+|CC-[A-Z]+|POC-REQ|PWB-REQ|CAP1-REQ)-\d+[a-z]?(\([a-z]\))?$/,
   /^(POC|POLARIS|PWB-STATE1-AMENDMENT)-DIR-\d{4}-\d{2}-\d{2}$/,
+  // Redis local-agent owner directions: `Decision ID:` in decisions/REDIS-LOCAL-AGENT-SITTING-DIRECTION.md.
+  /^REDIS-LOCAL-AGENT-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{4}-\d{2}-\d{2}$/,
   /^P-\d+-ruling-\d{4}-\d{2}-\d{2}( \(decisions\/[A-Z0-9-]+\.md\))?$/,
   /^decisions\/[A-Z0-9-]+\.md$/,
   /^[a-z0-9-]+\/(POC|PWB|CAP1)-REQ-\d+$/,
