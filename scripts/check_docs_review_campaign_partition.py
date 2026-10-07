@@ -323,6 +323,11 @@ CAMPAIGNS = (
         "Live test no-spawn",
         r"R-LIVE-TEST-NO-SPAWN-.*\.md",
     ),
+    campaign(
+        "redis-sitting-installer-pins",
+        "Redis sitting installer pins",
+        r"R-REDIS-SITTING-INSTALLER-PINS-.*\.md",
+    ),
 )
 
 
