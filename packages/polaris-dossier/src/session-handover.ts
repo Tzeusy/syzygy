@@ -227,7 +227,10 @@ async function sessionStatementRefusal(opened: Extract<OpenedRun, { ok: true }>,
   const provider = opened.declared.agentProvider;
   const records = await sources.providerStatements.statementsFor(opened.subject.repository.repositoryId);
   const statement = providerStatementGate(records, tool, provider, now);
-  if (statement.state !== 'ok') return `the session's agent tool ${tool} with the run's provider ${provider} has no per-project statement in force, so no session is handed over: ${statement.why}`;
+  if (statement.state !== 'ok') {
+    const standing = statement.state === 'absent' ? 'has no per-project statement in force' : 'has no single per-project statement that governs it';
+    return `the session's agent tool ${tool} with the run's provider ${provider} ${standing}, so no session is handed over: ${statement.why}`;
+  }
   const consented = statementContentClasses(records, tool, provider, now) ?? [];
   const beyond = opened.contentClasses.filter(contentClass => !consented.includes(contentClass));
   if (beyond.length > 0) return `the per-project statement ${statement.record} for the session's agent tool ${tool} with the provider ${provider} does not list ${beyond.join(', ')}, which the run's statement lets its packets carry, so no session is handed over`;

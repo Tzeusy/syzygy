@@ -343,6 +343,11 @@ CAMPAIGNS = (
         "Project-documentation screening",
         r"R-PR403-SCREEN-DOCS-.*\.md",
     ),
+    campaign(
+        "pr406-session-tool-statement",
+        "Session-prompt tool statement",
+        r"R-PR406-SESSION-TOOL-STATEMENT-.*\.md",
+    ),
 )
 
 
