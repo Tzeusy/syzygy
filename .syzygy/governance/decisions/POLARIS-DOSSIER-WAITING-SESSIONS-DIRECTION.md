@@ -91,11 +91,13 @@ quoted here as the packet's own wording for the selection.
    operator starts it.
 4. **The recommended mitigation, taken with the option.** A printed start
    command pre-approves only read tools and the role's one `syzygy dossier`
-   command, never a general shell and never a write outside the session's
-   own directory. The option the owner selected says "with only read tools
-   plus their one syzygy command pre-approved"; the packet's words: "approve only read tools and the
-   role's one `syzygy dossier` command [Inferred]". Where an agent tool
-   offers no such narrow scope, Syzygy prints no broader one and says so.
+   command, never a general shell and never a write. The option the owner
+   selected says "with only read tools plus their one syzygy command
+   pre-approved"; the packet's words: "approve only read tools and the
+   role's one `syzygy dossier` command [Inferred]". A session therefore hands
+   its inventory or verdict to that command, and Syzygy writes the file. Where
+   an agent tool offers no such narrow scope, Syzygy prints no broader one and
+   says so.
 
 ## What this direction does not authorize
 

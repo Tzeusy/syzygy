@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-dossier-local-agent-mode/design.md b/openspec/changes/polaris-dossier-local-agent-mode/design.md
-index e182af4c..ebe13559 100644
+index e182af4c..ff7eeb4e 100644
 --- a/openspec/changes/polaris-dossier-local-agent-mode/design.md
 +++ b/openspec/changes/polaris-dossier-local-agent-mode/design.md
 @@ -1,9 +1,9 @@
@@ -15,7 +15,7 @@ index e182af4c..ebe13559 100644
  > implementation. It contains no code. The command surface below is a design
  > for implementation after the owner's sign-off (direction item 5); the
  > requirements are the controlling text, and doctrine, accepted contracts,
-@@ -167,6 +167,32 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
+@@ -167,6 +167,35 @@ session. Syzygy chooses no default (REQ-polaris-generation-033).
     Code draft, or the reverse) is allowed and recorded. The fidelity packet
     carries the frozen inventory as part of its criteria, because
     REQ-polaris-generation-006 measures coverage against it.
@@ -37,9 +37,12 @@ index e182af4c..ebe13559 100644
 +   its own earlier verdict, is disclosed on the review page for every
 +   counted verdict, from the delivery records and from repeated session
 +   identifiers, both Inferred. The printed Claude Code command pre-approves
-+   only reading and writing its directory (the inventory also reads the
-+   clone) and its one `await` command, in the default permission mode, so
-+   any other call waits for the operator; Codex gets no pre-approval,
++   only reading its directory (the inventory also reads the clone) and its
++   one `await` command, in the default permission mode, so any other call,
++   a write included, waits for the operator. The session writes no file:
++   it passes its inventory or verdict on standard input to `await --submit
++   <file> --stdin`, and Syzygy writes that one file (the inventory, or a
++   delivered round's verdict) in the session's directory and checks it; Codex gets no pre-approval,
 +   because how narrowly it can pre-approve one command is Unknown to this
 +   design. The risk the owner accepted with the option is that a
 +   pre-approved session reads untrusted text while nobody is present; no
@@ -48,7 +51,7 @@ index e182af4c..ebe13559 100644
  6. **Excluded files make blocks Unknown, not findings.** A quotation from a
     file that screening excludes cannot be verified without using excluded
     content, so the block renders `excluded-content` (RFC2-24 #7) and no
-@@ -270,12 +296,14 @@ One binary, `syzygy`, with a `dossier` command family. Every command is
+@@ -270,12 +299,14 @@ One binary, `syzygy`, with a `dossier` command family. Every command is
  non-interactive, takes the run's state directory as its first argument after `init`,
  prints a human summary and, with `--json`, the same content as one JSON
  document. Exit status: 0 clean, 1 findings or refusal (reason printed), 2
@@ -60,7 +63,7 @@ index e182af4c..ebe13559 100644
  | `syzygy dossier preflight <url>` | agent | Reports whether observation consent, the observer registry entry and the classification and screening policy acts are in force for the repository, which revisions the consent names, whether a per-project statement names the operator's agent provider, and whether D9 is in force; prints the clone and checkout commands; refuses with the missing record named | consent reader (`packages/polaris-generation-consent`, on `main` since PR #263); `evaluateBodyReadAuthority`; `parseGithubUrl` | the report; no network access (the URL is parsed, not fetched) |
  | `syzygy dossier session-prompt <run> <inventory\|review> [--kind fidelity\|design]` | agent, at a hand-over | Makes the role's session directory (inventory brief only, or the packet), prints the fixed prompt and a ready command that starts the session there, and records the prompt's digest, so the authoring session does not write it | — | the prompt texts; the session directories |
 +| `syzygy dossier session-prompt <run> all` and `session-prompt <run> review --kind <kind> [--fresh]` (version 1.2) | agent, at the start of a run and at each review hand-over | `all` makes the inventory, fidelity and design session directories, writes the inventory brief, prints a command per session with its narrow pre-approval and records each prompt as waiting; a later `review` delivers the packet to the waiting session of its kind as its next round, recorded in the run directory, unless `--fresh` | — | the waiting prompts; delivery rounds and records |
-+| `syzygy dossier await <session-dir>/ [--round N] [--submit <file>] [--wait-minutes M]` (version 1.2) | a waiting session, its one Syzygy command | Waits a bounded slice (never past the deadline) for round N, re-hashes it and says what to read; exits 3 while still waiting and reports when the run has closed; with `--submit`, runs `inventory-check` or `review-check` on a file inside its directory | `inventory-check`, `review-check` | the wait and re-hash |
++| `syzygy dossier await <session-dir>/ [--round N] [--submit <file> [--stdin]] [--wait-minutes M]` (version 1.2) | a waiting session, its one Syzygy command | Waits a bounded slice (never past the deadline) for round N, re-hashes it and says what to read; exits 3 while still waiting and reports when the run has closed; with `--submit`, runs `inventory-check` or `review-check` on a file inside its directory, which with `--stdin` Syzygy first writes from standard input | `inventory-check`, `review-check` | the wait and re-hash |
  | `syzygy dossier launch-form <run> <role> terminal\|bang` | agent, on the operator's answer | Records the launch form the operator declares for that session, operator-declared and Inferred; refuses any other value | — | the record |
  | `syzygy dossier init <clone> --url <repo-url> --config <run.json>` | agent, on the operator's answer, or the operator | Reads the observation consent, registry entry and policy acts; verifies HEAD is a consented revision; decides governed or not from the project input and the pinned tree's paths, and for a governed or silent subject requires the per-project statement; checks the config's declared tool, provider, model and limits; writes `run.json` in the state directory | consent reader (`packages/polaris-generation-consent`: `inForceRecords`, `createConsentPorts`, `withConsent`; on `main` since PR #263); `evaluateBodyReadAuthority` (`packages/three-surface-poc-core/src/body-read-authority.ts`); `parseGithubUrl` (`dossier-trigger.ts`) | HEAD-to-consent comparison (the trigger's `pinRevision` reads `ls-remote`, not a local clone); isolated, re-hashing object reads; the governed predicate; config validation |
  | `syzygy dossier allow-execution <run> --revision <rev>` | operator, personally, only | Records the owner's execution choice for that one run and its pinned revision, with the operator's declaration that the owner started and attends the authoring session on the owner's own host, operator-declared and Inferred as to who entered them; never an execution consent; refuses while D9 is not in force, after the brief, or for another run or revision | — | the record |

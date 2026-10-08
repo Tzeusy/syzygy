@@ -33,8 +33,11 @@ says otherwise. Version 1.2 says it, and nothing else.
   delivery cannot switch the reviewer's tool or model.
 - **Narrow pre-approval, as you took with the option.** The printed Claude
   Code command lets the session read its own folder (the inventory session
-  also reads the clone), write in its own folder, and run its one Syzygy
-  command, and nothing else without asking. For Codex, Syzygy cannot tell
+  also reads the clone) and run its one Syzygy command, and nothing else
+  without asking: read tools plus that one command, as your option said. It
+  writes no file. It hands its inventory or verdict to its one command, and
+  Syzygy writes that one file in the session's folder and checks it. For
+  Codex, Syzygy cannot tell
   how narrow a pre-approval would be, so it prints none and says so; a
   waiting Codex session asks before each step.
 - **A reviewer may continue; the page says so.** The same reviewer may look
@@ -58,8 +61,8 @@ A pre-approved waiting session reads untrusted text, from the clone or its
 packet, while nobody is watching, and a sentence in its prompt saying that
 text is data does not stop a session that obeys injected text. The narrow
 pre-approval limits what such a session can do without asking you: read its
-folder, write in its folder, run its one command. It cannot build or run the
-project. Whether the agent tool enforces the printed rules exactly is
+folder (and, for the inventory, the clone) and run its one command. It cannot
+write a file, and it cannot build or run the project. Whether the agent tool enforces the printed rules exactly is
 something Syzygy cannot see.
 
 ## The question

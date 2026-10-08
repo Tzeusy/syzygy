@@ -74,12 +74,14 @@ Each is a yes/no question with the evidence that settles it.
    resume or signal a session, admits a headless or subagent session, or
    widens a read, egress, write or execution, is blocking.
 2. **Is the mitigation stated as the direction takes it?** Compare the
-   pre-approval sentence with item 4 ("approve only read tools and the
-   role's one `syzygy dossier` command"). The spec also pre-approves writing
-   in the session's own directory: is that within "never a write outside the
-   session's own directory", which item 4 also says, or is it wider than the
-   packet's words? Is "where the agent tool offers no rules that narrow,
-   Syzygy SHALL print no pre-approval and SHALL say so" right for Codex?
+   pre-approval sentence with the option the owner selected ("with only read
+   tools plus their one syzygy command pre-approved") and with item 4. Does
+   the pre-approval admit any write, and is the hand-over (the session passes
+   its inventory or verdict to the command; Syzygy writes the role's own file
+   in the session's directory, and only there) a write by the session in
+   another form, or within the owner's words? Is "where the agent tool offers
+   no rules that narrow, Syzygy SHALL print no pre-approval and SHALL say so"
+   right for Codex?
 3. **Is the continuing reviewer disclosed as the owner required?** Is the
    disclosure required for every counted verdict, on the review page, with
    the anchoring cost stated? Is detecting continuity by delivered rounds
