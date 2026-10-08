@@ -2,7 +2,7 @@
 > DOSSIER-LOCAL-AGENT-1.2 (`SEMANTIC-DELTA.md` in this directory), under
 > CC-IMPACT-1 to CC-IMPACT-6. Every figure below was computed by script on
 > branch `feat/dossier-waiting-sessions` at
-> `28015c67fce4e84e542cc9d4b09f18eaa59bfecd`, whose
+> `439c8afe211ea4daf545745c0124c2f685c472dd`, whose
 > `openspec/changes/polaris-dossier-local-agent-mode/` bytes are v1.1 as on
 > `main`; the predicates are published so that a reader can re-run them.
 
@@ -16,10 +16,10 @@ three patches applied by `git apply` and `check_spec_reconciliation.py
 
 | File, under `openspec/changes/polaris-dossier-local-agent-mode/` | v1.1 | v1.2 (patches applied, regenerated) |
 |---|---|---|
-| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `a8f631a3ae2390f5090c86f982a8c8c34a875438d8ea38a814aa18641e593d67` |
-| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `752ee397becb78e353ebfc108e646321b0f4078fad3c6e67e97a56dbb36a001d` |
-| `proposal.md` | `f917b75019574bfb89af4cdb86be7347b4595e0e4758056de842a07cecdbb4da` | `b096c4d65dc6cb0a52fcc17b228bcaa981bc295f019faf931dc63574e1bb0b06` |
-| `GOVERNING-DEPENDENCIES.md` (regenerated) | `de399fc8f8f85eb90a13c3e941ac8374f9d171577d2e81431b0f0ed435410cf5` | `ef111e933745618c573d58228edd3970d3144765df850bfc0a1fe36e62a0f545` |
+| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `63f620e21f500a10117928dde8afb211ff743bf5a3784d09f4ed0992fe9bb5e0` |
+| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `9837bf33558232151faea84e785cef0eca240e5b13843a37b282769b0a2333fa` |
+| `proposal.md` | `f917b75019574bfb89af4cdb86be7347b4595e0e4758056de842a07cecdbb4da` | `530475c00d21df9643f9ab4a5cb7e58df03259817ec1a578ac3ab5dd0a05b845` |
+| `GOVERNING-DEPENDENCIES.md` (regenerated) | `de399fc8f8f85eb90a13c3e941ac8374f9d171577d2e81431b0f0ed435410cf5` | `b0da779018ed5f3d99f5decf63b4ecdc6c1704b4f96084547e4a01e740a4d73a` |
 | `tasks.md` | `6ccaa6893947aa9cbb7dbe7b3704b7084167aee4bc74d4bf251b66115edd60c6` | unchanged |
 
 The patches are under `proposed/`: `spec.md.patch` (71 lines),
@@ -61,9 +61,10 @@ recorder entry exist.
 ## Text sweep
 
 Predicate: for each phrase below, a byte-literal substring match (Python
-`bytes in`) over every blob of `git ls-tree -r -z --name-only 28015c67`.
-Population: **2,628 tracked files**. Every hit is listed; the classification
-is the drafter's.
+`bytes in`) over every blob of `git ls-tree -r -z --name-only 439c8afe`.
+Population: **2,636 tracked files**. Hits inside this package's own directory
+(its ledger and patches quote the phrases) are left out of the counts. Every
+other hit is listed; the classification is the drafter's.
 
 | Phrase changed by v1.2 | Files | Classification |
 |---|---|---|
@@ -73,10 +74,12 @@ is the drafter's.
 | `> **Version 1.1.**` | 4 | `design.md` and `proposal.md` (changed here); the v1.1 package's two patches (historical) |
 
 The phrase v1.2 introduces as a warrant,
-`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`, appears in 4 files at that
-commit: the direction record, and three implementation files
+`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`, appears outside this package
+in 5 files at that commit: the direction record, three implementation files
 (`packages/polaris-dossier/src/waiting-sessions.ts`, its test, and
-`render.ts`), which cite the direction, not this package.
+`render.ts`) and the mutant evidence record, which cite the direction, not
+this package. The direction's ID was first drafted with its local date,
+`…-2026-10-09`; that form occurs in 0 of the 2,636 files.
 
 ## Dependents
 
@@ -86,7 +89,7 @@ commit: the direction record, and three implementation files
   (the continuity item and the review-status note). Each wait-mode step
   refuses until a `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or
   later) record exists, so v1.1 behaviour is unchanged while this package is
-  unsigned. Tests: `waiting-sessions.test.ts`, 32 tests; rule-6 mutants in
+  unsigned. Tests: `waiting-sessions.test.ts`, 32 tests, 40 of 40 mutants killed; rule-6 mutants in
   `docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json`.
 - **Agent texts.** The `/polaris-dossier` skill and the Codex instructions
   describe the v1.1 hand-over at their step 8 and do not mention waiting
