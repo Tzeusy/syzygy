@@ -48,6 +48,15 @@ export const DEFAULT_WAIT_MINUTES = 9;
 export const MAX_WAIT_MINUTES = 60;
 /** How often a wait slice looks for its delivery in the session directory. Local file system only. */
 export const POLL_MS = 2_000;
+/** The heredoc delimiter every printed hand-over names, always quoted, so the shell expands nothing in the JSON it carries. */
+export const HEREDOC_DELIMITER = 'SYZYGY_EOF';
+/** How a session passes JSON on the standard input of `command`: a heredoc with a quoted delimiter. The JSON may quote observed text
+ * holding `$(…)` or backticks; under an unquoted delimiter the shell would run them. `fence` wraps the command (a backtick in a report,
+ * nothing in a one-line prompt). */
+export const stdinHandOver = (command: string, fence = '`'): string =>
+  `${fence}${command} <<'${HEREDOC_DELIMITER}'${fence}, a heredoc whose delimiter is quoted exactly so: the JSON on the lines after it and ${HEREDOC_DELIMITER} alone on the last line. With the delimiter quoted the shell never expands the body, so nothing in it runs`;
+/** The wait advice every waiting prompt carries: a slice of `DEFAULT_WAIT_MINUTES` fits the longest Bash timeout of Claude Code. */
+export const WAIT_TIMEOUT_ADVICE = `Run every syzygy dossier await with your shell tool's longest timeout (600000 milliseconds in Claude Code): one call waits up to ${DEFAULT_WAIT_MINUTES} minutes`;
 export const roundDirName = (round: number): string => `round-${round}`;
 export const deliveryRecordName = (kind: ReviewKind, session: number, round: number): string => `${kind}-session-${session}.delivery-${round}.json`;
 const DELIVERY_RECORD = (kind: ReviewKind, session: number): RegExp => new RegExp(`^${kind}-session-${session}\\.delivery-([1-9][0-9]*)\\.json$`, 'u');
@@ -61,15 +70,51 @@ const isoOf = (instant: number): string => new Date(instant).toISOString();
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 
-/** Whether the owner has signed off a version of the local-agent mode at or after 1.2: a sign-off record named for it in the records
- * root's decisions. The record lies in the Syzygy checkout, not the run's state directory. */
+const SIGNOFF_PACKAGE = 'polaris-dossier-local-agent-mode';
+const AGGREGATE = 'ACCEPTANCE-ACT-RECORD.md';
+
+/** Whether a sign-off record of `version` is one `record_versioned_signoff.py` wrote: its head as the recorder renders it (title, package,
+ * version, tag, a reviewed commit and a confirming verdict), and exactly one marked block for the version in the aggregate record, as
+ * the recorder's `--check` requires. A file that only carries the name opens nothing. */
+export function signoffRecordHolds(decisions: string, name: string, version: string): boolean {
+  let text: string, aggregate: string;
+  try {
+    text = fs.readFileSync(path.join(decisions, name), 'utf8');
+    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');
+  } catch { return false; }
+  const head = text.split('\n').filter((line) => line.trim() !== '').slice(0, 12);
+  const field = (key: string): string | undefined => head.find((line) => line.startsWith(`${key}: `))?.slice(key.length + 2);
+  const headHolds = head[0] === `# Polaris dossier local-agent mode — version-tagged sign-off v${version}`
+    && field('Package') === SIGNOFF_PACKAGE && field('Version') === version && field('Tag') === `${SIGNOFF_PACKAGE}-v${version}`
+    && /^[0-9a-f]{40}$/u.test(field('Reviewed commit') ?? '') && (field('Review verdict') === 'CONFIRM' || field('Review verdict') === 'CONFIRM WITH EXCEPTIONS');
+  const start = `<!-- versioned-signoff:${SIGNOFF_PACKAGE}:v${version} -->`, end = `<!-- /versioned-signoff:${SIGNOFF_PACKAGE}:v${version} -->`;
+  const blockHolds = aggregate.split(start).length === 2 && aggregate.split(end).length === 2 && aggregate.indexOf(start) < aggregate.indexOf(end);
+  return headHolds && blockHolds;
+}
+
+/** Whether the owner has signed off a version of the local-agent mode at or after 1.2: a sign-off record for it in the records root's
+ * decisions that `signoffRecordHolds`. The record lies in the Syzygy checkout, not the run's state directory. */
 export function waitModeSignedIn(recordsRoot: string): boolean {
+  const decisions = path.join(recordsRoot, DECISIONS);
   let names: string[];
-  try { names = fs.readdirSync(path.join(recordsRoot, DECISIONS)); } catch { return false; }
+  try { names = fs.readdirSync(decisions); } catch { return false; }
   return names.some((name) => {
     const match = SIGNOFF_RECORD.exec(name);
-    return match !== null && (Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2));
+    return match !== null && (Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))
+      && signoffRecordHolds(decisions, name, `${match[1]}.${match[2]}`);
   });
+}
+
+/** Why a session directory may not be written into or delivered to, or null: it must be a directory itself, never a link (lstat), and
+ * its real path must be the real sessions root's entry of its own name, so no write Syzygy makes for a session lands outside the root. */
+export function sessionDirectoryRefusal(root: string, directory: string): string | null {
+  let stats: fs.Stats;
+  try { stats = fs.lstatSync(directory); } catch (cause) { return `${directory} cannot be read (${errno(cause)})`; }
+  if (!stats.isDirectory()) return `${directory} is not a directory of its own (a link, or another kind of file), so Syzygy writes nothing through it`;
+  let real: string, realRoot: string;
+  try { real = fs.realpathSync(directory); realRoot = fs.realpathSync(root); } catch (cause) { return `${directory} cannot be resolved (${errno(cause)})`; }
+  if (real !== path.join(realRoot, path.basename(directory))) return `${directory} resolves to ${real}, not to the sessions root's ${path.basename(directory)}, so Syzygy writes nothing there`;
+  return null;
 }
 
 export const WAIT_MODE_UNSIGNED = `wait mode is specified only by ${WAIT_MODE_SPEC}, which the owner has not signed off; until the version-tagged sign-off is recorded, hand each session over with session-prompt as signed in v1.1`;
@@ -132,6 +177,8 @@ export function deliverToWaiting(
   if (typeof relative !== 'string') return { ok: false, reason: `the prompt record of waiting ${kind} session ${session} names no directory` };
   const directory = path.join(path.dirname(run), relative);
   if (path.dirname(directory) !== sessionsRoot(run)) return { ok: false, reason: `the prompt record of waiting ${kind} session ${session} names a directory outside the sessions root` };
+  const unsafe = sessionDirectoryRefusal(sessionsRoot(run), directory);
+  if (unsafe !== null) return { ok: false, reason: unsafe };
   const earlier = deliveries(run, kind, session);
   const round = earlier.length === 0 ? 1 : earlier[earlier.length - 1]!.round + 1;
   const record = {
@@ -215,8 +262,8 @@ export interface AwaitDeps {
   readonly now: () => number;
   /** Wait between looks at the session directory; a timer by default. */
   readonly sleep?: (ms: number) => Promise<void>;
-  /** Standard input, read whole; null when it holds more than `maxBytes`. Only `--stdin` reads it. */
-  readonly readStdin?: (maxBytes: number) => Promise<string | null>;
+  /** Standard input, read whole as bytes; null when it holds more than `maxBytes`. Only `--stdin` reads it. */
+  readonly readStdin?: (maxBytes: number) => Promise<Uint8Array | null>;
   /** Whether version 1.2 is signed off; by default `waitModeSignedIn` over the records root. */
   readonly waitModeSigned?: () => boolean;
   readonly probe: CheckDeps['probe'];
@@ -264,23 +311,26 @@ const realOrNull = (file: string): string | null => { try { return fs.realpathSy
 const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\/verdict\.json$/u;
 export const INVENTORY_SUBMIT_FILE = 'inventory.json';
 
-/** Standard input of this process, read whole; null past `maxBytes`. */
-async function readProcessStdin(maxBytes: number): Promise<string | null> {
+/** A stream (standard input of this process, by default) read whole as bytes; null once past `maxBytes`, reading no further. */
+export async function readStdinBytes(maxBytes: number, stream: AsyncIterable<unknown> = process.stdin): Promise<Uint8Array | null> {
   const chunks: Buffer[] = [];
   let size = 0;
-  for await (const chunk of process.stdin) {
+  for await (const chunk of stream) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk));
     size += buffer.length;
     if (size > maxBytes) return null;
     chunks.push(buffer);
   }
-  return Buffer.concat(chunks).toString('utf8');
+  return new Uint8Array(Buffer.concat(chunks));
 }
 
+const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 500_000, maxDepth: 16 });
+
 /** Write the role's own file inside the session directory from standard input, by rename so a check never reads half a file. Null when
- * written; otherwise why not. Only the inventory's `inventory.json`, or `round-N/verdict.json` for a round Syzygy delivered, is written. */
+ * written; otherwise why not. Only the inventory's `inventory.json`, or `round-N/verdict.json` for a round Syzygy delivered, is written,
+ * and only bounded UTF-8 JSON: anything else is refused before the rename, so a bad submission never replaces the file there. */
 async function writeFromStdin(
-  realDir: string, role: Role, name: string, readStdin: (maxBytes: number) => Promise<string | null>,
+  realDir: string, role: Role, name: string, readStdin: (maxBytes: number) => Promise<Uint8Array | null>,
 ): Promise<string | null> {
   let target: string;
   if (role.role === 'inventory') {
@@ -295,14 +345,17 @@ async function writeFromStdin(
     }
     target = path.join(roundDir, 'verdict.json');
   }
-  const text = await readStdin(DRAFT_MAX_BYTES);
-  if (text === null) return `standard input holds more than ${DRAFT_MAX_BYTES} bytes`;
+  const bytes = await readStdin(DRAFT_MAX_BYTES);
+  if (bytes === null) return `standard input holds more than ${DRAFT_MAX_BYTES} bytes`;
+  let text: string;
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch { return 'standard input is not UTF-8 text; nothing is written'; }
   if (text.trim() === '') return 'standard input is empty: pass the file\'s JSON as the command\'s standard input';
+  try { parseBoundedJson(text, SUBMIT_JSON_LIMITS); } catch { return `standard input is not one bounded JSON document; nothing is written, and ${name} stays as it was`; }
   const pending = path.join(path.dirname(target), `.${path.basename(target)}.stdin`);
   try {
     // Never follow a link left at the pending name: remove it, then create the file exclusively.
     fs.rmSync(pending, { force: true });
-    fs.writeFileSync(pending, text, { mode: 0o600, flag: 'wx' });
+    fs.writeFileSync(pending, bytes, { mode: 0o600, flag: 'wx' });
     fs.renameSync(pending, target);
   } catch (cause) {
     return `${name} could not be written (${errno(cause)})`;
@@ -345,6 +398,8 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
   const opened = await openRun(run, deps.sources, startedAt, what, deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const self = `syzygy dossier await ${directoryArg}`;
+  const unsafe = sessionDirectoryRefusal(parent, directory);
+  if (unsafe !== null) return refuse('directory', unsafe);
 
   if (request.stdin === true && request.submit === undefined) return refuse('usage', '--stdin applies only with --submit');
   if (request.submit !== undefined) {
@@ -355,7 +410,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
     if (realDir === null) return refuse('submit', `${directory} cannot be read`);
     if (request.stdin === true) {
       // The session holds no write permission: Syzygy writes the role's own file from standard input, then checks it.
-      const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? readProcessStdin);
+      const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? ((maxBytes) => readStdinBytes(maxBytes)));
       if (stdinRefusal !== null) return refuse('submit', stdinRefusal);
     }
     const file = realOrNull(path.resolve(directory, request.submit));
@@ -369,7 +424,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
       const passed = result.report.outcome === 'passed';
       return { ok: true, report: {
         command: 'await', format: AWAIT_FORMAT, outcome: 'submitted', role: 'inventory', session: role.session, passed, check: result.report as unknown as Readonly<Record<string, unknown>>,
-        next: passed ? 'The inventory passed its check. Your work is done: tell the operator, and end this session.' : `Repair every finding in your inventory and pass it again on the standard input of \`${self} --submit ${request.submit} --stdin\`.`,
+        next: passed ? 'The inventory passed its check. Your work is done: tell the operator, and end this session.' : `Repair every finding in your inventory and pass it again on the standard input of ${stdinHandOver(`${self} --submit ${request.submit} --stdin`)}.`,
         disclosures: AWAIT_DISCLOSURES,
       } };
     }
@@ -382,7 +437,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
       command: 'await', format: AWAIT_FORMAT, outcome: 'submitted', role: 'review', kind: role.kind, session: role.session, passed, check: result.report as unknown as Readonly<Record<string, unknown>>,
       next: passed
         ? `Your verdict is recorded. If the subject is revised after a repair, Syzygy delivers its next packet to you: run \`${self} --round ${nextRound}\` to wait for it, review it afresh from that packet alone, and stop when await reports that the run ended.`
-        : `Repair what the check reports and pass the verdict again on the standard input of \`${self} --submit ${request.submit} --stdin\`.`,
+        : `Repair what the check reports and pass the verdict again on the standard input of ${stdinHandOver(`${self} --submit ${request.submit} --stdin`)}.`,
       disclosures: AWAIT_DISCLOSURES,
     } };
   }
@@ -403,7 +458,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
     return { ok: true, report: {
       command: 'await', format: AWAIT_FORMAT, outcome: 'delivered', role: 'inventory', session: role.session, round, continuing: false,
       read: path.join(directory, INVENTORY_BRIEF_FILE), sha256: expected,
-      next: `Read ${INVENTORY_BRIEF_FILE} in this directory and do what it says, with one change: you write no file. Where it says to write inventory.json and run \`syzygy dossier inventory-check\`, pass the inventory's JSON as the standard input of \`${self} --submit inventory.json --stdin\` (a heredoc): Syzygy writes inventory.json in this directory and runs the same check.`,
+      next: `Read ${INVENTORY_BRIEF_FILE} in this directory and do what it says, with one change: you write no file. Where it says to write inventory.json and run \`syzygy dossier inventory-check\`, pass the inventory's JSON as the standard input of ${stdinHandOver(`${self} --submit inventory.json --stdin`)}. Syzygy writes inventory.json in this directory and runs the same check.`,
       label: 'Inferred', disclosures: AWAIT_DISCLOSURES,
     } };
   }
@@ -456,7 +511,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
   return { ok: true, report: {
     command: 'await', format: AWAIT_FORMAT, outcome: 'delivered', role: 'review', kind: role.kind, session: role.session, round, continuing: round > 1,
     read: path.join(roundDir, PACKET_FILE), sha256: actual,
-    next: `${round > 1 ? 'This is the next revision: judge it from this packet alone, not from your earlier verdict. ' : ''}Read only ${roundDirName(round)}/${PACKET_FILE} and do only what its criteria say, with one change: you write no file. Where the criteria say to write the verdict and run \`syzygy dossier review-check\`, pass the verdict's JSON as the standard input of \`${self} --submit ${verdictFile} --stdin\` (a heredoc): Syzygy writes ${verdictFile} in this directory and runs the same check.`,
+    next: `${round > 1 ? 'This is the next revision: judge it from this packet alone, not from your earlier verdict. ' : ''}Read only ${roundDirName(round)}/${PACKET_FILE} and do only what its criteria say, with one change: you write no file. Where the criteria say to write the verdict and run \`syzygy dossier review-check\`, pass the verdict's JSON as the standard input of ${stdinHandOver(`${self} --submit ${verdictFile} --stdin`)}. Syzygy writes ${verdictFile} in this directory and runs the same check.`,
     label: 'Inferred', disclosures: AWAIT_DISCLOSURES,
   } };
 }

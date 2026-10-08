@@ -548,12 +548,13 @@ export function buildLocalInput(inputs: BuildInputs): Built {
 const DESIGN_REVIEW_WHERE = 'Whether a rendered-design review counts for these pages is stated in the review-status region at the foot of every page, the only part of a page a later render may change without retiring that review; this page is part of what that review reviews, so it does not repeat it.';
 
 /** The review-status region's line for the rendered-design review. */
-export function designStatusItem(design: DesignReviewOfRecord | undefined, run?: string): LocalDisclosureItem {
+export function designStatusItem(design: DesignReviewOfRecord | undefined, run: string): LocalDisclosureItem {
   if (design === undefined) return { id: 'review-status/design', text: 'Rendered-design review: not yet decided at this render.', label: 'Unknown' };
   if (!design.counts) return { id: 'review-status/design', text: `Rendered-design review: none counts (${design.why}).`, label: 'Unknown' };
-  // The design review's status lives only in this region, so a continuing design reviewer is disclosed here, never on a reviewed page.
-  const continuation = run === undefined ? null : continuationOf(run, 'design', design.session, design.number, design.packetSha256, design.sessionId.value);
-  return { id: 'review-status/design', text: `Rendered-design review: one counts, bound to packet ${design.packetSha256}, which Syzygy built at this render from these pages outside this region; its verdict, ${design.verdict.readiness}${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's.${continuation?.continuing ? ` ${continuation.text} (Inferred, from ${continuation.basis}.)` : ''}`, label: 'Inferred' };
+  // The design review's status lives only in this region, so its reviewer's continuity, continuing or not, is disclosed here, never on a
+  // reviewed page.
+  const continuation = continuationOf(run, 'design', design.session, design.number, design.packetSha256, design.sessionId.value);
+  return { id: 'review-status/design', text: `Rendered-design review: one counts, bound to packet ${design.packetSha256}, which Syzygy built at this render from these pages outside this region; its verdict, ${design.verdict.readiness}${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`, label: 'Inferred' };
 }
 
 const UNDERSTANDING_HEADINGS: Readonly<Record<(typeof UNDERSTANDING_ITEMS)[number], string>> = {
