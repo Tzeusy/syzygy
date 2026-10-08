@@ -68,8 +68,9 @@ that sink renders such a body, or any span of it, as text: every one of the
 characters & < > " ' is written as a character reference, the bytes are never
 parsed as Markdown or HTML and never mint a link, element, attribute, script or
 handler, and the page carries a Content-Security-Policy whose default-src is
-'none'. A consumer that cannot confirm this for a sink scans the body as before
-for that sink, and excludes it whole on a finding
+'none' and which carries no script-src, script-src-elem, script-src-attr or
+object-src directive. A consumer that cannot confirm this for a sink scans the
+body as before for that sink, and excludes it whole on a finding
 
 codeContentExemption.egress: the exemption changes no egress or consent rule: a
 span of such a body reaches an agent session or a provider only under the rules
@@ -119,7 +120,12 @@ The full proposed bytes are the two diffs under `proposed/`.
   `<div class="exact-source">`. `escape` is `draft-preview.ts:24`, which
   replaces each of `& < > " '` with a character reference. Every page carries
   `DRAFT_PREVIEW_CSP_META` (`draft-preview.ts:18`, used at
-  `dossier-render.ts:129`): `default-src 'none'`. The machine view
+  `dossier-render.ts:129`): `default-src 'none'; style-src 'unsafe-inline';
+  base-uri 'none'; form-action 'none'`. It carries none of the four
+  directives `renderCondition` forbids. Those four are named because a later
+  directive overrides `default-src` for its own fetch type, so
+  `default-src 'none'` alone would be met by a policy that also carried
+  `script-src 'unsafe-inline'` (round-1 review, finding 3). The machine view
   (`dossier-render.ts:440-452`) carries quotation offsets and anchors, not
   their text.
 - **The lead's wording is not quite true, and the delta does not use it.** The
@@ -127,7 +133,8 @@ The full proposed bytes are the two diffs under `proposed/`.
   inside code blocks". It is rendered context-encoded, but inside an inline
   quotation (`<q>`) and a block quotation (`<blockquote>`), not a code block.
   The narrowest true statement is the one `renderCondition` makes: entity-encoded
-  text under a CSP whose `default-src` is `'none'`. [Inferred] the sink sweep
+  text under a CSP whose `default-src` is `'none'` and which carries no
+  script-bearing directive. [Inferred] the sink sweep
   covered the three files that interpolate a body's text into HTML under
   `apps/three-surface-poc/src/polaris-generation/` (a grep for `.text`
   interpolations over `dossier-render.ts`, `dossier-render-local.ts` and
@@ -137,6 +144,44 @@ The full proposed bytes are the two diffs under `proposed/`.
   unencoded gains nothing from it, while the scan's Markdown grammar misreads
   ordinary source. Secret detectors are the screen that guards egress, and they
   stay.
+
+## Affected identifiers, and the reading the exemption relies on
+
+- **REQ-polaris-generation-012**, "Safe accessible presentation", opens:
+  "Generated pages SHALL render untrusted source and provider content
+  inertly". Its scenario "Malicious source or output" reads: "**WHEN** an input
+  contains executable markup, unsafe links or instructions to broaden tool
+  access **THEN** rendering executes none of that content and the workflow
+  obtains no new authority from it". It is defined at
+  `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md:641`
+  and restated with the same opening sentence and scenario in the
+  understanding overlay,
+  `openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md:366`.
+  **The reading this delta relies on:** for an exempt body, REQ-012's "render
+  … inertly" and "rendering executes none of that content" are met by
+  `renderCondition` (every character that could open markup is written as a
+  character reference, and the page's CSP admits no script or plugin), not by
+  withholding the body. Under version 2, the active-content scan was a second
+  way of meeting them for these bodies; under version 3 it is not used for
+  them. A reviewer who reads REQ-012 as requiring a body that carries markup-like
+  bytes to be withheld, however it is rendered, contradicts this reading, and
+  then the exemption needs a specification amendment as well as this act.
+  REQ-012's third line, "excluded or unclassifiable content is not revealed in
+  assets or diagnostics", is not reached: an exempt body is admitted, not
+  excluded.
+- **REQ-polaris-generation-033**, the operator-agent mode
+  (`openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:31`),
+  requires that "every object SHALL be classified and screened under the
+  observing project's effective policies (REQ-polaris-generation-025) before
+  its content is used in a check or rendered" (`screen.ts:7-8` quotes it).
+  The exemption changes what the effective policy's screen contains, not
+  whether screening happens. Every body is still classified, and every detector
+  still runs over it, so this delta reads 033 as met unchanged. REQ-025 is
+  reached only through that sentence. The delta changes none of its words.
+- No `SEC-`, `VIS-` or `RFC` clause is amended. REQ-012's contract warrants
+  (`RFC7-13, RFC7-14, RFC7-33, RFC7-34`, base `spec.md:682`) are not re-read
+  here. [Unknown] whether any of them states a stricter rendering rule than
+  REQ-012; the confirming review should check.
 
 ## What it does not change
 

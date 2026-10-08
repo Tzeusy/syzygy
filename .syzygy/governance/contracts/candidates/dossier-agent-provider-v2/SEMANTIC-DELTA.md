@@ -83,7 +83,10 @@ statement gate knows only version 1:
   recorders). Label suggested: `CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2
   FOR REDIS`. The egress precedent appended "VERSION 2" to version 1's label,
   but here version 1's label is a stem of version 1's sweep (`:225`, `:181`), so a
-  label that contains it would read as naming version 1.
+  label that contains it would read as naming version 1. The label avoids only
+  that one stem. A version-2 act record still carries the artifact basename,
+  the heading and the Record ID, which are also stems. Only the version-aware
+  form above removes the collision (round-1 review of PR #404, finding 8).
 
 ## What it does not change
 
