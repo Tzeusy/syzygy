@@ -27,9 +27,15 @@ export {
   type DossierRenderer, type DossierRendererInput, type RenderDeps, type RenderRefusal, type RenderReport, type RenderResult, type RenderStage,
 } from './render.js';
 export {
-  LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, inventoryPrompt, launchForm, reviewPrompt, sessionCommands, sessionPrompt, shellQuote,
-  type LaunchFormResult, type SessionPromptResult,
+  LAUNCH_FORM_FORMAT, SESSION_PROMPT_FORMAT, handOver, inventoryPrompt, launchForm, reviewPrompt, sessionCommands, sessionPrompt, shellQuote,
+  startSessions, waitingAllowedTools, waitingInventoryPrompt, waitingReviewPrompt,
+  type LaunchFormResult, type SessionPromptResult, type StartSessionsReport, type StartedSession,
 } from './session-handover.js';
+export {
+  AWAIT_FORMAT, DEFAULT_WAIT_MINUTES, DELIVERY_FILE, DELIVERY_FORMAT, MAX_WAIT_MINUTES, WAITING_MODE, WAIT_MODE_DIRECTION, WAIT_MODE_SPEC, WAIT_MODE_UNSIGNED,
+  awaitSession, continuationOf, deliveries, waitModeSignedIn, waitingReviewSession,
+  type AwaitDeps, type AwaitReport, type AwaitRequest, type AwaitResult, type Continuation, type DeliveryReport,
+} from './waiting-sessions.js';
 export { buildDossierScreen, loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 export { DOSSIER_USAGE, EXIT, STATE_ROOT_ENV, renderHuman, runDossierCli, type CliIo, type CliPorts } from './cli.js';
 export { resolveCloneHead, type CloneHead } from './clone-head.js';
