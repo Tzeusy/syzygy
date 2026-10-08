@@ -8,7 +8,7 @@
 
 ## What this is, in one paragraph
 
-On 2026-10-09 you chose option B for the dossier hand-offs: the helper
+On 2026-10-08 (UTC; 2026-10-09 your time) you chose option B for the dossier hand-offs: the helper
 sessions start at the beginning of a run and wait for their packets, and
 one reviewer may continue across revisions if the review page says so. The
 signed version 1.1 says each helper session gets its input when you start

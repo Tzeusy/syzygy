@@ -1,10 +1,11 @@
 # Owner direction — pre-started waiting sessions for the dossier hand-offs
 
-Date: 2026-10-09
+Date: 2026-10-08T16:24:26.838Z (UTC); 2026-10-09 in the owner's local time
 
 Owner: Tzeusy
 
-Decision ID: `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`
+Decision ID: `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09` (named for the
+owner's local date; the instant above, in UTC, is the date of record)
 
 This is a plain owner direction. It binds no artifact digest, adds no row to
 `ACCEPTANCE-ACT-RECORD.md` and registers nothing. It amends no doctrine,
@@ -15,15 +16,35 @@ it off by its version tag (VIS-4;
 
 ## The owner's words
 
-On 2026-10-09 (UTC), in the Claude Code CLI, the lead put decision 3 of
+At 2026-10-08T16:24:26.838Z (UTC), in the Claude Code CLI, the lead put
+decision 3 of
 [`DOSSIER-BLOCKERS-DECISION-PACKET-2026-10-08.md`](DOSSIER-BLOCKERS-DECISION-PACKET-2026-10-08.md)
-("the hand-offs that stalled the run") to the owner as a structured question,
-the same channel as the 2026-10-07 Redis sitting. The owner selected the
-option labelled:
+to the owner as a structured question, the same channel as the 2026-10-07
+Redis sitting, under the header chip "Hand-offs". The question, as relayed by
+the lead:
+
+> "Decision 3 (P-107): the run stalled for five hours because you must start
+> each helper session (inventory, fidelity review, design review) by hand.
+> Which hand-off model?"
+
+The owner selected the option labelled:
 
 > "B, reviewer may continue (Recommended)"
 
-The packet's "Words to give" maps that option to:
+described as:
+
+> "At run start you open all helper sessions. They wait for their packets and
+> run unattended with only read tools plus their one syzygy command
+> pre-approved. Cost: unattended sessions read untrusted clone text, and
+> while you're away nothing executes Redis code. One reviewer may continue
+> across revisions, disclosed on the page (its earlier verdict may anchor
+> it). Needs a v1.2 spec package and a wait-mode code change."
+
+Not selected: "B, fresh reviewer per revision", "C, you attend, agent
+launches" and "A, keep as is". The owner saw the question form and the
+lead's chat summaries, not the packet file.
+
+The packet's "Words to give" maps the selected option to:
 
 > "Direction: pre-started waiting sessions (option B), one reviewer may
 > continue across revisions"
