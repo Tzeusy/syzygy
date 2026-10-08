@@ -2,7 +2,7 @@
 > DOSSIER-LOCAL-AGENT-1.2 (`SEMANTIC-DELTA.md` in this directory), under
 > CC-IMPACT-1 to CC-IMPACT-6. Every figure below was computed by script on
 > branch `feat/dossier-waiting-sessions` at
-> `78909be2d418805a9260b18d85d96928f8ca5473`, whose
+> `853da03357817de50b7e0f6fb5f4c32599eb0174`, whose
 > `openspec/changes/polaris-dossier-local-agent-mode/` bytes are v1.1 as on
 > `main`; the predicates are published so that a reader can re-run them.
 
@@ -65,8 +65,8 @@ every dossier builder's `--check` passed. R5 then failed once, on the
 ## Text sweep
 
 Predicate: for each phrase below, a byte-literal substring match (Python
-`bytes in`) over every blob of `git ls-tree -r -z --name-only 78909be2`.
-Population: **2,637 tracked files**. Hits inside this package's own directory
+`bytes in`) over every blob of `git ls-tree -r -z --name-only 853da033`.
+Population: **2,649 tracked files**. Hits inside this package's own directory
 (its ledger and patches quote the phrases) are left out of the counts. Every
 other hit is listed; the classification is the drafter's.
 
@@ -83,7 +83,7 @@ in 6 files at that commit: the direction record, four implementation files
 (`packages/polaris-dossier/src/waiting-sessions.ts`, its test,
 `session-handover.ts` and `render.ts`) and the mutant evidence record, which cite the direction, not
 this package. The direction's ID was first drafted with its local date,
-`…-2026-10-09`; that form occurs in 0 of the 2,637 files.
+`…-2026-10-09`; that form occurs in 0 of the 2,649 files.
 
 ## Dependents
 
