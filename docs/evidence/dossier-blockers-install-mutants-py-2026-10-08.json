@@ -1,0 +1,115 @@
+{
+  "commit": "53b10a824fed63d3492156b0026ff82429722ac8",
+  "mutants": [
+    {
+      "id": "shell-word-colon",
+      "file": "scripts/install_redis_sitting.py",
+      "old": ".replace(\": \", \":'' \")",
+      "new": "",
+      "copies": 1,
+      "check": "python3 scripts/install_redis_sitting.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL a selection word holds neither ': ' nor ' #' for a plain YAML scalar",
+        "FAIL battery line quotes ': ' and a quote in the selection text"
+      ]
+    },
+    {
+      "id": "shell-word-quote",
+      "file": "scripts/install_redis_sitting.py",
+      "old": ".replace(\"'\", \"'\\\\''\")",
+      "new": "",
+      "copies": 1,
+      "check": "python3 scripts/install_redis_sitting.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL a selection word reads back exactly through the shell",
+        "FAIL battery line quotes ': ' and a quote in the selection text"
+      ]
+    },
+    {
+      "id": "battery-hash-refused",
+      "file": "scripts/install_redis_sitting.py",
+      "old": "        if \"#\" in s:\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "check": "python3 scripts/install_redis_sitting.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL selection text the battery splitter cannot carry is refused"
+      ]
+    },
+    {
+      "id": "battery-shell-word-used",
+      "file": "scripts/install_redis_sitting.py",
+      "old": "--question-opening {shell_word(opening)}",
+      "new": "--question-opening '{opening}'",
+      "copies": 1,
+      "check": "python3 scripts/install_redis_sitting.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL battery line quotes ': ' and a quote in the selection text"
+      ]
+    },
+    {
+      "id": "cg-provider-v2-battery-copy",
+      "file": "scripts/check_governance.py",
+      "old": "    pairs += list(DOSSIER_PROVIDER_V2_ACT_RECORDS.items())\n",
+      "new": "",
+      "copies": 1,
+      "check": "python3 scripts/check_governance.py",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL  CG-7e  act-argument copies enumerated and current \u2014 91 files examined, 1 finding"
+      ]
+    },
+    {
+      "id": "cg-provider-v2-supersedes",
+      "file": "scripts/check_governance.py",
+      "old": "ACT_DIGEST_COPY_FILES[record] = (label, DOSSIER_PROVIDER_V2_SUPERSEDES)",
+      "new": "ACT_DIGEST_COPY_FILES[record] = (label,)",
+      "copies": 1,
+      "check": "python3 scripts/check_governance.py",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "FAIL  CG-7e  act-argument copies enumerated and current \u2014 91 files examined, 1 finding"
+      ]
+    },
+    {
+      "id": "repin-later-v3",
+      "file": "scripts/build_pwb_behavior_contract_repin.py",
+      "old": "        (DECISIONS / \"PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md\",\n         pathlib.Path(\".syzygy/governance/contracts/candidates/public-source-screening-scope-v3/\"\n                      \"proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.\"\n                      \"{variant}.patch\")),\n",
+      "new": "",
+      "copies": 1,
+      "check": "python3 scripts/build_pwb_behavior_contract_repin.py --check",
+      "exit": 1,
+      "outcome": "killed",
+      "output": [
+        "  policy: the subject with the later patches reversed so far hashes to c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce, not the argument 98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49 of .syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"
+      ]
+    },
+    {
+      "id": "repin-variant-hyphen",
+      "file": "scripts/build_pwb_behavior_contract_repin.py",
+      "old": "`([a-z]+(?:-[a-z]+)*)`",
+      "new": "`([a-z]+)`",
+      "copies": 1,
+      "check": "python3 scripts/build_pwb_behavior_contract_repin.py --check",
+      "exit": 0,
+      "outcome": "survived",
+      "output": [
+        "PWB behaviour-contract re-pin manifest matches its 2 proposed subjects (pin = the pwb-readability-successor-v1.0 spec.md row); registry: performed, subject = proposed bytes, policy: performed, subject with 3 later act patch(es) reversed = proposed bytes"
+      ]
+    }
+  ],
+  "runner": "textual replacement of every copy of `old` by `new` in `file`, then `check`; killed = a nonzero exit; file restored from git after each run (scratch mutants_py.py, lane-policy)",
+  "equivalent": {
+    "repin-variant-hyphen": "the recorded variant is `all`, which the hyphen-free form also reads; only `non-web` needs the hyphen"
+  }
+}
