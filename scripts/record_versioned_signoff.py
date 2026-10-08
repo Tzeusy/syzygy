@@ -167,6 +167,7 @@ def real_packages() -> dict[str, Package]:
     dossier = lambda: _module("build_polaris_dossier_local_agent_mode")  # noqa: E731
     git_source = lambda: _module("build_public_git_source_acquisition_local_agent")  # noqa: E731
     dossier11 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_1")  # noqa: E731
+    dossier12 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_2")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -276,6 +277,22 @@ def real_packages() -> dict[str, Package]:
             options=("n6",),
             apply_with=lambda root, options: dossier11().apply(root, options),
             applied_options=lambda root: dossier11().state(root)[1],
+        ),
+        # Version 1.2 patches the installed v1.1 (as signed, with its options)
+        # the same way, and offers no option.
+        "polaris-dossier-local-agent-mode@1.2": Package(
+            "polaris-dossier-local-agent-mode",
+            "Polaris dossier local-agent mode",
+            "specification delta",
+            CANDIDATES / "polaris-dossier-local-agent-mode-v1-2",
+            "POLARIS-DOSSIER-LOCAL-AGENT-MODE",
+            lambda root: dossier12().check(root),
+            lambda root: dossier12().apply(root),
+            lambda root: dossier12().applied(root),
+            also=(pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode"),),
+            subject=pathlib.Path("openspec/changes/polaris-dossier-local-agent-mode/"
+                                 "specs/polaris-generation/spec.md"),
+            subject_bytes=lambda root: dossier12().subject_bytes(root),
         ),
     }
 
@@ -1073,6 +1090,15 @@ def selftest() -> int:
                     and real11.subject == v11.SPEC and real11.subject_bytes is not None
                     and real11.options == tuple(v11.OPTIONS) and real11.apply_with is not None
                     and real11.applied_options is not None))
+    real12 = packages["polaris-dossier-local-agent-mode@1.2"]
+    v12 = _module("build_polaris_dossier_local_agent_mode_v1_2")
+    results.append(("the real v1.2 entry shares v1.0's key and record stem, binds the computed "
+                    "subject in its own candidate directory and offers no option",
+                    package_for(packages, real.key, "1.2") is real12
+                    and real12.key == real.key and real12.record_stem == real.record_stem
+                    and real12.candidate == v12.CANDIDATE and real12.subject == v12.SPEC
+                    and real12.subject_bytes is not None and real12.options == ()
+                    and real12.apply_with is None and real12.applied_options is None))
     taken: list[frozenset[str]] = []
 
     def apply_with(root, options):
