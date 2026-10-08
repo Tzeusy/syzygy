@@ -110,9 +110,14 @@ LATER_SUBJECT_ACTS: dict[str, tuple[tuple[pathlib.Path, pathlib.Path], ...]] = {
          pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/"
                       "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json."
                       "{variant}.patch")),
+        (DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
+         pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v3/"
+                      "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json."
+                      "{variant}.patch")),
     ),
 }
-CHOSEN_VARIANT_RE = re.compile(r"^Chosen variant: `([a-z]+)`\.?\s*$", re.MULTILINE)
+# Version 3's variants are `all` and `non-web`, so a variant name may carry a hyphen.
+CHOSEN_VARIANT_RE = re.compile(r"^Chosen variant: `([a-z]+(?:-[a-z]+)*)`\.?\s*$", re.MULTILINE)
 
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 EXACT_DIGEST_RE = re.compile(

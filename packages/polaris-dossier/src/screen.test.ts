@@ -291,6 +291,14 @@ sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for 
     const { ours, theirs } = await both('all');
     expect([ours.screenBody(COMPARISON, 'redis.conf'), theirs.screenBody(COMPARISON, 'redis.conf')]).toEqual(['active-content', 'active-content']);
   });
+  it('scans a body at a screened-out path as before, though it ends in an exempt extension: the class decides, not the extension', async () => {
+    const { ours, theirs } = await both('all');
+    for (const screen of [ours, theirs]) {
+      // Denied by the `.env.` prefix, so no class admits it, although `.c` is exempt.
+      expect(screen.contentClass('config/.env.c')).toBeUndefined();
+      expect(screen.screenBody(COMPARISON, 'config/.env.c')).toBe('active-content');
+    }
+  });
   it.each(['all', 'non-web'])('agrees with the app on every path and body under variant %s, given the path', async (variant) => {
     const { ours, theirs } = await both(variant);
     const paths = ['src/server.c', 'src/server.h', 'deps/lua/src/lapi.c', 'web/app.js', 'web/app.ts', 'index.php', 'tests/test.tcl', 'README.md',
