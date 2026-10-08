@@ -291,5 +291,14 @@ never edited into a pass.
   read to check it, because no read is authorised yet. If either path exists,
   `init` reports Redis as governed and the run needs row 3a or 3b (brief item
   F).
-- [Unknown] Whether the deadline, budgets and resource limits suit a
-  repository of Redis's size. No run has measured them.
+- [Observed, synthetic stand-in, one host] The flow at Redis's approximate
+  size completed with no budget refused. The subject was a generated
+  repository of 1,751 files and 29.6 MB of blobs, three of them over 1 MB,
+  shaped from general knowledge of Redis [Inferred] and never read from it.
+  All 17 of Syzygy's steps exited 0, taking 453 ms in all; the process's
+  peak resident set, the whole-tree read below included, was 299 MiB. Reading every blob once, in one call, stayed
+  inside the per-call budgets. Record:
+  `docs/evidence/polaris-dossier-redis-scale-measurement-2026-10-07.json`.
+  [Unknown] Whether the same holds for Redis itself, on the operator's host,
+  and whether the deadline suits the agent sessions' own time: the
+  measurement times Syzygy's steps, not the agent's.

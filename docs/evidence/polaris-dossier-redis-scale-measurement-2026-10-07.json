@@ -1,13 +1,13 @@
 {
   "record": "Redis-scale measurement of the local-agent dossier flow over a synthetic repository (syzygy-qkea.13, the runbook's Unknown on budgets and limits). Measured, not authority; the subject is synthetic and labelled Inferred as a stand-in for Redis.",
   "measuredOn": {
-    "syzygyCommit": "9b6a678c3452c81b14ebca088fe5a40db4554cf7",
+    "syzygyCommit": "88a3c9f6e4ff237bd30e0e8ca1f68e2361c18ccb",
     "trackedTreeClean": true,
     "node": "v24.6.0",
     "platform": "linux x64",
     "script": {
       "path": "scripts/dossier_scale_measure.mjs",
-      "sha256": "967312b9851ff4cb39226cc27caa816e50e93ead2c8c441801b91e4430f3e6cf"
+      "sha256": "0cddf01b23fc639c480bfc2e91adc9f8203744f1f1c865fb7572b22c9573289e"
     }
   },
   "subject": {
@@ -45,7 +45,7 @@
   "initProbe": {
     "initReads": {
       "outcome": "initialized",
-      "ms": 19,
+      "ms": 22,
       "reader": {
         "inventoryCalls": 1,
         "storedNamed": 1783,
@@ -53,8 +53,8 @@
         "entriesListed": 1751
       }
     },
-    "refShape": {
-      "ms": 0,
+    "gitDirShape": {
+      "ms": 2,
       "result": {
         "ok": true
       }
@@ -77,11 +77,11 @@
       "entries": 1751
     },
     "readEveryBlobOnce": {
-      "ms": 340,
+      "ms": 335,
       "blobs": 1751,
       "bytes": 29637133,
-      "rssMiBBefore": 254,
-      "peakRssMiBAfter": 321,
+      "rssMiBBefore": 256,
+      "peakRssMiBAfter": 299,
       "note": "not a step of the flow: one call reading the whole tree, an upper bound against the per-call budgets"
     },
     "budgets": {
@@ -95,14 +95,14 @@
   "flow": {
     "completed": true,
     "failedAt": null,
-    "totalMs": 449,
+    "totalMs": 453,
     "peakRssBeforeFlowMiB": 212,
-    "peakRssMiB": 321,
+    "peakRssMiB": 299,
     "steps": [
       {
         "step": "preflight",
         "exit": 0,
-        "ms": 2,
+        "ms": 1,
         "peakRssMiB": 212,
         "rssMiB": 212,
         "reader": {}
@@ -110,9 +110,9 @@
       {
         "step": "init",
         "exit": 0,
-        "ms": 62,
+        "ms": 51,
         "peakRssMiB": 213,
-        "rssMiB": 208,
+        "rssMiB": 209,
         "reader": "the CLI passes init no reader port; see initProbe.initReads"
       },
       {
@@ -120,7 +120,7 @@
         "exit": 0,
         "ms": 18,
         "peakRssMiB": 213,
-        "rssMiB": 209,
+        "rssMiB": 211,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -129,9 +129,9 @@
       {
         "step": "check",
         "exit": 0,
-        "ms": 37,
-        "peakRssMiB": 213,
-        "rssMiB": 212,
+        "ms": 41,
+        "peakRssMiB": 214,
+        "rssMiB": 214,
         "reader": {
           "listTreeCalls": 2,
           "entriesListed": 3502,
@@ -143,9 +143,9 @@
       {
         "step": "session-prompt inventory",
         "exit": 0,
-        "ms": 16,
-        "peakRssMiB": 213,
-        "rssMiB": 213,
+        "ms": 15,
+        "peakRssMiB": 215,
+        "rssMiB": 215,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -154,9 +154,9 @@
       {
         "step": "inventory-check",
         "exit": 0,
-        "ms": 28,
-        "peakRssMiB": 220,
-        "rssMiB": 220,
+        "ms": 33,
+        "peakRssMiB": 221,
+        "rssMiB": 221,
         "reader": {
           "listTreeCalls": 2,
           "entriesListed": 3502,
@@ -168,9 +168,9 @@
       {
         "step": "launch-form inventory terminal",
         "exit": 0,
-        "ms": 15,
-        "peakRssMiB": 225,
-        "rssMiB": 225,
+        "ms": 18,
+        "peakRssMiB": 226,
+        "rssMiB": 226,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -179,9 +179,9 @@
       {
         "step": "session-prompt review --kind fidelity",
         "exit": 0,
-        "ms": 31,
-        "peakRssMiB": 235,
-        "rssMiB": 235,
+        "ms": 32,
+        "peakRssMiB": 236,
+        "rssMiB": 236,
         "reader": {
           "listTreeCalls": 2,
           "entriesListed": 3502,
@@ -193,9 +193,9 @@
       {
         "step": "review-check --kind fidelity",
         "exit": 0,
-        "ms": 30,
-        "peakRssMiB": 241,
-        "rssMiB": 241,
+        "ms": 32,
+        "peakRssMiB": 242,
+        "rssMiB": 242,
         "reader": {
           "listTreeCalls": 2,
           "entriesListed": 3502,
@@ -208,8 +208,8 @@
         "step": "launch-form review terminal --kind fidelity",
         "exit": 0,
         "ms": 12,
-        "peakRssMiB": 241,
-        "rssMiB": 241,
+        "peakRssMiB": 242,
+        "rssMiB": 242,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -218,9 +218,9 @@
       {
         "step": "render",
         "exit": 0,
-        "ms": 66,
-        "peakRssMiB": 244,
-        "rssMiB": 244,
+        "ms": 69,
+        "peakRssMiB": 246,
+        "rssMiB": 246,
         "reader": {
           "listTreeCalls": 3,
           "entriesListed": 5253,
@@ -232,9 +232,9 @@
       {
         "step": "session-prompt review --kind design",
         "exit": 0,
-        "ms": 19,
-        "peakRssMiB": 246,
-        "rssMiB": 246,
+        "ms": 21,
+        "peakRssMiB": 247,
+        "rssMiB": 247,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -244,8 +244,8 @@
         "step": "review-check --kind design",
         "exit": 0,
         "ms": 17,
-        "peakRssMiB": 247,
-        "rssMiB": 247,
+        "peakRssMiB": 248,
+        "rssMiB": 248,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -254,9 +254,9 @@
       {
         "step": "launch-form review terminal --kind design",
         "exit": 0,
-        "ms": 14,
-        "peakRssMiB": 251,
-        "rssMiB": 251,
+        "ms": 13,
+        "peakRssMiB": 252,
+        "rssMiB": 252,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -265,9 +265,9 @@
       {
         "step": "render",
         "exit": 0,
-        "ms": 63,
-        "peakRssMiB": 256,
-        "rssMiB": 253,
+        "ms": 60,
+        "peakRssMiB": 257,
+        "rssMiB": 255,
         "reader": {
           "listTreeCalls": 3,
           "entriesListed": 5253,
@@ -280,8 +280,8 @@
         "step": "close",
         "exit": 0,
         "ms": 15,
-        "peakRssMiB": 256,
-        "rssMiB": 254,
+        "peakRssMiB": 257,
+        "rssMiB": 255,
         "reader": {
           "listTreeCalls": 1,
           "entriesListed": 1751
@@ -291,8 +291,8 @@
         "step": "status",
         "exit": 0,
         "ms": 1,
-        "peakRssMiB": 256,
-        "rssMiB": 254,
+        "peakRssMiB": 257,
+        "rssMiB": 255,
         "reader": {}
       }
     ]
