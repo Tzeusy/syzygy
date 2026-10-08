@@ -4,9 +4,13 @@
 // `contracts/candidates/public-source-screening-scope/`) says every base
 // detector and the base active-content rule apply unchanged to every admitted
 // public body, the base denied-path rules apply to every path, and a blob is
-// `code-content` only when its final path segment ends with one of the scope's
-// `sourceExtensions` (case-sensitive); every other blob is indeterminate and
-// excluded unread. This module
+// `project-documentation` when exactly one of that rule's path rules matches
+// it (version 2; classified only while the RFC5-14 class amendment act is
+// confirmed, the scope's `prerequisite`), else `code-content` only when its
+// final path segment ends with one of the scope's `sourceExtensions`
+// (case-sensitive); every other blob is indeterminate and excluded unread.
+// The class decision is `@syzygy/polaris-generation-core`'s
+// `publicSourceContentClass`, shared with the dossier's screen. This module
 // loads that policy by the owner act that approves it — the dedicated record
 // `scripts/record_public_source_screening_scope_act.py` writes — never through
 // the Butlers governance-inputs pin, and refuses the run when the record is
@@ -27,6 +31,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { publicSourceContentClass, readProjectDocumentationRule } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 import { excludedSourceId, newGenerationRunKey } from './run-key.js';
@@ -37,10 +42,15 @@ export const PUBLIC_SOURCE_POLICY_PATH = '.syzygy/governance/policies/POLARIS-BU
 export const PUBLIC_SOURCE_ACT_RECORD_PATH = '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md';
 const ACT_IDENTITY = /^Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-\d{4}-\d{2}-\d{2}`$/mu;
 const EXACT_DIGEST = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gmu;
+// The RFC5-14 project-documentation class amendment, as scripts/record_rfc5_project_documentation_act.py writes it.
+export const RFC5_CLASS_ACT_RECORD_PATH = '.syzygy/governance/decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md';
+export const RFC5_MODULE_PATH = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+const CLASS_ACT_TITLE = '# Owner act — RFC5-14 project-documentation content-class amendment\n';
 
-/** The two inputs the screen is loaded from; absent bytes are `undefined`. */
+/** The inputs the screen is loaded from; absent bytes are `undefined`. The class act record and the RFC-0005 module only decide
+ * whether the project-documentation class is classified; leaving them out leaves that class's paths indeterminate. */
 export interface PublicSourcePolicyActPort {
-  readonly read: () => Promise<{ readonly actRecord: string | undefined; readonly policy: Uint8Array | undefined }>;
+  readonly read: () => Promise<{ readonly actRecord: string | undefined; readonly policy: Uint8Array | undefined; readonly classActRecord?: string | undefined; readonly rfc5Module?: Uint8Array | undefined }>;
 }
 
 const readOrAbsent = async (path: string): Promise<Buffer | undefined> => {
@@ -50,20 +60,35 @@ const readOrAbsent = async (path: string): Promise<Buffer | undefined> => {
   }
 };
 
-/** Reads the act record and the policy from a Syzygy checkout (default: this one). */
+/** Reads the act records, the policy and the RFC-0005 module from a Syzygy checkout (default: this one). */
 export function checkoutPolicyActPort(syzygyRoot: string = REPO_ROOT): PublicSourcePolicyActPort {
   return {
     read: async () => {
-      const [act, policy] = await Promise.all([readOrAbsent(join(syzygyRoot, PUBLIC_SOURCE_ACT_RECORD_PATH)), readOrAbsent(join(syzygyRoot, PUBLIC_SOURCE_POLICY_PATH))]);
-      return { actRecord: act?.toString('utf8'), policy: policy === undefined ? undefined : new Uint8Array(policy) };
+      const [act, policy, classAct, module] = await Promise.all([PUBLIC_SOURCE_ACT_RECORD_PATH, PUBLIC_SOURCE_POLICY_PATH, RFC5_CLASS_ACT_RECORD_PATH, RFC5_MODULE_PATH]
+        .map(path => readOrAbsent(join(syzygyRoot, path))));
+      const bytes = (buffer: Buffer | undefined): Uint8Array | undefined => buffer === undefined ? undefined : new Uint8Array(buffer);
+      return { actRecord: act?.toString('utf8'), policy: bytes(policy), classActRecord: classAct?.toString('utf8'), rfc5Module: bytes(module) };
     },
   };
+}
+
+/** Whether the class act record is in the recorder's form and its one exact digest is the RFC-0005 module's sha256. Unlike the dossier's
+ * strict reader this neither sweeps the decisions tree for a withdrawal nor compares the act's instant with the clock, as the policy act
+ * check above does neither. */
+function classActConfirmed(record: string | undefined, module: Uint8Array | undefined): boolean {
+  if (record === undefined || module === undefined || !record.startsWith(CLASS_ACT_TITLE)) return false;
+  const dates = [...record.matchAll(/^Date: (\d{4}-\d{2}-\d{2})$/gmu)], digests = [...record.matchAll(EXACT_DIGEST)];
+  return dates.length === 1 && digests.length === 1 && digests[0]![1] === createHash('sha256').update(module).digest('hex')
+    && record.includes(`\nAct identity: \`RFC5-PROJECT-DOCUMENTATION-AMEND-${dates[0]![1]!}\`\n`) && record.includes('\nAct type: `contract-amendment`\n')
+    && record.includes(`\nArtifact identity: \`${RFC5_MODULE_PATH}\`\n`) && record.includes('\nProject identity: `project:syzygy`\n');
 }
 
 export interface PublicSourceScreen extends CorpusScreen {
   readonly policyId: string;
   readonly policyVersion: string;
   readonly policySha256: string;
+  /** Whether the policy's project-documentation class is classified: it has the rule and the RFC5-14 class act is confirmed. */
+  readonly projectDocumentation: boolean;
 }
 
 function refuse(why: string): never { throw new CorpusRefusal(`public-source-policy: ${why}`); }
@@ -72,7 +97,7 @@ const stringList = (value: unknown): value is readonly string[] => Array.isArray
 /** Verifies the act record against the policy bytes and builds the screen. Any gap refuses. */
 export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = checkoutPolicyActPort(), runKey: Uint8Array = newGenerationRunKey()): Promise<PublicSourceScreen> {
   if (runKey.byteLength < 32) refuse('run key shorter than 32 bytes');
-  const { actRecord, policy } = await port.read();
+  const { actRecord, policy, classActRecord, rfc5Module } = await port.read();
   if (actRecord === undefined) refuse(`no act record at ${PUBLIC_SOURCE_ACT_RECORD_PATH}`);
   if (policy === undefined) refuse(`no policy at ${PUBLIC_SOURCE_POLICY_PATH}`);
   const act = actRecord!;
@@ -94,16 +119,20 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   const extensions = (codeContent[0] as Record<string, unknown> | undefined)?.sourceExtensions;
   if (codeContent.length !== 1 || !stringList(extensions) || extensions.length === 0 || extensions.some(extension => !/^\.[^/\s]+$/u.test(extension) || extension.includes('..'))) refuse('policy sourceExtensions unreadable');
   const sourceExtensions = extensions as readonly string[];
+  const documentationRead = readProjectDocumentationRule(classification!.rules as readonly unknown[], sourceExtensions);
+  if (!documentationRead.ok) refuse(`policy ${documentationRead.why.replace(/^its /u, '')}`);
+  // The scope's prerequisite: the class is classified only while the in-force RFC-0005 vocabulary lists it.
+  const documentation = classActConfirmed(classActRecord, rfc5Module) ? documentationRead.rule : null;
   const rules: DeniedPathRules = { basenames: admission!.deniedPathBasenames as string[], prefixes: admission!.deniedPathPrefixes as string[], suffixes: admission!.deniedPathSuffixes as string[] };
   let detectors: ReturnType<typeof compileDetectors>;
   try { detectors = compileDetectors({ detectors: doc.detectors as readonly SecretDetector[] }); } catch (error) { return refuse(`detectors: ${error instanceof Error ? error.message : 'invalid'}`); }
   const key = Buffer.from(runKey);
   return {
-    policyId: doc.policyId as string, policyVersion: doc.policyVersion as string, policySha256,
-    // Unread: denied path, then a detector match anywhere in the path, then a final segment no code-content extension ends.
+    policyId: doc.policyId as string, policyVersion: doc.policyVersion as string, policySha256, projectDocumentation: documentation !== null,
+    // Unread: denied path, then a detector match anywhere in the path, then a path in neither project-documentation nor code-content.
     screenPath: path => deniedPathReason(path, rules) !== undefined ? 'denied-path'
       : detectSecrets(detectors, path) !== undefined ? 'secret-detector-match'
-        : sourceExtensions.some(extension => (path.split('/').at(-1) ?? '').endsWith(extension)) ? undefined : 'unknown-extraction-class',
+        : publicSourceContentClass(path, sourceExtensions, documentation) !== undefined ? undefined : 'unknown-extraction-class',
     // Detectors scan the raw text (inert code contexts included), then the active-content scan.
     screenBody: body => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match' : scanActiveContent(body).length > 0 ? 'active-content' : undefined,
     opaqueId: identity => excludedSourceId(key, identity),

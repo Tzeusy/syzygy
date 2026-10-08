@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -342,5 +342,75 @@ describe('policy residuals (the detectors see literal forms only)', () => {
     expect(screen.screenPath(`keys/${DIR_TOKEN}/a.c`)).toBe('secret-detector-match');
     // RESIDUAL: the same token base64-encoded in a path passes the detectors.
     expect(screen.screenPath(`src/${Buffer.from(PATH_TOKEN).toString('base64').replace(/[/+=]/gu, '_')}.ts`)).toBeUndefined();
+  });
+});
+
+// syzygy-2coz: the project-documentation class of screening scope version 2, under the live scope's rules. It is classified only while
+// the RFC5-14 class amendment act is confirmed (the scope's prerequisite); its bodies pass every detector and the active-content scan.
+describe('the project-documentation class', () => {
+  const LIVE_RULES = (JSON.parse(readFileSync(new URL('../../../../.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json', import.meta.url), 'utf8'))
+    .publicSourceScope.contentClassification.rules) as Record<string, unknown>[];
+  const livePolicy = policyBytes({ publicSourceScope: { contentClassification: { rules: LIVE_RULES } } });
+  const MODULE = new TextEncoder().encode('# RFC-0005 fixture module\n\n- `project-documentation`\n');
+  const classAct = (date = '2026-10-04', lines: Record<string, string> = {}): string => [
+    '# Owner act — RFC5-14 project-documentation content-class amendment', '', `Date: ${date}`, '',
+    lines['identity'] ?? `Act identity: \`RFC5-PROJECT-DOCUMENTATION-AMEND-${date}\``, '', lines['type'] ?? 'Act type: `contract-amendment`', '',
+    lines['project'] ?? 'Project identity: `project:syzygy`', '', lines['artifact'] ?? 'Artifact identity: `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`', '',
+    lines['digest'] ?? `Exact digest (SHA-256): \`${sha(MODULE)}\``, '',
+  ].join('\n');
+  // No defaults for the record and the module: an absent one is passed as `undefined`, which a default would replace.
+  const docPort = (record: string | undefined, module: Uint8Array | undefined, policy = livePolicy): PublicSourcePolicyActPort =>
+    ({ read: async () => ({ actRecord: actRecord(sha(policy)), policy, classActRecord: record, rfc5Module: module }) });
+
+  it('admits a root document, a docs guide and a license text, and keeps withholding the rest', async () => {
+    const screen = await loadPublicSourceScreen(docPort(classAct(), MODULE));
+    expect(screen.projectDocumentation).toBe(true);
+    expect(['README.md', 'docs/guide.md', 'licenses/MIT.txt', 'src/server.c', 'MANIFESTO', 'docs/design.md', 'src/README.md', 'redis.conf'].map(path => screen.screenPath(path)))
+      .toEqual([undefined, undefined, undefined, undefined, 'unknown-extraction-class', 'unknown-extraction-class', 'unknown-extraction-class', 'unknown-extraction-class']);
+  });
+
+  it.each<[string, string | undefined, Uint8Array | undefined]>([
+    ['no class act record', undefined, MODULE],
+    ['no RFC-0005 module', classAct(), undefined],
+    ['a digest that is not the module\'s', classAct(), new TextEncoder().encode('# another module\n')],
+    ['another title', classAct().replace('# Owner act — RFC5-14', '# Owner act — RFC5-15'), MODULE],
+    ['an identity dated otherwise', classAct('2026-10-04', { identity: 'Act identity: `RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-05`' }), MODULE],
+    ['another act type', classAct('2026-10-04', { type: 'Act type: `approve-policy`' }), MODULE],
+    ['another artifact', classAct('2026-10-04', { artifact: 'Artifact identity: `.syzygy/governance/contracts/rfcs/RFC-0004/x.md`' }), MODULE],
+    ['another project', classAct('2026-10-04', { project: 'Project identity: `project:butlers`' }), MODULE],
+    ['two dates', `${classAct()}\nDate: 2026-10-05\n`, MODULE],
+    ['two digests', classAct('2026-10-04', { digest: `Exact digest (SHA-256): \`${sha(MODULE)}\`\n\nExact digest (SHA-256): \`${sha(MODULE)}\`` }), MODULE],
+  ])('leaves documentation indeterminate with %s, and still screens code', async (_name, record, module) => {
+    const screen = await loadPublicSourceScreen(docPort(record, module));
+    expect(screen.projectDocumentation).toBe(false);
+    expect(screen.screenPath('README.md')).toBe('unknown-extraction-class');
+    expect(screen.screenPath('src/server.c')).toBeUndefined();
+  });
+
+  it('refuses a malformed project-documentation rule whether or not the class act is confirmed', async () => {
+    const rules = LIVE_RULES.map(rule => (rule['class'] === 'project-documentation' ? { ...rule, docTreeRoots: ['docs/api'] } : rule));
+    const policy = policyBytes({ publicSourceScope: { contentClassification: { rules } } });
+    for (const record of [classAct(), undefined]) {
+      const error = await loadPublicSourceScreen(docPort(record, MODULE, policy)).then(() => undefined, (caught: unknown) => caught);
+      expect(error).toBeInstanceOf(CorpusRefusal);
+      expect((error as CorpusRefusal).message).toContain('public-source-policy: policy project-documentation rule docTreeRoots is unreadable');
+    }
+  });
+
+  it('reads admitted documentation bodies through the detectors and the active-content scan, and never reads an excluded one', async () => {
+    const only = fixtureRepo({
+      'README.md': '# Fixture\n\nA clean introduction.\n',
+      'docs/guide.md': `${SENTINEL}\n\`\`\`\n${SECRETS['credential-assignment']}\`\`\`\n`,
+      'licenses/MIT.txt': `${SENTINEL}\n<script>alert(1)</script>\n`,
+      'docs/design.md': `${SENTINEL} design\n`,
+    });
+    const read: string[][] = [];
+    const { readGitBlobsBatch } = await import('../git-blob-batch.js');
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct: docPort(classAct(), MODULE),
+      readBlobs: (repo, objects) => { read.push([...objects]); return readGitBlobsBatch(repo, objects); } });
+    expect(corpus.count).toMatchObject({ selected: 4, secretDetectorMatches: 1, activeContent: 1, indeterminate: 1, sourceRows: 4 });
+    expect(corpus.sources.filter(source => !source.exclusion.excluded).map(source => source.path)).toEqual(['README.md']);
+    expect(read.flat()).not.toContain(objectIdOf('docs/design.md', only.root, only.commit));
+    expect(leaks(JSON.stringify(corpus))).toEqual([]);
   });
 });
