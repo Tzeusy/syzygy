@@ -16,7 +16,7 @@ import {
 import type { ScreenLoad } from './screen.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 
-/** Pre-started waiting sessions (owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`; the candidate v1.2 of
+/** Pre-started waiting sessions (owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`; the candidate v1.2 of
  * `polaris-dossier-local-agent-mode`, REQ-polaris-generation-035 as amended there).
  *
  * At the start of a run the authoring session runs `syzygy dossier session-prompt <run> all`: Syzygy makes the inventory, fidelity-review
@@ -37,7 +37,7 @@ import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
  *
  * Gated: until the owner signs off version 1.2 of the specification, `waitModeSigned` is false and every wait-mode step refuses. */
 
-export const WAIT_MODE_DIRECTION = 'POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09';
+export const WAIT_MODE_DIRECTION = 'POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08';
 export const WAIT_MODE_SPEC = 'polaris-dossier-local-agent-mode v1.2';
 export const WAITING_MODE = 'waiting';
 export const DELIVERY_FORMAT = 'polaris-dossier-delivery/1';

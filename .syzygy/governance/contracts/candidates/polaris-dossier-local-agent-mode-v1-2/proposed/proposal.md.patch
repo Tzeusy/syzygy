@@ -18,7 +18,7 @@ index ca06590e..14178373 100644
 -> 1.1 (VIS-4). It grants no read, egress, write or execution beyond what
 +> D9 the same day, and version 1.1 on 2026-10-07; version 1.2 adds the
 +> waiting sessions of the owner direction
-+> `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`
++> `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`
 +> (`.syzygy/governance/decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md`).
 +> These bytes bind only by the owner's sign-off of version 1.2 (VIS-4). It grants no read, egress, write or execution beyond what
  > its requirements state.

@@ -1,5 +1,5 @@
 > **Candidate — binds nothing.** This semantic delta is drafted under the
-> owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09` and CC-REV-2.
+> owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08` and CC-REV-2.
 > It performs no act and amends no signed byte. Version 1.1 of
 > `polaris-dossier-local-agent-mode` stays in force until the owner signs off
 > version 1.2 after a fresh independent review of these exact bytes.
@@ -25,7 +25,7 @@ review page.
 
 `GOVERNING-DEPENDENCIES.md` is regenerated on install
 (`check_spec_reconciliation.py --regenerate`) and gains the decision
-`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`. `tasks.md` is unchanged.
+`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`. `tasks.md` is unchanged.
 
 **Stable IDs affected:** REQ-polaris-generation-035, amended in place: one
 paragraph added to the requirement text, four scenarios added, the case, the
@@ -50,7 +50,7 @@ so fails v1.2.
 
 - The owner direction
   `.syzygy/governance/decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md`
-  (`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`): option B, the
+  (`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`): option B, the
   sub-answer that one reviewer may continue with disclosure, and the
   recommended mitigation taken with the option.
 - Decision 3 of
@@ -149,7 +149,7 @@ sessions the operator starts".
 
 ## Warrant
 
-- **The owner direction** `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09` for
+- **The owner direction** `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08` for
   items 1 to 5; it joins 035's `decisions` warrants.
 - **VIS-1, VIS-2** for item 6: a value Syzygy cannot observe is Inferred and
   said so. **VIS-3** stays 035's primary warrant.

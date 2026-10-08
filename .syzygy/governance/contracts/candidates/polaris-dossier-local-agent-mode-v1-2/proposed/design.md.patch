@@ -20,7 +20,7 @@ index e182af4c..ebe13559 100644
     carries the frozen inventory as part of its criteria, because
     REQ-polaris-generation-006 measures coverage against it.
 +   Since version 1.2 (owner direction
-+   `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`, option B of the
++   `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`, option B of the
 +   2026-10-08 blockers packet), the operator may start all three helper
 +   sessions at the start of a run, so a run need not stall at each
 +   hand-over while nobody is there to start one. `session-prompt <run> all`
