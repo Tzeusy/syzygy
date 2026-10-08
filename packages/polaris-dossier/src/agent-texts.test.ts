@@ -183,7 +183,9 @@ const lint = (text: string): string[] => [
 
 describe('agent texts (S11)', () => {
   it('reads every command synopsis from the usage text', () => {
-    expect([...SYNOPSES.keys()].sort()).toEqual(['allow-execution', 'brief', 'check', 'close', 'init', 'inventory-brief', 'inventory-check', 'launch-form', 'preflight', 'render', 'review-check', 'review-packet', 'session-prompt', 'status']);
+    expect([...SYNOPSES.keys()].sort()).toEqual(['allow-execution', 'await', 'brief', 'check', 'close', 'init', 'inventory-brief', 'inventory-check', 'launch-form', 'preflight', 'render', 'review-check', 'review-packet', 'session-prompt', 'status']);
+    expect(SYNOPSES.get('session-prompt')!.positional).toEqual(['<run>', 'inventory|review|all']);
+    expect(SYNOPSES.get('await')!.positional).toEqual(['<session-dir>/']);
     expect(SYNOPSES.get('init')).toEqual({ positional: ['<clone>'], required: new Set(['--url', '--config']), options: new Map([['--url', null], ['--config', null], ['--state-root', null]]) });
     expect(SYNOPSES.get('launch-form')!.positional).toEqual(['<run>', 'inventory|review', 'terminal|bang']);
     expect(SYNOPSES.get('allow-execution')!.required).toEqual(new Set(['--revision', '--declare']));
@@ -212,7 +214,7 @@ describe('agent texts (S11)', () => {
     expect(commandFaults(swap('`syzygy dossier check <run>`', '`syzygy dossier verify <run>`'))).toEqual(['syzygy dossier verify <run>: no such command']);
     expect(commandFaults(swap('`syzygy dossier check <run>`', '`syzygy dossier check <run> --strict x`'))).toEqual(['syzygy dossier check <run> --strict x: check takes no --strict']);
     expect(commandFaults(swap('`syzygy dossier init <clone> --url <url> --config <file> --state-root <dir>`', '`syzygy dossier init <clone> --url <url>`'))).toEqual(['syzygy dossier init <clone> --url <url>: init requires --config']);
-    expect(commandFaults(swap('`syzygy dossier session-prompt <run> inventory`', '`syzygy dossier session-prompt <run> authoring`'))).toEqual(['syzygy dossier session-prompt <run> authoring: authoring is not one of inventory|review']);
+    expect(commandFaults(swap('`syzygy dossier session-prompt <run> inventory`', '`syzygy dossier session-prompt <run> authoring`'))).toEqual(['syzygy dossier session-prompt <run> authoring: authoring is not one of inventory|review|all']);
     expect(commandFaults(swap('--kind fidelity|design --verdict verdict.json', '--kind summary --verdict verdict.json'))).toHaveLength(1);
     expect(allowExecutionFaults(swap('Never\n   run that command yourself', 'Run\n   that command yourself'))).toHaveLength(1);
     expect(descriptionFaults(swap('for any repository the operator holds the consents for', 'for any public repository'))).toHaveLength(2);
