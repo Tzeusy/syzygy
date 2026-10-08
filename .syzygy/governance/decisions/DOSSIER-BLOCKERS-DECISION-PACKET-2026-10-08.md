@@ -76,11 +76,12 @@ manifest row, read at the sitting.
 **What is wrong.** Your 2026-10-07 statement lets Claude Code with Anthropic
 receive five classes of Redis content. `project-documentation` (README,
 guides, changelog) is not one of them, because the class was created later,
-and the class act says "No existing consent gains the class". PR #403's
-review therefore stopped Syzygy from putting docs text into the inventory
-and review packets [Observed, as relayed by the lead: review
-R-PR403-SCREEN-DOCS-1, finding F1, whose raw lives on the PR #403 branch].
-README-based claims then cannot be reviewed and render Unknown.
+and the class act says "No existing consent gains the class". So PR #403,
+now merged, withholds docs text from the review packets it hands your
+sessions [Observed: review finding F1,
+`docs/reviews/R-PR403-SCREEN-DOCS-1-RAW.md`, and the class gate in
+`packages/polaris-dossier/src/class-gate.ts`]. README-based claims then
+cannot be reviewed and render Unknown.
 
 **The draft.** `../contracts/candidates/dossier-agent-provider-v2/`: the
 same record at version `0.2.0-candidate.1`, with `project-documentation`
@@ -96,8 +97,8 @@ sign-offs do not cover consents).
 
 **If yes:** packets may carry screened docs text for Redis once the matching
 code change lands in the same commit (the package's `SEMANTIC-DELTA.md`);
-without it the act closes the statement gate. **If no:** PR #403 ships
-without docs in packets.
+without it the act closes the statement gate. **If no:** docs text stays
+withheld from packets, as now.
 
 **Words to give** (after a confirming review): "Sign the Redis Anthropic
 provider statement, version 2", or "Decline".

@@ -40,12 +40,17 @@ The supersession sentence is the egress record's version-2 form
   did not exist when it was drafted. The RFC5-14 class act says "No existing
   consent gains the class"
   (`.syzygy/governance/decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md:66`).
-- [Observed, as relayed by the lead and an exploration of the PR branch] the
-  PR #403 review's F1 found that the dossier's review packet carries
-  project-documentation spans to the agent session while the only Redis
-  provider record does not list the class, and asked for "an owner ruling or a
-  statement successor that lists `project-documentation`". This package is the
-  successor. The raw lives on the PR #403 branch, not on this base.
+- [Observed] The PR #403 review's F1
+  (`docs/reviews/R-PR403-SCREEN-DOCS-1-RAW.md`, on main since #403 merged)
+  found that the dossier's review packet carried project-documentation spans
+  to the agent session while the only Redis provider record does not list the
+  class. Its line 42 says: "Otherwise, ask the owner for a ruling or a
+  statement successor that lists `project-documentation` before this ships."
+  This package is that successor. #403 merged with the other remedy, a class
+  gate: `packages/polaris-dossier/src/class-gate.ts` withholds from every
+  agent-bound artifact a span whose class the in-force statement does not
+  list (`class-not-consented`). Under version 1, Redis's docs spans are
+  therefore withheld from packets.
 - [Inferred] With version 2 in force, README and docs spans that screening
   admits may go into Syzygy's own inventory and review packets for Redis; a
   dossier's overview can then be fidelity-reviewed against the project's own
@@ -72,11 +77,13 @@ statement gate knows only version 1:
   version-2 act names the same Record ID, so without a version-aware form the
   version-2 act record would read as a record naming version 1.
 - `providerStatementGate` refuses when more than one in-force statement names
-  the pair (`:295`): version 2 must end version 1's term at its own instant,
+  the pair (`:304`): version 2 must end version 1's term at its own instant,
   as `package-reader.ts` does for the policy chain.
-- The gate checks only that a statement lists some class
-  (`gate-sources.ts:293`); gating packet spans by class against the in-force
-  version is PR #403's own fix.
+- The gate itself checks only that a statement lists some class
+  (`liveStatements`, `:287-288`). The class gate PR #403 merged reads the
+  classes of the one in-force statement (`statementContentClasses`, `:291`),
+  so once version 2 alone is in force its `project-documentation` entry
+  admits docs spans to packets with no further class-gate change.
 - `gate-acts.test.ts` hard-codes version 1's classes and version; a new
   recorder and its `check_governance.py` registrations come with the act, not
   before (the version-1 and egress-v2 registrations were added with their
