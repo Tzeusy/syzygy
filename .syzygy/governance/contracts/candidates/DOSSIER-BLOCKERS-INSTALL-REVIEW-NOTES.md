@@ -71,15 +71,21 @@ Taken in the follow-up PR. `readCodeContentExemption` in
 `packages/polaris-generation-core/src/public-source-classification.ts` now
 refuses any `exemptExtensions` entry that is not a dot followed by no `/`
 and no whitespace, so it no longer relies on its callers' own check. A test
-in `public-source-exemption.test.ts` covers an extension carrying `/`, and a
-rule-6 mutant removing the check is killed; the record is under
-`docs/evidence/`.
+in `public-source-exemption.test.ts` covers six malformed entries a caller
+lists, `/` among them. Seven rule-6 mutants (the check removed, and each part
+of it weakened) are all killed; the record is
+`docs/evidence/dossier-blockers-install-n4-mutants-ts-2026-10-08.json`.
 
 ### N5 — no retained fresh-clone battery transcript
 
 Taken in the follow-up PR: a fresh-clone battery transcript for the merged
-head `f7d1ea7f` is retained under `docs/evidence/`, run on disk with
-`TMPDIR` on disk so the shared `/tmp`'s inode exhaustion cannot affect it.
+head `f7d1ea7f` is retained as
+`docs/evidence/dossier-blockers-install-clone-battery-f7d1ea7f-2026-10-08.log`:
+93 of 93 battery commands clean, after `npm ci` and the build. The clone sat
+on disk; `TMPDIR` sat outside every git repository. A first run with
+`TMPDIR` under the main checkout's directory failed a set of selftests, because
+scripts that run git in a scratch directory found the enclosing repository;
+that run is environmental and is not retained.
 
 ### N6 — the register note does not record the owner's P-107 answer
 

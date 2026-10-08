@@ -1,0 +1,330 @@
+commit f7d1ea7fe8c1590d8ea43d68e0d9f0d13f05f772
+started 2026-10-08T20:48:18Z
+python Python 3.10.12 node v24.6.0 npm 11.5.1
+npm ci rc=0
+build rc=0
+battery commands: 93
+== python3 scripts/check_governance.py
+
+32 OK, 21 WARN, 0 FAIL (53 checks) — counts derived, not asserted
+rc=0
+== python3 scripts/check_governance.py --selftest
+
+392 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 scripts/record_polaris_understanding_adoption.py --check
+PASS owner direction observed; exact digest reconciled: 8 historical rows, 7 unchanged, REQ-004 adoption/current bytes; 31 requirements/182 scenarios; C1 9322656dcfcc00b436868e93f2754f812dfa9db9. Technical evidence does not perform adoption or grant permission.
+rc=0
+== python3 scripts/record_polaris_understanding_adoption.py --selftest
+PASS history population selftest: 22 real-Git cases
+PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; a refused performed package contests its paths after a step back and at an instant tie, and still does after its act record is edited; a copy claiming a performed act contests; 15 composition cases
+rc=0
+== python3 scripts/launch_gate_results.py --selftest            # historical Markdown records
+  pass  LG-6 names the line that OPENED the region, not the last line before it (RD45-05 — expects line 64)
+329 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 scripts/validate_launch_administration.py --selftest # the structured record path
+
+126 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 scripts/render_launch_administration.py --selftest
+
+38 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 $CS/verify_final_prespec.py
+
+PASS — all checks clean
+rc=0
+== python3 $CS/build_contract_index.py --check
+index matches regeneration — no drift over 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 11 phase-rule clause(s) over 11 shared rule(s), status_source projected for 11 of 11
+rc=0
+== python3 $CS/build_contract_index.py --selftest   # needs PyYAML (test-only); without it the YAML cases fail, never skip
+SELFTEST OK: hostile list items load back as the same strings
+SELFTEST OK: an [Unknown] status_source row still parses, as a string
+rc=0
+== python3 $CS/build_dependency_index.py --check
+dependency index matches regeneration — no drift over 39 of 39 module(s) carry a front-matter id, 11 contract(s), 176 authored `depends_on` edge(s), 8 `constrains` edge(s)
+rc=0
+== python3 $CS/build_budget_report.py --check
+population: 10 fixture(s), 4 anchored field kind(s), 0 RFC11-4 index-digest anchor(s) present, 39 module(s) in the report
+fixture anchors and the generated report match regeneration
+rc=0
+== python3 $CS/build_active_manifest.py --check
+current manifests match regeneration and performed wave arguments verify — 5 current manifest(s) regenerated over 39 module(s), 2 performed wave manifest(s) preserved, 6 wave path sets checked
+rc=0
+== python3 $CS/build_task_router.py --check
+task router matches regeneration — 13 task classes validated
+rc=0
+== python3 $CS/build_task_router.py --selftest
+  pass  Capability 1 route: a later-gate decision named as executed detected
+11 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 $CS/build_capability_1_views.py --check      # capability 1: charter -> views
+capability 1 views match regeneration — 6 behaviour row(s), 29 clause(s), 0 blocking decision(s)
+rc=0
+== python3 $CS/build_capability_1_views.py --selftest
+
+21 fixtures, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 scripts/build_capability_1_spec_dependencies.py --check  # capability 1 spec: warrants -> generated union
+capability 1 spec dependencies match regeneration — 42 requirement(s), 50 distinct authorities
+rc=0
+== python3 scripts/build_capability_1_spec_dependencies.py --selftest
+selftest: 13/13 fixtures behave (1 clean, 10 mutations rejected, drift + determinism hold)
+rc=0
+== python3 scripts/build_general_trusted_bootstrap_impact_ledger.py --check
+performed impact ledger frozen and valid — .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md; 204 baseline files
+rc=0
+== python3 scripts/build_general_trusted_bootstrap_transaction.py --check
+performed general trusted-bootstrap transaction frozen and valid — 30 contract paths, 5 historical PWB paths, 5 owner-act rows
+rc=0
+== python3 scripts/build_polaris_project_wide_contract_coverage.py --check
+Polaris consequence matrix matches regeneration — 324 clauses represented
+rc=0
+== python3 scripts/build_polaris_project_wide_spec_dependencies.py --check
+Polaris dependencies match regeneration — 17 requirement(s)
+rc=0
+== python3 scripts/build_pwb_truth_policy_amendment.py --check
+PWB amendment manifests match 11 behavior and 2 separate effect subjects
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-missing-currency-disclosure-scenario --version 1.0   # missing-currency sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
+recorded pwb-missing-currency-disclosure-scenario v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-dismissal-expiry-amendment --version 1.0   # dismissal-expiry sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
+recorded pwb-dismissal-expiry-amendment v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-container-shape-profile-amendment --version 1.0   # container-shape sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
+recorded pwb-container-shape-profile-amendment v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-item-depth-amendment --version 1.0   # item-depth sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
+recorded pwb-item-depth-amendment v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-readability-successor --version 1.0   # PWB readability sign-off, v1.0 2026-10-02: record, aggregate block and applied tree
+recorded pwb-readability-successor v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check pwb-tree-framing-amendment --version 1.0   # tree-framing sign-off, v1.0 2026-10-03: record, aggregate block and applied tree
+recorded pwb-tree-framing-amendment v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0   # dossier local-agent sign-off, v1.0 2026-10-06: record, aggregate block and applied tree
+recorded polaris-dossier-local-agent-mode v1.0 sign-off regenerates exactly; superseded by a later version
+rc=0
+== python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.1   # dossier local-agent sign-off, v1.1 2026-10-07: record, options, aggregate block and applied tree
+recorded polaris-dossier-local-agent-mode v1.1 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02   # render-mode act, performed 2026-10-02: record, aggregate block and applied tree
+recorded PWB render-mode behavior amendment act matches exact owner argument; 11 of 11 rows hash the tree
+rc=0
+== python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02   # machine-view act, performed 2026-10-02: record, aggregate block and applied tree
+recorded PWB machine-view behavior amendment act matches exact owner argument; 11 of 11 rows hash the tree
+rc=0
+== python3 scripts/record_versioned_signoff.py --selftest   # version-tagged sign-off recorder (Scope A); per-package --check lines join the battery with each sign-off
+PASS the real registry package installs its builder's entry and binds the sitting manifest
+97 fixtures, 0 failing
+rc=0
+== python3 scripts/pwb_signed_selftest.py --selftest   # reruns a signed builder's fixtures against its pre-adoption tree (git archive; needs full history)
+selftest: a nested rerun is refused: ok
+selftest: 6 cases pass
+rc=0
+== python3 scripts/build_pwb_missing_currency_disclosure_scenario.py --selftest   # missing-currency builder fixtures, at its pre-adoption tree
+build_pwb_missing_currency_disclosure_scenario.py: signed off (.syzygy/governance/decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md); running this file's current bytes against the pre-adoption tree d9846de3ebf3 (git archive)
+selftest: missing/duplicate scenario, placement, fabricated freshness, aggregate absorption, stale manifest, path order, patch drift, dependency drift, contract-coverage drift, sibling orders and generated-patch collision all fail closed
+rc=0
+== python3 scripts/build_pwb_dismissal_expiry_amendment.py --selftest   # dismissal-expiry builder fixtures, at its pre-adoption tree
+build_pwb_dismissal_expiry_amendment.py: signed off (.syzygy/governance/decisions/PWB-DISMISSAL-EXPIRY-AMENDMENT-SIGNOFF-v1.0.md); running this file's current bytes against the pre-adoption tree 9bf3ea5eb632 (git archive)
+selftest: 166 mutants killed — stale manifest, path order, patch population, 35 paragraph rules, paragraph missing/duplicate/placement, 3 scenarios x missing/duplicate/placement, 17 scenario-body rules, 12 forbidden wordings x paragraph/scenario, 2 once-only scenario phrases, a dropped fact, the scenario-2 reversion, three round-3 mutants, 12 round-4 mutants against the whole-spec pin, 6 drifted pin anchors, 12 case-swapped forbidden wordings, 7 warrants, dependency and contract-coverage drift, proposal, capability row and totals, 13 repair rows, patch drift, 12 check() cases (manifest content/order/missing, patch population, undeclared subject, pin edges, dependencies, proposal, capability, contract coverage), all fail closed
+rc=0
+== python3 scripts/build_pwb_container_shape_profile_amendment.py --selftest   # container-shape builder fixtures, at its pre-adoption tree
+build_pwb_container_shape_profile_amendment.py: signed off (.syzygy/governance/decisions/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md); running this file's current bytes against the pre-adoption tree 07df24bef5a8 (git archive)
+selftest: 184 mutants killed — stale manifest, path order, a corrupted row digest, patch population, an undeclared subject change, 9 shape and 8 key-form sentences, entry dropped/added/moved and closure for each vocabulary, the duplicate-key rule, 8 vocabulary, 3 key-form, 8 profile and 13 loaded-profile rules, 4 declared-item rules and the rule made 'any', the source-path bullet, shared-text drift on either vocabulary and on both packages at once, the whole-spec pin over 15 unamended clauses, a scenario swap, the unscoped falsifier, 8 drifted and 8 duplicated anchors, check() without its manifest comparison, its shared-text digest, its patch population or its structure predicate, bullet order/duplicate/missing, retired opening, the hoisted exactness paragraph reworded or left behind, Butlers grammar drift, 23 PWB-REQ-002 rules, retired requirement text, SHALL made MAY, the falsifier relabelled, three scenario clauses and the first scenario altered, 5 scenarios x missing/duplicate/placement plus each scenario rule, warrants, dependency and contract-coverage drift, capability row and totals, patch drift and two table-shape mutants all fail closed
+rc=0
+== python3 scripts/build_pwb_item_depth_amendment.py --selftest   # item-depth builder fixtures, at its pre-adoption tree
+selftest: a landing without the contract-coverage subject: caught
+selftest: 63 package predicates fail closed
+rc=0
+== python3 scripts/build_pwb_readability_successor.py --selftest   # PWB readability successor builder fixtures, at its pre-adoption tree
+selftest: deterministic regeneration: caught
+selftest: 52 package predicates fail closed
+rc=0
+== python3 scripts/build_pwb_tree_framing_amendment.py --selftest   # tree-framing builder fixtures, at its pre-adoption tree
+selftest: a landing without the capability-coverage row: caught
+selftest: 117 package predicates fail closed
+rc=0
+== python3 scripts/build_polaris_dossier_local_agent_mode.py --check   # dossier local-agent package: absent, unapplied or applied, and its status figure
+OK: the package verifies (applied)
+rc=0
+== python3 scripts/build_polaris_dossier_local_agent_mode.py --selftest   # dossier local-agent builder fixtures, before and after its sign-off
+PASS unapplied: a short citer without the span fails
+36 fixtures, 0 failing
+rc=0
+== python3 scripts/build_polaris_dossier_local_agent_mode_v1_1.py --check   # dossier v1.1 package: absent, unapplied or applied over the signed v1.0 bytes, and signed or not
+OK: the v1.1 package verifies (applied, options ['n6'])
+rc=0
+== python3 scripts/build_polaris_dossier_local_agent_mode_v1_1.py --selftest   # dossier v1.1 builder fixtures, including the signed-bytes check
+PASS absent package with a v1.1 record fails
+32 fixtures, 0 failing
+rc=0
+== python3 scripts/record_pwb_behavior_amendment_acts.py --check opening-band 7f80cb05f644dd1e4f49e7b212d6972ee4754e40682450e59a6c3245546d5c46 --date 2026-10-01   # opening-band act, performed 2026-10-01: record, aggregate block and applied subjects regenerate exactly
+recorded PWB opening-band behavior amendment act matches exact owner argument; 11 of 11 rows hash the tree
+rc=0
+== python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check   # registry amendment, performed 2026-09-30, superseded 2026-10-02: the re-pinned subject reverses to its proposed bytes
+PWB registry currency-and-briefing amendment manifest matches the 1 proposed subject (13 currency bounds, 1 new response ceiling); performed and superseded 2026-10-02: the re-pinned subject reverses to the proposed bytes
+rc=0
+== python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
+selftest: 24 predicates — subject drift, patch corruption, patch population, a no-op patch, manifest digest, path mutation and absence, both version bumps, limit semantics, the briefing ceiling's value and exact single-claim scope, claim-class population, duplication, row shape and bound value, the semantics block's type, keys and empty sentences, entry count, the claim:fact:item: family name and JSON validity all fail closed
+rc=0
+== python3 scripts/record_pwb_registry_currency_amendment.py --check 2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a --date 2026-09-30  # registry act record and aggregate block regenerate exactly
+recorded superseding adopt-registry-entry act matches exact owner argument; the subject hashes to it once the 2026-10-02 re-pin that superseded it is reversed
+rc=0
+== python3 scripts/record_pwb_registry_currency_amendment.py --selftest
+PASS review verdict other than CONFIRM rejected
+16 recording fixtures, 0 failing
+rc=0
+== python3 scripts/build_pwb_behavior_contract_repin.py --selftest
+PASS replay fails: a later patch's added line corrupted
+37 fixtures, 0 failing
+rc=0
+== python3 scripts/record_pwb_behavior_contract_repin_acts.py --check registry ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa --date 2026-10-02   # registry re-pin act: record, aggregate block and applied subject
+recorded adopt-registry-entry re-pin act matches the exact owner argument; the subject hashes to it and the package verifies in its performed state
+rc=0
+== python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
+PASS malformed --date rejected
+38 recording fixtures, 0 failing
+rc=0
+== python3 scripts/record_public_source_screening_scope_v3_act.py --check c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce --date 2026-10-08 --question-opening 'Decision 1 (P-105):'' Redis'\''s core C files (server.c, networking.c, …) are withheld because the HTML check reads `a<b && c>d` as a tag. Screening policy v3 lets source files skip that check, but only while every page shows them as escaped text under a no-script CSP. Every secret detector still runs. Which do you choose?' --selection-label 'Variant all (Recommended)' --selection-description 'All 25 source extensions skip the HTML check. Widest:'' JS/PHP full of HTML strings are admitted too, protected only by escaping. Phrase:'' "Sign screening scope version 3, variant all".' --packet-words 'Sign screening scope version 3, variant all'   # screening-scope policy act: record, aggregate block and applied subject
+recorded policy act matches the exact owner argument
+rc=0
+== python3 scripts/record_public_source_screening_scope_v3_act.py --selftest
+ok   a record whose instant was altered fails the check against the block
+selftest: 55 of 55 predicates held
+rc=0
+== python3 scripts/check_polaris_response_ceiling_reading.py --check   # P-77 Q2 reading: quotes intact, compression only under the 2026-09-30 direction
+   not applicable composed: .syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/proposed/spec.md.patch -> openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+OK
+rc=0
+== python3 scripts/check_polaris_response_ceiling_reading.py --selftest
+PASS C5 two patches composed rewrite a quoted sentence
+selftest: 41/41 passed
+rc=0
+== python3 scripts/build_contract_readability_restyle.py --check   # restyle package: manifest = exact regeneration, applied
+contract readability-restyle package applied: all 29 manifest rows equal both current mirrors (1 through a later contract act's row: rfcs/RFC-0005/consent-egress-secrets.md)
+rc=0
+== python3 scripts/build_contract_readability_restyle.py --selftest
+  pass  absent package: --check prints absent and exits 0
+23 fixtures, 0 failing
+rc=0
+== python3 scripts/record_contract_readability_restyle.py --check  # restyle act, performed 2026-09-28: record and aggregate block intact
+PASS exact restyle manifest, pinned review and dedicated/aggregate adoption records
+rc=0
+== python3 scripts/record_contract_readability_restyle.py --selftest
+  pass  real package: apply after record installs, check still passes
+33 fixtures, 0 failing
+rc=0
+== python3 scripts/build_spec_policy_readability_restyle.py --check   # spec-policy restyle: installed bytes = manifest rows
+applied — both policies carry the manifest's bytes
+rc=0
+== python3 scripts/build_spec_policy_readability_restyle.py --selftest
+applied — the fixtures need the unapplied package; nothing run
+rc=0
+== python3 scripts/record_spec_policy_readability_restyle.py --check  # spec-policy restyle act: performed 2026-09-28; records regenerate exactly
+PASS exact restyle manifest, pinned review and dedicated, aggregate and install records
+rc=0
+== python3 scripts/record_spec_policy_readability_restyle.py --selftest
+  pass  real package present and unapplied (else skipped)
+34 fixtures, 0 failing
+rc=0
+== python3 scripts/build_three_surface_poc_readability_successor.py --check   # POC readability successor: candidate = exact regeneration, or installed rows
+three-surface POC readability successor installed: all 6 signed subjects carry their manifest rows
+rc=0
+== python3 scripts/build_three_surface_poc_readability_successor.py --selftest
+selftest: deterministic regeneration: caught
+selftest: 11 candidate predicates fail closed
+rc=0
+== python3 scripts/record_three_surface_poc_readability_successor.py --check  # POC successor sign-off: performed 2026-09-29; record and aggregate block intact
+PASS performed-exact: POC readability successor performed; both records exact, every subject at its successor row
+rc=0
+== python3 scripts/record_three_surface_poc_readability_successor.py --selftest
+
+21 fixtures, 0 failing
+rc=0
+== python3 scripts/readability_successor.py --all --check   # readability successors (Capability 1, Polaris base and understanding) performed 2026-09-29, the understanding dependency-union successor 2026-10-02: installed bytes = rows, or a later act's row over them
+PASS performed-exact: .syzygy/governance/contracts/candidates/polaris-understanding-readability-successor
+4 successor package(s) checked
+rc=0
+== python3 scripts/readability_successor.py --selftest
+40 fixtures, 0 failing
+rc=0
+== python3 scripts/build_polaris_dependency_unions.py --check   # both Polaris dependency unions, and each signed addition's, = their regeneration from the warrants blocks
+4 Polaris dependency unions match their warrants
+rc=0
+== python3 scripts/build_polaris_dependency_unions.py --selftest
+PASS --write-additions is idempotent once current
+22 fixtures, 0 failing
+rc=0
+== python3 scripts/check_spec_reconciliation.py --check   # five readability outcomes terminal and binding; populations by two methods; routes and generated rows
+OK    R7  Polaris dependency unions match their warrants (report only) — 13 examined, 0 findings — regenerated by scripts/build_polaris_dependency_unions.py; a change to a signed union needs a signed successor
+7 of 7 predicates without FAIL; PASS — counts derived, not asserted
+rc=0
+== python3 scripts/check_spec_reconciliation.py --selftest
+killed   regenerate-refuses-unsigned  refused (failed: )
+SELFTEST PASS: clean scratch copy and its signed- and adopted-addition variants pass; 85 of 85 mutants killed by their expected predicate (commit f7d1ea7fe8c1)
+rc=0
+== python3 scripts/build_three_surface_poc_spec_dependencies.py --check
+three-surface POC spec dependencies match regeneration — 24 requirement(s), 85 distinct authorities
+rc=0
+== python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
+OK: DIRECTIVE-REGISTER.md matches the tree
+rc=0
+== python3 scripts/build_directive_register.py --selftest
+
+21 checks, 0 failing — a check that cannot fail is not a check
+rc=0
+== python3 scripts/check_quotations.py     # a quotation beside a path:line locator was said by that file (RD-6, syzygy-0wf)
+note  QC-1  excluded verbatim records, raw review: 535 .md files, 854 quotations, 399 not in their source now; history not searched
+note  QC-1  excluded verbatim records, round directory: 139 .md files, 10 quotations, 4 not in their source now; history not searched
+rc=0
+== python3 scripts/check_quotations.py --selftest
+ok    git history across a rename: one amended, one finding: findings/amended (1, 1)
+selftest: 20 of 20 passed
+rc=0
+== python3 scripts/validate_launch_administration.py $DR
+
+record valid — the verdict above is computed from the rows
+rc=0
+== python3 scripts/render_launch_administration.py $DR --check
+--check: .syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md matches the record's rendering
+rc=0
+== git tag --list 'doctrine-*'
+doctrine-adopted-2026-07-30
+doctrine-d5-2026-09-27
+rc=0
+== python3 scripts/record_rfc5_project_documentation_act.py --check a69a606cc7c14da5de03ec26aaec435af2fee3fa4c7bfb8a92fc30deefa40c91 --date 2026-10-07 --question-opening 'Do you sign the RFC5-14 project-documentation class amendment at its row of the contract amendment manifest?' --selection-label 'Sign it, at the manifest row; direct the SOURCE-POLICY.md readability successor' --selection-description 'Act form 1, which makes screening scope version 2 performable; the six-class sentence in SOURCE-POLICY.md gets a readability successor.'   # rfc5 --check
+recorded act matches the exact owner argument
+rc=0
+== python3 scripts/record_versioned_signoff.py --check public-git-source-acquisition-local-agent --version 1.0   # public-git-source-acquisition-local-agent v1.0 --check
+recorded public-git-source-acquisition-local-agent v1.0 sign-off regenerates exactly; applied tree verified
+rc=0
+== python3 scripts/record_dossier_local_agent_acts.py --check redis-agent-anthropic fbbcd3c0e3d49aab3384a4ab18bf35816dbd8fb952e658d1edbac3d1c50e48a7 --date 2026-10-07 --question-opening 'Which statement do you sign for Redis at its row of the dossier local-agent acts manifest?' --selection-label 'Anthropic provider statement' --selection-description 'Claude Code may receive Redis content even if Redis counts as governed.'   # redis-agent-anthropic --check
+recorded redis-agent-anthropic act matches the exact owner argument
+rc=0
+== python3 scripts/record_dossier_agent_provider_v2_act.py --check b7a8d099ce108bfd70133b729327534f29806cb0118ee0b3e0f9ca077a946df3 --date 2026-10-08 --question-opening 'Decision 2 (P-106):'' your Redis Anthropic provider statement predates the README/docs class, so Syzygy withholds docs text from the packets it gives your own Claude Code sessions, and README-based claims render Unknown. Version 2 adds `project-documentation` and changes nothing else. Sign it?' --selection-label 'Sign version 2 (Recommended)' --selection-description 'Docs text goes to your own Claude Code sessions, which can already read the whole clone. Phrase:'' "Sign the Redis Anthropic provider statement, version 2".' --packet-words 'Sign the Redis Anthropic provider statement, version 2'   # agent-provider statement version 2 --check
+recorded provider statement version-2 act matches the exact owner argument
+rc=0
+== python3 scripts/record_dossier_agent_provider_v2_act.py --selftest   # agent-provider statement version 2 --selftest
+ok   record, check, a repeat --record and a tampered instant on a scratch tree
+selftest: 43 of 43 predicates held
+rc=0
+== python3 scripts/record_dossier_local_agent_acts.py --check d9-in-force 41fdfaea8cbde4cd8220910113fb5b376c7834a470d8c2d9badd9ab0fec9ac66 --date 2026-10-07 --question-opening 'Do you sign the D9 in-force record at its row of the dossier local-agent acts manifest?' --selection-label 'Sign it' --selection-description 'Binds D9 to the current security.md and v1.md bytes; it runs nothing until a choice for one run is recorded.'   # d9-in-force --check
+recorded d9-in-force act matches the exact owner argument
+rc=0
+== python3 scripts/record_dossier_local_agent_acts.py --check rfc7-20-reading-in-force f0725a204b6e6ccbccb211441e26e139502ef42a6447d0f4a40df2d09062f3d9 --date 2026-10-07 --question-opening 'Do you sign the RFC7-20 reading in-force record at its row of the dossier local-agent acts manifest?' --selection-label 'Sign it' --selection-description 'The agent draft renders as an editorial draft; it binds item 1 of the direction, whole-file.'   # rfc7-20-reading-in-force --check
+recorded rfc7-20-reading-in-force act matches the exact owner argument
+rc=0
+== python3 scripts/record_narrative_profile_adoption.py --check --date 2026-10-07 --question-opening 'Do you adopt the non-governed narrative profile, requirement 032, at its row of the profile manifest?' --selection-label 'Adopt as recommended' --selection-description 'O1 to O7 as the packet recommends; Scope A is not read to cover it; the two known limitations stand.'   # narrative profile --check
+recorded adoption matches the live bytes
+rc=0
+== python3 scripts/record_rfc5_project_documentation_act.py --selftest   # rfc5 --selftest
+ok   instant above the phrase in the aggregate block
+selftest: 34 of 34 predicates held
+rc=0
+finished 2026-10-08T20:50:39Z
+BATTERY DONE
