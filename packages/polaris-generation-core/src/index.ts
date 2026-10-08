@@ -51,3 +51,4 @@ export { QUOTE_LEAD_IN, checkBlockQuotes, checkDraftQuotes, draftBlocks, inspect
 export { leadInQuotationSpans, leadInQuotations, lineCount, locateQuote, normaliseTracked, type LeadInQuotation, type LeadInQuotationSpan, type QuoteLocation, type TrackedText } from './quote-locate.js';
 export type { EvidenceAnchor, LocalBlock, LocalDisclosureItem, LocalDraftLayer, LocalPage, LocalPageGroup, LocalPageItem, LocalRenderInput, LocalSegment } from './local-render.js';
 export { REVIEW_STATUS_REGION, REVIEW_STATUS_REGION_OPEN, withoutReviewStatusRegion } from './local-render.js';
+export { documentationPathRules, publicSourceContentClass, readProjectDocumentationRule, type DocumentationPathRuleId, type ProjectDocumentationRead, type ProjectDocumentationRule, type PublicSourceContentClass } from './public-source-classification.js';
