@@ -338,6 +338,11 @@ CAMPAIGNS = (
         "Arbitrary public-repository dossier spec",
         r"R-ARBITRARY-PUBLIC-REPO-.*\.md",
     ),
+    campaign(
+        "pr403-screen-docs",
+        "Project-documentation screening",
+        r"R-PR403-SCREEN-DOCS-.*\.md",
+    ),
 )
 
 
