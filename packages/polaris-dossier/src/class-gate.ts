@@ -16,6 +16,10 @@ import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core';
  * check derivation (`check.ts`, `deriveFindings`), local quotation verification whose findings and records carry byte ranges and no
  * source text, so it sends nothing; and `close.ts`, which runs the detectors over the run's own values and reads no blob.
  *
+ * Residual, not repaired here (R-PR403-SCREEN-DOCS-2 E1): the gate covers the spans Syzygy reads. The fidelity packet's `draft` and
+ * `inventory` documents are agent-authored and may quote a withheld body verbatim, and `check` has verified such a quotation against it,
+ * so those exact bytes can reach the review session inside the agent's own text. The authoring agent read them from the clone itself.
+ *
  * Where the policy is silent, fail closed: a run that relies on no statement (a non-governed subject, REQ-polaris-generation-033) has
  * no consent record listing project-documentation, so that class is withheld from it; code-content keeps the posture it had before
  * the class existed, which this gate does not change. A path the screen admits under no class is withheld too. */
