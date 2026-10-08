@@ -2,7 +2,7 @@
 > DOSSIER-LOCAL-AGENT-1.2 (`SEMANTIC-DELTA.md` in this directory), under
 > CC-IMPACT-1 to CC-IMPACT-6. Every figure below was computed by script on
 > branch `feat/dossier-waiting-sessions` at
-> `439c8afe211ea4daf545745c0124c2f685c472dd`, whose
+> `78909be2d418805a9260b18d85d96928f8ca5473`, whose
 > `openspec/changes/polaris-dossier-local-agent-mode/` bytes are v1.1 as on
 > `main`; the predicates are published so that a reader can re-run them.
 
@@ -16,14 +16,14 @@ three patches applied by `git apply` and `check_spec_reconciliation.py
 
 | File, under `openspec/changes/polaris-dossier-local-agent-mode/` | v1.1 | v1.2 (patches applied, regenerated) |
 |---|---|---|
-| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `63f620e21f500a10117928dde8afb211ff743bf5a3784d09f4ed0992fe9bb5e0` |
-| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `9837bf33558232151faea84e785cef0eca240e5b13843a37b282769b0a2333fa` |
-| `proposal.md` | `f917b75019574bfb89af4cdb86be7347b4595e0e4758056de842a07cecdbb4da` | `530475c00d21df9643f9ab4a5cb7e58df03259817ec1a578ac3ab5dd0a05b845` |
+| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `4d43a0fb63a1702bce6707672792c0a135030bf4c6b23619bf199bad304e8faf` |
+| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `ba733c4b33277fae2f2f1947a330154e103068821108763b0ebd33b0a0cd1520` |
+| `proposal.md` | `f917b75019574bfb89af4cdb86be7347b4595e0e4758056de842a07cecdbb4da` | `73ace9e28e0eae2496c1810fbd5cbb4c7f946b636b49b42418ce98cdbefd0be4` |
 | `GOVERNING-DEPENDENCIES.md` (regenerated) | `de399fc8f8f85eb90a13c3e941ac8374f9d171577d2e81431b0f0ed435410cf5` | `b0da779018ed5f3d99f5decf63b4ecdc6c1704b4f96084547e4a01e740a4d73a` |
 | `tasks.md` | `6ccaa6893947aa9cbb7dbe7b3704b7084167aee4bc74d4bf251b66115edd60c6` | unchanged |
 
 The patches are under `proposed/`: `spec.md.patch` (71 lines),
-`design.md.patch` (66) and `proposal.md.patch` (39). Each applies to the v1.1
+`design.md.patch` (69) and `proposal.md.patch` (41). Each applies to the v1.1
 bytes with `git apply`. The regeneration also rewrites
 `docs/evidence/spec-readability-reconciliation-2026-10-02/census.json`, and no
 other tracked file.
@@ -54,15 +54,19 @@ R5 FAIL with one finding, `PROJECT-STATUS.md`'s Polaris composition figure
 (36, 244) against the census (36, 248). That sentence is updated by the
 install, not by this package.
 
-R2 passing on the applied bytes is the gap the v1.1 package named: no check
-tells the signed v1.1 bytes from unsigned v1.2 bytes until a v1.2 builder and
-recorder entry exist.
+R2 passing on the applied bytes is the gap the v1.1 package named; the v1.2
+builder closes it (see Dependents, Tooling). [Observed] A rehearsal of the
+recording in a throwaway clone at `d930b6bc`, with a synthetic raw, applied
+the patches through `record_versioned_signoff.py --record`, which moved the
+status figure to (36, 248); `--check` then passed for 1.0, 1.1 and 1.2 and
+every dossier builder's `--check` passed. R5 then failed once, on the
+`openspec/README.md` row not naming the v1.2 record: an install-time edit.
 
 ## Text sweep
 
 Predicate: for each phrase below, a byte-literal substring match (Python
-`bytes in`) over every blob of `git ls-tree -r -z --name-only 439c8afe`.
-Population: **2,636 tracked files**. Hits inside this package's own directory
+`bytes in`) over every blob of `git ls-tree -r -z --name-only 78909be2`.
+Population: **2,637 tracked files**. Hits inside this package's own directory
 (its ledger and patches quote the phrases) are left out of the counts. Every
 other hit is listed; the classification is the drafter's.
 
@@ -75,11 +79,11 @@ other hit is listed; the classification is the drafter's.
 
 The phrase v1.2 introduces as a warrant,
 `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`, appears outside this package
-in 5 files at that commit: the direction record, three implementation files
-(`packages/polaris-dossier/src/waiting-sessions.ts`, its test, and
-`render.ts`) and the mutant evidence record, which cite the direction, not
+in 6 files at that commit: the direction record, four implementation files
+(`packages/polaris-dossier/src/waiting-sessions.ts`, its test,
+`session-handover.ts` and `render.ts`) and the mutant evidence record, which cite the direction, not
 this package. The direction's ID was first drafted with its local date,
-`…-2026-10-09`; that form occurs in 0 of the 2,636 files.
+`…-2026-10-09`; that form occurs in 0 of the 2,637 files.
 
 ## Dependents
 
