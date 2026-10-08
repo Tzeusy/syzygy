@@ -1,25 +1,38 @@
 {
-  "record": "Rule-6 mutants for the project-documentation class of public-source screening scope version 2 (syzygy-2coz): R1-R4 root-document; D2-D7 docs-tree; L1-L3 licenses-tree; W1-W7 the exactly-one rule, never-code-content, the ASCII fold and the path forms that match nothing; P1-P15 every prefix parameter and parameter list read from the policy; V1-V23 the refusals of a malformed or reworded rule; S1-S5 the dossier screen (prerequisite, class act state, refusal, admission, flag); A1-A11 the any-repo reader screen (prerequisite and class act form). Expected values in the tests are literals from the policy rule text. One mutant considered and not run as equivalent: docs-tree \"two or more segments\" relaxed to one, since a one-segment path has its name as its first segment and no docTreeRoots entry ends with a docTreeExtensions entry. Two mutants survived a first run (L1 licenses-tree \"exactly two segments\", V3 path-rule id order); tests were added before this run. The run was made detached at the subject commit, the parent of the commit that adds this record on branch fix/screen-project-documentation (the runner writes the branch as HEAD when detached); a rebase-merge leaves it reachable from no ref, so the old/new fragments and the file digests are the re-runnable form. Not authority.",
+  "record": "Rule-6 mutants for the project-documentation class of public-source screening scope version 2 (syzygy-2coz), regenerated after review round 1 (R-PR403-SCREEN-DOCS-1): R1-R4 root-document; D2-D7 docs-tree; L1-L3 licenses-tree; W1-W7 the exactly-one rule, never-code-content, the ASCII fold and the path forms that match nothing; P1-P15 every prefix parameter and parameter list read from the policy; V1-V23 the refusals of a malformed or reworded rule; S1-S7 the dossier screen (prerequisite, class act state, refusal, admission, flag, the class it names); A1-A8 the any-repo reader screen (prerequisite, its clock, a refused or absent class act state, refusal, admission, the class it names); C1-C2 the strict class act reader both screens now share (a withdrawal naming the act, an instant after now; finding F2); G1-G15 the content-class gate on agent-bound artifacts (finding F1): the gate rule, the fidelity packet, the rendered site the design packet carries, and the classes carried from the in-force statement. Expected values in the tests are literals from the policy rule text and the gate choices class-gate.ts writes down. One mutant considered and not run as equivalent: docs-tree \"two or more segments\" relaxed to one, since a one-segment path has its name as its first segment and no docTreeRoots entry ends with a docTreeExtensions entry. The round-1 record (74 of 74 killed at be1e0f3d) dropped A2-A9, which mutated the any-repo reader's own class act form check that round 2 replaced by the strict reader. The run was made on branch fix/screen-project-documentation at the subject commit, the parent of the commit that adds this record; a rebase-merge leaves it reachable from no ref, so the old/new fragments and the file digests are the re-runnable form. Not authority.",
   "result": {
-    "killed": 74,
+    "killed": 90,
     "survived": 0,
     "errored": 0,
-    "total": 74
+    "total": 90
   },
   "subject": {
-    "commit": "be1e0f3d4e6f61d3a08e27432919e41ded26de8b",
-    "branch": "HEAD",
+    "commit": "fe4bb4ca34e18038b8387f074b4951aa6e035607",
+    "branch": "fix/screen-project-documentation",
     "fileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "fc8e88be25626caeb05b0b8a5506186e590eaf1aeccaf83b5b4ef2056925b534",
-      "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "4f6bbea1bf80035b4e845a9fac7d1484beec3ab6b8b3fda67e7151742bdf3301",
-      "packages/polaris-dossier/src/screen.test.ts": "5b4030be0fa0363a9dffeb0a6aefba42e6e9e781bf5edebd81ae9afd7b109593",
-      "packages/polaris-dossier/src/screen.ts": "3b222ff2a948734bb0aaf40ffae2e417bbaf0d64fb397de7b087af5ac67da604",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "0720a1187b585c3fb5b628adfda264f05713b2a04a6ad85fffe8b1246437e4c0",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "bf233c647bb48a69b8610395dfde693d8176ce85063903fa5c238ecd9970bf73",
+      "packages/polaris-dossier/src/class-gate.test.ts": "23694e9065b8a2c290bcd0544d833a5993c7947dc4a6c391c9ff0bbb0c03d5ae",
+      "packages/polaris-dossier/src/class-gate.ts": "de5a6d769ee0a5f8c0874aa822e27ed4c8e58891b8cc20199c30dc23b613341b",
+      "packages/polaris-dossier/src/gate-sources.ts": "a9190f913a67e7676b64b269aea00161378039219a6b80332b3659ef5a00f8a7",
+      "packages/polaris-dossier/src/inventory.ts": "2520c671bd11dd3b542738da1f26ba460d17a69e27a8c87c9156aa320fb25128",
+      "packages/polaris-dossier/src/render.test.ts": "58926ea89c81657cee10681ed38fe267a99c46c329fb138629eafedd326fab1c",
+      "packages/polaris-dossier/src/render.ts": "6161d9df62a2c2f0d3e35c1ad0adf3939a54698d2d02eb6f816d7bd29a399b00",
+      "packages/polaris-dossier/src/reverify.ts": "908809b52ae67b364b182ba4a29ee18dfcabac78849381e01c925f5de9fbd640",
+      "packages/polaris-dossier/src/review.test.ts": "0638dafb3dc4fdd43c5aac4f6a12f218a6fb9f21395340b4b4563e68ee2f49af",
+      "packages/polaris-dossier/src/review.ts": "ae09f2a87c40bd1fde4cb9bd591726675d4918fc29810b1f35dbaff604352227",
+      "packages/polaris-dossier/src/screen.test.ts": "f5e3a39fec8730db69011af261bd4fe89a7f9b26dc8fb8a9d9a882f1cf3a519e",
+      "packages/polaris-dossier/src/screen.ts": "168399faed25dddf8274788c3b088b2dd1b6926579e42a779c580ae5e59a8ef0",
+      "packages/polaris-generation-consent/src/package-reader.ts": "eb59d261d6fe7a7a7a6730f44d81e199b8c31f49e16b3c2905d8366c036d4f1c",
       "packages/polaris-generation-core/src/public-source-classification.test.ts": "b93fcb8435869308b865c204bbdbd7d5cd3231144e51b8f14c669d89e2affc65",
       "packages/polaris-generation-core/src/public-source-classification.ts": "0c7e474079d17267452e1804f54ce73108c280fd7aa371db21a4a99375ce652a"
     },
     "testFileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "fc8e88be25626caeb05b0b8a5506186e590eaf1aeccaf83b5b4ef2056925b534",
-      "packages/polaris-dossier/src/screen.test.ts": "5b4030be0fa0363a9dffeb0a6aefba42e6e9e781bf5edebd81ae9afd7b109593",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "0720a1187b585c3fb5b628adfda264f05713b2a04a6ad85fffe8b1246437e4c0",
+      "packages/polaris-dossier/src/class-gate.test.ts": "23694e9065b8a2c290bcd0544d833a5993c7947dc4a6c391c9ff0bbb0c03d5ae",
+      "packages/polaris-dossier/src/render.test.ts": "58926ea89c81657cee10681ed38fe267a99c46c329fb138629eafedd326fab1c",
+      "packages/polaris-dossier/src/review.test.ts": "0638dafb3dc4fdd43c5aac4f6a12f218a6fb9f21395340b4b4563e68ee2f49af",
+      "packages/polaris-dossier/src/screen.test.ts": "f5e3a39fec8730db69011af261bd4fe89a7f9b26dc8fb8a9d9a882f1cf3a519e",
       "packages/polaris-generation-core/src/public-source-classification.test.ts": "b93fcb8435869308b865c204bbdbd7d5cd3231144e51b8f14c669d89e2affc65"
     }
   },
@@ -27,7 +40,7 @@
   "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-08T02:52:48+00:00",
+  "ranAt": "2026-10-08T03:23:50+00:00",
   "mutants": [
     {
       "id": "R1-root-nested",
@@ -792,8 +805,8 @@
         "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 9,
-      "totalTests": 76,
+      "failedTests": 15,
+      "totalTests": 90,
       "note": "prerequisite: the class classifies only while the class act is in force"
     },
     {
@@ -805,8 +818,8 @@
         "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 76,
+      "failedTests": 4,
+      "totalTests": 90,
       "note": "prerequisite: an absent (or not yet in force) class act confirms nothing"
     },
     {
@@ -819,20 +832,20 @@
       ],
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 76,
+      "totalTests": 90,
       "note": "a malformed rule refuses, in force or not"
     },
     {
       "id": "S4-dossier-class-unused",
       "file": "packages/polaris-dossier/src/screen.ts",
-      "old": "publicSourceContentClass(repositoryPath, extensions, documentation)",
-      "new": "publicSourceContentClass(repositoryPath, extensions, null)",
+      "old": "publicSourceContentClass(repositoryPath, extensions, documentation) !== undefined ? undefined",
+      "new": "publicSourceContentClass(repositoryPath, extensions, null) !== undefined ? undefined",
       "tests": [
         "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 10,
-      "totalTests": 76,
+      "failedTests": 14,
+      "totalTests": 90,
       "note": "the dossier screen admits the class"
     },
     {
@@ -844,129 +857,90 @@
         "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 11,
-      "totalTests": 76,
+      "failedTests": 16,
+      "totalTests": 90,
       "note": "the screen reports whether the class is classified"
+    },
+    {
+      "id": "S6-dossier-class-of-excluded",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "contentClass: (repositoryPath) => (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined),",
+      "new": "contentClass: (repositoryPath) => publicSourceContentClass(repositoryPath, extensions, documentation),",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 90,
+      "note": "F1: the screen names a class only for a path it admits"
+    },
+    {
+      "id": "S7-dossier-class-dropped",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "contentClass: (repositoryPath) => (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined),",
+      "new": "contentClass: (repositoryPath) => (screenPath(repositoryPath) === undefined ? 'code-content' : undefined),",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 90,
+      "note": "F1: the screen names the class it admitted the path under"
     },
     {
       "id": "A1-app-prerequisite-ignored",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "const documentation = classActConfirmed(classActRecord, rfc5Module) ? documentationRead.rule : null;",
+      "old": "const documentation = classActInForce === true ? documentationRead.rule : null;",
       "new": "const documentation = documentationRead.rule;",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 10,
-      "totalTests": 36,
-      "note": "prerequisite: the class classifies only while the class act is confirmed"
+      "failedTests": 2,
+      "totalTests": 28,
+      "note": "prerequisite: the class classifies only while the class act is in force"
     },
     {
-      "id": "A2-app-digest-unchecked",
+      "id": "A2-app-clock-ignored",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "digests[0]![1] === createHash('sha256').update(module).digest('hex')",
-      "new": "digests[0]![1] !== ''",
+      "old": "readClassActState({ root: syzygyRoot, now: now() })",
+      "new": "readClassActState({ root: syzygyRoot, now: Number.MAX_SAFE_INTEGER })",
       "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+        "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act argument is the module digest"
+      "totalTests": 90,
+      "note": "F2: the checkout port decides the prerequisite at its clock (a class act dated after now is not in force)"
     },
     {
-      "id": "A3-app-identity-date-unchecked",
+      "id": "A3-app-refused-counts",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "`\\nAct identity: \\`RFC5-PROJECT-DOCUMENTATION-AMEND-${dates[0]![1]!}\\`\\n`",
-      "new": "'\\nAct identity: `RFC5-PROJECT-DOCUMENTATION-AMEND-'",
+      "old": "classActInForce: classAct.state === 'ok'",
+      "new": "classActInForce: classAct.state !== 'absent'",
       "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+        "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act identity carries its date"
+      "failedTests": 2,
+      "totalTests": 90,
+      "note": "F2: a refused class act state (a withdrawal naming it) is not in force"
     },
     {
-      "id": "A4-app-type-unchecked",
+      "id": "A4-app-absent-counts",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": " && record.includes('\\nAct type: `contract-amendment`\\n')",
-      "new": "",
+      "old": "classActInForce: classAct.state === 'ok'",
+      "new": "classActInForce: classAct.state !== 'refused'",
       "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+        "packages/polaris-dossier/src/screen.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act is a contract amendment"
+      "failedTests": 2,
+      "totalTests": 90,
+      "note": "F2: an absent class act state (none recorded, or dated after now) is not in force"
     },
     {
-      "id": "A5-app-artifact-unchecked",
-      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "\n    && record.includes(`\\nArtifact identity: \\`${RFC5_MODULE_PATH}\\`\\n`)",
-      "new": "\n    ",
-      "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act names the RFC-0005 module"
-    },
-    {
-      "id": "A6-app-project-unchecked",
-      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": " && record.includes('\\nProject identity: `project:syzygy`\\n')",
-      "new": "",
-      "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act is project:syzygy's"
-    },
-    {
-      "id": "A7-app-title-unchecked",
-      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": " || !record.startsWith(CLASS_ACT_TITLE)",
-      "new": "",
-      "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "the class act is the recorder's form"
-    },
-    {
-      "id": "A8-app-two-digests",
-      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "digests.length === 1 &&",
-      "new": "digests.length >= 1 &&",
-      "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "exactly one exact digest"
-    },
-    {
-      "id": "A9-app-two-dates",
-      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "dates.length === 1 &&",
-      "new": "dates.length >= 1 &&",
-      "tests": [
-        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 36,
-      "note": "exactly one date"
-    },
-    {
-      "id": "A10-app-malformed-tolerated",
+      "id": "A5-app-malformed-tolerated",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
       "old": "if (!documentationRead.ok) refuse(",
       "new": "if (false) refuse(",
@@ -975,21 +949,298 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 36,
+      "totalTests": 28,
       "note": "a malformed rule refuses"
     },
     {
-      "id": "A11-app-class-unused",
+      "id": "A6-app-class-unused",
       "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-      "old": "publicSourceContentClass(path, sourceExtensions, documentation)",
-      "new": "publicSourceContentClass(path, sourceExtensions, null)",
+      "old": "publicSourceContentClass(path, sourceExtensions, documentation) !== undefined ? undefined : 'unknown-extraction-class' as const",
+      "new": "publicSourceContentClass(path, sourceExtensions, null) !== undefined ? undefined : 'unknown-extraction-class' as const",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 36,
+      "totalTests": 28,
       "note": "the app screen admits the class"
+    },
+    {
+      "id": "A7-app-class-of-excluded",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "contentClass: path => screenPath(path) === undefined ? publicSourceContentClass(path, sourceExtensions, documentation) : undefined,",
+      "new": "contentClass: path => publicSourceContentClass(path, sourceExtensions, documentation),",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 90,
+      "note": "F1: the app screen names a class only for a path it admits"
+    },
+    {
+      "id": "A8-app-class-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "contentClass: path => screenPath(path) === undefined ? publicSourceContentClass(path, sourceExtensions, documentation) : undefined,",
+      "new": "contentClass: path => screenPath(path) === undefined ? 'code-content' : undefined,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 28,
+      "note": "F1: the app screen names the class it admitted the path under"
+    },
+    {
+      "id": "C1-reader-withdrawal-ignored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (namesClassAct(rel, await swept(rel, text))) refuse();",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 90,
+      "note": "F2: a decisions file naming the class act withdraws it, for both screens"
+    },
+    {
+      "id": "C2-reader-clock-ignored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "return hit.act.recordedAt > options.now ? { state: 'absent', why: 'the class amendment act is not in force yet' } : { state: 'ok', ...hit };",
+      "new": "return { state: 'ok', ...hit };",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 90,
+      "note": "F2: a class act whose instant is after now is not in force, for both screens"
+    },
+    {
+      "id": "G1-gate-statement-ignored",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "return consented.includes(contentClass) ? undefined : contentClass;",
+      "new": "return undefined;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 92,
+      "note": "F1: a class the statement does not list is withheld"
+    },
+    {
+      "id": "G2-gate-no-statement-admits",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "if (consented === null) return contentClass === 'code-content' ? undefined : contentClass;",
+      "new": "if (consented === null) return undefined;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 92,
+      "note": "F1: with no statement, project-documentation is withheld"
+    },
+    {
+      "id": "G3-gate-no-statement-withholds-code",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "if (consented === null) return contentClass === 'code-content' ? undefined : contentClass;",
+      "new": "if (consented === null) return contentClass;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 20,
+      "totalTests": 92,
+      "note": "F1 choice: with no statement, code-content keeps its prior posture"
+    },
+    {
+      "id": "G4-gate-unclassified-admitted",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "if (contentClass === undefined) return 'unclassified';",
+      "new": "if (contentClass === undefined) return undefined;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1 choice: a path admitted under no class is withheld"
+    },
+    {
+      "id": "G5-review-gate-skipped",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "const missingClass = raw === undefined ? undefined : unconsentedClass(screen.contentClass(span.path), opened.contentClasses);",
+      "new": "const missingClass = undefined as string | undefined;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 92,
+      "note": "F1: the fidelity packet gates each span by class"
+    },
+    {
+      "id": "G6-review-statement-ignored",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "unconsentedClass(screen.contentClass(span.path), opened.contentClasses)",
+      "new": "unconsentedClass(screen.contentClass(span.path), null)",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 92,
+      "note": "F1: the fidelity packet reads the classes of the statement the run relies on"
+    },
+    {
+      "id": "G7-review-class-unnamed",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "outcome: CLASS_NOT_CONSENTED, missingClass, citedBy: span.citedBy",
+      "new": "outcome: CLASS_NOT_CONSENTED, missingClass: 'unknown', citedBy: span.citedBy",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 92,
+      "note": "F1: the withheld span names the missing class"
+    },
+    {
+      "id": "G8-render-gate-skipped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (missing !== undefined) withheldClass.set(repositoryPath, missing);",
+      "new": "if (false) withheldClass.set(repositoryPath, missing!);",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: the rendered site gates each admitted blob by class"
+    },
+    {
+      "id": "G9-render-quotation-ungated",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "derived.quotations.filter((quotation) => !withheldClass.has(quotation.path)).map(",
+      "new": "derived.quotations.filter((quotation) => true).map(",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: a quotation from a withheld body is not rendered"
+    },
+    {
+      "id": "G10-render-row-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "withheldClass.has(cited.path) ? 'body-not-retained-for-generation' : undefined",
+      "new": "undefined",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: a withheld body is a counted excluded row, never dropped"
+    },
+    {
+      "id": "G11-render-discovery-unnamed",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "cited.path !== null && withheldClass.has(cited.path) ? `read at this render",
+      "new": "false ? `read at this render",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: the discovery row names the missing class"
+    },
+    {
+      "id": "G12-render-basis-unnamed",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": ": unconsented.size > 0 ? `a quotation it rests on is from a",
+      "new": ": false ? `a quotation it rests on is from a",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: the withheld block names the missing class"
+    },
+    {
+      "id": "G13-reverify-classes-dropped",
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "old": "contentClasses = statementContentClasses(records, declared.agentTool, declared.agentProvider, now);",
+      "new": "contentClasses = null;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 92,
+      "note": "F1: the step guard carries the in-force statement's classes"
+    },
+    {
+      "id": "G14-statement-classes-widened",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "return live.length === 1 ? live[0]!.contentClasses : null;",
+      "new": "return live.length === 1 ? [...live[0]!.contentClasses, 'project-documentation'] : null;",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 92,
+      "note": "F1: the classes are the statement's own list"
+    },
+    {
+      "id": "G15-opened-classes-dropped",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "contentClasses: checked.contentClasses };",
+      "new": "contentClasses: null };",
+      "tests": [
+        "packages/polaris-dossier/src/class-gate.test.ts",
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 92,
+      "note": "F1: the opened run carries the classes to every step"
     }
   ]
 }
