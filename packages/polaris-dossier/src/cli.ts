@@ -171,8 +171,8 @@ export interface CliPorts {
   readonly waitModeSigned?: () => boolean;
   /** The pause between an `await` slice's looks at its session directory; a timer by default. */
   readonly sleep?: (ms: number) => Promise<void>;
-  /** Standard input, read whole, for `await --submit --stdin`; null past `maxBytes`. The process's own by default. */
-  readonly readStdin?: (maxBytes: number) => Promise<string | null>;
+  /** Standard input, read whole as bytes, for `await --submit --stdin`; null past `maxBytes`. The process's own by default. */
+  readonly readStdin?: (maxBytes: number) => Promise<Uint8Array | null>;
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
