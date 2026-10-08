@@ -368,6 +368,11 @@ CAMPAIGNS = (
         "P-105/P-106 record and install",
         r"R-PR409-DOSSIER-BLOCKERS-INSTALL-.*\.md",
     ),
+    campaign(
+        "pr408-waiting-sessions",
+        "Pre-started waiting sessions",
+        r"R-PR408-WAITING-SESSIONS-.*\.md",
+    ),
 )
 
 

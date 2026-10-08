@@ -94,8 +94,10 @@ quoted here as the packet's own wording for the selection.
    command, never a general shell and never a write. The option the owner
    selected says "with only read tools plus their one syzygy command
    pre-approved"; the packet's words: "approve only read tools and the
-   role's one `syzygy dossier` command [Inferred]". A session therefore hands
-   its inventory or verdict to that command, and Syzygy writes the file. Where
+   role's one `syzygy dossier` command [Inferred]". The drafter reads this
+   to mean that a session hands its inventory or verdict to that command,
+   and Syzygy writes the file [Inferred: the drafter's reading of the
+   selected words; the owner saw the option, not this mechanism]. Where
    an agent tool offers no such narrow scope, Syzygy prints no broader one and
    says so.
 

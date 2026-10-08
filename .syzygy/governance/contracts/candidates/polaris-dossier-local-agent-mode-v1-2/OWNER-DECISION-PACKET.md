@@ -35,8 +35,11 @@ says otherwise. Version 1.2 says it, and nothing else.
   Code command lets the session read its own folder (the inventory session
   also reads the clone) and run its one Syzygy command, and nothing else
   without asking: read tools plus that one command, as your option said. It
-  writes no file. It hands its inventory or verdict to its one command, and
-  Syzygy writes that one file in the session's folder and checks it. For
+  writes no file. It hands its inventory or verdict to its one command, in
+  a form the shell never expands (so a quoted line from the project cannot
+  run), and Syzygy writes that one file in the session's folder and checks
+  it. The command also refuses the write, web and helper-agent tools
+  outright. For
   Codex, Syzygy cannot tell
   how narrow a pre-approval would be, so it prints none and says so; a
   waiting Codex session asks before each step.
@@ -48,7 +51,12 @@ says otherwise. Version 1.2 says it, and nothing else.
 - **What stays a claim, not a fact.** That a session read the packet
   unaltered, that you used the printed command, that the agent tool applied
   the pre-approval as printed, and whether a reviewer continued, all rest on
-  files the sessions can write, so each is shown as Inferred.
+  files the sessions can write, so each is shown as Inferred. So is that
+  your own Claude Code settings allow nothing more: an allow rule you keep
+  there (for example for a test command) still runs in a waiting session
+  without asking, and the printed command cannot switch it off. Whether the
+  one command's rule would let the session redirect its output into a file
+  is Unknown.
 
 Not changed: who may start a session (you, never a subagent or a headless
 session the author starts); the execution rule (no waiting session may build
@@ -63,7 +71,8 @@ text is data does not stop a session that obeys injected text. The narrow
 pre-approval limits what such a session can do without asking you: read its
 folder (and, for the inventory, the clone) and run its one command. It cannot
 write a file, and it cannot build or run the project. Whether the agent tool enforces the printed rules exactly is
-something Syzygy cannot see.
+something Syzygy cannot see, and allow rules in your own settings still
+apply.
 
 ## The question
 
