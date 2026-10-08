@@ -1,19 +1,19 @@
 {
-  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; and the continuation disclosure in waiting-sessions.ts and render.ts. Not authority.",
+  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; the continuation disclosure in waiting-sessions.ts and render.ts; and the stdin hand-over (`await --submit <file> --stdin`: Syzygy writes before it checks, only the role's own file name, only a delivered round's verdict, the size bound, empty content, no pending link followed, `--stdin` without `--submit`, a resubmission replaces, and the CLI wiring). `builderMutants` covers the v1.2 builder, the v1.1 builder's peel and delegation, and the recorder's v1.2 entry. Not authority.",
   "measuredOn": {
-    "commit": "439c8afe211ea4daf545745c0124c2f685c472dd",
+    "commit": "d930b6bcf88b0a835c5be8a72162ca01645aaf53",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.ts",
-        "sha256": "ba13d2dc969938ac03ab2955a6deeed0d05a7cc6bb6de9817f3a4f2e84f8a31c"
+        "sha256": "d6a7040d6b988c3c2857a6f50f13528e7343a727ecd7de7fa0ca9bb5a81c2f62"
       },
       {
         "path": "packages/polaris-dossier/src/session-handover.ts",
-        "sha256": "274c2ac0ee6e7f0fe037b6c4b5b636701417b058a93d1ecab9612e39df01a5ed"
+        "sha256": "28b21acd40b15501ac3a21f6d3c646329f8e1d07090f78dc639ed449381057a6"
       },
       {
         "path": "packages/polaris-dossier/src/cli.ts",
-        "sha256": "2119758188e8d5f058ba30000bfaae9de3ad80878010771daa8de55e1967a39d"
+        "sha256": "7ec1498b4ad9e39ce3bce6a5e5f9492a4996312ea1fabee2789c74ca36a75b78"
       },
       {
         "path": "packages/polaris-dossier/src/render.ts",
@@ -21,15 +21,15 @@
       },
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
-        "sha256": "e68a6708d30de5d79b6617b36c85a073aeb542c4e0c6530a48fcba61fce21eab"
+        "sha256": "5600edfeafa457ef61a0cf010918f7e38a5262484650c1cab3d9a39913fe987f"
       }
     ]
   },
   "method": "Each mutant replaces `old` with `new` (exactly one occurrence, else not applied) in one file of the worktree at `commit`, runs `command` from the worktree root, then restores the file byte for byte. A mutant is killed only when the replacement applied and the command exits nonzero. `failedTests` is read from Vitest's summary line. The tree under packages/ was clean after the run (`treeCleanAfter`).",
   "command": "npx vitest run packages/polaris-dossier/src/waiting-sessions.test.ts",
   "result": {
-    "killed": 40,
-    "total": 40
+    "killed": 50,
+    "total": 50
   },
   "treeCleanAfter": true,
   "notMutated": [
@@ -94,16 +94,16 @@
     {
       "id": "M7-allow-list-await-rule-dropped",
       "file": "packages/polaris-dossier/src/session-handover.ts",
-      "old": "`Edit(/${directory}/**)`, `Bash(syzygy dossier await ${directory}/:*)`]",
-      "new": "`Edit(/${directory}/**)`]",
+      "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
+      "new": "`Read(/${dir}/**)`)];",
       "outcome": "killed",
       "failedTests": 1
     },
     {
-      "id": "M8-allow-list-edit-widened",
+      "id": "M8-allow-list-pre-approves-a-write",
       "file": "packages/polaris-dossier/src/session-handover.ts",
-      "old": "`Edit(/${directory}/**)`, `Bash(",
-      "new": "`Edit(//**)`, `Bash(",
+      "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
+      "new": "`Read(/${dir}/**)`), `Edit(/${directory}/**)`, `Bash(syzygy dossier await ${directory}/:*)`];",
       "outcome": "killed",
       "failedTests": 1
     },
@@ -238,8 +238,8 @@
     {
       "id": "M25-submit-containment-dropped",
       "file": "packages/polaris-dossier/src/waiting-sessions.ts",
-      "old": "if (file === null || realDir === null || !file.startsWith(`${realDir}${path.sep}`)) return refuse('submit',",
-      "new": "if (file === null || realDir === null) return refuse('submit',",
+      "old": "if (file === null || !file.startsWith(`${realDir}${path.sep}`)) return refuse('submit',",
+      "new": "if (file === null) return refuse('submit',",
       "outcome": "killed",
       "failedTests": 1
     },
@@ -257,7 +257,7 @@
       "old": "outcome.outcome === 'submitted' && !outcome.passed ? EXIT.refused : EXIT.clean",
       "new": "EXIT.clean",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 2
     },
     {
       "id": "M28-cli-waiting-exit-0",
@@ -273,7 +273,7 @@
       "old": "  const roundDir = path.join(directory, roundDirName(round));\n  try {",
       "new": "  const roundDir = directory;\n  try {",
       "outcome": "killed",
-      "failedTests": 9
+      "failedTests": 15
     },
     {
       "id": "M30-delivery-round-not-advanced",
@@ -362,6 +362,547 @@
       "new": "${false ? 'This is the next revision",
       "outcome": "killed",
       "failedTests": 1
+    },
+    {
+      "id": "S1-stdin-checks-without-writing",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? readProcessStdin);",
+      "new": "const stdinRefusal = null as string | null;",
+      "outcome": "killed",
+      "failedTests": 27
+    },
+    {
+      "id": "S2-stdin-inventory-any-name",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (name !== INVENTORY_SUBMIT_FILE) return `with --stdin an inventory session submits ${INVENTORY_SUBMIT_FILE}, nothing else`;\n    target = path.join(realDir, INVENTORY_SUBMIT_FILE);",
+      "new": "    target = path.join(realDir, name);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S3-stdin-review-any-file-in-a-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\/verdict\\.json$/u;",
+      "new": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\//u;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S4-stdin-undelivered-round-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !fs.existsSync(path.join(roundDir, DELIVERY_FILE))) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S5-stdin-unbounded",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const text = await readStdin(DRAFT_MAX_BYTES);",
+      "new": "const text = await readStdin(Number.MAX_SAFE_INTEGER);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S6-stdin-empty-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (text.trim() === '') return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S7-stdin-follows-pending-link",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    fs.rmSync(pending, { force: true });\n    fs.writeFileSync(pending, text, { mode: 0o600, flag: 'wx' });",
+      "new": "    fs.writeFileSync(pending, text, { mode: 0o600 });",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S8-stdin-without-submit-ignored",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (request.stdin === true && request.submit === undefined) return refuse('usage', '--stdin applies only with --submit');\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S9-stdin-never-replaces",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    fs.renameSync(pending, target);",
+      "new": "    if (!fs.existsSync(target)) fs.renameSync(pending, target);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "S10-cli-stdin-not-wired",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": ", ...(stdin === 1 ? { stdin: true } : {}),",
+      "new": ",",
+      "outcome": "killed",
+      "failedTests": 28
     }
-  ]
+  ],
+  "builderMutants": {
+    "measuredOn": {
+      "commit": "d930b6bcf88b0a835c5be8a72162ca01645aaf53",
+      "subjects": [
+        {
+          "path": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+          "sha256": "595092fc6d11ccc5e55d170a51445f4c322e9b16030dc37783280a9787cc7ee4"
+        },
+        {
+          "path": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+          "sha256": "7bd4fba08b41877dc5b3198cbc62ae87a21c711752aae533255cd971ba09f277"
+        },
+        {
+          "path": "scripts/record_versioned_signoff.py",
+          "sha256": "58f419056e44faabb684f9e94db607e6de11f1a1b924162fff6ac32b9ea8ec83"
+        }
+      ]
+    },
+    "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in `file`, runs `python3 <script> --selftest` for each name in `selftests` (v12: scripts/build_polaris_dossier_local_agent_mode_v1_2.py; v11: scripts/build_polaris_dossier_local_agent_mode_v1_1.py; recorder: scripts/record_versioned_signoff.py) from the worktree root, then restores the file byte for byte. Killed when any of them exits nonzero; `failures` keeps the first FAIL lines.",
+    "result": {
+      "killed": 21,
+      "total": 21
+    },
+    "mutants": [
+      {
+        "id": "B1-v1.1-not-installed-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if base != \"applied\":\n        findings.append(f\"v1.1 is {base}",
+        "new": "    if False:\n        findings.append(f\"v1.1 is {base}",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: v1.1 not installed"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B2-no-v1.1-record-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if not (root / V11_RECORD).is_file():\n        findings.append(",
+        "new": "    if False:\n        findings.append(",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: no v1.1 record"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B3-v1.1-layer-not-checked-as-signed",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    elif base == \"applied\":\n        findings += [f\"v1.1 signed bytes",
+        "new": "    elif False:\n        findings += [f\"v1.1 signed bytes",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL v1.2 recorded over a v1.1 layer that is not the signed v1.1: fails",
+              "FAIL refused: the v1.1 layer is not the bytes the v1.1 review read",
+              "FAIL refused: the v1.1 record names an option the tree lacks"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B4-status-links-not-checked",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "count(V11_LINKS) != 1):",
+        "new": "count(V11_LINKS) > 1):",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: the status page lacks the v1.0 and v1.1 links"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B5-post-apply-shape-not-checked",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "        findings += v11._shape(after[SPEC], f\"{SPEC.as_posix()} with the v{VERSION} patches\")",
+        "new": "        pass",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: a post-apply spec with an extra requirement"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B6-neither-not-reported",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if current == \"neither\":\n        return findings + [f\"the tree is neither v1.1",
+        "new": "    if False:\n        return findings + [f\"the tree is neither v1.1",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: the tree is neither state"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B7-signed-without-applied-tree",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if current != \"applied\":\n        return findings + [f\"the tree is not v1.1 plus",
+        "new": "    if False:\n        return findings + [f\"the tree is not v1.1 plus",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied and signed, then the spec edited: the tree is neither state"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B8-v1.2-review-digest-not-compared",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if reviewed is None or sha((root / SPEC).read_bytes()) != reviewed:",
+        "new": "    if reviewed is None:",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a v1.2 review digest that is not the spec fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B9-signed-v1.2-skips-the-v1.1-layer",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    findings = [f\"v1.1 signed bytes: {f}\" for f in v11.signed_v11_findings(root)]\n    current = state(root)",
+        "new": "    findings = []\n    current = state(root)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL v1.2 recorded over a v1.1 layer that is not the signed v1.1: fails",
+              "FAIL v1.2 recorded over a v1.1 layer lacking the recorded option: fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B10-later-version-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if latest != (1, 2):",
+        "new": "    if latest > (1, 3):",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a later version no builder knows fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B11-signed-with-package-absent",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "        return [f\"{V12_RECORD.as_posix()} exists but the v{VERSION} package is absent\"]",
+        "new": "        return []",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL absent package with a v1.2 record fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B12-check-absent-with-record-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "                if (root / V12_RECORD).exists() else [])",
+        "new": "                if False else [])",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL absent package with a v1.2 record fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B13-apply-names-no-v1.2-record",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    text = v10.refigure(root, text.replace(V11_LINKS, THREE_LINKS))",
+        "new": "    text = v10.refigure(root, text)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options none)",
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B14-apply-does-not-refigure",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    text = v10.refigure(root, text.replace(V11_LINKS, THREE_LINKS))",
+        "new": "    text = text.replace(V11_LINKS, THREE_LINKS)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B15-v1.1-peels-nothing",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return v12.backward(root)",
+        "new": "    return None",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B16-v1.1-latest-ignores-applied-v1.2",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "        if peeled(root) is not None:\n            findings.append(\"the tree carries the v1.2 patches",
+        "new": "        if False:\n            findings.append(\"the tree carries the v1.2 patches",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options none)",
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B17-v1.1-delegates-nothing",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return v12.signed_findings(root)",
+        "new": "    return []",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a v1.2 review digest that is not the spec fails",
+              "FAIL a later version no builder knows fails"
+            ]
+          },
+          {
+            "selftest": "v11",
+            "exit": 1,
+            "failing": [
+              "FAIL a later version no builder knows fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B18-v1.1-spec-not-peeled",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return later[SPEC] if later is not None else (root / SPEC).read_bytes()",
+        "new": "    return (root / SPEC).read_bytes()",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL restored: signed"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B19-v1.1-scratch-not-peeled",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "        if later is not None:\n            (scratch / rel).parent.mkdir",
+        "new": "        if False:\n            (scratch / rel).parent.mkdir",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)",
+              "FAIL applied package verifies (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B20-recorder-v1.2-subject-not-computed",
+        "file": "scripts/record_versioned_signoff.py",
+        "old": "            subject_bytes=lambda root: dossier12().subject_bytes(root),\n",
+        "new": "",
+        "selftests": [
+          "recorder"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "recorder",
+            "exit": 1,
+            "failing": [
+              "FAIL the real v1.2 entry shares v1.0's key and record stem, binds the computed subject in its own candidate directory and offers no option"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B21-recorder-v1.2-wrong-candidate",
+        "file": "scripts/record_versioned_signoff.py",
+        "old": "            CANDIDATES / \"polaris-dossier-local-agent-mode-v1-2\",",
+        "new": "            CANDIDATES / \"polaris-dossier-local-agent-mode-v1-1\",",
+        "selftests": [
+          "recorder"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "recorder",
+            "exit": 1,
+            "failing": [
+              "FAIL the real v1.2 entry shares v1.0's key and record stem, binds the computed subject in its own candidate directory and offers no option"
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

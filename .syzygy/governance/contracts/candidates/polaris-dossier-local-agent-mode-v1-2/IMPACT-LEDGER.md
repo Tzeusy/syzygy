@@ -89,15 +89,21 @@ this package. The direction's ID was first drafted with its local date,
   (the continuity item and the review-status note). Each wait-mode step
   refuses until a `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or
   later) record exists, so v1.1 behaviour is unchanged while this package is
-  unsigned. Tests: `waiting-sessions.test.ts`, 32 tests, 40 of 40 mutants killed; rule-6 mutants in
+  unsigned. Tests: `waiting-sessions.test.ts`, 44 tests, 50 of 50 mutants killed; rule-6 mutants in
   `docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json`.
 - **Agent texts.** The `/polaris-dossier` skill and the Codex instructions
   describe the v1.1 hand-over at their step 8 and do not mention waiting
   sessions; they are updated after the sign-off, under the agent-text lint.
 - **Generated.** `GOVERNING-DEPENDENCIES.md` and the census, regenerated at
   install; `PROJECT-STATUS.md`'s Polaris figure and its v1.1 routing line.
-- **Tooling, missing.** A v1.2 builder, its `real_packages()` entry and the
-  v1.1 builder's delegation (the delta's migration plan).
+- **Tooling.** `scripts/build_polaris_dossier_local_agent_mode_v1_2.py`, the
+  `polaris-dossier-local-agent-mode@1.2` entry in
+  `scripts/record_versioned_signoff.py` and the v1.1 builder's peel and
+  delegation, on the same branch; selftest fixtures and rule-6 mutants in the
+  evidence record above (`builderMutants`). The PROJECT-STATUS battery and
+  the hosted workflow do not yet run the v1.2 builder's own `--check` and
+  `--selftest` lines (CG-26 is registered once, at merge); its signed-bytes
+  check runs through the existing v1.0 and v1.1 `--check` lines.
 - **Not touched.** REQ-polaris-generation-033, 034, 036; the provider-mode
   requirements; RFC7; doctrine; the gate sources and screens.
 
