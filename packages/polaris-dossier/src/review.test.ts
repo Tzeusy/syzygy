@@ -635,29 +635,43 @@ describe('session-prompt --tool and the session pair\'s statement', () => {
     recordId: 'STATEMENT-KESTREL-CODEX', version: '3', digest: 'b'.repeat(64), agentTool: 'codex', provider: 'anthropic', contentClasses,
     withdrawn: false, act: { identity: 'CODEX-STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 }, ...change,
   });
+  /** Every entry under the state root (the run directory and its sessions root), each file with its digest. */
+  const stateTree = (run: string): Record<string, string> => {
+    const root = path.dirname(run);
+    return Object.fromEntries(fs.readdirSync(root, { recursive: true, encoding: 'utf8' }).sort().map((entry) => {
+      const full = path.join(root, entry);
+      return [entry, fs.lstatSync(full).isFile() ? sha256(fs.readFileSync(full)) : 'not a file'];
+    }));
+  };
   const handOver = async (others: readonly ProviderStatementRecord[] | null, request: Parameters<typeof sessionPrompt>[1]) => {
     world = others === null ? null : { screen: SCREEN, classes: RUN_CLASSES, others };
     const run = await prepared();
-    return { run, result: await sessionPrompt(run, request, { sources: sources(), now: () => LATER, loadScreen: screenOf }) };
+    const before = stateTree(run);
+    return { run, before, result: await sessionPrompt(run, request, { sources: sources(), now: () => LATER, loadScreen: screenOf }) };
   };
   const REVIEW = { role: 'review', kind: 'fidelity', tool: 'codex' } as const, INVENTORY = { role: 'inventory', tool: 'codex' } as const;
+  // R-PR406-SESSION-TOOL-STATEMENT-1 N3: the design kind, refused at the statement before it would look for a rendered site.
+  const DESIGN = { role: 'review', kind: 'design', tool: 'codex' } as const;
+  const AMBIGUOUS = 'the session\'s agent tool codex with the run\'s provider anthropic has no single per-project statement that governs it, so no session is handed over: 2 in-force per-project statements name the agent tool codex with the provider anthropic; which one governs is ambiguous';
 
   it.each<[string, readonly ProviderStatementRecord[], string]>([
     ['no statement names codex', [], 'the session\'s agent tool codex with the run\'s provider anthropic has no per-project statement in force, so no session is handed over: no per-project statement names the operator\'s agent tool codex with the provider anthropic (STATEMENT-KESTREL-ANTHROPIC@1 names claude-code with anthropic)'],
+    // R-PR406-SESSION-TOOL-STATEMENT-1 N1: two in-force statements for the pair are refused as ambiguous, not as absent.
+    ['two in-force statements name codex', [codex(RUN_CLASSES), codex(RUN_CLASSES, { recordId: 'STATEMENT-KESTREL-CODEX-B' })], AMBIGUOUS],
     ['the codex statement is withdrawn', [codex(RUN_CLASSES, { withdrawn: true })], 'no per-project statement naming the agent tool codex with the provider anthropic is in force: STATEMENT-KESTREL-CODEX@3 is withdrawn'],
     ['the codex statement takes effect after now', [codex(RUN_CLASSES, { act: { identity: 'CODEX-STATEMENT-ACT-FIXTURE', inForceAt: LATER + 1 } })], 'STATEMENT-KESTREL-CODEX@3 is not in force yet'],
     ['the codex statement names another provider', [codex(RUN_CLASSES, { provider: 'openai' })], 'no per-project statement names the operator\'s agent tool codex with the provider anthropic'],
     ['the codex statement lists only code-content', [codex(['code-content'])], 'the per-project statement STATEMENT-KESTREL-CODEX@3 for the session\'s agent tool codex with the provider anthropic does not list project-documentation, which the run\'s statement lets its packets carry, so no session is handed over'],
-  ])('refuses a review and an inventory session when %s, and writes no session', async (_name, others, reason) => {
-    for (const request of [REVIEW, INVENTORY]) {
-      const { run, result } = await handOver(others, request);
+  ])('refuses a fidelity, a design and an inventory session when %s, and writes nothing', async (_name, others, reason) => {
+    for (const request of [REVIEW, DESIGN, INVENTORY]) {
+      const { run, before, result } = await handOver(others, request);
       expect(result.ok).toBe(false);
       if (result.ok) continue;
       expect(result.refusal).toMatchObject({ command: 'session-prompt', outcome: 'refused', stage: 'statement' });
       expect(result.refusal.reason).toContain(reason);
-      expect(fs.readdirSync(path.join(path.dirname(run), `${RUN_ID}.sessions`)).sort()).toEqual(['session-1']);
-      expect(fs.existsSync(path.join(run, 'reviews', 'fidelity-session-1.json'))).toBe(false);
-      expect(fs.existsSync(path.join(run, 'inventory', 'session-2.json'))).toBe(false);
+      // R-PR406-SESSION-TOOL-STATEMENT-1 E1: the whole state root, the run directory's reviews/ packet included, is unchanged.
+      expect(stateTree(run)).toEqual(before);
+      expect(Object.keys(before)).toContain(`${RUN_ID}.sessions/session-1/inventory-brief.md`);
     }
   });
 
