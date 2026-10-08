@@ -1,0 +1,995 @@
+{
+  "record": "Rule-6 mutants for the project-documentation class of public-source screening scope version 2 (syzygy-2coz): R1-R4 root-document; D2-D7 docs-tree; L1-L3 licenses-tree; W1-W7 the exactly-one rule, never-code-content, the ASCII fold and the path forms that match nothing; P1-P15 every prefix parameter and parameter list read from the policy; V1-V23 the refusals of a malformed or reworded rule; S1-S5 the dossier screen (prerequisite, class act state, refusal, admission, flag); A1-A11 the any-repo reader screen (prerequisite and class act form). Expected values in the tests are literals from the policy rule text. One mutant considered and not run as equivalent: docs-tree \"two or more segments\" relaxed to one, since a one-segment path has its name as its first segment and no docTreeRoots entry ends with a docTreeExtensions entry. Two mutants survived a first run (L1 licenses-tree \"exactly two segments\", V3 path-rule id order); tests were added before this run. The run was made detached at the subject commit, the parent of the commit that adds this record on branch fix/screen-project-documentation (the runner writes the branch as HEAD when detached); a rebase-merge leaves it reachable from no ref, so the old/new fragments and the file digests are the re-runnable form. Not authority.",
+  "result": {
+    "killed": 74,
+    "survived": 0,
+    "errored": 0,
+    "total": 74
+  },
+  "subject": {
+    "commit": "be1e0f3d4e6f61d3a08e27432919e41ded26de8b",
+    "branch": "HEAD",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "fc8e88be25626caeb05b0b8a5506186e590eaf1aeccaf83b5b4ef2056925b534",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "4f6bbea1bf80035b4e845a9fac7d1484beec3ab6b8b3fda67e7151742bdf3301",
+      "packages/polaris-dossier/src/screen.test.ts": "5b4030be0fa0363a9dffeb0a6aefba42e6e9e781bf5edebd81ae9afd7b109593",
+      "packages/polaris-dossier/src/screen.ts": "3b222ff2a948734bb0aaf40ffae2e417bbaf0d64fb397de7b087af5ac67da604",
+      "packages/polaris-generation-core/src/public-source-classification.test.ts": "b93fcb8435869308b865c204bbdbd7d5cd3231144e51b8f14c669d89e2affc65",
+      "packages/polaris-generation-core/src/public-source-classification.ts": "0c7e474079d17267452e1804f54ce73108c280fd7aa371db21a4a99375ce652a"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": "fc8e88be25626caeb05b0b8a5506186e590eaf1aeccaf83b5b4ef2056925b534",
+      "packages/polaris-dossier/src/screen.test.ts": "5b4030be0fa0363a9dffeb0a6aefba42e6e9e781bf5edebd81ae9afd7b109593",
+      "packages/polaris-generation-core/src/public-source-classification.test.ts": "b93fcb8435869308b865c204bbdbd7d5cd3231144e51b8f14c669d89e2affc65"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-08T02:52:48+00:00",
+  "mutants": [
+    {
+      "id": "R1-root-nested",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.length !== 1) return false;",
+      "new": "if (segments.length > 2) return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "root-document: \"a path with one segment\""
+    },
+    {
+      "id": "R2-root-prefix-separator-kept",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (present) name = name.slice(digitCount + separator.length);",
+      "new": "if (present) name = name.slice(digitCount);",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 177,
+      "note": "root-document: removing rootStemNumericPrefix removes its separator too"
+    },
+    {
+      "id": "R3-root-prefix-ignored",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (present) name = name.slice(digitCount + separator.length);",
+      "new": "if (false) name = name.slice(digitCount + separator.length);",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 177,
+      "note": "root-document: \"after removing rootStemNumericPrefix when it is present\""
+    },
+    {
+      "id": "R4-root-two-suffixes",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "return rule.documentSuffixes.some(suffix => name.endsWith(suffix) && rule.rootStems.includes(name.slice(0, name.length - suffix.length)));",
+      "new": "return rule.documentSuffixes.some(suffix => name.endsWith(suffix) && rule.documentSuffixes.some(second => name.slice(0, name.length - suffix.length).endsWith(second) && rule.rootStems.includes(name.slice(0, name.length - suffix.length - second.length))));",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "root-document: \"then one suffix from documentSuffixes\""
+    },
+    {
+      "id": "D2-docs-any-root",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.length < 2 || !rule.docTreeRoots.includes(segments[0]!)) return false;",
+      "new": "if (segments.length < 2) return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 177,
+      "note": "docs-tree: \"whose first segment is one of docTreeRoots\""
+    },
+    {
+      "id": "D3-docs-dirs-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.slice(1, -1).some(directory => hasExcludedWord(directory, rule)) || ",
+      "new": "if (",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 177,
+      "note": "docs-tree: \"no directory name after the first ... has a word in docExcludedTokens\""
+    },
+    {
+      "id": "D4-docs-first-dir-skipped",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "segments.slice(1, -1).some(directory",
+      "new": "segments.slice(2, -1).some(directory",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 177,
+      "note": "docs-tree: every directory after the first, including the second segment"
+    },
+    {
+      "id": "D5-docs-name-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || stems.some(stem => hasExcludedWord(stem, rule))) return false;",
+      "new": ") return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 177,
+      "note": "docs-tree: \"no file name without its extension, has a word in docExcludedTokens\""
+    },
+    {
+      "id": "D6-docs-txt-literal",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "return !(name.endsWith(TXT) &&",
+      "new": "return !(name.endsWith('.md') &&",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 177,
+      "note": "docs-tree: \"a name ending in .txt that equals ... or starts with ...\""
+    },
+    {
+      "id": "D7-not-longer",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "extensions.filter(entry => name.length > entry.length && name.endsWith(entry))",
+      "new": "extensions.filter(entry => name.length >= entry.length && name.endsWith(entry))",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docs-tree and licenses-tree: \"ends with one of ... and is longer than it\" (shared helper)"
+    },
+    {
+      "id": "L1-licenses-deeper",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.length !== 2 || !rule.licenseTreeRoots.includes(segments[0]!)) return false;",
+      "new": "if (segments.length < 2 || !rule.licenseTreeRoots.includes(segments[0]!)) return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "licenses-tree: \"a path of exactly two segments\""
+    },
+    {
+      "id": "L2-licenses-any-root",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.length !== 2 || !rule.licenseTreeRoots.includes(segments[0]!)) return false;",
+      "new": "if (segments.length !== 2) return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 17,
+      "totalTests": 177,
+      "note": "licenses-tree: \"whose first segment is one of licenseTreeRoots\""
+    },
+    {
+      "id": "L3-licenses-words-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "return stems.length > 0 && !stems.some(stem => hasExcludedWord(stem, rule));",
+      "new": "return stems.length > 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "licenses-tree: \"no word of the file name without its extension is in docExcludedTokens\""
+    },
+    {
+      "id": "W1-two-rules-admitted",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "documentationPathRules(repositoryPath, documentation).length === 1",
+      "new": "documentationPathRules(repositoryPath, documentation).length >= 1",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "class: \"matched by exactly one of the three path rules\""
+    },
+    {
+      "id": "W2-code-wins",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (documentation !== null && documentationPathRules(repositoryPath, documentation).length === 1) return 'project-documentation';",
+      "new": "if (documentation !== null && !sourceExtensions.some(entry => repositoryPath.endsWith(entry)) && documentationPathRules(repositoryPath, documentation).length === 1) return 'project-documentation';",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "class: \"a blob matched here is never code-content\""
+    },
+    {
+      "id": "W3-no-fold",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const folded = fold(repositoryPath);",
+      "new": "const folded = repositoryPath;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 29,
+      "totalTests": 177,
+      "note": "matching: \"a copy of the path with its ASCII letters A-Z folded to a-z\""
+    },
+    {
+      "id": "W4-unicode-fold",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const fold = (text: string): string => text.replace(/[A-Z]/gu, letter => letter.toLowerCase());",
+      "new": "const fold = (text: string): string => text.toLowerCase();",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "matching: \"and nothing else folded\""
+    },
+    {
+      "id": "W5-backslash-allowed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (folded.includes('\\\\')) return [];",
+      "new": "if (false) return [];",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "matching: \"a backslash ... matches nothing\""
+    },
+    {
+      "id": "W6-dot-dot-allowed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.some(part => part === '' || part === '.' || part === '..')) return [];",
+      "new": "if (segments.some(part => part === '' || part === '.')) return [];",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "matching: \"a path with an empty, '.' or '..' segment\""
+    },
+    {
+      "id": "W7-empty-segment-allowed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (segments.some(part => part === '' || part === '.' || part === '..')) return [];",
+      "new": "if (segments.some(part => part === '.' || part === '..')) return [];",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "matching: \"an empty segment ... or a leading or trailing '/'\""
+    },
+    {
+      "id": "P1-digitCount",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const head = name.slice(0, digitCount);",
+      "new": "const head = name.slice(0, 2);",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "rootStemNumericPrefix.digitCount read from the policy"
+    },
+    {
+      "id": "P2-digits",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "[...head].every(character => digits.includes(character))",
+      "new": "[...head].every(character => /[0-9]/u.test(character))",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "rootStemNumericPrefix.digits read from the policy (and no Unicode digit)"
+    },
+    {
+      "id": "P3-separator",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "name.startsWith(separator, digitCount)",
+      "new": "name.startsWith('-', digitCount)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "rootStemNumericPrefix.separator read from the policy"
+    },
+    {
+      "id": "P4-optional",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "else if (!optional) return false;",
+      "new": "else if (false) return false;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "rootStemNumericPrefix.optional read from the policy"
+    },
+    {
+      "id": "P5-rootStems",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "rule.rootStems.includes(name.slice(0, name.length - suffix.length))",
+      "new": "['readme', 'license', 'licence', 'copying', 'changelog', 'changes', 'contributing', 'notice', 'notices', 'news', 'history', 'authors', 'faq', 'release-notes', 'release_notes', 'releasenotes'].includes(name.slice(0, name.length - suffix.length))",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 177,
+      "note": "rootStems read from the policy"
+    },
+    {
+      "id": "P6-documentSuffixes",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "return rule.documentSuffixes.some(suffix =>",
+      "new": "return ['', '.md', '.rst', '.txt'].some(suffix =>",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "documentSuffixes read from the policy"
+    },
+    {
+      "id": "P7-docTreeRoots",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "!rule.docTreeRoots.includes(segments[0]!)",
+      "new": "!['docs', 'doc'].includes(segments[0]!)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docTreeRoots read from the policy"
+    },
+    {
+      "id": "P8-docTreeExtensions",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "stemsWithout(name, rule.docTreeExtensions)",
+      "new": "stemsWithout(name, ['.md', '.rst', '.txt'])",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "docTreeExtensions read from the policy"
+    },
+    {
+      "id": "P9-docExcludedTokens",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (rule.docExcludedTokens.includes(word)) return true;",
+      "new": "if (false) return true;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 18,
+      "totalTests": 177,
+      "note": "docExcludedTokens applied"
+    },
+    {
+      "id": "P10-docTokenSeparators",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (!rule.docTokenSeparators.includes(character)) { word += character; continue; }",
+      "new": "if (!'-_. '.includes(character)) { word += character; continue; }",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "docTokenSeparators read from the policy"
+    },
+    {
+      "id": "P11-separator-space-dropped",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (!rule.docTokenSeparators.includes(character)) { word += character; continue; }",
+      "new": "if (!rule.docTokenSeparators.replace(' ', '').includes(character)) { word += character; continue; }",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "docTokenSeparators: \"split ... at each character\", the space included"
+    },
+    {
+      "id": "P12-docTxtExcludedNames",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "rule.docTxtExcludedNames.includes(name)",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docTxtExcludedNames applied"
+    },
+    {
+      "id": "P13-docTxtExcludedPrefixes",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "rule.docTxtExcludedPrefixes.some(prefix => name.startsWith(prefix))",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 177,
+      "note": "docTxtExcludedPrefixes applied"
+    },
+    {
+      "id": "P14-licenseTreeRoots",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "!rule.licenseTreeRoots.includes(segments[0]!)",
+      "new": "!['licenses'].includes(segments[0]!)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "licenseTreeRoots read from the policy"
+    },
+    {
+      "id": "P15-licenseTreeSuffixes",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "stemsWithout(segments[1]!, rule.licenseTreeSuffixes)",
+      "new": "stemsWithout(segments[1]!, ['.md', '.txt'])",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "licenseTreeSuffixes read from the policy"
+    },
+    {
+      "id": "V1-text-unpinned",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || sha256(rule['rule']) !== IMPLEMENTED_TEXTS.rule) return refuse(",
+      "new": ") return refuse(",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "the class rule text is pinned"
+    },
+    {
+      "id": "V2-path-texts-unpinned",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "\n      && sha256(pathRule['rule']) === IMPLEMENTED_TEXTS[PATH_RULE_IDS[index]!])) {",
+      "new": ")) {",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 177,
+      "note": "the three path rule texts are pinned"
+    },
+    {
+      "id": "V3-path-ids-unordered",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "pathRule['id'] === PATH_RULE_IDS[index]",
+      "new": "PATH_RULE_IDS.includes(pathRule['id'] as DocumentationPathRuleId)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "the three path rules, by id and order"
+    },
+    {
+      "id": "V4-disjoint-unpinned",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || sha256(rule['disjointFromSourceExtensions']) !== IMPLEMENTED_TEXTS.disjointFromSourceExtensions) {",
+      "new": ") {",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "the disjointness statement is pinned"
+    },
+    {
+      "id": "V5-note-unpinned",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || sha256(prefix['note']) !== IMPLEMENTED_TEXTS.rootStemNumericPrefixNote) {",
+      "new": ") {",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "the prefix note is pinned"
+    },
+    {
+      "id": "V6-digitCount-zero",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "(prefix['digitCount'] as number) < 1",
+      "new": "(prefix['digitCount'] as number) < 0",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "digitCount is a positive integer"
+    },
+    {
+      "id": "V7-digits-unicode",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "!/^[\\x21-\\x7e]+$/u.test(prefix['digits'])",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "digits are ASCII"
+    },
+    {
+      "id": "V8-separator-empty",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "!/^[\\x21-\\x7e]+$/u.test(prefix['separator'])",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "the separator is non-empty ASCII"
+    },
+    {
+      "id": "V9-optional-any",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "typeof prefix['optional'] !== 'boolean'",
+      "new": "false",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "optional is a boolean"
+    },
+    {
+      "id": "V10-separators-any",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (typeof separators !== 'string' || separators.length === 0 || unmatchable(separators)) return refuse('docTokenSeparators is unreadable');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docTokenSeparators is a non-empty string"
+    },
+    {
+      "id": "V11-rootStems-empty",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['rootStems', 1, nonEmpty]",
+      "new": "['rootStems', 0, nonEmpty]",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "rootStems is non-empty"
+    },
+    {
+      "id": "V12-documentSuffixes-any",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['documentSuffixes', 1, entry => entry === '' || extension(entry)]",
+      "new": "['documentSuffixes', 1, entry => true]",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "documentSuffixes are empty or an extension"
+    },
+    {
+      "id": "V13-docTreeRoots-dot",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['docTreeRoots', 1, segment]",
+      "new": "['docTreeRoots', 1, nonEmpty]",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "docTreeRoots are segments"
+    },
+    {
+      "id": "V14-docTreeExtensions-empty",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['docTreeExtensions', 1, extension]",
+      "new": "['docTreeExtensions', 0, extension]",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "docTreeExtensions is non-empty"
+    },
+    {
+      "id": "V15-tokens-with-separator",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "entry.length > 0 && ![...separators].some(sep => entry.includes(sep))",
+      "new": "entry.length > 0",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "an excluded token holds no separator"
+    },
+    {
+      "id": "V16-txtNames-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['docTxtExcludedNames', 0, nonEmpty], ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docTxtExcludedNames is validated"
+    },
+    {
+      "id": "V17-txtPrefixes-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['docTxtExcludedPrefixes', 0, nonEmpty], ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "docTxtExcludedPrefixes is validated"
+    },
+    {
+      "id": "V18-licenseRoots-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "['licenseTreeRoots', 1, segment], ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "licenseTreeRoots is validated"
+    },
+    {
+      "id": "V19-licenseSuffixes-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": ", ['licenseTreeSuffixes', 1, extension]",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 177,
+      "note": "licenseTreeSuffixes is validated"
+    },
+    {
+      "id": "V20-case-unchecked",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const unmatchable = (entry: string): boolean => /[A-Z/\\\\]/u.test(entry);",
+      "new": "const unmatchable = (entry: string): boolean => /[/\\\\]/u.test(entry);",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 177,
+      "note": "list entries that could never match a folded path refuse"
+    },
+    {
+      "id": "V21-overlap-allowed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (overlap.length > 0) return refuse(",
+      "new": "if (overlap.length > 3) return refuse(",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 177,
+      "note": "\"none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions\""
+    },
+    {
+      "id": "V22-two-rules-allowed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (found.length > 1) return refuse('appears more than once');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "one project-documentation rule"
+    },
+    {
+      "id": "V23-repeated-entries",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "\n  && new Set(value).size === value.length;",
+      "new": ";",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-classification.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 177,
+      "note": "list entries are distinct"
+    },
+    {
+      "id": "S1-dossier-prerequisite-ignored",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "const documentation = classActInForce ? documentationRead.rule : null;",
+      "new": "const documentation = documentationRead.rule;",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 9,
+      "totalTests": 76,
+      "note": "prerequisite: the class classifies only while the class act is in force"
+    },
+    {
+      "id": "S2-dossier-absent-act-counts",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "classAct.state === 'ok'",
+      "new": "classAct.state !== 'refused'",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 76,
+      "note": "prerequisite: an absent (or not yet in force) class act confirms nothing"
+    },
+    {
+      "id": "S3-dossier-malformed-tolerated",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "if (!documentationRead.ok) return refuse(documentationRead.why);",
+      "new": "if (!documentationRead.ok && classActInForce) return refuse(documentationRead.why);",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 76,
+      "note": "a malformed rule refuses, in force or not"
+    },
+    {
+      "id": "S4-dossier-class-unused",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "publicSourceContentClass(repositoryPath, extensions, documentation)",
+      "new": "publicSourceContentClass(repositoryPath, extensions, null)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 76,
+      "note": "the dossier screen admits the class"
+    },
+    {
+      "id": "S5-dossier-flag",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "projectDocumentation: documentation !== null,",
+      "new": "projectDocumentation: true,",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 11,
+      "totalTests": 76,
+      "note": "the screen reports whether the class is classified"
+    },
+    {
+      "id": "A1-app-prerequisite-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "const documentation = classActConfirmed(classActRecord, rfc5Module) ? documentationRead.rule : null;",
+      "new": "const documentation = documentationRead.rule;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 36,
+      "note": "prerequisite: the class classifies only while the class act is confirmed"
+    },
+    {
+      "id": "A2-app-digest-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "digests[0]![1] === createHash('sha256').update(module).digest('hex')",
+      "new": "digests[0]![1] !== ''",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act argument is the module digest"
+    },
+    {
+      "id": "A3-app-identity-date-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "`\\nAct identity: \\`RFC5-PROJECT-DOCUMENTATION-AMEND-${dates[0]![1]!}\\`\\n`",
+      "new": "'\\nAct identity: `RFC5-PROJECT-DOCUMENTATION-AMEND-'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act identity carries its date"
+    },
+    {
+      "id": "A4-app-type-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": " && record.includes('\\nAct type: `contract-amendment`\\n')",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act is a contract amendment"
+    },
+    {
+      "id": "A5-app-artifact-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "\n    && record.includes(`\\nArtifact identity: \\`${RFC5_MODULE_PATH}\\`\\n`)",
+      "new": "\n    ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act names the RFC-0005 module"
+    },
+    {
+      "id": "A6-app-project-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": " && record.includes('\\nProject identity: `project:syzygy`\\n')",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act is project:syzygy's"
+    },
+    {
+      "id": "A7-app-title-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": " || !record.startsWith(CLASS_ACT_TITLE)",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "the class act is the recorder's form"
+    },
+    {
+      "id": "A8-app-two-digests",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "digests.length === 1 &&",
+      "new": "digests.length >= 1 &&",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "exactly one exact digest"
+    },
+    {
+      "id": "A9-app-two-dates",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "dates.length === 1 &&",
+      "new": "dates.length >= 1 &&",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "exactly one date"
+    },
+    {
+      "id": "A10-app-malformed-tolerated",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "if (!documentationRead.ok) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 36,
+      "note": "a malformed rule refuses"
+    },
+    {
+      "id": "A11-app-class-unused",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "publicSourceContentClass(path, sourceExtensions, documentation)",
+      "new": "publicSourceContentClass(path, sourceExtensions, null)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 36,
+      "note": "the app screen admits the class"
+    }
+  ]
+}
