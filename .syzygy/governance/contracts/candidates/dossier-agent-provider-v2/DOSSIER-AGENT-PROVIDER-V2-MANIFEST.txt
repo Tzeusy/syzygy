@@ -1,0 +1,5 @@
+# DOSSIER AGENT-PROVIDER STATEMENT VERSION 2 MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 1 row(s) sorted by codepoint path; each hashes the record's exact bytes
+# and is the argument of one separate owner act over that record.
+b7a8d099ce108bfd70133b729327534f29806cb0118ee0b3e0f9ca077a946df3  .syzygy/governance/contracts/candidates/dossier-agent-provider-v2/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md
