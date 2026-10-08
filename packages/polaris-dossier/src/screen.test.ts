@@ -29,12 +29,13 @@ const docScopeWith = (over: Record<string, unknown>) => ({ contentClassification
 const RFC5_MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
 const MODULE_TEXT = '# RFC-0005 fixture module\n\n- `project-documentation`\n';
 const CLASS_ACT_FILE = `${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`;
-type ClassAct = { readonly argument?: string; readonly date?: string } | null;
+type ClassAct = { readonly argument?: string; readonly date?: string; readonly withdrawn?: boolean } | null;
 const recordsRoot = (policy: string, actArgument: string = sha(policy), classAct: ClassAct = null): string => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-screen-')));
   cleanups.push(() => fs.rmSync(root, { recursive: true, force: true }));
   const files: [string, string][] = [[POLICY_PATH, policy], [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`, renderPolicyAct(actArgument, '2026-10-04', '2026-10-04T10:00:00Z')]];
   if (classAct !== null) files.push([RFC5_MODULE, MODULE_TEXT], [CLASS_ACT_FILE, renderClassAct(classAct.argument ?? sha(MODULE_TEXT), classAct.date ?? '2026-10-04', `${classAct.date ?? '2026-10-04'}T09:00:00Z`)]);
+  if (classAct?.withdrawn === true) files.push([`${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-WITHDRAWAL-2026-10-06.md`, '# Owner withdrawal\n\nWithdraws `RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-04`.\n']);
   for (const [rel, body] of files) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
     fs.writeFileSync(path.join(root, rel), body);
@@ -109,6 +110,15 @@ describe('the project-documentation class (syzygy-2coz)', () => {
     expect(screen.screenPath('src/server.c')).toBeUndefined();
   });
 
+  // R-PR403-SCREEN-DOCS-1 finding 1: the screen names the class it admits each path under, and none for a path it excludes.
+  it.each<[string, boolean, string | undefined]>([
+    ['README.md', true, 'project-documentation'], ['docs/guide.md', true, 'project-documentation'], ['licenses/MIT.txt', true, 'project-documentation'],
+    ['src/server.c', true, 'code-content'], ['docs/design.md', true, undefined], ['docs/server.pem', true, undefined],
+    ['README.md', false, undefined], ['src/server.c', false, 'code-content'],
+  ])('names the content class of %s (class act in force: %s)', (repositoryPath, inForce, contentClass) => {
+    expect(build(inForce).contentClass(repositoryPath)).toBe(contentClass);
+  });
+
   it('builds without the class act by default', () => {
     expect(buildDossierScreen(encode(policyOf(DOC_SCOPE)))).toMatchObject({ ok: true, screen: { projectDocumentation: false } });
   });
@@ -139,14 +149,17 @@ describe('the project-documentation class (syzygy-2coz)', () => {
 // into the app. Both screens are built from the same policy bytes and must agree on every path and body of the population, and on
 // which malformed policies they refuse.
 const APP_SCREENING = path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/public-source-screening.ts');
-type AppScreen = { screenPath: (p: string) => string | undefined; screenBody: (b: string) => string | undefined; projectDocumentation: boolean };
-// The app reads the class act record and the RFC-0005 module through its port; `classAct` gives it the same confirmation the dossier's
-// screen is built with.
+type AppScreen = { screenPath: (p: string) => string | undefined; screenBody: (b: string) => string | undefined; contentClass: (p: string) => string | undefined; projectDocumentation: boolean };
+// The app's port states whether the class act is in force; `classAct` gives it the same answer the dossier's screen is built with.
+// `checkoutAppScreen` instead lets the app's own checkout port decide it from a records root at `now`, as the dossier's loader does.
 const appScreen = async (policy: string, classAct = false): Promise<AppScreen> => {
   const app = await import(APP_SCREENING);
-  const classInputs = classAct ? { classActRecord: renderClassAct(sha(MODULE_TEXT), '2026-10-04', '2026-10-04T09:00:00Z'), rfc5Module: encode(MODULE_TEXT) } : {};
-  const port = { read: async () => ({ actRecord: renderPolicyAct(sha(policy), '2026-10-04', '2026-10-04T10:00:00Z'), policy: encode(policy), ...classInputs }) };
+  const port = { read: async () => ({ actRecord: renderPolicyAct(sha(policy), '2026-10-04', '2026-10-04T10:00:00Z'), policy: encode(policy), classActInForce: classAct }) };
   return app.loadPublicSourceScreen(port, new Uint8Array(32).fill(7));
+};
+const checkoutAppScreen = async (root: string, now: number): Promise<AppScreen> => {
+  const app = await import(APP_SCREENING);
+  return app.loadPublicSourceScreen(app.checkoutPolicyActPort(root, () => now), new Uint8Array(32).fill(7));
 };
 
 describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
@@ -174,7 +187,7 @@ describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
     const theirs = await appScreen(policy, classAct);
     expect(ours.screen.projectDocumentation).toBe(classAct && policy.includes('project-documentation'));
     expect(paths.length).toBeGreaterThan(1000);
-    const pathDisagreements = paths.filter((p) => ours.screen.screenPath(p) !== theirs.screenPath(p));
+    const pathDisagreements = paths.filter((p) => ours.screen.screenPath(p) !== theirs.screenPath(p) || ours.screen.contentClass(p) !== theirs.contentClass(p));
     const bodyDisagreements = bodies.map((b, i) => [i, ours.screen.screenBody(b), theirs.screenBody(b)]).filter(([, a, b]) => a !== b);
     expect({ pathDisagreements, bodyDisagreements }).toEqual({ pathDisagreements: [], bodyDisagreements: [] });
     // The population exercises every outcome, so agreement is not agreement on one answer.
@@ -183,6 +196,29 @@ describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
     expect(theirs.projectDocumentation).toBe(ours.screen.projectDocumentation);
     // Under the live scope the class decides real paths both ways, so agreement covers it.
     if (policy.includes('project-documentation')) expect(['README.md', 'docs/design.md'].map((p) => ours.screen.screenPath(p))).toEqual([classAct ? undefined : 'unknown-extraction-class', 'unknown-extraction-class']);
+    // The class each admitted path is admitted under, so that agreement on classes is not agreement on one class.
+    expect(new Set(paths.map((p) => ours.screen.contentClass(p) ?? 'excluded'))).toEqual(new Set(['code-content', 'excluded', ...(classAct && policy.includes('project-documentation') ? ['project-documentation'] : [])]));
+  });
+
+  // R-PR403-SCREEN-DOCS-1 finding 2: each screen decides the class prerequisite from the same records at the same `now`, so a class act
+  // not yet in force, a withdrawn one, or one that binds other module bytes leaves both screens with the class unclassified.
+  it.each<[string, ClassAct, boolean]>([
+    ['in force', {}, true],
+    ['absent', null, false],
+    ['dated after now', { date: '2026-10-08' }, false],
+    ['withdrawn', { withdrawn: true }, false],
+    ['binding other module bytes', { argument: sha(`${MODULE_TEXT} `) }, false],
+  ])('decides the class prerequisite as the app does from the same records at now: %s', async (_name, classAct, classified) => {
+    const root = recordsRoot(policyOf(DOC_SCOPE), undefined, classAct);
+    const ours = await loadDossierScreen(root, NOW);
+    if (!ours.ok) throw new Error(ours.why);
+    const theirs = await checkoutAppScreen(root, NOW);
+    expect([ours.screen.projectDocumentation, theirs.projectDocumentation]).toEqual([classified, classified]);
+    expect(['README.md', 'licenses/MIT.txt', 'src/server.c'].map((p) => [ours.screen.screenPath(p), theirs.screenPath(p), ours.screen.contentClass(p), theirs.contentClass(p)])).toEqual([
+      classified ? [undefined, undefined, 'project-documentation', 'project-documentation'] : ['unknown-extraction-class', 'unknown-extraction-class', undefined, undefined],
+      classified ? [undefined, undefined, 'project-documentation', 'project-documentation'] : ['unknown-extraction-class', 'unknown-extraction-class', undefined, undefined],
+      [undefined, undefined, 'code-content', 'code-content'],
+    ]);
   });
 
   it.each<[string, string]>([
@@ -235,6 +271,7 @@ describe('the screen of the policy in force', () => {
     ['absent', null, false],
     ['naming another module digest', { argument: sha(`${MODULE_TEXT} `) }, false],
     ['not yet in force', { date: '2026-10-08' }, false],
+    ['withdrawn', { withdrawn: true }, false],
   ])('classifies project documentation only while the class act is in force: %s', async (_name, classAct, classified) => {
     const result = await loadDossierScreen(recordsRoot(policyOf(DOC_SCOPE), undefined, classAct), NOW);
     if (!result.ok) throw new Error(result.why);

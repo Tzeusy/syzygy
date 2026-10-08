@@ -19,6 +19,7 @@ import { buildDesignPacket } from './design-review.js';
 import { designReviewOfRecord, latestPassedDraft, reviewOfRecord, type DesignReviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { NO_WORK_ITEM_REASON } from './run-record.js';
+import { CLASS_NOT_CONSENTED, unconsentedClass, unconsentedText } from './class-gate.js';
 import { loadDossierScreen, type DossierScreen, type ScreenExclusion } from './screen.js';
 import { RUN_LAYOUT } from './state-directory.js';
 
@@ -256,12 +257,22 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const clean = (value: string): string => (screen.screenBody(value) === 'secret-detector-match' ? WITHHELD_TEXT : value);
   const shownPath = (repositoryPath: string): string => (screen.screenPath(repositoryPath) === 'secret-detector-match' ? SECRET_PATH : repositoryPath);
 
+  // The class gate (`class-gate.ts`): the design packet carries these pages to a review session, so a blob screening admitted under a
+  // class the run's statement does not list is neither quoted nor put on a source page; it is a counted row naming the class.
+  const consented = opened.contentClasses;
+  const withheldClass = new Map<string, string>();
+  for (const repositoryPath of derived.admitted.keys()) {
+    const missing = unconsentedClass(screen.contentClass(repositoryPath), consented);
+    if (missing !== undefined) withheldClass.set(repositoryPath, missing);
+  }
+  const admitted = new Map([...derived.admitted].filter(([repositoryPath]) => !withheldClass.has(repositoryPath)));
+
   // Sources: every cited blob read now and admitted (whole, or in pieces when too long to quote whole), and every cited blob screening
-  // excluded as a counted row with its reason. A blob whose path a secret detector matches is named nowhere.
+  // excluded or the class gate withheld as a counted row with its reason. A blob whose path a secret detector matches is named nowhere.
   const sources: GenerationSource[] = [];
   const pieces = new Map<string, GenerationSource[]>();
   const sourceIdOf = (repositoryPath: string): string => `src-${sha256(repositoryPath).slice(0, 24)}`;
-  for (const [repositoryPath, blob] of [...derived.admitted].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
+  for (const [repositoryPath, blob] of [...admitted].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
     const own = generationSourcesForBody({ sourceId: sourceIdOf(repositoryPath), repositoryId: subject.repository.repositoryId, revision: pinned, path: repositoryPath, objectId: blob.objectId, evaluationId: runId, body: blob.raw });
     pieces.set(repositoryPath, [...own]);
     sources.push(...own);
@@ -271,10 +282,14 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   // each such row names its path, and no row is written for a path a secret detector matches.
   const runKey = createHash('sha256').update(`polaris-dossier excluded-source key\u0000${runId}\u0000${pinned}`).digest();
   for (const cited of derived.citedBlobs) {
-    if (cited.outcome === 'admitted' || cited.path === null || cited.objectId === null) continue;
+    if (cited.path === null || cited.objectId === null) continue;
+    // The closed exclusion vocabulary has no class reason; a withheld body is one not carried into generation, and its class is named on
+    // the discovery page's row for it.
+    const reason = cited.outcome !== 'admitted' ? EXCLUSION_REASON[cited.outcome] : withheldClass.has(cited.path) ? 'body-not-retained-for-generation' : undefined;
+    if (reason === undefined) continue;
     sources.push({
       sourceId: excludedSourceId(runKey, cited.path), repositoryId: subject.repository.repositoryId, revision: pinned, path: cited.path, objectId: cited.objectId,
-      evaluationId: runId, classificationBasis: cited.read ? 'body' : 'path-only', exclusion: { excluded: true, reason: EXCLUSION_REASON[cited.outcome] }, spans: [],
+      evaluationId: runId, classificationBasis: cited.read ? 'body' : 'path-only', exclusion: { excluded: true, reason }, spans: [],
     });
   }
   if (sources.length === 0) return { ok: false, stage: 'sources', reason: 'the draft cites no blob Syzygy can name, so there is no source population to render' };
@@ -295,7 +310,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const citedSources = (value: Readonly<Record<string, unknown>>): string[] => [...new Set(list(value['citations']).flatMap((citation) => {
     if (!isObj(citation)) return [];
     const cited = text(citation['path']);
-    const blob = cited === undefined ? undefined : derived.admitted.get(cited);
+    const blob = cited === undefined ? undefined : admitted.get(cited);
     const piece = blob === undefined ? undefined : pieceAt(cited!, byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
     return piece === undefined ? [] : [piece.sourceId];
   }))];
@@ -308,8 +323,10 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   }));
 
   // Claim blocks: segments from the agent's text with every quotation replaced by Syzygy's located bytes, and the marking.
-  const verified = new Map(derived.quotations.map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, quotation]));
-  const excluded = new Set(derived.excludedContent.map((quotation) => `${quotation.blockId}\u0000${quotation.index}`));
+  // A quotation verified against a body the class gate withholds is withheld like one from an excluded file, naming the class.
+  const verified = new Map(derived.quotations.filter((quotation) => !withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, quotation]));
+  const classOf = new Map(derived.quotations.filter((quotation) => withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, withheldClass.get(quotation.path)!]));
+  const excluded = new Set([...derived.excludedContent.map((quotation) => `${quotation.blockId}\u0000${quotation.index}`), ...classOf.keys()]);
   const executions = new Map(list(doc['executions']).flatMap((entry) => (isObj(entry) && text(entry['id']) !== undefined ? [[text(entry['id'])!, clean(text(entry['command']) ?? '')] as const] : [])));
   const support = review.counts ? review.verdict.blockSupport : {};
   const blocks = new Map<string, LocalBlock>();
@@ -321,12 +338,13 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     let segments: LocalSegment[] = [];
     let at = 0;
     let withheld = false;
+    const unconsented = new Set<string>();
     leadInQuotationSpans(prose).forEach((span, index) => {
       segments.push({ kind: 'prose', text: prose.slice(at, span.open) });
       const key = `${id}\u0000${index}`;
       const found = verified.get(key);
       if (found !== undefined) {
-        const blob = derived.admitted.get(found.path)!;
+        const blob = admitted.get(found.path)!;
         const [start, end] = found.byteRange;
         const piece = pieceAt(found.path, start)!;
         segments.push({ kind: 'quotation', sourceId: piece.sourceId, start, end, text: Buffer.from(blob.raw, 'utf8').subarray(start, end).toString('utf8'), anchor: anchorOf(piece, start, end) });
@@ -334,6 +352,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
         if (!excluded.has(key)) throw new Error(`render: quotation ${index + 1} of block ${id} was neither verified nor excluded at this render`);
         segments.push({ kind: 'withheld', reason: 'excluded-content' });
         withheld = true;
+        if (classOf.has(key)) unconsented.add(classOf.get(key)!);
       }
       at = span.close + 1;
     });
@@ -345,7 +364,11 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     const unknown = (reason: string, basis: string): LocalBlock => ({ marking: 'unknown', unknownReason: reason, basis, segments, executions: named });
     if (label === 'non-normative') blocks.set(id, { marking: 'non-normative', unknownReason: null, basis: 'the agent marks this block non-normative: it claims nothing from a source', segments, executions: [] });
     else if (label === 'unknown') blocks.set(id, unknown(text(value['reason']) ?? 'missing-evidence', 'the agent labels this block Unknown'));
-    else if (withheld || secret) blocks.set(id, unknown('excluded-content', secret ? 'a secret detector matches its text, so it is withheld' : 'a quotation it rests on is from a file screening excludes, so the quotation is neither verified nor shown'));
+    else if (withheld || secret) {
+      blocks.set(id, unknown('excluded-content', secret ? 'a secret detector matches its text, so it is withheld'
+        : unconsented.size > 0 ? `a quotation it rests on is from a ${[...unconsented].sort().join(' or ')} file, ${unconsentedText([...unconsented].sort().join(' or '), consented).replace(/^withheld/u, 'which is withheld')}, so the quotation is not shown`
+          : 'a quotation it rests on is from a file screening excludes, so the quotation is neither verified nor shown'));
+    }
     else if (support[id] === 'supported') {
       blocks.set(id, { marking: 'inferred', unknownReason: null, basis: 'the agent\'s claim, which the counted fidelity review judged supported by the spans it cites', segments, executions: named });
     } else {
@@ -408,7 +431,9 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const observedReads: LocalPageItem[] = derived.citedBlobs.map((cited, i) => ({
     id: `discovery/read/${i + 1}`, marking: 'observed', unknownReason: null,
     title: cited.path === null ? SECRET_PATH : cited.path,
-    text: cited.outcome === 'admitted' ? 'read at this render, re-hashed, and admitted by screening' : `${cited.read ? 'read at this render and re-hashed' : 'named by the pinned tree and not read'}; excluded by screening (${cited.outcome})`,
+    text: cited.outcome !== 'admitted' ? `${cited.read ? 'read at this render and re-hashed' : 'named by the pinned tree and not read'}; excluded by screening (${cited.outcome})`
+      : cited.path !== null && withheldClass.has(cited.path) ? `read at this render, re-hashed, and admitted by screening as ${withheldClass.get(cited.path)!}; ${unconsentedText(withheldClass.get(cited.path)!, consented)} (${CLASS_NOT_CONSENTED})`
+        : 'read at this render, re-hashed, and admitted by screening',
     details: [`object ${cited.objectId === null ? '(not shown)' : `${algorithm}:${cited.objectId}`}`, `revision ${pinned}`],
     sourceIds: cited.outcome === 'admitted' && cited.path !== null ? (pieces.get(cited.path) ?? []).slice(0, 1).map((source) => source.sourceId) : [],
   }));
