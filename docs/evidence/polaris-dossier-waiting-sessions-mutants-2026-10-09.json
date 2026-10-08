@@ -1,7 +1,8 @@
 {
   "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; the continuation disclosure in waiting-sessions.ts and render.ts; and the stdin hand-over (`await --submit <file> --stdin`: Syzygy writes before it checks, only the role's own file name, only a delivered round's verdict, the size bound, empty content, no pending link followed, `--stdin` without `--submit`, a resubmission replaces, and the CLI wiring). `builderMutants` covers the v1.2 builder, the v1.1 builder's peel and delegation, and the recorder's v1.2 entry. Not authority.",
   "measuredOn": {
-    "commit": "d930b6bcf88b0a835c5be8a72162ca01645aaf53",
+    "commit": "cfdd1a40d5aa9c619b1fa1da08ba1b6e3c29e0d7",
+    "commitNote": "`commit` is a local rebase of this branch onto main after #409, never pushed; the branch was rebased again onto main after #410 at 7646cccf36d1eef1c90fbe4b201aaef044da264e, which changes none of `subjects` (it adds a review raw and its notes, and edits docs/README.md, scripts/check_docs_review_campaign_partition.py and packages/polaris-generation-core/src/public-source-classification.ts with its test). Re-check by the subjects' digests.",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.ts",
@@ -17,7 +18,7 @@
       },
       {
         "path": "packages/polaris-dossier/src/render.ts",
-        "sha256": "20e368e39f07c79115f4da3e16e19f18fcd69f17250b9a05bc270a2c36c53b57"
+        "sha256": "f0fcc15a6f956f70dd07db71279785058d5ce2bc7fe855b172620e41ac105aa8"
       },
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
@@ -446,7 +447,7 @@
   ],
   "builderMutants": {
     "measuredOn": {
-      "commit": "d930b6bcf88b0a835c5be8a72162ca01645aaf53",
+      "commit": "7646cccf36d1eef1c90fbe4b201aaef044da264e",
       "subjects": [
         {
           "path": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
