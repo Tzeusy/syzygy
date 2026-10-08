@@ -79,8 +79,11 @@ RENDER_CONDITION = (
     "the exemption holds for a sink only while that sink renders such a body, or any span of it, as text: every one "
     "of the characters & < > \" ' is written as a character reference, the bytes are never parsed as Markdown or "
     "HTML and never mint a link, element, attribute, script or handler, and the page carries a "
-    "Content-Security-Policy whose default-src is 'none'. A consumer that cannot confirm this for a sink scans the "
-    "body as before for that sink, and excludes it whole on a finding")
+    "Content-Security-Policy whose default-src is 'none' and which carries no script-src, script-src-elem, "
+    "script-src-attr or object-src directive. A consumer that cannot confirm this for a sink scans the body as "
+    "before for that sink, and excludes it whole on a finding")
+#: A later directive overrides default-src for its own fetch type, so the condition names each one it forbids.
+FORBIDDEN_CSP_DIRECTIVES = ("script-src", "script-src-elem", "script-src-attr", "object-src")
 EGRESS_RULE = (
     "the exemption changes no egress or consent rule: a span of such a body reaches an agent session or a provider "
     "only under the rules that already govern code-content")
@@ -269,6 +272,10 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
         bad.append("the exemption rule is not the declared one, or no longer keeps every detector")
     if ex.get("renderCondition") != RENDER_CONDITION:
         bad.append("the render condition is not the declared one")
+    cond = ex.get("renderCondition", "")
+    if "default-src is 'none'" not in cond or any(not re.search(rf"(?<![\w-]){re.escape(d)}(?![\w-])", cond)
+                                                  for d in FORBIDDEN_CSP_DIRECTIVES):
+        bad.append("the render condition does not require default-src 'none' and forbid every script-bearing directive")
     if ex.get("egress") != EGRESS_RULE:
         bad.append("the egress statement is not the declared one")
     if ex != exemption(s3, variant):
@@ -406,6 +413,16 @@ def selftest() -> int:
         sem("a dropped render condition caught", "all",
             lambda d: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].pop("renderCondition"),
             "render condition")
+        for directive in FORBIDDEN_CSP_DIRECTIVES:
+            sem(f"a render condition that allows {directive} caught", "non-web",
+                lambda d, directive=directive: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
+                    "renderCondition", re.sub(rf"(?<![\w-]){re.escape(directive)}(?![\w-])", "frame-src",
+                                              RENDER_CONDITION)),
+                "forbid every script-bearing directive")
+        sem("a render condition without default-src 'none' caught", "all",
+            lambda d: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
+                "renderCondition", RENDER_CONDITION.replace("default-src is 'none'", "default-src is 'self'")),
+            "forbid every script-bearing directive")
         sem("a dropped detector sentence caught", "all",
             lambda d: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
                 "rule", EXEMPTION_RULE.replace("Every detector still runs over the whole body; ", "")),

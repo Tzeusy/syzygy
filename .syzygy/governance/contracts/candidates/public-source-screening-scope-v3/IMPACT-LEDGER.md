@@ -8,7 +8,12 @@
 package's base commit for the policy's path
 (`POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`) and for the
 key names `activeContent` and `codeContentExemption`, then read each hit that
-is not under `dist/`. A second method for the act-chain readers: read
+is not under `dist/`. A second sweep, added after round-1 review finding 7,
+covers the version literal, because a version pin does not name the path:
+`grep -rlF '1.3.0-public-source-candidate.1.none'` over the same four trees
+(12 files, 6 of them under `dist/`), confirmed by
+`git grep -lF` over tracked files (the same 6 non-`dist` files). A second
+method for the act-chain readers: read
 `packages/polaris-generation-consent/src/package-reader.ts` lines 342-440.
 
 ## What the act breaks until the install change lands
@@ -47,6 +52,15 @@ from this page. Known members [Observed by the sweep above]:
   there are `packages/three-surface-poc-core/src/content-classification.ts`,
   `apps/three-surface-poc/src/governance-inputs.ts` and
   `apps/three-surface-poc/src/walkthrough-inputs.ts`, plus tests.
+- **Version pins.** [Observed by the version-literal sweep] the version-2
+  `policyVersion` string is pinned in
+  `packages/three-surface-poc-core/src/git-object-reader.ts:43` (its comment:
+  "proven byte-equal in the test") and
+  `apps/three-surface-poc/src/governance-inputs.ts:83` and `:104`, and carried
+  by `content-classification.test.ts`, `project-shape-model.test.ts`,
+  `governance-inputs.test.ts` and the version-2 recorder
+  (`scripts/record_public_source_screening_scope_v2_act.py`). Each source pin
+  moves to the chosen variant's version at install, with its test.
 - `scripts/check_governance.py`, `check_spec_reconciliation.py` and
   `simulate_redis_sitting.py` name the policy path; whether each pins the
   digest is for the installer to derive [Unknown at drafting].
@@ -56,6 +70,22 @@ from this page. Known members [Observed by the sweep above]:
 [Unknown] What any target contains beyond the run's own report; no body was
 read. [Inferred] Under `all`, every admitted file with one of the 25 source
 extensions; under `non-web`, the 18 outside the web list.
+
+That same set of newly admitted bodies widens two populations the egress rule
+does not change (round-1 review, finding 5):
+
+- **What Syzygy transmits.** Review packets carry "the cited spans as Syzygy
+  read them" (REQ-polaris-generation-035,
+  `openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:320`).
+  In provider mode, span text goes to the provider
+  (`packages/polaris-generation-core/src/pipeline.ts:265`, which maps each
+  referenced source's spans to `{ sourceId, anchorId, text }`) under the
+  public egress record. A body withheld under version 2 could be in neither;
+  an exempt body can be in both. [Inferred] The added risk is small, because
+  the agent session already reads the whole clone and the provider already
+  receives code-content.
+- **What Syzygy renders.** Every exempt body becomes quotable on a page. Its
+  only remaining guards are `renderCondition` and the secret detectors.
 
 ## What is unchanged
 
