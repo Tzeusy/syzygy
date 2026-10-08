@@ -1,0 +1,670 @@
+{
+  "subject": {
+    "commit": "53b10a824fed63d3492156b0026ff82429722ac8",
+    "branch": "governance/dossier-blockers-install",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "73a7cf560eb32f2b4aacb9a5abea9cb528b99ac13d6b8bed0daa77071e0d230a",
+      "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "0f364d648d0f9510083829894a12a365b642d17d118d8d991a73bde4eeffce79",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "cedfb6cd5985f2550cc54c3a3a50d53ee2120d268a96fc3434e45de01ea108fe",
+      "packages/polaris-dossier/src/gate-sources.ts": "bf55db65445c7c1b5f675c895e1d5f619b8a98ddd89092cef68bbe7b1478930a",
+      "packages/polaris-dossier/src/render.ts": "9626798b6db6241a2ca68a3731c5d15ece2d7b47d382d5c6570cc490dc399ead",
+      "packages/polaris-dossier/src/screen.ts": "3add901af15d1e7897d02ddf6a0fc2fb6b4ef1a2d31058fb7d0d8ef21c42d8e9",
+      "packages/polaris-generation-consent/src/package-reader.ts": "4a3767b709aa1dc3c7ba15632040b5aa17b18e43fd51e1d291ea25e1fbf1ff51",
+      "packages/polaris-generation-core/src/public-source-classification.ts": "f8c0456751c4f8c4ff07f3a79dbd6581f8a060815578e169cabaa62ec9f95172"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts": "6d145d878640d2cf8e9ddcf87df4b8912f77daa15501600cb92f2fa1a78d11b0",
+      "packages/polaris-dossier/src/gate-acts.test.ts": "8dca809e9a0348066abb818e5b40521aafa3cf43a10b1d3e836bac73c57f8f8b",
+      "packages/polaris-dossier/src/render.test.ts": "0ec901fc8ceed521bdedadde449585f49619cf20cd649108b047319a058da540",
+      "packages/polaris-dossier/src/screen.test.ts": "708b492e3b0032b3c9a9c82df749f0241a1619857129c54d7d447e9ab729c9cb",
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "f9e15c08d2b8245df10bfa041ecbffcc46208d92c8c9c70eaa0232cf33a09e5b",
+      "packages/polaris-generation-core/src/public-source-exemption.test.ts": "3a1247fcc203f9f60f1be09b7a47b1273a8390fa513f6e04506b7d4efeb4d0eb"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-08T19:50:36+00:00",
+  "mutants": [
+    {
+      "id": "exemption-keys-count",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "keys.length !== EXEMPTION_KEYS.length || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-keys-names",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || EXEMPTION_KEYS.some(key => !keys.includes(key))",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 31,
+      "note": "equivalent mutant: with exactly five keys, each of the five required keys is then read and validated by value (appliesTo, rule, renderCondition, egress by digest, exemptExtensions by shape), so a renamed key already refuses at its value check"
+    },
+    {
+      "id": "exemption-applies-to-text",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "|| !(EXEMPTION_TEXTS.appliesTo as readonly string[]).includes(sha256(applies))",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-texts",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "|| sha256(value) !== EXEMPTION_TEXTS[key]",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-ext-empty",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "extensions.length === 0 || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-ext-distinct",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "new Set(extensions).size !== extensions.length\n    || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-ext-source",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "&& sourceExtensions.includes(entry)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exemption-ext-string",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "every(entry => typeof entry === 'string' && sourceExtensions",
+      "new": "every(entry => sourceExtensions",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 31,
+      "note": "equivalent mutant: sourceExtensions holds strings only, so includes() of a non-string is already false"
+    },
+    {
+      "id": "exempt-null",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "exemption === null || contentClass !== 'code-content'",
+      "new": "contentClass !== 'code-content'",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exempt-class",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "exemption === null || contentClass !== 'code-content'",
+      "new": "exemption === null || contentClass === undefined",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exempt-final-segment",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "exemption.exemptExtensions.some(entry => name.endsWith(entry))",
+      "new": "exemption.exemptExtensions.some(entry => repositoryPath.endsWith(entry))",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 31,
+      "note": "equivalent mutant: no extension contains \"/\", so a path ends with an extension exactly when its final segment does"
+    },
+    {
+      "id": "exempt-case",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "exemption.exemptExtensions.some(entry => name.endsWith(entry))",
+      "new": "exemption.exemptExtensions.some(entry => name.toLowerCase().endsWith(entry))",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "exempt-extension",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "exemption.exemptExtensions.some(entry => name.endsWith(entry))",
+      "new": "true",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-count",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (metas.length !== 1)",
+      "new": "if (metas.length === 0)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-report-only",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (/content-security-policy-report-only/iu.test(meta[0]))",
+      "new": "if (false)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-position",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (rest !== '')",
+      "new": "if (rest === null)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-default-count",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "defaults.length !== 1 || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-default-sources",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "defaults[0]!.length !== 2 || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-default-none",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": " || defaults[0]![1]!.toLowerCase() !== '\\'none\\''",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-forbidden",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (forbidden.length > 0)",
+      "new": "if (false)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-forbidden-attr",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "'script-src-attr', ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "csp-forbidden-object",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": ", 'object-src'] as const",
+      "new": "] as const",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "dossier-screen-exempt-guard",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": ": !exempt(repositoryPath) && scanActiveContent(body)",
+      "new": ": scanActiveContent(body)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 101
+    },
+    {
+      "id": "dossier-screen-exempt-always",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": ": !exempt(repositoryPath) && scanActiveContent(body)",
+      "new": ": false && scanActiveContent(body)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 15,
+      "totalTests": 101
+    },
+    {
+      "id": "dossier-screen-refuse",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "if (!exemptionRead.ok) return refuse(exemptionRead.why);",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 101
+    },
+    {
+      "id": "dossier-screen-class",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "codeContentExempt(repositoryPath, contentClass(repositoryPath), exemption)",
+      "new": "codeContentExempt(repositoryPath, 'code-content', exemption)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 101
+    },
+    {
+      "id": "app-screen-exempt-guard",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": ": !(path !== undefined && codeContentExempt(path, contentClass(path), exemption)) && scanActiveContent(body)",
+      "new": ": scanActiveContent(body)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 101
+    },
+    {
+      "id": "app-screen-exempt-always",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": ": !(path !== undefined && codeContentExempt(path, contentClass(path), exemption)) && scanActiveContent(body)",
+      "new": ": false && scanActiveContent(body)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 11,
+      "totalTests": 101
+    },
+    {
+      "id": "app-screen-refuse",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "if (!exemptionRead.ok) refuse(",
+      "new": "if (false) refuse(",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 101
+    },
+    {
+      "id": "app-screen-class",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "codeContentExempt(path, contentClass(path), exemption)",
+      "new": "codeContentExempt(path, 'code-content', exemption)",
+      "tests": [
+        "packages/polaris-dossier/src/screen.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 101
+    },
+    {
+      "id": "render-refusal",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (unconfirmed !== null) {",
+      "new": "if (false) {",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 41
+    },
+    {
+      "id": "render-contract",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (renderer.pageSinkContract !== PAGE_SINK_CONTRACT) return",
+      "new": "if (false) return",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 41
+    },
+    {
+      "id": "render-csp",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (finding !== null) return `${file}: ${finding}`;",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 41
+    },
+    {
+      "id": "render-html-only",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "if (!file.endsWith('.html')) continue;",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 41
+    },
+    {
+      "id": "sink-contract",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "renderDossier.pageSinkContract = PAGE_SINK_CONTRACT;",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 2
+    },
+    {
+      "id": "sink-dossier-exact-text",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "${escape(span.text).replace(/\\r/gu, '&#13;')}</blockquote>",
+      "new": "${span.text}</blockquote>",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 2
+    },
+    {
+      "id": "sink-escape-apostrophe",
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "old": "\"'\": '&#39;' ",
+      "new": "\"'\": \"'\" ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 2
+    },
+    {
+      "id": "sink-escape-lt",
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "old": "'<': '&lt;'",
+      "new": "'<': '<'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 2
+    },
+    {
+      "id": "chain-prefix",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (parsed.slice(count).some(act => act !== null)) refuse();",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 282
+    },
+    {
+      "id": "chain-order",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (later.recordedAt <= earlier.recordedAt || ",
+      "new": "if (",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 282
+    },
+    {
+      "id": "chain-digest",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "|| later.digest === earlier.digest ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 282
+    },
+    {
+      "id": "chain-supersession-digest",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "|| !later.supersession.includes(`\\`${earlier.digest}\\``)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 282
+    },
+    {
+      "id": "chain-supersession-path",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "\n      || !later.supersession.includes(`${DECISIONS_DIR}/${earlier.file}`)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 282
+    },
+    {
+      "id": "chain-term",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "until: acts[i + 1]?.recordedAt ?? null",
+      "new": "until: null",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 282
+    },
+    {
+      "id": "exempt-record-skip",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if ((form.exemptRecords ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 130
+    },
+    {
+      "id": "exempt-record-template",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "exempt.file === rel && templateFields(exempt.template, text) !== null",
+      "new": "exempt.file === rel",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 130
+    },
+    {
+      "id": "exempt-record-file",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "exempt.file === rel && templateFields(exempt.template, text) !== null",
+      "new": "templateFields(exempt.template, text) !== null",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-ok-only",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (next.state === 'ok') return [successor];",
+      "new": "if (next.state === 'ok') return [current, successor];",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-absent",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "next.state === 'absent' || ",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 22,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-refused-unrecorded",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "(next.state === 'refused' && !(await recorded(s.successor.file)))",
+      "new": "false",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 25,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-refused-recorded-any",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "(next.state === 'refused' && !(await recorded(s.successor.file)))",
+      "new": "next.state === 'refused'",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 11,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-withdraws",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "return [current === null ? null : { ...current, withdrawn: true }, successor];",
+      "new": "return [current, successor];",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 130
+    },
+    {
+      "id": "successor-read",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "if (s.successor === undefined) return [current];",
+      "new": "return [current];",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 15,
+      "totalTests": 130
+    }
+  ]
+}
