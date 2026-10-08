@@ -32,7 +32,7 @@ const dist = (rel) => import(pathToFileURL(path.join(ROOT, rel)).href);
 const kit = await dist('packages/polaris-dossier/dist/full-run.testkit.js');
 const { runDossierCli } = await dist('packages/polaris-dossier/dist/cli.js');
 const { openPinnedObjectReader } = await dist('packages/polaris-dossier/dist/git-object-reader.js');
-const { cloneRefShape, cloneStoreShape } = await dist('packages/polaris-dossier/dist/clone-shape.js');
+const { cloneGitDirShape, cloneStoreShape } = await dist('packages/polaris-dossier/dist/clone-shape.js');
 const { initRun } = await dist('packages/polaris-dossier/dist/init.js');
 const { renderDossier } = await dist('apps/three-surface-poc/dist/polaris-generation/dossier-render.js');
 
@@ -207,7 +207,7 @@ const initAgain = await timed(() => initRun({ clone, url: kit.FIXTURE_URL, confi
 const initReads = { outcome: initAgain.value.ok ? initAgain.value.report.outcome : `refused at ${initAgain.value.refusal.stage}`, ms: initAgain.ms, reader: tally };
 tally = null;
 const probeReader = openPinnedObjectReader({ gitDir: path.join(clone, '.git'), revision: commit });
-const refShape = await timed(() => cloneRefShape(path.join(clone, '.git'), commit));
+const gitDirShape = await timed(() => cloneGitDirShape(path.join(clone, '.git'), commit));
 const inv = await timed(() => probeReader.inventory());
 const storeShape = await timed(() => cloneStoreShape(path.join(clone, '.git'), commit, inv.value));
 const list = await timed(() => probeReader.listTree());
@@ -215,7 +215,7 @@ const rssBefore = Math.round(process.memoryUsage().rss / 2 ** 20);
 const allBlobs = await timed(() => probeReader.readBlobs(list.value.filter((e) => e.mode !== '160000').map((e) => e.path)));
 const initProbe = {
   initReads,
-  refShape: { ms: refShape.ms, result: refShape.value },
+  gitDirShape: { ms: gitDirShape.ms, result: gitDirShape.value },
   inventory: { ms: inv.ms, stored: inv.value.stored, reachable: inv.value.reachable, beyondCount: inv.value.beyondCount, note: 'inventory names identifiers from loose file names and pack .idx entries; it reads no object body beyond the walk from the commit' },
   storeShape: { ms: storeShape.ms, result: storeShape.value },
   listTree: { ms: list.ms, entries: list.value.length },
