@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { publicSourceContentClass, readProjectDocumentationRule, type PublicSourceContentClass } from '@syzygy/polaris-generation-core';
+import { codeContentExempt, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, type PublicSourceContentClass } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified
@@ -15,7 +15,10 @@ import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, t
  * (exactly one of that rule's path rules, `@syzygy/polaris-generation-core`'s `publicSourceContentClass`; classified only while the
  * RFC5-14 class amendment act is in force, the scope's `prerequisite`) nor its code-content class (a final segment ending with one of
  * `sourceExtensions`); a body that is not UTF-8 text, that a secret detector matches, or that holds active content is excluded after the
- * read, whichever class admitted its path. An excluded blob is never used to verify a quotation, and no finding carries its bytes.
+ * read, whichever class admitted its path, except that a code-content body whose extension the scope's `codeContentExemption` lists
+ * (version 3) skips the active-content scan when `screenBody` is given its path; every detector still runs over it. That exemption
+ * holds at a page only while the page meets the scope's `renderCondition`, which `render.ts` confirms for the pages it draws (scanning
+ * such a body as before where it cannot). An excluded blob is never used to verify a quotation, and no finding carries its bytes.
  * `contentClass` names the class a path is admitted under, so that every agent-bound artifact can gate it by the classes its consent lists
  * (`class-gate.ts`). Policy residuals, not repaired here: the detectors match literal forms only, so an encoded or split secret passes
  * them; and the project-documentation rule folds ASCII A-Z only and splits words only at its `docTokenSeparators`, as its text says, so a
@@ -37,8 +40,12 @@ export interface DossierScreen {
   readonly screenPath: (repositoryPath: string) => ScreenExclusion | undefined;
   /** The content class `screenPath` admits a path under, or undefined when it excludes the path. */
   readonly contentClass: (repositoryPath: string) => PublicSourceContentClass | undefined;
-  /** Why a read body is excluded, or undefined when it is admitted. */
-  readonly screenBody: (body: string) => ScreenExclusion | undefined;
+  /** Whether the policy declares the version-3 code-content exemption. */
+  readonly codeContentExemption: boolean;
+  /** Why a read body is excluded, or undefined when it is admitted. With the blob's `repositoryPath`, a body the code-content exemption
+   * names skips the active-content scan; without one (agent text, or a page that cannot meet the render condition) every body is
+   * scanned. */
+  readonly screenBody: (body: string, repositoryPath?: string) => ScreenExclusion | undefined;
 }
 
 export type ScreenLoad = { readonly ok: true; readonly screen: DossierScreen } | { readonly ok: false; readonly why: string };
@@ -69,20 +76,28 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   const documentationRead = readProjectDocumentationRule(rules, extensions);
   if (!documentationRead.ok) return refuse(documentationRead.why);
   const documentation = classActInForce ? documentationRead.rule : null;
+  const exemptionRead = readCodeContentExemption(scope, extensions);
+  if (!exemptionRead.ok) return refuse(exemptionRead.why);
+  const exemption = exemptionRead.exemption;
   const denied: DeniedPathRules = { basenames: admission['deniedPathBasenames'], prefixes: admission['deniedPathPrefixes'], suffixes: admission['deniedPathSuffixes'] };
   let detectors: ReturnType<typeof compileDetectors>;
   try { detectors = compileDetectors({ detectors: doc['detectors'] as readonly SecretDetector[] }); } catch (error) { return refuse(`its detectors do not compile (${error instanceof Error ? error.message : 'invalid'})`); }
   const screenPath = (repositoryPath: string): ScreenExclusion | undefined => deniedPathReason(repositoryPath, denied) !== undefined ? 'denied-path'
     : detectSecrets(detectors, repositoryPath) !== undefined ? 'secret-detector-match'
       : publicSourceContentClass(repositoryPath, extensions, documentation) !== undefined ? undefined : 'unknown-extraction-class';
+  const contentClass = (repositoryPath: string): PublicSourceContentClass | undefined =>
+    (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined);
+  const exempt = (repositoryPath: string | undefined): boolean => repositoryPath !== undefined && codeContentExempt(repositoryPath, contentClass(repositoryPath), exemption);
   return {
     ok: true,
     screen: {
       policyId: doc['policyId'], policyVersion: doc['policyVersion'], policySha256: createHash('sha256').update(policy).digest('hex'),
       projectDocumentation: documentation !== null,
+      codeContentExemption: exemption !== null,
       screenPath,
-      contentClass: (repositoryPath) => (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined),
-      screenBody: (body) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match' : scanActiveContent(body).length > 0 ? 'active-content' : undefined,
+      contentClass,
+      screenBody: (body, repositoryPath) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match'
+        : !exempt(repositoryPath) && scanActiveContent(body).length > 0 ? 'active-content' : undefined,
     },
   };
 }

@@ -432,7 +432,7 @@ describe('an admitted, fully readable fixture', () => {
     expect(shape.identity.sourceClaimedInstant.instant).not.toBe(shape.identity.capturedAt);
     expect(shape.identity.scope).toEqual({ repositoryId: 'repository:butlers-configured-poc', contentClass: 'declared-project-shape-text', phase: 'A' });
     expect(shape.identity.observer.observerId).toBe('polaris-butlers-project-shape');
-    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.3.0-public-source-candidate.1.none' });
+    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.4.0-public-source-candidate.1.none.code-all' });
     expect(shape.identity.manifestDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.observationDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.deterministicInputs.authority).toEqual({
@@ -589,7 +589,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
         redactionClass: 'excluded-artifact',
         repositoryRelativePath: 'about/craft-and-care/README.md',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.3.0-public-source-candidate.1.none',
+        policyVersion: '1.4.0-public-source-candidate.1.none.code-all',
         contentDigest: sha256(CRAFT_SECRET),
         detectorId: 'known-token-formats',
       },

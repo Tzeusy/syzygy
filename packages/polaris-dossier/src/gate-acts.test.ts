@@ -4,9 +4,10 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, type DigestBoundActForm } from '@syzygy/polaris-generation-consent';
-import { recorderRecordPaths, renderDossierLocalAgentAct, renderLocalAgentSignoff, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
+import { recorderRecordPaths, renderDossierLocalAgentAct, renderLocalAgentSignoff, renderProviderV2Act, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
 import { afterEach, describe, expect, it } from 'vitest';
-import { D9_ACT_FORM, DRAWER_FORMS, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS, createPackageGateSources, providerStatementGate } from './gate-sources.js';
+import { preflight } from './preflight.js';
+import { D9_ACT_FORM, DRAWER_FORMS, PROVIDER_V2_FORM, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS, createPackageGateSources, providerStatementGate } from './gate-sources.js';
 
 // syzygy-qkea.21: the gate sources read the local-agent sitting's acts (scripts/record_dossier_local_agent_acts.py) and the
 // version-tagged sign-off of the local-agent registry entry (scripts/record_versioned_signoff.py). Act text comes from the real
@@ -35,6 +36,11 @@ const ACTS: Record<DossierLocalAgentActKey, { readonly record: string; readonly 
   'rfc7-20-reading-in-force': { record: `${INSTANCES}/in-force/RFC7-20-READING-IN-FORCE-RECORD.md`, file: `${DECISIONS_DIR}/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md` },
 };
 const KEYS = Object.keys(ACTS) as DossierLocalAgentActKey[];
+/** Version 2 of the Anthropic statement (scripts/record_dossier_agent_provider_v2_act.py): its record and its act's decisions file. */
+const V2_RECORD = '.syzygy/governance/contracts/candidates/dossier-agent-provider-v2/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md';
+const V2_ACT = `${DECISIONS_DIR}/DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md`;
+const V2_INSTANT = '2026-10-07T10:30:00Z';
+const V2_AT = Date.UTC(2026, 9, 7, 10, 30, 0);
 const real = (rel: string): string => fs.readFileSync(path.join(REAL_ROOT, rel), 'utf8');
 
 const cleanups: (() => void)[] = [];
@@ -51,17 +57,21 @@ const write = (root: string, rel: string, text: string): void => {
 
 /** A records root holding the real sitting records and the files they bind, with the named acts recorded at INSTANT, and (when
  * `signoff`) the local-agent entry installed and signed off v1.0. An unrelated decisions file keeps the directory present. */
-function world(acts: readonly DossierLocalAgentActKey[], signoff = false): string {
+function world(acts: readonly DossierLocalAgentActKey[], signoff = false, v2 = false): string {
   const root = tempDir();
-  for (const rel of [...KEYS.map(k => ACTS[k].record), SECURITY, V1, DIRECTION]) write(root, rel, real(rel));
+  for (const rel of [...KEYS.map(k => ACTS[k].record), SECURITY, V1, DIRECTION, V2_RECORD]) write(root, rel, real(rel));
   write(root, `${DECISIONS_DIR}/UNRELATED.md`, '# Unrelated\n');
   for (const key of acts) write(root, ACTS[key].file, renderDossierLocalAgentAct(key, sha(real(ACTS[key].record)), DATE, INSTANT));
   if (signoff) {
     write(root, INSTALLED_ENTRY, real(PROPOSED_ENTRY));
     write(root, SIGNOFF, renderLocalAgentSignoff(root, DATE, INSTANT));
   }
+  if (v2) write(root, V2_ACT, v2Act());
   return root;
 }
+/** The version-2 act as its recorder renders it, superseding the version-1 act of DATE over the real version-1 record. */
+const v2Act = (verdict = 'CONFIRM'): string =>
+  renderProviderV2Act(sha(real(V2_RECORD)), DATE, V2_INSTANT, sha(real(ACTS['redis-agent-anthropic'].record)), DATE, verdict);
 const sources = (root: string, now = NOW) => createPackageGateSources({ root, now: () => now });
 const notEstablished = (what: string) => ({
   state: 'absent',
@@ -91,7 +101,106 @@ describe('the sitting\'s acts as gate sources, with no act recorded', () => {
     await expectFollowsTree(world(KEYS, true), NOW);
     for (const key of KEYS) await expectFollowsTree(world([key]), NOW);
     await expectFollowsTree(world([], true), NOW);
+    await expectFollowsTree(world(KEYS, true, true), NOW);
+    await expectFollowsTree(world([], false, true), NOW);
   }, TREE_TIMEOUT);
+});
+
+// P-106 (owner act of 2026-10-08): version 2 of the Redis statement for Claude Code with Anthropic supersedes version 1 from its own
+// act's instant (RFC5-13), so the gate and preflight see exactly one statement for the pair (round-2 note 3 of the package review).
+describe('version 2 of the Anthropic statement', () => {
+  const V2_CLASSES = [...CLASSES, 'project-documentation'];
+  it('replaces version 1 from its act\'s instant, one statement for the pair, the OpenAI statement untouched', async () => {
+    const root = world(KEYS, true, true);
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    expect(statements).toEqual([
+      { recordId: 'AGENT-PROVIDER-redis-redis-anthropic', version: '0.2.0-candidate.1', digest: sha(real(V2_RECORD)), agentTool: 'claude-code', provider: 'anthropic', contentClasses: V2_CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-V2-REDIS-ANTHROPIC-2026-10-07', inForceAt: V2_AT } },
+      { recordId: 'AGENT-PROVIDER-redis-redis-openai', version: '0.1.0-candidate.1', digest: sha(real(ACTS['redis-agent-openai'].record)), agentTool: 'codex', provider: 'openai', contentClasses: CLASSES, withdrawn: false, act: { identity: 'AGENT-PROVIDER-REDIS-OPENAI-2026-10-07', inForceAt: AT } },
+    ]);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-anthropic@0.2.0-candidate.1' });
+  });
+  it('leaves version 1 alone in force before version 2\'s instant', async () => {
+    const statements = await sources(world(KEYS, true, true), V2_AT - 1).providerStatements.statementsFor('redis-redis');
+    expect(statements.map(r => `${r.recordId}@${r.version}`)).toEqual(['AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1', 'AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1']);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', V2_AT - 1)).toEqual({ state: 'ok', record: 'AGENT-PROVIDER-redis-redis-anthropic@0.1.0-candidate.1' });
+  });
+  it('is what preflight lists in force, before and after its instant, agreeing with the gate', async () => {
+    const root = world(KEYS, true, true);
+    for (const [now, version] of [[NOW, '0.2.0-candidate.1'], [V2_AT - 1, '0.1.0-candidate.1']] as const) {
+      const s = { ...sources(root, now), repositoryIdsFor: async () => ['redis-redis'], consentedRevisionsFor: async () => [] };
+      const result = await preflight('https://github.com/redis/redis', s, now);
+      expect(result.ok).toBe(true);
+      const inForce = result.ok ? result.report.providerStatements.inForce : [];
+      expect(inForce.map(r => r.record)).toEqual([`AGENT-PROVIDER-redis-redis-anthropic@${version}`, 'AGENT-PROVIDER-redis-redis-openai@0.1.0-candidate.1']);
+      expect(providerStatementGate(await s.providerStatements.statementsFor('redis-redis'), 'claude-code', 'anthropic', now)).toEqual({ state: 'ok', record: inForce[0]!.record });
+    }
+  });
+  it('closes no other gate: D9, the reading, the drawer and the registry sign-off stay established beside it', async () => {
+    const s = sources(world(KEYS, true, true));
+    expect([(await s.d9()).state, (await s.rfc720Ruling()).state, (await s.projectInput.drawerFor('redis-redis')).stated, (await s.registryEntry()).state]).toEqual(['ok', 'ok', true, 'ok']);
+  });
+  it.each([
+    ['an appended line', (t: string) => `${t}\nWithdrawn.\n`],
+    ['another supersession', (t: string) => t.replace('this act supersedes, prospectively', 'this act supersedes, retroactively')],
+    ['another effect', (t: string) => t.replace('## Effect\n\n', '## Effect\n\nWidened. ')],
+    ['a digest in the packet words', (t: string) => t.replace(/its words "[^"\n]+"/, `its words "${'a'.repeat(64)}"`)],
+  ])('fails closed when its act record has %s: version 1 reads withdrawn and version 2 unbound, so the pair has no statement', async (_name, mutate) => {
+    const root = world(KEYS, true, true);
+    const mutated = mutate(v2Act());
+    expect(mutated).not.toBe(v2Act());
+    write(root, V2_ACT, mutated);
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    // Version 1 is withdrawn either way: by the successor rule, or (once the record no longer renders) by its own sweep, which then
+    // reads the record as a file naming it.
+    expect(statements.filter(r => r.provider === 'anthropic').map(r => [r.withdrawn, r.version === 'unestablished' || r.act === null])).toEqual([[true, _name === 'a digest in the packet words' ? false : true], [false, true]]);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW).state).toBe('absent');
+    expect(providerStatementGate(statements, 'codex', 'openai', NOW).state).toBe('ok');
+  });
+  it('fails closed once its record changes after the act', async () => {
+    const root = world(KEYS, true, true);
+    fs.appendFileSync(path.join(root, V2_RECORD), ' ');
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    expect(statements.filter(r => r.provider === 'anthropic').map(r => [r.withdrawn, r.act === null])).toEqual([[true, false], [false, true]]);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW).state).toBe('absent');
+  });
+  it.each([
+    ['its phrase label', 'Withdrawn: CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2 FOR REDIS'],
+    ['its title', 'Withdrawn: agent-provider statement for redis/redis, version 2: Claude Code with Anthropic'],
+    ['its act identity', 'The owner withdraws AGENT-PROVIDER-V2-REDIS-ANTHROPIC.'],
+    ['its record\'s path', `Withdrawn: ${V2_RECORD}`],
+  ])('is withdrawn by a decisions file naming it by %s, and version 1 does not come back', async (_name, withdrawal) => {
+    const root = world(KEYS, true, true);
+    write(root, `${DECISIONS_DIR}/WITHDRAW.md`, `${withdrawal}\n`);
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    expect(statements.filter(r => r.provider === 'anthropic').map(r => r.withdrawn)).toEqual([true, true]);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW).state).toBe('absent');
+  });
+  it('reads version 1\'s act record past only at its exact render, and version 1 reads version 2\'s the same way', async () => {
+    // Version 1's record, edited, names version 2's artifact basename in a form neither reader defines: version 2 refuses, and so does
+    // version 1 itself (its own record no longer renders).
+    const root = world(KEYS, true, true);
+    fs.appendFileSync(path.join(root, ACTS['redis-agent-anthropic'].file), '\nedit\n');
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    expect(statements.filter(r => r.provider === 'anthropic').map(r => r.act === null)).toEqual([true, true]);
+  });
+  it('reads past version 1\'s exact render only at version 1\'s own file: a byte-identical copy elsewhere names version 2', async () => {
+    const root = world(KEYS, true, true);
+    write(root, `${DECISIONS_DIR}/COPY-OF-V1.md`, fs.readFileSync(path.join(root, ACTS['redis-agent-anthropic'].file), 'utf8'));
+    const statements = await sources(root).providerStatements.statementsFor('redis-redis');
+    expect(statements.filter(r => r.provider === 'anthropic').map(r => r.withdrawn)).toEqual([true, true]);
+    expect(providerStatementGate(statements, 'claude-code', 'anthropic', NOW).state).toBe('absent');
+  });
+  it('is the form its recorder writes: the file it writes and the record byte for byte, CONFIRM and CONFIRM WITH EXCEPTIONS', () => {
+    expect(`${DECISIONS_DIR}/${PROVIDER_V2_FORM.file}`).toBe(V2_ACT);
+    expect(STATEMENT_FORMS['redis-redis']![0]!.successor).toBe(PROVIDER_V2_FORM);
+    for (const verdict of ['CONFIRM', 'CONFIRM WITH EXCEPTIONS']) {
+      const fields = { date: DATE, instant: V2_INSTANT, argument: sha(real(V2_RECORD)), opening: 'opening', label: 'label', description: 'description', quote: 'Sign the Redis Anthropic provider statement, version 2', frozen: 'f'.repeat(40), manifest: 'b'.repeat(64), verdict, reviewed: 'c'.repeat(40), superseded: sha(real(ACTS['redis-agent-anthropic'].record)), supersededDate: DATE };
+      expect(PROVIDER_V2_FORM.template!.render(fields)).toBe(v2Act(verdict));
+    }
+  });
+  it('sweeps its artifact by the artifact\'s own heading', () => {
+    expect(PROVIDER_V2_FORM.stems).toContain(/^# (.+)$/m.exec(real(V2_RECORD))![1]!);
+  });
 });
 
 /** The real-tree pin, per source: the expected state is decided by whether that source's act record exists under `root`, so the
@@ -106,8 +215,12 @@ async function expectFollowsTree(root: string, now: number): Promise<void> {
   if (has(ACTS['redis-no-evidence-drawer'].file)) expect(await s.projectInput.drawerFor('redis-redis')).toEqual({ stated: true, drawer: 'absent', record: expect.stringMatching(/^NO-EVIDENCE-DRAWER-redis-redis@/) });
   else expect(await s.projectInput.drawerFor('redis-redis')).toEqual(UNSTATED);
   const statements = await s.providerStatements.statementsFor('redis-redis');
-  const recorded = (['redis-agent-anthropic', 'redis-agent-openai'] as const).filter(key => has(ACTS[key].file));
+  // Version 2 of the Anthropic statement replaces version 1 one for one: either act recorded gives one Anthropic statement, at version 2
+  // when its act is recorded (the trees here are read after its instant).
+  const recorded = (['redis-agent-anthropic', 'redis-agent-openai'] as const).filter(key => has(ACTS[key].file) || (key === 'redis-agent-anthropic' && has(V2_ACT)));
   expect(statements.map(r => [r.recordId, r.withdrawn, r.act === null])).toEqual(recorded.map(key => [key === 'redis-agent-anthropic' ? 'AGENT-PROVIDER-redis-redis-anthropic' : 'AGENT-PROVIDER-redis-redis-openai', false, false]));
+  const anthropic = statements.find(r => r.provider === 'anthropic');
+  if (anthropic !== undefined) expect([anthropic.version, anthropic.contentClasses.includes('project-documentation')]).toEqual(has(V2_ACT) ? ['0.2.0-candidate.1', true] : ['0.1.0-candidate.1', false]);
   if (has(SIGNOFF)) expect(await s.registryEntry()).toEqual({ state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' });
   else expect(await s.registryEntry()).toEqual({ state: 'absent', why: `no owner-act record ${SIGNOFF} exists` });
 }

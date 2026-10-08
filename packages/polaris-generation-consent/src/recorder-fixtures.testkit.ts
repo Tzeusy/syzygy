@@ -22,17 +22,21 @@ sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 
   return run.stdout;
 }
 
-/** The public-source screening-scope policy act as scripts/record_public_source_screening_scope_act.py (version 1) or
- * scripts/record_public_source_screening_scope_v2_act.py (version 2) renders it. */
-export function renderPolicyAct(argument: string, date: string, instant: string, version: 1 | 2 = 1, supersededArgument = '1'.repeat(64)): string {
+/** The public-source screening-scope policy act as scripts/record_public_source_screening_scope_act.py (version 1),
+ * scripts/record_public_source_screening_scope_v2_act.py (version 2) or scripts/record_public_source_screening_scope_v3_act.py
+ * (version 3, variant `all`, superseding a version-2 act of 2026-10-07) renders it. */
+export function renderPolicyAct(argument: string, date: string, instant: string, version: 1 | 2 | 3 = 1, supersededArgument = '1'.repeat(64)): string {
   const id = ['policy', version, argument, date, instant, supersededArgument].join('|');
   const hit = cache.get(id);
   if (hit !== undefined) return hit;
   const py = version === 1
     ? `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
 sys.stdout.write(m.render_act(m.ACT, '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '1'*64, '1.2.0-public-source-candidate.1'))`
-    : `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_v2_act as m
-sys.stdout.write(m.render_act(m.ACT, '${argument}', 'none', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '${supersededArgument}', '2026-10-03', '1.2.0-public-source-candidate.2'))`;
+    : version === 2
+      ? `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_v2_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', 'none', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '${supersededArgument}', '2026-10-03', '1.2.0-public-source-candidate.2'))`
+      : `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_v3_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', 'all', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description', m.PACKET_WORDS[0]), 'f'*40, '${instant}', '${supersededArgument}', '2026-10-07', '1.4.0-public-source-candidate.1.none.code-all', 25))`;
   const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
   if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
   cache.set(id, run.stdout);
@@ -61,6 +65,20 @@ export function renderDossierLocalAgentAct(key: DossierLocalAgentActKey, argumen
   if (hit !== undefined) return hit;
   const py = `import sys; sys.path.insert(0, 'scripts'); import record_dossier_local_agent_acts as m
 sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*40, '${instant}'))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  cache.set(id, run.stdout);
+  return run.stdout;
+}
+
+/** The version-2 Redis Anthropic statement act as scripts/record_dossier_agent_provider_v2_act.py renders it, superseding a version-1
+ * act of `supersededDate` over `superseded`, with the packet words the owner's option maps to. */
+export function renderProviderV2Act(argument: string, date: string, instant: string, superseded: string, supersededDate: string, verdict = 'CONFIRM'): string {
+  const id = ['provider-v2', argument, date, instant, superseded, supersededDate, verdict].join('|');
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const py = `import sys; sys.path.insert(0, 'scripts'); import record_dossier_agent_provider_v2_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', '${date}', 'b'*64, 'c'*40, '${verdict}', m.Selection('opening', 'label', 'description', m.PACKET_WORDS[0]), 'f'*40, '${instant}', '${superseded}', '${supersededDate}'))`;
   const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
   if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
   cache.set(id, run.stdout);

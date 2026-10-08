@@ -327,7 +327,7 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
 
 /** The public-source screening-scope policy (an `approve-policy` act over the
  * policy file). Which act is in force follows the chain, never the bytes:
- * version 1 from its instant until version 2's, version 2 from its own. The act
+ * each version from its instant until the next version's, the last from its own. The act
  * in force counts only while the policy file's current bytes hash to its digest
  * AND declare a `publicSourceScope` object; a superseded act counts for nothing
  * even when the bytes revert to its argument. The 2026-09 policy acts approved
@@ -340,8 +340,8 @@ export interface PolicyActRecord { readonly actIdentity: string; readonly digest
 export interface PolicyActReader { readonly read: () => Promise<readonly PolicyActRecord[]> }
 
 /** A recorder's act form for the screening-scope policy: the one file it writes, the title and the identity it renders
- * (`scripts/record_public_source_screening_scope_act.py`). The list is closed; a later recorder (scope v2) is registered here by
- * a reviewed change, never discovered. */
+ * (`scripts/record_public_source_screening_scope_act.py`). The list is closed and ordered; a later recorder (scope v2, v3) is
+ * registered here by a reviewed change, never discovered. */
 export interface PolicyActForm { readonly file: string; readonly title: string; readonly identity: (date: string) => string }
 export const POLICY_ACT_FORMS: readonly PolicyActForm[] = Object.freeze([Object.freeze({
   file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md',
@@ -353,6 +353,11 @@ export const POLICY_ACT_FORMS: readonly PolicyActForm[] = Object.freeze([Object.
   file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md',
   title: '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 2)',
   identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-${date}`,
+}), Object.freeze({
+  // scripts/record_public_source_screening_scope_v3_act.py (2026-10-08, `syzygy-fxro`): it supersedes version 2 the same way.
+  file: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md',
+  title: '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 3)',
+  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-${date}`,
 })]);
 export const POLICY_ACT_FILE = POLICY_ACT_FORMS[0]!.file;
 /** Earlier acts that name the same policy file for its Butlers-only content, pinned by name and digest: they bind other bytes
@@ -388,10 +393,10 @@ function parsePolicyAct(text: string, form: PolicyActForm): ParsedAct {
   return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH, project, digest: act.digest, date: act.date, recordedAt: actInstant(text, act.date), supersession: supersessionText(text), text };
 }
 
-/** The policy, its declared scope, and the recorder acts over it (version 1, version 2), every decisions file swept. The chain is
- * strict: version 2 needs version 1, took effect strictly later, binds other bytes, and its supersession text names version 1's
- * record path and argument. */
-async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ readonly policy: string; readonly scope: unknown; readonly v1: ParsedAct | null; readonly v2: ParsedAct | null }> {
+/** The policy, its declared scope, and the recorder acts over it in chain order (version 1, 2, 3), every decisions file swept. The
+ * chain is strict: each later version needs the one before it, took effect strictly later, binds other bytes, and its supersession
+ * text names the earlier version's record path and argument. */
+async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ readonly policy: string; readonly scope: unknown; readonly acts: readonly ParsedAct[] }> {
   let policy: string;
   try { policy = await fs.readFile(path.join(root, POLICY_PATH)); } catch { return refuse(); }
   const files = await walk(fs, path.join(root, DECISIONS_DIR));
@@ -411,18 +416,24 @@ async function readPolicyActs(fs: PackageReaderFs, root: string): Promise<{ read
     }
     parsed[at] = parsePolicyAct(text, POLICY_ACT_FORMS[at]!);
   }
-  const [v1, v2] = parsed;
-  if (v1 === null || v1 === undefined || v2 === null || v2 === undefined) { if (v2 !== null && v2 !== undefined) refuse(); return { policy, scope, v1: v1 ?? null, v2: null }; }
-  if (v2.recordedAt <= v1.recordedAt || v2.digest === v1.digest || !v2.supersession.includes(`\`${v1.digest}\``) || !v2.supersession.includes(`${DECISIONS_DIR}/${v1.file}`)) refuse();
-  return { policy, scope, v1, v2 };
+  // The recorded versions must be a prefix of the forms: a later version without every earlier one refuses.
+  const count = parsed.indexOf(null) < 0 ? parsed.length : parsed.indexOf(null);
+  if (parsed.slice(count).some(act => act !== null)) refuse();
+  const acts = parsed.slice(0, count) as ParsedAct[];
+  for (let i = 1; i < acts.length; i++) {
+    const [earlier, later] = [acts[i - 1]!, acts[i]!];
+    if (later.recordedAt <= earlier.recordedAt || later.digest === earlier.digest || !later.supersession.includes(`\`${earlier.digest}\``)
+      || !later.supersession.includes(`${DECISIONS_DIR}/${earlier.file}`)) refuse();
+  }
+  return { policy, scope, acts };
 }
 
-/** Each recorded act with the term the chain gives it: version 1 ends where version 2 begins. */
-const policyTerms = (v1: ParsedAct | null, v2: ParsedAct | null): ReadonlyArray<{ readonly act: ParsedAct; readonly until: number | null }> =>
-  [...(v1 === null ? [] : [{ act: v1, until: v2?.recordedAt ?? null }]), ...(v2 === null ? [] : [{ act: v2, until: null }])];
+/** Each recorded act with the term the chain gives it: each version ends where the next begins. */
+const policyTerms = (acts: readonly ParsedAct[]): ReadonlyArray<{ readonly act: ParsedAct; readonly until: number | null }> =>
+  acts.map((act, i) => ({ act, until: acts[i + 1]?.recordedAt ?? null }));
 /** The act the chain puts in force at `now`, whatever the policy bytes are, or null before the first act. */
-const policyActAt = (v1: ParsedAct | null, v2: ParsedAct | null, now: number): ParsedAct | null =>
-  policyTerms(v1, v2).find(t => t.act.recordedAt <= now && (t.until === null || now < t.until))?.act ?? null;
+const policyActAt = (acts: readonly ParsedAct[], now: number): ParsedAct | null =>
+  policyTerms(acts).find(t => t.act.recordedAt <= now && (t.until === null || now < t.until))?.act ?? null;
 /** Why the act in force does not cover the on-disk policy, or null when it does. */
 const policyMismatch = (act: ParsedAct, policy: string, scope: unknown): string | null =>
   act.digest !== sha256(policy) ? 'the policy bytes differ from the in-force act\'s argument'
@@ -432,10 +443,10 @@ export function createPackagePolicyReader(options: { readonly root: string; read
   const fs = options.fs ?? nodeFs;
   return {
     read: async () => {
-      const { policy, scope, v1, v2 } = await readPolicyActs(fs, options.root);
+      const { policy, scope, acts } = await readPolicyActs(fs, options.root);
       // Every act keeps its chain term; one whose argument is not the current policy (or a policy without the scope) is left out, so at
       // any instant the port counts at most the act the chain puts in force, and only when that act binds the bytes.
-      return Object.freeze(policyTerms(v1, v2).filter(t => policyMismatch(t.act, policy, scope) === null)
+      return Object.freeze(policyTerms(acts).filter(t => policyMismatch(t.act, policy, scope) === null)
         .map(t => Object.freeze({ actIdentity: t.act.identity, digest: t.act.digest, inForceAt: t.act.recordedAt, until: t.until })));
     },
   };
@@ -451,18 +462,22 @@ async function strict<T>(read: () => Promise<ActState<T>>): Promise<ActState<T>>
   try { return await read(); } catch (error) { if (error instanceof AdmissionRecordError) return { state: 'refused', why: error.message }; throw error; }
 }
 
-/** The screening-scope policy act chain at `now`. `final` is the act the chain puts in force then (version 2 from its instant, else
- * version 1); `ok` only when it binds exactly the on-disk policy bytes and that policy declares a `publicSourceScope` object, which is
- * exactly when the port's public-source-policy check is satisfied. `absent` before the first act's instant. */
-export type PolicyActChain = { readonly v1: ParsedAct | null; readonly v2: ParsedAct | null; readonly final: ParsedAct; readonly policyDigest: string };
+/** The screening-scope policy act chain at `now`. `final` is the act the chain puts in force then (the latest version whose instant
+ * has passed); `ok` only when it binds exactly the on-disk policy bytes and that policy declares a `publicSourceScope` object, which is
+ * exactly when the port's public-source-policy check is satisfied. `absent` before the first act's instant. `acts` is every recorded
+ * version in chain order; `v1`, `v2` and `v3` name them by version. */
+export type PolicyActChain = {
+  readonly v1: ParsedAct | null; readonly v2: ParsedAct | null; readonly v3: ParsedAct | null; readonly acts: readonly ParsedAct[];
+  readonly final: ParsedAct; readonly policyDigest: string;
+};
 export function readPolicyActChain(options: StrictReadOptions): Promise<ActState<PolicyActChain>> {
   return strict<PolicyActChain>(async () => {
-    const { policy, scope, v1, v2 } = await readPolicyActs(options.fs ?? nodeFs, options.root);
-    if (v1 === null && v2 === null) return { state: 'absent', why: 'no screening-scope policy act is recorded' };
-    const final = policyActAt(v1, v2, options.now);
+    const { policy, scope, acts } = await readPolicyActs(options.fs ?? nodeFs, options.root);
+    if (acts.length === 0) return { state: 'absent', why: 'no screening-scope policy act is recorded' };
+    const final = policyActAt(acts, options.now);
     if (final === null) return { state: 'absent', why: 'no screening-scope policy act is in force yet' };
     const why = policyMismatch(final, policy, scope);
-    return why === null ? { state: 'ok', v1, v2, final, policyDigest: sha256(policy) } : { state: 'refused', why };
+    return why === null ? { state: 'ok', v1: acts[0] ?? null, v2: acts[1] ?? null, v3: acts[2] ?? null, acts, final, policyDigest: sha256(policy) } : { state: 'refused', why };
   });
 }
 
@@ -540,11 +555,16 @@ export interface DigestBoundActForm {
    * register row that cites the act by name before it exists. Every other line of that file, a second copy of the same line included,
    * is swept as any other; an edited line no longer matches and is swept too. */
   readonly citedRows?: readonly CitedRow[];
+  /** Decisions files the sweep reads past while each is exactly what its template renders: a successor or predecessor act over another
+   * version of the same record, which must name this act's record or artifact (a supersession). Any other bytes in that file, an
+   * edited copy included, are swept as any other file. */
+  readonly exemptRecords?: readonly ExemptRecord[];
   /** The record as its recorder renders it: the record counts only when the slots read out of it render the template back to the
    * record, byte for byte. The template fixes every literal line, the scope included. */
   readonly template?: RecorderTemplate;
 }
 export interface CitedRow { readonly file: string; readonly sha256: string }
+export interface ExemptRecord { readonly file: string; readonly template: RecorderTemplate }
 
 /** The P-104 row of `PENDING-OWNER-DECISIONS.md` as it stands before the local-agent sitting: it names the registry sign-off's tag. */
 const P104_ROW_SHA256 = '05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb';
@@ -586,13 +606,14 @@ function withoutCitedRows(text: string, pins: readonly string[]): string {
 /** The one record a form names, after the withdrawal sweep over every other decisions file: its text, null when absent, or why the
  * sweep refuses and the file that named the act. */
 type FoundRecord = { readonly text: string | null } | { readonly why: string; readonly namedBy: string };
-async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly fieldStems?: readonly string[]; readonly citedRows?: readonly CitedRow[] }, artifact: string): Promise<FoundRecord> {
+async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly fieldStems?: readonly string[]; readonly citedRows?: readonly CitedRow[]; readonly exemptRecords?: readonly ExemptRecord[] }, artifact: string): Promise<FoundRecord> {
   const files = await walk(fs, path.join(root, DECISIONS_DIR)), swept = sweepText(fs, root);
   let found: string | null = null;
   for (const rel of files) {
     let text: string;
     try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
     if (rel === form.file) { found = text; continue; }
+    if ((form.exemptRecords ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;
     const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));
     if (namesDigestBoundAct(form, artifact, rel, await swept(rel, read))) {
       return { why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define`, namedBy: `${DECISIONS_DIR}/${rel}` };

@@ -573,6 +573,53 @@ describe('screening scope version 2 policy act', () => {
   });
 });
 
+// P-105 (owner act of 2026-10-08, syzygy-fxro): the third form. Version 3 supersedes version 2 as version 2 superseded version 1.
+describe('screening scope version 3 policy act', () => {
+  const V1 = `${DECISIONS_DIR}/${POLICY_ACT_FILE}`;
+  const V2 = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`;
+  const V3 = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md`;
+  const p1 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } }, null, 1) + '\n';
+  const p2 = JSON.stringify({ policyVersion: '1.3.0-public-source-candidate.1.none', publicSourceScope: { rules: ['more'] } }, null, 1) + '\n';
+  const p3 = JSON.stringify({ policyVersion: '1.4.0-public-source-candidate.1.none.code-all', publicSourceScope: { rules: ['more'], activeContent: {} } }, null, 1) + '\n';
+  const V2_AT = Date.UTC(2026, 9, 4, 9, 30, 0), V3_AT = Date.UTC(2026, 9, 5, 9, 30, 0);
+  const v1 = (): string => renderPolicyAct(sha(p1), '2026-10-03', '2026-10-03T09:30:00Z', 1);
+  const v2 = (): string => renderPolicyAct(sha(p2), '2026-10-04', '2026-10-04T09:30:00Z', 2, sha(p1));
+  const v3 = (text = p3, date = '2026-10-05', superseded = sha(p2)): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, 3, superseded);
+  const files = (policy: string, extra: Record<string, string>): Record<string, string> => ({ ...world(), [POLICY_PATH]: policy, ...extra });
+  const chainAt = (f: Record<string, string>, now: number) => readPolicyActChain({ root: '/r', fs: memoryFs(seen(f)), now });
+  const check = (f: Record<string, string>, now: number) => createPackageAdmissionRecordsPort({ root: '/r', now: () => now, fs: memoryFs(seen(f)) }).check(requirement('public-source-policy'));
+  const V2_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04';
+  const V3_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-05';
+
+  it('puts version 3 in force from its instant over version 2 over version 1, in both views', async () => {
+    const f = files(p3, { [V1]: v1(), [V2]: v2(), [V3]: v3() });
+    expect(await chainAt(f, V3_AT)).toMatchObject({ state: 'ok', v1: { digest: sha(p1) }, v2: { digest: sha(p2) }, v3: { digest: sha(p3) }, final: { identity: V3_ID, recordedAt: V3_AT }, policyDigest: sha(p3) });
+    expect(await check(f, V3_AT)).toEqual({ satisfied: true, record: V3_ID });
+    expect(await createPackagePolicyReader({ root: '/r', fs: memoryFs(seen(f)) }).read()).toEqual([{ actIdentity: V3_ID, digest: sha(p3), inForceAt: V3_AT, until: null }]);
+  });
+  it('leaves version 2 in force before version 3\'s instant, and never brings it back after', async () => {
+    const before = files(p2, { [V1]: v1(), [V2]: v2(), [V3]: v3() });
+    expect(await chainAt(before, V3_AT - 1)).toMatchObject({ state: 'ok', final: { identity: V2_ID } });
+    expect(await check(before, V3_AT - 1)).toEqual({ satisfied: true, record: V2_ID });
+    expect(await chainAt(before, V3_AT)).toMatchObject({ state: 'refused' });
+    expect(await check(before, V3_AT)).toMatchObject({ satisfied: false });
+    expect(await chainAt(before, V2_AT - 1 - 86_400_000)).toMatchObject({ state: 'absent' });
+  });
+  it.each<[string, string, Record<string, string>]>([
+    ['version 3 without version 2', p3, { [V1]: v1(), [V3]: v3() }],
+    ['version 3 without version 1 or 2', p3, { [V3]: v3() }],
+    ['version 3 not later than version 2', p3, { [V1]: v1(), [V2]: v2(), [V3]: v3(p3, '2026-10-04') }],
+    ['version 3 over version 2\'s bytes', p2, { [V1]: v1(), [V2]: v2(), [V3]: v3(p2) }],
+    ['a supersession naming version 1\'s argument', p3, { [V1]: v1(), [V2]: v2(), [V3]: v3(p3, '2026-10-05', sha(p1)) }],
+    ['a supersession naming version 1\'s record', p3, { [V1]: v1(), [V2]: v2(), [V3]: v3().replace('PUBLIC-SOURCE-SCOPE-V2-ACT.md', 'PUBLIC-SOURCE-SCOPE-ACT.md') }],
+    ['a version 3 record titled as version 2', p3, { [V1]: v1(), [V2]: v2(), [V3]: v3().replace(', version 3)', ', version 2)') }],
+    ['a version 3 record with version 2\'s identity', p3, { [V1]: v1(), [V2]: v2(), [V3]: v3().replace('V3-APPROVAL', 'V2-APPROVAL') }],
+    ['other policy bytes', `${p3} `, { [V1]: v1(), [V2]: v2(), [V3]: v3() }],
+  ])('refuses %s', async (_name, policy, extra) => {
+    expect(await chainAt(files(policy, extra), V3_AT + 1000)).toMatchObject({ state: 'refused' });
+  });
+});
+
 describe('strict act reads', () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
   const POLICY_V1 = `${DECISIONS_DIR}/${POLICY_ACT_FILE}`;

@@ -1783,6 +1783,22 @@ DOSSIER_LOCAL_AGENT_ACTS = (
 #: Each act's dedicated record, written by `record_dossier_local_agent_acts.py`;
 #: registered with the aggregate record once it exists (its selftest checks
 #: these paths against the recorder's own).
+#: Version 2 of the Redis Anthropic provider statement (register row P-106): one consent act over the one row of its manifest,
+#: written by `record_dossier_agent_provider_v2_act.py`. Its label avoids
+#: version 1's sweep stems (the package's SEMANTIC-DELTA says why). Version 1's
+#: subject bytes are unchanged, so its copies stay current and nothing is
+#: pinned as history; the gate reads version 2 in its place from its instant.
+DOSSIER_PROVIDER_V2_DIR = f"{CANDIDATES}/dossier-agent-provider-v2"
+DOSSIER_PROVIDER_V2_MANIFEST = f"{DOSSIER_PROVIDER_V2_DIR}/DOSSIER-AGENT-PROVIDER-V2-MANIFEST.txt"
+DOSSIER_PROVIDER_V2_ACTS = (
+    ("CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2 FOR REDIS",
+     f"{DOSSIER_PROVIDER_V2_DIR}/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md"),
+)
+DOSSIER_PROVIDER_V2_SUPERSEDES = "CONSENT TO AGENT PROVIDER ANTHROPIC FOR REDIS-REDIS"
+DOSSIER_PROVIDER_V2_ACT_RECORDS = {
+    "CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2 FOR REDIS":
+        f"{DECISIONS}/DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md",
+}
 DOSSIER_LOCAL_AGENT_ACT_RECORDS = {
     "STATE NO KERNEL EVIDENCE DRAWER FOR REDIS-REDIS":
         f"{DECISIONS}/DOSSIER-LOCAL-AGENT-REDIS-NO-EVIDENCE-DRAWER-ACT.md",
@@ -1837,6 +1853,12 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
      "d42defcaf4dbb9b4e815f988ef8ba62be1dad081aa851d430b427b35c42f346b"),
+    # The public-source screening-scope version-3 act supersedes the version-2 act for
+    # the policy subject (screening-scope v3 chain row).
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
+     "98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
@@ -1865,6 +1887,11 @@ PWB_EFFECT_AMENDMENT_OFFERINGS = {
     # its packet by design carries no digest.
     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md": {
         f"{CANDIDATES}/public-source-screening-scope/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt": "row",
+    },
+    # The version-2 screening-scope act was offered as the chosen variant's row of its
+    # manifest, a row that ends in its `[variant: …]` tag; its packet carries no digest.
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md": {
+        f"{CANDIDATES}/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt": "variant-row",
     },
 }
 PWB_STATE1_SUBJECTS = tuple(sorted((
@@ -2588,6 +2615,11 @@ def _act_subjects():
             if not any(l == label for l, _rel, _pat in out):
                 out.append((label, subject, re.compile(
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, DOSSIER_PROVIDER_V2_MANIFEST)):
+        for label, subject in DOSSIER_PROVIDER_V2_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     return tuple(out)
 
 
@@ -3281,7 +3313,9 @@ def _activate_pwb_effect_amendment_act_copy_registries():
             # by that amendment's own package.
             historical = {predecessor: phrase_line}
             for rel, shape in PWB_EFFECT_AMENDMENT_OFFERINGS[predecessor].items():
-                historical[rel] = manifest_row if shape == "row" else phrase_line
+                historical[rel] = (manifest_row if shape == "row"
+                                   else manifest_row[:-1] + r"  \[variant: [a-z-]+\]$"
+                                   if shape == "variant-row" else phrase_line)
         else:
             historical = {
                 f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": phrase_line,
@@ -3455,6 +3489,31 @@ def _activate_dossier_local_agent_manifest_copy_registry():
 _activate_dossier_local_agent_manifest_copy_registry()
 
 
+def _activate_dossier_provider_v2_copy_registry():
+    """The provider version 2 manifest carries its one current argument as a row.
+
+    Existence-gated: the manifest is registered while it exists; the
+    dedicated record joins the aggregate once performed. The round-2 notes
+    record quotes no digest, so it is not registered.
+    """
+    labels = tuple(label for label, _subject in DOSSIER_PROVIDER_V2_ACTS)
+    if os.path.isfile(os.path.join(ROOT, DOSSIER_PROVIDER_V2_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[DOSSIER_PROVIDER_V2_MANIFEST] = labels
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, record in DOSSIER_PROVIDER_V2_ACT_RECORDS.items():
+        if not os.path.isfile(os.path.join(ROOT, record)):
+            continue
+        present = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in present:
+            ACT_DIGEST_COPY_FILES[aggregate] = present + (label,)
+        # Its supersession line quotes version 1's argument, which stays
+        # current: version 1's subject bytes are unchanged.
+        ACT_DIGEST_COPY_FILES[record] = (label, DOSSIER_PROVIDER_V2_SUPERSEDES)
+
+
+_activate_dossier_provider_v2_copy_registry()
+
+
 #: The public-source screening scope, version 2 (sitting row 12): one state-(1)
 #: `approve-policy` act over ONE of four manifest rows (the variants). It reuses
 #: the policy's existing phrase label, supersedes the version-1 act for that
@@ -3475,7 +3534,10 @@ def _activate_public_source_scope_v2_copy_registry():
     the current argument.
     """
     if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_ACT))
-            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))):
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))
+            # once the version-3 act supersedes it, the chosen row is history
+            # (pinned by the amendment registries)
+            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"))):
         ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V2_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
 
 
@@ -3791,6 +3853,7 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
     (f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md", "manifest file"): RFC5_CLASS_SUBJECT,
     (PWB_SCOPE_ACT, "manifest"): PWB_SCOPE_MANIFEST,
     (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,
+    (PUBLIC_SOURCE_SCOPE_V3_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V3_MANIFEST,
 }
 
 
@@ -11108,6 +11171,8 @@ def cg25_check_owners(res, reported=None, owners=None):
 def _activate_redis_local_agent_battery_copies():
     """Install change: the battery's recorder lines pass each recorded local-agent act's argument."""
     pairs = list(DOSSIER_LOCAL_AGENT_ACT_RECORDS.items())
+    # the provider statement's version-2 recorder line passes its argument too, once performed
+    pairs += list(DOSSIER_PROVIDER_V2_ACT_RECORDS.items())
     # the Redis observation consent's line is in node-ci, not here (NODE_CHECKS)
     # the RFC5-14 constants exist only once that act's chain link is installed; the
     # name is split so this text never carries the chain step's install mark

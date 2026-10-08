@@ -1,8 +1,11 @@
 import {
   LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, createPackageAdmissionRecordsPort, readDigestBoundActState, readPolicyActChain, readVersionedSignoffState,
-  SLOT, recorderTemplate,
-  type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type PackageReaderFs, type RecorderTemplate, type VersionedSignoffForm,
+  DECISIONS_DIR, SLOT, recorderTemplate,
+  type ActState, type CitedRow, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type ExemptRecord, type PackageReaderFs, type RecorderTemplate,
+  type VersionedSignoffForm,
 } from '@syzygy/polaris-generation-consent';
+import { readdir } from 'node:fs/promises';
+import * as path from 'node:path';
 import type { DrawerStatement } from './governed.js';
 
 /** The records Syzygy's start gates read (REQ-polaris-generation-033, 036), each re-read on every call and never cached.
@@ -170,18 +173,131 @@ result.
     frozen: SLOT.commit, manifest: SLOT.sha256, verdict: SLOT.verdict, reviewed: SLOT.commit,
   });
 }
+/** What a form adds to its own stems: `stems` (prose), `fieldStems` (field lines only), `bound` files, and the `citedRows` and
+ * `exemptRecords` its sweep reads past (`DigestBoundActForm`). */
+interface FormExtras {
+  readonly bound?: readonly string[]; readonly stems?: readonly string[]; readonly fieldStems?: readonly string[];
+  readonly citedRows?: readonly CitedRow[]; readonly exemptRecords?: readonly ExemptRecord[];
+}
+const extras = (more: FormExtras) => ({
+  ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
+  ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
+  ...(more.citedRows === undefined ? {} : { citedRows: Object.freeze([...more.citedRows]) }),
+  ...(more.exemptRecords === undefined ? {} : { exemptRecords: Object.freeze([...more.exemptRecords]) }),
+});
 /** The form of one sitting act. Its sweep reads the record's file stem, the act identity, the artifact's path, basename and heading,
- * the phrase label and the record's title, plus `more.stems` (prose) and `more.fieldStems` (field lines only). */
-const sittingForm = (a: SittingAct, more: { readonly bound?: readonly string[]; readonly stems?: readonly string[]; readonly fieldStems?: readonly string[] } = {}): DigestBoundActForm => Object.freeze({
+ * the phrase label and the record's title, plus the extras. */
+const sittingForm = (a: SittingAct, more: FormExtras = {}): DigestBoundActForm => Object.freeze({
   file: `DOSSIER-LOCAL-AGENT-${a.stem}-ACT.md`,
   title: `# Owner act — ${a.title}`,
   type: a.type,
   identity: (date: string) => `${a.identityStem}-${date}`,
   artifact: `${SITTING_INSTANCES}/${a.artifact}`,
   stems: Object.freeze([`dossier-local-agent-${a.stem.toLowerCase()}`, a.identityStem.toLowerCase(), a.artifact.split('/').pop()!, a.heading, a.label, a.title, ...(more.stems ?? [])]),
-  ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
   template: sittingTemplate(a),
-  ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
+  ...extras(more),
+});
+
+/** Version 2 of the Redis statement for Claude Code with Anthropic (`dossier-agent-provider-v2/`, register row P-106): the same record
+ * with `project-documentation` added. Its act is written by scripts/record_dossier_agent_provider_v2_act.py; this is a byte-for-byte
+ * port of its `render_act`, slots as the sitting's plus the packet words the owner's option maps to (`quote`) and the version-1 act's
+ * date and argument (`supersededDate`, `superseded`), held to the recorder by a test. */
+const PROVIDER_V2_PACKAGE = '.syzygy/governance/contracts/candidates/dossier-agent-provider-v2';
+const PROVIDER_V2_FILE = 'DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md';
+const PROVIDER_V2_LABEL = 'CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2 FOR REDIS';
+const PROVIDER_V2_TITLE = 'agent-provider statement for redis/redis, version 2: Claude Code with Anthropic';
+const PROVIDER_V2_ARTIFACT = `${PROVIDER_V2_PACKAGE}/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md`;
+const PROVIDER_V1_RECORD = `${DECISIONS_DIR}/DOSSIER-LOCAL-AGENT-REDIS-AGENT-ANTHROPIC-ACT.md`;
+const STATEMENT_SCOPE = 'operator-agent runs over this one repository with this one tool and provider';
+const PROVIDER_V2_TEMPLATE: RecorderTemplate = recorderTemplate(`# Owner act — ${PROVIDER_V2_TITLE}
+
+Date: {date}
+
+Recorded at (UTC): {instant}
+
+Owner: Tzeusy
+
+Act identity: \`AGENT-PROVIDER-V2-REDIS-ANTHROPIC-{date}\`
+
+Act type: \`consent-agent-provider\`
+
+Project identity: \`project:syzygy\`
+
+Artifact identity: \`${PROVIDER_V2_ARTIFACT}\`
+
+Exact digest (SHA-256): \`{argument}\`
+
+Scope: ${STATEMENT_SCOPE}
+
+Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1),
+explicitly selected by the owner's option selection recorded below
+
+Supersession / revocation: this act supersedes, prospectively from its own instant (RFC5-13), the {supersededDate} act recorded at \`${PROVIDER_V1_RECORD}\`, which binds version 1 of the same record at \`{superseded}\`. That record, its digest and the bytes it bound remain immutable history. This act is revoked only by a later exact owner act naming it.
+
+A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**
+
+## Ceremony
+
+The owner was presented decision 2 of the packet at
+\`${DECISIONS_DIR}/DOSSIER-BLOCKERS-DECISION-PACKET-2026-10-08.md\`, which by design carries no digest.
+The act takes this phrase, whose argument is the one row of the package
+manifest:
+
+\`\`\`text
+${PROVIDER_V2_LABEL}: {argument}
+\`\`\`
+
+The owner did not type the phrase. On {date} the owner answered a structured
+question in the Claude Code CLI that opened "{opening}" by selecting the
+option below. The label and description, verbatim:
+
+| Label | Description |
+|---|---|
+| "{label}" | "{description}" |
+
+The packet maps that option to its words "{quote}"; the selection is the
+instruction, and the words name the record at the manifest row.
+
+The argument was read from the one row of
+\`${PROVIDER_V2_PACKAGE}/DOSSIER-AGENT-PROVIDER-V2-MANIFEST.txt\` and matched the record on disk
+at recording. A swapped argument would have been refused: the recorder
+rejects an argument that is not that row.
+
+Frozen provenance:
+
+- frozen subject (package bytes): \`{frozen}\`;
+- the package manifest file hashes to \`{manifest}\` (a container
+  digest, no act's argument);
+- confirmation review: \`docs/reviews/R-DOSSIER-AGENT-PROVIDER-V2-2-RAW.md\`, verdict
+  \`{verdict}\`, its head bound to the manifest file's SHA-256 above; notes, if
+  any, are dispositioned in \`${PROVIDER_V2_PACKAGE}/ROUND-2-DISPOSITIONS.md\`; the raw names
+  reviewed commit \`{reviewed}\` [Observed — the raw's own line; binding is by
+  digest]; and
+- recording tag: \`dossier-agent-provider-v2-redis-anthropic-signed-{date}\`, on the commit carrying this act record.
+
+## Effect
+
+The record is the owner's explicit, recorded, per-project consent (SEC-2)
+that the operator's Claude Code sessions, with Anthropic, may receive the
+content classes it lists from (\`project:syzygy\`, \`repository:redis-redis\`) in
+an operator-agent run, so a brief may issue for that repository even when it
+counts as governed. Version 2 lists \`project-documentation\` beside version
+1's five classes and differs from version 1 in nothing else but its draft
+date, version and supersession line. From this act's instant the gate reads
+version 2 and not version 1; before it, version 1 alone.
+
+## What this act does not authorize
+
+This act satisfies only its own authority (REQ-polaris-generation-025). It
+gives no observation consent, adopts no registry entry or screening policy,
+amends no doctrine, contract or specification, and grants no read, egress,
+write, execution, deployment, release, autonomous or multi-user authority
+beyond what its Effect states. It is not an egress record and widens no
+consent to another tool, provider or repository. It proves no read,
+screening, generation or answer result.
+`, {
+  date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line, quote: SLOT.line,
+  frozen: SLOT.commit, manifest: SLOT.sha256, verdict: SLOT.verdict, reviewed: SLOT.commit, superseded: SLOT.sha256, supersededDate: SLOT.date,
 });
 
 /** D9 was adopted by the owner's words, logged in the doctrine amendment log with no digest, which RFC3-16(a) does not read as an
@@ -216,24 +332,45 @@ export const DRAWER_FORMS: Readonly<Record<string, DigestBoundActForm>> = Object
 /** Rows 3a and 3b: the per-project agent-provider statements, per repository id, each naming the tool (its run-configuration id and
  * the name its record's `Agent tool:` line opens with) and the provider it consents to. A statement's record says it is withdrawn by
  * "a later owner act naming this record", so the sweep reads its Record ID and its Subject as well as the act's own stems. */
-export interface StatementForm { readonly agentTool: string; readonly toolName: string; readonly provider: string; readonly recordId: string; readonly form: DigestBoundActForm }
-const statementForm = (agentTool: string, toolName: string, provider: string, providerName: string, repositoryId: string, stem: string, identityStem: string, artifact: string): StatementForm => {
-  const recordId = `AGENT-PROVIDER-${repositoryId}-${provider}`;
-  return Object.freeze({
-    agentTool, toolName, provider, recordId,
-    form: sittingForm({
-      key: `redis-agent-${provider}`, label: `CONSENT TO AGENT PROVIDER ${provider.toUpperCase()} FOR ${repositoryId.toUpperCase()}`, stem, identityStem,
-      title: `agent-provider statement for ${repositoryId.replace('-', '/')}: ${toolName} with ${providerName}`, type: 'consent-agent-provider', artifact,
-      heading: `Agent-provider statement — ${repositoryId} to ${provider}`,
-      scope: 'operator-agent runs over this one repository with this one tool and provider',
-      effect: `The record is the owner's explicit, recorded, per-project consent (SEC-2) that the operator's ${toolName} sessions, with ${providerName}, may receive the content classes it lists from (\`project:syzygy\`, \`repository:${repositoryId}\`) in an operator-agent run, so a brief may issue for that repository even when it counts as governed.`,
-    }, { stems: [recordId.toLowerCase(), `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`] }),
-  });
-};
+/** `successor`, when set, is the act form over the next version of the same record (same Record ID, Subject, tool and provider): from its
+ * act's instant the source reads the successor and not this version (RFC5-13, prospective), so the gate never sees two statements for the
+ * pair. Each version's sweep reads past the other's act record, and only while it is exactly what that act's recorder renders. */
+export interface StatementForm {
+  readonly agentTool: string; readonly toolName: string; readonly provider: string; readonly recordId: string; readonly form: DigestBoundActForm;
+  readonly successor?: DigestBoundActForm;
+}
+const statementAct = (toolName: string, provider: string, providerName: string, repositoryId: string, stem: string, identityStem: string, artifact: string): SittingAct => ({
+  key: `redis-agent-${provider}`, label: `CONSENT TO AGENT PROVIDER ${provider.toUpperCase()} FOR ${repositoryId.toUpperCase()}`, stem, identityStem,
+  title: `agent-provider statement for ${repositoryId.replace('-', '/')}: ${toolName} with ${providerName}`, type: 'consent-agent-provider', artifact,
+  heading: `Agent-provider statement — ${repositoryId} to ${provider}`,
+  scope: STATEMENT_SCOPE,
+  effect: `The record is the owner's explicit, recorded, per-project consent (SEC-2) that the operator's ${toolName} sessions, with ${providerName}, may receive the content classes it lists from (\`project:syzygy\`, \`repository:${repositoryId}\`) in an operator-agent run, so a brief may issue for that repository even when it counts as governed.`,
+});
+const statementStems = (repositoryId: string, provider: string): readonly string[] =>
+  [`AGENT-PROVIDER-${repositoryId}-${provider}`.toLowerCase(), `project:syzygy, repository:${repositoryId}, agent-provider:${provider}`];
+const statementForm = (agentTool: string, act: SittingAct, toolName: string, provider: string, repositoryId: string, successor?: { readonly form: DigestBoundActForm; readonly template: RecorderTemplate }): StatementForm => Object.freeze({
+  agentTool, toolName, provider, recordId: `AGENT-PROVIDER-${repositoryId}-${provider}`,
+  form: sittingForm(act, { stems: statementStems(repositoryId, provider), ...(successor === undefined ? {} : { exemptRecords: [{ file: successor.form.file, template: successor.template }] }) }),
+  ...(successor === undefined ? {} : { successor: successor.form }),
+});
+const REDIS_ANTHROPIC_V1 = statementAct('Claude Code', 'anthropic', 'Anthropic', 'redis-redis', 'REDIS-AGENT-ANTHROPIC', 'AGENT-PROVIDER-REDIS-ANTHROPIC', 'redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md');
+/** Version 2's form. Its own stems are new (file, identity, label, title; none in a decisions file before its act, round-2 note 3); the
+ * artifact's basename, heading, Record ID and Subject are version 1's, so it reads past version 1's act record at its exact render. */
+export const PROVIDER_V2_FORM: DigestBoundActForm = Object.freeze({
+  file: PROVIDER_V2_FILE,
+  title: `# Owner act — ${PROVIDER_V2_TITLE}`,
+  type: 'consent-agent-provider',
+  identity: (date: string) => `AGENT-PROVIDER-V2-REDIS-ANTHROPIC-${date}`,
+  artifact: PROVIDER_V2_ARTIFACT,
+  stems: Object.freeze(['dossier-agent-provider-v2-redis-anthropic', 'agent-provider-v2-redis-anthropic', 'AGENT-PROVIDER-STATEMENT-ANTHROPIC.md',
+    'Agent-provider statement — redis-redis to anthropic', PROVIDER_V2_LABEL, PROVIDER_V2_TITLE, ...statementStems('redis-redis', 'anthropic')]),
+  template: PROVIDER_V2_TEMPLATE,
+  ...extras({ exemptRecords: [{ file: PROVIDER_V1_RECORD.slice(DECISIONS_DIR.length + 1), template: sittingTemplate(REDIS_ANTHROPIC_V1) }] }),
+});
 export const STATEMENT_FORMS: Readonly<Record<string, readonly StatementForm[]>> = Object.freeze({
   'redis-redis': Object.freeze([
-    statementForm('claude-code', 'Claude Code', 'anthropic', 'Anthropic', 'redis-redis', 'REDIS-AGENT-ANTHROPIC', 'AGENT-PROVIDER-REDIS-ANTHROPIC', 'redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md'),
-    statementForm('codex', 'Codex', 'openai', 'OpenAI', 'redis-redis', 'REDIS-AGENT-OPENAI', 'AGENT-PROVIDER-REDIS-OPENAI', 'redis/AGENT-PROVIDER-STATEMENT-OPENAI.md'),
+    statementForm('claude-code', REDIS_ANTHROPIC_V1, 'Claude Code', 'anthropic', 'redis-redis', { form: PROVIDER_V2_FORM, template: PROVIDER_V2_TEMPLATE }),
+    statementForm('codex', statementAct('Codex', 'openai', 'OpenAI', 'redis-redis', 'REDIS-AGENT-OPENAI', 'AGENT-PROVIDER-REDIS-OPENAI', 'redis/AGENT-PROVIDER-STATEMENT-OPENAI.md'), 'Codex', 'openai', 'redis-redis'),
   ]),
 });
 
@@ -329,6 +466,9 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
   const fsOption = options.fs === undefined ? {} : { fs: options.fs };
   const port = createPackageAdmissionRecordsPort({ root: options.root, now: options.now, ...fsOption });
   const read = (form: DigestBoundActForm) => readDigestBoundActState({ root: options.root, now: options.now(), form, ...fsOption });
+  const recorded = async (file: string): Promise<boolean> => {
+    try { return (await (options.fs?.readdir ?? readdir)(path.join(options.root, DECISIONS_DIR))).includes(file); } catch { return false; }
+  };
   const crossCheck = async (form: DigestBoundActForm | null | undefined, what: string): Promise<GateState> => {
     if (form === null || form === undefined) return notEstablished(what);
     const state = await read(form);
@@ -344,8 +484,19 @@ export function createPackageGateSources(options: PackageGateSourceOptions): Gat
   const providerStatements: ProviderStatementSource = {
     statementsFor: async repositoryId => {
       const forms = Object.hasOwn(STATEMENT_FORMS, repositoryId) ? STATEMENT_FORMS[repositoryId]! : [];
-      const found = await Promise.all(forms.map(async s => providerStatement(await read(s.form), repositoryId, s)));
-      return found.filter((r): r is ProviderStatementRecord => r !== null);
+      const found = await Promise.all(forms.map(async (s): Promise<readonly (ProviderStatementRecord | null)[]> => {
+        const current = providerStatement(await read(s.form), repositoryId, s);
+        if (s.successor === undefined) return [current];
+        // The successor replaces this version from its act's instant (an act not yet in force reads absent, and this version stands).
+        // A successor record that exists but does not hold fails closed: this version is read as withdrawn beside it. With no successor
+        // record, a sweep refusal is a file naming the shared stems, which this version's own read has already judged.
+        const next = await read(s.successor);
+        if (next.state === 'absent' || (next.state === 'refused' && !(await recorded(s.successor.file)))) return [current];
+        const successor = providerStatement(next, repositoryId, s);
+        if (next.state === 'ok') return [successor];
+        return [current === null ? null : { ...current, withdrawn: true }, successor];
+      }));
+      return found.flat().filter((r): r is ProviderStatementRecord => r !== null);
     },
   };
   return {

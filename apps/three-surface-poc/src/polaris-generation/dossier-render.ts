@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
-  DOSSIER_FORMAT, OWNER_TOPICS, checkDraftQuotes, diagramToMermaid, isDossierPagePath, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById, withoutReviewStatusRegion,
+  DOSSIER_FORMAT, OWNER_TOPICS, PAGE_SINK_CONTRACT, checkDraftQuotes, diagramToMermaid, isDossierPagePath, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById, withoutReviewStatusRegion,
   validateDraftRecord, validateGenerationSources, validateRequestedAssets,
   type DossierManifest, type EpistemicMarking, type GenerationSource, type LocalPageItem, type LocalRenderInput, type LocalSegment, type OwnerTopic, type PipelineResult,
   type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph, type RequestedAsset,
@@ -453,3 +453,6 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   }
   return { files, manifest };
 }
+/** The encoding half of the screening scope's render condition (policy version 3): every page writes each source byte through
+ * `escape` and carries `DRAFT_PREVIEW_CSP_META` first in its head. `page-sink.test.ts` fails if either stops holding. */
+renderDossier.pageSinkContract = PAGE_SINK_CONTRACT;

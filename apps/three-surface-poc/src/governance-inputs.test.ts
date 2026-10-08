@@ -32,7 +32,7 @@ import {
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
-const EVALUATION_INSTANT = '2026-10-07T00:00:00Z';
+const EVALUATION_INSTANT = '2026-10-08T00:00:00Z';
 const CURRENT_COMMIT = 'f'.repeat(40);
 const cleanups: string[] = [];
 
@@ -166,7 +166,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.policy);
     const inputs = loaderFor(tree);
-    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-public-source-scope-v2-signed-2026-10-07' });
+    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-public-source-scope-v3-signed-2026-10-08' });
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:git-ref-only');
   });
@@ -305,12 +305,12 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
   it('direction C: the gate admits under the 2026-10-02 re-pin acts and refuses when either act names another digest', () => {
     const tree = fakeTree();
     const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
-    expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-07');
+    expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-08');
     expect(expected.registry.actIdentity).toBe('PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02');
-    expect(expected.policy.recordingTag).toBe('pwb-approve-policy-public-source-scope-v2-signed-2026-10-07');
+    expect(expected.policy.recordingTag).toBe('pwb-approve-policy-public-source-scope-v3-signed-2026-10-08');
     expect(expected.registry.recordingTag).toBe('pwb-adopt-registry-entry-signed-2026-10-02');
     // The version anchors are unchanged by direction C.
-    expect(expected.policy.scopeAnchors).toContain('1.3.0-public-source-candidate.1.none');
+    expect(expected.policy.scopeAnchors).toContain('1.4.0-public-source-candidate.1.none.code-all');
     expect(expected.registry.scopeAnchors).toContain('1.2.0-candidate.1');
     const admitted = evaluateBodyReadAuthority(loaderFor(tree));
     expect(admitted.admits).toBe(true);
