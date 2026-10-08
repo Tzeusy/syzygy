@@ -1,7 +1,7 @@
 # Owner decision packet — Polaris dossier local-agent mode, version 1.2
 
 > **Candidate — binds nothing.** Drafted 2026-10-09 under the owner
-> direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`. It performs no act
+> direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`. It performs no act
 > and carries no phrase. Effect comes only from your version-tagged sign-off
 > of the exact reviewed bytes, after a confirming review. A commit, a review
 > or a merged pull request performs no act.

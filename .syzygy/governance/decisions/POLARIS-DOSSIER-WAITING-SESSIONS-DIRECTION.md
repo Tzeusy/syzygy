@@ -4,8 +4,8 @@ Date: 2026-10-08T16:24:26.838Z (UTC); 2026-10-09 in the owner's local time
 
 Owner: Tzeusy
 
-Decision ID: `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09` (named for the
-owner's local date; the instant above, in UTC, is the date of record)
+Decision ID: `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08` (named for the
+UTC date of the instant above)
 
 This is a plain owner direction. It binds no artifact digest, adds no row to
 `ACCEPTANCE-ACT-RECORD.md` and registers nothing. It amends no doctrine,
@@ -16,12 +16,12 @@ it off by its version tag (VIS-4;
 
 ## The owner's words
 
-At 2026-10-08T16:24:26.838Z (UTC), in the Claude Code CLI, the lead put
-decision 3 of
+At 2026-10-08T16:24:26.838Z (UTC; the transcript timestamp of the tool
+result), in the Claude Code CLI, the lead put decision 3 of
 [`DOSSIER-BLOCKERS-DECISION-PACKET-2026-10-08.md`](DOSSIER-BLOCKERS-DECISION-PACKET-2026-10-08.md)
-to the owner as a structured question, the same channel as the 2026-10-07
-Redis sitting, under the header chip "Hand-offs". The question, as relayed by
-the lead:
+to the owner as an AskUserQuestion structured question, the same channel as
+the 2026-10-07 Redis sitting, under the header chip "Hand-offs". The
+question, verbatim from the lead's record of the selection:
 
 > "Decision 3 (P-107): the run stalled for five hours because you must start
 > each helper session (inventory, fidelity review, design review) by hand.
@@ -40,9 +40,19 @@ described as:
 > across revisions, disclosed on the page (its earlier verdict may anchor
 > it). Needs a v1.2 spec package and a wait-mode code change."
 
-Not selected: "B, fresh reviewer per revision", "C, you attend, agent
-launches" and "A, keep as is". The owner saw the question form and the
-lead's chat summaries, not the packet file.
+Not selected:
+
+- "B, fresh reviewer per revision": "Same as above, but each revision's
+  review needs a session you start. That is more independent, and more
+  stalls after repairs."
+- "C, you attend, agent launches": "The authoring session launches each
+  helper headless, and you approve each launch. You must be present. It
+  supersedes your 2026-10-05 item 2 and weakens independence."
+- "A, keep as is": "No change. Runs stall whenever you step away."
+
+The owner saw the question form and the lead's earlier chat summaries of the
+review verdicts and of the packet's content; not the raws, the dispositions
+or the packet file itself.
 
 The packet's "Words to give" maps the selected option to:
 
@@ -82,7 +92,8 @@ quoted here as the packet's own wording for the selection.
 4. **The recommended mitigation, taken with the option.** A printed start
    command pre-approves only read tools and the role's one `syzygy dossier`
    command, never a general shell and never a write outside the session's
-   own directory. The packet's words: "approve only read tools and the
+   own directory. The option the owner selected says "with only read tools
+   plus their one syzygy command pre-approved"; the packet's words: "approve only read tools and the
    role's one `syzygy dossier` command [Inferred]". Where an agent tool
    offers no such narrow scope, Syzygy prints no broader one and says so.
 

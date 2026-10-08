@@ -73,7 +73,7 @@ is the drafter's.
 | `> **Version 1.1.**` | 4 | `design.md` and `proposal.md` (changed here); the v1.1 package's two patches (historical) |
 
 The phrase v1.2 introduces as a warrant,
-`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`, appears in 4 files at that
+`POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`, appears in 4 files at that
 commit: the direction record, and three implementation files
 (`packages/polaris-dossier/src/waiting-sessions.ts`, its test, and
 `render.ts`), which cite the direction, not this package.

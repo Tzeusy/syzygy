@@ -10,7 +10,7 @@ import type { GateSources, ProviderStatementRecord } from './gate-sources.js';
 import type { DossierRenderer } from './render.js';
 import { waitModeSignedIn } from './waiting-sessions.js';
 
-// Pre-started waiting sessions (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09; candidate v1.2 of the local-agent mode,
+// Pre-started waiting sessions (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate v1.2 of the local-agent mode,
 // REQ-polaris-generation-035 as amended there). Every step runs through the CLI as a session would. Expected prompts, permission rules,
 // file names, outcomes, exit codes and disclosure texts are literals written here, never read from the module under test; digests are
 // computed here from the bytes on disk. One test per predicate; each names the mutant of the module that it kills.
