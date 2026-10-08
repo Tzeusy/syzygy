@@ -199,22 +199,28 @@ code becomes conformant only once these bytes are signed.
   patches through a builder, writes a v1.2 record and aggregate block, and
   `--regenerate` refreshes the union and the census. The v1.0 and v1.1
   records are never edited.
-- **Prerequisites that do not exist yet** (scripts, outside this package): a
-  builder for this package's patches (a v1.2 sibling of
-  `scripts/build_polaris_dossier_local_agent_mode_v1_1.py`), its entry in `record_versioned_signoff.py`'s
-  `real_packages()`, and the v1.1 builder's `signed_findings` delegating to
-  it for version 1.2 (today it reports "recorded version 1.2 has no
-  builder"), each with a selftest fixture per predicate. Until the builder
-  exists no check tells v1.1's signed bytes from v1.2's: R2 of
-  `check_spec_reconciliation.py --check` passed with these patches applied
-  in this session. The version-tagged sign-off is the only guard on them,
-  and the packet says so.
+- **The recording tools** (scripts, outside this package, on the branch
+  that carries it): `scripts/build_polaris_dossier_local_agent_mode_v1_2.py`
+  verifies, applies and tells signed from unsigned v1.2 bytes;
+  `record_versioned_signoff.py`'s `real_packages()` carries the entry
+  `polaris-dossier-local-agent-mode@1.2`, whose reviewed subject is the
+  installed spec with `spec.md.patch` applied; and the v1.1 builder reads its
+  own layer once these patches are applied and leaves a later version to the
+  v1.2 builder. Once v1.2 is recorded, the battery's existing dossier
+  `--check` lines fail unless the tree is the signed v1.1 plus exactly these
+  patches and the spec hashes to the digest the v1.2 review read; while v1.1
+  is the latest record, a tree carrying these patches fails them.
+- **Install-time edits the recorder does not make:** the
+  `polaris-dossier-local-agent-mode` row of `openspec/README.md` names the
+  v1.2 record (R5 of `check_spec_reconciliation.py --check` requires it);
+  `--regenerate` refreshes the union and the census; the recorder's apply
+  moves `PROJECT-STATUS.md`'s figure itself.
 - The wait-mode code refuses every wait-mode step until a
   `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or later) record exists
   in `decisions/`, so a v1.1 run behaves the same with it present. That gate
   does not lift the direction's order: "The code may merge only once version
-  1.2 is signed off". The proposed order is review, sign-off, builder and
-  recorder entry, then merging the code.
+  1.2 is signed off". The proposed order is review, sign-off, recording,
+  then merging the code.
 
 ## Review
 

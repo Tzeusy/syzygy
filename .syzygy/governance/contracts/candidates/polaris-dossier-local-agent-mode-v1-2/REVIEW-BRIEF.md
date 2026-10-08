@@ -58,8 +58,12 @@ read the post-apply bytes beside the v1.1 bytes; `git diff` is the change.
 You may read the implementation on the same branch
 (`packages/polaris-dossier/src/waiting-sessions.ts`, `session-handover.ts`,
 `render.ts`, `cli.ts` and `waiting-sessions.test.ts`) as evidence that the
-text can be met. It is not the subject, and the specification must stand
-without it.
+text can be met, and the recording tool
+(`scripts/build_polaris_dossier_local_agent_mode_v1_2.py` and the
+`polaris-dossier-local-agent-mode@1.2` entry in
+`scripts/record_versioned_signoff.py`) as evidence of what a sign-off would
+install. Neither is the subject, and the specification must stand without
+them.
 
 The reviewer does not receive the drafting conversation, the drafter's
 messages to the lead, or any signal of a desired verdict.
@@ -106,8 +110,8 @@ Each is a yes/no question with the evidence that settles it.
    the commit it names and compare every row; re-compute the digests and
    counts; re-run its scratch-tree checks and compare.
 10. **Is the owner packet fair and plain?** Does it state the question with
-    its options and costs, disclose the tooling prerequisite and the
-    unattended-reading risk the owner accepted with option B, and steer no
+    its options and costs, say truly what the recording tool does, disclose
+    the unattended-reading risk the owner accepted with option B, and steer no
     further than a labelled recommendation?
 11. **Does `design.md` stay design?** No implementation code in
     `openspec/**`.
