@@ -75,11 +75,11 @@ something Syzygy cannot see.
   switched off (it refuses every waiting step until a v1.2 sign-off record
   exists), and runs keep stalling at each hand-over.
 
-Recording 1.2 needs a small tool change first: a builder that applies these
-patches and its entry in the sign-off recorder. That is implementation work
-after your answer and changes no text you sign. Until it exists, no check in
-the battery can tell 1.1's signed bytes from 1.2's: your version-tagged
-sign-off is the only thing that makes 1.2 binding.
+The tool that records 1.2 is ready on the same branch: a builder that applies
+these patches and its entry in the sign-off recorder. It changes no text you
+sign. Once 1.2 is recorded, the battery fails unless the installed files are
+exactly the reviewed 1.2 bytes; your version-tagged sign-off is still the only
+thing that makes 1.2 binding.
 
 ## If you agree with the recommendation
 
