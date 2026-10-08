@@ -95,13 +95,19 @@ At v1.1, REQ-polaris-generation-035:
    for the waiting session's own declared agent tool, pass at that delivery;
    a delivery SHALL NOT change the session's declared agent tool, version or
    model."
-4. **The mitigation the owner took with the option.** The printed command
-   "SHALL pre-approve, where the agent tool offers rules that narrow, only
-   reading the session's own directory (and, for the inventory session, the
-   clone), writing in that directory, and that one Syzygy command for that
-   directory, and never a general shell or a write outside that directory";
-   where the tool offers none, "Syzygy SHALL print no pre-approval and SHALL
-   say so." "A waiting session SHALL NOT carry the execution permission of
+4. **The mitigation the owner took with the option.** The selected option
+   reads "with only read tools plus their one syzygy command pre-approved".
+   The printed command "SHALL pre-approve, where the agent tool offers rules
+   that narrow, only read tools over the session's own directory (and, for
+   the inventory session, the clone) and that one Syzygy command for that
+   directory, and never a write or a general shell"; where the tool offers
+   none, "Syzygy SHALL print no pre-approval and SHALL say so." Because the
+   session may not write, "A waiting session SHALL hand its inventory or
+   verdict to that command, as content it passes to the command or as a file
+   under its own directory that the command reads; Syzygy writes the content
+   into the session's directory under the role's own file name (the
+   inventory, or the verdict of a round Syzygy delivered), and only there".
+   "A waiting session SHALL NOT carry the execution permission of
    REQ-polaris-generation-033."
 5. **A continuing reviewer, disclosed.** "One waiting review session MAY
    receive the packet of each later revision of its subject as its next

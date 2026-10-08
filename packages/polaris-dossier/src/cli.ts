@@ -83,15 +83,19 @@ Commands:
                       make the inventory, fidelity-review and design-review
                       session directories, write the inventory brief, and print a
                       command per session that pre-approves only reading its
-                      directory (the inventory also the clone), writing in it and
-                      its one command, syzygy dossier await; Syzygy starts nothing
-  await <session-dir>/ [--round <n>] [--submit <file>] [--wait-minutes <m>]
+                      directory (the inventory also the clone) and its one
+                      command, syzygy dossier await, and no write; Syzygy starts
+                      nothing
+  await <session-dir>/ [--round <n>] [--submit <file> [--stdin]] [--wait-minutes <m>]
                       run by a waiting session: wait (9 minutes a call by default,
                       never past the run's deadline; local files only) for round n
                       of its input, re-hash it against the digest Syzygy recorded,
                       and say what to read; exit 3 while still waiting. With
                       --submit, run the role's inventory-check or review-check on
-                      a file inside the session directory
+                      a file inside the session directory; with --stdin as well,
+                      Syzygy first writes that file (inventory.json, or
+                      round-N/verdict.json for a delivered round) from standard
+                      input, so the session needs no write permission
   launch-form <run> inventory|review terminal|bang [--kind fidelity|design]
                       record, once, how the operator declares the latest inventory
                       or review session (of the kind, fidelity by default) was
@@ -167,6 +171,8 @@ export interface CliPorts {
   readonly waitModeSigned?: () => boolean;
   /** The pause between an `await` slice's looks at its session directory; a timer by default. */
   readonly sleep?: (ms: number) => Promise<void>;
+  /** Standard input, read whole, for `await --submit --stdin`; null past `maxBytes`. The process's own by default. */
+  readonly readStdin?: (maxBytes: number) => Promise<string | null>;
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
@@ -251,17 +257,20 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'await') {
-    const options = parseOptions(rest, ['--round', '--submit', '--wait-minutes']);
+    const stdin = rest.filter((arg) => arg === '--stdin').length;
+    if (stdin > 1) return usageError('--stdin given more than once');
+    const options = parseOptions(rest.filter((arg) => arg !== '--stdin'), ['--round', '--submit', '--wait-minutes']);
     if (typeof options === 'string') return usageError(options);
     if (options.positional.length !== 1) return usageError('await takes exactly one positional argument, the session directory');
     const v = options.values;
     const env = ports.env ?? process.env;
     const result = await awaitSession(options.positional[0]!, {
       ...(v.has('--round') ? { round: v.get('--round')! } : {}), ...(v.has('--submit') ? { submit: v.get('--submit')! } : {}),
-      ...(v.has('--wait-minutes') ? { waitMinutes: v.get('--wait-minutes')! } : {}),
+      ...(v.has('--wait-minutes') ? { waitMinutes: v.get('--wait-minutes')! } : {}), ...(stdin === 1 ? { stdin: true } : {}),
     }, {
       sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
       ...(ports.waitModeSigned ? { waitModeSigned: ports.waitModeSigned } : {}), ...(ports.sleep ? { sleep: ports.sleep } : {}),
+      ...(ports.readStdin ? { readStdin: ports.readStdin } : {}),
     });
     if (!result.ok) return refused(result.refusal);
     const outcome = result.report;
