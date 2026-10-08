@@ -1262,10 +1262,13 @@ def policy_selftests() -> list[tuple[str, bool]]:
                    and three.count("PUBLIC_SOURCE_SCOPE_V3_MANIFEST,") == 1 + both.count("PUBLIC_SOURCE_SCOPE_V3_MANIFEST,")))
         ok.append(("chain edits: version 3 is idempotent", policy_cg_v3_edits(three, "c" * 64) == three))
         ok.append(("chain edits: the argument quoted is version 2's", f'"{"c" * 64}"),' in three))
+        # The live file is either before the version-3 install (the edit applies once) or after it (the edit
+        # is already there, so it changes nothing); both must hold from either side of the install commit.
+        installed = V3_CHAIN_MARK in live
         live3 = policy_cg_v3_edits(live, "c" * 64)
         ast.parse(live3)
-        ok.append(("chain edits: version 3 applies to the live check_governance.py and stays valid Python",
-                   live3.count(V3_CHAIN_MARK) == 1 and live3 != live))
+        ok.append(("chain edits: version 3 applies to the live check_governance.py once and stays valid Python",
+                   live3.count(V3_CHAIN_MARK) == 1 and (live3 == live if installed else live3 != live)))
     except (SyntaxError, Refusal) as exc:
         print(f"  (chain edit failure: {exc})")
         ok.append(("chain edits: the version 1, 2 and 3 edits apply and are valid Python", False))
