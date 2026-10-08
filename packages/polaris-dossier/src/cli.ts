@@ -69,7 +69,10 @@ Commands:
                       the command that starts an interactive session there
                       (claude '<prompt>', also behind !, or codex '<prompt>'), and
                       record the prompt's digest; Syzygy starts nothing. The tool, version and
-                      model default to the run's declared values. review --kind
+                      model default to the run's declared values; when the run relies
+                      on a per-project statement, a tool whose pair with the run's
+                      provider has no statement in force listing the run's classes
+                      is refused. review --kind
                       fidelity|design builds that review's packet and copies it,
                       with its digest, into the review session's directory there
   launch-form <run> inventory|review terminal|bang [--kind fidelity|design]

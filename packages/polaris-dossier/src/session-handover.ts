@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
+import { RECORDS_WITHIN_REACH, providerStatementGate, statementContentClasses, type GateSources } from './gate-sources.js';
 import {
   INVENTORY_BRIEF_FILE, LAUNCH_FORMS, buildInventoryBrief, errno, latestInventorySession, launchRecordName, logStep, openRun, promptRecordName,
   readRecord, sessionDirectory, sessionsRoot, sessionsRootViolation, type Declared, type LaunchForm, type OpenedRun,
@@ -142,6 +142,8 @@ export async function sessionPrompt(runDir: string, request: SessionPromptReques
 
   const tool = request.tool ?? declared.agentTool;
   if (!(AGENT_TOOLS as readonly string[]).includes(tool)) return refuse('context', `--tool must be one of ${AGENT_TOOLS.join(', ')}`);
+  const unstated = await sessionStatementRefusal(opened, tool, deps.sources, now);
+  if (unstated !== null) return refuse('statement', unstated);
   const toolVersion = request.toolVersion ?? declared.agentToolVersion, model = request.model ?? declared.model;
   if (!CONTEXT_TEXT.test(toolVersion) || !CONTEXT_TEXT.test(model)) return refuse('context', 'the tool version and the model are each 1 to 200 characters with no control character');
   const overridden = ([['agentTool', request.tool], ['agentToolVersion', request.toolVersion], ['model', request.model]] as const)
@@ -212,6 +214,25 @@ const REVIEW_PROMPT_DISCLOSURES = [
   'Syzygy built the packet at this step and copied it into the session directory with its digest; both copies lie within the agent sessions\' write reach, so that the review session read it unaltered is Inferred.',
   'The agent tool, version and model of the review session are the operator\'s declaration, labelled Inferred.',
 ];
+
+/** The session's own provider-statement gate (syzygy-up98, R-DOSSIER-AGENT-PROVIDER-V2-1 finding 1). The step guard gates the run's
+ * declared pair, and the packets are class-gated on that pair's statement, so a `--tool` override would hand them to a tool no
+ * statement covers. When the run relies on a statement (its subject is governed or unstated, so `contentClasses` is not null), the
+ * session's pair, its tool with the run's declared provider, must have exactly one in-force statement, and that statement must list
+ * every class the run's statement lists: the packet stays gated on the run's classes, so its digest is the one review-check rebuilds,
+ * and none of them exceeds the session pair's consent. A non-governed run relies on no statement for its declared pair, and the session
+ * pair needs none either. Returns the refusal reason, or null. */
+async function sessionStatementRefusal(opened: Extract<OpenedRun, { ok: true }>, tool: string, sources: GateSources, now: number): Promise<string | null> {
+  if (opened.contentClasses === null) return null;
+  const provider = opened.declared.agentProvider;
+  const records = await sources.providerStatements.statementsFor(opened.subject.repository.repositoryId);
+  const statement = providerStatementGate(records, tool, provider, now);
+  if (statement.state !== 'ok') return `the session's agent tool ${tool} with the run's provider ${provider} has no per-project statement in force, so no session is handed over: ${statement.why}`;
+  const consented = statementContentClasses(records, tool, provider, now) ?? [];
+  const beyond = opened.contentClasses.filter(contentClass => !consented.includes(contentClass));
+  if (beyond.length > 0) return `the per-project statement ${statement.record} for the session's agent tool ${tool} with the provider ${provider} does not list ${beyond.join(', ')}, which the run's statement lets its packets carry, so no session is handed over`;
+  return null;
+}
 
 /** The review half of `session-prompt`: build the packet of the kind now, write it under `reviews/`, copy it into the next session's
  * directory of that kind under the sessions root, and record the prompt. */
