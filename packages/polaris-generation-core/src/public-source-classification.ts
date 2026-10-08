@@ -191,6 +191,7 @@ const EXEMPTION_TEXTS = {
   egress: '4ffff86212a31309259037674aa7d95f4458c2f460335ef12198ba7a453148fd',
 } as const;
 const EXEMPTION_KEYS = ['appliesTo', 'exemptExtensions', 'rule', 'renderCondition', 'egress'] as const;
+const EXTENSION_SHAPE = /^\.[^/\s]+$/u;
 
 export interface CodeContentExemption {
   /** The extensions whose code-content bodies skip the active-content scan, each one of `sourceExtensions`. */
@@ -218,6 +219,11 @@ export function readCodeContentExemption(scope: unknown, sourceExtensions: reado
   if (!Array.isArray(extensions) || extensions.length === 0 || new Set(extensions).size !== extensions.length
     || !extensions.every(entry => typeof entry === 'string' && sourceExtensions.includes(entry))) {
     return refuse('exemptExtensions is not a non-empty list of distinct sourceExtensions entries');
+  }
+  // `codeContentExempt` matches on the final path segment, which is sound only for an extension with no `/`: the shape is checked here,
+  // not left to each caller's own `sourceExtensions` check.
+  if (!extensions.every(entry => EXTENSION_SHAPE.test(entry) && !entry.includes('..'))) {
+    return refuse('exemptExtensions lists an entry that is not a dot followed by no slash, no whitespace and no `..`');
   }
   return { ok: true, exemption: Object.freeze({ exemptExtensions: Object.freeze([...extensions as string[]]) }) };
 }
