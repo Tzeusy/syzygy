@@ -1,0 +1,39 @@
+diff --git a/openspec/changes/polaris-dossier-local-agent-mode/proposal.md b/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
+index ca06590e..14178373 100644
+--- a/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
++++ b/openspec/changes/polaris-dossier-local-agent-mode/proposal.md
+@@ -1,6 +1,6 @@
+ # Polaris dossier local-agent mode
+ 
+-> **Version 1.1.** Drafted 2026-10-05 under the owner direction
++> **Version 1.2.** Drafted 2026-10-05 under the owner direction
+ > `POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05`
+ > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-DIRECTION.md`),
+ > which authorizes drafting and review only, and relies on the owner's
+@@ -14,8 +14,11 @@
+ > (`.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-RECORDS-DIRECTION.md`).
+ > The owner signed off version 1.0 on 2026-10-06, after adopting the SEC-3
+ > amendment that the review-1 rulings direct (item 1) as doctrine amendment
+-> D9 the same day; these bytes bind only by the owner's sign-off of version
+-> 1.1 (VIS-4). It grants no read, egress, write or execution beyond what
++> D9 the same day, and version 1.1 on 2026-10-07; version 1.2 adds the
++> waiting sessions of the owner direction
++> `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09`
++> (`.syzygy/governance/decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md`).
++> These bytes bind only by the owner's sign-off of version 1.2 (VIS-4). It grants no read, egress, write or execution beyond what
+ > its requirements state.
+ 
+ **A Polaris dossier can be written by the operator's own Claude Code or Codex
+@@ -154,6 +157,12 @@ through one reviewed CC-REV-2 delta.
+   ruling: the `!` launch is the same headless command, a child of the
+   authoring tool's shell whose output lands in the author's context, and
+   only who typed it differs. The owner's sign-off covers that reading.
++  Since version 1.2 the operator may start these sessions at the start of
++  the run, before their input exists: each waits through one Syzygy command
++  for what Syzygy delivers into its directory, re-hashes it and reads it.
++  One review session may go on to review later revisions, and the review
++  page discloses it. Syzygy and the authoring session still start, resume
++  and signal no session.
+ - **What the agent ran is its report.** Commands the agent says it ran are
+   recorded as its report, labelled Inferred; Syzygy cannot observe them.
+ - **No new permission.** This is not permission to read, egress, write,
