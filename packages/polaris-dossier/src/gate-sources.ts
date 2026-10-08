@@ -284,13 +284,22 @@ function providerStatement(state: ActState<DigestBoundAct>, repositoryId: string
   return { recordId, version, digest: state.artifactDigest, agentTool, provider, contentClasses: classes, withdrawn: false, act: { identity: state.act.identity, inForceAt: state.act.recordedAt } };
 }
 
+const liveStatements = (records: readonly ProviderStatementRecord[], agentTool: string, provider: string, now: number): readonly ProviderStatementRecord[] =>
+  records.filter(r => r.agentTool === agentTool && r.provider === provider && !r.withdrawn && r.act !== null && r.act.inForceAt <= now && r.contentClasses.length > 0);
+
+/** The content classes of the one statement `providerStatementGate` admits for the pair at `now`, or null when it admits none. */
+export function statementContentClasses(records: readonly ProviderStatementRecord[], agentTool: string, provider: string, now: number): readonly string[] | null {
+  const live = liveStatements(records, agentTool, provider, now);
+  return live.length === 1 ? live[0]!.contentClasses : null;
+}
+
 /** The statement gate: exactly one in-force statement for the subject that names the run's declared `agentTool` with its `provider`,
  * and at least one content class. A statement for the same provider under another tool, or the same tool with another provider, is
  * no consent to this pair (SEC-2: the record consents to one tool with one provider). */
 export function providerStatementGate(records: readonly ProviderStatementRecord[], agentTool: string, provider: string, now: number): GateState {
   const pair = `the agent tool ${agentTool} with the provider ${provider}`;
   const named = records.filter(r => r.agentTool === agentTool && r.provider === provider);
-  const live = named.filter(r => !r.withdrawn && r.act !== null && r.act.inForceAt <= now && r.contentClasses.length > 0);
+  const live = liveStatements(records, agentTool, provider, now);
   if (live.length === 1) return { state: 'ok', record: `${live[0]!.recordId}@${live[0]!.version}` };
   if (live.length > 1) return { state: 'refused', why: `${live.length} in-force per-project statements name ${pair}; which one governs is ambiguous` };
   if (named.length === 0) {

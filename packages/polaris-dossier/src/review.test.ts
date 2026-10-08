@@ -15,7 +15,7 @@ import { checkInventory, openRun } from './inventory.js';
 import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
-import { buildDossierScreen } from './screen.js';
+import { buildDossierScreen, type ScreenLoad } from './screen.js';
 import { launchForm, sessionPrompt } from './session-handover.js';
 
 // syzygy-qkea.9 (S8): review packets and review-check (REQ-polaris-generation-035, 006). The clone is a real Git repository built
@@ -75,13 +75,18 @@ const tempDir = (prefix: string): string => {
   return dir;
 };
 
+// R-PR403-SCREEN-DOCS-1 finding 1: the class-gate tests run in a world with the project-documentation screen and, for a governed
+// subject, one in-force per-project statement listing `classes`; every other test runs with `world` null, as before.
+let world: { readonly screen: ScreenLoad; readonly classes: readonly string[] | null } | null = null;
+afterEach(() => { world = null; });
+const STATEMENT_ID = 'STATEMENT-KESTREL-ANTHROPIC';
 const subject = (clone: string): RunSubject => ({
   repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
   clone: { path: clone, declaredBy: 'operator', label: 'Inferred', use: 'read' },
   pinnedRevision: { commit, label: 'fixture', consentRecord: 'PUBLIC-OBS-FIXTURE@1', pinnedAt: '2026-10-07T11:00:00.000Z' },
   startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },
-  governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
-  providerStatement: null,
+  governed: world?.classes ? { kind: 'governed', because: ['the project input fixture records a kernel evidence drawer'] } : { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
+  providerStatement: world?.classes ? `${STATEMENT_ID}@1` : null,
   workItem: { identity: null, reason: NO_WORK_ITEM_REASON },
 });
 const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
@@ -95,12 +100,15 @@ const sources = (): GateSources => ({
   d9: async () => OK,
   rfc720Ruling: async () => OK,
   // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
-  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
-  providerStatements: NO_PROVIDER_STATEMENTS,
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: world?.classes ? 'present' : 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
+  providerStatements: world?.classes ? {
+    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: world!.classes!, withdrawn: false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }],
+  } : NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
-const checkDeps = (): CheckDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN });
-const deps = (): ReviewDeps => ({ sources: sources(), now: () => LATER, loadScreen: async () => SCREEN });
+const screenOf = async (): Promise<ScreenLoad> => world?.screen ?? SCREEN;
+const checkDeps = (): CheckDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: screenOf });
+const deps = (): ReviewDeps => ({ sources: sources(), now: () => LATER, loadScreen: screenOf });
 
 type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) => ({ id, path: file, startLine, endLine });
@@ -572,6 +580,49 @@ describe('the step guard runs before every review step (syzygy-qkea.23)', () => 
       expect(JSON.parse(out.join('')), argv[0]).toMatchObject({ command: argv[0], stage: 'reverify', refusals: [{ code: 'governed-changed' }, { code: 'statement' }] });
     }
     expect(opened.length).toBe(2);
+  });
+});
+
+// R-PR403-SCREEN-DOCS-1 finding 1: screening admits a project-documentation body, but the packet carries its bytes to the review session
+// only when the statement the run relies on lists the class; otherwise the span names the class and carries no byte.
+describe('the content-class gate on the fidelity packet', () => {
+  const DOC_POLICY = new TextEncoder().encode(JSON.stringify({
+    policyId: 'fixture-public-source', policyVersion: '2', detectors: LIVE_POLICY.detectors, sourceAdmission: LIVE_POLICY.sourceAdmission,
+    publicSourceScope: { contentClassification: { rules: LIVE_POLICY.publicSourceScope.contentClassification.rules } },
+  }));
+  const NOTES_CITED = [{ subject: 'draft', citationId: 'c-p2' }, { subject: 'inventory', citationId: 'c-e-snap' }];
+  const spansOf = async (classes: readonly string[] | null): Promise<{ spans: Record<string, unknown>[]; text: string; counts: unknown }> => {
+    world = { screen: buildDossierScreen(DOC_POLICY, true), classes };
+    const run = await prepared();
+    const result = await reviewPacket(run, { kind: 'fidelity' }, deps());
+    if (!result.ok) throw new Error(result.refusal.reason);
+    const text = fs.readFileSync(path.join(result.report.directory, 'packet.json'), 'utf8');
+    return { spans: JSON.parse(text).spans, text, counts: 'spans' in result.report ? result.report.spans : undefined };
+  };
+  const withheldNotes = (missingClass: string) => ({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'class-not-consented', missingClass, citedBy: NOTES_CITED });
+
+  it.each<[string, readonly string[] | null]>([
+    ['a non-governed run, which relies on no statement', null],
+    ['a statement that lists code-content and not project-documentation', ['governance-text', 'code-structure', 'code-content', 'evidence-content', 'derived-composites']],
+  ])('withholds a project-documentation span under %s, naming the class', async (_name, classes) => {
+    const { spans, counts } = await spansOf(classes);
+    expect(spans[1]).toEqual(withheldNotes('project-documentation'));
+    expect(spans.filter((span) => span['outcome'] === 'admitted').map((span) => span['path'])).toEqual(['src/kestrel.c', 'src/kestrel.c', 'src/kestrel.c']);
+    expect(counts).toEqual({ admitted: 3, excluded: 2 });
+  });
+
+  it('admits the span with its text once the statement lists project-documentation', async () => {
+    const { spans } = await spansOf(['code-content', 'project-documentation']);
+    expect(spans[1]).toEqual({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'admitted', text: 'Snapshots are written periodically.\n', citedBy: NOTES_CITED });
+  });
+
+  it('gates every class by the statement: one that lists only project-documentation withholds the code-content spans', async () => {
+    const { spans, text } = await spansOf(['project-documentation']);
+    expect(spans.map((span) => [span['path'], span['outcome'], span['missingClass']])).toEqual([
+      ['.env', 'denied-path', undefined], ['docs/notes.txt', 'admitted', undefined],
+      ['src/kestrel.c', 'class-not-consented', 'code-content'], ['src/kestrel.c', 'class-not-consented', 'code-content'], ['src/kestrel.c', 'class-not-consented', 'code-content'],
+    ]);
+    expect(text).not.toContain('int main(void)');
   });
 });
 

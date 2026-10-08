@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { publicSourceContentClass, readProjectDocumentationRule } from '@syzygy/polaris-generation-core';
+import { publicSourceContentClass, readProjectDocumentationRule, type PublicSourceContentClass } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified
@@ -15,8 +15,12 @@ import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, t
  * (exactly one of that rule's path rules, `@syzygy/polaris-generation-core`'s `publicSourceContentClass`; classified only while the
  * RFC5-14 class amendment act is in force, the scope's `prerequisite`) nor its code-content class (a final segment ending with one of
  * `sourceExtensions`); a body that is not UTF-8 text, that a secret detector matches, or that holds active content is excluded after the
- * read, whichever class admitted its path. An excluded blob is never used to verify a quotation, and no finding carries its bytes. Policy residual, not repaired here: the
- * detectors match literal forms only, so an encoded or split secret passes them.
+ * read, whichever class admitted its path. An excluded blob is never used to verify a quotation, and no finding carries its bytes.
+ * `contentClass` names the class a path is admitted under, so that every agent-bound artifact can gate it by the classes its consent lists
+ * (`class-gate.ts`). Policy residuals, not repaired here: the detectors match literal forms only, so an encoded or split secret passes
+ * them; and the project-documentation rule folds ASCII A-Z only and splits words only at its `docTokenSeparators`, as its text says, so a
+ * Unicode look-alike of a withheld word (`docs/\uff44esign.md`), a word joined by a tab (`docs/a\tb.md`) or one that runs on into other
+ * characters (`docs/rfc0001.md`) is admitted as project-documentation. The detectors and the active-content scan still run on those bodies.
  *
  * TODO(syzygy-qkea.17): these rules are a copy of the app's; move them into one shared package that both import. Until then
  * `screen.test.ts` builds both screens from the same policy and fails if they disagree on any path or body of its population. */
@@ -31,6 +35,8 @@ export interface DossierScreen {
   readonly projectDocumentation: boolean;
   /** Why a path is excluded before any read, or undefined when its blob may be read. */
   readonly screenPath: (repositoryPath: string) => ScreenExclusion | undefined;
+  /** The content class `screenPath` admits a path under, or undefined when it excludes the path. */
+  readonly contentClass: (repositoryPath: string) => PublicSourceContentClass | undefined;
   /** Why a read body is excluded, or undefined when it is admitted. */
   readonly screenBody: (body: string) => ScreenExclusion | undefined;
 }
@@ -66,14 +72,16 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   const denied: DeniedPathRules = { basenames: admission['deniedPathBasenames'], prefixes: admission['deniedPathPrefixes'], suffixes: admission['deniedPathSuffixes'] };
   let detectors: ReturnType<typeof compileDetectors>;
   try { detectors = compileDetectors({ detectors: doc['detectors'] as readonly SecretDetector[] }); } catch (error) { return refuse(`its detectors do not compile (${error instanceof Error ? error.message : 'invalid'})`); }
+  const screenPath = (repositoryPath: string): ScreenExclusion | undefined => deniedPathReason(repositoryPath, denied) !== undefined ? 'denied-path'
+    : detectSecrets(detectors, repositoryPath) !== undefined ? 'secret-detector-match'
+      : publicSourceContentClass(repositoryPath, extensions, documentation) !== undefined ? undefined : 'unknown-extraction-class';
   return {
     ok: true,
     screen: {
       policyId: doc['policyId'], policyVersion: doc['policyVersion'], policySha256: createHash('sha256').update(policy).digest('hex'),
       projectDocumentation: documentation !== null,
-      screenPath: (repositoryPath) => deniedPathReason(repositoryPath, denied) !== undefined ? 'denied-path'
-        : detectSecrets(detectors, repositoryPath) !== undefined ? 'secret-detector-match'
-          : publicSourceContentClass(repositoryPath, extensions, documentation) !== undefined ? undefined : 'unknown-extraction-class',
+      screenPath,
+      contentClass: (repositoryPath) => (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined),
       screenBody: (body) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match' : scanActiveContent(body).length > 0 ? 'active-content' : undefined,
     },
   };

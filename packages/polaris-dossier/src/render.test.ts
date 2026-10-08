@@ -80,13 +80,18 @@ const tempDir = (prefix: string): string => {
   return dir;
 };
 
+// R-PR403-SCREEN-DOCS-1 finding 1: with `statementClasses` set the subject is governed and relies on one in-force per-project statement
+// listing those classes; every other test runs with it null, a non-governed subject, as before.
+let statementClasses: readonly string[] | null = null;
+afterEach(() => { statementClasses = null; });
+const STATEMENT_ID = 'STATEMENT-KESTREL-ANTHROPIC';
 const subject = (clone: string): RunSubject => ({
   repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },
   clone: { path: clone, declaredBy: 'operator', label: 'Inferred', use: 'read' },
   pinnedRevision: { commit, label: 'fixture', consentRecord: 'PUBLIC-OBS-FIXTURE@1', pinnedAt: '2026-10-07T11:00:00.000Z' },
   startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },
-  governed: { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
-  providerStatement: null,
+  governed: statementClasses ? { kind: 'governed', because: ['the project input fixture records a kernel evidence drawer'] } : { kind: 'non-governed', because: ['the project input fixture states that no kernel evidence drawer exists'] },
+  providerStatement: statementClasses ? `${STATEMENT_ID}@1` : null,
   workItem: { identity: null, reason: NO_WORK_ITEM_REASON },
 });
 const OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };
@@ -101,8 +106,10 @@ const sources = (ruling: GateState = { state: 'ok', record: 'RFC7-20-RULING-FIXT
   d9: async () => OK,
   rfc720Ruling: async () => ruling,
   // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
-  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
-  providerStatements: NO_PROVIDER_STATEMENTS,
+  projectInput: { drawerFor: async () => ({ stated: true, drawer: statementClasses ? 'present' : 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
+  providerStatements: statementClasses ? {
+    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: statementClasses!, withdrawn: false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }],
+  } : NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
 const checkDeps = (): CheckDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN });
@@ -375,6 +382,39 @@ describe('render', () => {
     const files = readSite(result.report.site);
     expect(marked(files.get('index.html')!, 'p2')).toEqual({ epistemic: 'unknown', reason: 'excluded-content' });
     expect([...files.values()].filter((page) => page.includes('Snapshots are written periodically.')).length).toBe(0);
+  });
+
+  // R-PR403-SCREEN-DOCS-1 finding 1: the design packet carries these pages to a review session, so a body screening admits as
+  // project-documentation is quoted and given a source page only when the statement the run relies on lists the class.
+  const DOC_SCREEN = buildDossierScreen(new TextEncoder().encode(JSON.stringify({
+    policyId: 'fixture-public-source', policyVersion: '2', detectors: LIVE_POLICY.detectors, sourceAdmission: LIVE_POLICY.sourceAdmission,
+    publicSourceScope: { contentClassification: { rules: LIVE_POLICY.publicSourceScope.contentClassification.rules } },
+  })), true);
+  it.each<[string, readonly string[] | null, string]>([
+    ['a non-governed run, which relies on no statement', null, 'withheld from every agent-bound artifact: the run relies on no per-project statement, so no consent record lists project-documentation'],
+    ['a statement that does not list project-documentation', ['code-content'], 'withheld from every agent-bound artifact: the per-project statement the run relies on does not list project-documentation'],
+  ])('withholds a project-documentation quotation and source page under %s, naming the class', async (_name, classes, why) => {
+    statementClasses = classes;
+    const run = await prepared(draft(), false);
+    const { renderer, inputs } = capturing();
+    const result = await renderRun(run, renderDeps({ loadScreen: async () => DOC_SCREEN, renderer }));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    expect(result.report).toMatchObject({ quotations: { rendered: 2, withheld: 1 }, sources: { admitted: 1, excluded: 1 } });
+    const files = readSite(result.report.site);
+    expect(marked(files.get('index.html')!, 'p2')).toEqual({ epistemic: 'unknown', reason: 'excluded-content' });
+    expect([...files.values()].filter((page) => page.includes('Snapshots are written periodically.')).length).toBe(0);
+    expect(files.get('discovery.html')).toContain(`read at this render, re-hashed, and admitted by screening as project-documentation; ${why} (class-not-consented)`);
+    expect(inputs[0]!.sources.filter((source) => source.path === 'docs/notes.txt').map((source) => source.exclusion)).toEqual([{ excluded: true, reason: 'body-not-retained-for-generation' }]);
+    expect(inputs[0]!.local.blocks.get('p2')).toMatchObject({ marking: 'unknown', unknownReason: 'excluded-content', basis: `a quotation it rests on is from a project-documentation file, ${why.replace(/^withheld/u, 'which is withheld')}, so the quotation is not shown` });
+  });
+
+  it('quotes a project-documentation body once the statement the run relies on lists the class', async () => {
+    statementClasses = ['code-content', 'project-documentation'];
+    const run = await prepared(draft(), false);
+    const result = await renderRun(run, renderDeps({ loadScreen: async () => DOC_SCREEN }));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    expect(result.report).toMatchObject({ quotations: { rendered: 3, withheld: 0 }, sources: { admitted: 2, excluded: 0 } });
+    expect([...readSite(result.report.site).values()].some((page) => page.includes('Snapshots are written periodically.'))).toBe(true);
   });
 
   it('refuses when an object at the pinned revision can no longer be read, and writes nothing', async () => {

@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core';
-import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources } from './gate-sources.js';
+import { RECORDS_WITHIN_REACH, providerStatementGate, statementContentClasses, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { governedSubject, type GovernedDecision } from './governed.js';
 import { readRunRecord, type RecordedRunConfig } from './run-record.js';
@@ -51,6 +51,8 @@ export type ReverifyResult =
     readonly governed: GovernedDecision;
     /** The per-project statement in force now that the run relies on; null for a non-governed subject. */
     readonly providerStatement: string | null;
+    /** The content classes that statement lists; null when the run relies on none (a non-governed subject). */
+    readonly contentClasses: readonly string[] | null;
     readonly disclosures: readonly string[];
   }
   | {
@@ -148,14 +150,17 @@ export async function reverifyPinnedRevision(runDir: string, sources: GateSource
     refusals.push({ code: 'governed-changed', reason: `the subject at the pinned revision is ${governed.kind} now (${governed.because.join('; ')}), not the ${subject.governed.kind} the run record states` });
   }
   let providerStatement: string | null = null;
+  let contentClasses: readonly string[] | null = null;
   if (governed.statementRequired) {
-    const statement = providerStatementGate(await sources.providerStatements.statementsFor(repositoryId), declared.agentTool, declared.agentProvider, now);
+    const records = await sources.providerStatements.statementsFor(repositoryId);
+    const statement = providerStatementGate(records, declared.agentTool, declared.agentProvider, now);
     if (statement.state !== 'ok') {
       refusals.push({ code: 'statement', reason: `the subject is ${governed.kind} now and has no per-project statement in force: ${statement.why}` });
     } else if (statement.record !== subject.providerStatement) {
       refusals.push({ code: 'statement-changed', reason: `the in-force per-project statement is ${statement.record}, not the ${subject.providerStatement ?? 'none'} the run relies on` });
     } else {
       providerStatement = statement.record;
+      contentClasses = statementContentClasses(records, declared.agentTool, declared.agentProvider, now);
     }
   }
   if (refusals.length > 0) return refuse();
@@ -168,6 +173,7 @@ export async function reverifyPinnedRevision(runDir: string, sources: GateSource
     revision: { commit, label, consentRecord: consent.record },
     governed,
     providerStatement,
+    contentClasses,
     disclosures: DISCLOSURES,
   };
 }

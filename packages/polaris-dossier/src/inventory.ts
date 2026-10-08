@@ -77,7 +77,7 @@ export const errno = (cause: unknown): string => (cause as NodeJS.ErrnoException
 /** A run step's common opening: the run directory, the pinned revision verified again, a brief issued and its deadline not passed.
  * `revision` is the label and consent record the live consent gives the pinned commit now, never the run record's copy. */
 export type OpenedRun =
-  | { readonly ok: true; readonly run: string; readonly runId: string; readonly subject: RunSubject; readonly declared: RunConfig; readonly deadlineEnds: number; readonly revision: ReverifiedRevision }
+  | { readonly ok: true; readonly run: string; readonly runId: string; readonly subject: RunSubject; readonly declared: RunConfig; readonly deadlineEnds: number; readonly revision: ReverifiedRevision; readonly contentClasses: readonly string[] | null }
   | { readonly ok: false; readonly stage: 'run' | 'reverify' | 'not-briefed' | 'deadline'; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[] };
 
 export async function openRun(runDir: string, sources: GateSources, now: number, what: string, options: ReverifyOptions = {}): Promise<OpenedRun> {
@@ -91,7 +91,7 @@ export async function openRun(runDir: string, sources: GateSources, now: number,
   if (typeof issued === 'string') return { ok: false, stage: 'not-briefed', reason: issued };
   const deadlineEnds = issued + declared.deadline.seconds * 1000;
   if (now >= deadlineEnds) return { ok: false, stage: 'deadline', reason: `the deadline ${declared.deadline.declared} from the brief ended at ${isoOf(deadlineEnds)} on Syzygy's clock; no step runs after it` };
-  return { ok: true, run, runId, subject, declared, deadlineEnds, revision: checked.revision };
+  return { ok: true, run, runId, subject, declared, deadlineEnds, revision: checked.revision, contentClasses: checked.contentClasses };
 }
 
 /** Append one entry to the run's step log; a failure to append changes no result. */

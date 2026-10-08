@@ -9,6 +9,7 @@ import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, 
 import { INVENTORY_INFERRED, authoringSessionIds, errno, inventoryOfRecord, logStep, openRun, readRecord, sessionsRoot, type OpenedRun } from './inventory.js';
 import { buildDesignPacket, designBlocking, readLatestSite, validateDesignVerdict, type DesignPacketBuild } from './design-review.js';
 import type { ReverifyRefusal } from './reverify.js';
+import { CLASS_NOT_CONSENTED, unconsentedClass } from './class-gate.js';
 import { loadDossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
 
@@ -17,7 +18,7 @@ import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
  * Syzygy builds the fidelity packet itself, from the latest frozen draft revision (which must have passed its check) and the inventory
  * of record: the draft with its understanding record and without its read account (`discovery`), the frozen inventory as the criterion
  * coverage is measured against, every span the draft and the inventory cite as Syzygy read it now at the pinned revision (screening-
- * admitted only; an excluded span is listed without a byte), Syzygy's criteria, the verdict schema and the pinned revision. Its digest
+ * admitted, in a content class the run's statement lists, only; any other span is listed without a byte), Syzygy's criteria, the verdict schema and the pinned revision. Its digest
  * is the SHA-256 of `packet.json`, written beside it in `packet.sha256` so the review session can re-hash the packet before reading it.
  *
  * `review-check` rebuilds the packet from the current frozen subject and validates the verdict against it: schema, packet digest,
@@ -69,9 +70,11 @@ export function latestReviewSession(run: string, kind: ReviewKind): number {
 }
 
 /** One cited span as Syzygy read it at the pinned revision. An excluded span carries no byte; one whose path a secret detector matches
- * is named by neither path nor object identifier. */
+ * is named by neither path nor object identifier. A span screening admitted under a content class the run's consent does not list is
+ * withheld, carrying no byte and naming that class (`class-gate.ts`). */
 export type PacketSpan =
   | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: 'admitted'; readonly text: string; readonly citedBy: readonly SpanCitation[] }
+  | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: typeof CLASS_NOT_CONSENTED; readonly missingClass: string; readonly citedBy: readonly SpanCitation[] }
   | { readonly id: string; readonly path: string | null; readonly startLine: number; readonly endLine: number; readonly objectId: string | null; readonly outcome: ScreenExclusion | 'absent' | 'beyond-blob'; readonly citedBy: readonly SpanCitation[] };
 export interface SpanCitation { readonly subject: 'draft' | 'inventory'; readonly citationId: string }
 
@@ -195,6 +198,11 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     const id = `span-${i + 1}`;
     const raw = blobs.get(span.path);
     const lines = raw === undefined ? [] : linesOf(raw);
+    // Screening admitted the body; whether it may reach the review session is the class gate's (`class-gate.ts`).
+    const missingClass = raw === undefined ? undefined : unconsentedClass(screen.contentClass(span.path), opened.contentClasses);
+    if (missingClass !== undefined) {
+      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: CLASS_NOT_CONSENTED, missingClass, citedBy: span.citedBy };
+    }
     if (raw !== undefined && span.startLine >= 1 && span.startLine <= span.endLine && span.endLine <= lines.length) {
       return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: 'admitted', text: lines.slice(span.startLine - 1, span.endLine).join(''), citedBy: span.citedBy };
     }
