@@ -104,18 +104,25 @@ statement gate knows only version 1:
   `providerStatement` would then mark version 2 withdrawn (`:271`). The
   version-aware form must exempt each version's own predecessor and successor
   records from the other's sweep, in both directions.
-- **Prerequisite: the `--tool` override (`syzygy-up98`, being fixed in code
-  separately).** `session-handover.ts:143` reads
-  `const tool = request.tool ?? declared.agentTool;`. A helper session may
-  therefore run under any tool in `AGENT_TOOLS`, `codex` included. The packets
-  are class-gated on the run's declared pair (`reverify.ts:163`), not on the
+- **Prerequisite: the `--tool` override (`syzygy-up98`), met by #406 (merged
+  at `ff9a19b6`, 2026-10-08).** Since that merge, `sessionStatementRefusal`
+  (`session-handover.ts:225`, called at `:145`) refuses a hand-over when the
+  session's own pair has no single in-force statement, or when that statement
+  omits a class the run's statement lists. The gap it closed, as the round-1
+  review found it: `session-handover.ts:143` reads
+  `const tool = request.tool ?? declared.agentTool;`, and that line is
+  unchanged. Before #406 nothing followed it, so a helper session could run
+  under any tool in `AGENT_TOOLS`, `codex` included. The packets are
+  class-gated on the run's declared pair (`reverify.ts:163`), not on the
   session's pair. With version 2 in force,
-  `session-prompt <run> review --kind fidelity --tool codex` would hand
-  `project-documentation` spans to a Codex session, and so to OpenAI, which
-  no statement covers [Inferred by the round-1 reviewer]. The route exists
-  for version 1's classes already; version 2 widens what travels it. The
-  version-2 act should not be installed until `session-prompt` refuses a
-  tool whose pair has no in-force statement, or gates on the session's pair.
+  `session-prompt <run> review --kind fidelity --tool codex` would have handed
+  `project-documentation` spans to a Codex session, and so to OpenAI, which no
+  statement covers [Inferred by the round-1 reviewer]. The condition this
+  bullet set was that the version-2 act not be installed until
+  `session-prompt` refuses a tool whose pair has no in-force statement. That
+  condition is met [Observed: `sessionStatementRefusal` at main `e509a5e9`;
+  whether it holds against every route is the PR #406 review's question
+  (`R-PR406-SESSION-TOOL-STATEMENT-1-RAW.md`), not this delta's].
 - **`preflight.ts` filters on its own** (`:50`). It lists every unwithdrawn,
   act-bound, in-force statement with a class, without going through
   `liveStatements`. If version 1's term ends only inside the gate, preflight
