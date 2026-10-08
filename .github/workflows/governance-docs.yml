@@ -219,11 +219,11 @@ jobs:
       - name: record_pwb_behavior_contract_repin_acts --selftest
         run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
 
-      - name: record_public_source_screening_scope_v2_act --check
-        run: python3 scripts/record_public_source_screening_scope_v2_act.py --check 98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49 --date 2026-10-07 --question-opening 'Do you sign screening scope version 2 at the row of its variant none in the version 2 manifest?' --selection-label 'Sign it, variant none' --selection-description 'README, changelog, contribution, licence files and top-level docs guides become readable, with Q3 to Q5 at the packet defaults.'
+      - name: record_public_source_screening_scope_v3_act --check
+        run: python3 scripts/record_public_source_screening_scope_v3_act.py --check c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce --date 2026-10-08 --question-opening 'Decision 1 (P-105):'' Redis'\''s core C files (server.c, networking.c, …) are withheld because the HTML check reads `a<b && c>d` as a tag. Screening policy v3 lets source files skip that check, but only while every page shows them as escaped text under a no-script CSP. Every secret detector still runs. Which do you choose?' --selection-label 'Variant all (Recommended)' --selection-description 'All 25 source extensions skip the HTML check. Widest:'' JS/PHP full of HTML strings are admitted too, protected only by escaping. Phrase:'' "Sign screening scope version 3, variant all".' --packet-words 'Sign screening scope version 3, variant all'
 
-      - name: record_public_source_screening_scope_v2_act --selftest
-        run: python3 scripts/record_public_source_screening_scope_v2_act.py --selftest
+      - name: record_public_source_screening_scope_v3_act --selftest
+        run: python3 scripts/record_public_source_screening_scope_v3_act.py --selftest
 
       - name: check_polaris_response_ceiling_reading --check
         run: python3 scripts/check_polaris_response_ceiling_reading.py --check
@@ -356,6 +356,12 @@ jobs:
 
       - name: redis-agent-anthropic --check
         run: python3 scripts/record_dossier_local_agent_acts.py --check redis-agent-anthropic fbbcd3c0e3d49aab3384a4ab18bf35816dbd8fb952e658d1edbac3d1c50e48a7 --date 2026-10-07 --question-opening 'Which statement do you sign for Redis at its row of the dossier local-agent acts manifest?' --selection-label 'Anthropic provider statement' --selection-description 'Claude Code may receive Redis content even if Redis counts as governed.'
+
+      - name: agent-provider statement version 2 --check
+        run: python3 scripts/record_dossier_agent_provider_v2_act.py --check b7a8d099ce108bfd70133b729327534f29806cb0118ee0b3e0f9ca077a946df3 --date 2026-10-08 --question-opening 'Decision 2 (P-106):'' your Redis Anthropic provider statement predates the README/docs class, so Syzygy withholds docs text from the packets it gives your own Claude Code sessions, and README-based claims render Unknown. Version 2 adds `project-documentation` and changes nothing else. Sign it?' --selection-label 'Sign version 2 (Recommended)' --selection-description 'Docs text goes to your own Claude Code sessions, which can already read the whole clone. Phrase:'' "Sign the Redis Anthropic provider statement, version 2".' --packet-words 'Sign the Redis Anthropic provider statement, version 2'
+
+      - name: agent-provider statement version 2 --selftest
+        run: python3 scripts/record_dossier_agent_provider_v2_act.py --selftest
 
       - name: d9-in-force --check
         run: python3 scripts/record_dossier_local_agent_acts.py --check d9-in-force 41fdfaea8cbde4cd8220910113fb5b376c7834a470d8c2d9badd9ab0fec9ac66 --date 2026-10-07 --question-opening 'Do you sign the D9 in-force record at its row of the dossier local-agent acts manifest?' --selection-label 'Sign it' --selection-description 'Binds D9 to the current security.md and v1.md bytes; it runs nothing until a choice for one run is recorded.'

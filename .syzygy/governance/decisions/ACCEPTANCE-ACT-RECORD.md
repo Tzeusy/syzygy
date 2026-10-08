@@ -1422,3 +1422,62 @@ BIND RFC7-20 READING TO EXACT BYTES FOR OPERATOR-AGENT RUNS: f0725a204b6e6ccbccb
 Effective status: this one record is **effective owner authority —
 owner-adopted (bootstrap, uncorrelated)** for its own role only. The sitting's
 other acts remain separate.
+
+<!-- PWB-POLICY-SCOPE-V3:BEGIN -->
+## Public-source screening scope version 3 act — approve-policy — performed 2026-10-08
+
+**Phrase the act takes (given 2026-10-08 by option selection, not typed; see the
+dedicated record):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the chosen row (variant `all`) of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `5db1dd720338edd7963653f7e19ff727e1e99f32` |
+| Manifest | `.syzygy/governance/contracts/candidates/public-source-screening-scope-v3/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt`, SHA-256 `e5328701c62fa567d9f8dcc4d11c80266638b28bc368212b264514052bcec9e3` |
+| Review outcome | `docs/reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V3-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-08T16:24:27Z` |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md`; annotated tag `pwb-approve-policy-public-source-scope-v3-signed-2026-10-08` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
+consent, read or egress, and the read gates are re-pointed by a separate change.
+<!-- PWB-POLICY-SCOPE-V3:END -->
+
+<!-- DOSSIER-AGENT-PROVIDER-V2:BEGIN -->
+## Agent-provider statement version 2 act — consent-agent-provider — redis-agent-anthropic-v2 — performed 2026-10-08
+
+Act instant: 2026-10-08T16:24:27Z
+
+**Phrase the act takes (given 2026-10-08 by option selection, not typed; see the
+dedicated record):**
+
+```text
+CONSENT TO ANTHROPIC AGENT PROVIDER VERSION 2 FOR REDIS: b7a8d099ce108bfd70133b729327534f29806cb0118ee0b3e0f9ca077a946df3
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `consent-agent-provider` / `.syzygy/governance/contracts/candidates/dossier-agent-provider-v2/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md` |
+| Scope | operator-agent runs over this one repository with this one tool and provider |
+| Argument | SHA-256 of the artifact itself: the one row of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `5db1dd720338edd7963653f7e19ff727e1e99f32` |
+| Manifest | `.syzygy/governance/contracts/candidates/dossier-agent-provider-v2/DOSSIER-AGENT-PROVIDER-V2-MANIFEST.txt`, SHA-256 `62cd699a6fbc4ad07777509e17530948f68efc7978800f6c0e4db358c7d06af7` |
+| Review outcome | `docs/reviews/R-DOSSIER-AGENT-PROVIDER-V2-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-08T16:24:27Z` |
+| Recording | `.syzygy/governance/decisions/DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md`; annotated tag `dossier-agent-provider-v2-redis-anthropic-signed-2026-10-08` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. It supersedes
+the version-1 statement act prospectively; that act's record is unchanged.
+<!-- DOSSIER-AGENT-PROVIDER-V2:END -->

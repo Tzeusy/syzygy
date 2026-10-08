@@ -151,7 +151,8 @@ export interface RepoCorpus {
 export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content' | 'unknown-extraction-class'>;
 export interface CorpusScreen {
   readonly screenPath: (path: string) => Exclude<CorpusScreenReason, 'active-content'> | undefined;
-  readonly screenBody: (body: string) => 'secret-detector-match' | 'active-content' | undefined;
+  /** With the blob's path, a body the scope's code-content exemption names may skip the active-content scan. */
+  readonly screenBody: (body: string, path?: string) => 'secret-detector-match' | 'active-content' | undefined;
   readonly opaqueId: (identity: string) => string;
 }
 /** `runKey` keys every excluded row's id and the unrepresentable path digests
@@ -224,7 +225,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       if (body === undefined) { binaryOrNonUtf8++; sources.push(excludedRow('binary-or-non-utf8')); continue; }
       if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
       if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
-      const screenedOut = screen?.screenBody(body);
+      const screenedOut = screen?.screenBody(body, record.path);
       if (screenedOut !== undefined) { screened[screenedOut]++; sources.push(withheld(record, screenedOut)); continue; }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
       sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => !row.exclusion.excluded ? row

@@ -574,7 +574,7 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
   for (const blob of read) {
     let raw: string;
     try { raw = decoder.decode(blob.bytes); } catch { blobs.set(blob.path, { state: 'excluded', outcome: 'not-utf8-text' }); continue; }
-    const outcome = inputs.screen.screenBody(raw);
+    const outcome = inputs.screen.screenBody(raw, blob.path);
     blobs.set(blob.path, outcome === undefined ? { state: 'admitted', entry: blob, raw, lines: lineCount(raw), tracked: null } : { state: 'excluded', outcome });
   }
   const firstCited = [...new Set(citations.flatMap(({ value }) => (text(value['path']) === undefined ? [] : [text(value['path'])!])))];

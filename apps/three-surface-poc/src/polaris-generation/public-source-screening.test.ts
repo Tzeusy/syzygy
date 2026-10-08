@@ -1,8 +1,10 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, excludedSourceId, generationSourceIdentity, runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
@@ -65,8 +67,10 @@ const policyBytes = (extra: Record<string, unknown> = { publicSourceScope: fixtu
   detectors: PWB_SECRET_POLICY.detectors, ...extra,
 }, null, 2)}\n`);
 const sha = (bytes: Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
-const actRecord = (digest: string, overrides: { readonly identity?: string; readonly type?: string; readonly artifact?: string } = {}): string => [
-  '# Owner act — synthetic fixture', '',
+// The version-1 recorder's form: its title, one Date line and the identity that date gives (POLICY_ACT_FORMS[0], written out here).
+const actRecord = (digest: string, overrides: { readonly title?: string; readonly date?: string; readonly identity?: string; readonly type?: string; readonly artifact?: string } = {}): string => [
+  overrides.title ?? '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope)', '',
+  overrides.date ?? 'Date: 2026-10-03', '',
   overrides.identity ?? 'Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-03`', '',
   overrides.type ?? 'Act type: `approve-policy`', '',
   'Project identity: `project:syzygy`', '',
@@ -248,15 +252,32 @@ describe('the policy act gate fails closed', () => {
     expect(touched).toBe(false);
     return (error as CorpusRefusal).reason;
   };
-  it('refuses with no act record', async () => { expect(await refusal(port(undefined, goodPolicy))).toMatch(/^public-source-policy: no act record/u); });
+  it('refuses with no act in force, saying why when the port says', async () => {
+    expect(await refusal(port(undefined, goodPolicy))).toBe('public-source-policy: no screening-scope policy act is in force');
+    const why: PublicSourcePolicyActPort = { read: async () => ({ actRecord: undefined, why: 'fixture reason', policy: goodPolicy }) };
+    expect(await refusal(why)).toBe('public-source-policy: no screening-scope policy act is in force (fixture reason)');
+  });
   it('refuses with no policy', async () => { expect(await refusal(port(actRecord(sha(goodPolicy)), undefined))).toMatch(/^public-source-policy: no policy/u); });
   it('refuses when the policy does not hash to the act argument', async () => {
     expect(await refusal(port(actRecord(sha(goodPolicy)), policyBytes({ publicSourceScope: { purpose: 'other bytes' } })))).toBe('public-source-policy: policy bytes do not hash to the act argument');
   });
   it('refuses an act record of another act', async () => {
     const digest = sha(goodPolicy);
-    for (const overrides of [{ identity: 'Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-2026-10-02`' }, { type: 'Act type: `approve-registry-entry`' }, { artifact: 'Artifact identity: `other.json`' }]) {
-      expect(await refusal(port(actRecord(digest, overrides), goodPolicy))).toBe('public-source-policy: act record is not the public-source scope approve-policy act');
+    for (const overrides of [{ identity: 'Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-2026-10-02`' }, { type: 'Act type: `approve-registry-entry`' }, { artifact: 'Artifact identity: `other.json`' },
+      // No recorder's title; another form's identity under this form's title; an identity for another date; two dates.
+      { title: '# Owner act — synthetic fixture' },
+      { identity: 'Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-03`' },
+      { date: 'Date: 2026-10-04' }, { date: 'Date: 2026-10-03\n\nDate: 2026-10-03' }]) {
+      expect(await refusal(port(actRecord(digest, overrides), goodPolicy))).toBe('public-source-policy: act record is not a public-source scope approve-policy act');
+    }
+  });
+  it('admits each later recorder\'s form at its own identity', async () => {
+    const digest = sha(goodPolicy);
+    for (const [title, identity] of [
+      ['# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 2)', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-03'],
+      ['# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 3)', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-03'],
+    ] as const) {
+      expect((await loadPublicSourceScreen(port(actRecord(digest, { title, identity: `Act identity: \`${identity}\`` }), goodPolicy))).policySha256).toBe(digest);
     }
   });
   it('refuses a record naming two digests', async () => {
@@ -288,17 +309,19 @@ describe('the policy act gate fails closed', () => {
   it('refuses a short run key', async () => {
     await expect(loadPublicSourceScreen(goodPort, new Uint8Array(16))).rejects.toThrow('run key shorter than 32 bytes');
   });
-  it('the default port reads this checkout: no act record refuses, a performed one loads the policy it names, a superseded one refuses', async () => {
-    // A later act (the scope V2 act) re-approves new policy bytes; this port reads only the first scope act, so it then refuses.
+  it('the default port reads this checkout\'s chain: the latest recorded version loads the policy it names', async () => {
+    // syzygy-p83h: the port read only the version-1 record, so it refused from the version-2 act on. It now reads the act the chain
+    // puts in force, whichever version that is; the expected digest is read from the latest version's own record here.
     const fs = await import('node:fs');
     const repo = new URL('../../../../', import.meta.url);
-    const recordUrl = new URL('.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md', repo);
+    const latest = ['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md']
+      .map(file => new URL(`.syzygy/governance/decisions/${file}`, repo)).find(url => fs.existsSync(url));
     const port = checkoutPolicyActPort();
-    if (!fs.existsSync(recordUrl)) { await expect(loadPublicSourceScreen(port)).rejects.toThrow(/^Corpus read refused: public-source-policy: no act record/u); return; }
-    const argument = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/mu.exec(fs.readFileSync(recordUrl, 'utf8'))?.[1];
-    const policy = fs.readFileSync(new URL('.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json', repo));
-    if (argument === createHash('sha256').update(policy).digest('hex')) expect((await loadPublicSourceScreen(port)).policyId).toBe('polaris-butlers-project-shape-secrets');
-    else await expect(loadPublicSourceScreen(port)).rejects.toThrow('Corpus read refused: public-source-policy: policy bytes do not hash to the act argument');
+    if (latest === undefined) { await expect(loadPublicSourceScreen(port)).rejects.toThrow(/^Corpus read refused: public-source-policy: no screening-scope policy act is in force/u); return; }
+    const argument = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/mu.exec(fs.readFileSync(latest, 'utf8'))?.[1];
+    const screen = await loadPublicSourceScreen(port);
+    expect(screen.policyId).toBe('polaris-butlers-project-shape-secrets');
+    expect(screen.policySha256).toBe(argument);
   });
 });
 
@@ -402,5 +425,53 @@ describe('the project-documentation class', () => {
     expect(corpus.sources.filter(source => !source.exclusion.excluded).map(source => source.path)).toEqual(['README.md']);
     expect(read.flat()).not.toContain(objectIdOf('docs/design.md', only.root, only.commit));
     expect(leaks(JSON.stringify(corpus))).toEqual([]);
+  });
+});
+
+// syzygy-wsev / P-105: version 3's code-content exemption in this screen. The exemption's texts are the builder's own (variant all),
+// re-derived from the checkout, so this holds before and after the act; the fixture exempts `.c` only of its fixture extensions.
+describe('the code-content exemption (screening scope version 3)', () => {
+  const C_BODY = 'static int cmp(int a, int b, int c, int d) {\n    return a<b && c>d;\n}\n';
+  let exemption: Record<string, unknown> = {};
+  beforeAll(async () => {
+    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
+base, _mode = b.base_bytes()
+sys.stdout.write(json.dumps(json.loads(b.propose(base, 'all'))[b.SCOPE_KEY]['activeContent']['codeContentExemption']))`;
+    const run = await promisify(execFile)('python3', ['-c', py], { cwd: fileURLToPath(new URL('../../../../', import.meta.url)), encoding: 'utf8' });
+    exemption = JSON.parse(run.stdout) as Record<string, unknown>;
+  });
+  const exemptPolicy = (overrides: Record<string, unknown> = {}): Uint8Array =>
+    policyBytes({ publicSourceScope: { ...fixtureScope(), activeContent: { codeContentExemption: { ...exemption, exemptExtensions: ['.c'], ...overrides } } } });
+  const exemptPort = (policy = exemptPolicy()): PublicSourcePolicyActPort => port(actRecord(sha(policy)), policy);
+
+  it('admits an exempt extension\'s body that the active-content scan reads as a tag, and only with its path', async () => {
+    const screen = await loadPublicSourceScreen(exemptPort());
+    expect(screen.codeContentExemption).toBe(true);
+    expect(screen.screenBody(C_BODY, 'src/server.c')).toBeUndefined();
+    expect(screen.screenBody(C_BODY)).toBe('active-content');
+    // A code-content extension the exemption does not list is still scanned.
+    expect(screen.screenBody(C_BODY, 'src/server.js')).toBe('active-content');
+    // Every detector still runs over an exempt body.
+    expect(screen.screenBody(`${C_BODY}${SECRETS['known-token-formats']}\n`, 'src/server.c')).toBe('secret-detector-match');
+  });
+
+  it('without the exemption the same body is withheld as active content', async () => {
+    const screen = await loadPublicSourceScreen(goodPort);
+    expect(screen.codeContentExemption).toBe(false);
+    expect(screen.screenBody(C_BODY, 'src/server.c')).toBe('active-content');
+  });
+
+  it('reads the corpus through it: the .c body is admitted and the .js body withheld', async () => {
+    const only = fixtureRepo({ 'src/cmp.c': C_BODY, 'src/cmp.js': C_BODY });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct: exemptPort() });
+    expect(corpus.count).toMatchObject({ selected: 2, activeContent: 1, sourceRows: 2 });
+    expect(corpus.sources.filter(source => !source.exclusion.excluded).map(source => source.path)).toEqual(['src/cmp.c']);
+  });
+
+  it('refuses an exemption whose texts or extensions this screen does not implement', async () => {
+    expect(await loadPublicSourceScreen(exemptPort(exemptPolicy({ rule: 'another rule' }))).then(() => '', (error: unknown) => (error as CorpusRefusal).reason))
+      .toBe('public-source-policy: policy code-content exemption rule is not the text this screen implements');
+    expect(await loadPublicSourceScreen(exemptPort(exemptPolicy({ exemptExtensions: ['.h'] }))).then(() => '', (error: unknown) => (error as CorpusRefusal).reason))
+      .toBe('public-source-policy: policy code-content exemption exemptExtensions is not a non-empty list of distinct sourceExtensions entries');
   });
 });

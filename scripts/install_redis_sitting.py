@@ -12,6 +12,7 @@ Run from the repository root after every recorder has run:
   python3 scripts/install_redis_sitting.py            # install
   python3 scripts/install_redis_sitting.py --check    # report what is not installed
   python3 scripts/install_redis_sitting.py --selftest
+  python3 scripts/install_redis_sitting.py --only policy,reconcile   # a later policy act alone
 
 It refuses (exit 2, nothing written) unless every required act record exists.
 It is idempotent: a second run changes nothing and says so. Each step asserts
@@ -29,7 +30,8 @@ Steps (finding numbers are the runbook's):
   policy          F4,F10  the screening-scope act becomes the policy's chain link (the
                        2026-10-02 re-pin turns to history); when the version-2 act
                        exists it is the final link and version 1 turns to history
-                       too; the read gate, its tests and the status battery and
+                       too, and likewise version 3 over version 2 (its manifest's
+                       variant-tagged row pinned as history); the read gate, its tests and the status battery and
                        workflow follow the final act, once (an act pair recorded
                        in the wrong order is refused)
   profile         F8,F11  the narrative-profile spec moves from proposed/ to
@@ -45,8 +47,10 @@ from __future__ import annotations
 
 import argparse
 import ast
+import contextlib
 from dataclasses import dataclass
 import hashlib
+import io
 import json
 import pathlib
 import re
@@ -119,8 +123,14 @@ SCOPE_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-A
 V2_PKG = f"{CAND}/public-source-screening-scope-v2"
 V2_MANIFEST = f"{V2_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"
 V2_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"
+V3_PKG = f"{CAND}/public-source-screening-scope-v3"
+V3_MANIFEST = f"{V3_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt"
+V3_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"
 V1_SCRIPT = "record_public_source_screening_scope_act"
 V2_SCRIPT = "record_public_source_screening_scope_v2_act"
+V3_SCRIPT = "record_public_source_screening_scope_v3_act"
+#: The scope recorders in chain order; the battery carries only the final act's.
+SCOPE_SCRIPTS = (V1_SCRIPT, V2_SCRIPT, V3_SCRIPT)
 REPIN_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
 AMENDMENT_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md"
 POLICY_JSON = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
@@ -740,6 +750,53 @@ def policy_cg_v2_edits(text: str, v1_arg: str) -> str:
     return add_exemptions(text, '    (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,\n')
 
 
+V3_CHAIN_MARK = "screening-scope v3 chain row"
+#: The version-2 act was offered as one row of a four-variant manifest, and each of its rows ends in
+#: `  [variant: <name>]`, so the amendment registries learn a third offering shape for it.
+OFFERING_SHAPE_OLD = '                historical[rel] = manifest_row if shape == "row" else phrase_line\n'
+OFFERING_SHAPE_NEW = ('                historical[rel] = (manifest_row if shape == "row"\n'
+                      '                                   else manifest_row[:-1] + r"  \\[variant: [a-z-]+\\]$"\n'
+                      '                                   if shape == "variant-row" else phrase_line)\n')
+V2_MANIFEST_GATE_OLD = ("    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_ACT))\n"
+                        "            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))):\n")
+V2_MANIFEST_GATE_NEW = ("    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_ACT))\n"
+                        "            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))\n"
+                        "            # once the version-3 act supersedes it, the chosen row is history\n"
+                        "            # (pinned by the amendment registries)\n"
+                        '            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/'
+                        'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"))):\n')
+
+
+def policy_cg_v3_edits(text: str, v2_arg: str) -> str:
+    """The version-3 act supersedes the version-2 act for the policy subject. Applies on top of
+    `policy_cg_v2_edits`; the version-2 manifest's chosen row becomes history and the version-3
+    manifest, which check_governance registers once the performed record exists, takes its place."""
+    if V3_CHAIN_MARK in text:
+        return text
+    if V2_CHAIN_MARK not in text:
+        raise Refusal("the version-3 chain row needs the version-2 install first (policy_cg_v2_edits)")
+    i = once(text, ")\n#: For a chained amendment row", "policy chain end")
+    row = ('    # The public-source screening-scope version-3 act supersedes the version-2 act for\n'
+           f'    # the policy subject ({V3_CHAIN_MARK}).\n'
+           '    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],\n'
+           '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",\n'
+           '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",\n'
+           f'     "{v2_arg}"),\n')
+    text = text[:i] + row + text[i:]
+    i = once(text, OFFERINGS_END_ANCHOR, "policy offerings end")
+    text = text[:i] + (
+        '    # The version-2 screening-scope act was offered as the chosen variant\'s row of its\n'
+        '    # manifest, a row that ends in its `[variant: …]` tag; its packet carries no digest.\n'
+        '    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md": {\n'
+        '        f"{CANDIDATES}/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt": "variant-row",\n'
+        '    },\n') + text[i:]
+    once(text, OFFERING_SHAPE_OLD, "offering shape")
+    text = text.replace(OFFERING_SHAPE_OLD, OFFERING_SHAPE_NEW, 1)
+    once(text, V2_MANIFEST_GATE_OLD, "version-2 manifest registration")
+    text = text.replace(V2_MANIFEST_GATE_OLD, V2_MANIFEST_GATE_NEW, 1)
+    return add_exemptions(text, '    (PUBLIC_SOURCE_SCOPE_V3_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V3_MANIFEST,\n')
+
+
 def battery_lines(record: str, new_arg: str, date: str, script: str = V1_SCRIPT) -> tuple[str, str]:
     """The scope recorder's --check line needs the owner's selection text, read back from the record."""
     opening = " ".join(grab(r'that opened "(.+?)" by selecting', record, "question opening", re.S).split())
@@ -747,57 +804,73 @@ def battery_lines(record: str, new_arg: str, date: str, script: str = V1_SCRIPT)
     if len(rows) != 1:
         raise Refusal(f"the scope act record carries {len(rows)} selection table rows, expected one")
     label, desc = rows[0]
-    for s in (opening, label, desc):
-        if ": " in s or " #" in s or "'" in s:
-            raise Refusal("the owner's selection text contains ': ', ' #' or a quote, which a plain YAML "
-                          "workflow line and the battery splitter cannot carry; add the --check line "
-                          "to PROJECT-STATUS.md and the workflow by hand")
+    # Version 3's recorder also takes the packet words the selected option maps to, which its record quotes.
+    words = [" ".join(w.split()) for w in re.findall(r'The packet maps that option to its\s+words\s+"([^"]+)"', record)]
+    if len(words) > 1:
+        raise Refusal(f"the scope act record quotes {len(words)} packet phrases, expected at most one")
+    for s in (opening, label, desc, *words):
+        if "#" in s:
+            raise Refusal("the owner's selection text contains '#', which the battery splitter reads as a "
+                          "comment; add the --check line to PROJECT-STATUS.md and the workflow by hand")
     cmd = (f"python3 scripts/{script}.py --check {new_arg} --date {date} "
-           f"--question-opening '{opening}' --selection-label '{label}' --selection-description '{desc}'")
+           f"--question-opening {shell_word(opening)} --selection-label {shell_word(label)} "
+           f"--selection-description {shell_word(desc)}"
+           + "".join(f" --packet-words {shell_word(w)}" for w in words))
     return cmd, f"python3 scripts/{script}.py --selftest"
+
+
+def shell_word(s: str) -> str:
+    """One single-quoted shell word for `s` that a plain YAML `run:` scalar can also carry: a quote is
+    written '\\'' and a ': ' as :'' (an empty quoted string ends the colon's run), since a plain scalar
+    may hold neither ': ' nor ' #'. The shell reads the word back as exactly `s`."""
+    return "'" + s.replace("'", "'\\''").replace(": ", ":'' ") + "'"
 
 
 def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str,
                  script: str = V1_SCRIPT) -> tuple[str, str]:
     """Idempotent. Three starting states: the re-pin lines (install the final recorder's lines in
-    their place), the version-1 recorder's lines (replace them when the final recorder is
-    version 2), or the final recorder's lines already (nothing to do)."""
+    their place), an earlier scope recorder's lines (replace them in place when the final recorder
+    is a later version), or the final recorder's lines already (nothing to do)."""
     if f"{script}.py --check" in status:
         return status, workflow
     note = "   # screening-scope policy act: record, aggregate block and applied subject"
-    if script != V1_SCRIPT and f"{V1_SCRIPT}.py --check" in status:
+    earlier = [s for s in SCOPE_SCRIPTS[:SCOPE_SCRIPTS.index(script)] if f"{s}.py --check" in status]
+    if len(earlier) > 1:
+        raise Refusal(f"status battery carries more than one earlier scope recorder: {earlier}")
+    if earlier:
+        prior = earlier[0]
         lines = status.split("\n")
         out, hit = [], 0
         for ln in lines:
-            if ln.startswith(f"python3 scripts/{V1_SCRIPT}.py --check"):
+            if ln.startswith(f"python3 scripts/{prior}.py --check"):
                 out.append(check_cmd + note)
                 hit += 1
-            elif ln.startswith(f"python3 scripts/{V1_SCRIPT}.py --selftest"):
+            elif ln.startswith(f"python3 scripts/{prior}.py --selftest"):
                 out.append(selftest_cmd)
                 hit += 1
             else:
                 out.append(ln)
         if hit != 2:
-            raise Refusal("status battery: expected to replace exactly the version-1 check and selftest lines")
+            raise Refusal("status battery: expected to replace exactly the earlier check and selftest lines")
         status = "\n".join(out)
         wl = workflow.split("\n")
         out, hit = [], 0
         for ln in wl:
             st = ln.strip()
-            if st == f"- name: {V1_SCRIPT} --check":
-                out.append(ln.replace(V1_SCRIPT, script))
+            if st == f"- name: {prior} --check":
+                out.append(ln.replace(prior, script))
                 hit += 1
-            elif st == f"- name: {V1_SCRIPT} --selftest":
-                out.append(ln.replace(V1_SCRIPT, script))
+            elif st == f"- name: {prior} --selftest":
+                out.append(ln.replace(prior, script))
                 hit += 1
-            elif st.startswith(f"run: python3 scripts/{V1_SCRIPT}.py --check"):
+            elif st.startswith(f"run: python3 scripts/{prior}.py --check"):
                 out.append("        run: " + check_cmd)
-            elif st.startswith(f"run: python3 scripts/{V1_SCRIPT}.py --selftest"):
+            elif st.startswith(f"run: python3 scripts/{prior}.py --selftest"):
                 out.append("        run: " + selftest_cmd)
             else:
                 out.append(ln)
         if hit != 2:
-            raise Refusal("workflow: expected to replace exactly the version-1 check and selftest steps")
+            raise Refusal("workflow: expected to replace exactly the earlier check and selftest steps")
         return status, "\n".join(out)
     drop_b = "python3 scripts/build_pwb_behavior_contract_repin.py --check"
     drop_r = "python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy "
@@ -875,21 +948,29 @@ def read_policy_act(root: pathlib.Path, key: str, path: str, script: str, manife
 
 
 def policy_acts(root: pathlib.Path) -> list[PolicyAct]:
-    """The policy acts in force, in order: version 1, then version 2 when it exists. Refuses an
-    order or a pair the records themselves contradict, so the wrong order is never installed."""
+    """The policy acts in force, in order: version 1, then version 2 and version 3 when each exists.
+    Each later version needs the one before it. Refuses an order or a pair the records themselves
+    contradict, so the wrong order is never installed."""
     v1 = read_policy_act(root, "v1", SCOPE_ACT, V1_SCRIPT, SCOPE_MANIFEST, REPIN_ACT)
     acts = [v1]
-    if (root / V2_ACT).is_file():
-        v2 = read_policy_act(root, "v2", V2_ACT, V2_SCRIPT, V2_MANIFEST, SCOPE_ACT)
-        if v2.arg == v1.arg:
-            raise Refusal("the version-2 act carries the version-1 act's argument: it cannot supersede it")
-        if v2.instant <= v1.instant:
-            raise Refusal(f"the version-2 act ({v2.instant}) is not recorded after the version-1 act "
-                          f"({v1.instant}): it supersedes the version-1 act, so the order is v1 then v2")
-        if SCOPE_ACT not in v2.text or v1.arg not in v2.text:
-            raise Refusal("the version-2 act record does not name the version-1 act and its argument "
+    for key, path, script, manifest, n in (("v2", V2_ACT, V2_SCRIPT, V2_MANIFEST, 2),
+                                           ("v3", V3_ACT, V3_SCRIPT, V3_MANIFEST, 3)):
+        if not (root / path).is_file():
+            continue
+        prev = acts[-1]
+        if prev.key != f"v{n - 1}":
+            raise Refusal(f"the version-{n} act exists without the version-{n - 1} act")
+        act = read_policy_act(root, key, path, script, manifest, prev.path)
+        if act.arg == prev.arg:
+            raise Refusal(f"the version-{n} act carries the version-{n - 1} act's argument: it cannot supersede it")
+        if act.instant <= prev.instant:
+            raise Refusal(f"the version-{n} act ({act.instant}) is not recorded after the version-{n - 1} act "
+                          f"({prev.instant}): it supersedes the version-{n - 1} act, so the order is "
+                          f"v{n - 1} then v{n}")
+        if prev.path not in act.text or prev.arg not in act.text:
+            raise Refusal(f"the version-{n} act record does not name the version-{n - 1} act and its argument "
                           "as the act it supersedes")
-        acts.append(v2)
+        acts.append(act)
     policy = sha((root / POLICY_JSON).read_bytes())
     if policy != acts[-1].arg:
         raise Refusal(f"the policy on disk does not hash to the final policy act's argument "
@@ -917,6 +998,9 @@ def repoint_gate(inputs: str, desired: list[str], comment: str) -> str:
 
 def gate_comment(acts: list[PolicyAct]) -> str:
     final = acts[-1]
+    if final.key == "v3":
+        return (f"// The policy act is the {final.date} public-source screening-scope version 3 act, superseding the\n"
+                f"// {acts[1].date} version-2 act; the registry act is still its 2026-10-02 re-pin act.\n")
     if final.key == "v2":
         return (f"// The policy act is the {final.date} public-source screening-scope version 2 act, superseding the\n"
                 f"// {acts[0].date} version-1 act; the registry act is still its 2026-10-02 re-pin act.\n")
@@ -934,12 +1018,14 @@ def step_policy(root: pathlib.Path, write: bool) -> bool:
     old_ver = grab(r"policyVersion: '([^']+)'", reader, "reader policy version") if "policyVersion: '" in reader else new_ver
     inputs = (root / INPUTS_TS).read_text()
     changed = False
-    # check_governance supersession: the version-1 link, then the version-2 link on top of it
+    # check_governance supersession: the version-1 link, then each later link on top of it
     cg = root / CG
     text = cg.read_text()
     new_text = policy_cg_edits(text, repin_arg)
-    if final.key == "v2":
+    if final.key in ("v2", "v3"):
         new_text = policy_cg_v2_edits(new_text, acts[0].arg)
+    if final.key == "v3":
+        new_text = policy_cg_v3_edits(new_text, acts[1].arg)
     if new_text != text:
         changed = True
         if write:
@@ -983,20 +1069,30 @@ STEPS = (("registrations", step_registrations), ("rfc5", step_rfc5), ("policy", 
          ("reconcile", step_reconcile))
 
 
-def run(root: pathlib.Path, write: bool) -> int:
+def run(root: pathlib.Path, write: bool, only: tuple[str, ...] = ()) -> int:
+    """`only` names steps to run alone, for an install after the sitting (the 2026-10-08 version-3
+    act): those steps check their own records, and the sitting's full record set is not required,
+    as the local-agent sitting's installer (`install_redis_local_agent_sitting.py`) composes them."""
     global J
     J = Journal()
-    missing = missing_records(root)
+    unknown = [s for s in only if s not in dict(STEPS)]
+    if unknown:
+        print(f"REFUSED: unknown step(s) {unknown}; the steps are {[n for n, _f in STEPS]}")
+        return 2
+    missing = [] if only else missing_records(root)
     if missing:
         print("REFUSED: required act records are missing (nothing written):")
         for m in missing:
             print(f"  {m}")
         return 2
     try:
-        rfc5_precondition(root)
-        print(check_stage_map(root))
+        if not only:
+            rfc5_precondition(root)
+            print(check_stage_map(root))
         pending = []
         for name, fn in STEPS:
+            if only and name not in only:
+                continue
             if fn(root, write):
                 pending.append(name)
     except Refusal as exc:
@@ -1011,6 +1107,59 @@ def run(root: pathlib.Path, write: bool) -> int:
 
 
 # ---- selftest ----------------------------------------------------------------
+
+#: A check_governance.py as it stood before any screening-scope link was installed, reduced to
+#: the anchors the chain edits find: the selftest exercises those edits from that state, since the
+#: live file already carries the version-1 and version-2 links.
+PRE_INSTALL_CG = '''PWB_EFFECT_AMENDMENT_ACTS = (
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a"),
+)
+#: For a chained amendment row, the package that offered the predecessor
+PWB_EFFECT_AMENDMENT_OFFERINGS = {
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md": {
+        f"{CANDIDATES}/pwb-registry-currency-briefing-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
+    },
+}
+PWB_STATE1_SUBJECTS = tuple(sorted((
+    "a",
+)))
+
+
+def _activate_pwb_effect_amendment_act_copy_registries():
+    for label, subject, predecessor, act, performed_digest in PWB_EFFECT_AMENDMENT_ACTS:
+        if predecessor in PWB_EFFECT_AMENDMENT_OFFERINGS:
+            historical = {}
+            for rel, shape in PWB_EFFECT_AMENDMENT_OFFERINGS[predecessor].items():
+                historical[rel] = manifest_row if shape == "row" else phrase_line
+
+
+PWB_BEHAVIOR_REPIN_MANIFEST = f"{PWB_BEHAVIOR_REPIN_DIR}/PWB-EFFECT-REPIN-MANIFEST.txt"
+
+
+def _activate_pwb_behavior_repin_manifest_copy_registry():
+    if os.path.isfile(os.path.join(ROOT, PWB_BEHAVIOR_REPIN_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[PWB_BEHAVIOR_REPIN_MANIFEST] = (
+            PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[2][0])
+
+
+_activate_pwb_behavior_repin_manifest_copy_registry()
+
+
+def _activate_public_source_scope_v2_copy_registry():
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V2_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
+BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
+    (f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md", "three-artifact manifest"):
+        f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt",
+}
+'''
+
 
 def policy_selftests() -> list[tuple[str, bool]]:
     """The two-policy-act install: order, pairs, the chain edits, the gate pointers, the battery."""
@@ -1029,10 +1178,11 @@ def policy_selftests() -> list[tuple[str, bool]]:
                 'that opened "Q one" by selecting the\n| "L" | "D d" |\n')
 
     a1, a2, repin = "1" * 64, "2" * 64, "0" * 64
-    pol1, pol2 = b'{"policyVersion": "1.2.0"}\n', b'{"policyVersion": "1.3.0"}\n'
-    a1, a2 = sha(pol1), sha(pol2)
+    pol1, pol2, pol3 = b'{"policyVersion": "1.2.0"}\n', b'{"policyVersion": "1.3.0"}\n', b'{"policyVersion": "1.4.0"}\n'
+    a1, a2, a3 = sha(pol1), sha(pol2), sha(pol3)
 
-    def tree(t, v2=True, v2_instant="2026-10-04T10:00:00Z", v2_arg=None, policy=None, naming=True, v1=True):
+    def tree(t, v2=True, v2_instant="2026-10-04T10:00:00Z", v2_arg=None, policy=None, naming=True, v1=True,
+             v3=False, v3_instant="2026-10-09T10:00:00Z", v3_arg=None, v3_naming=True):
         root = pathlib.Path(t)
         (root / SCOPE_ACT).parent.mkdir(parents=True, exist_ok=True)
         if v1:
@@ -1041,8 +1191,11 @@ def policy_selftests() -> list[tuple[str, bool]]:
         if v2:
             extra = f"supersedes `{SCOPE_ACT}` argument `{a1}`\n" if naming else "\n"
             (root / V2_ACT).write_text(record(v2_arg or a2, "ID2", "tag2", "2026-10-04", v2_instant, extra))
+        if v3:
+            extra = f"supersedes `{V2_ACT}` argument `{v2_arg or a2}`\n" if v3_naming else "\n"
+            (root / V3_ACT).write_text(record(v3_arg or a3, "ID3", "tag3", "2026-10-09", v3_instant, extra))
         (root / POLICY_JSON).parent.mkdir(parents=True, exist_ok=True)
-        (root / POLICY_JSON).write_bytes(policy if policy is not None else (pol2 if v2 else pol1))
+        (root / POLICY_JSON).write_bytes(policy if policy is not None else (pol3 if v3 else pol2 if v2 else pol1))
         return root
 
     with tempfile.TemporaryDirectory() as t:
@@ -1054,12 +1207,23 @@ def policy_selftests() -> list[tuple[str, bool]]:
         ok.append(("policy acts: version 1 then version 2, the final act supersedes version 1",
                    [a.key for a in got] == ["v1", "v2"] and got[-1].supersedes == SCOPE_ACT
                    and got[-1].script == V2_SCRIPT and got[-1].arg == a2))
+    with tempfile.TemporaryDirectory() as t:
+        got = policy_acts(tree(t, v3=True))
+        ok.append(("policy acts: versions 1, 2 then 3, the final act supersedes version 2",
+                   [a.key for a in got] == ["v1", "v2", "v3"] and got[-1].supersedes == V2_ACT
+                   and got[-1].script == V3_SCRIPT and got[-1].arg == a3 and got[-1].manifest == V3_MANIFEST))
     for name, kwargs in (("version 2 recorded before version 1", dict(v2_instant="2026-10-04T08:00:00Z")),
                          ("version 2 recorded at the same instant", dict(v2_instant="2026-10-04T09:00:00Z")),
                          ("version 2 carrying version 1's argument", dict(v2_arg=a1, policy=pol1)),
                          ("version 2 that does not name version 1", dict(naming=False)),
                          ("the policy still at version 1's bytes after version 2", dict(policy=pol1)),
-                         ("version 2 without version 1", dict(v1=False))):
+                         ("version 2 without version 1", dict(v1=False)),
+                         ("version 3 without version 2", dict(v2=False, v3=True)),
+                         ("version 3 recorded before version 2", dict(v3=True, v3_instant="2026-10-04T09:30:00Z")),
+                         ("version 3 recorded at version 2's instant", dict(v3=True, v3_instant="2026-10-04T10:00:00Z")),
+                         ("version 3 carrying version 2's argument", dict(v3=True, v3_arg=a2, policy=pol2)),
+                         ("version 3 that does not name version 2", dict(v3=True, v3_naming=False)),
+                         ("the policy still at version 2's bytes after version 3", dict(v3=True, policy=pol2))):
         with tempfile.TemporaryDirectory() as t:
             root = tree(t, **kwargs)
             ok.append((f"policy acts refuse the wrong order or pair: {name}", refused(lambda: policy_acts(root))))
@@ -1068,8 +1232,12 @@ def policy_selftests() -> list[tuple[str, bool]]:
         ok.append(("policy acts: a policy that is not the final act's argument is refused",
                    refused(lambda: policy_acts(root))))
 
-    # the check_governance edits: version 1, then version 2 on top, in that order only
-    cg_text = (ROOT / CG).read_text()
+    # the check_governance edits: version 1, then version 2, then version 3 on top, in that order only.
+    # The live check_governance.py already carries the version-1 and version-2 links, so those two are
+    # exercised on a pre-install fixture (`PRE_INSTALL_CG`) carrying only the anchors they edit; the
+    # version-3 edit is exercised on that fixture and on the live file, whose anchors it must still find.
+    cg_text = PRE_INSTALL_CG
+    live = (ROOT / CG).read_text()
     try:
         v1_only = policy_cg_edits(cg_text, "a" * 64)
         both = policy_cg_v2_edits(v1_only, "b" * 64)
@@ -1083,11 +1251,28 @@ def policy_selftests() -> list[tuple[str, bool]]:
                    and both.count("PUBLIC_SOURCE_SCOPE_V2_MANIFEST,") == 1 + cg_text.count("PUBLIC_SOURCE_SCOPE_V2_MANIFEST,")))
         ok.append(("chain edits: version 2 is idempotent", policy_cg_v2_edits(both, "b" * 64) == both))
         ok.append(("chain edits: the argument quoted is version 1's", f'"{"b" * 64}"),' in both))
+        three = policy_cg_v3_edits(both, "c" * 64)
+        ast.parse(three)
+        ok.append(("chain edits: version 3 on top of version 2 is valid Python", True))
+        ok.append(("chain edits: one version-3 row, one variant-row offering, the shape taught, the version-2 manifest gated, one exemption",
+                   three.count(V3_CHAIN_MARK) == 1
+                   and three.count('PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt": "variant-row"') == 1
+                   and OFFERING_SHAPE_NEW in three and OFFERING_SHAPE_OLD not in three
+                   and V2_MANIFEST_GATE_NEW in three and V2_MANIFEST_GATE_OLD not in three
+                   and three.count("PUBLIC_SOURCE_SCOPE_V3_MANIFEST,") == 1 + both.count("PUBLIC_SOURCE_SCOPE_V3_MANIFEST,")))
+        ok.append(("chain edits: version 3 is idempotent", policy_cg_v3_edits(three, "c" * 64) == three))
+        ok.append(("chain edits: the argument quoted is version 2's", f'"{"c" * 64}"),' in three))
+        live3 = policy_cg_v3_edits(live, "c" * 64)
+        ast.parse(live3)
+        ok.append(("chain edits: version 3 applies to the live check_governance.py and stays valid Python",
+                   live3.count(V3_CHAIN_MARK) == 1 and live3 != live))
     except (SyntaxError, Refusal) as exc:
         print(f"  (chain edit failure: {exc})")
-        ok.append(("chain edits: version 2 on top of version 1 is valid Python", False))
+        ok.append(("chain edits: the version 1, 2 and 3 edits apply and are valid Python", False))
     ok.append(("chain edits: version 2 without version 1 is refused",
                refused(lambda: policy_cg_v2_edits(cg_text, "b" * 64))))
+    ok.append(("chain edits: version 3 without version 2 is refused",
+               refused(lambda: policy_cg_v3_edits(policy_cg_edits(cg_text, "a" * 64), "c" * 64))))
 
     # the read gate pointers, from each starting state to the final pair
     mark = "export const PWB_ACT_RECORDS: x = 1;\n"
@@ -1097,9 +1282,11 @@ def policy_selftests() -> list[tuple[str, bool]]:
     amend = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md"
     acts_v1 = [PolicyAct("v1", SCOPE_ACT, "", "", "", "", "2026-10-04", "", V1_SCRIPT, REPIN_ACT, "")]
     acts_v2 = [acts_v1[0], PolicyAct("v2", V2_ACT, "", "", "", "", "2026-10-05", "", V2_SCRIPT, SCOPE_ACT, "")]
+    acts_v3 = acts_v2 + [PolicyAct("v3", V3_ACT, "", "", "", "", "2026-10-09", "", V3_SCRIPT, V2_ACT, "")]
     for name, start, acts in (("re-pin to version 1", gate(REPIN_ACT, amend), acts_v1),
                               ("re-pin straight to version 2", gate(REPIN_ACT, amend), acts_v2),
-                              ("version 1 up to version 2", gate(SCOPE_ACT, REPIN_ACT, gate_comment(acts_v1)), acts_v2)):
+                              ("version 1 up to version 2", gate(SCOPE_ACT, REPIN_ACT, gate_comment(acts_v1)), acts_v2),
+                              ("version 2 up to version 3", gate(V2_ACT, SCOPE_ACT, gate_comment(acts_v2)), acts_v3)):
         desired = [acts[-1].path, acts[-1].supersedes]
         done = repoint_gate(start, desired, gate_comment(acts))
         ok.append((f"gate pointers: {name}",
@@ -1136,6 +1323,18 @@ def policy_selftests() -> list[tuple[str, bool]]:
                "The three checks above are the same three" in n2 and n2.count("python3 ") == 3))
     ok.append(("battery: a workflow without the version-1 steps is refused on upgrade",
                refused(lambda: edit_battery(n1, wf, c2, s2, V2_SCRIPT))))
+    c3, s3 = f"python3 scripts/{V3_SCRIPT}.py --check x", f"python3 scripts/{V3_SCRIPT}.py --selftest"
+    n3, w3 = edit_battery(st, wf, c3, s3, V3_SCRIPT)
+    n23, w23 = edit_battery(n2, w2, c3, s3, V3_SCRIPT)
+    ok.append(("battery: version 2 up to version 3 replaces its lines in place",
+               V2_SCRIPT not in n23 + w23 and c3 in n23 and s3 in n23 and (n23, w23) == (n3, w3)
+               and edit_battery(n23, w23, c3, s3, V3_SCRIPT) == (n23, w23)))
+    ok.append(("battery: version 3's lines keep the count at three",
+               "The three checks above are the same three" in n23 and n23.count("python3 ") == 3))
+    ok.append(("battery: a workflow without the version-2 steps is refused on upgrade to version 3",
+               refused(lambda: edit_battery(n2, wf, c3, s3, V3_SCRIPT))))
+    ok.append(("gate comment: version 3 names version 2's date",
+               gate_comment(acts_v3).startswith("// The policy act is the 2026-10-09 public-source screening-scope version 3 act, superseding the\n// 2026-10-05 version-2 act;")))
     return ok
 
 
@@ -1340,12 +1539,25 @@ def selftest() -> int:
     rec = ('that opened "Q one" by selecting the\n| "L" | "D d" |\n')
     cmd, _st = battery_lines(rec, "a" * 64, "2026-10-04")
     ok.append(("battery line carries the owner's selection text",
-               "--question-opening 'Q one' --selection-label 'L' --selection-description 'D d'" in cmd))
+               "--question-opening 'Q one' --selection-label 'L' --selection-description 'D d'" in cmd
+               and "--packet-words" not in cmd))
+    cmd3, _st = battery_lines(rec + 'The packet maps that option to its\nwords "Sign it, variant\nall"; the selection\n',
+                              "a" * 64, "2026-10-09", V3_SCRIPT)
+    ok.append(("battery line carries version 3's packet words, folded across a wrap",
+               cmd3.endswith("--selection-description 'D d' --packet-words 'Sign it, variant all'")))
     try:
-        battery_lines('that opened "Q: x" by selecting the\n| "L" | "D" |\n', "a" * 64, "2026-10-04")
-        ok.append(("selection text a workflow line cannot carry is refused", False))
+        battery_lines('that opened "Q # x" by selecting the\n| "L" | "D" |\n', "a" * 64, "2026-10-04")
+        ok.append(("selection text the battery splitter cannot carry is refused", False))
     except Refusal:
-        ok.append(("selection text a workflow line cannot carry is refused", True))
+        ok.append(("selection text the battery splitter cannot carry is refused", True))
+    awkward = "Decision 1: Redis's `a<b && c>d` \"x\": y"
+    word = shell_word(awkward)
+    back = subprocess.run(["sh", "-c", f"printf %s {word}"], capture_output=True, text=True).stdout
+    ok.append(("a selection word reads back exactly through the shell", back == awkward))
+    ok.append(("a selection word holds neither ': ' nor ' #' for a plain YAML scalar", ": " not in word and " #" not in word))
+    cmdq, _st = battery_lines('that opened "Q: it\'s" by selecting the\n| "L" | "D: x" |\n', "a" * 64, "2026-10-04")
+    ok.append(("battery line quotes ': ' and a quote in the selection text",
+               "--question-opening 'Q:'' it'\\''s'" in cmdq and ": " not in cmdq))
     st = ("## How to verify this page\n```sh\n"
           "python3 scripts/build_pwb_behavior_contract_repin.py --check   # x\n"
           "python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy abc --date d\n"
@@ -1380,6 +1592,14 @@ def selftest() -> int:
                    missing_records(root)[:len(REQUIRED_RECORDS)] == list(REQUIRED_RECORDS)
                    and len(missing_records(root)) == len(REQUIRED_RECORDS) + 2))
         ok.append(("refusal writes nothing", run(root, True) == 2 and not any(root.iterdir())))
+        ok.append(("--only: an unknown step is refused and writes nothing",
+                   run(root, True, ("policy", "nope")) == 2 and not any(root.iterdir())))
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = run(root, True, ("policy",))
+        ok.append(("--only policy: the sitting's record set is not required, the step's own records are",
+                   code == 2 and "required act records are missing" not in buf.getvalue()
+                   and "policy act record is absent" in buf.getvalue() and not any(root.iterdir())))
         act = root / RFC5_ACT
         act.parent.mkdir(parents=True)
         for good, name in (("Act instant: 2026-10-04T10:00:00Z\n", "single instant"),
@@ -1441,10 +1661,11 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--root", default=str(ROOT))
+    ap.add_argument("--only", default="", help="comma-separated steps to run alone (e.g. policy,reconcile)")
     a = ap.parse_args(argv)
     if a.selftest:
         return selftest()
-    return run(pathlib.Path(a.root), write=not a.check)
+    return run(pathlib.Path(a.root), write=not a.check, only=tuple(s for s in a.only.split(",") if s))
 
 
 if __name__ == "__main__":

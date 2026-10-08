@@ -434,6 +434,31 @@ describe('render', () => {
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
   });
 
+  // P-105 (screening scope version 3): a body admitted only under the code-content exemption holds at a page only while the page meets
+  // renderCondition. The screen here admits src/kestrel.c given its path and finds active content in it without one, as the exemption
+  // does for a C file whose comparisons read as tags; render then needs the renderer's declared encoding and the CSP on every page.
+  it('renders an exempt body only through a renderer that declares the page-sink contract and pages that carry the CSP', async () => {
+    const run = await prepared(draft(), false);
+    if (!SCREEN.ok) throw new Error(SCREEN.why);
+    const base = SCREEN.screen;
+    const exempt = { ok: true as const, screen: { ...base, codeContentExemption: true, screenBody: (body: string, repositoryPath?: string) => (repositoryPath === undefined && body === KESTREL ? 'active-content' as const : base.screenBody(body, repositoryPath)) } };
+    const deps = (renderer: DossierRenderer) => renderDeps({ loadScreen: async () => exempt, renderer });
+    const undeclared: DossierRenderer = (input) => renderDossier(input);
+    const why = (unconfirmed: string) => `1 cited blob(s) were admitted only under the screening policy's code-content exemption, and these pages cannot be confirmed to meet its render condition (${unconfirmed}); scanned as before for these pages they hold active content, so nothing is rendered`;
+    expect(await renderRun(run, deps(undeclared))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: why('the injected renderer does not declare that it writes every source byte as entity-encoded text') } });
+    const noCsp: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'index.html' ? page.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/u, '') : page])) }), { pageSinkContract: renderDossier.pageSinkContract });
+    expect(await renderRun(run, deps(noCsp))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: expect.stringContaining('index.html') } });
+    const reportOnly: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, page.replace('http-equiv="Content-Security-Policy"', 'http-equiv="Content-Security-Policy-Report-Only"')])) }), { pageSinkContract: renderDossier.pageSinkContract });
+    expect(await renderRun(run, deps(reportOnly))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: expect.stringContaining('Report-Only') } });
+    expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
+    expect(renderDossier.pageSinkContract).toBe('polaris/page-sink/escaped-text-under-csp/1');
+    const result = await renderRun(run, deps(renderDossier));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    expect(result.report.outcome).toBe('rendered');
+    // Without an exempt body the contract is not needed: the same undeclared renderer renders.
+    expect(await renderRun(run, renderDeps({ renderer: undeclared }))).toMatchObject({ ok: true });
+  });
+
   it('refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure', async () => {
     const run = await prepared(draft(), false);
     expect(await renderRun(run, renderDeps({ now: () => NOW + 3_600_000 }))).toMatchObject({ ok: false, refusal: { stage: 'deadline' } });

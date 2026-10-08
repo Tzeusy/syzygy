@@ -22,7 +22,9 @@ Steps, in the order of the sitting packet (PR 260):
              provider route (`--route b`: PR 273 recorder, a synthetic freeze;
              `--route a`: PR 255 recorder) and the Git source adapter, the three
              admission consents (PR 215), the RFC5-14 amendment (PR 257), the
-             egress version 2 consent (row 8) and the narrative-profile adoption (PR 256)
+             egress version 2 consent (row 8), the screening-scope version 2
+             (row 12, `--v2-variant`) and version 3 (row P-105, `--v3-variant`)
+             acts and the narrative-profile adoption (PR 256)
   4 install  `scripts/install_redis_sitting.py`, then again (idempotent) and
              with `--check`; then row 8's end: egress version 1 stays
              unperformed, and (when the dossier wiring is in the tree) a
@@ -95,6 +97,13 @@ PKG_SCOPE = f"{CAND}/public-source-screening-scope"
 PKG_SCOPE_V2 = f"{CAND}/public-source-screening-scope-v2"
 V2_RECORDER = "scripts/record_public_source_screening_scope_v2_act.py"
 V2_VARIANTS = ("none", "manifesto", "architecture", "both")
+#: Version 3 (register row P-105) supersedes version 2; its recorder is frozen on the package's real
+#: round-2 raw and also takes the packet words the owner's selection maps to.
+PKG_SCOPE_V3 = f"{CAND}/public-source-screening-scope-v3"
+V3_RECORDER = "scripts/record_public_source_screening_scope_v3_act.py"
+V3_VARIANTS = ("all", "non-web")
+V3_PACKET_WORDS = {"all": "Sign screening scope version 3, variant all",
+                   "non-web": "Sign screening scope version 3, variant non-web"}
 PKG_RFC5 = f"{CAND}/rfc5-project-documentation-class"
 PKG_EGRESS_V2 = f"{CAND}/public-egress-v2"
 EGRESS_V2_RECORDER = "record_public_egress_v2_act.py"
@@ -254,6 +263,7 @@ class Sim:
         self.base = base
         self.vitest = vitest
         self.v2_variant = "none"
+        self.v3_variant = "all"
         self.steps = []
         self.findings = []
         self.baseline_failing = set()
@@ -488,10 +498,24 @@ class Sim:
         self.step("freeze-v2", note="synthetic confirming raw and synthetic freeze, scratch only")
         return True
 
-    def v2_row(self, variant):
-        text = (self.scratch / PKG_SCOPE_V2 / "PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt").read_text()
-        m = re.search(rf"^([0-9a-f]{{64}})  \S+  \[variant: {variant}\]$", text, re.M)
+    def v2_row(self, variant, pkg=PKG_SCOPE_V2, manifest="PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"):
+        text = (self.scratch / pkg / manifest).read_text()
+        m = re.search(rf"^([0-9a-f]{{64}})  \S+  \[variant: {re.escape(variant)}\]$", text, re.M)
         return m.group(1) if m else None
+
+    def policy_v3(self, sel):
+        """Row P-105: the version-3 act over the chosen variant's row, after version 2. Its recorder is
+        used as it stands (frozen on the real round-2 raw); a scratch without version 2 skips it."""
+        v2_record = self.scratch / f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"
+        if not ((self.scratch / V3_RECORDER).is_file() and self.v3_variant and v2_record.is_file()):
+            self.step("rowP105-policy-v3", note="not run: the recorder or the version-2 act is absent, or --v3-variant skip was given")
+            return
+        arg = self.v2_row(self.v3_variant, PKG_SCOPE_V3, "PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt")
+        if arg is None:
+            self.step("rowP105-policy-v3", note=f"no manifest row for variant {self.v3_variant}")
+            return
+        self.record("record_public_source_screening_scope_v3_act.py", None, arg, "rowP105-policy-v3",
+                    [*sel, "--packet-words", V3_PACKET_WORDS[self.v3_variant]])
 
     def acts(self, route):
         scope = (self.scratch / PKG_SCOPE / "PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt").read_text()
@@ -529,6 +553,7 @@ class Sim:
                 self.record("record_public_source_screening_scope_v2_act.py", None, arg, "row12-policy-v2", sel)
         else:
             self.step("row12-policy-v2", note="not run: the package is absent or --no-v2 was given")
+        self.policy_v3(sel)
         self.record("record_narrative_profile_adoption.py", None, None, "row8-profile", sel)
         self.commit("sim: every recorder run")
         self.checks("after-acts")
@@ -727,6 +752,8 @@ def main(argv):
     ap.add_argument("--vitest", action="store_true")
     ap.add_argument("--v2-variant", choices=V2_VARIANTS + ("skip",), default="none",
                     help="the screening-scope v2 variant row recorded as row 12 (skip: version 1 only)")
+    ap.add_argument("--v3-variant", choices=V3_VARIANTS + ("skip",), default="all",
+                    help="the screening-scope v3 variant row recorded after version 2 (register row P-105; skip: no version 3)")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args(argv)
@@ -740,6 +767,7 @@ def main(argv):
     scratch = build_scratch(ROOT, a.scratch, a.base)
     sim = Sim(scratch, a.report, a.base, a.vitest)
     sim.v2_variant = None if a.v2_variant == "skip" else a.v2_variant
+    sim.v3_variant = None if a.v3_variant == "skip" or sim.v2_variant is None else a.v3_variant
     try:
         sim.merge_all()
         sim.merge_fixup()
@@ -819,6 +847,18 @@ def selftest():
                "[...NARRATIVE_STAGES, ...DISCOVERY_STAGES]", "EGRESS_V1_DIGEST")))
     expect("row 8 is a recorded act and row 6 is not", EGRESS_V2_RECORDER.startswith("record_public_egress_v2")
            and EGRESS_V1_RECORD != EGRESS_V2_RECORD)
+    # Version 3's packet words are the recorder's own, one per variant, and each variant has a manifest row.
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import record_public_source_screening_scope_v3_act as v3rec  # noqa: E402
+    expect("version 3: one packet phrase per variant, each one the recorder accepts",
+           set(V3_PACKET_WORDS) == set(V3_VARIANTS) and set(V3_PACKET_WORDS.values()) == set(v3rec.PACKET_WORDS)
+           and all(variant in words for variant, words in V3_PACKET_WORDS.items()))
+    v3_manifest = (ROOT / PKG_SCOPE_V3 / "PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt")
+    if v3_manifest.is_file():
+        sim = Sim.__new__(Sim)
+        sim.scratch = ROOT
+        expect("version 3: each variant names one manifest row",
+               all(sim.v2_row(v, PKG_SCOPE_V3, v3_manifest.name) is not None for v in V3_VARIANTS))
 
     # The scratch builder refuses a directory inside the real tree and the real
     # tree comparison notices a change, on a throwaway repository.

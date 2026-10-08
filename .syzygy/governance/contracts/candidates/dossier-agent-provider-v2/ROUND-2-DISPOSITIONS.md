@@ -12,7 +12,15 @@ round-1 findings are repaired. Round 2 has three findings, each marked
 (`decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1), that round
 clears the package at its manifest. The record and manifest are unchanged.
 
-## Note 1 — the `--tool` prerequisite has landed (taken)
+Reviewed record: docs/reviews/R-DOSSIER-AGENT-PROVIDER-V2-2-RAW.md
+
+*(Added 2026-10-08 at install: the line above and the numbered headings
+below are the form `scripts/record_dossier_agent_provider_v2_act.py` reads,
+through `record_versioned_signoff.validate_disposition`; no disposition
+changed. Each heading kept its words after the number. The install outcome
+of each note is in "Install notes" at the end.)*
+
+## 1 — Note 1 — the `--tool` prerequisite has landed (taken)
 
 The reviewer asked the delta to cite the fix commit and say the
 precondition is met. The lead directed that change and it was made after
@@ -22,7 +30,7 @@ prerequisite is met by #406, merged at `ff9a19b6` on 2026-10-08, and cites
 That is a prose edit to bytes round 2 read. It does not touch the record or
 the manifest, and the builder's `--check` still reports both current.
 
-## Note 2 — the aggregate record does not name version 2 (correction)
+## 2 — Note 2 — the aggregate record does not name version 2 (correction)
 
 `SEMANTIC-DELTA.md` lines 103–104 say a version-2 form built in version 1's
 pattern "would read version 1's act record, and its `ACCEPTANCE-ACT-RECORD.md`
@@ -38,7 +46,7 @@ block, as naming version 2". The first half holds. The second does not
 installer must still exempt version 1's act record in both directions, as
 the bullet says.
 
-## Install requirement — version 2's own act prose and stems (note 3)
+## 3 — Install requirement — version 2's own act prose and stems (note 3)
 
 **This adds to the delta's install list, and the owner should read it beside
 the act.** Every reader sweeps every decisions file, so the version-2 act
@@ -66,3 +74,35 @@ E]:
   title collision fails only once that pin learns version 2's record. The
   first two hazards already fail `real-tree.test.ts`'s "refuse nothing" test
   in CI.
+
+## Install notes
+
+*(Added at install, in the commit that records the version-2 act. The
+notes above are unchanged; this says what the install did with each.)*
+
+- **Note 1, taken before the review closed.** No install change.
+- **Note 2, read as stated.** The install exempts the two act records from
+  each other:
+  - version 2's form reads past version 1's act record at version 1's exact
+    render;
+  - version 1's statement form reads past version 2's act record at
+    version 2's exact render.
+
+  Both use `exemptRecords` in `gate-sources.ts`. A byte-identical copy of
+  either record under any other file name is not exempt, and it names the
+  other version. `gate-acts.test.ts` holds both directions and the copy
+  case.
+- **Note 3, taken.**
+  - The version-2 recorder's template cites no other family's package path
+    or class-act file name.
+  - The version-2 stems are new: the file stem, identity stem, label and
+    title. None of them appears in a decisions file before the act is
+    recorded, and after it they appear only in the version-2 act record
+    and its `ACCEPTANCE-ACT-RECORD.md` block. Row P-106 is resolved
+    without them.
+  - Because the stems were chosen clean, no `citedRows` pin is needed, and
+    `sittingForm` still passes none.
+  - `expectFollowsTree` in `gate-acts.test.ts` runs worlds holding version
+    2's act, both with and without the rest of the sitting's acts.
+  - The real tree passes `real-tree.test.ts`'s "refuse nothing" test with
+    the act recorded.

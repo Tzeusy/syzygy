@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DECISIONS_DIR, POLICY_PATH } from '@syzygy/polaris-generation-consent';
 import { renderClassAct, renderPolicyAct } from '@syzygy/polaris-generation-consent/testing';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { buildDossierScreen, loadDossierScreen } from './screen.js';
 
 // syzygy-qkea.7 (S6): the screen every blob a check reads passes (REQ-polaris-generation-033, 025). The records root is a temporary
@@ -149,7 +149,7 @@ describe('the project-documentation class (syzygy-2coz)', () => {
 // into the app. Both screens are built from the same policy bytes and must agree on every path and body of the population, and on
 // which malformed policies they refuse.
 const APP_SCREENING = path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/public-source-screening.ts');
-type AppScreen = { screenPath: (p: string) => string | undefined; screenBody: (b: string) => string | undefined; contentClass: (p: string) => string | undefined; projectDocumentation: boolean };
+type AppScreen = { screenPath: (p: string) => string | undefined; screenBody: (b: string, p?: string) => string | undefined; contentClass: (p: string) => string | undefined; projectDocumentation: boolean };
 // The app's port states whether the class act is in force; `classAct` gives it the same answer the dossier's screen is built with.
 // `checkoutAppScreen` instead lets the app's own checkout port decide it from a records root at `now`, as the dossier's loader does.
 const appScreen = async (policy: string, classAct = false): Promise<AppScreen> => {
@@ -238,6 +238,78 @@ describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
       expect(buildDossierScreen(encode(policy), classAct)).toMatchObject({ ok: false });
       await expect(appScreen(policy, classAct)).rejects.toThrow();
     }
+  });
+});
+
+// P-105 (owner act of 2026-10-08; syzygy-wsev): the version-3 scope's code-content exemption, in both screens. The scopes are the
+// builder's proposed bytes for each variant (scripts/build_public_source_screening_scope_v3.py), so this holds on either side of the act.
+describe('the code-content exemption of screening scope version 3', () => {
+  let V3: Record<string, Record<string, unknown>> = {};
+  beforeAll(() => {
+    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
+base, _mode = b.base_bytes()
+sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for v in b.VARIANTS}))`;
+    V3 = JSON.parse(execFileSync('python3', ['-c', py], { cwd: REAL_ROOT, encoding: 'utf8' })) as Record<string, Record<string, unknown>>;
+  });
+  const both = async (variant: string, classAct = true) => {
+    const policy = policyOf(V3[variant]);
+    const ours = buildDossierScreen(encode(policy), classAct);
+    if (!ours.ok) throw new Error(ours.why);
+    return { ours: ours.screen, theirs: await appScreen(policy, classAct) };
+  };
+  const COMPARISON = 'if (a<b && c>d) { return; }\n';
+  it('admits a C body whose comparisons read as tags, given its path, and scans it without one: both screens', async () => {
+    const { ours, theirs } = await both('all');
+    expect([ours.codeContentExemption, (theirs as { codeContentExemption?: boolean }).codeContentExemption]).toEqual([true, true]);
+    for (const screen of [ours, theirs]) {
+      expect(screen.screenBody(COMPARISON, 'src/server.c')).toBeUndefined();
+      expect(screen.screenBody(COMPARISON)).toBe('active-content');
+      expect(screen.screenBody('<script>x()</script>\n', 'src/server.c')).toBeUndefined();
+    }
+  });
+  it('still runs every detector over an exempt body', async () => {
+    const { ours, theirs } = await both('all');
+    const secret = `${['to', 'ken'].join('')} = "${'z'.repeat(12)}"\n<b>\n`;
+    expect([ours.screenBody(secret, 'src/server.c'), theirs.screenBody(secret, 'src/server.c')]).toEqual(['secret-detector-match', 'secret-detector-match']);
+  });
+  it('scans a project-documentation body as before, whatever path it is given', async () => {
+    const { ours, theirs } = await both('all');
+    for (const screen of [ours, theirs]) {
+      expect(screen.contentClass('README.md')).toBe('project-documentation');
+      expect(screen.screenBody('<img src="logo.png">\n', 'README.md')).toBe('active-content');
+      expect(screen.screenBody('# Redis\n\nAn in-memory data store.\n', 'README.md')).toBeUndefined();
+    }
+  });
+  it('scans .js and the other web extensions as before under variant non-web, and exempts C', async () => {
+    const { ours, theirs } = await both('non-web');
+    for (const screen of [ours, theirs]) {
+      expect(screen.screenBody('<script>x()</script>\n', 'web/app.js')).toBe('active-content');
+      expect(screen.screenBody(COMPARISON, 'src/server.c')).toBeUndefined();
+    }
+  });
+  it('scans a body at a path no class admits as before', async () => {
+    const { ours, theirs } = await both('all');
+    expect([ours.screenBody(COMPARISON, 'redis.conf'), theirs.screenBody(COMPARISON, 'redis.conf')]).toEqual(['active-content', 'active-content']);
+  });
+  it.each(['all', 'non-web'])('agrees with the app on every path and body under variant %s, given the path', async (variant) => {
+    const { ours, theirs } = await both(variant);
+    const paths = ['src/server.c', 'src/server.h', 'deps/lua/src/lapi.c', 'web/app.js', 'web/app.ts', 'index.php', 'tests/test.tcl', 'README.md',
+      'docs/guide.md', 'redis.conf', 'src/server.C', 'licenses/MIT.txt'];
+    const bodies = ['int main(void) { return 0; }\n', COMPARISON, '<script>run()</script>\n', '<a href="x">link</a>\n', '<!-- note -->\n',
+      `${['api', '_key'].join('')}: ${'q'.repeat(10)}\n`, '[x](javascript:alert(1))\n'];
+    const disagreements = paths.flatMap(p => bodies.map((b, i) => [p, i, ours.screenBody(b, p), theirs.screenBody(b, p)] as const)).filter(([, , a, b]) => a !== b);
+    expect(disagreements).toEqual([]);
+    expect(new Set(paths.flatMap(p => bodies.map(b => ours.screenBody(b, p) ?? 'admitted')))).toEqual(new Set(['admitted', 'secret-detector-match', 'active-content']));
+  });
+  it.each([
+    ['another rule text', (e: Record<string, unknown>) => ({ ...e, rule: `${e['rule'] as string} ` })],
+    ['an extension that is no source extension', (e: Record<string, unknown>) => ({ ...e, exemptExtensions: ['.c', '.md'] })],
+    ['an extra field', (e: Record<string, unknown>) => ({ ...e, scope: 'all' })],
+  ])('refuses a policy whose exemption has %s, as the app does', async (_name, mutate) => {
+    const scope = V3['all']!, active = scope['activeContent'] as Record<string, unknown>;
+    const policy = policyOf({ ...scope, activeContent: { ...active, codeContentExemption: mutate(active['codeContentExemption'] as Record<string, unknown>) } });
+    expect(buildDossierScreen(encode(policy), true)).toMatchObject({ ok: false, why: expect.stringContaining('its code-content exemption') });
+    await expect(appScreen(policy, true)).rejects.toThrow();
   });
 });
 

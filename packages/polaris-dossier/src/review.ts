@@ -185,7 +185,7 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     for (const blob of toRead.length === 0 ? [] : await reader.readBlobs(toRead)) {
       let raw: string;
       try { raw = decoder.decode(blob.bytes); } catch { outcomes.set(blob.path, 'not-utf8-text'); continue; }
-      const excluded = screen.screenBody(raw);
+      const excluded = screen.screenBody(raw, blob.path);
       if (excluded === undefined) blobs.set(blob.path, raw); else outcomes.set(blob.path, excluded);
     }
   } catch (cause) {

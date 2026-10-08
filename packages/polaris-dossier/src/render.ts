@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans,
+  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
   type EpistemicMarking, type EvidenceAnchor, type GenerationExclusionReason, type GenerationSource, type LocalBlock,
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type ProviderBlock, type ProviderDraft, type ProviderParagraph,
@@ -52,9 +52,23 @@ export const NO_RENDERER = 'no renderer wired: the dossier pages are drawn by th
 const WITHHELD_TEXT = '[withheld: a secret detector matches this text]';
 const SECRET_PATH = 'a path a secret detector matches (not shown)';
 
-/** What the renderer port takes and gives: the multi-page renderer's operator-agent input and the files of the site. */
+/** What the renderer port takes and gives: the multi-page renderer's operator-agent input and the files of the site. A renderer that
+ * writes every source byte as entity-encoded text says so by carrying `pageSinkContract` (`PAGE_SINK_CONTRACT`). */
 export interface DossierRendererInput { readonly local: LocalRenderInput; readonly sources: readonly GenerationSource[] }
-export type DossierRenderer = (input: DossierRendererInput) => { readonly files: ReadonlyMap<string, string> };
+export type DossierRenderer = ((input: DossierRendererInput) => { readonly files: ReadonlyMap<string, string> }) & { readonly pageSinkContract?: string };
+
+/** Why the drawn site cannot be confirmed to meet the screening scope's `codeContentExemption.renderCondition` (policy version 3), or
+ * null when it can: the renderer declares the encoding half (`PAGE_SINK_CONTRACT`) and every HTML page carries the required
+ * Content-Security-Policy first in its head (`pageSinkCspFinding`). */
+export function pageSinkUnconfirmed(renderer: DossierRenderer, files: ReadonlyMap<string, string>): string | null {
+  if (renderer.pageSinkContract !== PAGE_SINK_CONTRACT) return 'the injected renderer does not declare that it writes every source byte as entity-encoded text';
+  for (const [file, html] of files) {
+    if (!file.endsWith('.html')) continue;
+    const finding = pageSinkCspFinding(html);
+    if (finding !== null) return `${file}: ${finding}`;
+  }
+  return null;
+}
 
 export interface RenderDeps extends ReviewDeps {
   readonly probe: CredentialProbe;
@@ -183,6 +197,14 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   // The first RFC7-20 condition, checked on the output itself: the disclosure on every page and in the machine view.
   const pagesMissing = [...files].filter(([file, html]) => file.endsWith('.html') && !html.includes('class="run-disclosure"')).map(([file]) => file);
   if (pagesMissing.length > 0 || !files.has('machine.json')) return refuse('render', `the rendered site does not carry the run disclosure on every page and in the machine view (${pagesMissing.join(', ') || 'machine.json'})`);
+  // The code-content exemption (policy version 3) admitted some bodies without the active-content scan. It holds at these pages only
+  // while they meet its renderCondition; where that cannot be confirmed, each such body is scanned as before for these pages, and one with
+  // a finding is excluded whole here: a quoted or cited body cannot leave the pages it is drawn on, so nothing is rendered.
+  const scannedAsBefore = [...derived.admitted].filter(([, blob]) => screen.screenBody(blob.raw) !== undefined).map(([cited]) => cited);
+  const unconfirmed = scannedAsBefore.length === 0 ? null : pageSinkUnconfirmed(renderer, files);
+  if (unconfirmed !== null) {
+    return refuse('render', `${scannedAsBefore.length} cited blob(s) were admitted only under the screening policy's code-content exemption, and these pages cannot be confirmed to meet its render condition (${unconfirmed}); scanned as before for these pages they hold active content, so nothing is rendered`);
+  }
 
   let site: string;
   try { site = writeSite(run, files); } catch (cause) { return refuse('write', `the site could not be written (${cause instanceof Error && cause.message.startsWith('invalid') ? cause.message : errno(cause)})`); }
