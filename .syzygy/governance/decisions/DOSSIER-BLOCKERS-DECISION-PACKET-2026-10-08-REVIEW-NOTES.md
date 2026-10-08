@@ -13,7 +13,9 @@ only three findings marked low (N1, N3, N4) and two notes (N2, N5). Under the
 owner's notes-only rule
 (`POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1), that round clears the
 bytes it read. The notes are therefore recorded here, and the packet and the
-register rows are left unedited.
+register rows are left unedited. *(Corrected 2026-10-08: the packet is still
+unedited. The register is state rather than the packet, so on the lead's
+direction its N1 sentences were corrected in place; see N1.)*
 
 Read the packet together with these corrections. Each one supersedes the
 packet wording it names, for a reader of the packet.
@@ -28,6 +30,10 @@ commit and stopped being true once the packet's round 1 ran.
 **Read as:** no *confirming* review of either candidate package has run.
 Each package's own review state is in `docs/README.md`'s campaign table, and
 each decision is still offered only after a confirming review of its package.
+
+*Corrected in the register, 2026-10-08:* the two row sentences and the dated
+note's sentence now carry a dated correction at the sentence, with the
+original wording quoted, and they state each package's current review state.
 
 ## N2 — the dated note names the pre-rebase base (note)
 
