@@ -1,11 +1,11 @@
 {
   "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; and the continuation disclosure in waiting-sessions.ts and render.ts. Not authority.",
   "measuredOn": {
-    "commit": "28015c67fce4e84e542cc9d4b09f18eaa59bfecd",
+    "commit": "439c8afe211ea4daf545745c0124c2f685c472dd",
     "subjects": [
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.ts",
-        "sha256": "0e44c3b3334b3d0c07e9260d08ca3807a96724b77671fbc9299837dba42ee2fa"
+        "sha256": "ba13d2dc969938ac03ab2955a6deeed0d05a7cc6bb6de9817f3a4f2e84f8a31c"
       },
       {
         "path": "packages/polaris-dossier/src/session-handover.ts",
@@ -17,11 +17,11 @@
       },
       {
         "path": "packages/polaris-dossier/src/render.ts",
-        "sha256": "5a5861f9307c5a1412580239ed2d9efde802894fba47614da88cbaa2dbc579a4"
+        "sha256": "20e368e39f07c79115f4da3e16e19f18fcd69f17250b9a05bc270a2c36c53b57"
       },
       {
         "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
-        "sha256": "260428904006a1ed08991c9e36b3a9fb0ebb6146952784a337f628756f6a6c38"
+        "sha256": "e68a6708d30de5d79b6617b36c85a073aeb542c4e0c6530a48fcba61fce21eab"
       }
     ]
   },
