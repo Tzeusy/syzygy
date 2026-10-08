@@ -1,0 +1,103 @@
+{
+  "subject": {
+    "commit": "4c50da97628b0c550e54bb66060af5916779933e",
+    "branch": "governance/dossier-blockers-install-followup",
+    "fileSha256": {
+      "packages/polaris-generation-core/src/public-source-classification.ts": "5d3cb7538eec7e90b6a711eb741cb7a59d401029365c72b8c13ec2c56fcba32c"
+    },
+    "testFileSha256": {
+      "packages/polaris-generation-core/src/public-source-exemption.test.ts": "9adb6fd45d08bf0281226074767b2c2cb8e5b7b7009fc451b081c3b4355d185e"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-08T20:49:51+00:00",
+  "mutants": [
+    {
+      "id": "exemption-ext-shape-removed",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "if (!extensions.every(entry => EXTENSION_SHAPE.test(entry) && !entry.includes('..'))) {",
+      "new": "if (false) {",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-regex",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "EXTENSION_SHAPE.test(entry) && !entry.includes('..')",
+      "new": "!entry.includes('..')",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-dotdot",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "EXTENSION_SHAPE.test(entry) && !entry.includes('..')",
+      "new": "EXTENSION_SHAPE.test(entry)",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-slash",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const EXTENSION_SHAPE = /^\\.[^/\\s]+$/u;",
+      "new": "const EXTENSION_SHAPE = /^\\.[^\\s]+$/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-space",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const EXTENSION_SHAPE = /^\\.[^/\\s]+$/u;",
+      "new": "const EXTENSION_SHAPE = /^\\.[^/]+$/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-dot",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const EXTENSION_SHAPE = /^\\.[^/\\s]+$/u;",
+      "new": "const EXTENSION_SHAPE = /^\\.?[^/\\s]+$/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 37
+    },
+    {
+      "id": "exemption-ext-shape-nonempty",
+      "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "old": "const EXTENSION_SHAPE = /^\\.[^/\\s]+$/u;",
+      "new": "const EXTENSION_SHAPE = /^\\.[^/\\s]*$/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/public-source-exemption.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 37
+    }
+  ]
+}
