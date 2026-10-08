@@ -85,7 +85,12 @@ Each is a yes/no question with the evidence that settles it.
    in the session's directory, and only there) a write by the session in
    another form, or within the owner's words? Is "where the agent tool offers
    no rules that narrow, Syzygy SHALL print no pre-approval and SHALL say so"
-   right for Codex?
+   right for Codex? Does the rule that every printed hand-over passes its
+   content "so that the shell expands nothing in it" close the path by which
+   quoted project text could run, and are the residuals the delta names
+   outside the printed command (the operator's own settings layers,
+   subagents, an output redirection) labelled as Inferred or Unknown rather
+   than claimed closed?
 3. **Is the continuing reviewer disclosed as the owner required?** Is the
    disclosure required for every counted verdict, on the review page, with
    the anchoring cost stated? Is detecting continuity by delivered rounds

@@ -56,7 +56,7 @@ install, not by this package.
 
 R2 passing on the applied bytes is the gap the v1.1 package named; the v1.2
 builder closes it (see Dependents, Tooling). [Observed] A rehearsal of the
-recording in a throwaway clone at `d930b6bc`, with a synthetic raw, applied
+recording in a throwaway clone at `a544be7a`, with a synthetic raw, applied
 the patches through `record_versioned_signoff.py --record`, which moved the
 status figure to (36, 248); `--check` then passed for 1.0, 1.1 and 1.2 and
 every dossier builder's `--check` passed. R5 then failed once, on the
@@ -92,8 +92,9 @@ this package. The direction's ID was first drafted with its local date,
   `cli.ts` (`session-prompt … all|--fresh`, `await`, exit 3) and `render.ts`
   (the continuity item and the review-status note). Each wait-mode step
   refuses until a `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or
-  later) record exists, so v1.1 behaviour is unchanged while this package is
-  unsigned. Tests: `waiting-sessions.test.ts`, 44 tests, 50 of 50 mutants killed; rule-6 mutants in
+  later) record exists with the recorder's head and exactly one marked block
+  for its version in `ACCEPTANCE-ACT-RECORD.md`, so v1.1 behaviour is
+  unchanged while this package is unsigned. Tests: `waiting-sessions.test.ts`, 44 tests, 50 of 50 mutants killed; rule-6 mutants in
   `docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json`.
 - **Agent texts.** The `/polaris-dossier` skill and the Codex instructions
   describe the v1.1 hand-over at their step 8 and do not mention waiting

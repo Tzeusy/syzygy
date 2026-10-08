@@ -19,9 +19,12 @@ review page.
 `main` (tag `polaris-dossier-local-agent-mode-v1.1`; the spec last changed at
 `32a067aa`). Three files move, by the patches under `proposed/`:
 
-- `specs/polaris-generation/spec.md` (`spec.md.patch`);
+- `specs/polaris-generation/spec.md` (`spec.md.patch`), including its
+  header line, which moves from "Exact behavioral delta, version 1.1" to
+  version 1.2, names the v1.1 sign-off record beside the v1.0 one, and says
+  the bytes bind only by the sign-off of version 1.2 (non-normative);
 - `design.md` (`design.md.patch`);
-- `proposal.md` (`proposal.md.patch`).
+- `proposal.md` (`proposal.md.patch`), including its version line.
 
 `GOVERNING-DEPENDENCIES.md` is regenerated on install
 (`check_spec_reconciliation.py --regenerate`) and gains the decision
@@ -107,8 +110,10 @@ At v1.1, REQ-polaris-generation-035:
    under its own directory that the command reads; Syzygy writes the content
    into the session's directory under the role's own file name (the
    inventory, or the verdict of a round Syzygy delivered), and only there".
-   "A waiting session SHALL NOT carry the execution permission of
-   REQ-polaris-generation-033."
+   Content passed to the command may quote the observed project, so "every
+   instruction Syzygy prints for passing content SHALL pass it so that the
+   shell expands nothing in it, and SHALL say so." "A waiting session SHALL
+   NOT carry the execution permission of REQ-polaris-generation-033."
 5. **A continuing reviewer, disclosed.** "One waiting review session MAY
    receive the packet of each later revision of its subject as its next
    round", and its verdict is validated and counted under the existing rules,
@@ -121,8 +126,18 @@ At v1.1, REQ-polaris-generation-035:
    the declared session identifiers lie within the sessions' write reach, so
    "that a waiting session read the packet Syzygy delivered, unaltered, that
    the operator used the printed command, that the agent tool applied the
-   printed pre-approval as written, and a reviewer's continuity or its
-   absence are Inferred, and no surface states them as Observed."
+   printed pre-approval as written, that no allow rule in a settings layer
+   the operator keeps outside the printed command (the agent tool's user,
+   project or local settings) widens what the session may run unattended,
+   that the session started no subagent, which would act with the same
+   pre-approval, and a reviewer's continuity or its absence are Inferred;
+   whether the agent tool's rule for the one command admits an output
+   redirection, a write outside the role's own file, is Unknown; and no
+   surface states any of them as Observed." The printed pre-approval is
+   narrowed where the tool allows it (the implementation also denies the
+   write, web and subagent tools and loads no MCP server), but no printed
+   flag reaches the operator's own settings layers, so that residual is
+   named rather than claimed closed.
 
 Four scenarios carry these: "Waiting session started before its packet",
 "Packet delivered to a waiting session", "Printed pre-approval for a waiting
@@ -217,7 +232,11 @@ code becomes conformant only once these bytes are signed.
   moves `PROJECT-STATUS.md`'s figure itself.
 - The wait-mode code refuses every wait-mode step until a
   `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or later) record exists
-  in `decisions/`, so a v1.1 run behaves the same with it present. That gate
+  in `decisions/` with the head `record_versioned_signoff.py` writes (title,
+  package, version, tag, a 40-hex reviewed commit and a confirming verdict)
+  and exactly one marked block for that version in
+  `ACCEPTANCE-ACT-RECORD.md`, so a v1.1 run behaves the same with the code
+  present, and a file that only carries the name opens nothing. That gate
   does not lift the direction's order: "The code may merge only once version
   1.2 is signed off". The proposed order is review, sign-off, recording,
   then merging the code.
