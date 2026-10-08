@@ -52,9 +52,23 @@ The supersession sentence is the egress record's version-2 form
   list (`class-not-consented`). Under version 1, Redis's docs spans are
   therefore withheld from packets.
 - [Inferred] With version 2 in force, README and docs spans that screening
-  admits may go into Syzygy's own inventory and review packets for Redis; a
-  dossier's overview can then be fidelity-reviewed against the project's own
-  explanation of itself instead of rendering Unknown.
+  admits may go into Syzygy's fidelity review packet and into the rendered
+  site that the design review packet carries, for Redis. These are the two
+  agent-bound artifacts `class-gate.ts` gates; the inventory brief carries no
+  target bytes. A dossier's overview can then be fidelity-reviewed against
+  the project's own explanation of itself instead of rendering Unknown.
+  This holds only while Redis is a subject whose run relies on a statement.
+  [Observed] `governed.ts:54` sets `statementRequired` false for a
+  non-governed subject, and `class-gate.ts` then withholds
+  `project-documentation` because no statement is relied on. Redis is
+  `unstated` today, since no drawer act is recorded. If the owner also
+  performs the no-evidence-drawer act, Redis becomes non-governed and version
+  2 has no effect on packets [Inferred].
+- [Observed] Consequence for open runs: `reverify.ts:159-160` refuses with
+  `statement-changed` when the in-force statement differs from the one the
+  run relies on. After version 2's instant, every Redis run opened under
+  version 1 refuses at its next step and must be restarted. This is
+  fail-closed, and it is intended.
 
 ## Why a new package
 
@@ -76,6 +90,37 @@ statement gate knows only version 1:
 - The withdrawal sweep reads the Record ID as a stem (`:230`), and the
   version-2 act names the same Record ID, so without a version-aware form the
   version-2 act record would read as a record naming version 1.
+- **The reverse direction too** (round 1 of this package, finding 2).
+  Version 2's artifact has version 1's basename,
+  `AGENT-PROVIDER-STATEMENT-ANTHROPIC.md`. `sittingForm` puts the basename in
+  the stems (`:181`), and `namesDigestBoundAct`
+  (`packages/polaris-generation-consent/src/package-reader.ts:570-576`)
+  matches stems in the text and on the field lines of every other decisions
+  file. Version 1's act record carries that basename on its `Artifact
+  identity:` line
+  (`decisions/DOSSIER-LOCAL-AGENT-REDIS-AGENT-ANTHROPIC-ACT.md:15`). So a
+  version-2 form built in version 1's pattern would read version 1's act
+  record, and its `ACCEPTANCE-ACT-RECORD.md` block, as naming version 2.
+  `providerStatement` would then mark version 2 withdrawn (`:271`). The
+  version-aware form must exempt each version's own predecessor and successor
+  records from the other's sweep, in both directions.
+- **Prerequisite: the `--tool` override (`syzygy-up98`, being fixed in code
+  separately).** `session-handover.ts:143` reads
+  `const tool = request.tool ?? declared.agentTool;`. A helper session may
+  therefore run under any tool in `AGENT_TOOLS`, `codex` included. The packets
+  are class-gated on the run's declared pair (`reverify.ts:163`), not on the
+  session's pair. With version 2 in force,
+  `session-prompt <run> review --kind fidelity --tool codex` would hand
+  `project-documentation` spans to a Codex session, and so to OpenAI, which
+  no statement covers [Inferred by the round-1 reviewer]. The route exists
+  for version 1's classes already; version 2 widens what travels it. The
+  version-2 act should not be installed until `session-prompt` refuses a
+  tool whose pair has no in-force statement, or gates on the session's pair.
+- **`preflight.ts` filters on its own** (`:50`). It lists every unwithdrawn,
+  act-bound, in-force statement with a class, without going through
+  `liveStatements`. If version 1's term ends only inside the gate, preflight
+  reports both versions in force. End the term in the source
+  (`statementsFor`), so the gate and preflight agree.
 - `providerStatementGate` refuses when more than one in-force statement names
   the pair (`:304`): version 2 must end version 1's term at its own instant,
   as `package-reader.ts` does for the policy chain.

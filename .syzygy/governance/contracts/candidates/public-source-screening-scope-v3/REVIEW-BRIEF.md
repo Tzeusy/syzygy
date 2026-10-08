@@ -59,8 +59,12 @@ confirming review).
 
 ## Recording
 
-Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-V3-1-RAW.md`. **The raw's head is a predicate
+Store the raw verbatim under `docs/reviews/` as
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-V3-<n>-RAW.md`, where `<n>` is the round
+number. Round 1 is `R-PUBLIC-SOURCE-SCREENING-SCOPE-V3-1-RAW.md` (`REVISE`),
+and its findings are repaired in the delta, the ledger and the builder. A
+round-2 reviewer checks those repairs against that raw and then applies
+every criterion above afresh. **The raw's head is a predicate
 a recorder will enforce:** the first four non-blank lines are the title and
 exactly
 

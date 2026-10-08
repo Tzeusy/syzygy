@@ -34,23 +34,62 @@ from this page. Known members [Observed by the sweep above]:
   `POLICY_ACT_FORMS` entry (file, title, identity) and extends the chain to
   version 3 needing version 2, later and over other bytes, with its
   supersession naming version 2's record path and argument.
-- **The version-2 recorder's battery line.** `record_public_source_screening_scope_v2_act.py --check`
-  in `PROJECT-STATUS.md` and `.github/workflows/governance-docs.yml` checks
-  the applied subject, so it fails after a version-3 act by design; the
-  version-3 recorder's line replaces it (the CG-26 triple, once).
-- **The two consumers that run the scan.** `packages/polaris-dossier/src/screen.ts:85`
-  and `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:138`
-  call `scanActiveContent` on every body. Without a code change they keep
-  withholding the C files under the version-3 bytes: the act alone admits
-  nothing. Each must read `codeContentExemption.exemptExtensions`, skip the
-  scan only for a code-content body whose extension it lists, and keep the
-  scan for every other body. [Observed] Since PR #403, both consumers take
-  a path's class from one shared function, `publicSourceContentClass` in
+- **The version-2 recorder's two battery lines.** These are
+  `record_public_source_screening_scope_v2_act.py --check` and `--selftest`,
+  at `PROJECT-STATUS.md:403-404` and
+  `.github/workflows/governance-docs.yml:222-226`. Both fail after a version-3
+  act. `--check` checks the applied subject. `--selftest` crashes, because the
+  version-2 builder refuses a policy that is neither its base nor its row
+  [Observed by the package's round-1 reviewer, who simulated the act]. The
+  version-3 recorder's lines replace all four (the CG-26 triple, once).
+- **`check_governance.py` CG-7e.** [Observed by the same simulation] after a
+  version-3 act, CG-7e fails six ways:
+  - the version-2 manifest, the version-2 act record (its bare `Exact digest`
+    line) and `ACCEPTANCE-ACT-RECORD.md` each "does not contain its current
+    argument";
+  - the version-3 manifest is in neither act-copy registry.
+
+  This package registers the version-3 manifest now, gated on the version-3
+  act record's existence (`_activate_public_source_scope_v3_copy_registry`),
+  so the registration does nothing before the act. The version-2 copies need
+  historical pinning at install, as after earlier superseding acts; a
+  version-3 recorder cannot supply that.
+- **The two screens and the three call sites that use them.** The screens
+  are `packages/polaris-dossier/src/screen.ts:85` and
+  `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:138`.
+  Both run `scanActiveContent` on every body. Three non-test call sites
+  screen a blob body:
+  - `apps/three-surface-poc/src/polaris-generation/repo-corpus.ts:227`;
+  - `packages/polaris-dossier/src/check.ts:577`;
+  - `packages/polaris-dossier/src/review.ts:188`.
+
+  The other three `screenBody(` callers (`render.ts:257`, `render.ts:360`,
+  `close.ts:124`) screen agent text, and use only the secret result.
+
+  Without a code change, the screens keep withholding the C files under the
+  version-3 bytes: the act alone admits nothing. `screenBody(body)` carries
+  no path and no class, so the change must give the screen the body's path or
+  class. It skips the scan only for a code-content body whose extension
+  `exemptExtensions` lists, and keeps it for every other body.
+
+  That decision is one per body, not per sink: the exempt body is
+  screening-admitted everywhere (`egress`). Only a page sink that cannot meet
+  `renderCondition` scans again, and only for that page. [Observed] Since
+  PR #403, both screens take a path's class from one shared function,
+  `publicSourceContentClass` in
   `packages/polaris-generation-core/src/public-source-classification.ts`
   (`screen.ts:5`, `public-source-screening.ts:43`). That module is one home
-  from which both could read the exemption. The render condition is met by the renderer as it
-  stands (see the delta); the change should add a test that fails if a
-  renderer path stops encoding.
+  from which both could read the exemption. The renderer as it stands meets
+  the render condition (see the delta). The change should add a test that
+  fails if a page path stops encoding, or if a page loses its CSP or moves it
+  after body bytes.
+- **The app reader's act port (pre-existing).** `checkoutPolicyActPort`
+  (`public-source-screening.ts:72`) reads only the version-1 act record
+  (`PUBLIC_SOURCE_ACT_RECORD_PATH`, `:51`). [Inferred by the round-1
+  reviewer, from the code and the records; not run] It has refused on the
+  real checkout since the version-2 act. Its file says it has "no production
+  caller" (`:36`). This is PR #403's F3, tracked as `syzygy-p83h`. Teaching
+  this screen the exemption needs that reader moved to the act chain first.
 - **The Butlers read gate** pins the policy by digest and then version (the
   version-2 ledger's statement), so it refuses until re-pinned, as after
   versions 1 and 2. [Observed] the source files that name the policy path
@@ -66,9 +105,9 @@ from this page. Known members [Observed by the sweep above]:
   `governance-inputs.test.ts` and the version-2 recorder
   (`scripts/record_public_source_screening_scope_v2_act.py`). Each source pin
   moves to the chosen variant's version at install, with its test.
-- `scripts/check_governance.py`, `check_spec_reconciliation.py` and
-  `simulate_redis_sitting.py` name the policy path; whether each pins the
-  digest is for the installer to derive [Unknown at drafting].
+- `check_spec_reconciliation.py` and `simulate_redis_sitting.py` name the
+  policy path. Whether each pins the digest is for the installer to derive
+  [Unknown at drafting]. `check_governance.py` is covered above.
 
 ## Population this reaches
 
@@ -90,7 +129,8 @@ does not change (round-1 review, finding 5):
   the agent session already reads the whole clone and the provider already
   receives code-content.
 - **What Syzygy renders.** Every exempt body becomes quotable on a page. Its
-  only remaining guards are `renderCondition` and the secret detectors.
+  remaining guards are `renderCondition`, the base `renderRule` and the
+  secret detectors.
 
 ## What is unchanged
 

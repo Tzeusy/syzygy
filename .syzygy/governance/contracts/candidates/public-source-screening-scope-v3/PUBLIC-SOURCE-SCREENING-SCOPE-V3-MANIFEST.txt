@@ -4,5 +4,5 @@
 # (the version-2 policy, variant none, with that variant's
 # proposed/<name>.<variant>.patch applied). The owner picks at most one row;
 # that row is the argument of one superseding approve-policy act.
-8f70c736478dd23d848dbdb2a23a840140c7c506af1405d26a997d245bd71027  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: all]
-44b8aab8f92d940e18be5a27bf4466f84a4eef6f8796601d922de37bc09b2334  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: non-web]
+c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: all]
+61f384d4ddea3ab5a2b4724eaef316e524f4f3e8353bf05a07065600efac0a5a  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: non-web]

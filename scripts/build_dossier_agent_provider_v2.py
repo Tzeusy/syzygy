@@ -19,8 +19,9 @@ has one row, the argument of one new owner act over this record.
   --check            fail if the record or the manifest differs from its
                      regeneration, the record differs from its predecessor
                      beyond the declared lines, an instance directory holds a
-                     record nothing produces, or a package Markdown file
-                     outside `instances/` carries a 64-hex token
+                     record nothing produces, or a package Markdown file at
+                     any depth outside `instances/` and `reviews/` (round
+                     dispositions excepted) carries a 64-hex token
   --digests          print the manifest row (refuses while stale)
   --manifest-digest  print the SHA-256 of the manifest FILE (refuses while stale)
   --selftest         one mutant per predicate; each must be caught
@@ -147,9 +148,12 @@ def stale(root: pathlib.Path = ROOT) -> list[str]:
     m = root / PKG / MANIFEST_NAME
     if not m.is_file() or m.read_text(encoding="utf-8") != manifest:
         out.append(f"{MANIFEST_NAME}: stale or missing")
-    for md in sorted((root / PKG).glob("*.md")):
-        if not DISPOSITIONS.match(md.name) and HEX64.search(md.read_text(encoding="utf-8")):
-            out.append(f"{md.name}: carries a 64-hex token")
+    for md in sorted((root / PKG).rglob("*.md")):
+        rel = md.relative_to(root / PKG)
+        if rel.parts[0] in ("instances", "reviews") or DISPOSITIONS.match(md.name):
+            continue
+        if HEX64.search(md.read_text(encoding="utf-8")):
+            out.append(f"{rel.as_posix()}: carries a 64-hex token")
     return out
 
 
@@ -223,6 +227,12 @@ def selftest() -> int:
     def digest_in_md(tmp):
         (tmp / PKG / "SEMANTIC-DELTA.md").write_text("argument " + "a" * 64 + "\n")
     caught("a digest in a package Markdown file refused", digest_in_md, "64-hex")
+
+    def digest_in_template_header(tmp):
+        # The renderer replaces the template's header blockquote, so only the Markdown sweep can see this token.
+        p = tmp / PKG / "templates/AGENT-PROVIDER-STATEMENT-TEMPLATE-V2.md"
+        p.write_text(re.sub(r"^> ", "> " + "b" * 64 + " ", p.read_text(), count=1, flags=re.M))
+    caught("a digest in a template's header refused", digest_in_template_header, "templates/AGENT-PROVIDER-STATEMENT-TEMPLATE-V2.md: carries a 64-hex token")
 
     def unfilled(tmp):
         p = tmp / PKG / "templates/AGENT-PROVIDER-STATEMENT-TEMPLATE-V2.md"

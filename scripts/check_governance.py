@@ -3482,6 +3482,27 @@ def _activate_public_source_scope_v2_copy_registry():
 _activate_public_source_scope_v2_copy_registry()
 
 
+#: The public-source screening scope, version 3 (`syzygy-wsev`, register row
+#: P-105): one `approve-policy` act over ONE of two manifest rows (variants
+#: `all`, `non-web`), reusing the policy's phrase label and superseding the
+#: version-2 act. Registered at drafting time and gated on the performed record,
+#: for the reason the version-2 registration gives; the version-2 copies' historical
+#: pinning and the chain link arrive with the act.
+PUBLIC_SOURCE_SCOPE_V3_DIR = f"{CANDIDATES}/public-source-screening-scope-v3"
+PUBLIC_SOURCE_SCOPE_V3_MANIFEST = f"{PUBLIC_SOURCE_SCOPE_V3_DIR}/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt"
+PUBLIC_SOURCE_SCOPE_V3_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"
+
+
+def _activate_public_source_scope_v3_copy_registry():
+    """The version-3 manifest is a current copy of the policy argument once the act exists."""
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V3_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
+_activate_public_source_scope_v3_copy_registry()
+
+
 #: The act-time digests the specification-policy restyle supersedes as the
 #: current policy state: act 7's CC-IMPACT argument and the bootstrap
 #: transaction's CC-SPEC row (row 5 of its act, line 11 of its manifest).

@@ -353,6 +353,16 @@ CAMPAIGNS = (
         "Redis dossier blockers packet",
         r"R-PR404-DOSSIER-BLOCKERS-.*\.md",
     ),
+    campaign(
+        "public-source-screening-scope-v3",
+        "Screening scope version 3",
+        r"R-PUBLIC-SOURCE-SCREENING-SCOPE-V3-.*\.md",
+    ),
+    campaign(
+        "dossier-agent-provider-v2",
+        "Agent-provider statement version 2",
+        r"R-DOSSIER-AGENT-PROVIDER-V2-.*\.md",
+    ),
 )
 
 

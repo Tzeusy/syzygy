@@ -13,10 +13,12 @@ changes two values inside `publicSourceScope` and nothing else:
 
 - `activeContent` gains `codeContentExemption`: a code-content body whose
   extension the chosen variant lists is admitted without the active-content
-  scan, only while every sink renders it as entity-encoded text under a
-  script-forbidding Content-Security-Policy; every detector still runs;
+  scan, only while every page sink (a document an HTML or SVG parser reads)
+  writes it as entity-encoded text under an enforced, script-forbidding
+  Content-Security-Policy; every other place it reaches is governed by egress;
+  every detector still runs, and `renderRule` still binds it;
 - `inheritedRules` says the base active-content classification applies except
-  where that exemption exempts a body.
+  the scan and the malformed-context exclusion for an exempt body.
 
 `policyVersion` moves to the next minor, with the version-2 variant name kept
 and the version-3 variant appended (`.none.code-all`, `.none.code-non-web`).
@@ -74,32 +76,44 @@ EXEMPTION_RULE = (
     "a<b && c>d as an HTML tag, and an unpaired backtick in source as a code context that never closes). Every "
     "detector still runs over the whole body; the denied-path, strict-UTF-8, NUL and resource-limit rules are "
     "unchanged; a project-documentation body, or a code-content body this exemption does not name, is scanned as "
-    "before")
+    "before. The exemption reaches those three steps and nothing else: activeContentClassification.renderRule, "
+    "and the encoding of selected text for its destination, still bind such a body at every place it reaches")
+RENDER_SENTENCE = "activeContentClassification.renderRule, and the encoding of selected text for its destination, still bind"
 RENDER_CONDITION = (
-    "the exemption holds for a sink only while that sink renders such a body, or any span of it, as text: every one "
-    "of the characters & < > \" ' is written as a character reference, the bytes are never parsed as Markdown or "
-    "HTML and never mint a link, element, attribute, script or handler, and the page carries a "
-    "Content-Security-Policy whose default-src is 'none' and which carries no script-src, script-src-elem, "
-    "script-src-attr or object-src directive. A consumer that cannot confirm this for a sink scans the body as "
-    "before for that sink, and excludes it whole on a finding")
+    "a page is a document an HTML or SVG parser reads, and a page sink is a place where such a body's bytes, or a "
+    "span of them, are written into a page. The exemption holds for a page sink only while it writes the body or "
+    "span as text: every one of the characters & < > \" ' is written as a character reference, the bytes are never "
+    "parsed as Markdown or HTML and never mint a link, element, attribute, script or handler, and the page carries "
+    "an enforced Content-Security-Policy, delivered before any of the body's bytes, whose default-src source list "
+    "is exactly 'none' and which carries no script-src, script-src-elem, script-src-attr or object-src directive. A "
+    "consumer that cannot confirm this for a page sink scans the body as before for that sink, and excludes it whole "
+    "there on a finding. Every other place such a body or a span of it reaches is not a page sink; egress governs it")
 #: A later directive overrides default-src for its own fetch type, so the condition names each one it forbids.
 FORBIDDEN_CSP_DIRECTIVES = ("script-src", "script-src-elem", "script-src-attr", "object-src")
+#: What the condition must say about the CSP itself (round-1 review, finding 3), and how it defines its sink (finding 1).
+CSP_TERMS = ("an enforced Content-Security-Policy", "delivered before any of the body's bytes",
+             "default-src source list is exactly 'none'")
+SINK_TERMS = ("a page is a document an HTML or SVG parser reads", "Every other place such a body or a span of it "
+              "reaches is not a page sink; egress governs it")
 EGRESS_RULE = (
-    "the exemption changes no egress or consent rule: a span of such a body reaches an agent session or a provider "
-    "only under the rules that already govern code-content")
+    "the exemption changes no egress or consent rule. At every place that is not a page sink (a review packet, a "
+    "provider request, a discovery excerpt, a stored record), an exempt body or a span of it counts as "
+    "screening-admitted code-content, reaches an agent session or a provider only under the rules that already "
+    "govern code-content, and is encoded for that destination's format as renderRule requires")
 ACTIVE_RULE = (
     "the base activeContentClassification, inertContextRule and the active-content condition of "
-    "classificationSuccess apply unchanged to every admitted body that codeContentExemption does not exempt, "
-    "Markdown or not: such a body with an active-content form outside a valid inert code context is excluded whole "
-    "as active content")
+    "classificationSuccess apply unchanged to every admitted body, Markdown or not, except the steps "
+    "codeContentExemption.rule lifts for a body it exempts: a body it does not exempt with an active-content form "
+    "outside a valid inert code context is excluded whole as active content, and renderRule binds every body")
 CONSEQUENCE = (
     "[Inferred] a source file whose only active-content finding was markup-like bytes outside a Markdown code "
     "context (a comparison, a generic type, a template literal, a string holding HTML) is admitted when its "
     "extension is exempt; the first public-target run (2026-10-08) withheld seven C files of its target for active "
     "content. A body a secret detector matches stays excluded whole")
 INHERITED_OLD = "activeContentClassification and the strict-UTF-8 and NUL rules"
-INHERITED_NEW = ("activeContentClassification (except where activeContent.codeContentExemption exempts a body) "
-                 "and the strict-UTF-8 and NUL rules")
+INHERITED_NEW = ("activeContentClassification (except that, for a body activeContent.codeContentExemption exempts, its "
+                 "active-content forms are not scanned for and malformedContextAction does not apply; its renderRule "
+                 "binds every body) and the strict-UTF-8 and NUL rules")
 
 
 def patch_path(variant: str) -> pathlib.Path:
@@ -119,8 +133,9 @@ def exemption(scope: dict, variant: str) -> dict:
     applies = ("a body this scope classifies code-content whose final path segment ends with one of "
                "exemptExtensions, compared case-sensitively as ASCII as sourceExtensions are")
     if variant == "non-web":
-        applies += ("; " + ", ".join(WEB_EXTENSIONS) + " are code-content but not exempt, because those languages "
-                    "commonly carry HTML in their source, and such a body is scanned as before")
+        applies += ("; " + ", ".join(WEB_EXTENSIONS) + " are code-content but not exempt, and such a body is scanned "
+                    "as before: they are the browser-side and server-templating languages, chosen as the variant's "
+                    "criterion and not as a claim that other languages carry no HTML")
     return {"appliesTo": applies, "exemptExtensions": exempt_extensions(scope, variant), "rule": EXEMPTION_RULE,
             "renderCondition": RENDER_CONDITION, "egress": EGRESS_RULE}
 
@@ -273,9 +288,15 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
     if ex.get("renderCondition") != RENDER_CONDITION:
         bad.append("the render condition is not the declared one")
     cond = ex.get("renderCondition", "")
-    if "default-src is 'none'" not in cond or any(not re.search(rf"(?<![\w-]){re.escape(d)}(?![\w-])", cond)
-                                                  for d in FORBIDDEN_CSP_DIRECTIVES):
-        bad.append("the render condition does not require default-src 'none' and forbid every script-bearing directive")
+    if any(t not in cond for t in CSP_TERMS) or any(not re.search(rf"(?<![\w-]){re.escape(d)}(?![\w-])", cond)
+                                                    for d in FORBIDDEN_CSP_DIRECTIVES):
+        bad.append("the render condition does not require an enforced, early default-src 'none' CSP and forbid every "
+                   "script-bearing directive")
+    if any(t not in cond for t in SINK_TERMS):
+        bad.append("the render condition does not define its page sink and route every other place to egress")
+    if (RENDER_SENTENCE not in ex.get("rule", "") or "renderRule binds every body" not in ac.get("rule", "")
+            or "its renderRule binds every body" not in s3.get("inheritedRules", "")):
+        bad.append("renderRule no longer binds an exempt body")
     if ex.get("egress") != EGRESS_RULE:
         bad.append("the egress statement is not the declared one")
     if ex != exemption(s3, variant):
@@ -419,10 +440,28 @@ def selftest() -> int:
                     "renderCondition", re.sub(rf"(?<![\w-]){re.escape(directive)}(?![\w-])", "frame-src",
                                               RENDER_CONDITION)),
                 "forbid every script-bearing directive")
-        sem("a render condition without default-src 'none' caught", "all",
+        for term in CSP_TERMS:
+            sem(f"a render condition without {term!r} caught", "all",
+                lambda d, term=term: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
+                    "renderCondition", RENDER_CONDITION.replace(term, "a Content-Security-Policy")),
+                "forbid every script-bearing directive")
+        for term in SINK_TERMS:
+            sem(f"a render condition without its sink term {term[:24]!r}… caught", "non-web",
+                lambda d, term=term: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
+                    "renderCondition", RENDER_CONDITION.replace(term, "")),
+                "does not define its page sink")
+        sem("an exemption rule that drops renderRule caught", "all",
             lambda d: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
-                "renderCondition", RENDER_CONDITION.replace("default-src is 'none'", "default-src is 'self'")),
-            "forbid every script-bearing directive")
+                "rule", EXEMPTION_RULE.split(" The exemption reaches those three steps")[0]),
+            "renderRule no longer binds")
+        sem("inheritedRules that lift renderRule caught", "non-web",
+            lambda d: d[SCOPE_KEY].__setitem__("inheritedRules", d[SCOPE_KEY]["inheritedRules"].replace(
+                "; its renderRule binds every body", "")),
+            "renderRule no longer binds")
+        sem("an active-content rule that lifts renderRule caught", "all",
+            lambda d: d[SCOPE_KEY]["activeContent"].__setitem__("rule", ACTIVE_RULE.replace(
+                ", and renderRule binds every body", "")),
+            "renderRule no longer binds")
         sem("a dropped detector sentence caught", "all",
             lambda d: d[SCOPE_KEY]["activeContent"]["codeContentExemption"].__setitem__(
                 "rule", EXEMPTION_RULE.replace("Every detector still runs over the whole body; ", "")),
