@@ -363,6 +363,11 @@ CAMPAIGNS = (
         "Agent-provider statement version 2",
         r"R-DOSSIER-AGENT-PROVIDER-V2-.*\.md",
     ),
+    campaign(
+        "pr409-dossier-blockers-install",
+        "P-105/P-106 record and install",
+        r"R-PR409-DOSSIER-BLOCKERS-INSTALL-.*\.md",
+    ),
 )
 
 

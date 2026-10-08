@@ -57,6 +57,12 @@ describe('reading the exemption', () => {
     const read = readCodeContentExemption(scope(), SOURCE(ALL));
     expect(read.ok).toBe(false);
   });
+  // R-PR409-DOSSIER-BLOCKERS-INSTALL-1 N4: the shape is the reader's own check, so a caller whose sourceExtensions carry a slash (which
+  // codeContentExempt's final-segment match could never meet) is refused here rather than relying on that caller's validation.
+  it.each([['x/y.c'], ['. c'], ['..c'], ['c'], ['.']])('refuses an exempt extension %j shaped other than a dot and a name, even when the caller lists it', entry => {
+    const read = readCodeContentExemption(withExemption(ALL, { ...exemptionOf(ALL), exemptExtensions: ['.c', entry] }), [...SOURCE(ALL), entry]);
+    expect(read).toEqual({ ok: false, why: 'its code-content exemption exemptExtensions lists an entry that is not a dot followed by no slash, no whitespace and no `..`' });
+  });
 });
 
 describe('which bodies are exempt', () => {
