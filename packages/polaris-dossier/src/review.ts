@@ -267,6 +267,7 @@ const PACKET_DISCLOSURES = [
   'Syzygy built this packet at this step from the frozen draft, the inventory of record and Git objects read by identifier at the pinned revision and re-hashed now; the packet and its digest are Observed at this step.',
   'The emitted packet lies within the agent sessions\' write reach, so that the review session read it unaltered is Inferred; the digest beside it lets the session re-hash it, a cheap check, not a proof.',
   `The inventory's completeness is Inferred: ${INVENTORY_INFERRED.completeness}.`,
+  'The content-class gate covers only the spans Syzygy read: a span whose class the run\'s statement does not list carries no byte, but the draft and the inventory the packet carries are the agents\' own text and may quote that span verbatim.',
 ];
 
 const DESIGN_PACKET_DISCLOSURES = [
