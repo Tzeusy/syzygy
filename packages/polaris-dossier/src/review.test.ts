@@ -10,7 +10,7 @@ import { checkDraft, type CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
 import { verdictSchemaDocument } from './draft-schema.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
-import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState, type ProviderStatementRecord } from './gate-sources.js';
 import { checkInventory, openRun } from './inventory.js';
 import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
@@ -77,7 +77,8 @@ const tempDir = (prefix: string): string => {
 
 // R-PR403-SCREEN-DOCS-1 finding 1: the class-gate tests run in a world with the project-documentation screen and, for a governed
 // subject, one in-force per-project statement listing `classes`; every other test runs with `world` null, as before.
-let world: { readonly screen: ScreenLoad; readonly classes: readonly string[] | null } | null = null;
+// syzygy-up98: `others` are further statements of the subject, for the session-prompt --tool tests.
+let world: { readonly screen: ScreenLoad; readonly classes: readonly string[] | null; readonly others?: readonly ProviderStatementRecord[] } | null = null;
 afterEach(() => { world = null; });
 const STATEMENT_ID = 'STATEMENT-KESTREL-ANTHROPIC';
 const subject = (clone: string): RunSubject => ({
@@ -102,7 +103,7 @@ const sources = (): GateSources => ({
   // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
   projectInput: { drawerFor: async () => ({ stated: true, drawer: world?.classes ? 'present' : 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: world?.classes ? {
-    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: world!.classes!, withdrawn: false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }],
+    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: world!.classes!, withdrawn: false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }, ...(world!.others ?? [])],
   } : NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
@@ -623,6 +624,59 @@ describe('the content-class gate on the fidelity packet', () => {
       ['src/kestrel.c', 'class-not-consented', 'code-content'], ['src/kestrel.c', 'class-not-consented', 'code-content'], ['src/kestrel.c', 'class-not-consented', 'code-content'],
     ]);
     expect(text).not.toContain('int main(void)');
+  });
+});
+
+// syzygy-up98 (R-DOSSIER-AGENT-PROVIDER-V2-1 finding 1): the packets are class-gated on the run's declared pair, so session-prompt
+// refuses a --tool whose pair with the run's provider has no in-force statement listing every class the run's statement lists.
+describe('session-prompt --tool and the session pair\'s statement', () => {
+  const RUN_CLASSES = ['code-content', 'project-documentation'];
+  const codex = (contentClasses: readonly string[], change: Partial<ProviderStatementRecord> = {}): ProviderStatementRecord => ({
+    recordId: 'STATEMENT-KESTREL-CODEX', version: '3', digest: 'b'.repeat(64), agentTool: 'codex', provider: 'anthropic', contentClasses,
+    withdrawn: false, act: { identity: 'CODEX-STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 }, ...change,
+  });
+  const handOver = async (others: readonly ProviderStatementRecord[] | null, request: Parameters<typeof sessionPrompt>[1]) => {
+    world = others === null ? null : { screen: SCREEN, classes: RUN_CLASSES, others };
+    const run = await prepared();
+    return { run, result: await sessionPrompt(run, request, { sources: sources(), now: () => LATER, loadScreen: screenOf }) };
+  };
+  const REVIEW = { role: 'review', kind: 'fidelity', tool: 'codex' } as const, INVENTORY = { role: 'inventory', tool: 'codex' } as const;
+
+  it.each<[string, readonly ProviderStatementRecord[], string]>([
+    ['no statement names codex', [], 'the session\'s agent tool codex with the run\'s provider anthropic has no per-project statement in force, so no session is handed over: no per-project statement names the operator\'s agent tool codex with the provider anthropic (STATEMENT-KESTREL-ANTHROPIC@1 names claude-code with anthropic)'],
+    ['the codex statement is withdrawn', [codex(RUN_CLASSES, { withdrawn: true })], 'no per-project statement naming the agent tool codex with the provider anthropic is in force: STATEMENT-KESTREL-CODEX@3 is withdrawn'],
+    ['the codex statement takes effect after now', [codex(RUN_CLASSES, { act: { identity: 'CODEX-STATEMENT-ACT-FIXTURE', inForceAt: LATER + 1 } })], 'STATEMENT-KESTREL-CODEX@3 is not in force yet'],
+    ['the codex statement names another provider', [codex(RUN_CLASSES, { provider: 'openai' })], 'no per-project statement names the operator\'s agent tool codex with the provider anthropic'],
+    ['the codex statement lists only code-content', [codex(['code-content'])], 'the per-project statement STATEMENT-KESTREL-CODEX@3 for the session\'s agent tool codex with the provider anthropic does not list project-documentation, which the run\'s statement lets its packets carry, so no session is handed over'],
+  ])('refuses a review and an inventory session when %s, and writes no session', async (_name, others, reason) => {
+    for (const request of [REVIEW, INVENTORY]) {
+      const { run, result } = await handOver(others, request);
+      expect(result.ok).toBe(false);
+      if (result.ok) continue;
+      expect(result.refusal).toMatchObject({ command: 'session-prompt', outcome: 'refused', stage: 'statement' });
+      expect(result.refusal.reason).toContain(reason);
+      expect(fs.readdirSync(path.join(path.dirname(run), `${RUN_ID}.sessions`)).sort()).toEqual(['session-1']);
+      expect(fs.existsSync(path.join(run, 'reviews', 'fidelity-session-1.json'))).toBe(false);
+      expect(fs.existsSync(path.join(run, 'inventory', 'session-2.json'))).toBe(false);
+    }
+  });
+
+  it.each<[string, readonly ProviderStatementRecord[] | null]>([
+    ['an in-force codex statement lists every class the run\'s lists', [codex([...RUN_CLASSES, 'governance-text'])]],
+    ['the run is non-governed and relies on no statement', null],
+  ])('hands a codex session over when %s', async (_name, others) => {
+    for (const request of [REVIEW, INVENTORY]) {
+      const { result } = await handOver(others, request);
+      if (!result.ok) throw new Error(result.refusal.reason);
+      expect(result.report.context).toMatchObject({ agentTool: 'codex', overridden: ['agentTool'], runDeclared: { agentTool: 'claude-code' } });
+      expect(result.report.commands.terminal).toContain(' && codex \'');
+    }
+  });
+
+  it('hands the declared tool\'s session over with no codex statement at all', async () => {
+    const { result } = await handOver([], { role: 'review', kind: 'fidelity' });
+    if (!result.ok) throw new Error(result.refusal.reason);
+    expect(result.report.context.agentTool).toBe('claude-code');
   });
 });
 
