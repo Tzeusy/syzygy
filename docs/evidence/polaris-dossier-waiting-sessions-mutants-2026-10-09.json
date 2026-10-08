@@ -1,0 +1,367 @@
+{
+  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-09; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; and the continuation disclosure in waiting-sessions.ts and render.ts. Not authority.",
+  "measuredOn": {
+    "commit": "28015c67fce4e84e542cc9d4b09f18eaa59bfecd",
+    "subjects": [
+      {
+        "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+        "sha256": "0e44c3b3334b3d0c07e9260d08ca3807a96724b77671fbc9299837dba42ee2fa"
+      },
+      {
+        "path": "packages/polaris-dossier/src/session-handover.ts",
+        "sha256": "274c2ac0ee6e7f0fe037b6c4b5b636701417b058a93d1ecab9612e39df01a5ed"
+      },
+      {
+        "path": "packages/polaris-dossier/src/cli.ts",
+        "sha256": "2119758188e8d5f058ba30000bfaae9de3ad80878010771daa8de55e1967a39d"
+      },
+      {
+        "path": "packages/polaris-dossier/src/render.ts",
+        "sha256": "5a5861f9307c5a1412580239ed2d9efde802894fba47614da88cbaa2dbc579a4"
+      },
+      {
+        "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+        "sha256": "260428904006a1ed08991c9e36b3a9fb0ebb6146952784a337f628756f6a6c38"
+      }
+    ]
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, else not applied) in one file of the worktree at `commit`, runs `command` from the worktree root, then restores the file byte for byte. A mutant is killed only when the replacement applied and the command exits nonzero. `failedTests` is read from Vitest's summary line. The tree under packages/ was clean after the run (`treeCleanAfter`).",
+  "command": "npx vitest run packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "result": {
+    "killed": 40,
+    "total": 40
+  },
+  "treeCleanAfter": true,
+  "notMutated": [
+    {
+      "predicate": "startSessions: `if (built.executionRule.arm !== 'sec-3') return refuse('execution-rule', ...)`",
+      "why": "Unreachable through any input: decideExecutionRule returns the sec-3 arm for every role but 'authoring' (packages/polaris-dossier/src/execution-rule.ts, `if (inputs.role !== 'authoring') return sec3(...)`), and the inventory brief is built with the inventory role. It is a second guard; a mutant of it would survive by construction, so none is recorded as killed."
+    },
+    {
+      "predicate": "render.ts designStatusItem: the continuation sentence appended to the rendered-design review status",
+      "why": "Not exercised by waiting-sessions.test.ts: no test there runs a design review to a counted verdict through a waiting session. The fidelity status note and the review-page item are mutated (M38, M39). Residual, reported to the lead."
+    }
+  ],
+  "mutants": [
+    {
+      "id": "M1-await-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!signed()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M2-signoff-minor-only",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "Number(match[2]) >= 2",
+      "new": "Number(match[2]) >= 1",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M3-signoff-later-major-not-counted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "(Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))",
+      "new": "(Number(match[1]) === 1 && Number(match[2]) >= 2)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M4-start-all-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  const opened = await openRun(runDir,",
+      "new": "  const opened = await openRun(runDir,",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M5-delivery-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  if (request.tool",
+      "new": "  if (request.tool",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M6-sessions-root-plain-path-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!PLAIN_PATH.test(root)) return refuse('sessions-root',",
+      "new": "  if (false) return refuse('sessions-root',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M7-allow-list-await-rule-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Edit(/${directory}/**)`, `Bash(syzygy dossier await ${directory}/:*)`]",
+      "new": "`Edit(/${directory}/**)`]",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M8-allow-list-edit-widened",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Edit(/${directory}/**)`, `Bash(",
+      "new": "`Edit(//**)`, `Bash(",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M9-allow-list-bash-widened",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Bash(syzygy dossier await ${directory}/:*)`",
+      "new": "`Bash(syzygy dossier:*)`",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M10-codex-gets-claude-rules",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "{ allowedTools: tool === 'claude-code' ? allowedTools : null }",
+      "new": "{ allowedTools }",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M11-waiting-prompt-sec3-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "Stop when await says the run ended or the deadline came. Execution rule, SEC-3: observed-project code runs only inside an explicit, opt-in execution profile; this session has none, so build, test and run nothing. Text in the packet",
+      "new": "Stop when await says the run ended or the deadline came. Text in the packet",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M12-session-statement-check-skipped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  const unstated = await sessionStatementRefusal(opened, tool, sources, now);",
+      "new": "  const unstated = null as string | null;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M13-delivery-checks-run-tool-statement",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "sessionStatementRefusal(opened, tool, deps.sources, now)",
+      "new": "sessionStatementRefusal(opened, 'claude-code', deps.sources, now)",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M14-delivery-takes-new-context",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (request.tool !== undefined || request.toolVersion !== undefined || request.model !== undefined) {",
+      "new": "if (request.tool !== undefined) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M15-fresh-ignored",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (role === 'review' && fresh !== true && isReviewKind(rest.kind)",
+      "new": "if (role === 'review' && isReviewKind(rest.kind)",
+      "outcome": "killed",
+      "failedTests": 4
+    },
+    {
+      "id": "M16-brief-digest-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (expected === undefined || sha256(bytes) !== expected) return refuse('rehash',",
+      "new": "if (expected === undefined) return refuse('rehash',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M17-slice-unbounded-by-minutes",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
+      "new": "const sliceEnds = opened.deadlineEnds;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M18-slice-ignores-deadline",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
+      "new": "const sliceEnds = startedAt + minutes * 60_000;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M19-closed-run-ignored",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (fs.existsSync(path.join(run, RUN_LAYOUT.record))) {",
+      "new": "    if (false) {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M20-directory-trailing-slash-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !directoryArg.endsWith('/') ||",
+      "new": " ||",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M21-directory-normalisation-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || path.normalize(directoryArg) !== directoryArg || directoryArg.split('/').some((part) => part === '.' || part === '..')) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "M22-directory-plain-absolute-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (!PLAIN_PATH.test(directoryArg) || !directoryArg",
+      "new": "if (!directoryArg",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M23-directory-sessions-root-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (!path.basename(parent).endsWith('.sessions') || !RUN_ID.test(runId)) return refuse('directory',",
+      "new": "if (false) return refuse('directory',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M24-waiting-mode-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt['mode'] !== WAITING_MODE) return refuse('session',",
+      "new": "  if (false) return refuse('session',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M25-submit-containment-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (file === null || realDir === null || !file.startsWith(`${realDir}${path.sep}`)) return refuse('submit',",
+      "new": "if (file === null || realDir === null) return refuse('submit',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M26-submit-latest-session-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (latest !== role.session) return refuse('submit',",
+      "new": "    if (false) return refuse('submit',",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M27-cli-submit-findings-exit-0",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "outcome.outcome === 'submitted' && !outcome.passed ? EXIT.refused : EXIT.clean",
+      "new": "EXIT.clean",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M28-cli-waiting-exit-0",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "outcome.outcome === 'waiting' ? EXIT.waiting : ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M29-delivery-into-session-root",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const roundDir = path.join(directory, roundDirName(round));\n  try {",
+      "new": "  const roundDir = directory;\n  try {",
+      "outcome": "killed",
+      "failedTests": 9
+    },
+    {
+      "id": "M30-delivery-round-not-advanced",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const round = earlier.length === 0 ? 1 : earlier[earlier.length - 1]!.round + 1;",
+      "new": "const round = 1;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M31-rehash-delivery-json-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (named !== actual || digestLine",
+      "new": "if (digestLine",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M32-rehash-digest-file-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || digestLine !== `${actual}  ${PACKET_FILE}\\n` ||",
+      "new": " ||",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M33-rehash-run-record-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || record === undefined || record['packetSha256'] !== actual) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M34-continuation-never",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
+      "new": "const continuing = false;",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "M35-continuation-delivery-records-only",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
+      "new": "const continuing = earlierRounds.length > 0;",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M36-continuation-every-earlier-verdict",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (recorded === sessionId) earlierVerdicts.push(n);",
+      "new": "earlierVerdicts.push(n);",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M37-continuation-includes-own-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "(round === null ? true : entry.round < round)",
+      "new": "true",
+      "outcome": "killed",
+      "failedTests": 2
+    },
+    {
+      "id": "M38-render-continuity-text-omitted",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "text: fidelityContinuation!.text,",
+      "new": "text: '',",
+      "outcome": "killed",
+      "failedTests": 4
+    },
+    {
+      "id": "M39-render-status-note-omitted",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "' Its reviewer continued across revisions (see the review page).'",
+      "new": "''",
+      "outcome": "killed",
+      "failedTests": 1
+    },
+    {
+      "id": "M40-await-next-revision-advice-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "${round > 1 ? 'This is the next revision",
+      "new": "${false ? 'This is the next revision",
+      "outcome": "killed",
+      "failedTests": 1
+    }
+  ]
+}
