@@ -1,0 +1,160 @@
+# Semantic delta — public-source screening scope, version 3
+
+> **Candidate — binds nothing.** Drafted 2026-10-08 for `syzygy-wsev`. Effect
+> comes only from an owner `approve-policy` act over the exact proposed bytes
+> of one manifest row. No repository body was read to draft it, and no act is
+> recorded here.
+
+## Class
+
+Normative, and a loosening. The version-2 scope says "This scope adds no
+loosening" and "a loosening would be a later policy version and an explicit
+owner question" (`publicSourceScope.activeContent`). This is that version and
+that question. It adds no network route, no storage place, no class and no
+detector change.
+
+## Subject and change
+
+Subject: the secret-classification policy of `project:syzygy` as the
+version-2 act left it (the version-2 manifest row `none`).
+`scripts/build_public_source_screening_scope_v3.py` takes the policy on disk
+when it hashes to that row, and otherwise refuses, except after a version-3
+act, when it recovers that row's bytes by reversing its own patch.
+
+Exactly three values change; the builder fails if anything else does:
+
+| Value | Change |
+|---|---|
+| `policyVersion` | next minor, the version-2 variant name kept and the version-3 variant appended: `1.4.0-public-source-candidate.1.none.code-all` or `…code-non-web` |
+| `publicSourceScope.activeContent` | rule narrowed to bodies the exemption does not name; new object `codeContentExemption`; new `consequence` |
+| `publicSourceScope.inheritedRules` | "activeContentClassification" becomes "activeContentClassification (except where activeContent.codeContentExemption exempts a body)"; every other word is unchanged |
+
+### Current text (version 2)
+
+```text
+activeContent.rule: the base activeContentClassification, inertContextRule and
+the active-content condition of classificationSuccess apply unchanged to every
+admitted body, Markdown or not: a body with an active-content form outside a
+valid inert code context is excluded whole as active content. This scope adds
+no loosening
+
+activeContent.consequence: [Inferred] a source file that embeds markup-like
+bytes outside a valid inert code context, for example an HTML string in a
+script, is withheld. The first run measures how many; a loosening would be a
+later policy version and an explicit owner question
+```
+
+### Proposed text (both variants)
+
+```text
+activeContent.rule: the base activeContentClassification, inertContextRule and
+the active-content condition of classificationSuccess apply unchanged to every
+admitted body that codeContentExemption does not exempt, Markdown or not: such
+a body with an active-content form outside a valid inert code context is
+excluded whole as active content
+
+codeContentExemption.rule: such a body is admitted without the active-content
+scan: neither step 4 of classificationOrder, nor the active-content condition
+of classificationSuccess, nor the malformed-code-context exclusion applies to
+it, because the Markdown code-context profile does not describe source code (it
+reads a comparison such as a<b && c>d as an HTML tag, and an unpaired backtick
+in source as a code context that never closes). Every detector still runs over
+the whole body; the denied-path, strict-UTF-8, NUL and resource-limit rules are
+unchanged; a project-documentation body, or a code-content body this exemption
+does not name, is scanned as before
+
+codeContentExemption.renderCondition: the exemption holds for a sink only while
+that sink renders such a body, or any span of it, as text: every one of the
+characters & < > " ' is written as a character reference, the bytes are never
+parsed as Markdown or HTML and never mint a link, element, attribute, script or
+handler, and the page carries a Content-Security-Policy whose default-src is
+'none'. A consumer that cannot confirm this for a sink scans the body as before
+for that sink, and excludes it whole on a finding
+
+codeContentExemption.egress: the exemption changes no egress or consent rule: a
+span of such a body reaches an agent session or a provider only under the rules
+that already govern code-content
+
+activeContent.consequence: [Inferred] a source file whose only active-content
+finding was markup-like bytes outside a Markdown code context (a comparison, a
+generic type, a template literal, a string holding HTML) is admitted when its
+extension is exempt; the first public-target run (2026-10-08) withheld seven C
+files of its target for active content. A body a secret detector matches stays
+excluded whole
+```
+
+The variants differ only in `codeContentExemption.appliesTo`,
+`codeContentExemption.exemptExtensions` and the `policyVersion` suffix:
+
+- **`all`**: `exemptExtensions` is every entry of the code-content rule's
+  `sourceExtensions` (25 extensions).
+- **`non-web`**: the same list less `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`,
+  `.tsx` and `.php` (18 extensions); `appliesTo` says those seven are scanned
+  as before because those languages commonly carry HTML in their source.
+
+The full proposed bytes are the two diffs under `proposed/`.
+
+## Why [Observed] / [Inferred]
+
+- [Observed] The scanner is the Markdown active-content scan,
+  `scanActiveContent` (`packages/three-surface-poc-core/src/git-object-reader.ts:191`),
+  whose tag pattern is `HTML_TAG` at line 164:
+  `<\/?([A-Za-z][A-Za-z0-9-]*)(?:\s[^<>]*)?\/?>`. In `a<b && c>d` it matches
+  `<b && c>`, a "tag" named `b`.
+- [Observed] Both consumers of this scope apply it to every admitted body:
+  `packages/polaris-dossier/src/screen.ts:66` and
+  `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:108`.
+- [Observed, as reported by the lead from run `run-e8b77d72780cc48f4dd032267d963d93`]
+  the run withheld seven C files of its target for active content. This
+  package did not read the run directory.
+- [Observed] The renderer encodes every rendered byte of a target body. The
+  dossier command `packages/polaris-dossier/src/render.ts` does no HTML itself:
+  it hands the located bytes to an injected renderer (quotation segments at
+  `render.ts:332`, whole-blob sources at `render.ts:265`). That renderer,
+  `apps/three-surface-poc/src/polaris-generation/dossier-render.ts`, writes a
+  quotation as `<q class="verified-quote">` around `escape(part.text)` (line
+  261) and a source page as `<blockquote class="exact-source">` around
+  `escape(span.text)` (line 409); the provider-mode preview,
+  `draft-preview.ts:122`, writes `escape(source.spans[0]!.text)` inside a
+  `<div class="exact-source">`. `escape` is `draft-preview.ts:24`, which
+  replaces each of `& < > " '` with a character reference. Every page carries
+  `DRAFT_PREVIEW_CSP_META` (`draft-preview.ts:18`, used at
+  `dossier-render.ts:129`): `default-src 'none'`. The machine view
+  (`dossier-render.ts:440-452`) carries quotation offsets and anchors, not
+  their text.
+- **The lead's wording is not quite true, and the delta does not use it.** The
+  proposal said a code-content body "is only ever rendered context-encoded
+  inside code blocks". It is rendered context-encoded, but inside an inline
+  quotation (`<q>`) and a block quotation (`<blockquote>`), not a code block.
+  The narrowest true statement is the one `renderCondition` makes: entity-encoded
+  text under a CSP whose `default-src` is `'none'`. [Inferred] the sink sweep
+  covered the three files that interpolate a body's text into HTML under
+  `apps/three-surface-poc/src/polaris-generation/` (a grep for `.text`
+  interpolations over `dossier-render.ts`, `dossier-render-local.ts` and
+  `draft-preview.ts`); another HTML sink elsewhere is not excluded by it, which
+  is why the condition is stated per sink and fails closed.
+- [Inferred] The scan protects HTML sinks. A body that reaches no HTML sink
+  unencoded gains nothing from it, while the scan's Markdown grammar misreads
+  ordinary source. Secret detectors are the screen that guards egress, and they
+  stay.
+
+## What it does not change
+
+Every detector, including inside code contexts; denied paths; strict UTF-8 and
+NUL; resource limits; the classes and their rules; `project-documentation`
+bodies (still scanned); the access boundary; raw-body handling; every
+consent; every act already performed.
+
+## Supersession and the state after the act
+
+The act supersedes the version-2 act for the `approve-policy` role from its own
+instant, as version 2 superseded version 1. After it, the policy on disk is the
+chosen row's bytes; this builder's `--check` still passes (selftest), and the
+version-2 recorder's `--check` fails by design, so its battery line is replaced
+by the version-3 recorder's at install. The recorder is written after a
+confirming review and must refuse a second variant act over this manifest.
+
+## One variant act, or none
+
+The manifest has two rows. The owner picks at most one; declining leaves
+version 2 in force and the C files withheld.

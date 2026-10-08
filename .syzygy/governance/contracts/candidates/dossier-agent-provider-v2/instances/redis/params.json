@@ -1,0 +1,19 @@
+{
+  "AGENT-PROVIDER-STATEMENT-ANTHROPIC.md": {
+    "template": "AGENT-PROVIDER-STATEMENT-TEMPLATE-V2.md",
+    "predecessor": ".syzygy/governance/contracts/candidates/dossier-local-agent-acts/instances/redis/AGENT-PROVIDER-STATEMENT-ANTHROPIC.md",
+    "fields": {
+      "PROVIDER_ID": "anthropic",
+      "TOOL": "Claude Code, run by the operator with the operator's own account",
+      "PROVIDER": "Anthropic, under the terms and settings of the operator's own account; Syzygy holds no key or account for it",
+      "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`\n- `project-documentation`",
+      "SUPERSESSION": "supersedes version 0.1.0-candidate.1 of this record, if an act over that version is in force, from the effective instant of the act on this version (prospective, RFC5-13); with none in force it supersedes nothing"
+    }
+  },
+  "common": {
+    "DRAFT_DATE": "2026-10-08",
+    "OWNER": "Tzeusy",
+    "VERSION": "0.2.0-candidate.1",
+    "REPOSITORY_ID": "redis-redis"
+  }
+}
