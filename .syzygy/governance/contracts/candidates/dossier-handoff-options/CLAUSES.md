@@ -90,13 +90,13 @@ agent tool lets that be scoped.
 
 - **D, where Syzygy launches the helpers.** Syzygy becomes the party sending
   content to a provider. The run disclosure "Syzygy made no provider call"
-  (`packages/polaris-dossier/src/render.ts:531`) turns false, and the public
+  (`packages/polaris-dossier/src/render.ts:556`) turns false, and the public
   egress record and the owner's reading of RFC7-20 then apply. SEC-3 as
   amended excludes an execution-permitted run ("a session it started").
 - **E, a single session.** It displaces REQ-polaris-generation-006 and 035,
   owner direction item 2, and CC-REV-1. Claims could not be judged supported
   by an independent review, so they render Unknown
-  (`packages/polaris-dossier/src/render.ts:349-352`).
+  (`packages/polaris-dossier/src/render.ts:372-375`).
 
 ## The continuing reviewer (the sub-question)
 

@@ -348,6 +348,11 @@ CAMPAIGNS = (
         "Session-prompt tool statement",
         r"R-PR406-SESSION-TOOL-STATEMENT-.*\.md",
     ),
+    campaign(
+        "pr404-dossier-blockers",
+        "Redis dossier blockers packet",
+        r"R-PR404-DOSSIER-BLOCKERS-.*\.md",
+    ),
 )
 
 

@@ -5,14 +5,15 @@
 ## Method
 
 `grep -rlF` over `packages/`, `apps/`, `scripts/` and `.github/` at this
-package's base commit for the policy's path
+package's first base commit for the policy's path
 (`POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`) and for the
 key names `activeContent` and `codeContentExemption`, then read each hit that
 is not under `dist/`. A second sweep, added after round-1 review finding 7,
 covers the version literal, because a version pin does not name the path:
-`grep -rlF '1.3.0-public-source-candidate.1.none'` over the same four trees
-(12 files, 6 of them under `dist/`), confirmed by
-`git grep -lF` over tracked files (the same 6 non-`dist` files). A second
+`grep -rlF '1.3.0-public-source-candidate.1.none'` over the same four trees,
+which also hits untracked built copies under `dist/`. A second method,
+`git grep -lF` over tracked files, gives 6 files; it was re-run after the
+rebase onto PR #403's merge and gave the same 6 files. A second
 method for the act-chain readers: read
 `packages/polaris-generation-consent/src/package-reader.ts` lines 342-440.
 
@@ -37,13 +38,17 @@ from this page. Known members [Observed by the sweep above]:
   in `PROJECT-STATUS.md` and `.github/workflows/governance-docs.yml` checks
   the applied subject, so it fails after a version-3 act by design; the
   version-3 recorder's line replaces it (the CG-26 triple, once).
-- **The two consumers that run the scan.** `packages/polaris-dossier/src/screen.ts:66`
-  and `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:108`
+- **The two consumers that run the scan.** `packages/polaris-dossier/src/screen.ts:85`
+  and `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:138`
   call `scanActiveContent` on every body. Without a code change they keep
   withholding the C files under the version-3 bytes: the act alone admits
   nothing. Each must read `codeContentExemption.exemptExtensions`, skip the
   scan only for a code-content body whose extension it lists, and keep the
-  scan for every other body. The render condition is met by the renderer as it
+  scan for every other body. [Observed] Since PR #403, both consumers take
+  a path's class from one shared function, `publicSourceContentClass` in
+  `packages/polaris-generation-core/src/public-source-classification.ts`
+  (`screen.ts:5`, `public-source-screening.ts:43`). That module is one home
+  from which both could read the exemption. The render condition is met by the renderer as it
   stands (see the delta); the change should add a test that fails if a
   renderer path stops encoding.
 - **The Butlers read gate** pins the policy by digest and then version (the

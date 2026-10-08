@@ -103,15 +103,15 @@ The full proposed bytes are the two diffs under `proposed/`.
   `<\/?([A-Za-z][A-Za-z0-9-]*)(?:\s[^<>]*)?\/?>`. In `a<b && c>d` it matches
   `<b && c>`, a "tag" named `b`.
 - [Observed] Both consumers of this scope apply it to every admitted body:
-  `packages/polaris-dossier/src/screen.ts:66` and
-  `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:108`.
+  `packages/polaris-dossier/src/screen.ts:85` and
+  `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:138`.
 - [Observed, as reported by the lead from run `run-e8b77d72780cc48f4dd032267d963d93`]
   the run withheld seven C files of its target for active content. This
   package did not read the run directory.
 - [Observed] The renderer encodes every rendered byte of a target body. The
   dossier command `packages/polaris-dossier/src/render.ts` does no HTML itself:
   it hands the located bytes to an injected renderer (quotation segments at
-  `render.ts:332`, whole-blob sources at `render.ts:265`). That renderer,
+  `render.ts:350`, whole-blob sources at `render.ts:276`). That renderer,
   `apps/three-surface-poc/src/polaris-generation/dossier-render.ts`, writes a
   quotation as `<q class="verified-quote">` around `escape(part.text)` (line
   261) and a source page as `<blockquote class="exact-source">` around
@@ -173,7 +173,7 @@ The full proposed bytes are the two diffs under `proposed/`.
   (`openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:31`),
   requires that "every object SHALL be classified and screened under the
   observing project's effective policies (REQ-polaris-generation-025) before
-  its content is used in a check or rendered" (`screen.ts:7-8` quotes it).
+  its content is used in a check or rendered" (`screen.ts:8-9` quotes it).
   The exemption changes what the effective policy's screen contains, not
   whether screening happens. Every body is still classified, and every detector
   still runs over it, so this delta reads 033 as met unchanged. REQ-025 is
