@@ -1,0 +1,155 @@
+{
+  "record": "Rule-6 mutants for the session pair's provider-statement check in session-prompt (syzygy-up98, R-DOSSIER-AGENT-PROVIDER-V2-1 finding 1): U1 the check is wired into session-prompt; U2-U3 it runs exactly when the run relies on a statement (non-governed runs need none); U4-U5 the gate and the classes name the session's tool, not the run's declared tool; U6 and U9 the session statement lists every class the run's lists, in that direction; U7 an absent statement (none, withdrawn, not yet in force) refuses; U8 the pair takes the run's declared provider. Expected reasons in the tests are literals. One mutant considered and not run as equivalent: `?? []` after statementContentClasses, since the gate admits the pair only when exactly one live statement names it, and then the classes are that statement's. The run was made on branch fix/session-prompt-tool-statement at the subject commit, the parent of the commit that adds this record; a rebase-merge leaves it reachable from no ref, so the old/new fragments and the file digests are the re-runnable form. Not authority.",
+  "result": {
+    "killed": 9,
+    "survived": 0,
+    "errored": 0,
+    "total": 9
+  },
+  "subject": {
+    "commit": "df6e26c02424bd704496e6a8372106d0a3222ba2",
+    "branch": "fix/session-prompt-tool-statement",
+    "fileSha256": {
+      "packages/polaris-dossier/src/inventory.test.ts": "f5f13d663ab9cf438fa6b6dda38d022c91f6d1d113575218b573df62970e1ad0",
+      "packages/polaris-dossier/src/review.test.ts": "063c53f5dd9c65f5baefdc70a68b7b47a24d46c5730fd8654a0e1fae01bd83c8",
+      "packages/polaris-dossier/src/session-handover.ts": "6efea863d7ba5138a47bba24ea2cfbdd9601773d61d31820a211511fe62666df"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/inventory.test.ts": "f5f13d663ab9cf438fa6b6dda38d022c91f6d1d113575218b573df62970e1ad0",
+      "packages/polaris-dossier/src/review.test.ts": "063c53f5dd9c65f5baefdc70a68b7b47a24d46c5730fd8654a0e1fae01bd83c8"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-08T06:11:13+00:00",
+  "mutants": [
+    {
+      "id": "U1-check-unwired",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (unstated !== null) return refuse('statement', unstated);\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 90,
+      "note": "session-prompt runs the session pair's statement check"
+    },
+    {
+      "id": "U2-non-governed-checked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (opened.contentClasses === null) return null;",
+      "new": "if (false) return null;",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 72,
+      "totalTests": 90,
+      "note": "a run relying on no statement (non-governed) needs none for the session pair"
+    },
+    {
+      "id": "U3-never-checked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (opened.contentClasses === null) return null;",
+      "new": "if (true) return null;",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 90,
+      "note": "a run relying on a statement checks the session pair"
+    },
+    {
+      "id": "U4-gate-on-declared-tool",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "providerStatementGate(records, tool, provider, now)",
+      "new": "providerStatementGate(records, opened.declared.agentTool, provider, now)",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 90,
+      "note": "the gate names the session's tool, not the run's declared tool"
+    },
+    {
+      "id": "U5-classes-of-declared-tool",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "statementContentClasses(records, tool, provider, now)",
+      "new": "statementContentClasses(records, opened.declared.agentTool, provider, now)",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 90,
+      "note": "the classes are the session pair's statement's"
+    },
+    {
+      "id": "U6-superset-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (beyond.length > 0) return",
+      "new": "if (false) return",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 90,
+      "note": "the session pair's statement lists every class the run's lists"
+    },
+    {
+      "id": "U7-absent-admitted",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (statement.state !== 'ok') return",
+      "new": "if (statement.state === 'refused') return",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 90,
+      "note": "an absent statement (none, withdrawn, not yet in force) refuses"
+    },
+    {
+      "id": "U8-provider-not-declared",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "const provider = opened.declared.agentProvider;",
+      "new": "const provider = 'openai';",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 90,
+      "note": "the session pair takes the run's declared provider"
+    },
+    {
+      "id": "U9-superset-reversed",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "const beyond = opened.contentClasses.filter(contentClass => !consented.includes(contentClass));",
+      "new": "const beyond = consented.filter(contentClass => !opened.contentClasses!.includes(contentClass));",
+      "tests": [
+        "packages/polaris-dossier/src/review.test.ts",
+        "packages/polaris-dossier/src/inventory.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 90,
+      "note": "the subset runs from the run's classes into the session statement's, not the other way"
+    }
+  ]
+}
