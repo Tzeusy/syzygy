@@ -31,8 +31,14 @@ sign-off is recorded: with v1.0 the latest recorded version, the installed
 spec must hash to v1.0's signed bytes and no v1.1 patch may be applied; with
 v1.1 the latest, the tree must be v1.0's signed bytes plus the v1.1 patches
 with exactly the options the v1.1 record names, and the spec without the
-option must hash to the digest the v1.1 review read. Any later version is a
-finding until a builder knows it.
+option must hash to the digest the v1.1 review read; with a later version the
+latest, the v1.2 builder (``build_polaris_dossier_local_agent_mode_v1_2.py``)
+decides, and any version it does not know is a finding.
+
+Version 1.2 patches the installed v1.1. Once its patches are applied, every
+predicate here reads the v1.1 layer: the targets with the v1.2 patches peeled
+off (``peeled()``). With v1.1 the latest recorded version, a tree that carries
+the v1.2 patches is a finding.
 
 The CLI writes nothing. The sign-off recorder
 (``record_versioned_signoff.py --record polaris-dossier-local-agent-mode
@@ -147,9 +153,30 @@ def recorded_options(root: pathlib.Path) -> frozenset[str] | None:
 
 # --- patches in a scratch copy -------------------------------------------------
 
+def peeled(root: pathlib.Path) -> dict[pathlib.Path, bytes] | None:
+    """The targets with the v1.2 patches reversed, when the tree carries them.
+
+    Every v1.1 predicate reads the v1.1 layer: once v1.2 is applied, that is
+    the tree with the v1.2 patches peeled off. None when nothing is peeled.
+    """
+    import build_polaris_dossier_local_agent_mode_v1_2 as v12
+    if not (root / v12.CANDIDATE).is_dir():
+        return None
+    return v12.backward(root)
+
+
+def _spec(root: pathlib.Path) -> bytes:
+    later = peeled(root)
+    return later[SPEC] if later is not None else (root / SPEC).read_bytes()
+
+
 def _copy_targets(root: pathlib.Path, scratch: pathlib.Path) -> None:
+    later = peeled(root)
     for rel in TARGETS:
-        if (root / rel).is_file():
+        if later is not None:
+            (scratch / rel).parent.mkdir(parents=True, exist_ok=True)
+            (scratch / rel).write_bytes(later[rel])
+        elif (root / rel).is_file():
             (scratch / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(root / rel, scratch / rel)
 
@@ -246,7 +273,7 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
                 (root / STATUS).read_text(encoding="utf-8").count(V10_LINK) != 1):
             findings.append(f"{STATUS}: does not carry the v1.0 record link exactly once; "
                             "the install would name no v1.1 record")
-        if signed is not None and sha((root / SPEC).read_bytes()) != signed:
+        if signed is not None and sha(_spec(root)) != signed:
             findings.append(f"{SPEC.as_posix()} is not the v1.0 signed bytes")
         for opts in _option_sets():
             after = forward(root, opts)
@@ -261,7 +288,7 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
         assert before is not None  # state() found it reversible
         if signed is not None and sha(before[SPEC]) != signed:
             findings.append(f"reversing the v{VERSION} patches does not restore the v1.0 signed bytes")
-        findings += _shape((root / SPEC).read_bytes(), SPEC.as_posix())
+        findings += _shape(_spec(root), SPEC.as_posix())
     return findings
 
 
@@ -278,10 +305,9 @@ def signed_findings(root: pathlib.Path) -> list[str]:
     if signed is None:
         return [f"{V10_RECORD.as_posix()} names no review whose head carries the v1.0 signed digest"]
     latest = versions[-1]
-    installed = (root / SPEC).read_bytes()
     if latest == (1, 0):
         findings = []
-        if sha(installed) != signed:
+        if sha((root / SPEC).read_bytes()) != signed:
             findings.append(f"{SPEC.as_posix()} is not the signed v1.0 bytes, and no later "
                             "version is recorded")
         if (root / CANDIDATE).is_dir():
@@ -291,26 +317,38 @@ def signed_findings(root: pathlib.Path) -> list[str]:
                                 "record covers")
         return findings
     if latest == (1, 1):
-        options = recorded_options(root)
-        if options is None:
-            return [f"{V11_RECORD.as_posix()} names no legible `Options:` line"]
-        if not (root / CANDIDATE).is_dir():
-            return [f"{V11_RECORD.as_posix()} exists but the v{VERSION} package is absent"]
-        current, applied_options = state(root)
-        if current != "applied" or applied_options != options:
-            return [f"the tree is not v1.0 plus the v{VERSION} patches with options "
-                    f"{sorted(options)} as recorded (found {current}, {sorted(applied_options)})"]
-        findings = []
-        before = backward(root, options)
-        if before is None or sha(before[SPEC]) != signed:
-            findings.append(f"reversing the v{VERSION} patches does not restore the v1.0 signed bytes")
-        reviewed = review_digest(root, V11_RECORD)
-        spec = _without_options(root, options) if options else installed
-        if reviewed is None or spec is None or sha(spec) != reviewed:
-            findings.append(f"the v{VERSION} spec without options is not the bytes its review read")
+        findings = signed_v11_findings(root)
+        if peeled(root) is not None:
+            findings.append("the tree carries the v1.2 patches, which no sign-off record covers")
         return findings
-    return [f"recorded version {latest[0]}.{latest[1]} has no builder; its bytes cannot be told "
-            "from unsigned ones"]
+    # A later version: its own builder tells its signed bytes from unsigned ones.
+    import build_polaris_dossier_local_agent_mode_v1_2 as v12
+    return v12.signed_findings(root)
+
+
+def signed_v11_findings(root: pathlib.Path) -> list[str]:
+    """Whether the v1.1 layer (any later patches peeled) is the signed v1.1."""
+    signed = review_digest(root, V10_RECORD)
+    if signed is None:
+        return [f"{V10_RECORD.as_posix()} names no review whose head carries the v1.0 signed digest"]
+    options = recorded_options(root)
+    if options is None:
+        return [f"{V11_RECORD.as_posix()} names no legible `Options:` line"]
+    if not (root / CANDIDATE).is_dir():
+        return [f"{V11_RECORD.as_posix()} exists but the v{VERSION} package is absent"]
+    current, applied_options = state(root)
+    if current != "applied" or applied_options != options:
+        return [f"the tree is not v1.0 plus the v{VERSION} patches with options "
+                f"{sorted(options)} as recorded (found {current}, {sorted(applied_options)})"]
+    findings = []
+    before = backward(root, options)
+    if before is None or sha(before[SPEC]) != signed:
+        findings.append(f"reversing the v{VERSION} patches does not restore the v1.0 signed bytes")
+    reviewed = review_digest(root, V11_RECORD)
+    spec = _without_options(root, options) if options else _spec(root)
+    if reviewed is None or spec is None or sha(spec) != reviewed:
+        findings.append(f"the v{VERSION} spec without options is not the bytes its review read")
+    return findings
 
 
 def _without_options(root: pathlib.Path, options: frozenset[str]) -> bytes | None:
@@ -480,7 +518,7 @@ def selftest() -> int:
         results.append(("an illegible options line fails",
                         any("no legible" in f for f in signed_findings(root))))
         _record_v11(root)
-        (root / DECISIONS / f"{RECORD_STEM}-SIGNOFF-v1.2.md").write_text("Review: x\n")
+        (root / DECISIONS / f"{RECORD_STEM}-SIGNOFF-v1.3.md").write_text("Review: x\n")
         results.append(("a later version no builder knows fails",
                         any("has no builder" in f for f in signed_findings(root))))
 
