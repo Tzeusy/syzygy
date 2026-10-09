@@ -89,8 +89,12 @@ Each is a yes/no question with the evidence that settles it.
    content "so that the shell expands nothing in it" close the path by which
    quoted project text could run, and are the residuals the delta names
    outside the printed command (the operator's own settings layers,
-   subagents, an output redirection) labelled as Inferred or Unknown rather
-   than claimed closed?
+   subagents, a tool from outside the agent tool's own set, an output
+   redirection) labelled as Inferred or Unknown rather than claimed closed?
+   Is the new SHALL that limits a waiting session to its read tools and the
+   shell, where the agent tool can limit its own tools, and the one that
+   refuses a shell-escape launch form for a waiting session, within the
+   owner's words?
 3. **Is the continuing reviewer disclosed as the owner required?** Is the
    disclosure required for every counted verdict, on the review page, with
    the anchoring cost stated? Is detecting continuity by delivered rounds

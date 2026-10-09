@@ -93,8 +93,10 @@ this package. The direction's ID was first drafted with its local date,
   (the continuity item and the review-status note). Each wait-mode step
   refuses until a `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or
   later) record exists with the recorder's head and exactly one marked block
-  for its version in `ACCEPTANCE-ACT-RECORD.md`, so v1.1 behaviour is
-  unchanged while this package is unsigned. Tests: `waiting-sessions.test.ts`, 101 tests; 112 of 112 rule-6
+  for its version in `ACCEPTANCE-ACT-RECORD.md`, over a tree whose installed
+  spec names the version and hashes to the `Manifest SHA-256` in the head of
+  the review the record names, so v1.1 behaviour is unchanged while this
+  package is unsigned. Tests: `waiting-sessions.test.ts`, 101 tests; 112 of 112 rule-6
   mutants killed (one by timeout) and 15 predicates left unmutated, each
   with its reason, in
   `docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json`.

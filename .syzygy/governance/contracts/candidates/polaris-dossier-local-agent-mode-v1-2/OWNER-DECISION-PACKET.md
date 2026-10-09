@@ -54,9 +54,14 @@ says otherwise. Version 1.2 says it, and nothing else.
   files the sessions can write, so each is shown as Inferred. So is that
   your own Claude Code settings allow nothing more: an allow rule you keep
   there (for example for a test command) still runs in a waiting session
-  without asking, and the printed command cannot switch it off. Whether the
-  one command's rule would let the session redirect its output into a file
-  is Unknown.
+  without asking, and the printed command cannot switch it off. The printed
+  command also gives the session only Claude Code's own read tools and its
+  shell, so no other tool of Claude Code's is there to run; that it works as
+  printed is Inferred. Whether a tool connected through your claude.ai
+  account stays available, and whether the one command's rule would let the
+  session redirect its output into a file, are Unknown. A waiting session is
+  started in a terminal of its own: the shell-escape form is not printed for
+  it, and Syzygy refuses it as a declared launch form.
 
 Not changed: who may start a session (you, never a subagent or a headless
 session the author starts); the execution rule (no waiting session may build
