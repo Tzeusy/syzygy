@@ -1,0 +1,1714 @@
+{
+  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there), re-run in full after review-408 round 2 (docs/reviews/R-PR408-WAITING-SESSIONS-2-RAW.md). The population is every refusal, guard and disclosure predicate of the wait-mode code, re-derived from the files at `commit`: each `if`, conjunct and ternary in waiting-sessions.ts, the wait-mode paths of session-handover.ts (sessionCommands, waitingAllowedTools, the two waiting prompts, START_DISCLOSURES, startSessions, handOver, deliverReview and the launch-form refusal for a waiting session), the continuity items of render.ts, and in cli.ts the await exit codes, the stdin wiring and the two wait-mode flags given twice (`--stdin`, `--fresh`). The positional-count usage checks that every dossier command shares (exactly one run or session directory) are outside the population: they are the CLI's grammar for all commands, not a wait-mode predicate. Each predicate in the population has one mutant below, or one entry in `notMutated` with its reason. M1-M40 and S1-S10 are the first record's mutants; F1-F8 and N2 cover the round-1 repairs; F4a-F4af the predicates round-1 finding 4 named and the rest of the population; R2-* the round-2 repairs, and R2-NM7 the rethrow mutant round-2 finding 6 asked for. `builderMutants` covers the v1.2 builder, the v1.1 builder's peel and delegation, and the recorder's v1.2 entry. Not authority.",
+  "measuredOn": {
+    "commits": [
+      {
+        "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2",
+        "subjects": [
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+            "sha256": "748afb167b34dcc80906735adaf41e7d4db794c5d1dcc9c08b694dd2ff811d80"
+          },
+          {
+            "path": "packages/polaris-dossier/src/session-handover.ts",
+            "sha256": "6a3f36b61f3f83c493b8a2c379587362458283f2fc05cfc9114ad2f14e2edbba"
+          },
+          {
+            "path": "packages/polaris-dossier/src/cli.ts",
+            "sha256": "8a63661c74acd30b279951490e4a8567921c7057e6742ba407315ea5f9a9f919"
+          },
+          {
+            "path": "packages/polaris-dossier/src/render.ts",
+            "sha256": "1941053700189d34bc410342c9af75d9af800337a7aae97b9f484468b4f06435"
+          },
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+            "sha256": "96361331b1933c8edfccb8042ad70327f856dab5e4cdd4652a7b4d3e9ca0643d"
+          }
+        ]
+      },
+      {
+        "commit": "b8896a9720a36740ca9756123ab52dca8db5a672",
+        "subjects": [
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+            "sha256": "748afb167b34dcc80906735adaf41e7d4db794c5d1dcc9c08b694dd2ff811d80"
+          },
+          {
+            "path": "packages/polaris-dossier/src/session-handover.ts",
+            "sha256": "6a3f36b61f3f83c493b8a2c379587362458283f2fc05cfc9114ad2f14e2edbba"
+          },
+          {
+            "path": "packages/polaris-dossier/src/cli.ts",
+            "sha256": "8a63661c74acd30b279951490e4a8567921c7057e6742ba407315ea5f9a9f919"
+          },
+          {
+            "path": "packages/polaris-dossier/src/render.ts",
+            "sha256": "1941053700189d34bc410342c9af75d9af800337a7aae97b9f484468b4f06435"
+          },
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+            "sha256": "35e30a42e531444e7e9780a7fd0de08ef311d8b90e782ae01b77df8ace7a93f1"
+          }
+        ]
+      }
+    ],
+    "commitNote": "Each mutant names the commit it ran at. All 125 ran at bf10c10e, where one survived: R2-4d-first-of-several-digests-taken, because the two-digest test put the non-matching digest first. b8896a97 puts the matching digest first in that test case and changes no other subject (compare the digests); R2-4d alone was re-run there and is the entry listed."
+  },
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, else not applied) in one file of the worktree at its `commit`, runs `command` from the worktree root, then restores the file byte for byte. Killed when the replacement applied and the command exits nonzero, or `killed (timeout)` when the command was still running after 300 s (its process group is then killed). `failedTests` is read from Vitest's summary line. The tree under packages/ was clean after the run (`treeCleanAfter`).",
+  "command": "npx vitest run packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "result": {
+    "killed": 125,
+    "killedByTimeout": 1,
+    "total": 125,
+    "notMutated": 14
+  },
+  "treeCleanAfter": true,
+  "notMutated": [
+    {
+      "predicate": "session-handover.ts startSessions: `if (built.executionRule.arm !== 'sec-3') return refuse('execution-rule', ...)`",
+      "why": "Unreachable through any input: decideExecutionRule returns the sec-3 arm for every role but 'authoring' (packages/polaris-dossier/src/execution-rule.ts, `if (inputs.role !== 'authoring') return sec3(...)`), and the inventory brief is built with the inventory role. A mutant would survive by construction."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: the clause `directoryArg.split('/').some((part) => part === '.' || part === '..')`",
+      "why": "Subsumed by the clause before it: path.normalize removes every '.' and '..' segment of an absolute path, so a path holding one never equals its normalisation and is already refused. M21 removes both clauses together and is killed; this clause alone cannot change an outcome."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: the clause `expected === undefined` in the brief re-hash",
+      "why": "Subsumed by the clause after it: a sha256 hex digest is never undefined, so `sha256(bytes) !== expected` refuses the same inputs. M16 removes that clause and is killed."
+    },
+    {
+      "predicate": "waiting-sessions.ts sessionDirectoryRefusal: the two `lstatSync` catches (a sessions root, or a session directory, that does not exist)",
+      "why": "No write can follow either: with a catch removed, the exception leaves sessionDirectoryRefusal before await or the delivery writes anything, and a missing directory is refused by the next step anyway (`realOrNull` in await, the `mkdirSync` of the round in a delivery), so only the stage word or the error changes, never whether anything is written."
+    },
+    {
+      "predicate": "waiting-sessions.ts sessionDirectoryRefusal: the two `realpathSync` catches (the sessions root and its parent; the session directory and the root)",
+      "why": "Reachable only when lstat has just succeeded and realpath then fails (an entry or an ancestor removed or made unreadable between the two calls); no test can place an input there without fault injection into node:fs."
+    },
+    {
+      "predicate": "waiting-sessions.ts signoffRecordHolds, appliedSubjectHolds and waitModeSignedIn: each read's `catch { return false; }`, and the clause `review === undefined`",
+      "why": "Fail closed either way: without a catch (or with `review === undefined` dropped, `.split` of undefined throws) the exception leaves the gate, which every wait-mode step evaluates first (`if (!signed()) return refuse('unsigned', ...)`, session-handover.ts and waiting-sessions.ts), so the step neither opens nor writes. The gate tests reach each arm: a missing aggregate, a missing record, a record with no review and no installed spec."
+    },
+    {
+      "predicate": "waiting-sessions.ts waitingReviewSession: `if (session === 0) return null`",
+      "why": "Equivalent without it: readRecord of the session-0 prompt record finds no file, so the function returns null either way."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: `if (realDir === null) return refuse('submit', ...)`",
+      "why": "Reachable only by a race: sessionDirectoryRefusal has just resolved the same path's real path, so realpath fails here only if the directory vanished in between."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: `if (!result.ok) return refuse('check', ...)` after checkInventory and after reviewCheck",
+      "why": "Forwarding only: the refusal is the check's own, tested in check and review suites; the waiting code adds no predicate there, and since F5 a submission reaches the check only as bounded JSON."
+    },
+    {
+      "predicate": "session-handover.ts startSessions: `if ('stage' in context) return refuse(...)` and `if (!built.ok) return refuse(built.stage, built.reason)`",
+      "why": "Forwarding only: sessionContextOf's statement refusal is killed through M12; buildInventoryBrief refuses only when SEC-3 cannot be quoted from the records root's adopted doctrine, which the fixture sources read from the real checkout, where it can."
+    },
+    {
+      "predicate": "session-handover.ts startSessions: the catch around the directory and record writes",
+      "why": "An I/O failure arm (a write refused by the file system after every check passed); no input reaches it without fault injection."
+    },
+    {
+      "predicate": "session-handover.ts deliverReview: `if (waiting === null) return refuse('session', ...)`",
+      "why": "Reachable only by a race: handOver calls deliverReview only after waitingReviewSession returned a session for the same run and kind."
+    },
+    {
+      "predicate": "session-handover.ts handOver: the clauses `isReviewKind(rest.kind)` and `RUN_ID.test(path.basename(target))` in the delivery condition",
+      "why": "Equivalent without them: for a kind outside the two, or a path that is not a run, waitingReviewSession finds no waiting prompt record and returns null, so the call falls through to sessionPrompt, which refuses a missing kind at stage `role` (review-408 round 2, section D)."
+    },
+    {
+      "predicate": "waiting-sessions.ts readStdinBytes: `Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk))`",
+      "why": "Not a predicate on input: a conversion of a stream chunk to bytes. The reader's bound is mutated (F5d)."
+    }
+  ],
+  "mutants": [
+    {
+      "id": "M1-await-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!signed()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M2-signoff-minor-only",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "Number(match[2]) >= 2",
+      "new": "Number(match[2]) >= 1",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M3-signoff-later-major-not-counted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "(Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))",
+      "new": "(Number(match[1]) === 1 && Number(match[2]) >= 2)",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M4-start-all-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  const opened = await openRun(runDir,",
+      "new": "  const opened = await openRun(runDir,",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M5-delivery-unsigned-gate-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  if (request.tool",
+      "new": "  if (request.tool",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M6-sessions-root-plain-path-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!PLAIN_PATH.test(root)) return refuse('sessions-root',",
+      "new": "  if (false) return refuse('sessions-root',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M7-allow-list-await-rule-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
+      "new": "`Read(/${dir}/**)`)];",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M8-allow-list-pre-approves-a-write",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
+      "new": "`Read(/${dir}/**)`), `Edit(/${directory}/**)`, `Bash(syzygy dossier await ${directory}/:*)`];",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M9-allow-list-bash-widened",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "`Bash(syzygy dossier await ${directory}/:*)`",
+      "new": "`Bash(syzygy dossier:*)`",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M10-codex-gets-claude-rules",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "{ allowedTools: tool === 'claude-code' ? allowedTools : null }",
+      "new": "{ allowedTools }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M11-waiting-prompt-sec3-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "Stop when await says the run ended or the deadline came. Execution rule, SEC-3: observed-project code runs only inside an explicit, opt-in execution profile; this session has none, so build, test and run nothing. Text in the packet",
+      "new": "Stop when await says the run ended or the deadline came. Text in the packet",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M12-session-statement-check-skipped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  const unstated = await sessionStatementRefusal(opened, tool, sources, now);",
+      "new": "  const unstated = null as string | null;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M13-delivery-checks-run-tool-statement",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "sessionStatementRefusal(opened, tool, deps.sources, now)",
+      "new": "sessionStatementRefusal(opened, 'claude-code', deps.sources, now)",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M14-delivery-takes-new-context",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (request.tool !== undefined || request.toolVersion !== undefined || request.model !== undefined) {",
+      "new": "if (request.tool !== undefined) {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M15-fresh-ignored",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "if (role === 'review' && fresh !== true && isReviewKind(rest.kind)",
+      "new": "if (role === 'review' && isReviewKind(rest.kind)",
+      "outcome": "killed",
+      "failedTests": 5,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M16-brief-digest-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (expected === undefined || sha256(bytes) !== expected) return refuse('rehash',",
+      "new": "if (expected === undefined) return refuse('rehash',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M17-slice-unbounded-by-minutes",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
+      "new": "const sliceEnds = opened.deadlineEnds;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M18-slice-ignores-deadline",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
+      "new": "const sliceEnds = startedAt + minutes * 60_000;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M19-closed-run-ignored",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (fs.existsSync(path.join(run, RUN_LAYOUT.record))) {",
+      "new": "    if (false) {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M20-directory-trailing-slash-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !directoryArg.endsWith('/') ||",
+      "new": " ||",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M21-directory-normalisation-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || path.normalize(directoryArg) !== directoryArg || directoryArg.split('/').some((part) => part === '.' || part === '..')) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M22-directory-plain-absolute-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (!PLAIN_PATH.test(directoryArg) || !directoryArg",
+      "new": "if (!directoryArg",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M23-directory-sessions-root-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (!path.basename(parent).endsWith('.sessions') || !RUN_ID.test(runId)) return refuse('directory',",
+      "new": "if (false) return refuse('directory',",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M24-waiting-mode-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt['mode'] !== WAITING_MODE) return refuse('session',",
+      "new": "  if (false) return refuse('session',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M25-submit-containment-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (file === null || !file.startsWith(`${realDir}${path.sep}`)) return refuse('submit',",
+      "new": "if (file === null) return refuse('submit',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M26-submit-latest-session-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (latest !== role.session) return refuse('submit',",
+      "new": "    if (false) return refuse('submit',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M27-cli-submit-findings-exit-0",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "outcome.outcome === 'submitted' && !outcome.passed ? EXIT.refused : EXIT.clean",
+      "new": "EXIT.clean",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M28-cli-waiting-exit-0",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "outcome.outcome === 'waiting' ? EXIT.waiting : ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M29-delivery-into-session-root",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const roundDir = path.join(directory, roundDirName(round));\n  try {",
+      "new": "  const roundDir = directory;\n  try {",
+      "outcome": "killed",
+      "failedTests": 21,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M30-delivery-round-not-advanced",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const round = earlier.length === 0 ? 1 : earlier[earlier.length - 1]!.round + 1;",
+      "new": "const round = 1;",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M31-rehash-delivery-json-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (named !== actual || digestLine",
+      "new": "if (digestLine",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M32-rehash-digest-file-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || digestLine !== `${actual}  ${PACKET_FILE}\\n` ||",
+      "new": " ||",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M33-rehash-run-record-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || record === undefined || record['packetSha256'] !== actual) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M34-continuation-never",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
+      "new": "const continuing = false;",
+      "outcome": "killed",
+      "failedTests": 3,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M35-continuation-delivery-records-only",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
+      "new": "const continuing = earlierRounds.length > 0;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M36-continuation-every-earlier-verdict",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (recorded === sessionId) earlierVerdicts.push(n);",
+      "new": "earlierVerdicts.push(n);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M37-continuation-includes-own-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "(round === null ? true : entry.round < round)",
+      "new": "true",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M38-render-continuity-text-omitted",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "text: fidelityContinuation!.text,",
+      "new": "text: '',",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M39-render-status-note-omitted",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "' Its reviewer continued across revisions (see the review page).'",
+      "new": "''",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "M40-await-next-revision-advice-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "${round > 1 ? 'This is the next revision",
+      "new": "${false ? 'This is the next revision",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S1-stdin-checks-without-writing",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? ((maxBytes) => readStdinBytes(maxBytes)));",
+      "new": "const stdinRefusal = null as string | null;",
+      "outcome": "killed",
+      "failedTests": 48,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S2-stdin-inventory-any-name",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (name !== INVENTORY_SUBMIT_FILE) return `with --stdin an inventory session submits ${INVENTORY_SUBMIT_FILE}, nothing else`;\n    target = path.join(realDir, INVENTORY_SUBMIT_FILE);",
+      "new": "    target = path.join(realDir, name);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S3-stdin-review-any-file-in-a-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\/verdict\\.json$/u;",
+      "new": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\//u;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S4-stdin-undelivered-round-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !fs.existsSync(path.join(roundDir, DELIVERY_FILE))) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S5-stdin-unbounded",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const bytes = await readStdin(DRAFT_MAX_BYTES);",
+      "new": "const bytes = await readStdin(Number.MAX_SAFE_INTEGER);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S6-stdin-empty-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (text.trim() === '') return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S7-stdin-follows-pending-link",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    fs.rmSync(pending, { force: true });\n    fs.writeFileSync(pending, bytes, { mode: 0o600, flag: 'wx' });",
+      "new": "    fs.writeFileSync(pending, bytes, { mode: 0o600 });",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S8-stdin-without-submit-ignored",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (request.stdin === true && request.submit === undefined) return refuse('usage', '--stdin applies only with --submit');\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S9-stdin-never-replaces",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    fs.renameSync(pending, target);",
+      "new": "    if (!fs.existsSync(target)) fs.renameSync(pending, target);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "S10-cli-stdin-not-wired",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": ", ...(stdin === 1 ? { stdin: true } : {}),",
+      "new": ",",
+      "outcome": "killed",
+      "failedTests": 49,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F1a-await-directory-check-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const unsafe = sessionDirectoryRefusal(parent, directory);\n  if (unsafe !== null) return refuse('directory', unsafe);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 3,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F1b-delivery-directory-check-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const unsafe = sessionDirectoryRefusal(sessionsRoot(run), directory);\n  if (unsafe !== null) return { ok: false, reason: unsafe };\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F1c-lstat-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!stats.isDirectory()) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F1d-realpath-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (real !== path.join(realRoot, path.basename(directory))) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F2a-design-continuity-only-when-continuing",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`",
+      "new": "is the review session's.${continuation.continuing ? ` ${continuation.text} (Inferred, from ${continuation.basis}.)` : ''}`",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F2b-design-continuity-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`",
+      "new": "is the review session's.`",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F3a-heredoc-delimiter-unquoted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "${fence}${command} <<'${HEREDOC_DELIMITER}'${fence}",
+      "new": "${fence}${command} <<${HEREDOC_DELIMITER}${fence}",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F3b-heredoc-never-expanded-sentence-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " With the delimiter quoted the shell never expands the body, so nothing in it runs`;",
+      "new": "`;",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F7a-timeout-advice-dropped-from-review-prompt",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "--stdin`, '')}; never with any other command, and you write no file yourself. ${WAIT_TIMEOUT_ADVICE}. After",
+      "new": "--stdin`, '')}; never with any other command, and you write no file yourself. After",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F7b-timeout-advice-dropped-from-inventory-prompt",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "--stdin`, '')}; never with any other command, and you write no file yourself. ${WAIT_TIMEOUT_ADVICE}. Execution",
+      "new": "--stdin`, '')}; never with any other command, and you write no file yourself. Execution",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F5a-utf8-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }",
+      "new": "  try { text = new TextDecoder('utf-8').decode(bytes); }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F5b-json-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { parseBoundedJson(text, SUBMIT_JSON_LIMITS); } catch {",
+      "new": "  try { /* unchecked */ } catch {",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F5c-json-bound-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 500_000, maxDepth: 16 });",
+      "new": "const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 500_000, maxDepth: 1_000 });",
+      "outcome": "killed",
+      "failedTests": 46,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F5d-reader-bound-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (size > maxBytes) return null;\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F6a-disallowed-tools-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';",
+      "new": " --strict-mcp-config` : '';",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F6b-strict-mcp-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';",
+      "new": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')}` : '';",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F6c-residual-disclosure-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " It does not stop the user, project and local settings layers: an allow rule there, for a shell command other than await, still runs unattended in a waiting session.",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "N2a-bang-printed-for-waiting",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    return { terminal, bang: null, note: 'Claude Code: type the terminal form in a new terminal. No bang form",
+      "new": "    return { terminal, bang: `! ${terminal}`, note: 'Claude Code: type the terminal form in a new terminal. No bang form",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8a-record-title-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const headHolds = head[0] === `# Polaris dossier local-agent mode — version-tagged sign-off v${version}`\n    && ",
+      "new": "  const headHolds = true\n    && ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8b-record-package-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "field('Package') === SIGNOFF_PACKAGE && ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8c-record-version-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "field('Version') === version && ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8d-record-tag-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && field('Tag') === `${SIGNOFF_PACKAGE}-v${version}`",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8e-record-commit-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    && /^[0-9a-f]{40}$/u.test(field('Reviewed commit') ?? '') && (",
+      "new": "    && (",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8f-record-verdict-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && (field('Review verdict') === 'CONFIRM' || field('Review verdict') === 'CONFIRM WITH EXCEPTIONS');",
+      "new": ";",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8g-aggregate-start-count-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const blockHolds = aggregate.split(start).length === 2 && ",
+      "new": "  const blockHolds = ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8h-aggregate-end-count-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && aggregate.split(end).length === 2 && aggregate.indexOf",
+      "new": " && aggregate.indexOf",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8i-aggregate-order-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && aggregate.indexOf(start) < aggregate.indexOf(end);",
+      "new": ";",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8j-unreadable-record-opens",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');\n  } catch { return false; }",
+      "new": "    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');\n  } catch { return true; }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8k-no-decisions-directory-opens",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { names = fs.readdirSync(decisions); } catch { return false; }",
+      "new": "  try { names = fs.readdirSync(decisions); } catch { return true; }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F8l-whole-head-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  return headHolds && blockHolds;",
+      "new": "  return blockHolds;",
+      "outcome": "killed",
+      "failedTests": 6,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4a-round-containment-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || path.dirname(roundDir) !== realDir || ",
+      "new": " || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4b-prompt-record-directory-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt['directory'] !== path.relative(path.dirname(run), directory)) return refuse('session',",
+      "new": "  if (false) return refuse('session',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4c-delivery-lexical-root-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (path.dirname(directory) !== sessionsRoot(run)) return {",
+      "new": "  if (false) return {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4d-prompt-digest-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || prompt['promptSha256'] !== sha256(prompt['prompt'])) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4e-prompt-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt === undefined || typeof prompt['prompt'] !== 'string' || ",
+      "new": "  if (prompt === undefined || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4f-prompt-missing-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt === undefined || typeof prompt['prompt'] !== 'string' || ",
+      "new": "  if (typeof prompt!['prompt'] !== 'string' || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4g-round-grammar-loosened",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "/^[1-9][0-9]{0,5}$/u.test(request.round)",
+      "new": "/^[0-9a-z]{1,6}$/u.test(request.round)",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4h-minutes-grammar-loosened",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "/^[1-9][0-9]{0,2}$/u.test(request.waitMinutes)",
+      "new": "/^[0-9]{1,3}$/u.test(request.waitMinutes)",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4i-minutes-cap-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (minutes === null || minutes > MAX_WAIT_MINUTES) return",
+      "new": "  if (minutes === null) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4j-submit-takes-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (request.round !== undefined || request.waitMinutes !== undefined) return refuse('usage',",
+      "new": "    if (request.waitMinutes !== undefined) return refuse('usage',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4k-submit-takes-wait-minutes",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (request.round !== undefined || request.waitMinutes !== undefined) return refuse('usage',",
+      "new": "    if (request.round !== undefined) return refuse('usage',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4l-inventory-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (round !== 1) return refuse('usage', 'an inventory session has one round",
+      "new": "    if (false) return refuse('usage', 'an inventory session has one round",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4m-reopened-gates-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!reopened.ok) return refuse(reopened.stage, reopened.reason, reopened.reasons, reopened.refusals);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4n-await-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const self",
+      "new": "  const self",
+      "outcome": "killed (timeout)",
+      "failedTests": null,
+      "timeoutSeconds": 300,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4o-start-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const { run, runId } = opened;\n  const context = await sessionContextOf(opened, request, deps.sources, now);\n  if ('stage' in context) return refuse(context.stage, context.reason);\n  const outside",
+      "new": "  const { run, runId } = opened;\n  const context = await sessionContextOf(opened, request, deps.sources, now);\n  if ('stage' in context) return refuse(context.stage, context.reason);\n  const outside",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4p-delivery-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const waiting = waitingReviewSession(run, kind);",
+      "new": "  const waiting = waitingReviewSession(run, kind);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4q-all-takes-kind",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (rest.kind !== undefined || fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "new": "    if (fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4r-all-takes-fresh",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (rest.kind !== undefined || fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "new": "    if (rest.kind !== undefined) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4s-inventory-takes-fresh",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (role === 'inventory' && fresh === true) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4t-start-sessions-root-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (outside !== null) return refuse('sessions-root', outside);\n  const root = sessionsRoot(run);\n  if (!PLAIN_PATH.test(root)) return refuse('sessions-root', `the sessions root ${root} holds a character a printed permission rule cannot carry unquoted",
+      "new": "  const root = sessionsRoot(run);\n  if (!PLAIN_PATH.test(root)) return refuse('sessions-root', `the sessions root ${root} holds a character a printed permission rule cannot carry unquoted",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4u-delivery-record-directory-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (typeof relative !== 'string') return { ok: false, reason:",
+      "new": "  if (false) return { ok: false, reason:",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4v-delivery-ignores-waiting-mode",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  return record !== undefined && record['mode'] === WAITING_MODE ? { session, record } : null;",
+      "new": "  return record !== undefined ? { session, record } : null;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4w-delivery-record-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && record['round'] === round && typeof record['packetSha256'] === 'string' ?",
+      "new": " && typeof record['packetSha256'] === 'string' ?",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4x-delivery-record-digest-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && record['round'] === round && typeof record['packetSha256'] === 'string' ?",
+      "new": " && record['round'] === round ?",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4y-note-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['round'] === round && delivery['kind']",
+      "new": " && delivery['kind']",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4z-note-kind-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['kind'] === role.kind && ",
+      "new": " && ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4aa-note-session-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['session'] === role.session ? delivery['packetSha256']",
+      "new": " ? delivery['packetSha256']",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4ab-delivery-recorded-tool-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return refuse('context',",
+      "new": "  if (typeof tool !== 'string') return refuse('context',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4ac-delivery-design-build-refusal-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "unstated.replace('so no session is handed over', 'so no packet is delivered'));\n  let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;\n  if (kind === 'design') {\n    const design = buildStoredDesignPacket(opened);\n    if (!design.ok) return refuse(design.stage, design.reason);\n",
+      "new": "unstated.replace('so no session is handed over', 'so no packet is delivered'));\n  let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;\n  if (kind === 'design') {\n    const design = buildStoredDesignPacket(opened);\n",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4ad-delivery-fidelity-build-refusal-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (!fidelity.ok) return refuse(fidelity.stage, fidelity.reason);\n    built = fidelity;\n    packet = { sha256: fidelity.sha256, draftRevision: fidelity.draft.revision, inventoryRevision: fidelity.inventory.revision };\n  }\n  const delivered = deliverToWaiting(",
+      "new": "    built = fidelity;\n    packet = { sha256: fidelity.sha256, draftRevision: fidelity.draft.revision, inventoryRevision: fidelity.inventory.revision };\n  }\n  const delivered = deliverToWaiting(",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4ae-directory-no-run-id-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !RUN_ID.test(runId)) return refuse('directory',",
+      "new": ") return refuse('directory',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "F4af-directory-no-role-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (role === null) return refuse('directory', `${directory} is not an inventory or review session directory`);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-1a-root-lstat-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!rootStats.isDirectory()) return `the sessions root",
+      "new": "  if (false && !rootStats.isDirectory()) return `the sessions root",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-1b-root-real-path-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (realRootOwn !== path.join(realParent, path.basename(root))) return",
+      "new": "  if (false && realRootOwn !== path.join(realParent, path.basename(root))) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-2-launch-form-bang-for-waiting-accepted",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (prompt['mode'] === WAITING_MODE && request.form === 'bang') {",
+      "new": "  if (false && prompt['mode'] === WAITING_MODE && request.form === 'bang') {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-4a-applied-subject-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "&& signoffRecordHolds(decisions, name, version) && appliedSubjectHolds(recordsRoot, path.join(decisions, name), version);",
+      "new": "&& signoffRecordHolds(decisions, name, version);",
+      "outcome": "killed",
+      "failedTests": 6,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-4b-subject-digest-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "return digests.length === 1 && sha256(spec) === digests[0] && spec.toString",
+      "new": "return digests.length === 1 && spec.toString",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-4c-subject-version-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && spec.toString('utf8').includes(`Exact behavioral delta, version ${version}.`);",
+      "new": ";",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-4d-first-of-several-digests-taken",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "return digests.length === 1 && sha256(spec)",
+      "new": "return digests.length >= 1 && sha256(spec)",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "b8896a9720a36740ca9756123ab52dca8db5a672"
+    },
+    {
+      "id": "R2-4e-whole-review-read",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": ".filter((line) => line.trim() !== '').slice(0, 4)\n",
+      "new": ".filter((line) => line.trim() !== '')\n",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-4f-review-path-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "if (review === undefined || review.split('/').includes('..')) return false;",
+      "new": "if (review === undefined) return false;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-5-tool-set-limit-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " --tools ${WAITING_TOOLS.join(',')}",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-6a-stdin-twice-allowed",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "if (stdin > 1) return usageError",
+      "new": "if (stdin > 2) return usageError",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-6b-fresh-twice-allowed",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "if (fresh > 1) return usageError",
+      "new": "if (fresh > 2) return usageError",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    },
+    {
+      "id": "R2-NM7-delivery-write-failure-rethrown",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  } catch (cause) {\n    return { ok: false, reason: `round ${round} could not be delivered",
+      "new": "  } catch (cause) {\n    throw cause;\n    return { ok: false, reason: `round ${round} could not be delivered",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "bf10c10e307b0b3d25d54df30b21bbaa3987b6f2"
+    }
+  ],
+  "builderMutants": {
+    "measuredOn": {
+      "commit": "b8896a9720a36740ca9756123ab52dca8db5a672",
+      "subjects": [
+        {
+          "path": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+          "sha256": "595092fc6d11ccc5e55d170a51445f4c322e9b16030dc37783280a9787cc7ee4"
+        },
+        {
+          "path": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+          "sha256": "7bd4fba08b41877dc5b3198cbc62ae87a21c711752aae533255cd971ba09f277"
+        },
+        {
+          "path": "scripts/record_versioned_signoff.py",
+          "sha256": "58f419056e44faabb684f9e94db607e6de11f1a1b924162fff6ac32b9ea8ec83"
+        }
+      ]
+    },
+    "method": "Each mutant replaces `old` with `new` (exactly one occurrence) in `file`, runs `python3 <script> --selftest` for each name in `selftests` (v12: scripts/build_polaris_dossier_local_agent_mode_v1_2.py; v11: scripts/build_polaris_dossier_local_agent_mode_v1_1.py; recorder: scripts/record_versioned_signoff.py) from the worktree root, then restores the file byte for byte. Killed when any of them exits nonzero; `failures` keeps the first FAIL lines.",
+    "result": {
+      "killed": 21,
+      "total": 21
+    },
+    "mutants": [
+      {
+        "id": "B1-v1.1-not-installed-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if base != \"applied\":\n        findings.append(f\"v1.1 is {base}",
+        "new": "    if False:\n        findings.append(f\"v1.1 is {base}",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: v1.1 not installed"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B2-no-v1.1-record-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if not (root / V11_RECORD).is_file():\n        findings.append(",
+        "new": "    if False:\n        findings.append(",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: no v1.1 record"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B3-v1.1-layer-not-checked-as-signed",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    elif base == \"applied\":\n        findings += [f\"v1.1 signed bytes",
+        "new": "    elif False:\n        findings += [f\"v1.1 signed bytes",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL v1.2 recorded over a v1.1 layer that is not the signed v1.1: fails",
+              "FAIL refused: the v1.1 layer is not the bytes the v1.1 review read",
+              "FAIL refused: the v1.1 record names an option the tree lacks"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B4-status-links-not-checked",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "count(V11_LINKS) != 1):",
+        "new": "count(V11_LINKS) > 1):",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: the status page lacks the v1.0 and v1.1 links"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B5-post-apply-shape-not-checked",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "        findings += v11._shape(after[SPEC], f\"{SPEC.as_posix()} with the v{VERSION} patches\")",
+        "new": "        pass",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: a post-apply spec with an extra requirement"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B6-neither-not-reported",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if current == \"neither\":\n        return findings + [f\"the tree is neither v1.1",
+        "new": "    if False:\n        return findings + [f\"the tree is neither v1.1",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL refused: the tree is neither state"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B7-signed-without-applied-tree",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if current != \"applied\":\n        return findings + [f\"the tree is not v1.1 plus",
+        "new": "    if False:\n        return findings + [f\"the tree is not v1.1 plus",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied and signed, then the spec edited: the tree is neither state"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B8-v1.2-review-digest-not-compared",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if reviewed is None or sha((root / SPEC).read_bytes()) != reviewed:",
+        "new": "    if reviewed is None:",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a v1.2 review digest that is not the spec fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B9-signed-v1.2-skips-the-v1.1-layer",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    findings = [f\"v1.1 signed bytes: {f}\" for f in v11.signed_v11_findings(root)]\n    current = state(root)",
+        "new": "    findings = []\n    current = state(root)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL v1.2 recorded over a v1.1 layer that is not the signed v1.1: fails",
+              "FAIL v1.2 recorded over a v1.1 layer lacking the recorded option: fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B10-later-version-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    if latest != (1, 2):",
+        "new": "    if latest > (1, 3):",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a later version no builder knows fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B11-signed-with-package-absent",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "        return [f\"{V12_RECORD.as_posix()} exists but the v{VERSION} package is absent\"]",
+        "new": "        return []",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL absent package with a v1.2 record fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B12-check-absent-with-record-accepted",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "                if (root / V12_RECORD).exists() else [])",
+        "new": "                if False else [])",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL absent package with a v1.2 record fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B13-apply-names-no-v1.2-record",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    text = v10.refigure(root, text.replace(V11_LINKS, THREE_LINKS))",
+        "new": "    text = v10.refigure(root, text)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options none)",
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B14-apply-does-not-refigure",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
+        "old": "    text = v10.refigure(root, text.replace(V11_LINKS, THREE_LINKS))",
+        "new": "    text = text.replace(V11_LINKS, THREE_LINKS)",
+        "selftests": [
+          "v12"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the status figure follows the recount and names three records (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B15-v1.1-peels-nothing",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return v12.backward(root)",
+        "new": "    return None",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B16-v1.1-latest-ignores-applied-v1.2",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "        if peeled(root) is not None:\n            findings.append(\"the tree carries the v1.2 patches",
+        "new": "        if False:\n            findings.append(\"the tree carries the v1.2 patches",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options none)",
+              "FAIL applied without a v1.2 record: the battery fails (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B17-v1.1-delegates-nothing",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return v12.signed_findings(root)",
+        "new": "    return []",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL a v1.2 review digest that is not the spec fails",
+              "FAIL a later version no builder knows fails"
+            ]
+          },
+          {
+            "selftest": "v11",
+            "exit": 1,
+            "failing": [
+              "FAIL a later version no builder knows fails"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B18-v1.1-spec-not-peeled",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "    return later[SPEC] if later is not None else (root / SPEC).read_bytes()",
+        "new": "    return (root / SPEC).read_bytes()",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL restored: signed"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B19-v1.1-scratch-not-peeled",
+        "file": "scripts/build_polaris_dossier_local_agent_mode_v1_1.py",
+        "old": "        if later is not None:\n            (scratch / rel).parent.mkdir",
+        "new": "        if False:\n            (scratch / rel).parent.mkdir",
+        "selftests": [
+          "v12",
+          "v11"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "v12",
+            "exit": 1,
+            "failing": [
+              "FAIL apply returns 0 (v1.1 options none)",
+              "FAIL applied package verifies (v1.1 options none)",
+              "FAIL applied: the v1.1 builder reads its own layer (v1.1 options none)",
+              "FAIL applied with a v1.2 record: signed (v1.1 options none)",
+              "FAIL apply returns 0 (v1.1 options n6)",
+              "FAIL applied package verifies (v1.1 options n6)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B20-recorder-v1.2-subject-not-computed",
+        "file": "scripts/record_versioned_signoff.py",
+        "old": "            subject_bytes=lambda root: dossier12().subject_bytes(root),\n",
+        "new": "",
+        "selftests": [
+          "recorder"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "recorder",
+            "exit": 1,
+            "failing": [
+              "FAIL the real v1.2 entry shares v1.0's key and record stem, binds the computed subject in its own candidate directory and offers no option"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "B21-recorder-v1.2-wrong-candidate",
+        "file": "scripts/record_versioned_signoff.py",
+        "old": "            CANDIDATES / \"polaris-dossier-local-agent-mode-v1-2\",",
+        "new": "            CANDIDATES / \"polaris-dossier-local-agent-mode-v1-1\",",
+        "selftests": [
+          "recorder"
+        ],
+        "outcome": "killed",
+        "failures": [
+          {
+            "selftest": "recorder",
+            "exit": 1,
+            "failing": [
+              "FAIL the real v1.2 entry shares v1.0's key and record stem, binds the computed subject in its own candidate directory and offers no option"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

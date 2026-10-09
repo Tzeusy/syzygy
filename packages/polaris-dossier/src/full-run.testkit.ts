@@ -84,7 +84,7 @@ export function fixtureSources(commit: string): GateSources {
   };
 }
 
-type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+export type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 3) => ({ id, path: file, startLine, endLine });
 const UNDERSTANDING = ['purpose', 'beneficiary', 'proposition', 'capabilities', 'components', 'choices', 'tradeOffs', 'limits', 'terminology', 'contradictions', 'openQuestions'];
 export const draft = (commit: string, plantSecret = false): Doc => ({
@@ -113,7 +113,7 @@ export const draft = (commit: string, plantSecret = false): Doc => ({
       { id: 'x-3', command: 'ls', workingDirectory: `/tmp/${PLANTED_SECRET}`, purpose: 'A command whose working directory carries a token.' }] : []),
   ],
 });
-const inventory = (commit: string): Doc => ({
+export const inventory = (commit: string): Doc => ({
   schemaVersion: 'polaris-dossier-local-inventory-v1',
   pinnedRevision: commit,
   sessionId: 'inventory-1',
@@ -123,7 +123,7 @@ const inventory = (commit: string): Doc => ({
   ],
   coverage: { inspected: ['src/kestrel.c', 'docs/notes.txt'], excluded: [], deferred: [], stoppingReason: 'Read every file.' },
 });
-const fidelityVerdict = (commit: string, packetSha256: string, spans: readonly { id: string; path: string; startLine: number }[]): Doc => {
+export const fidelityVerdict = (commit: string, packetSha256: string, spans: readonly { id: string; path: string; startLine: number }[]): Doc => {
   const kestrel = spans.filter((span) => span.path === 'src/kestrel.c' && span.startLine === 1).slice(0, 1).map((span) => span.id);
   const notes = spans.filter((span) => span.path === 'docs/notes.txt').map((span) => span.id);
   return {
@@ -148,7 +148,7 @@ const fidelityVerdict = (commit: string, packetSha256: string, spans: readonly {
     readiness: 'ready',
   };
 };
-const designVerdict = (commit: string, packetSha256: string, pages: readonly string[]): Doc => ({
+export const designVerdict = (commit: string, packetSha256: string, pages: readonly string[]): Doc => ({
   schemaVersion: 'polaris-dossier-local-design-verdict-v1',
   pinnedRevision: commit,
   packetSha256,

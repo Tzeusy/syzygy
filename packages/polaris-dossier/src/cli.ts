@@ -15,8 +15,9 @@ import { RUN_CONFIG_JSON_LIMITS } from './run-config.js';
 import { renderRun, type DossierRenderer } from './render.js';
 import { reviewCheck, reviewPacket } from './review.js';
 import type { ScreenLoad } from './screen.js';
-import { launchForm, sessionPrompt } from './session-handover.js';
+import { handOver, launchForm } from './session-handover.js';
 import { runStatus } from './status.js';
+import { awaitSession } from './waiting-sessions.js';
 
 /** The `syzygy dossier` command family (design "Command surface").
  *
@@ -25,7 +26,7 @@ import { runStatus } from './status.js';
  * Exit status: 0 clean, 1 findings or refusal (reason printed), 2 usage error. The family serves no
  * route and opens no socket: it is a local program the operator's sessions run as the operator. */
 
-export const EXIT = Object.freeze({ clean: 0, refused: 1, usage: 2 });
+export const EXIT = Object.freeze({ clean: 0, refused: 1, usage: 2, waiting: 3 });
 
 export const STATE_ROOT_ENV = 'SYZYGY_DOSSIER_STATE_ROOT';
 
@@ -62,7 +63,7 @@ Commands:
                       the object store of the clone init recorded and re-hashed,
                       freeze it as revision N
                       and write checks/rev-N.json; exit 1 on any finding
-  session-prompt <run> inventory|review [--kind <kind>] [--tool <tool>] [--tool-version <v>] [--model <m>]
+  session-prompt <run> inventory|review|all [--kind <kind>] [--tool <tool>] [--tool-version <v>] [--model <m>] [--fresh]
                       at a hand-over: make the inventory session's directory under
                       <state root>/<run id>.sessions/, beside the run directory and
                       holding only the inventory brief, print the fixed prompt and
@@ -74,7 +75,27 @@ Commands:
                       provider has no statement in force listing the run's classes
                       is refused. review --kind
                       fidelity|design builds that review's packet and copies it,
-                      with its digest, into the review session's directory there
+                      with its digest, into the review session's directory there;
+                      when a session of the kind is waiting (started by all), it delivers the
+                      packet to that session as its next round instead, unless
+                      --fresh is given. all, at the start of a run (v1.2, refused
+                      until it is signed off):
+                      make the inventory, fidelity-review and design-review
+                      session directories, write the inventory brief, and print a
+                      command per session that pre-approves only reading its
+                      directory (the inventory also the clone) and its one
+                      command, syzygy dossier await, and no write; Syzygy starts
+                      nothing
+  await <session-dir>/ [--round <n>] [--submit <file> [--stdin]] [--wait-minutes <m>]
+                      run by a waiting session: wait (9 minutes a call by default,
+                      never past the run's deadline; local files only) for round n
+                      of its input, re-hash it against the digest Syzygy recorded,
+                      and say what to read; exit 3 while still waiting. With
+                      --submit, run the role's inventory-check or review-check on
+                      a file inside the session directory; with --stdin as well,
+                      Syzygy first writes that file (inventory.json, or
+                      round-N/verdict.json for a delivered round) from standard
+                      input, so the session needs no write permission
   launch-form <run> inventory|review terminal|bang [--kind fidelity|design]
                       record, once, how the operator declares the latest inventory
                       or review session (of the kind, fidelity by default) was
@@ -126,7 +147,7 @@ Commands:
 Every value status reports comes from files the agent sessions can write,
 and is labelled Inferred. --json prints the same content as one JSON document;
 the machine form, refusals included, is printed only with --json.
-Exit status: 0 clean, 1 refusal, 2 usage error.
+Exit status: 0 clean, 1 refusal, 2 usage error, 3 await still waiting.
 `;
 
 export interface CliIo {
@@ -146,6 +167,12 @@ export interface CliPorts {
   readonly loadScreen?: () => Promise<ScreenLoad>;
   /** The multi-page dossier renderer `render` draws through; the `syzygy` composition root injects it. Without it `render` refuses. */
   readonly renderer?: DossierRenderer;
+  /** Whether version 1.2 of the local-agent mode, which specifies waiting sessions, is signed off; by default read from the records root. */
+  readonly waitModeSigned?: () => boolean;
+  /** The pause between an `await` slice's looks at its session directory; a timer by default. */
+  readonly sleep?: (ms: number) => Promise<void>;
+  /** Standard input, read whole as bytes, for `await --submit --stdin`; null past `maxBytes`. The process's own by default. */
+  readonly readStdin?: (maxBytes: number) => Promise<Uint8Array | null>;
 }
 
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
@@ -216,16 +243,38 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
   }
   if (command === 'session-prompt') {
-    const options = parseOptions(rest, ['--kind', '--tool', '--tool-version', '--model']);
+    const fresh = rest.filter((arg) => arg === '--fresh').length;
+    if (fresh > 1) return usageError('--fresh given more than once');
+    const options = parseOptions(rest.filter((arg) => arg !== '--fresh'), ['--kind', '--tool', '--tool-version', '--model']);
     if (typeof options === 'string') return usageError(options);
     const [run, role, ...extra] = options.positional;
-    if (run === undefined || (role !== 'inventory' && role !== 'review') || extra.length > 0) return usageError('session-prompt takes the run directory and a role, inventory or review');
+    if (run === undefined || (role !== 'inventory' && role !== 'review' && role !== 'all') || extra.length > 0) return usageError('session-prompt takes the run directory and a role, inventory, review or all');
     const v = options.values;
-    const result = await sessionPrompt(run, {
-      role, ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
+    const result = await handOver(run, {
+      role, ...(fresh === 1 ? { fresh: true } : {}), ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
       ...(v.has('--tool-version') ? { toolVersion: v.get('--tool-version')! } : {}), ...(v.has('--model') ? { model: v.get('--model')! } : {}),
-    }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
+    }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}), ...(ports.waitModeSigned ? { waitModeSigned: ports.waitModeSigned } : {}) });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
+  }
+  if (command === 'await') {
+    const stdin = rest.filter((arg) => arg === '--stdin').length;
+    if (stdin > 1) return usageError('--stdin given more than once');
+    const options = parseOptions(rest.filter((arg) => arg !== '--stdin'), ['--round', '--submit', '--wait-minutes']);
+    if (typeof options === 'string') return usageError(options);
+    if (options.positional.length !== 1) return usageError('await takes exactly one positional argument, the session directory');
+    const v = options.values;
+    const env = ports.env ?? process.env;
+    const result = await awaitSession(options.positional[0]!, {
+      ...(v.has('--round') ? { round: v.get('--round')! } : {}), ...(v.has('--submit') ? { submit: v.get('--submit')! } : {}),
+      ...(v.has('--wait-minutes') ? { waitMinutes: v.get('--wait-minutes')! } : {}), ...(stdin === 1 ? { stdin: true } : {}),
+    }, {
+      sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
+      ...(ports.waitModeSigned ? { waitModeSigned: ports.waitModeSigned } : {}), ...(ports.sleep ? { sleep: ports.sleep } : {}),
+      ...(ports.readStdin ? { readStdin: ports.readStdin } : {}),
+    });
+    if (!result.ok) return refused(result.refusal);
+    const outcome = result.report;
+    return report(outcome, outcome.outcome === 'waiting' ? EXIT.waiting : outcome.outcome === 'submitted' && !outcome.passed ? EXIT.refused : EXIT.clean);
   }
   if (command === 'review-packet') {
     const options = parseOptions(rest, ['--kind']);

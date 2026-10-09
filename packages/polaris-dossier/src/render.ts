@@ -22,6 +22,7 @@ import { NO_WORK_ITEM_REASON } from './run-record.js';
 import { CLASS_NOT_CONSENTED, unconsentedClass, unconsentedText } from './class-gate.js';
 import { loadDossierScreen, type DossierScreen, type ScreenExclusion } from './screen.js';
 import { RUN_LAYOUT } from './state-directory.js';
+import { continuationOf } from './waiting-sessions.js';
 
 /** `syzygy dossier render <run>` (REQ-polaris-generation-033, 034, 036; design "Command surface", `render`; syzygy-qkea.10).
  *
@@ -187,7 +188,7 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   const reviewed = buildDesignPacket({ run, runId, pinnedRevision: pinned, files: pending });
   if (!reviewed.ok) return refuse('render', `the rendered pages cannot be compared outside the review-status region: ${reviewed.reason}`);
   const design = designReviewOfRecord(opened, reviewed);
-  const local: LocalRenderInput = { ...built.local, reviewStatus: built.local.reviewStatus.map((item) => (item.id === 'review-status/design' ? designStatusItem(design) : item)) };
+  const local: LocalRenderInput = { ...built.local, reviewStatus: built.local.reviewStatus.map((item) => (item.id === 'review-status/design' ? designStatusItem(design, run) : item)) };
   const files = draw(local);
   if (typeof files === 'string') return refuse('render', files);
   const published = buildDesignPacket({ run, runId, pinnedRevision: pinned, files });
@@ -495,10 +496,14 @@ export function buildLocalInput(inputs: BuildInputs): Built {
       ], sourceIds: [],
     })) }],
   };
+  const fidelityContinuation = review.counts ? continuationOf(run, 'fidelity', review.session, review.number, review.packetSha256, review.sessionId.value) : null;
   const reviewItems: LocalPageItem[] = review.counts ? [
     { id: 'review/fidelity/binding', marking: 'observed', unknownReason: null, title: 'Fidelity review binding', text: `Syzygy rebuilt the fidelity packet from the frozen draft and inventory at this render; its digest is ${review.packetSha256}, and the counted verdict names that digest.`, details: [], sourceIds: [] },
     { id: 'review/fidelity/verdict', marking: 'inferred', unknownReason: null, title: 'Fidelity verdict', text: `The review session declares the draft ${review.verdict.readiness}${review.verdict.blocking ? ', beside a blocking finding' : ''}.`,
       details: [`Review session identifier ${review.sessionId.value}, as that session declares it`, `Launch form ${review.launchForm.value}, as the operator declares it`, ...review.inferred.basis], sourceIds: [] },
+    // A reviewer that continued across revisions is disclosed (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08).
+    { id: 'review/fidelity/continuation', marking: 'inferred', unknownReason: null, title: fidelityContinuation!.continuing ? 'Continuing reviewer' : 'Reviewer continuity', text: fidelityContinuation!.text,
+      details: [`From ${fidelityContinuation!.basis}`], sourceIds: [] },
   ] : [{ id: 'review/fidelity/none', marking: 'unknown', unknownReason: 'missing-evidence', title: 'Fidelity review', text: `No fidelity review counts for this draft: ${review.why}.`, details: [], sourceIds: [] }];
   const reviewPage: LocalPage = {
     path: 'review.html', title: 'Review',
@@ -523,9 +528,9 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const disclosure = disclosureItems({ opened, draftLayer, executionList, flags, quotationCount, credential, clean, run });
   const reviewStatus: LocalDisclosureItem[] = [
     review.counts
-      ? { id: 'review-status/fidelity', text: `Fidelity review: one counts, bound to packet ${review.packetSha256} rebuilt at this render; its verdict, ${review.verdict.readiness}, is the review session's.`, label: 'Inferred' }
+      ? { id: 'review-status/fidelity', text: `Fidelity review: one counts, bound to packet ${review.packetSha256} rebuilt at this render; its verdict, ${review.verdict.readiness}, is the review session's.${fidelityContinuation!.continuing ? ' Its reviewer continued across revisions (see the review page).' : ''}`, label: 'Inferred' }
       : { id: 'review-status/fidelity', text: `Fidelity review: none counts (${review.why}).`, label: 'Unknown' },
-    designStatusItem(design),
+    designStatusItem(design, run),
   ];
 
   const editorial = draftLayer.state === 'editorial-draft';
@@ -543,11 +548,13 @@ export function buildLocalInput(inputs: BuildInputs): Built {
 const DESIGN_REVIEW_WHERE = 'Whether a rendered-design review counts for these pages is stated in the review-status region at the foot of every page, the only part of a page a later render may change without retiring that review; this page is part of what that review reviews, so it does not repeat it.';
 
 /** The review-status region's line for the rendered-design review. */
-export function designStatusItem(design: DesignReviewOfRecord | undefined): LocalDisclosureItem {
+export function designStatusItem(design: DesignReviewOfRecord | undefined, run: string): LocalDisclosureItem {
   if (design === undefined) return { id: 'review-status/design', text: 'Rendered-design review: not yet decided at this render.', label: 'Unknown' };
-  return design.counts
-    ? { id: 'review-status/design', text: `Rendered-design review: one counts, bound to packet ${design.packetSha256}, which Syzygy built at this render from these pages outside this region; its verdict, ${design.verdict.readiness}${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's.`, label: 'Inferred' }
-    : { id: 'review-status/design', text: `Rendered-design review: none counts (${design.why}).`, label: 'Unknown' };
+  if (!design.counts) return { id: 'review-status/design', text: `Rendered-design review: none counts (${design.why}).`, label: 'Unknown' };
+  // The design review's status lives only in this region, so its reviewer's continuity, continuing or not, is disclosed here, never on a
+  // reviewed page.
+  const continuation = continuationOf(run, 'design', design.session, design.number, design.packetSha256, design.sessionId.value);
+  return { id: 'review-status/design', text: `Rendered-design review: one counts, bound to packet ${design.packetSha256}, which Syzygy built at this render from these pages outside this region; its verdict, ${design.verdict.readiness}${design.verdict.blocking ? ' beside a blocking finding' : ''}, is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`, label: 'Inferred' };
 }
 
 const UNDERSTANDING_HEADINGS: Readonly<Record<(typeof UNDERSTANDING_ITEMS)[number], string>> = {
