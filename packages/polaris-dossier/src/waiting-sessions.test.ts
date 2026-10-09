@@ -264,7 +264,8 @@ describe('the v1.2 gate', () => {
     }],
     ['the review\'s head carries two digests (mutant: take the first digest of several)', (root) => {
       const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');
-      fs.writeFileSync(path.join(root, 'docs', 'reviews', 'FIXTURE-v1.2-RAW.md'), reviewHead(digest, `Manifest SHA-256: ${'a'.repeat(64)}\n`));
+      // The matching digest first, so taking the first of several would open the gate.
+      fs.writeFileSync(path.join(root, 'docs', 'reviews', 'FIXTURE-v1.2-RAW.md'), `# Review\nManifest SHA-256: ${digest}\nManifest SHA-256: ${'a'.repeat(64)}\nVerdict: CONFIRM\n`);
     }],
     ['the digest lies past the review\'s head (mutant: read the whole review)', (root) => {
       const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');
