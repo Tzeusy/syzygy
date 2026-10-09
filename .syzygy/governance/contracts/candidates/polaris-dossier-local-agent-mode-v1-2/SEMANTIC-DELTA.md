@@ -81,9 +81,12 @@ At v1.1, REQ-polaris-generation-035:
    MAY be started before its input exists". At the start of a run Syzygy may
    write the inventory brief, make the review directories and print a command
    per session; "the operator starts each such session as above, and neither
-   Syzygy nor the authoring session starts, resumes or signals it." The
-   rule that a subagent, a process of the authoring session or a headless
-   session it starts does not count is unchanged.
+   Syzygy nor the authoring session starts, resumes or signals it."
+   "Because a waiting session holds its terminal for the whole run, Syzygy
+   SHALL print its command for a new terminal only and SHALL refuse a
+   shell-escape launch form declared for it." The rule that a subagent, a
+   process of the authoring session or a headless session it starts does not
+   count is unchanged.
 2. **One command, bounded, local, re-hashing.** A waiting session "SHALL
    obtain its input only through one Syzygy command named for its directory,
    which reads only the local file system and makes no network request; waits
@@ -104,11 +107,14 @@ At v1.1, REQ-polaris-generation-035:
    that narrow, only read tools over the session's own directory (and, for
    the inventory session, the clone) and that one Syzygy command for that
    directory, and never a write or a general shell"; where the tool offers
-   none, "Syzygy SHALL print no pre-approval and SHALL say so." Because the
+   none, "Syzygy SHALL print no pre-approval and SHALL say so." "Where the
+   agent tool can limit which of its own tools a session has at all, the
+   printed command SHALL also limit a waiting session to its read tools and
+   the shell its one command runs in." Because the
    session may not write, "A waiting session SHALL hand its inventory or
    verdict to that command, as content it passes to the command or as a file
-   under its own directory that the command reads; Syzygy writes the content
-   into the session's directory under the role's own file name (the
+   under its own directory that the command reads", and "Syzygy writes the
+   content into the session's directory under the role's own file name (the
    inventory, or the verdict of a round Syzygy delivered), and only there".
    Content passed to the command may quote the observed project, so "every
    instruction Syzygy prints for passing content SHALL pass it so that the
@@ -130,14 +136,18 @@ At v1.1, REQ-polaris-generation-035:
    the operator keeps outside the printed command (the agent tool's user,
    project or local settings) widens what the session may run unattended,
    that the session started no subagent, which would act with the same
-   pre-approval, and a reviewer's continuity or its absence are Inferred;
-   whether the agent tool's rule for the one command admits an output
-   redirection, a write outside the role's own file, is Unknown; and no
-   surface states any of them as Observed." The printed pre-approval is
-   narrowed where the tool allows it (the implementation also denies the
-   write, web and subagent tools and loads no MCP server), but no printed
-   flag reaches the operator's own settings layers, so that residual is
-   named rather than claimed closed.
+   pre-approval, that the printed limit on the agent tool's own tools leaves
+   the session no other of them, and a reviewer's continuity or its absence
+   are Inferred; whether a tool from outside the agent tool's own set, such
+   as one connected through the operator's account, remains available to the
+   session, and whether the agent tool's rule for the one command admits an
+   output redirection, a write outside the role's own file, are Unknown; and
+   no surface states any of them as Observed." The printed pre-approval is
+   narrowed where the tool allows it (the implementation also limits Claude
+   Code to its built-in Read, Glob, Grep and Bash tools, denies the write,
+   web and subagent tools and loads no MCP server), but no printed flag
+   reaches the operator's own settings layers or a tool outside the agent
+   tool's own set, so those residuals are named rather than claimed closed.
 
 Four scenarios carry these: "Waiting session started before its packet",
 "Packet delivered to a waiting session", "Printed pre-approval for a waiting
@@ -157,7 +167,8 @@ sessions the operator starts".
 - Syzygy coordinates no agent: it starts, resumes and signals no session
   (owner direction of 2026-10-03, item 2).
 - The packet's contents, the verdict's validation, the session-identifier
-  rule, the launch-form rule and the rule that any revision retires the
+  rule, the launch-form rule (but for a waiting session, whose declared form
+  is a new terminal only: item 1) and the rule that any revision retires the
   verdicts bound to it. A waiting session declares its identifier as before;
   the identifier rule only refuses a reviewer that declares the author's or
   the inventory session's identifier.
@@ -235,8 +246,13 @@ code becomes conformant only once these bytes are signed.
   in `decisions/` with the head `record_versioned_signoff.py` writes (title,
   package, version, tag, a 40-hex reviewed commit and a confirming verdict)
   and exactly one marked block for that version in
-  `ACCEPTANCE-ACT-RECORD.md`, so a v1.1 run behaves the same with the code
-  present, and a file that only carries the name opens nothing. That gate
+  `ACCEPTANCE-ACT-RECORD.md`, over a tree that carries the applied, reviewed
+  subject: the installed spec names the version in its head and hashes to
+  the one `Manifest SHA-256` in the head of the review the record names, the
+  comparison the v1.2 builder's signed check makes. A v1.1 run behaves the
+  same with the code present, and neither a file that only carries the name
+  nor a hand-written head with no review and no applied patch opens
+  anything. That gate
   does not lift the direction's order: "The code may merge only once version
   1.2 is signed off". The proposed order is review, sign-off, recording,
   then merging the code.
