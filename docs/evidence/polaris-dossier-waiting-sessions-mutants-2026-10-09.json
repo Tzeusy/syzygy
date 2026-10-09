@@ -1,46 +1,153 @@
 {
-  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there). One mutant per predicate: the v1.2 gate at each entry and its version comparison; the printed allow-list and the Codex null; the waiting prompt's SEC-3 rule; the provider-statement check at start and at delivery; the delivery's context refusal and --fresh; the brief and packet re-hash, each of three digests; the wait slice and the deadline cap; the closed run; each directory-argument check; the waiting-mode, containment and latest-session checks; the CLI exit codes; the delivery round; the continuation disclosure in waiting-sessions.ts and render.ts; and the stdin hand-over (`await --submit <file> --stdin`: Syzygy writes before it checks, only the role's own file name, only a delivered round's verdict, the size bound, empty content, no pending link followed, `--stdin` without `--submit`, a resubmission replaces, and the CLI wiring). `builderMutants` covers the v1.2 builder, the v1.1 builder's peel and delegation, and the recorder's v1.2 entry. Not authority.",
+  "record": "Rule-6 mutants for pre-started waiting sessions in packages/polaris-dossier (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate polaris-dossier-local-agent-mode v1.2, REQ-polaris-generation-035 as amended there), re-run after review-408 round 1 (docs/reviews/R-PR408-WAITING-SESSIONS-1-RAW.md). The population is every refusal, guard and disclosure predicate of the wait-mode code, re-derived from the files at `commit`: each `if`, conjunct and ternary in waiting-sessions.ts, the wait-mode paths of session-handover.ts (sessionCommands, waitingAllowedTools, the two waiting prompts, START_DISCLOSURES, startSessions, handOver and deliverReview), the continuity items of render.ts and the await exit codes and stdin wiring of cli.ts. Each predicate has one mutant below, or one entry in `notMutated` with its reason. M1-M40 and S1-S10 are the earlier record's mutants (S1, S5 and S7 re-anchored on the moved source); F1-F8 and N2 cover the round-1 repairs; F4a-F4af cover the predicates finding 4 named and the rest of the population. `builderMutants` covers the v1.2 builder, the v1.1 builder's peel and delegation, and the recorder's v1.2 entry. Not authority.",
   "measuredOn": {
-    "commit": "cfdd1a40d5aa9c619b1fa1da08ba1b6e3c29e0d7",
-    "commitNote": "`commit` is a local rebase of this branch onto main after #409, never pushed; the branch was rebased again onto main after #410 at 7646cccf36d1eef1c90fbe4b201aaef044da264e, which changes none of `subjects` (it adds a review raw and its notes, and edits docs/README.md, scripts/check_docs_review_campaign_partition.py and packages/polaris-generation-core/src/public-source-classification.ts with its test). Re-check by the subjects' digests.",
-    "subjects": [
+    "commits": [
       {
-        "path": "packages/polaris-dossier/src/waiting-sessions.ts",
-        "sha256": "d6a7040d6b988c3c2857a6f50f13528e7343a727ecd7de7fa0ca9bb5a81c2f62"
+        "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112",
+        "subjects": [
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+            "sha256": "d9b23a8f7b77cb9f5b7799dda7f52fbc5383ecd3eb42d8af2648dddd55247fb5"
+          },
+          {
+            "path": "packages/polaris-dossier/src/session-handover.ts",
+            "sha256": "7b75190723bb7a992ec9b3535d095fe5ddccac6576f4434d62accaf05d129d2b"
+          },
+          {
+            "path": "packages/polaris-dossier/src/cli.ts",
+            "sha256": "8a63661c74acd30b279951490e4a8567921c7057e6742ba407315ea5f9a9f919"
+          },
+          {
+            "path": "packages/polaris-dossier/src/render.ts",
+            "sha256": "1941053700189d34bc410342c9af75d9af800337a7aae97b9f484468b4f06435"
+          },
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+            "sha256": "3d56de1d1f75cb35b1da0d9f53c763327915382632f1ac50c26e3053029f1324"
+          }
+        ]
       },
       {
-        "path": "packages/polaris-dossier/src/session-handover.ts",
-        "sha256": "28b21acd40b15501ac3a21f6d3c646329f8e1d07090f78dc639ed449381057a6"
+        "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43",
+        "subjects": [
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+            "sha256": "d9b23a8f7b77cb9f5b7799dda7f52fbc5383ecd3eb42d8af2648dddd55247fb5"
+          },
+          {
+            "path": "packages/polaris-dossier/src/session-handover.ts",
+            "sha256": "7b75190723bb7a992ec9b3535d095fe5ddccac6576f4434d62accaf05d129d2b"
+          },
+          {
+            "path": "packages/polaris-dossier/src/cli.ts",
+            "sha256": "8a63661c74acd30b279951490e4a8567921c7057e6742ba407315ea5f9a9f919"
+          },
+          {
+            "path": "packages/polaris-dossier/src/render.ts",
+            "sha256": "1941053700189d34bc410342c9af75d9af800337a7aae97b9f484468b4f06435"
+          },
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+            "sha256": "7f67df54c67432477749dd055d7c86c590bf15865f783c1cd74e48acf1dc2135"
+          }
+        ]
       },
       {
-        "path": "packages/polaris-dossier/src/cli.ts",
-        "sha256": "7ec1498b4ad9e39ce3bce6a5e5f9492a4996312ea1fabee2789c74ca36a75b78"
-      },
-      {
-        "path": "packages/polaris-dossier/src/render.ts",
-        "sha256": "f0fcc15a6f956f70dd07db71279785058d5ce2bc7fe855b172620e41ac105aa8"
-      },
-      {
-        "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
-        "sha256": "5600edfeafa457ef61a0cf010918f7e38a5262484650c1cab3d9a39913fe987f"
+        "commit": "fc9fa3aa4630437010341fde3019f82413691548",
+        "subjects": [
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.ts",
+            "sha256": "d9b23a8f7b77cb9f5b7799dda7f52fbc5383ecd3eb42d8af2648dddd55247fb5"
+          },
+          {
+            "path": "packages/polaris-dossier/src/session-handover.ts",
+            "sha256": "7b75190723bb7a992ec9b3535d095fe5ddccac6576f4434d62accaf05d129d2b"
+          },
+          {
+            "path": "packages/polaris-dossier/src/cli.ts",
+            "sha256": "8a63661c74acd30b279951490e4a8567921c7057e6742ba407315ea5f9a9f919"
+          },
+          {
+            "path": "packages/polaris-dossier/src/render.ts",
+            "sha256": "1941053700189d34bc410342c9af75d9af800337a7aae97b9f484468b4f06435"
+          },
+          {
+            "path": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+            "sha256": "eafba542bf2672488a74e3b99bf1184034715433c67f7daa03a7d07408cf4f6e"
+          }
+        ]
       }
-    ]
+    ],
+    "commitNote": "Each mutant names the commit it ran at. The first pass ran at 4f668cf9 in list order through F4m; the vitest run of F4n hung (dropping the opening gate leaves the wait slice without a deadline) and the runner stopped at its timeout. e1b15896 adds two aggregate cases to waiting-sessions.test.ts, which F8g and F8h had survived at 4f668cf9; it changes no other subject (compare the digests). The second pass re-ran F8g, F8h and F4n onward there. Adding test cases cannot revive a mutant the first pass killed. F4ac survived there (the dropped design build refusal still refused, later, at stage write); fc9fa3aa adds one assertion that the refusal is not at stage write, changes no other subject, and F4ac alone was re-run there. Where an id ran twice its last run is the one listed."
   },
-  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, else not applied) in one file of the worktree at `commit`, runs `command` from the worktree root, then restores the file byte for byte. A mutant is killed only when the replacement applied and the command exits nonzero. `failedTests` is read from Vitest's summary line. The tree under packages/ was clean after the run (`treeCleanAfter`).",
+  "method": "Each mutant replaces `old` with `new` (exactly one occurrence, else not applied) in one file of the worktree at its `commit`, runs `command` from the worktree root, then restores the file byte for byte. A mutant is killed when the replacement applied and the command exits nonzero, or `killed (timeout)` when the command was still running after 300 s (second pass; the process group is killed). `failedTests` is read from Vitest's summary line, null where the first pass logged none. The tree under packages/ was clean after the second pass (`treeCleanAfter`).",
   "command": "npx vitest run packages/polaris-dossier/src/waiting-sessions.test.ts",
   "result": {
-    "killed": 50,
-    "total": 50
+    "killed": 112,
+    "total": 112,
+    "notMutated": 15
   },
   "treeCleanAfter": true,
   "notMutated": [
     {
-      "predicate": "startSessions: `if (built.executionRule.arm !== 'sec-3') return refuse('execution-rule', ...)`",
-      "why": "Unreachable through any input: decideExecutionRule returns the sec-3 arm for every role but 'authoring' (packages/polaris-dossier/src/execution-rule.ts, `if (inputs.role !== 'authoring') return sec3(...)`), and the inventory brief is built with the inventory role. It is a second guard; a mutant of it would survive by construction, so none is recorded as killed."
+      "predicate": "session-handover.ts startSessions: `if (built.executionRule.arm !== 'sec-3') return refuse('execution-rule', ...)`",
+      "why": "Unreachable through any input: decideExecutionRule returns the sec-3 arm for every role but 'authoring' (packages/polaris-dossier/src/execution-rule.ts, `if (inputs.role !== 'authoring') return sec3(...)`), and the inventory brief is built with the inventory role. A mutant would survive by construction."
     },
     {
-      "predicate": "render.ts designStatusItem: the continuation sentence appended to the rendered-design review status",
-      "why": "Not exercised by waiting-sessions.test.ts: no test there runs a design review to a counted verdict through a waiting session. The fidelity status note and the review-page item are mutated (M38, M39). Residual, reported to the lead."
+      "predicate": "waiting-sessions.ts awaitSession: the clause `directoryArg.split('/').some((part) => part === '.' || part === '..')`",
+      "why": "Subsumed by the clause before it: path.normalize removes every '.' and '..' segment of an absolute path, so a path holding one never equals its normalisation and is already refused. M21 removes both clauses together and is killed; this clause alone cannot change an outcome."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: the clause `expected === undefined` in the brief re-hash",
+      "why": "Subsumed by the clause after it: a sha256 hex digest is never undefined, so `sha256(bytes) !== expected` refuses the same inputs. M16 removes that clause and is killed."
+    },
+    {
+      "predicate": "waiting-sessions.ts sessionDirectoryRefusal: the `lstatSync` catch (a session directory that does not exist)",
+      "why": "No write can follow it: with the arm removed, a missing directory still fails `realOrNull` in await (refused at stage submit) and the `mkdirSync` of the round in a delivery (refused at stage write), so only the stage word changes, never whether anything is written."
+    },
+    {
+      "predicate": "waiting-sessions.ts sessionDirectoryRefusal: the `realpathSync` catch",
+      "why": "Reachable only when lstat has just succeeded and realpath then fails (the entry or an ancestor removed or made unreadable between the two calls); no test can place an input there without fault injection into node:fs."
+    },
+    {
+      "predicate": "waiting-sessions.ts waitingReviewSession: `if (session === 0) return null`",
+      "why": "Equivalent without it: readRecord of the session-0 prompt record finds no file, so the function returns null either way."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: `if (realDir === null) return refuse('submit', ...)`",
+      "why": "Reachable only by a race: sessionDirectoryRefusal has just resolved the same path's real path, so realpath fails here only if the directory vanished in between."
+    },
+    {
+      "predicate": "waiting-sessions.ts deliverToWaiting: the catch around the round's writes",
+      "why": "Exercised, not mutated: the two 'counts no delivery record' tests drive it (the run's delivery record already exists, so `wx` fails) and assert its reason, 'round 1 could not be delivered'. A mutant rethrowing instead would change that reason, but none was run."
+    },
+    {
+      "predicate": "waiting-sessions.ts awaitSession: `if (!result.ok) return refuse('check', ...)` after checkInventory and after reviewCheck",
+      "why": "Forwarding only: the refusal is the check's own, tested in check and review suites; the waiting code adds no predicate there, and since F5 a submission reaches the check only as bounded JSON."
+    },
+    {
+      "predicate": "session-handover.ts startSessions: `if ('stage' in context) return refuse(...)` and `if (!built.ok) return refuse(built.stage, built.reason)`",
+      "why": "Forwarding only: sessionContextOf's statement refusal is killed through M12; buildInventoryBrief refuses only when SEC-3 cannot be quoted from the records root's adopted doctrine, which the fixture sources read from the real checkout, where it can."
+    },
+    {
+      "predicate": "session-handover.ts startSessions: the catch around the directory and record writes",
+      "why": "An I/O failure arm (a write refused by the file system after every check passed); no input reaches it without fault injection."
+    },
+    {
+      "predicate": "session-handover.ts deliverReview: `if (waiting === null) return refuse('session', ...)`",
+      "why": "Reachable only by a race: handOver calls deliverReview only after waitingReviewSession returned a session for the same run and kind."
+    },
+    {
+      "predicate": "session-handover.ts handOver: the clauses `isReviewKind(rest.kind)` and `RUN_ID.test(path.basename(target))` in the delivery condition",
+      "why": "Equivalent without them: for a kind outside the two, or a path that is not a run, waitingReviewSession finds no waiting prompt record and returns null, so the call falls through to sessionPrompt either way."
+    },
+    {
+      "predicate": "waiting-sessions.ts readStdinBytes: `Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk))`",
+      "why": "Not a predicate on input: a conversion of a stream chunk to bytes. The reader's bound is mutated (F5d)."
+    },
+    {
+      "predicate": "cli.ts: the `await` and `session-prompt` argument grammar (`--stdin` or `--fresh` given twice, other than one positional argument)",
+      "why": "Usage errors (exit 2) raised before any wait-mode code runs; they guard the command line's shape, not a write, a read or a disclosure, and are not mutated in this record."
     }
   ],
   "mutants": [
@@ -50,7 +157,8 @@
       "old": "  if (!signed()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n",
       "new": "",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M2-signoff-minor-only",
@@ -58,7 +166,8 @@
       "old": "Number(match[2]) >= 2",
       "new": "Number(match[2]) >= 1",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M3-signoff-later-major-not-counted",
@@ -66,7 +175,8 @@
       "old": "(Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))",
       "new": "(Number(match[1]) === 1 && Number(match[2]) >= 2)",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M4-start-all-unsigned-gate-dropped",
@@ -74,7 +184,8 @@
       "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  const opened = await openRun(runDir,",
       "new": "  const opened = await openRun(runDir,",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M5-delivery-unsigned-gate-dropped",
@@ -82,7 +193,8 @@
       "old": "  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);\n  if (request.tool",
       "new": "  if (request.tool",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M6-sessions-root-plain-path-dropped",
@@ -90,7 +202,8 @@
       "old": "  if (!PLAIN_PATH.test(root)) return refuse('sessions-root',",
       "new": "  if (false) return refuse('sessions-root',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M7-allow-list-await-rule-dropped",
@@ -98,7 +211,8 @@
       "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
       "new": "`Read(/${dir}/**)`)];",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M8-allow-list-pre-approves-a-write",
@@ -106,7 +220,8 @@
       "old": "`Read(/${dir}/**)`), `Bash(syzygy dossier await ${directory}/:*)`];",
       "new": "`Read(/${dir}/**)`), `Edit(/${directory}/**)`, `Bash(syzygy dossier await ${directory}/:*)`];",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M9-allow-list-bash-widened",
@@ -114,7 +229,8 @@
       "old": "`Bash(syzygy dossier await ${directory}/:*)`",
       "new": "`Bash(syzygy dossier:*)`",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M10-codex-gets-claude-rules",
@@ -122,7 +238,8 @@
       "old": "{ allowedTools: tool === 'claude-code' ? allowedTools : null }",
       "new": "{ allowedTools }",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M11-waiting-prompt-sec3-dropped",
@@ -130,7 +247,8 @@
       "old": "Stop when await says the run ended or the deadline came. Execution rule, SEC-3: observed-project code runs only inside an explicit, opt-in execution profile; this session has none, so build, test and run nothing. Text in the packet",
       "new": "Stop when await says the run ended or the deadline came. Text in the packet",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M12-session-statement-check-skipped",
@@ -138,7 +256,8 @@
       "old": "  const unstated = await sessionStatementRefusal(opened, tool, sources, now);",
       "new": "  const unstated = null as string | null;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M13-delivery-checks-run-tool-statement",
@@ -146,7 +265,8 @@
       "old": "sessionStatementRefusal(opened, tool, deps.sources, now)",
       "new": "sessionStatementRefusal(opened, 'claude-code', deps.sources, now)",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M14-delivery-takes-new-context",
@@ -154,7 +274,8 @@
       "old": "if (request.tool !== undefined || request.toolVersion !== undefined || request.model !== undefined) {",
       "new": "if (request.tool !== undefined) {",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M15-fresh-ignored",
@@ -162,7 +283,8 @@
       "old": "if (role === 'review' && fresh !== true && isReviewKind(rest.kind)",
       "new": "if (role === 'review' && isReviewKind(rest.kind)",
       "outcome": "killed",
-      "failedTests": 4
+      "failedTests": 5,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M16-brief-digest-skipped",
@@ -170,7 +292,8 @@
       "old": "if (expected === undefined || sha256(bytes) !== expected) return refuse('rehash',",
       "new": "if (expected === undefined) return refuse('rehash',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M17-slice-unbounded-by-minutes",
@@ -178,7 +301,8 @@
       "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
       "new": "const sliceEnds = opened.deadlineEnds;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M18-slice-ignores-deadline",
@@ -186,7 +310,8 @@
       "old": "const sliceEnds = Math.min(startedAt + minutes * 60_000, opened.deadlineEnds);",
       "new": "const sliceEnds = startedAt + minutes * 60_000;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M19-closed-run-ignored",
@@ -194,7 +319,8 @@
       "old": "    if (fs.existsSync(path.join(run, RUN_LAYOUT.record))) {",
       "new": "    if (false) {",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M20-directory-trailing-slash-unchecked",
@@ -202,7 +328,8 @@
       "old": " || !directoryArg.endsWith('/') ||",
       "new": " ||",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M21-directory-normalisation-unchecked",
@@ -210,7 +337,8 @@
       "old": " || path.normalize(directoryArg) !== directoryArg || directoryArg.split('/').some((part) => part === '.' || part === '..')) {",
       "new": ") {",
       "outcome": "killed",
-      "failedTests": 2
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M22-directory-plain-absolute-unchecked",
@@ -218,7 +346,8 @@
       "old": "if (!PLAIN_PATH.test(directoryArg) || !directoryArg",
       "new": "if (!directoryArg",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M23-directory-sessions-root-unchecked",
@@ -226,7 +355,8 @@
       "old": "if (!path.basename(parent).endsWith('.sessions') || !RUN_ID.test(runId)) return refuse('directory',",
       "new": "if (false) return refuse('directory',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M24-waiting-mode-unchecked",
@@ -234,7 +364,8 @@
       "old": "  if (prompt['mode'] !== WAITING_MODE) return refuse('session',",
       "new": "  if (false) return refuse('session',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M25-submit-containment-dropped",
@@ -242,7 +373,8 @@
       "old": "if (file === null || !file.startsWith(`${realDir}${path.sep}`)) return refuse('submit',",
       "new": "if (file === null) return refuse('submit',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M26-submit-latest-session-unchecked",
@@ -250,7 +382,8 @@
       "old": "    if (latest !== role.session) return refuse('submit',",
       "new": "    if (false) return refuse('submit',",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M27-cli-submit-findings-exit-0",
@@ -258,7 +391,8 @@
       "old": "outcome.outcome === 'submitted' && !outcome.passed ? EXIT.refused : EXIT.clean",
       "new": "EXIT.clean",
       "outcome": "killed",
-      "failedTests": 2
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M28-cli-waiting-exit-0",
@@ -266,7 +400,8 @@
       "old": "outcome.outcome === 'waiting' ? EXIT.waiting : ",
       "new": "",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M29-delivery-into-session-root",
@@ -274,7 +409,8 @@
       "old": "  const roundDir = path.join(directory, roundDirName(round));\n  try {",
       "new": "  const roundDir = directory;\n  try {",
       "outcome": "killed",
-      "failedTests": 15
+      "failedTests": 21,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M30-delivery-round-not-advanced",
@@ -282,7 +418,8 @@
       "old": "const round = earlier.length === 0 ? 1 : earlier[earlier.length - 1]!.round + 1;",
       "new": "const round = 1;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M31-rehash-delivery-json-unchecked",
@@ -290,7 +427,8 @@
       "old": "if (named !== actual || digestLine",
       "new": "if (digestLine",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 4,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M32-rehash-digest-file-unchecked",
@@ -298,7 +436,8 @@
       "old": " || digestLine !== `${actual}  ${PACKET_FILE}\\n` ||",
       "new": " ||",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M33-rehash-run-record-unchecked",
@@ -306,7 +445,8 @@
       "old": " || record === undefined || record['packetSha256'] !== actual) {",
       "new": ") {",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M34-continuation-never",
@@ -314,7 +454,8 @@
       "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
       "new": "const continuing = false;",
       "outcome": "killed",
-      "failedTests": 2
+      "failedTests": 3,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M35-continuation-delivery-records-only",
@@ -322,7 +463,8 @@
       "old": "const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;",
       "new": "const continuing = earlierRounds.length > 0;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M36-continuation-every-earlier-verdict",
@@ -330,7 +472,8 @@
       "old": "if (recorded === sessionId) earlierVerdicts.push(n);",
       "new": "earlierVerdicts.push(n);",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M37-continuation-includes-own-round",
@@ -338,7 +481,8 @@
       "old": "(round === null ? true : entry.round < round)",
       "new": "true",
       "outcome": "killed",
-      "failedTests": 2
+      "failedTests": 4,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M38-render-continuity-text-omitted",
@@ -346,7 +490,8 @@
       "old": "text: fidelityContinuation!.text,",
       "new": "text: '',",
       "outcome": "killed",
-      "failedTests": 4
+      "failedTests": 4,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M39-render-status-note-omitted",
@@ -354,7 +499,8 @@
       "old": "' Its reviewer continued across revisions (see the review page).'",
       "new": "''",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "M40-await-next-revision-advice-dropped",
@@ -362,15 +508,17 @@
       "old": "${round > 1 ? 'This is the next revision",
       "new": "${false ? 'This is the next revision",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S1-stdin-checks-without-writing",
       "file": "packages/polaris-dossier/src/waiting-sessions.ts",
-      "old": "const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? readProcessStdin);",
+      "old": "const stdinRefusal = await writeFromStdin(realDir, role, request.submit, deps.readStdin ?? ((maxBytes) => readStdinBytes(maxBytes)));",
       "new": "const stdinRefusal = null as string | null;",
       "outcome": "killed",
-      "failedTests": 27
+      "failedTests": 46,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S2-stdin-inventory-any-name",
@@ -378,7 +526,8 @@
       "old": "    if (name !== INVENTORY_SUBMIT_FILE) return `with --stdin an inventory session submits ${INVENTORY_SUBMIT_FILE}, nothing else`;\n    target = path.join(realDir, INVENTORY_SUBMIT_FILE);",
       "new": "    target = path.join(realDir, name);",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S3-stdin-review-any-file-in-a-round",
@@ -386,7 +535,8 @@
       "old": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\/verdict\\.json$/u;",
       "new": "const STDIN_REVIEW_FILE = /^round-([1-9][0-9]{0,5})\\//u;",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S4-stdin-undelivered-round-accepted",
@@ -394,15 +544,17 @@
       "old": " || !fs.existsSync(path.join(roundDir, DELIVERY_FILE))) {",
       "new": ") {",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S5-stdin-unbounded",
       "file": "packages/polaris-dossier/src/waiting-sessions.ts",
-      "old": "const text = await readStdin(DRAFT_MAX_BYTES);",
-      "new": "const text = await readStdin(Number.MAX_SAFE_INTEGER);",
+      "old": "const bytes = await readStdin(DRAFT_MAX_BYTES);",
+      "new": "const bytes = await readStdin(Number.MAX_SAFE_INTEGER);",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S6-stdin-empty-accepted",
@@ -410,15 +562,17 @@
       "old": "  if (text.trim() === '') return",
       "new": "  if (false) return",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S7-stdin-follows-pending-link",
       "file": "packages/polaris-dossier/src/waiting-sessions.ts",
-      "old": "    fs.rmSync(pending, { force: true });\n    fs.writeFileSync(pending, text, { mode: 0o600, flag: 'wx' });",
-      "new": "    fs.writeFileSync(pending, text, { mode: 0o600 });",
+      "old": "    fs.rmSync(pending, { force: true });\n    fs.writeFileSync(pending, bytes, { mode: 0o600, flag: 'wx' });",
+      "new": "    fs.writeFileSync(pending, bytes, { mode: 0o600 });",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S8-stdin-without-submit-ignored",
@@ -426,7 +580,8 @@
       "old": "  if (request.stdin === true && request.submit === undefined) return refuse('usage', '--stdin applies only with --submit');\n",
       "new": "",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S9-stdin-never-replaces",
@@ -434,7 +589,8 @@
       "old": "    fs.renameSync(pending, target);",
       "new": "    if (!fs.existsSync(target)) fs.renameSync(pending, target);",
       "outcome": "killed",
-      "failedTests": 1
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
     },
     {
       "id": "S10-cli-stdin-not-wired",
@@ -442,12 +598,572 @@
       "old": ", ...(stdin === 1 ? { stdin: true } : {}),",
       "new": ",",
       "outcome": "killed",
-      "failedTests": 28
+      "failedTests": 47,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F1a-await-directory-check-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const unsafe = sessionDirectoryRefusal(parent, directory);\n  if (unsafe !== null) return refuse('directory', unsafe);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F1b-delivery-directory-check-skipped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const unsafe = sessionDirectoryRefusal(sessionsRoot(run), directory);\n  if (unsafe !== null) return { ok: false, reason: unsafe };\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F1c-lstat-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!stats.isDirectory()) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F1d-realpath-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (real !== path.join(realRoot, path.basename(directory))) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F2a-design-continuity-only-when-continuing",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`",
+      "new": "is the review session's.${continuation.continuing ? ` ${continuation.text} (Inferred, from ${continuation.basis}.)` : ''}`",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F2b-design-continuity-dropped",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "is the review session's. ${continuation.text} (Inferred, from ${continuation.basis}.)`",
+      "new": "is the review session's.`",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F3a-heredoc-delimiter-unquoted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "${fence}${command} <<'${HEREDOC_DELIMITER}'${fence}",
+      "new": "${fence}${command} <<${HEREDOC_DELIMITER}${fence}",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F3b-heredoc-never-expanded-sentence-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " With the delimiter quoted the shell never expands the body, so nothing in it runs`;",
+      "new": "`;",
+      "outcome": "killed",
+      "failedTests": 4,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F7a-timeout-advice-dropped-from-review-prompt",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "--stdin`, '')}; never with any other command, and you write no file yourself. ${WAIT_TIMEOUT_ADVICE}. After",
+      "new": "--stdin`, '')}; never with any other command, and you write no file yourself. After",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F7b-timeout-advice-dropped-from-inventory-prompt",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "--stdin`, '')}; never with any other command, and you write no file yourself. ${WAIT_TIMEOUT_ADVICE}. Execution",
+      "new": "--stdin`, '')}; never with any other command, and you write no file yourself. Execution",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F5a-utf8-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }",
+      "new": "  try { text = new TextDecoder('utf-8').decode(bytes); }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F5b-json-check-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { parseBoundedJson(text, SUBMIT_JSON_LIMITS); } catch {",
+      "new": "  try { /* unchecked */ } catch {",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F5c-json-bound-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 500_000, maxDepth: 16 });",
+      "new": "const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 500_000, maxDepth: 1_000 });",
+      "outcome": "killed",
+      "failedTests": 44,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F5d-reader-bound-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (size > maxBytes) return null;\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F6a-disallowed-tools-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';",
+      "new": " --strict-mcp-config` : '';",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F6b-strict-mcp-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';",
+      "new": " --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')}` : '';",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F6c-residual-disclosure-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": " It does not stop the user, project and local settings layers: an allow rule there, for a shell command other than await, still runs unattended in a waiting session.",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "N2a-bang-printed-for-waiting",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    return { terminal, bang: null, note: 'Claude Code: type the terminal form in a new terminal. No bang form",
+      "new": "    return { terminal, bang: `! ${terminal}`, note: 'Claude Code: type the terminal form in a new terminal. No bang form",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8a-record-title-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const headHolds = head[0] === `# Polaris dossier local-agent mode — version-tagged sign-off v${version}`\n    && ",
+      "new": "  const headHolds = true\n    && ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8b-record-package-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "field('Package') === SIGNOFF_PACKAGE && ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8c-record-version-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "field('Version') === version && ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8d-record-tag-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && field('Tag') === `${SIGNOFF_PACKAGE}-v${version}`",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8e-record-commit-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    && /^[0-9a-f]{40}$/u.test(field('Reviewed commit') ?? '') && (",
+      "new": "    && (",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8f-record-verdict-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && (field('Review verdict') === 'CONFIRM' || field('Review verdict') === 'CONFIRM WITH EXCEPTIONS');",
+      "new": ";",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8g-aggregate-start-count-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  const blockHolds = aggregate.split(start).length === 2 && ",
+      "new": "  const blockHolds = ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F8h-aggregate-end-count-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && aggregate.split(end).length === 2 && aggregate.indexOf",
+      "new": " && aggregate.indexOf",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F8i-aggregate-order-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && aggregate.indexOf(start) < aggregate.indexOf(end);",
+      "new": ";",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8j-unreadable-record-opens",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');\n  } catch { return false; }",
+      "new": "    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');\n  } catch { return true; }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8k-no-decisions-directory-opens",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  try { names = fs.readdirSync(decisions); } catch { return false; }",
+      "new": "  try { names = fs.readdirSync(decisions); } catch { return true; }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F8l-whole-head-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  return headHolds && blockHolds;",
+      "new": "  return blockHolds;",
+      "outcome": "killed",
+      "failedTests": 7,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4a-round-containment-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || path.dirname(roundDir) !== realDir || ",
+      "new": " || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4b-prompt-record-directory-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt['directory'] !== path.relative(path.dirname(run), directory)) return refuse('session',",
+      "new": "  if (false) return refuse('session',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4c-delivery-lexical-root-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (path.dirname(directory) !== sessionsRoot(run)) return {",
+      "new": "  if (false) return {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4d-prompt-digest-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || prompt['promptSha256'] !== sha256(prompt['prompt'])) {",
+      "new": ") {",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4e-prompt-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt === undefined || typeof prompt['prompt'] !== 'string' || ",
+      "new": "  if (prompt === undefined || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4f-prompt-missing-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (prompt === undefined || typeof prompt['prompt'] !== 'string' || ",
+      "new": "  if (typeof prompt!['prompt'] !== 'string' || ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4g-round-grammar-loosened",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "/^[1-9][0-9]{0,5}$/u.test(request.round)",
+      "new": "/^[0-9a-z]{1,6}$/u.test(request.round)",
+      "outcome": "killed",
+      "failedTests": 2,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4h-minutes-grammar-loosened",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "/^[1-9][0-9]{0,2}$/u.test(request.waitMinutes)",
+      "new": "/^[0-9]{1,3}$/u.test(request.waitMinutes)",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4i-minutes-cap-dropped",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (minutes === null || minutes > MAX_WAIT_MINUTES) return",
+      "new": "  if (minutes === null) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4j-submit-takes-round",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (request.round !== undefined || request.waitMinutes !== undefined) return refuse('usage',",
+      "new": "    if (request.waitMinutes !== undefined) return refuse('usage',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4k-submit-takes-wait-minutes",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (request.round !== undefined || request.waitMinutes !== undefined) return refuse('usage',",
+      "new": "    if (request.round !== undefined) return refuse('usage',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4l-inventory-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "    if (round !== 1) return refuse('usage', 'an inventory session has one round",
+      "new": "    if (false) return refuse('usage', 'an inventory session has one round",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4m-reopened-gates-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!reopened.ok) return refuse(reopened.stage, reopened.reason, reopened.reasons, reopened.refusals);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "4f668cf9cbb4287854becd22fbb86fc551b3d112"
+    },
+    {
+      "id": "F4n-await-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const self",
+      "new": "  const self",
+      "outcome": "killed (timeout)",
+      "failedTests": null,
+      "timeoutSeconds": 300,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4o-start-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const { run, runId } = opened;\n  const context = await sessionContextOf(opened, request, deps.sources, now);\n  if ('stage' in context) return refuse(context.stage, context.reason);\n  const outside",
+      "new": "  const { run, runId } = opened;\n  const context = await sessionContextOf(opened, request, deps.sources, now);\n  if ('stage' in context) return refuse(context.stage, context.reason);\n  const outside",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4p-delivery-opening-gates-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);\n  const waiting = waitingReviewSession(run, kind);",
+      "new": "  const waiting = waitingReviewSession(run, kind);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4q-all-takes-kind",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (rest.kind !== undefined || fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "new": "    if (fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4r-all-takes-fresh",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (rest.kind !== undefined || fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "new": "    if (rest.kind !== undefined) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4s-inventory-takes-fresh",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (role === 'inventory' && fresh === true) return",
+      "new": "  if (false) return",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4t-start-sessions-root-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (outside !== null) return refuse('sessions-root', outside);\n  const root = sessionsRoot(run);\n  if (!PLAIN_PATH.test(root)) return refuse('sessions-root', `the sessions root ${root} holds a character a printed permission rule cannot carry unquoted",
+      "new": "  const root = sessionsRoot(run);\n  if (!PLAIN_PATH.test(root)) return refuse('sessions-root', `the sessions root ${root} holds a character a printed permission rule cannot carry unquoted",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4u-delivery-record-directory-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (typeof relative !== 'string') return { ok: false, reason:",
+      "new": "  if (false) return { ok: false, reason:",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4v-delivery-ignores-waiting-mode",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  return record !== undefined && record['mode'] === WAITING_MODE ? { session, record } : null;",
+      "new": "  return record !== undefined ? { session, record } : null;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4w-delivery-record-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && record['round'] === round && typeof record['packetSha256'] === 'string' ?",
+      "new": " && typeof record['packetSha256'] === 'string' ?",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4x-delivery-record-digest-type-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && record['round'] === round && typeof record['packetSha256'] === 'string' ?",
+      "new": " && record['round'] === round ?",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4y-note-round-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['round'] === round && delivery['kind']",
+      "new": " && delivery['kind']",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4z-note-kind-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['kind'] === role.kind && ",
+      "new": " && ",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4aa-note-session-unchecked",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " && delivery['session'] === role.session ? delivery['packetSha256']",
+      "new": " ? delivery['packetSha256']",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4ab-delivery-recorded-tool-unchecked",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return refuse('context',",
+      "new": "  if (typeof tool !== 'string') return refuse('context',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4ac-delivery-design-build-refusal-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "unstated.replace('so no session is handed over', 'so no packet is delivered'));\n  let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;\n  if (kind === 'design') {\n    const design = buildStoredDesignPacket(opened);\n    if (!design.ok) return refuse(design.stage, design.reason);\n",
+      "new": "unstated.replace('so no session is handed over', 'so no packet is delivered'));\n  let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;\n  if (kind === 'design') {\n    const design = buildStoredDesignPacket(opened);\n",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "fc9fa3aa4630437010341fde3019f82413691548"
+    },
+    {
+      "id": "F4ad-delivery-fidelity-build-refusal-dropped",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "    if (!fidelity.ok) return refuse(fidelity.stage, fidelity.reason);\n    built = fidelity;\n    packet = { sha256: fidelity.sha256, draftRevision: fidelity.draft.revision, inventoryRevision: fidelity.inventory.revision };\n  }\n  const delivered = deliverToWaiting(",
+      "new": "    built = fidelity;\n    packet = { sha256: fidelity.sha256, draftRevision: fidelity.draft.revision, inventoryRevision: fidelity.inventory.revision };\n  }\n  const delivered = deliverToWaiting(",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4ae-directory-no-run-id-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": " || !RUN_ID.test(runId)) return refuse('directory',",
+      "new": ") return refuse('directory',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
+    },
+    {
+      "id": "F4af-directory-no-role-accepted",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "  if (role === null) return refuse('directory', `${directory} is not an inventory or review session directory`);\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "commit": "e1b158967e0655d09dd59f367c9d9406ea79af43"
     }
   ],
   "builderMutants": {
     "measuredOn": {
-      "commit": "7646cccf36d1eef1c90fbe4b201aaef044da264e",
+      "commit": "8c054a732609744b8ff0b6665b358e00a37f067c",
       "subjects": [
         {
           "path": "scripts/build_polaris_dossier_local_agent_mode_v1_2.py",
