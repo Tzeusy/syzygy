@@ -60,15 +60,20 @@ export interface SessionCommands {
 /** The tools a waiting Claude Code session is denied outright, whatever another settings layer allows: every write, the web, and
  * subagents (`Task`, and `Agent`, its later name). That these names match the agent tool's own is Inferred. */
 export const WAITING_DENIED_TOOLS = Object.freeze(['Edit', 'Write', 'NotebookEdit', 'WebFetch', 'WebSearch', 'Task', 'Agent']);
+/** The only built-in tools a waiting Claude Code session has at all (`--tools`, "the list of available tools from the built-in set" in
+ * `claude --help`, 2.1.295): an allow-list of the tool set itself, beneath the deny list, so a built-in tool the deny list does not name
+ * is not there to run. Tools from outside the built-in set are not governed by it. */
+export const WAITING_TOOLS = Object.freeze(['Read', 'Glob', 'Grep', 'Bash']);
 
 /** The session starts interactive, the prompt its first message: `claude '<prompt>'` or `codex '<prompt>'`. This departs from the
  * design's `claude -p` (a headless print run) by owner ruling, tracked in syzygy-qkea.18: the operator watches and steers the session.
  * A waiting session (`allowedTools`) also pre-approves only the rules given, in Claude Code's default permission mode, so a call outside
- * them waits for the operator instead of running; denies `WAITING_DENIED_TOOLS`; and loads no MCP server. It runs for the whole run, so
+ * them waits for the operator instead of running; has only the built-in `WAITING_TOOLS`; denies `WAITING_DENIED_TOOLS`; and loads no MCP
+ * server. It runs for the whole run, so
  * only its terminal form is printed: behind `!` it would hold the authoring session's terminal. */
 export function sessionCommands(tool: AgentTool, directory: string, prompt: string, allowedTools?: readonly string[]): SessionCommands {
   const permissions = tool === 'claude-code' && allowedTools !== undefined
-    ? ` --permission-mode default --allowedTools ${allowedTools.map(shellQuote).join(' ')} --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';
+    ? ` --permission-mode default --tools ${WAITING_TOOLS.join(',')} --allowedTools ${allowedTools.map(shellQuote).join(' ')} --disallowedTools ${WAITING_DENIED_TOOLS.join(' ')} --strict-mcp-config` : '';
   const start = tool === 'claude-code' ? `claude ${shellQuote(prompt)}${permissions}` : `codex ${shellQuote(prompt)}`;
   const terminal = `cd ${shellQuote(directory)} && ${start}`;
   const waiting = allowedTools === undefined ? {} : { allowedTools: tool === 'claude-code' ? allowedTools : null };
@@ -366,7 +371,7 @@ const START_DISCLOSURES = [
   RECORDS_WITHIN_REACH,
   'Syzygy prints the prompts and the commands and starts nothing; it never starts, resumes or signals a session. That the operator started each session, in the launch form later declared, as a top-level session and not a subagent or process of the authoring session, is the operator\'s declaration, labelled Inferred.',
   'A waiting session runs with no one approving each call: it reads untrusted text from the clone or its packet while nobody is present, and a brief saying that text is data does not stop a pre-approved session that obeys injected text. The printed Claude Code command pre-approves only reading its directory (and, for the inventory, the clone) and its one `syzygy dossier await` command, never a write: the session hands its inventory or verdict to that command on standard input, in a heredoc whose delimiter is quoted so the shell expands nothing in it, and Syzygy writes the file; that the agent tool applies those rules as written, and that the operator used the printed command, is Inferred.',
-  `The printed Claude Code command also denies ${WAITING_DENIED_TOOLS.join(', ')} and loads no MCP server (--strict-mcp-config). It does not stop the user, project and local settings layers: an allow rule there, for a shell command other than await, still runs unattended in a waiting session. That a session cannot start subagents with the tool names denied, and whether the await rule admits an output redirection (a write outside the role's file), are Inferred and Unknown respectively.`,
+  `The printed Claude Code command also gives the session only the built-in tools ${WAITING_TOOLS.join(', ')} (--tools), denies ${WAITING_DENIED_TOOLS.join(', ')} and loads no MCP server (--strict-mcp-config). It does not stop the user, project and local settings layers: an allow rule there, for a shell command other than await, still runs unattended in a waiting session. That a session cannot start subagents with the tool names denied, and that --tools leaves it no other built-in tool, are Inferred; whether a tool from outside the built-in set (a connector of the operator's claude.ai account) remains available, and whether the await rule admits an output redirection (a write outside the role's file), are Unknown.`,
   'A waiting session never carries the execution permission. A permission the authoring session\'s brief carries lapses when the owner stops attending it, so an unattended stretch of the run is a reading-only stretch.',
   `One waiting review session may review each later revision of its subject; a review page discloses a reviewer that continued (${WAIT_MODE_DIRECTION}).`,
 ];
@@ -541,6 +546,9 @@ export async function launchForm(runDir: string, request: LaunchFormRequest, dep
   const prompt = readRecord(path.join(run, recordsDir, role === 'inventory' ? promptRecordName(session) : reviewPromptRecordName(kind, session)));
   if (prompt === undefined || typeof prompt['prompt'] !== 'string' || prompt['promptSha256'] !== sha256(prompt['prompt'])) {
     return refuse('session', `the prompt record of ${noun} ${session} cannot be read or does not match its own digest`);
+  }
+  if (prompt['mode'] === WAITING_MODE && request.form === 'bang') {
+    return refuse('form', `${noun} ${session} was started to wait: it runs for the whole run, so only the terminal form was printed for it, and no bang form is recorded`);
   }
   const file = path.join(recordsDir, role === 'inventory' ? launchRecordName(session) : reviewLaunchRecordName(kind, session));
   const form: Declared<LaunchForm> = { value: request.form as LaunchForm, declaredBy: 'operator', label: 'Inferred' };
