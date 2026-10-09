@@ -883,6 +883,8 @@ describe('the predicates review-408 F4 named', () => {
     for (const kind of ['fidelity', 'design']) {
       const delivered = await h.cli(['session-prompt', h.run, 'review', '--kind', kind]);
       expect(delivered.doc['outcome']).toBe('refused');
+      // Refused by the packet builder itself, never later by a failed write of a packet that was not built.
+      expect(delivered.doc['stage']).not.toBe('write');
       expect(fs.existsSync(path.join(h.sessions, `${kind}-1`, 'round-1'))).toBe(false);
     }
   });
