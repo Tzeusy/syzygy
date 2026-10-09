@@ -92,22 +92,55 @@ export function signoffRecordHolds(decisions: string, name: string, version: str
   return headHolds && blockHolds;
 }
 
+const INSTALLED_SPEC = path.join('openspec', 'changes', SIGNOFF_PACKAGE, 'specs', 'polaris-generation', 'spec.md');
+const MANIFEST_LINE = /^Manifest SHA-256: ([0-9a-f]{64})$/u;
+
+/** Whether the records root carries the applied, signed bytes of `version`, as the v1.2 builder's signed check reads them: the review the
+ * record names (a path inside the records root) carries exactly one `Manifest SHA-256` in its head, its first four non-blank lines; the
+ * installed spec hashes to it; and the spec's head names the version. A record written by hand, with no review and no applied patch,
+ * opens nothing. */
+export function appliedSubjectHolds(recordsRoot: string, recordFile: string, version: string): boolean {
+  let record: string, spec: Buffer;
+  try {
+    record = fs.readFileSync(recordFile, 'utf8');
+    spec = fs.readFileSync(path.join(recordsRoot, INSTALLED_SPEC));
+  } catch { return false; }
+  const review = /^Review: (.+)$/mu.exec(record)?.[1];
+  // path.join keeps even an absolute review path inside the records root; only a '..' segment could leave it.
+  if (review === undefined || review.split('/').includes('..')) return false;
+  let reviewText: string;
+  try { reviewText = fs.readFileSync(path.join(recordsRoot, review), 'utf8'); } catch { return false; }
+  const digests = reviewText.split(/\r?\n/u).filter((line) => line.trim() !== '').slice(0, 4)
+    .flatMap((line) => { const match = MANIFEST_LINE.exec(line); return match === null ? [] : [match[1]]; });
+  return digests.length === 1 && sha256(spec) === digests[0] && spec.toString('utf8').includes(`Exact behavioral delta, version ${version}.`);
+}
+
 /** Whether the owner has signed off a version of the local-agent mode at or after 1.2: a sign-off record for it in the records root's
- * decisions that `signoffRecordHolds`. The record lies in the Syzygy checkout, not the run's state directory. */
+ * decisions that `signoffRecordHolds`, over a tree that carries its applied subject (`appliedSubjectHolds`). The record lies in the Syzygy
+ * checkout, not the run's state directory. */
 export function waitModeSignedIn(recordsRoot: string): boolean {
   const decisions = path.join(recordsRoot, DECISIONS);
   let names: string[];
   try { names = fs.readdirSync(decisions); } catch { return false; }
   return names.some((name) => {
     const match = SIGNOFF_RECORD.exec(name);
+    const version = match === null ? '' : `${match[1]}.${match[2]}`;
     return match !== null && (Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))
-      && signoffRecordHolds(decisions, name, `${match[1]}.${match[2]}`);
+      && signoffRecordHolds(decisions, name, version) && appliedSubjectHolds(recordsRoot, path.join(decisions, name), version);
   });
 }
 
-/** Why a session directory may not be written into or delivered to, or null: it must be a directory itself, never a link (lstat), and
- * its real path must be the real sessions root's entry of its own name, so no write Syzygy makes for a session lands outside the root. */
+/** Why a session directory may not be written into or delivered to, or null. The sessions root and the session directory must each be
+ * a directory itself, never a link (lstat), and each real path must be its real parent's entry of its own name: a linked root would move
+ * the root and its entries together, so checking the entry against the resolved root alone is not enough. Then no write Syzygy makes
+ * for a session lands outside the root, or the root outside its parent in the state directory. */
 export function sessionDirectoryRefusal(root: string, directory: string): string | null {
+  let rootStats: fs.Stats;
+  try { rootStats = fs.lstatSync(root); } catch (cause) { return `the sessions root ${root} cannot be read (${errno(cause)})`; }
+  if (!rootStats.isDirectory()) return `the sessions root ${root} is not a directory of its own (a link, or another kind of file), so Syzygy writes nothing through it`;
+  let realRootOwn: string, realParent: string;
+  try { realRootOwn = fs.realpathSync(root); realParent = fs.realpathSync(path.dirname(root)); } catch (cause) { return `the sessions root ${root} cannot be resolved (${errno(cause)})`; }
+  if (realRootOwn !== path.join(realParent, path.basename(root))) return `the sessions root ${root} resolves to ${realRootOwn}, not to its parent's ${path.basename(root)}, so Syzygy writes nothing there`;
   let stats: fs.Stats;
   try { stats = fs.lstatSync(directory); } catch (cause) { return `${directory} cannot be read (${errno(cause)})`; }
   if (!stats.isDirectory()) return `${directory} is not a directory of its own (a link, or another kind of file), so Syzygy writes nothing through it`;
@@ -328,7 +361,9 @@ const SUBMIT_JSON_LIMITS = Object.freeze({ maxBytes: DRAFT_MAX_BYTES, maxNodes: 
 
 /** Write the role's own file inside the session directory from standard input, by rename so a check never reads half a file. Null when
  * written; otherwise why not. Only the inventory's `inventory.json`, or `round-N/verdict.json` for a round Syzygy delivered, is written,
- * and only bounded UTF-8 JSON: anything else is refused before the rename, so a bad submission never replaces the file there. */
+ * and only bounded UTF-8 JSON: a submission that is not one bounded JSON document is refused before the rename and never replaces the
+ * file there. That is a syntax check only: well-formed JSON that fails the role's check still replaces it, and the check then reports
+ * its findings (the spec's order: Syzygy writes the content, then checks it). */
 async function writeFromStdin(
   realDir: string, role: Role, name: string, readStdin: (maxBytes: number) => Promise<Uint8Array | null>,
 ): Promise<string | null> {
