@@ -208,6 +208,10 @@ describe('the v1.2 gate', () => {
     ['only the opening marker', (aggregate) => fs.appendFileSync(aggregate, '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
     ['the closing marker before the opening one', (aggregate) => fs.appendFileSync(aggregate,
       '<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
+    ['two opening markers and one closing marker', (aggregate) => fs.appendFileSync(aggregate,
+      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
+    ['one opening marker and two closing markers', (aggregate) => fs.appendFileSync(aggregate,
+      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
     ['no marked block', () => undefined],
     ['two marked blocks', (aggregate) => {
       const block = '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n';
