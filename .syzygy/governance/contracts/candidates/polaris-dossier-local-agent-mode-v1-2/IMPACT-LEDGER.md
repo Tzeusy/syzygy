@@ -2,7 +2,7 @@
 > DOSSIER-LOCAL-AGENT-1.2 (`SEMANTIC-DELTA.md` in this directory), under
 > CC-IMPACT-1 to CC-IMPACT-6. Every figure below was computed by script on
 > branch `feat/dossier-waiting-sessions` at
-> `853da03357817de50b7e0f6fb5f4c32599eb0174`, whose
+> `3b19bcc364559c3ad167eb54a7fe29da9bec9c9a`, whose
 > `openspec/changes/polaris-dossier-local-agent-mode/` bytes are v1.1 as on
 > `main`; the predicates are published so that a reader can re-run them.
 
@@ -16,14 +16,14 @@ three patches applied by `git apply` and `check_spec_reconciliation.py
 
 | File, under `openspec/changes/polaris-dossier-local-agent-mode/` | v1.1 | v1.2 (patches applied, regenerated) |
 |---|---|---|
-| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `4d43a0fb63a1702bce6707672792c0a135030bf4c6b23619bf199bad304e8faf` |
-| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `ba733c4b33277fae2f2f1947a330154e103068821108763b0ebd33b0a0cd1520` |
+| `specs/polaris-generation/spec.md` | `6414597d73572c903b0f876fd31d58f04d1b42a8c1a68361aa3a5f30feb598ee` | `4c4ea2a7646f61f5cea665f1762d847e9df1f38a38f6bdd8698dd8e04b1868f5` |
+| `design.md` | `66356a0fccee14a7e88fbce52324f619d11f82e49e3da955463b55fcf37c4a81` | `6cb2f4dbc5aa833cbf830e9fca03c1aebd552146dea7bcf387d430b099ccd11a` |
 | `proposal.md` | `f917b75019574bfb89af4cdb86be7347b4595e0e4758056de842a07cecdbb4da` | `73ace9e28e0eae2496c1810fbd5cbb4c7f946b636b49b42418ce98cdbefd0be4` |
 | `GOVERNING-DEPENDENCIES.md` (regenerated) | `de399fc8f8f85eb90a13c3e941ac8374f9d171577d2e81431b0f0ed435410cf5` | `b0da779018ed5f3d99f5decf63b4ecdc6c1704b4f96084547e4a01e740a4d73a` |
 | `tasks.md` | `6ccaa6893947aa9cbb7dbe7b3704b7084167aee4bc74d4bf251b66115edd60c6` | unchanged |
 
 The patches are under `proposed/`: `spec.md.patch` (71 lines),
-`design.md.patch` (69) and `proposal.md.patch` (41). Each applies to the v1.1
+`design.md.patch` (77) and `proposal.md.patch` (41). Each applies to the v1.1
 bytes with `git apply`. The regeneration also rewrites
 `docs/evidence/spec-readability-reconciliation-2026-10-02/census.json`, and no
 other tracked file.
@@ -65,8 +65,8 @@ every dossier builder's `--check` passed. R5 then failed once, on the
 ## Text sweep
 
 Predicate: for each phrase below, a byte-literal substring match (Python
-`bytes in`) over every blob of `git ls-tree -r -z --name-only 853da033`.
-Population: **2,649 tracked files**. Hits inside this package's own directory
+`bytes in`) over every blob of `git ls-tree -r -z --name-only 3b19bcc3`.
+Population: **2,650 tracked files**. Hits inside this package's own directory
 (its ledger and patches quote the phrases) are left out of the counts. Every
 other hit is listed; the classification is the drafter's.
 
@@ -83,7 +83,7 @@ in 6 files at that commit: the direction record, four implementation files
 (`packages/polaris-dossier/src/waiting-sessions.ts`, its test,
 `session-handover.ts` and `render.ts`) and the mutant evidence record, which cite the direction, not
 this package. The direction's ID was first drafted with its local date,
-`…-2026-10-09`; that form occurs in 0 of the 2,649 files.
+`…-2026-10-09`; that form occurs in 0 of the 2,650 files.
 
 ## Dependents
 
@@ -94,7 +94,9 @@ this package. The direction's ID was first drafted with its local date,
   refuses until a `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md` (or
   later) record exists with the recorder's head and exactly one marked block
   for its version in `ACCEPTANCE-ACT-RECORD.md`, so v1.1 behaviour is
-  unchanged while this package is unsigned. Tests: `waiting-sessions.test.ts`, 44 tests, 50 of 50 mutants killed; rule-6 mutants in
+  unchanged while this package is unsigned. Tests: `waiting-sessions.test.ts`, 101 tests; 112 of 112 rule-6
+  mutants killed (one by timeout) and 15 predicates left unmutated, each
+  with its reason, in
   `docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json`.
 - **Agent texts.** The `/polaris-dossier` skill and the Codex instructions
   describe the v1.1 hand-over at their step 8 and do not mention waiting
@@ -105,7 +107,7 @@ this package. The direction's ID was first drafted with its local date,
   `polaris-dossier-local-agent-mode@1.2` entry in
   `scripts/record_versioned_signoff.py` and the v1.1 builder's peel and
   delegation, on the same branch; selftest fixtures and rule-6 mutants in the
-  evidence record above (`builderMutants`). The PROJECT-STATUS battery and
+  evidence record above (`builderMutants`, 21 of 21 killed). The PROJECT-STATUS battery and
   the hosted workflow do not yet run the v1.2 builder's own `--check` and
   `--selftest` lines (CG-26 is registered once, at merge); its signed-bytes
   check runs through the existing v1.0 and v1.1 `--check` lines.
