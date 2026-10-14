@@ -155,3 +155,38 @@ its notes are answered in a sibling `ROUND-2-DISPOSITIONS.md`, and the
 package is not edited. Any other verdict leaves the bytes uncleared: the
 package is not edited, no round 3 is dispatched, and the findings go to the
 owner.
+
+## Round 3 (added 2026-10-14)
+
+Round 2 returned `REVISE`, and its findings went to the owner as P-86. On
+2026-10-14 the owner directed one new version repairing all eight round-2
+findings, then one fresh round. This section prepares that round; it does
+not dispatch it.
+
+Round 3 reviews the repaired bytes against the same seven criteria and the
+two round-2 additions, on their own merits. Do not read
+`ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md` or anything under
+`docs/reviews/`. One more addition, arising from the repairs:
+
+- **Criterion 2** also covers rule provenance and the root-index read. The
+  reader definitions now bind five rule names to the four signed rules and
+  define when the root index is read. Check that the provenance oracle can
+  be decided for every admitted source, the root index included, without
+  judgment; that a read root index whose grammar fails is decided one way;
+  and that the selftest's mutants each fail on their own phrase, the
+  manifest-row and contract-coverage mutants included.
+
+**Raw head.** The output contract above stands. Over the first four
+non-blank lines: the title; `Reviewed commit: ` and the 40-hex commit read;
+`Manifest SHA-256: ` and the lowercase 64-hex sha256 of the **bytes of the
+file** `PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt` at that
+commit, computed by `git show <commit>:<path> | sha256sum` — never a row
+inside the manifest, and never the digest of any subject the manifest
+names; and `Verdict: `.
+
+**Stopping rule for round 3**, set before it runs. A notes-only round
+(`CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with every finding a note) clears
+the bytes it read; its notes are answered in a sibling
+`ROUND-3-DISPOSITIONS.md` and the package is not edited. Any other verdict
+leaves the bytes uncleared: the package is not edited, no round 4 is
+dispatched, and the findings go to the owner.
