@@ -199,14 +199,20 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     expect(sweep(dir)).toEqual(before);
   });
 
-  it('the daemon path never loads the POC app: its one import is dynamic and inside the `dossier` branch', () => {
+  // The `polaris` branch (prototype, POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) injects the same renderer the same way.
+  it('the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch', () => {
     const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
-    const mentions = main.split('\n').filter((line) => line.includes('three-surface-poc-app'));
-    expect(mentions).toEqual(["    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');"]);
-    const branch = main.indexOf("if (argv[0] === 'dossier') {");
-    const at = main.indexOf(mentions[0]!);
-    expect(branch).toBeGreaterThan(-1);
-    expect(at).toBeGreaterThan(branch);
-    expect(at).toBeLessThan(main.indexOf('let parsed = parseCli('));
+    const line = "    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');";
+    const mentions = main.split('\n').filter((text) => text.includes('three-surface-poc-app'));
+    expect(mentions).toEqual([line, line]);
+    const daemon = main.indexOf('let parsed = parseCli(');
+    const first = main.indexOf(line), second = main.indexOf(line, first + 1);
+    const dossier = main.indexOf("if (argv[0] === 'dossier') {"), polaris = main.indexOf("if (argv[0] === 'polaris') {");
+    expect(dossier).toBeGreaterThan(-1);
+    expect(polaris).toBeGreaterThan(dossier);
+    expect(first).toBeGreaterThan(dossier);
+    expect(first).toBeLessThan(polaris);
+    expect(second).toBeGreaterThan(polaris);
+    expect(second).toBeLessThan(daemon);
   });
 });
