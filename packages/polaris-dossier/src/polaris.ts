@@ -427,10 +427,11 @@ function paneState(state: SupervisorState, role: ViewRole): string {
   return dead === '1' ? `exited (${status})` : 'running';
 }
 
-function tellAuthor(state: SupervisorState, message: string): void {
-  spawnSync('tmux', ['send-keys', '-t', `${state.tmuxSession}:author`, '-l', message], { stdio: 'ignore' });
-  spawnSync('tmux', ['send-keys', '-t', `${state.tmuxSession}:author`, 'Enter'], { stdio: 'ignore' });
+function tell(state: SupervisorState, role: ViewRole, message: string): void {
+  spawnSync('tmux', ['send-keys', '-t', `${state.tmuxSession}:${role}`, '-l', message], { stdio: 'ignore' });
+  spawnSync('tmux', ['send-keys', '-t', `${state.tmuxSession}:${role}`, 'Enter'], { stdio: 'ignore' });
 }
+const tellAuthor = (state: SupervisorState, message: string): void => tell(state, 'author', message);
 
 async function loop(options: Options, ports: CliPorts, state: SupervisorState, screen: Screen): Promise<number> {
   const run = state.run;
@@ -453,6 +454,13 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
     const fidelityState = verdictFor(fidelity, 'draftRevision', passedDraft);
     const designState = verdictFor(design, 'site', site);
 
+    // An inventory submitted before the author froze a draft is refused unchecked (no author session to compare against yet); once a
+    // draft passes, tell the inventory session once to resubmit.
+    if (passedDraft !== null && !inventory.counts && !state.notified.includes(`inventory-draft-${passedDraft}`)) {
+      tell(state, 'inventory', `Syzygy: the authoring session has frozen draft revision ${passedDraft}. If your inventory was refused or not yet accepted, submit it now with the same syzygy dossier await --submit command; otherwise carry on.`);
+      state.notified.push(`inventory-draft-${passedDraft}`); saveState(options.stateRoot, state);
+      screen.event(`told the inventory session: draft revision ${passedDraft} is frozen`);
+    }
     if (passedDraft !== null && inventory.counts && !state.fidelityDeliveredFor.includes(passedDraft)) {
       const r = await step(['--json', 'session-prompt', run, 'review', '--kind', 'fidelity'], ports);
       screen.event(r.exit === 0 ? `delivered the fidelity packet for draft revision ${passedDraft}` : `fidelity delivery refused: ${r.doc ? String(r.doc['reason']) : r.stderr.trim()}`);
