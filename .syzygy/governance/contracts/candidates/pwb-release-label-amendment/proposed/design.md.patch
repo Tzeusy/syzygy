@@ -1,10 +1,12 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
+index a11e58d..3e53869 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -530,4 +530,63 @@
+@@ -587,6 +587,76 @@ flowchart TD
+     P --> T["Class and category totals<br/>that count a failed class<br/>are Unknown"]
  ```
-
-+### 12. Name the revision by its release label
+ 
++### 13. Name the revision by its release label
 +
 +An owner reads "Butlers v1.0.23" faster than a 40-digit object id. Polaris
 +leads with the label and keeps the object id beneath it, because a tag can be
@@ -34,13 +36,24 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +  statement is false when the other holds.
 +- **Label unit.** The revision is named only in a marked unit: the label,
 +  its statement, the full object id beneath, the expansion of tied names and
-+  any moved-tag disclosure. Every Polaris page shows at least one. A checker
-+  counts the units by their marks, then sweeps the visible text for any
-+  other short or full id of the revision, or project name followed by a tag
-+  name. Three marked kinds are excepted: per-claim provenance stamps, which
-+  are the identity a claim binds to and carry no label; Butlers-declared
-+  text kept verbatim; and the shared operability status line, which the POC
-+  specification governs. Link targets are left to the tag-name sweep.
++  any moved-tag disclosure. Every Polaris page, meaning `/polaris` and each
++  exact-source route response, shows at least one, and on each page the
++  first visible id of the revision, the shared status line aside, is in a
++  unit, with the label before the id. A checker counts the units by their
++  marks, then sweeps the visible text for any other short or full id of the
++  revision, or project name followed by a tag name. Four marked kinds are
++  excepted, and the checker decides each from what it reads, not from the
++  mark:
++  - a per-claim provenance stamp, which is only the revision element of a
++    citation whose cite names a served anchor or source record carrying
++    that revision, so a sentence or heading never holds one;
++  - an identity shown whole, equal to the evaluation identity or a served
++    record's own identity;
++  - Butlers-declared text kept verbatim;
++  - the shared operability status line, which no requirement of either
++    specification names.
++
++  Link targets are left to the tag-name sweep.
 +- **Binding.** Claims, evaluation identities, links and comparisons bind to
 +  the object id. An evaluation names the earlier evaluations it is compared
 +  with as inputs; a tag one of them bound to another commit is disclosed as
@@ -64,4 +77,5 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +```
 +
  ## Risks / Trade-offs
-
+ 
+ Each known risk has a fail-closed answer; the one residual risk the owner
