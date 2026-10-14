@@ -18,7 +18,15 @@ obligations are added: surface unenumerated headings, and qualify counts made
 without a read root index. An implementation that complied before does not
 comply now.
 **Author:** a drafting session (Claude), bead `syzygy-dov.15.1`.
-**Date:** 2026-10-03, over `main` at `ef5d5f03`.
+**Date:** 2026-10-03, over `main` at `ef5d5f03`. Repaired 2026-10-14 over
+`main` at `8f1fbec7`, under the owner's direction of that day (relayed to
+the drafting session by the lead session; no decision record holds it yet),
+for the eight round-2 findings (`ROUND-2-DISPOSITIONS.md`). [Observed] The
+signed change directory and the two code files cited below are
+byte-identical at the two commits (`git diff --stat ef5d5f03 8f1fbec7` over
+those paths is empty), so every [Observed at `ef5d5f03`] claim about them
+still holds. These repaired bytes are **unconfirmed**: no round has read
+them.
 
 ## Warrant
 
@@ -95,10 +103,30 @@ item set" rule now holds per class, not per source.
   is the rule the container-shape amendment already states for an
   unreadable class ("that class's item denominator and its category's item
   denominator render Unknown"), applied to a failed class.
-- **"Fails the source".** The signed shape and key-form sentences say a
-  defect "fails the source as missing-heading", and so on. Rather than
-  rewrite each, one sentence in the shared heading rules defines it: it
-  fails the class whose row it reads, in that source.
+- **"Fails the source".** The signed shared heading rules, shape sentences
+  and key-form sentences say a defect "fails the source as missing-heading",
+  and so on. Rather than rewrite each, one sentence placed after the shared
+  heading rules defines it for all three: wherever the shared rules above
+  it, or a shape or key form below it, fail the source, the failure fails
+  the class whose row it reads, in that source. (Round 2 found that the
+  first wording, "a shape or key form below", left out the shared rule
+  directly above it.)
+- **Signed text whose meaning changes without a byte changing.** Two signed
+  passages are kept word for word, but read differently once the exactness
+  rule is per class:
+  - the loaded-profile sentence that a class with an invalid or missing row
+    "is unreadable: … each source any of its rows names fails as a source in
+    which a class fails";
+  - the signed scenario "Loaded profile names a shape outside the
+    vocabulary".
+
+  Under the signed exactness rule, "a source in which a class fails" lost
+  every class it was assigned. Under this amendment it is a source in which
+  that one class fails: the unreadable class is Unknown there, and every
+  other class the source is assigned keeps its items and its own item
+  denominator. The source is partially extracted and its own item
+  denominator is Unknown. [Inferred] This is the intended effect, and it is
+  named here because no byte of those passages shows it.
 - **What still fails a whole source.** An unavailable, unclassifiable or
   excluded body, or a resource-limit breach, leaves no class readable.
   PWB-REQ-003 and PWB-REQ-006 own those cases, and nothing about them moves.
@@ -148,32 +176,76 @@ not change"). That leaves half of the Q3 ruling undesigned. The drafter took
 this reading from the record's gloss ("One CC-REV-2 semantic delta to
 PWB-REQ-002"), which is not the owner's words, so the packet puts it to you
 as question 6: defer the root grammars to a separate PWB-REQ-004 delta, or
-widen this package. It is also residual 5 below.
+widen this package. It is also the open owner question under "Migration /
+supersession plan" below.
 
 ### 3. Root independence (P-82 Q4)
 
-Each population rule declares whether it needs the root index read, and
-every source carries the name of the rule that admitted it.
+Every source carries the name of the rule that admitted it, and each
+population rule declares whether it needs the root index read.
 
-- **Values.** The pillar-root and pillar-index rules need it. The
-  baseline-spec and roster rules do not, because these definitions write
-  their path patterns rather than the root index naming them.
+- **Rule names, bound to the four signed rules.** The signed sentence closes
+  the source-path population by four rules and names none of them. This
+  amendment binds a closed set of five names to them:
+
+  | Signed rule | What it admits | Name |
+  |---|---|---|
+  | 1 — the five pillar roots named in the root index | the root index itself | `root-index` |
+  | 1 | each named pillar root's own index file | `pillar-index` |
+  | 2 — files named by each pillar's own index | each such file | `pillar-named-file` |
+  | 3 — baseline `openspec/specs/*/spec.md` entries | each baseline spec | `baseline-spec-tree` |
+  | 4 — roster directories containing `butler.toml` | each `butler.toml` and its `MANIFESTO.md` | `roster-tree` |
+
+  A source that a loaded profile's tree population admits carries that
+  population's `pathPattern` as its rule name.
+  - [Observed at `8f1fbec7`] These are exactly the five values of
+    `SOURCE_RULES` in `packages/three-surface-poc-core/src/project-shape-manifest.ts`
+    line 71, and that module's own comment files the root index under
+    rule 1 ("Rule 1 — the root index and the pillar roots it names", line
+    403).
+  - [Inferred] Reading the root index itself as a rule-1 source is a
+    reading of the signed sentence, which names the root index only as what
+    rule 1 reads. The alternative, scoping the provenance obligation to the
+    sources the four rules name and leaving the root index unnamed, would
+    leave the provenance oracle unable to name the one source every
+    observation admits. Round 2 found the first wording ("the pillar-root and
+    pillar-index rules") undecidable for exactly that source: its labels
+    matched neither the spec nor the code.
+- **Values of the flag.** Rules 1 and 2 need the root index. Rules 3 and 4
+  do not, because these definitions write their path patterns rather than
+  the root index naming them.
 - **The flag belongs to the rule.** A loaded profile sets it for each tree
   population it declares.
+- **What "read" means.** The root index is read when its body is read:
+  present at the revision, admitted, and read within its resource limits. A
+  body that is read but whose grammar fails is still read.
+  - A pillar root it does not name unambiguously leaves that pillar's index
+    and named files unadmitted (today's code records that pillar as Unknown,
+    `not-named-in-root-index` or `named-root-ambiguous`).
+  - A failing PWB-REQ-004 root grammar is that requirement's failure.
+  - Neither qualifies a rule 3 or rule 4 count, because the root index was
+    read.
+  - [Inferred] This matches the code's three root-index states, `read`,
+    `unavailable` and `missing-at-revision` (`RootIndexState`, same file
+    line 126). The other reading, that a grammar failure also counts as
+    unread, would qualify baseline-spec and roster counts whenever any root
+    grammar fails, though those counts never use that grammar. The packet
+    puts the choice to the owner as question 7.
 - **Unread root index, rule that needs it:** it mints no item. Where the rule
   is a tree population, each source its path pattern matches stays counted
   with an Unknown item denominator and the reason that the root index was
-  not read. The pillar rules name no source without the root index, so they
-  admit none. For Butlers' built-in grammar, then, only "mints no item" has
+  not read. Rule 1 then admits only the root index itself, and rule 2 admits
+  no source. For Butlers' built-in grammar, then, only "mints no item" has
   effect.
 - **Unread root index, rule that does not need it:** it still admits its
   sources, and every class and category count, and every source-path
   population total, that includes one of them says it was derived without a
   read root index.
-- **Rule provenance is checked.** [Observed at `ef5d5f03`]
+- **Rule provenance is checked.** [Observed at `8f1fbec7`]
   `ManifestSource` in `project-shape-manifest.ts` already carries the rule
-  that admitted a source. The oracle compares it with an independent
-  derivation of the source-path population, and a scenario asserts it.
+  that admitted a source, from the five names above. The oracle compares it
+  with an independent derivation of the source-path population, and a
+  scenario asserts it, naming the root index's own rule.
 - **Loaded profiles.** A profile's tree population declares
   `rootIndexRequired`, true or false. One that does not declare it needs
   the root index: the fail-closed default.
@@ -209,17 +281,31 @@ Current:
 Proposed:
 
 ```text
-  - Each rule declares whether it needs the root index read, and every
-    source carries the name of the rule that admitted it. The flag belongs to
-    the rule; a loaded profile sets it for each tree population it declares.
-    The pillar-root and pillar-index rules need the root index; the
-    baseline-spec and roster rules, whose path patterns these definitions
-    write, do not.
+  - Every source carries the name of the rule that admitted it, from this
+    closed set: the first rule admits the root index itself as `root-index`,
+    and the index file of each pillar root it names as `pillar-index`; the
+    second rule admits each file a pillar's index names as
+    `pillar-named-file`; the third admits each baseline spec as
+    `baseline-spec-tree`; and the fourth admits each roster `butler.toml`, and
+    its `MANIFESTO.md`, as `roster-tree`. A source that a loaded profile's tree
+    population admits carries that population's `pathPattern` as its rule
+    name.
+  - Each rule declares whether it needs the root index read. The flag belongs
+    to the rule; a loaded profile sets it for each tree population it
+    declares. The first and second rules need the root index; the third and
+    fourth, whose path patterns these definitions write, do not.
+  - The root index is read when its body is read: present at the revision,
+    admitted and read within its resource limits. A root index whose body is
+    read but whose grammar fails is still read: a pillar root it does not name
+    unambiguously leaves that pillar's index and named files unadmitted, a
+    PWB-REQ-004 root grammar that fails is that requirement's failure, and
+    neither qualifies a count of the third or fourth rule.
   - When the root index was not read, a rule that needs it mints no item.
     Where that rule is a tree population, each source its path pattern
     matches stays counted in the source-path population with an Unknown item
-    denominator, giving the reason that the root index was not read; the
-    pillar rules name no source without the root index, so they admit none.
+    denominator, giving the reason that the root index was not read. The
+    first rule then admits only the root index itself, and the second admits
+    no source.
   - When the root index was not read, a rule that does not need it still
     admits its sources, and every class and category item denominator, and
     every source-path population total, that counts one of them states that
@@ -237,8 +323,9 @@ Current:
 Proposed:
 
 ```text
-  - Wherever a shape or key form below fails the source, it fails the class
-    whose row it reads, in that source, as the exactness rules below state.
+  - Wherever the shared rules above, or a shape or key form below, fail the
+    source, the failure fails the class whose row it reads, in that source, as
+    the exactness rules below state.
   - A list or table row that declares two or more headings at one level
     encloses that level: within the section of each heading one level higher
     that holds one of them (or the whole file, when the level is 1 or no
@@ -439,6 +526,8 @@ Proposed:
   reason
 - **AND** the two classes that read keep their items modeled and their own
   item denominators known
+- **AND** the source's own item denominator renders Unknown, and the source
+  is shown as partially extracted with each class's outcome
 
 #### Scenario: An unenumerated heading is surfaced, not skipped
 
@@ -460,7 +549,8 @@ Proposed:
 - **AND** no source of a rule that needs the root index mints an item, nor
   does any source of a loaded profile's tree population that does not
   declare `rootIndexRequired`
-- **AND** every admitted source names the rule that admitted it
+- **AND** every admitted source names the rule that admitted it, the root
+  index itself as `root-index`
 ```
 
 ## What explicitly does NOT change
@@ -479,9 +569,11 @@ Proposed:
     qualification) fall under its existing "every fact Polaris presents"
     reach; the ledger names the parity families an implementation adds.
 - **PWB-REQ-002's existing obligations.** Its six signed scenarios, its
-  warrants and every other verification limb stay. "A malformed source
-  emits a partial population" is the one falsifier limb replaced, by the
-  per-class limbs.
+  warrants and every other verification limb stay byte for byte. "A
+  malformed source emits a partial population" is the one falsifier limb
+  replaced, by the per-class limbs. One kept scenario, "Loaded profile names
+  a shape outside the vocabulary", keeps its bytes but not its old reach:
+  see "Signed text whose meaning changes without a byte changing" in part 1.
 - **The closed vocabularies.** Nine shapes, eight key forms and nine classes
   stay closed. `unenumerated-heading` is a denominator reason, not a new
   failure, shape or key form.
@@ -498,8 +590,10 @@ Proposed:
 ## Terms introduced / retired
 
 Introduced, each defined in the reader definitions: *partially extracted*;
-*unenumerated heading*, with the reason `unenumerated-heading`; and the
-profile field `rootIndexRequired`. None is retired.
+*unenumerated heading*, with the reason `unenumerated-heading`; the profile
+field `rootIndexRequired`; the five rule names `root-index`, `pillar-index`,
+`pillar-named-file`, `baseline-spec-tree` and `roster-tree`; and what it
+means for the root index to be *read*. None is retired.
 
 ## Downstream impact
 
@@ -538,9 +632,12 @@ short:
   4. The observer registry entry and the secret-classification policy pin a
      PWB spec digest; both are already stale and Unknown until their own
      act (`syzygy-jloi`). Signing this moves the digest again.
-  5. Half of the Q3 ruling, unenumerated root-summary and precedence
-     headings, is not designed here. Packet question 6 asks whether a
-     separate PWB-REQ-004 delta carries it or this package widens.
+- **Open owner question, not a signing-change task.** Half of the Q3
+  ruling, unenumerated root-summary and precedence headings, is not designed
+  here. Packet question 6 asks whether a separate PWB-REQ-004 delta carries
+  it or this package widens. (Until 2026-10-14 this was listed as residual 5
+  above; round 2 found that it is neither an observation nor a task the
+  signing change performs.)
 - **Implementation** needs its own authorization, after sign-off.
 
 ## Review
@@ -551,6 +648,12 @@ round, raw retained verbatim.
 **Verdict:** round 1 `REVISE`, copied from
 `docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-1-RAW.md` line 4 and
 dispositioned in `ROUND-1-DISPOSITIONS.md` beside this file. Findings 1–9
-were repaired; finding 10 changed nothing. A confirmation round over the
-repaired bytes (round 2, bead `syzygy-418x`) is recorded in
-`ROUND-2-DISPOSITIONS.md`, which says whether the bytes are cleared.
+were repaired; finding 10 changed nothing. Round 2 (bead `syzygy-418x`),
+over the repaired bytes at `1701c88f`, returned `REVISE`, copied from
+`docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-2-RAW.md` line 4:
+one revise finding and seven notes, dispositioned in
+`ROUND-2-DISPOSITIONS.md`. On 2026-10-14 the owner directed one new version
+repairing all eight, then one fresh round. All eight were repaired once
+that day; the repaired bytes are **unconfirmed** pending round 3, and are
+not offered for sign-off until a round over them returns `CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with notes only.

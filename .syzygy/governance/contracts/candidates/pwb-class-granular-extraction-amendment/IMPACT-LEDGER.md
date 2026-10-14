@@ -32,6 +32,34 @@ there. The one it misses, `apps/three-surface-poc/src/pwb-mutation-sweep-main.ts
 cites the requirement only in run form (`PWB-REQ-001/002/003/…`, line 226),
 which is why the predicate carries the run form.
 
+### Re-derived 2026-10-14 at `8f1fbec7`, for the round-2 repairs
+
+[Observed] The same predicate over every path of `git ls-tree -r -z
+8f1fbec7` (2,658 paths), each blob read at that commit, run first at
+`ef5d5f03` to confirm it reproduces 96 over 1,970 paths and the table above
+row for row:
+
+- **Result:** 111 files cite PWB-REQ-002. All 96 above still do; none
+  dropped out. The 15 new citers:
+  - 9 are this package's own record: six package files, its builder, and
+    the round-1 and round-2 raws. Raws are never edited (CC-REV-6).
+  - 2 are the impact ledgers of the pending opening-index and
+    accessible-name amendments (P-98, P-99). Each names this package in its
+    order disclosure; their spec patches touch other requirements, and
+    every builder's all-orders check covers all five pending spec patches.
+  - 4 are history: `docs/README.md` (the review-campaign table),
+    `scripts/build_pwb_behavior_contract_repin_tree_framing.py`, and two
+    evidence records (`syzygy-tmkb-signed-selftests-2026-10-03.json` and the
+    2026-10-08 install-clone battery log). None is edited.
+- **By area:** `docs/reviews/` 25, other `docs/` 25, sibling candidates 31,
+  other `.syzygy/` 5, the PWB change 10, `scripts/` 6, core `src/` 5, app
+  `src/` 3, `AGENTS.md` 1.
+- **Second method:** fixed-string `git grep -F -l "PWB-REQ-002" 8f1fbec7`
+  (excluding `.beads/`) returns 99 files, every one inside the predicate's
+  111; the other 12 cite the requirement only in run or continuation form.
+- **Effect of the round-2 repairs on this census:** none. They change this
+  package's patches, builder and prose, and no other file.
+
 ## Files a later implementation would touch
 
 [Inferred — named for planning, not authorized]
@@ -49,7 +77,9 @@ which is why the predicate carries the run form.
 - **Manifest.** `project-shape-manifest.ts` does not cite PWB-REQ-002 by
   name, but its Rules 3 and 4 (the baseline-spec and roster tree rules) are
   where root independence is declared and stamped. The funnel's falsifier
-  for that slice applies: Butlers' manifest digest must not move.
+  for that slice applies: Butlers' manifest digest must not move. Its
+  `SOURCE_RULES` (line 71) already holds the five rule names the repaired
+  reader definitions bind, so rule provenance needs no rename.
 - **Parity.** Each new machine field (per-class outcome, unenumerated
   heading, root-index qualification) joins the PWB-REQ-020 parity sweep as
   its own family.

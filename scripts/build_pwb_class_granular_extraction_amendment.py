@@ -19,9 +19,10 @@ candidate commit, review, manifest or merge performs no owner act.
                  one result across every order of this and the pending
                  siblings' spec patches, and the manifest
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
-                 required phrases, not each one), plus patch drift, an
-                 unclassified sibling, the pending patch population, and
-                 divergent and failing application orders
+                 required phrases, not each one), plus one manifest row, one
+                 contract-coverage count, patch drift, an unclassified
+                 sibling, the pending patch population, and divergent and
+                 failing application orders
     --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
                  manifest over the proposed bytes, refusing if CONTRACT-COVERAGE
                  would change
@@ -133,14 +134,23 @@ READER_MARK = "\nReader definitions:\n"
 #: Load-bearing fragments of the proposed reader definitions. Each must occur
 #: exactly once, whitespace-normalized.
 READER_REQUIRED_ONCE = (
-    "Each rule declares whether it needs the root index read, and every source carries the name of the rule that admitted it.",
+    "Every source carries the name of the rule that admitted it, from this closed set:",
+    "the first rule admits the root index itself as `root-index`, and the index file of each pillar root it names as `pillar-index`;",
+    "the second rule admits each file a pillar's index names as `pillar-named-file`;",
+    "the third admits each baseline spec as `baseline-spec-tree`;",
+    "the fourth admits each roster `butler.toml`, and its `MANIFESTO.md`, as `roster-tree`.",
+    "A source that a loaded profile's tree population admits carries that population's `pathPattern` as its rule name.",
+    "Each rule declares whether it needs the root index read.",
     "The flag belongs to the rule; a loaded profile sets it for each tree population it declares.",
-    "The pillar-root and pillar-index rules need the root index; the baseline-spec and roster rules, whose path patterns these definitions write, do not.",
+    "The first and second rules need the root index; the third and fourth, whose path patterns these definitions write, do not.",
+    "The root index is read when its body is read: present at the revision, admitted and read within its resource limits.",
+    "A root index whose body is read but whose grammar fails is still read:",
+    "neither qualifies a count of the third or fourth rule",
     "When the root index was not read, a rule that needs it mints no item",
-    "the pillar rules name no source without the root index, so they admit none",
+    "The first rule then admits only the root index itself, and the second admits no source.",
     "When the root index was not read, a rule that does not need it still admits its sources",
     "every class and category item denominator, and every source-path population total, that counts one of them states that it was derived without a read root index",
-    "it fails the class whose row it reads, in that source",
+    "Wherever the shared rules above, or a shape or key form below, fail the source, the failure fails the class whose row it reads, in that source",
     "a heading at that level that no row of the source's grammar declares is an unenumerated heading",
     "An unenumerated heading mints no item and fails nothing",
     "It is surfaced, never skipped",
@@ -193,8 +203,9 @@ REQ_REQUIRED_ONCE = (
     "the failed class's item denominator in that source, its class's and its category's item denominators render Unknown with the failure's reason",
     "and the V1 index's own item denominator, render Unknown with the reason unenumerated-heading",
     "nor does any source of a loaded profile's tree population that does not declare `rootIndexRequired`",
-    "every admitted source names the rule that admitted it",
+    "every admitted source names the rule that admitted it, the root index itself as `root-index`",
     "a rule that needs the root index mints an item when it was not read",
+    "the source's own item denominator renders Unknown, and the source is shown as partially extracted with each class's outcome",
 )
 #: Signed PWB-REQ-002 lines the amendment replaces, and nothing else.
 REQ_REPLACED = (
@@ -246,6 +257,8 @@ PROPOSAL_PHRASE = "  - Each class of a source is read on its own:"
 DESIGN_PHRASES = (
     "### 12. Read each class of a source on its own",
     "- **Root independence.** Rules 1 and 2 need the root index read;",
+    "- **Rule names.** Each source names the rule that admitted it: rule 1 admits the root index itself as `root-index`",
+    "A body that reads but whose grammar fails is still read",
     "*partially extracted*",
     "No `catalog-count` declaration is minted for it; that family stays closed at nine.",
     "Butlers' baseline-spec and roster rules declare that they do not need it, so its manifest admits the same sources as before.",
@@ -603,9 +616,15 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     findings.extend(pending_order_findings())
     if not (ROOT / MANIFEST).is_file():
         findings.append(f"missing manifest: {MANIFEST}")
-    elif (ROOT / MANIFEST).read_text(encoding="utf-8") != render_manifest(proposed):
-        findings.append("manifest differs from deterministic proposed-byte regeneration")
+    else:
+        findings.extend(manifest_findings((ROOT / MANIFEST).read_text(encoding="utf-8"), proposed))
     return findings, proposed
+
+
+def manifest_findings(text: str, proposed: dict[pathlib.Path, bytes]) -> list[str]:
+    if text != render_manifest(proposed):
+        return ["manifest differs from deterministic proposed-byte regeneration"]
+    return []
 
 
 # --- selftest ----------------------------------------------------------------
@@ -639,19 +658,39 @@ def selftest() -> int:
         ),
         "whole-source discard restored": (
             SPEC, _replace(spec, "keeps every other class it is assigned", "keeps no other class it is assigned"),
-            "the reader definitions carries 0 copies of required phrase",
+            "the reader definitions carries 0 copies of required phrase: 'A source in which a class fails keeps",
         ),
         "partial class set allowed": (
             SPEC, _replace(spec, "A\n    class that fails never produces a partial item set;", "A\n    class that fails may produce a partial item set;"),
-            "the reader definitions carries 0 copies of required phrase",
+            "the reader definitions carries 0 copies of required phrase: 'the class yields none of its items from that source",
         ),
         "unenumerated heading skipped": (
             SPEC, _replace(spec, "It is surfaced, never skipped:", "It is skipped:"),
-            "the reader definitions carries 0 copies of required phrase",
+            "the reader definitions carries 0 copies of required phrase: 'It is surfaced, never skipped'",
         ),
         "tree flag default flipped": (
             SPEC, _replace(spec, "a tree population that does not declare it needs the root\n    index.", "a tree population that does not declare it does not need\n    the root index."),
-            "the reader definitions carries 0 copies of required phrase",
+            "the reader definitions carries 0 copies of required phrase: 'a tree population that does not declare it needs the root",
+        ),
+        "root-index rule name dropped": (
+            SPEC, _replace(spec, "the first rule admits the root index itself as `root-index`,\n    and", "the first rule admits"),
+            "the reader definitions carries 0 copies of required phrase: 'the first rule admits the root index itself as `root-index`",
+        ),
+        "grammar failure counted as unread": (
+            SPEC, _replace(spec, "read but whose grammar fails is still read:", "read but whose grammar fails is not read:"),
+            "the reader definitions carries 0 copies of required phrase: 'A root index whose body is read but whose grammar fails is s",
+        ),
+        "second rule admits without root": (
+            SPEC, _replace(spec, "and the second admits\n    no source.", "and the second admits\n    what it can."),
+            "the reader definitions carries 0 copies of required phrase: 'The first rule then admits only the root index itself",
+        ),
+        "shared heading rules left whole-source": (
+            SPEC, _replace(spec, "Wherever the shared rules above, or a shape or key form below, fail the", "Wherever a shape or key form below fails the"),
+            "the reader definitions carries 0 copies of required phrase: 'Wherever the shared rules above",
+        ),
+        "partially extracted source limb dropped": (
+            SPEC, _replace(spec, "- **AND** the source's own item denominator renders Unknown, and the source\n  is shown as partially extracted with each class's outcome\n", ""),
+            "PWB-REQ-002 carries 0 copies of required phrase: \"the source's own item denominator renders Unknown",
         ),
         "roster exemption dropped": (
             SPEC, _replace(spec, "must be non-empty; its tree population does not need the\n    root index.", "must be non-empty."),
@@ -678,8 +717,8 @@ def selftest() -> int:
             "the reader definitions carries 0 copies of required phrase: 'every class and category item denominator, and every",
         ),
         "rule provenance dropped": (
-            SPEC, _replace(spec, ", and every\n    source carries the name of the rule that admitted it.", "."),
-            "the reader definitions carries 0 copies of required phrase: 'Each rule declares whether",
+            SPEC, _replace(spec, "Every source carries the name of the rule that admitted it, from this\n    closed set:", "Sources may carry a rule name:"),
+            "the reader definitions carries 0 copies of required phrase: 'Every source carries the name of the rule",
         ),
         "source denominator rule dropped": (
             SPEC, _replace(spec, "A source's own item denominator is Unknown whenever", "A source's own item denominator is known whenever"),
@@ -772,6 +811,7 @@ def selftest() -> int:
         if not any(finding.startswith(expected) for finding in findings):
             print(f"SELFTEST FAILED: mutant {name!r} gave {findings}, expected {expected!r}")
             failed += 1
+    failed += manifest_and_coverage_selftest(proposed)
     # Patch drift: a corrupted context line stops the spec patch applying.
     spec_patch = ROOT / PROPOSED / "spec.md.patch"
     with tempfile.TemporaryDirectory() as temp:
@@ -800,11 +840,37 @@ def selftest() -> int:
     if failed:
         return 1
     print(
-        f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
-        "sibling, the pending patch population, and divergent and failing "
-        "application orders all fail closed on their own predicates"
+        f"selftest: {len(mutants)} structure mutants, a manifest row, a contract-coverage "
+        "count, patch drift, an unclassified sibling, the pending patch population, "
+        "and divergent and failing application orders all fail closed on their own predicates"
     )
     return 0
+
+
+def manifest_and_coverage_selftest(proposed: dict[pathlib.Path, bytes]) -> int:
+    """The manifest and contract-coverage predicates each pass unmutated and
+    fail on one changed character of the bytes they guard."""
+    failed = 0
+    manifest = render_manifest(proposed)
+    row = f"{sha256(proposed[SPEC])}  {SPEC.as_posix()}\n"
+    drifted_row = ("1" if row[0] == "0" else "0") + row[1:]
+    if manifest_findings(manifest, proposed):
+        print("SELFTEST FAILED: the regenerated manifest does not pass its own predicate")
+        failed += 1
+    found = manifest_findings(manifest.replace(row, drifted_row, 1), proposed)
+    if found != ["manifest differs from deterministic proposed-byte regeneration"]:
+        print(f"SELFTEST FAILED: manifest row mutant gave {found}")
+        failed += 1
+    if coverage_findings(proposed):
+        print("SELFTEST FAILED: contract coverage does not pass over the proposed bytes")
+        failed += 1
+    mutated = _replace(proposed[CONTRACT_COVERAGE], "clauses: **324**.", "clauses: **325**.")
+    found = coverage_findings({**proposed, CONTRACT_COVERAGE: mutated})
+    expected = "contract-coverage --check fails over the proposed bytes: DRIFT"
+    if not any(finding.startswith(expected) for finding in found):
+        print(f"SELFTEST FAILED: contract-coverage mutant gave {found}")
+        failed += 1
+    return failed
 
 
 #: This package's spec patch first, then every pending sibling's, sorted.
