@@ -1,10 +1,9 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -529,6 +529,61 @@
-     V -- "no" --> F["No SVG emitted; text equivalent<br/>kept; failure disclosed"]
+@@ -530,4 +530,63 @@
  ```
- 
+
 +### 12. Name the revision by its release label
 +
 +An owner reads "Butlers v1.0.23" faster than a 40-digit object id. Polaris
@@ -33,11 +32,15 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +  "Not read" is never shown as "untagged": an absence nobody looked for is
 +  Unknown (VIS-2). Each not-read form says which read is missing, so neither
 +  statement is false when the other holds.
-+- **Label unit.** Each place the revision is named shows one unit: the
-+  label, its statement, the full object id beneath and any moved-tag
-+  disclosure. A checker counts, in the visible text, every short or full id
-+  and every project name followed by a tag name, and each must sit in a
-+  unit. Link targets and identities are left to the tag-name sweep.
++- **Label unit.** The revision is named only in a marked unit: the label,
++  its statement, the full object id beneath, the expansion of tied names and
++  any moved-tag disclosure. Every Polaris page shows at least one. A checker
++  counts the units by their marks, then sweeps the visible text for any
++  other short or full id of the revision, or project name followed by a tag
++  name. Three marked kinds are excepted: per-claim provenance stamps, which
++  are the identity a claim binds to and carry no label; Butlers-declared
++  text kept verbatim; and the shared operability status line, which the POC
++  specification governs. Link targets are left to the tag-name sweep.
 +- **Binding.** Claims, evaluation identities, links and comparisons bind to
 +  the object id. An evaluation names the earlier evaluations it is compared
 +  with as inputs; a tag one of them bound to another commit is disclosed as
@@ -61,5 +64,4 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +```
 +
  ## Risks / Trade-offs
- 
- Each known risk has a fail-closed answer; the one residual risk the owner
+

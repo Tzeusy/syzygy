@@ -38,7 +38,6 @@ contract-coverage generator's own ``--check`` recomputes.
 from __future__ import annotations
 
 import argparse
-import collections
 import difflib
 import hashlib
 import pathlib
@@ -119,8 +118,9 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: definitions, not PWB-REQ-001, but it also adds design decision 12 and
 #: capability row 34, so whichever is signed second is regenerated over the
 #: first's applied bytes and re-reviewed. The anchor-resolution amendment
-#: (N9, ``syzygy-u05.9``) touches only PWB-REQ-014 and the generated
-#: dependency declaration. The opening-index (PWB-REQ-010) and
+#: (N9, ``syzygy-u05.9``) was signed v1.0 on 2026-10-14 and is performed
+#: above; this package's patches were regenerated over its applied bytes.
+#: The opening-index (PWB-REQ-010) and
 #: accessible-name (PWB-REQ-016) amendments (``syzygy-u05.12``) each touch
 #: one other requirement and the generated declaration only; their spec
 #: patches compose with this one.
@@ -166,10 +166,35 @@ REQUIRED_ONCE = (
     # Round 2, Finding 2: a fixture whose captured history holds a reaching tag.
     "a shallow clone whose captured history holds a reaching tag",
     "a count of later commits computed from incomplete ancestry",
-    # Round 2, Finding 3: naming sites are owner-visible text, in label units.
-    "Attribute values, link targets and identities are not owner-visible text.",
-    "exposed as one element of the page so that a checker finds it without judgment",
-    "zero sites outside a label unit",
+    # Round 2, Finding 3, re-repaired for round 3, Finding 1: a naming site is
+    # a marked label unit; other visible ids are a separate prohibition with
+    # three marked exceptions.
+    "Attribute values and link targets are not owner-visible text",
+    "marked as a label unit, so that a checker finds it without judgment",
+    "zero swept occurrences outside a label unit and the excepted elements",
+    "Polaris names the observed revision only in a label unit.",
+    "Every Polaris page SHALL present at least one label unit.",
+    "Outside a label unit, owner-visible Polaris text SHALL NOT show",
+    "a provenance stamp, whose whole text is a revision's full object id or its first twelve hexadecimal digits",
+    "Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf",
+    "the operability status line that the Three-Surface POC's shared page shell renders on every surface",
+    "at least one label unit on every Polaris page",
+    "every provenance stamp's whole text a full object id or its first twelve hexadecimal digits",
+    # Round 3, Finding 2: the not-read tests read checker-owned construction
+    # records.
+    "These construction records are fixture facts the checker owns, not the observer's captured inputs.",
+    "Tests 1 and 3 apply to its construction records",
+    "Tests 2, 4 and 5 apply to its own recorded listing",
+    "as the construction records identify it",
+    # Round 3, Finding 4: no stability statement, swept and falsified.
+    "states that the tag is unmoved, unchanged or stable",
+    "zero stability terms found by the fifth sweep",
+    "a tag presented as unmoved, unchanged or stable",
+    # Round 3, Finding 5: the expansion lies in the unit; the record is
+    # decided by equality alone.
+    "the expansion of any tied names",
+    "expandable on the surface, inside the label unit.",
+    "the label record is decided by this equality alone",
     # Round 2, Finding 4: "release tag" is defined by the captured tag set.
     "These are the release tags the label counts.",
     'beside the statement "no release tag reaches this revision"',
@@ -342,7 +367,7 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
     signed = old[REQ_001]
     lost = lost_lines(signed, block, lambda line: bool(WARRANT_LIST_RE.match(line)))
     if lost:
-        findings.append(f"signed PWB-REQ-001 line edited or removed: {lost[0]!r}")
+        findings.append(f"signed PWB-REQ-001 line edited, moved or removed: {lost[0]!r}")
     for key, items in WARRANT_LIST_RE.findall(signed):
         kept = re.search(rf"^  {key}: \[([^\]\n]*)\]$", block, re.MULTILINE)
         now = {item.strip() for item in kept.group(1).split(",")} if kept else set()
@@ -353,7 +378,7 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
     for phrase in REQUIRED_ONCE:
         count = text.count(flat(phrase))
         if count != 1:
-            findings.append(f"PWB-REQ-001 carries {count} copies of required phrase: {phrase[:60]!r}")
+            findings.append(f"PWB-REQ-001 carries {count} copies of required phrase: {phrase!r}")
     for phrase in KEPT_IN_001 + NEW_SCENARIOS:
         if block.count(phrase) != 1:
             findings.append(f"PWB-REQ-001 lacks exactly one: {phrase.splitlines()[0][:60]!r}")
@@ -366,14 +391,23 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
 
 
 def lost_lines(old: str, new: str, skip=lambda line: False) -> list[str]:
-    remaining = collections.Counter(new.split("\n"))
+    """Signed lines that do not survive, in their signed order, in ``new``.
+
+    The amendment only inserts lines (and replaces the ``skip`` lines), so the
+    signed lines must be a subsequence of the new ones. A greedy match finds a
+    subsequence whenever one exists; a line edited, removed or moved past a
+    later signed line is reported (round 3, Finding 6: a multiset comparison
+    let a signed line move).
+    """
+    lines = new.split("\n")
     lost = []
+    position = 0
     for line in old.split("\n"):
         if skip(line):
             continue
-        if remaining[line]:
-            remaining[line] -= 1
-        else:
+        try:
+            position = lines.index(line, position) + 1
+        except ValueError:
             lost.append(line)
     return lost
 
@@ -383,7 +417,7 @@ def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     findings = []
     lost = lost_lines(old, new, lambda line: bool(CAPABILITY_COUNT_LINES.match(line)))
     if lost:
-        findings.append(f"signed capability line edited or removed: {lost[0]!r}")
+        findings.append(f"signed capability line edited, moved or removed: {lost[0]!r}")
     if new.count(CAPABILITY_ROW) != 1:
         findings.append("capability row 34 for the release label is missing")
     rows = CAPABILITY_ROW_RE.findall(new)
@@ -407,7 +441,7 @@ def repair_findings(proposed: bytes, current: bytes) -> list[str]:
     findings = []
     lost = lost_lines(old, new, lambda line: line in REPAIR_TOTALS_LINES)
     if lost:
-        findings.append(f"signed repair-delta line edited or removed: {lost[0]!r}")
+        findings.append(f"signed repair-delta line edited, moved or removed: {lost[0]!r}")
     for row in REPAIR_ROWS:
         if new.count(row) != 1:
             findings.append(f"repair row missing: {row.split(' | ')[0][2:]}")
@@ -419,7 +453,7 @@ def companion_findings(proposed: dict[pathlib.Path, bytes], current: dict[pathli
     for rel in (PROPOSAL, DESIGN):
         lost = lost_lines(current[rel].decode("utf-8"), proposed[rel].decode("utf-8"))
         if lost:
-            findings.append(f"signed {rel.name} line edited or removed: {lost[0]!r}")
+            findings.append(f"signed {rel.name} line edited, moved or removed: {lost[0]!r}")
     if PROPOSAL_PHRASE not in proposed[PROPOSAL].decode("utf-8"):
         findings.append("proposal does not carry the release-label bullet")
     design = flat(proposed[DESIGN].decode("utf-8"))
@@ -602,6 +636,12 @@ def _replace(data: bytes, old: str, new: str) -> bytes:
     return data.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
 
 
+def phrase_finding(phrase: str) -> str:
+    """The exact finding a mutant deleting one required phrase must raise
+    (round 3, Finding 6: a shared prefix let any missing phrase satisfy it)."""
+    return f"PWB-REQ-001 carries 0 copies of required phrase: {phrase!r}"
+
+
 def selftest() -> int:
     proposed = proposed_bytes()
     current = read_subjects()
@@ -620,55 +660,55 @@ def selftest() -> int:
         ),
         "object id no longer beneath": (
             SPEC, _replace(proposed[SPEC], "and SHALL show the revision's full\n  Git object id beneath the label", "and MAY show the revision's full\n  Git object id near the label"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding("SHALL show the revision's full Git object id beneath the label, on the same surface and without expanding anything"),
         ),
         "unread shown as untagged": (
             SPEC, _replace(proposed[SPEC], "It never states\n  that the revision is untagged.", "It may state\n  that the revision is untagged."),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('It never states that the revision is untagged.'),
         ),
         "tag message read": (
             SPEC, _replace(proposed[SPEC], "no tag message or signature is read into\n    the model or rendered", "the tag message is rendered"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('no tag message or signature is read into the model or rendered'),
         ),
         "incomplete-ancestry statement false": (
             SPEC, _replace(proposed[SPEC], 'Its statement is\n     "the history needed to judge release tags was not read".', 'Its statement is\n     "release tags were not read".'),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('Its statement is "the history needed to judge release tags was not read".'),
         ),
         "statement decide-line dropped": (
             SPEC, _replace(proposed[SPEC], "    - exact equality of form, statement, tag name,", "    - exact equality of form, tag name,"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('exact equality of form, statement, tag name, distance, tied names'),
         ),
         "visible reaching-tag shallow fixture dropped": (
             SPEC, _replace(proposed[SPEC], "    - a shallow clone whose captured history holds a reaching tag;\n", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('a shallow clone whose captured history holds a reaching tag'),
         ),
         "naming sites back to every element": (
-            SPEC, _replace(proposed[SPEC], "    - zero sites outside a label unit;", "    - zero sites without a label;"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            SPEC, _replace(proposed[SPEC], "    - zero swept occurrences outside a label unit and the excepted elements;", "    - zero swept occurrences;"),
+            phrase_finding('zero swept occurrences outside a label unit and the excepted elements'),
         ),
         "release tag left undefined": (
             SPEC, _replace(proposed[SPEC], " These are the release tags the label counts.", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('These are the release tags the label counts.'),
         ),
         "tied moved tag undisclosed": (
             SPEC, _replace(proposed[SPEC], "SHALL be\n    disclosed as moved wherever its name is carried", "SHALL be\n    disclosed as moved wherever a label names that tag"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('SHALL be disclosed as moved wherever its name is carried'),
         ),
         "failed peel undecided": (
             SPEC, _replace(proposed[SPEC], " When any ref under `refs/tags/` cannot be read or peeled,\n    reading the tag set failed.", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('When any ref under `refs/tags/` cannot be read or peeled, reading the tag set failed.'),
         ),
         "signed oracle clause deleted": (
             SPEC, _replace(proposed[SPEC], "  distinct from source-claimed time. Exact set, stamp and input-identity\n  equality decides.\n", "  equality decides.\n"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed falsifier clause edited": (
             SPEC, _replace(proposed[SPEC], "  deterministic input identity is missing, or exposed sources use different\n", "  deterministic input identity is missing, or exposed sources differ in\n"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed observable clause edited": (
             SPEC, _replace(proposed[SPEC], "  per-emission identity.\n  For the release label", "  identity.\n  For the release label"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed doctrine warrant dropped": (
             SPEC, _replace(proposed[SPEC], "  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]", "  doctrine: [VIS-1, VIS-2, VIS-7]"),
@@ -688,7 +728,42 @@ def selftest() -> int:
         ),
         "ancestry limb dropped": (
             SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.", "  3."),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('**Not read**, when the captured ancestry is incomplete.'),
+        ),
+        # Round 3, Finding 1: the naming site is a marked label unit, and the
+        # visible-id prohibition has three bounded, marked exceptions.
+        "label unit floor dropped": (
+            SPEC, _replace(proposed[SPEC], "Every Polaris page\n    SHALL present at least one label unit.", "Every Polaris page\n    MAY present a label unit."),
+            phrase_finding("Every Polaris page SHALL present at least one label unit."),
+        ),
+        "provenance stamp unbounded": (
+            SPEC, _replace(proposed[SPEC], "a provenance stamp, whose whole text is a revision's", "a provenance stamp, whose text includes a revision's"),
+            phrase_finding("a provenance stamp, whose whole text is a revision's full object id or its first twelve hexadecimal digits"),
+        ),
+        "verbatim exception dropped": (
+            SPEC, _replace(proposed[SPEC], "Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf,", "Butlers-declared text,"),
+            phrase_finding("Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf"),
+        ),
+        # Round 3, Finding 2: tests 1 and 3 read the construction records.
+        "not-read tests off the construction records": (
+            SPEC, _replace(proposed[SPEC], "Tests 1 and 3 apply to its\n    construction records", "Tests 1 and 3 apply to its\n    recorded listing"),
+            phrase_finding("Tests 1 and 3 apply to its construction records"),
+        ),
+        # Round 3, Finding 4: a stability statement is swept and decided.
+        "stability decide-line dropped": (
+            SPEC, _replace(proposed[SPEC], "    - zero stability terms found by the fifth sweep;\n", ""),
+            phrase_finding("zero stability terms found by the fifth sweep"),
+        ),
+        # Round 3, Finding 5: the label record is decided by equality alone.
+        "label record under the page predicates": (
+            SPEC, _replace(proposed[SPEC], "; the label-unit predicates apply to page sites\n      only, and the label record is decided by this equality alone", ""),
+            phrase_finding("the label record is decided by this equality alone"),
+        ),
+        # Round 3, Finding 6: a signed line moved within PWB-REQ-001 fails
+        # the order-aware lost-line guard.
+        "signed line moved": (
+            SPEC, _replace(proposed[SPEC], "  distinct from source-claimed time. Exact set, stamp and input-identity\n  equality decides.\n", "  equality decides.\n  distinct from source-claimed time. Exact set, stamp and input-identity\n"),
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "repair row dropped": (
             REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], REPAIR_ROWS[0] + "\n", ""),
@@ -696,7 +771,7 @@ def selftest() -> int:
         ),
         "signed repair row edited": (
             REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], "| RFC2-1.r2 | RFC2-1.c12 |", "| RFC2-1.r2 | RFC2-1.c13 |"),
-            "signed repair-delta line edited or removed",
+            "signed repair-delta line edited, moved or removed",
         ),
         "capability row dropped": (
             CAPABILITY, _replace(proposed[CAPABILITY], CAPABILITY_ROW + "\n", ""),
@@ -708,11 +783,11 @@ def selftest() -> int:
         ),
         "signed capability row edited": (
             CAPABILITY, _replace(proposed[CAPABILITY], "| 1 | Bind every source to one exact Butlers revision |", "| 1 | Bind every source to one Butlers revision |"),
-            "signed capability line edited or removed",
+            "signed capability line edited, moved or removed",
         ),
         "signed proposal line edited": (
             PROPOSAL, _replace(proposed[PROPOSAL], "- **Every declared item is counted.**", "- **Items are counted.**"),
-            "signed proposal.md line edited or removed",
+            "signed proposal.md line edited, moved or removed",
         ),
         "proposal bullet dropped": (
             PROPOSAL, _replace(proposed[PROPOSAL], PROPOSAL_PHRASE, "- **The revision.**"),
@@ -724,7 +799,7 @@ def selftest() -> int:
         ),
         "signed design line edited": (
             DESIGN, _replace(proposed[DESIGN], "## Risks / Trade-offs", "## Risks"),
-            "signed design.md line edited or removed",
+            "signed design.md line edited, moved or removed",
         ),
         "dependency drift": (
             GOVERNING, _replace(proposed[GOVERNING], "PWB-REQ-001", "PWB-REQ-000"),
@@ -776,7 +851,6 @@ def selftest() -> int:
 ORDER_POPULATION = [
     "pwb-release-label-amendment",
     "pwb-accessible-name-amendment",
-    "pwb-anchor-resolution-amendment",
     "pwb-class-granular-extraction-amendment",
     "pwb-opening-index-amendment",
 ]
