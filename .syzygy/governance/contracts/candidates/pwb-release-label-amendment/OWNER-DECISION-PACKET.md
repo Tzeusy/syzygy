@@ -5,9 +5,17 @@
 > answer binds anything (VIS-4).
 
 **Status:** drafted 2026-10-03 under your direction of 2026-10-02 on bead
-`syzygy-l362`. The review round's verdict and its dispositions are in
-`ROUND-1-DISPOSITIONS.md` beside this file, which also says whether this
-version is ready to offer.
+`syzygy-l362`. Rounds 1 and 2 both returned `REVISE`; their dispositions are
+in `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md` beside this file.
+
+**Round-2 findings repaired once on 2026-10-14, unconfirmed pending round
+3.** On 2026-10-14 you instructed one new version repairing all six round-2
+findings, then one fresh confirmation round. This is that version. No round
+has read these bytes, so it is **not offered for sign-off** until round 3
+returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. The
+questions below are unchanged; your instruction answers Question 1 with
+*Revise* for round 2's bytes, and Question 1 is asked again of this version
+once round 3 clears it.
 
 ## What you would be signing
 
@@ -18,16 +26,23 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
   the full Git object id beneath it. Every claim still binds to the object id,
   never to a tag.
 - **Four forms, in order:**
-  - **not read:** a short id, and the statement that tags were not read, used
-    whenever the tags, or the history needed to judge them, were not read;
+  - **not read:** a short id and a statement saying which read is missing:
+    "release tags were not read" when the tags were not read, or "the
+    history needed to judge release tags was not read" when the tags were
+    read but the history was not;
   - **tagged:** "Butlers v1.0.23";
   - **described:** the nearest tag plus a count of later commits;
-  - **untagged:** a short id, and the statement that no release tag reaches
-    it.
+  - **untagged:** a short id, and the statement "no release tag reaches this
+    revision".
 
-  A tag set nobody read is never shown as "untagged".
+  A tag set nobody read is never shown as "untagged". "Release tags" means
+  the tags the label counts, which is whatever Question 4 decides.
+- **Every place that shows the revision shows the label.** Wherever a page's
+  visible text shows the short or full id, it sits in one label unit with
+  the label and the full id beneath it.
 - **Moved tags** are disclosed when an earlier evaluation, named as compared,
-  saw the tag on another commit. Nothing ever says a tag is unmoved.
+  saw the tag on another commit, wherever the tag's name appears, tied names
+  included. Nothing ever says a tag is unmoved.
 - **Determinism is kept.** The tags are an input of the evaluation. Your
   "some cost in determinism" is paid only here: the same commit can show a
   different label once its tags change.
@@ -41,6 +56,12 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
   "PWB-REQ-007/020 tuple". The label is treated as a presentation of the
   revision, not a project claim, so neither requirement changes. Answer
   "Revise" if you want it to be a challengeable claim instead.
+
+**Three choices the round-2 repair made** (`SEMANTIC-DELTA.md` §"Choices
+the round-2 repair made"): one tag that cannot be peeled makes the whole tag
+set read as failed; the three statements are fixed wording; and each label
+unit is one element of the page, so a checker can count them. Answer
+*Revise* if you want any of them otherwise.
 
 **What signing does not do.**
 

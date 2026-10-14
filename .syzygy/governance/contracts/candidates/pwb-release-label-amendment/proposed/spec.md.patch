@@ -1,8 +1,7 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 6077e4a..f4e110f 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -287,24 +287,138 @@ readers SHALL receive those identities, the capture instant and the same source
+@@ -287,24 +287,167 @@
  population. Every emitted project-shape fact SHALL carry its source identity,
  scope, capture instant and observer identity/version.
  
@@ -10,6 +9,14 @@ index 6077e4a..f4e110f 100644
 +  lead with that revision's release label, and SHALL show the revision's full
 +  Git object id beneath the label, on the same surface and without expanding
 +  anything.
++  - Polaris names the revision wherever its owner-visible text shows the
++    revision's full object id, its first twelve hexadecimal digits, or the
++    project's name followed by a captured tag's name. Attribute values, link
++    targets and identities are not owner-visible text.
++  - Each such place presents one label unit: the label, the statement its
++    form requires, the full object id beneath them and any moved-tag
++    disclosure, exposed as one element of the page so that a checker finds
++    it without judgment.
 +  - The object id stays the revision's identity: every claim, evaluation
 +    identity, link and comparison binds to it. A label is a name for the
 +    revision, and nothing binds to a tag name.
@@ -20,10 +27,12 @@ index 6077e4a..f4e110f 100644
 +  identity of its own, feed the label.
 +  - The captured tag set is every ref under `refs/tags/` in the observed
 +    repository's object database at the capture instant, each paired with
-+    the object it peels to. A tag's name is its ref name without the
-+    `refs/tags/` prefix. Only ref names and object ids are taken; no tag
-+    message or signature is read into the model or rendered. A tag that
-+    peels to anything but a commit reaches no revision.
++    the object it peels to. These are the release tags the label counts. A
++    tag's name is its ref name without the `refs/tags/` prefix. Only ref
++    names and object ids are taken; no tag message or signature is read into
++    the model or rendered. A tag that peels to anything but a commit reaches
++    no revision. When any ref under `refs/tags/` cannot be read or peeled,
++    reading the tag set failed.
 +  - The captured ancestry is the parent object ids of every commit in the
 +    revision's history. It is complete only when every commit in that
 +    history was read; a shallow or grafted object database, an unreadable
@@ -36,38 +45,42 @@ index 6077e4a..f4e110f 100644
 +- **Label forms.** The label takes exactly one of four forms. The tests below
 +  run in this order, and the first whose condition holds applies.
 +  1. **Not read**, when the tag set was not captured, because its input is
-+     not admitted or reading it failed.
++     not admitted or reading it failed. Its statement is "release tags were
++     not read".
 +  2. **Tagged**, when one or more captured tags peel to the revision itself.
 +     The label is the project's name followed by that tag's name.
-+  3. **Not read**, when the captured ancestry is incomplete.
++  3. **Not read**, when the captured ancestry is incomplete. Its statement is
++     "the history needed to judge release tags was not read".
 +  4. **Described**, when some captured tag reaches the revision. The label is
 +     the project's name, the name of the reaching tag with the least
 +     distance, and that distance stated as a count of later commits.
 +  5. **Untagged**, otherwise. The label is the project's name and the
-+     revision's first twelve hexadecimal digits, beside the statement that
-+     no release tag reaches this revision.
++     revision's first twelve hexadecimal digits, beside the statement "no
++     release tag reaches this revision".
 +
-+  In the not-read form, Polaris names the revision by its first twelve
-+  hexadecimal digits beside the statement that release tags were not read,
-+  with the reason `source-uncaptured-or-unreachable` and its route. It never
-+  states that the revision is untagged. Where tags tie, at the revision
-+  itself or at the least distance, the label names the first of them in
-+  codepoint order of tag name, and every tied name is carried in the machine
-+  answer and expandable on the surface.
++  In either not-read form, Polaris names the revision by its first twelve
++  hexadecimal digits beside the statement of the test that applied, with the
++  reason `source-uncaptured-or-unreachable` and its route. It never states
++  that the revision is untagged. Where tags tie, at the revision itself or at
++  the least distance, the label names the first of them in codepoint order of
++  tag name, and every tied name is carried in the machine answer and
++  expandable on the surface.
 +- **Moved tags.** An evaluation's compared evaluations are earlier
 +  identified evaluations of the same repository. They are named in its
 +  inputs by evaluation identity, so they are a deterministic input like the
 +  others.
-+  - A tag name that a compared evaluation bound to a different commit SHALL
-+    be disclosed as moved wherever a label names that tag, naming both
-+    commits and both evaluations.
++  - A tag that a compared evaluation bound to a different commit SHALL be
++    disclosed as moved wherever its name is carried, naming both commits and
++    both evaluations. Its name is carried in a label, among the tied names in
++    the machine answer, and in the surface's expansion of those names.
 +  - Nothing presents a tag as unmoved. Where an evaluation names no compared
 +    evaluation, no stability is stated.
-+- **Machine answer.** The machine answer SHALL carry the label's form, tag
-+  name, distance, tied names and moved-tag disclosures, the identities of the
-+  captured tag set, the captured ancestry and the compared evaluations, and
-+  the full object id, so every label value Polaris presents is recoverable
-+  from it.
++- **Machine answer.** The machine answer SHALL carry each label's form, the
++  test that applied, its statement, tag name, distance, tied names and
++  moved-tag disclosures, the identities of the captured tag set, the captured
++  ancestry and the compared evaluations, and the full object id, so every
++  label value Polaris presents is recoverable from it. This is its label
++  record.
 +
  **Verification.**
  
@@ -83,30 +96,39 @@ index 6077e4a..f4e110f 100644
 +      least distance;
 +    - a tag peeling to a tree;
 +    - no reaching tag;
-+    - a tag set whose read fails or is not admitted;
++    - a tag set whose read fails or is not admitted, and a tag set one of
++      whose refs fails to peel while the others read;
 +    - a shallow clone whose missing history holds the only reaching tag;
++    - a shallow clone whose captured history holds a reaching tag;
 +    - one revision observed twice with different tag sets;
 +    - a tag moved between two evaluations, the second naming the first as
-+      compared.
++      compared;
++    - two tags tied at the revision, the later in codepoint order moved
++      between two evaluations, the second naming the first as compared.
 +  - The checker records its own listing of each fixture's tags and peeled
 +    objects before any tag is moved.
  - **Observable**: the machine answer and Polaris expose the revision, source
    paths, source count, capture instant and every deterministic input and
--  per-emission identity.
-+  per-emission identity, and every label's form, values and full object id.
+   per-emission identity.
++  For the release label, they also expose every label unit's form,
++  statement, values and full object id.
  - **Oracle**: compare the exposed paths and revision to an independent Git tree
    listing and the closed discovery rules; exhaust every emitted fact's source,
    scope, capture-instant and observer-version stamp; verify capture time remains
    distinct from source-claimed time. Exact set, stamp and input-identity
    equality decides.
-+  - For the release label, the checker enumerates the naming sites: every
-+    element of every Polaris page and of the machine answer that carries the
-+    revision's full object id, its first twelve hexadecimal digits, or a
-+    label. The count of those sites is the denominator.
-+  - For each fixture, the checker computes the expected form and values by
-+    applying the rule above to its own recorded listing of the fixture's
-+    tags and peeled objects, and to its own count of commits between each
-+    tag and the revision.
++  - For the release label, the checker enumerates the naming sites with a
++    plain DOM/text extractor: in the owner-visible text of every Polaris
++    page, every occurrence of the revision's first twelve hexadecimal
++    digits, alone or opening its full object id, and every occurrence of the
++    project's name followed by a captured tag's name, whitespace-normalized;
++    plus the machine answer's label record. Attribute values, link targets and identities are not
++    sites; the tag-name sweep below covers them. The count of those sites is
++    the denominator.
++  - For each fixture, the checker computes the expected form, statement and
++    values by applying the rule above to its own recorded listing of the
++    fixture's tags and peeled objects, and to its own count of commits
++    between each tag and the revision.
 +  - The checker also performs four sweeps:
 +    - it searches every claim identity, evaluation identity and link target
 +      on Polaris and in the machine answer for each captured tag name;
@@ -114,37 +136,40 @@ index 6077e4a..f4e110f 100644
 +      string;
 +    - it compares the tag-set and evaluation identities of the twice-observed
 +      revision;
-+    - it compares the moved-tag disclosure with its own recorded listings.
++    - it compares every moved-tag disclosure, in labels, among tied names and
++      in their expansion, with its own recorded listings.
 +  - The following decide, over the enumerated sites:
-+    - zero sites without a label;
-+    - exact equality of form, tag name, distance, tied names and moved-tag
-+      disclosure on Polaris and in the machine answer;
-+    - the full object id on the same surface as each label;
++    - zero sites outside a label unit;
++    - exact equality of form, statement, tag name, distance, tied names and
++      moved-tag disclosures in each label unit and in the label record;
++    - the full object id in each label unit;
 +    - zero labels stating untagged in either not-read case;
 +    - zero tag names found in an identity or link target;
 +    - zero occurrences of the tag message;
 +    - distinct tag-set and evaluation identities for the twice-observed
 +      revision.
  - **Oracle independence**: the expected set comes from Git and the Butlers
--  indexes, not from the POC model.
-+  indexes, not from the POC model. Expected labels come from the checker's own
-+  Git listing of each fixture, never from the observer's captured inputs.
+   indexes, not from the POC model.
++  Expected labels come from the checker's own Git listing of each fixture,
++  never from the observer's captured inputs.
  - **Falsifier**: one source is absent, one arbitrary source is included, one
    deterministic input identity is missing, or exposed sources use different
--  revisions.
-+  revisions. For the release label, any of these falsifies it:
-+  - a naming site without a label;
+   revisions.
++  For the release label, any of these falsifies it:
++  - a naming site outside a label unit;
 +  - a label in a form other than the first whose condition holds;
-+  - a label with no full object id on its surface;
++  - a not-read or untagged label whose statement is not its test's;
++  - a label unit with no full object id;
 +  - a claim, identity or link bound to a tag name;
 +  - an uncaptured tag set or incomplete ancestry stated as untagged;
-+  - a moved tag not disclosed;
++  - a count of later commits computed from incomplete ancestry;
++  - a moved tag not disclosed wherever its name is carried;
 +  - a tag message rendered;
 +  - one evaluation identity for two different tag sets.
  
  #### Scenario: Source population is complete at one revision
  
-@@ -312,11 +426,45 @@ scope, capture instant and observer identity/version.
+@@ -312,11 +455,47 @@
  - **THEN** every admitted project-shape source resolves at R
  - **AND** the human and machine views expose the same complete source set
  
@@ -161,16 +186,17 @@ index 6077e4a..f4e110f 100644
 +- **WHEN** the captured tag set holds no tag that reaches revision R and the
 +  captured ancestry of R is complete
 +- **THEN** Polaris names the revision by the project's name and R's first
-+  twelve hexadecimal digits, states that no release tag reaches it, and shows
-+  R's full object id beneath
++  twelve hexadecimal digits, states that no release tag reaches this
++  revision, and shows R's full object id beneath
 +
 +#### Scenario: Unread tags are never shown as untagged
 +
-+- **WHEN** the tag set for revision R was not captured, or R's captured
-+  ancestry is incomplete and no captured tag peels to R
-+- **THEN** Polaris names R by its first twelve hexadecimal digits and states
-+  that release tags were not read, with the reason
-+  `source-uncaptured-or-unreachable` and its route
++- **WHEN** the tag set for revision R was not captured, or it was captured,
++  no captured tag peels to R and R's captured ancestry is incomplete
++- **THEN** Polaris names R by its first twelve hexadecimal digits, with the
++  reason `source-uncaptured-or-unreachable` and its route
++- **AND** it states that release tags were not read in the first case, and
++  that the history needed to judge release tags was not read in the second
 +- **AND** neither Polaris nor the machine answer states that R is untagged
 +
 +#### Scenario: A moved tag is disclosed, not trusted
@@ -178,8 +204,9 @@ index 6077e4a..f4e110f 100644
 +- **WHEN** an evaluation names as compared an earlier evaluation that bound
 +  tag `v1.0.23` to commit A, and its own captured tag set binds `v1.0.23` to
 +  commit B
-+- **THEN** wherever a label names `v1.0.23`, Polaris and the machine answer
-+  disclose the tag as moved, naming A, B and both evaluations
++- **THEN** wherever the name `v1.0.23` is carried, in a label, among tied
++  names or in their expansion, Polaris and the machine answer disclose the
++  tag as moved, naming A, B and both evaluations
 +- **AND** every claim still binds to the current revision's full object id
 +
  ```yaml

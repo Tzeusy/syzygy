@@ -26,7 +26,9 @@ candidate commit, review, manifest or merge performs no owner act.
     --apply --at-adoption   write the proposed bytes (sign-off change only)
 
 Outside PWB-REQ-001, every requirement block and the text before the
-requirements must survive byte for byte, and no signed line of the proposal,
+requirements must survive byte for byte. Inside it, every signed line must
+survive, except its doctrine and contracts warrant lists, which may only grow.
+No signed line of the proposal,
 the design, the capability table or the contract-coverage repair delta may be
 lost, except the two capability count lines that ``capability_findings``
 recomputes and the repair delta's two declared-totals lines, which the
@@ -147,13 +149,34 @@ REQUIRED_ONCE = (
     "It never states that the revision is untagged.",
     "the name of the reaching tag with the least distance",
     "every tied name is carried in the machine answer",
-    "SHALL be disclosed as moved wherever a label names that tag",
     "Nothing presents a tag as unmoved.",
     "so every label value Polaris presents is recoverable from it",
     "Expected labels come from the checker's own Git listing of each fixture",
     "an uncaptured tag set or incomplete ancestry stated as untagged",
     "The count of those sites is the denominator.",
     "zero occurrences of the tag message",
+    # Round 2, Finding 1: one true statement per not-read test, and a
+    # decide-line and falsifier limb that check it.
+    'Its statement is "release tags were not read".',
+    'Its statement is "the history needed to judge release tags was not read".',
+    "beside the statement of the test that applied",
+    "exact equality of form, statement, tag name, distance, tied names",
+    "a not-read or untagged label whose statement is not its test's",
+    # Round 2, Finding 2: a fixture whose captured history holds a reaching tag.
+    "a shallow clone whose captured history holds a reaching tag",
+    "a count of later commits computed from incomplete ancestry",
+    # Round 2, Finding 3: naming sites are owner-visible text, in label units.
+    "Attribute values, link targets and identities are not owner-visible text.",
+    "exposed as one element of the page so that a checker finds it without judgment",
+    "zero sites outside a label unit",
+    # Round 2, Finding 4: "release tag" is defined by the captured tag set.
+    "These are the release tags the label counts.",
+    'beside the statement "no release tag reaches this revision"',
+    # Round 2, Finding 6: disclosure wherever the name is carried; a failed peel.
+    "SHALL be disclosed as moved wherever its name is carried",
+    "Its name is carried in a label, among the tied names in the machine answer, and in the surface's expansion of those names.",
+    "When any ref under `refs/tags/` cannot be read or peeled, reading the tag set failed.",
+    "two tags tied at the revision, the later in codepoint order moved",
 )
 #: Signed PWB-REQ-001 text the amendment keeps.
 KEPT_IN_001 = (
@@ -170,6 +193,10 @@ NEW_SCENARIOS = (
 #: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
 WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
 WARRANT_RE = re.compile(r"^  contracts: \[([^\]\n]*)\]$", re.MULTILINE)
+#: The two warrant lists the amendment extends. Every other signed line of
+#: PWB-REQ-001 must survive byte for byte (round 2, Finding 5); these two may
+#: grow, but must keep every signed identifier.
+WARRANT_LIST_RE = re.compile(r"^  (doctrine|contracts): \[([^\]\n]*)\]$", re.MULTILINE)
 REPAIR_ROWS = (
     "| RFC4-11.r1 | RFC4-11.c4 | RFC4-11 | A count over commit history is computed only from completely captured ancestry and is never reconstructed from history the adapter cannot reach | covered:PWB-REQ-001 |",
     "| RFC4-11.r2 | RFC4-11.c4 | RFC4-11 | Squash/deletion loss becomes reduced-fidelity PR facts | believed-not-applicable |",
@@ -311,6 +338,16 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
         if rid != REQ_001 and block != old[rid]:
             findings.append(f"{rid} changed; the amendment touches only PWB-REQ-001")
     block = dict(new_blocks)[REQ_001]
+    signed = old[REQ_001]
+    lost = lost_lines(signed, block, lambda line: bool(WARRANT_LIST_RE.match(line)))
+    if lost:
+        findings.append(f"signed PWB-REQ-001 line edited or removed: {lost[0]!r}")
+    for key, items in WARRANT_LIST_RE.findall(signed):
+        kept = re.search(rf"^  {key}: \[([^\]\n]*)\]$", block, re.MULTILINE)
+        now = {item.strip() for item in kept.group(1).split(",")} if kept else set()
+        dropped = sorted({item.strip() for item in items.split(",")} - now)
+        if dropped:
+            findings.append(f"PWB-REQ-001 drops signed {key} warrant {', '.join(dropped)}")
     text = flat(block)
     for phrase in REQUIRED_ONCE:
         count = text.count(flat(phrase))
@@ -585,12 +622,56 @@ def selftest() -> int:
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "unread shown as untagged": (
-            SPEC, _replace(proposed[SPEC], "It never\n  states that the revision is untagged.", "It may\n  state that the revision is untagged."),
+            SPEC, _replace(proposed[SPEC], "It never states\n  that the revision is untagged.", "It may state\n  that the revision is untagged."),
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "tag message read": (
-            SPEC, _replace(proposed[SPEC], "no tag\n    message or signature is read into the model or rendered", "the tag\n    message is rendered"),
+            SPEC, _replace(proposed[SPEC], "no tag message or signature is read into\n    the model or rendered", "the tag message is rendered"),
             "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "incomplete-ancestry statement false": (
+            SPEC, _replace(proposed[SPEC], 'Its statement is\n     "the history needed to judge release tags was not read".', 'Its statement is\n     "release tags were not read".'),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "statement decide-line dropped": (
+            SPEC, _replace(proposed[SPEC], "    - exact equality of form, statement, tag name,", "    - exact equality of form, tag name,"),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "visible reaching-tag shallow fixture dropped": (
+            SPEC, _replace(proposed[SPEC], "    - a shallow clone whose captured history holds a reaching tag;\n", ""),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "naming sites back to every element": (
+            SPEC, _replace(proposed[SPEC], "    - zero sites outside a label unit;", "    - zero sites without a label;"),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "release tag left undefined": (
+            SPEC, _replace(proposed[SPEC], " These are the release tags the label counts.", ""),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "tied moved tag undisclosed": (
+            SPEC, _replace(proposed[SPEC], "SHALL be\n    disclosed as moved wherever its name is carried", "SHALL be\n    disclosed as moved wherever a label names that tag"),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "failed peel undecided": (
+            SPEC, _replace(proposed[SPEC], " When any ref under `refs/tags/` cannot be read or peeled,\n    reading the tag set failed.", ""),
+            "PWB-REQ-001 carries 0 copies of required phrase",
+        ),
+        "signed oracle clause deleted": (
+            SPEC, _replace(proposed[SPEC], "  distinct from source-claimed time. Exact set, stamp and input-identity\n  equality decides.\n", "  equality decides.\n"),
+            "signed PWB-REQ-001 line edited or removed",
+        ),
+        "signed falsifier clause edited": (
+            SPEC, _replace(proposed[SPEC], "  deterministic input identity is missing, or exposed sources use different\n", "  deterministic input identity is missing, or exposed sources differ in\n"),
+            "signed PWB-REQ-001 line edited or removed",
+        ),
+        "signed observable clause edited": (
+            SPEC, _replace(proposed[SPEC], "  per-emission identity.\n  For the release label", "  identity.\n  For the release label"),
+            "signed PWB-REQ-001 line edited or removed",
+        ),
+        "signed doctrine warrant dropped": (
+            SPEC, _replace(proposed[SPEC], "  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]", "  doctrine: [VIS-1, VIS-2, VIS-7]"),
+            "PWB-REQ-001 drops signed doctrine warrant SEC-3",
         ),
         "signed scenario dropped": (
             SPEC, _replace(proposed[SPEC], "#### Scenario: Source population is complete at one revision", "#### Scenario: Source population is complete"),
@@ -605,7 +686,7 @@ def selftest() -> int:
             "PWB-REQ-001 warrants omit RFC2-24",
         ),
         "ancestry limb dropped": (
-            SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.\n", ""),
+            SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.", "  3."),
             "PWB-REQ-001 carries 0 copies of required phrase",
         ),
         "repair row dropped": (
