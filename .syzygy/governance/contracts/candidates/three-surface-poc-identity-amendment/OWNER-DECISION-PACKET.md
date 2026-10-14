@@ -9,6 +9,13 @@ verdict and dispositions are recorded in the package's
 `ROUND-<n>-DISPOSITIONS.md` records beside this file, and the latest one says
 whether this version is ready to offer.
 
+**State on 2026-10-14:** four fresh-context rounds were each `REVISE`. On
+your direction of 2026-10-14, round 4's findings 26–32 were **repaired once
+on 2026-10-14**. The repaired bytes are **unconfirmed, pending round 5**, one
+fresh confirmation review. This version is not yet recommended for signing.
+Each repair is mapped in `ROUND-4-DISPOSITIONS.md`, and none needed a choice
+from you.
+
 ## What you would be signing
 
 One amendment to the signed Three-Surface POC specification, the one P-75
@@ -36,7 +43,9 @@ ruled. Read `SEMANTIC-DELTA.md` for the full account. In short:
   only for an agent's assertion and never counts as Observed. Nothing
   produces one today.
 
-**One departure from the design you adopted.** The M9 design said
+**Two departures from the design you adopted.**
+
+**Departure 1 — the join key.** The M9 design said
 POC-REQ-054 "Declares the canonical join key". This package does not: it
 requires one identity per subject but leaves the identity's *form* to the
 implementation slice.
@@ -49,6 +58,19 @@ implementation slice.
   with no further act from you.
 - **If you would rather settle the form in the specification,** answer
   "Revise" below and name it.
+
+**Departure 2 — role pairs, not only kinds.** The M9 design said "Every
+emitted kind is either an RFC1-25 name or carries an explicit
+out-of-vocabulary flag". POC-REQ-055 also checks that a named relationship
+joins the kinds of thing the table allows for that name.
+
+- **Why.** RFC1-26 forbids re-typing, so a correct name between the wrong
+  kinds of thing is not compliant either. This is why `contains`, from a
+  project to a capability, is flagged too. [Inferred]
+- **The consequence if you sign.** Slice 8 also writes a declaration
+  mapping the POC's kinds to RFC 0001's classes. Whether that mapping is
+  true stays Unknown.
+- **If you want the kind check alone,** answer "Revise" and say so.
 
 **What signing does not do.**
 

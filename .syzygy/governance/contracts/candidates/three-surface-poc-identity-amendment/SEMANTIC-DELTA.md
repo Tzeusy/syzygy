@@ -37,7 +37,10 @@ compliance consequence.]
 
 **Author:** Claude worker lane for `syzygy-dov.26`.
 
-**Date:** 2026-10-03
+**Date:** 2026-10-03. Repaired 2026-10-14 for round-4 findings 26–32 on the
+owner's direction of that day; the repairs are mapped in
+`ROUND-4-DISPOSITIONS.md` and are unconfirmed until a fifth fresh-context
+round reads them.
 
 ## What the ruling settled, verbatim
 
@@ -86,6 +89,19 @@ POC-REQ-012. A link between surfaces resolves, by that identity, to exactly
 one link target on the other surface, and that target carries the same
 identity.
 
+Which subjects a source authority owns is decided by a stated procedure,
+not by example: a subject is owned where the source record the shared model
+reads for it carries a non-empty identifier of that source's own record
+format. The sweep's population is every element on the served surfaces
+**and** every record in the machine answer that carries a subject identity.
+Two value-free limbs then hold for every subject, owned or not: every
+element and record attributed to one subject carries one identity value,
+and no identity value is carried by elements or records of two subjects.
+The checker attributes each element and record to its subject by the
+source record it renders, never by the identity it carries. Only the
+equality limb, the identity against its owning source's identifier, is
+limited to owned subjects.
+
 A second paragraph carries the **ribbon**: where a surface renders one claim's
 desired, execution and observed states together, each slot is filled only by
 a subject joined by the identity. An unfilled slot renders Unknown with its
@@ -108,8 +124,9 @@ The requirement has two scenarios:
   object id — is ever a selection identity". Its second bullet (lines
   116–118) reads: "every handle must resolve to a selection reference
   before it crosses a surface boundary, a URL, or an endpoint." The
-  covered consequence is narrower: one identity per subject, equal to the
-  identity its owning source authority gives it. The requirement states no
+  covered consequence is narrower: one identity per subject on every
+  surface and in the machine answer, and, for an owned subject, equal to
+  the identity its owning source authority gives it. The requirement states no
   procedure that classifies an identity value as a surface-local handle,
   so that limb is an Unknown row rather than a claim. Two further limbs
   are added as Unknown rows:
@@ -117,7 +134,11 @@ The requirement has two scenarios:
     identity), and the POC's entity kinds are not RFC1-5's;
   - the qualifiers limb.
 - **RFC6-3**, line 135: "One selection reference resolves **identically in all
-  three surfaces**". Only "same entity" is covered. Two limbs are added as
+  three surfaces**". Only "same entity" is covered, as the oracle observes
+  it: one identity value names one and the same subject on every surface
+  and in the machine answer. The covered row no longer rests on the
+  implementation fact that all surfaces read one model instance. Two limbs
+  are added as
   Unknown rows: same evaluation, same scenario context and same drawer fact
   set; and the skew limb ("must render the skew explicitly — naming both
   evaluation identities").
@@ -218,11 +239,27 @@ decision rule counts each falsifier limb: unflagged outside kinds,
 unflagged unassigned role pairs (reversed roles included), flags on
 relationships whose kind and mapped role pair the table assigns, and flagged
 relationships missing their reason. RFC1-25's rows also carry a semantic class
-and a rule, and RFC1-26 forbids re-typing; POC-REQ-055 decides neither, so a
-second Unknown amendment row reads "A closed-name relationship honours its
-row's semantic class and rule, and no relation is re-typed". The table assigns several role pairs to some
-relations, such as `contains`/`part_of`, so the requirement checks against
-the set.
+and a rule, and RFC1-26 forbids re-typing; POC-REQ-055 decides neither. Each
+limb has an Unknown amendment row under its own clause: under RFC1-25, "A
+closed-name relationship honours its row's semantic class and rule"; under
+RFC1-26, "No relation is re-typed". (Before the 2026-10-14 repair the two
+were one row filed under RFC1-26 alone.) The table assigns several role
+pairs to some relations, such as `contains`/`part_of`, so the requirement
+checks against the set.
+
+**Departure from the adopted design: role pairs.** The design's slice 3
+item 3 reads "Every emitted kind is either an RFC1-25 name or carries an
+explicit out-of-vocabulary flag"
+(`docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md` lines 804–807), and P-75
+Q3 speaks of "the seven outside kinds". POC-REQ-055 checks more than the
+kind: a closed name must also be emitted in a role pair the table assigns
+it, read through the declared kind-to-class correspondence. That is why
+the eighth relationship, `contains` from a project to a capability, is
+also flagged. The widening is offered because RFC1-26 forbids re-typing and
+the design's slice 8 already treats direction as material [Inferred]. It is
+still more than the design's sentence says. If the owner wants the kind
+check alone, the answer is "Revise", and the role-pair limbs, the
+correspondence declaration and its Unknown row come out.
 
 The builder fails if the signed row changes (`--selftest`, mutant "bound row
 edited").
@@ -240,7 +277,10 @@ extends it:
 
 - **Labels:** "Observed, Inferred, Unknown".
 - **Record shape:** every entity, relationship and claim carries one record
-  shape in the model and the machine answer. It holds a label from the closed
+  shape in the model and the machine answer. The sweep's denominator is the
+  objects, not the records: it enumerates every entity, relationship and
+  claim in the machine answer and checks that each carries exactly one
+  epistemic record, so an object with no record, or with two, falsifies it. It holds a label from the closed
   three; a tier from RFC2-25's closed six where one applies, inside its parent
   label; and, where Unknown, exactly one primary reason from RFC2-24's closed
   twelve with its route.
@@ -249,8 +289,13 @@ extends it:
   distinctly. The oracle names a procedure for each of these limbs:
   - a check that the record names an agent assertion;
   - a recount of every Observed total without the record;
-  - a before-and-after comparison of each Unknown it addresses;
+  - a recount of every Unknown in the machine answer with and without the
+    record, whose two sets of Unknown records by identity must be equal
+    (this replaces "each Unknown it addresses", which no procedure defined);
   - an encoding comparison.
+
+  The first check observes that the record *names* an assertion, not that
+  it *arose* from one. That source limb has its own Unknown amendment row.
 
 The signed scenario "Unknown looks the same everywhere" is preserved verbatim;
 the builder checks this. A second scenario is added: "An agent assertion stays
@@ -293,10 +338,27 @@ Unknown rows under RFC6-14 and RFC2-24 rather than claiming them.
 
 The same goes for the RFC2-25 limbs the oracle does not observe. Each tier's
 authority — for example, only `gate-backed` supports a positive status — is
-an Unknown row. So is the `asserted-by-worker` row's "challengeable" and
-"never a status input" limb. The signed RFC6-14 row's fold note is preserved,
-with a second disclosure saying which of its limbs the amendment now
-covers.
+an Unknown row. The `asserted-by-worker` row's Authority column reads
+"Visible, never green, challengeable, never a status input", and each of its
+words now has its own row:
+
+- **"never green"** — covered. The claim sits inside its parent label,
+  Inferred, and renders with the declared Inferred encoding, which the legend
+  distinguishes from Observed.
+- **"never a status input"** — split. Covered for the two computations the
+  POC performs: the claim counts toward no Observed total and clears no
+  Unknown. Unknown for any positive status (Aligned, Converged, reconciled,
+  green), which the POC does not compute.
+- **"Visible"** — Unknown. POC-REQ-060 fixes the encoding wherever an
+  Inferred record appears; no requirement requires one to appear.
+- **"challengeable"** — Unknown. The POC has no challenge mechanism.
+
+The tier's Semantics column, "An LLM worker's assertion of an outcome with no
+retained artifact", has an Unknown row too, for the source limb above. Before
+the 2026-10-14 repair the covered row read "is Inferred, absent from every
+Observed total and never clears an Unknown", a paraphrase rather than the
+clause's words. The signed RFC6-14 row's fold note is preserved, with a
+second disclosure saying which of its limbs the amendment now covers.
 
 ## Coverage matrix, computed
 
@@ -307,14 +369,21 @@ checked by `--check`]
 | | Signed | Proposed |
 |---|---:|---:|
 | Part A clauses (= `contracts[]` union) | 74 | 78 |
-| Part A rows: covered / Unknown | 92 / 15 | 102 / 32 |
+| Part A rows: covered / Unknown | 92 / 15 | 103 / 36 |
 | Part B1 clauses (rows) | 27 (28) | 27 (28) |
 | Part B2 clauses | 223 | 219 |
 
 Four Part B2 beliefs move to Part A because a requirement now covers one of
 their consequences: RFC2-25, RFC6-1, RFC6-3 and RFC6-12. Every other signed
-row is unchanged, and every added row carries the words "Amendment row". The
-builder checks both.
+consequence or belief row is unchanged, and every added row carries the
+words "Amendment row". The builder checks both.
+
+Some other signed lines do move, because they print figures computed from
+the rows: the family-table rows for RFC2, RFC6 and Total, and the five
+computed-figure prose lines the builder lists in `COMPUTED_LINES` (the Part A
+totals, which span two lines, the Part B2 total, the denominator sum and the
+mapped-set count). The builder recomputes each replacement and checks it
+against the rows.
 
 The generated `GOVERNING-DEPENDENCIES.md` is regenerated over the proposed
 spec. It now reads 26 requirements; the contracts class goes from 74 to 78.
