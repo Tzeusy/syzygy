@@ -23,8 +23,9 @@ const POLARIS_SURFACE = /(^|[^A-Za-z0-9-])\/polaris\b|polaris\.ts\b|apps\/three-
 
 const GENERATOR_REQUIREMENT = /^REQ-polaris-generation-\d{3}$/;
 
-/** Owner decisions of the local-agent dossier mode; each must be declared by a `Decision ID:` line under decisions/. */
-const DOSSIER_DECISION = /^POLARIS-DOSSIER-LOCAL-AGENT-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{4}-\d{2}-\d{2}$/;
+/** Owner decisions of the local-agent dossier mode, and the P-107 waiting-sessions direction its v1.2 cites; each must be declared by a
+ * `Decision ID:` line under decisions/. */
+const DOSSIER_DECISION = /^POLARIS-DOSSIER-(?:LOCAL-AGENT-[A-Z0-9]+(?:-[A-Z0-9]+)*|WAITING-SESSIONS)-\d{4}-\d{2}-\d{2}$/;
 
 /** Hand-typed warrant id families (a new family must be added here). */
 const WARRANT_FAMILIES = [
@@ -128,7 +129,7 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
     const decisionsDirectory = join(REPO_ROOT, '.syzygy/governance/decisions');
     const declaredDecisions = new Set<string>();
     for (const file of walk(decisionsDirectory, isSpec)) {
-      for (const match of readFileSync(file, 'utf8').matchAll(/^Decision ID: `([A-Z0-9-]+)`$/gm)) declaredDecisions.add(match[1] as string);
+      for (const match of readFileSync(file, 'utf8').matchAll(/^Decision ID: `([A-Z0-9-]+)`(?:$| )/gm)) declaredDecisions.add(match[1] as string);
     }
     const polarisNamed = entries.filter((entry) => /polaris/i.test(entry.value));
     expect(polarisNamed.length).toBeGreaterThan(0);
@@ -147,10 +148,10 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
   });
 
   it('recognizes dossier decision identity syntax without accepting presentation references', () => {
-    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05']) {
+    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-REVIEW-1-RULINGS-2026-10-05', 'POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08']) {
       expect(DOSSIER_DECISION.test(value)).toBe(true);
     }
-    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05/polaris', 'polaris-dossier-local-agent-mode-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05 (/polaris)']) {
+    for (const value of ['POLARIS-DOSSIER-LOCAL-AGENT-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05/polaris', 'polaris-dossier-local-agent-mode-2026-10-05', 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05 (/polaris)', 'POLARIS-DOSSIER-WAITING-SESSIONS', 'POLARIS-DOSSIER-WAITING-SESSIONS-X-2026-10-08', 'POLARIS-DOSSIER-2026-10-08']) {
       expect(DOSSIER_DECISION.test(value)).toBe(false);
     }
   });
