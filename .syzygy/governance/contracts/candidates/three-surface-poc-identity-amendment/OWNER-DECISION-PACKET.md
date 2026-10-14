@@ -22,6 +22,15 @@ Under the stopping rule recorded in
 `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md` the
 package is not repaired again and comes to you with those findings open;
 `ROUND-5-DISPOSITIONS.md` beside this file classifies them.)*
+*(Marked 2026-10-14, later the same day: "not repaired again" and "with
+those findings open" are superseded. On your further direction that day,
+relayed by the lead session, one more cycle ran: **round-5 findings
+repaired once on 2026-10-14, unconfirmed pending round 6**. Every round-5
+finding, notes included, is repaired and mapped in `ROUND-5-DISPOSITIONS.md`
+§"Repairs, 2026-10-14 (cycle 2)"; round 6 is briefed in `REVIEW-BRIEF.md`
+§"Round 6" and not yet run. A notes-only round 6 clears these bytes; a
+`REVISE` comes back to you. No repair needed a choice from you, and no
+question was added.)*
 
 ## What you would be signing
 
@@ -62,7 +71,11 @@ implementation slice.
   identity, so writing that key into the signed text would put the
   specification against a contract clause. [Inferred]
 - **The consequence if you sign.** Slice 6b picks the form under POC-REQ-054
-  with no further act from you.
+  with no further act from you. It also declares, per source, which field
+  of that source's records is the identity the source owns. Until it does,
+  that source's subjects are of Unknown ownership: the check reports their
+  identity equality as Unknown, never as passing. *(Added 2026-10-14,
+  cycle 2.)*
 - **If you would rather settle the form in the specification,** answer
   "Revise" below and name it.
 
@@ -95,12 +108,24 @@ joins the kinds of thing the table allows for that name.
 | Decline | The specification stays at 24 requirements, and M9 slices 4–8 stay blocked. |
 | Revise | Name what to change; a new version gets a new review round. |
 
-## Question 2 — by which route?
+## Question 2 — by which route? (answered 2026-10-14)
+
+**Answered by your direction of 2026-10-14.** In answering P-97's own
+Question 2 you selected "Extend Scope A to POC", recorded in
+`../../../decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md`.
+That direction extends the Scope A version-tag route to Three-Surface POC
+specification amendments generally and names this package as following it
+when it clears. So this package is signed, if you sign it, by selecting a
+version under Question 1; no phrase or digest is needed, and the signing
+change registers it with `scripts/record_versioned_signoff.py`, naming that
+direction as its Scope A extension. Only Question 1 is still open. The text
+and table below are kept as drafted.
 
 The 2026-10-02 versioned sign-off direction (Scope A) covers "the PWB
 specification deltas, the observer registry entry and the contract
 successors queued behind them". A Three-Surface POC specification amendment
-is not in that list.
+is not in that list. *(Marked 2026-10-14: true of the 2026-10-02 direction
+alone; the 2026-10-14 extension above adds POC specification amendments.)*
 
 | Option | Meaning |
 |---|---|
@@ -108,3 +133,5 @@ is not in that list.
 | Phrase and digest | A dedicated recorder is written, and you type a phrase naming the manifest digest, as for the 2026-09-29 readability successor act. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.
+*(Marked 2026-10-14: Question 2 is answered, above; the sentence still
+holds for Question 1.)*

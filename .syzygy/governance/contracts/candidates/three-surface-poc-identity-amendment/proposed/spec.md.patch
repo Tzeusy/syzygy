@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-index 092711e..7e949ea 100644
+index b5d17d5..3dad98f 100644
 --- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 +++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-@@ -29,16 +29,20 @@
+@@ -29,16 +29,20 @@ Reader notes, binding on how this file is read:
    named in each requirement's `Group` line: *Code-structure
    observation* (001–004), *Work-item observation* (010–013), *Client
    rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
@@ -29,7 +29,7 @@ index 092711e..7e949ea 100644
    from the CC-SPEC-8 sweep recorded in this change's
    `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
    found the requirement's oracle observes one of that clause's
-@@ -937,27 +941,234 @@
+@@ -991,27 +995,247 @@ warrants:
    parent_requirements: []
  ```
  
@@ -70,24 +70,27 @@ index 092711e..7e949ea 100644
 +  that appear in more than one of the surfaces and the machine answer —
 +  follows every link between surfaces, and enumerates every three-state
 +  slot on the surfaces and in the machine answer.
-+- **Observable**: every element and record attributed to one subject
-+  carries one identity value, and no identity value is carried by elements
-+  or records attributed to two subjects; each owned subject's identity
-+  equals its expected identity; each link between surfaces resolves to
-+  exactly one target
++- **Observable**: every element and record carrying a subject identity
++  is attributed to one subject; every element and record attributed to
++  one subject carries one identity value, and no identity value is
++  carried by elements or records attributed to two subjects; each owned
++  subject's identity equals its expected identity, and each subject of
++  Unknown ownership is reported Unknown for that comparison; each link between
++  surfaces resolves to exactly one target
 +  carrying the same identity; each slot is a joined subject, or an
 +  Unknown carrying a reason, a route and the declared Unknown encoding,
 +  identically on the surface and in the machine answer.
 +- **Oracle**: per-subject identity consistency over every element and
-+  record attributed to it, per-element identity equality with an
-+  independently derived expected identity for each owned subject,
-+  HTTP/anchor resolution per link with a count of link targets defined
-+  more than once, and per-slot comparison with independently derived
-+  joins, over the exhausted populations. Zero subjects whose elements or
-+  records carry more than one identity value, zero identity values
-+  carried by elements or records of more than one subject, zero
-+  mismatched identities of owned subjects, zero dangling, mis-resolving
-+  or duplicated link
++  record attributed to it, per-element and per-record identity equality
++  with an independently derived expected identity for each owned
++  subject, HTTP/anchor resolution per link with a count of link targets
++  defined more than once, and per-slot comparison with independently
++  derived joins, over the exhausted populations. Zero elements or
++  records carrying a subject identity that are attributed to no subject,
++  zero subjects whose elements or records carry more than one identity
++  value, zero identity values carried by elements or records of more
++  than one subject, zero mismatched identities of owned subjects, zero
++  dangling, mis-resolving or duplicated link
 +  targets, zero absent or unjoined slots, zero unfilled slots lacking the
 +  Unknown label, a reason, a route or the declared Unknown encoding, zero
 +  unfilled slots carrying a score or a verdict, and zero slot differences
@@ -97,14 +100,24 @@ index 092711e..7e949ea 100644
 +  shared model reads — each subject's owning source record, and a work
 +  item's or code region's own reference to the claim it names — never
 +  from the machine answer or a surface's renderer. It attributes each
-+  element to its subject by the source record the element renders, never
-+  by the identity the element carries. Whether a subject is owned is decided
-+  by the procedure the required behavior states: the source record the
-+  element renders carries a non-empty identifier of its source's own
-+  record format. A subject no source authority owns has no independently
-+  derived identity; the identity-equality limb makes no claim for it, and
-+  the consistency limb, its link targets and its slots are still checked.
-+- **Falsifier**: one subject named by two identity values across the
++  element and record to its subject by the source record it renders or
++  answers for, never by the identity it carries; an element or record
++  that renders or answers for no source record the shared model reads is
++  attributed to no subject. Whether a subject is owned is decided by the
++  procedure the required behavior states: the source record that an
++  element renders or a record answers for carries a non-empty identifier
++  of its source's own record format. Which field of a source's record
++  format is that identifier is declared, per source, by the
++  implementation slice that lands the identity's form; until it is
++  declared for a source, that source's subjects are of Unknown ownership
++  and are reported Unknown for the identity-equality limb, never as
++  owned, unowned or passing. A subject no source authority owns, or of
++  Unknown ownership, has no independently derived identity; the
++  identity-equality limb makes no claim for it, and the consistency
++  limb, its link targets and its slots are still checked.
++- **Falsifier**: an element or record carrying a subject identity that
++  renders or answers for no source record the shared model reads; one
++  subject named by two identity values across the
 +  surfaces and the machine answer, one identity value naming two subjects,
 +  one element or record whose identity differs from its owned subject's
 +  expected identity, a link between surfaces resolving to no target, to a
@@ -121,8 +134,8 @@ index 092711e..7e949ea 100644
 +  the other
 +- **THEN** all three name it by the same identity value, the link
 +  resolves to exactly one target carrying that identity, and the check
-+  reports the number of identities rendered on more than one surface as
-+  its denominator
++  reports the number of identities that appear in more than one of the
++  surfaces and the machine answer as its denominator
 +
 +#### Scenario: A three-state view with nothing joined
 +
@@ -147,7 +160,8 @@ index 092711e..7e949ea 100644
 +### Requirement: POC-REQ-055 — Every relationship is named in or flagged outside the closed vocabulary
 +
 +Group: Cross-cutting experience. Form: **invariant**.
-+
+ 
+-- **Scope.** every epistemic encoding across the three surfaces.
 +**Required behavior.** Every relationship the shared model emits SHALL either
 +carry a relation name from RFC1-25's closed table, emitted with its source and
 +target in the roles that table assigns the relation — read through a
@@ -195,8 +209,7 @@ index 092711e..7e949ea 100644
 +  relationship's outside-closed-vocabulary flag and reason, and the check
 +  reports the number of relationships and of distinct kinds as its
 +  denominators
- 
--- **Scope.** every epistemic encoding across the three surfaces.
++
 +```yaml
 +warrants:
 +  primary: VIS-1
@@ -277,7 +290,7 @@ index 092711e..7e949ea 100644
  
  #### Scenario: Unknown looks the same everywhere
  
-@@ -966,13 +1177,23 @@
+@@ -1020,13 +1244,23 @@ reasons) identically wherever they appear.
  - **THEN** all three render it with the declared Unknown encoding from
    the shared token set
  

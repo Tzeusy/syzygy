@@ -31,7 +31,9 @@ figures COMPUTED_LINES names, the family table that totals_findings checks and
 the clause rows that coverage_findings checks. Every signed line of the
 specification's reader notes must survive too, except the six lines
 READER_NOTE_EDITS names, which the amendment rewraps; their replacements are
-checked by READER_NOTE_PHRASES. The proposal's new section must carry the
+checked by READER_NOTE_PHRASES. The RFC6-1, RFC6-3 and RFC2-25 amendment rows
+must carry the justification phrases COVERAGE_ROW_PHRASES names. The
+proposal's new section must carry the
 P-75 Q4 sentence PROPOSAL_Q4 names. The --check success line prints the
 requirement count computed over the proposed spec.
 """
@@ -106,10 +108,19 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("held, never minted", "the shared model holds that identity and mints none of its own"),
         ("owned decided by a stated procedure", "carries a non-empty identifier of that source's own record format"),
         ("machine answer in the identity population", "over the union of the served surfaces and the machine answer, every element and every record carrying a subject identity"),
-        ("one identity value per subject decides", "Zero subjects whose elements or records carry more than one identity value"),
+        ("one identity value per subject decides", "zero subjects whose elements or records carry more than one identity value"),
         ("one subject per identity value decides", "zero identity values carried by elements or records of more than one subject"),
         ("expected identity independent of the renderer", "never from the machine answer or a surface's renderer"),
-        ("attribution independent of the identity", "never by the identity the element carries"),
+        ("records attributed like elements", "It attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries"),
+        ("unattributed carrier observed", "every element and record carrying a subject identity is attributed to one subject"),
+        ("unattributed carrier decides", "Zero elements or records carrying a subject identity that are attributed to no subject"),
+        ("unattributed carrier falsifies", "an element or record carrying a subject identity that renders or answers for no source record the shared model reads"),
+        ("per-record identity equality", "per-element and per-record identity equality"),
+        ("ownership procedure in the oracle", "the source record that an element renders or a record answers for carries a non-empty identifier of its source's own record format"),
+        ("identifier field declared per source", "Which field of a source's record format is that identifier is declared, per source, by the implementation slice that lands the identity's form"),
+        ("Unknown ownership never passes", "are reported Unknown for the identity-equality limb, never as owned, unowned or passing"),
+        ("unowned subjects still checked", "the consistency limb, its link targets and its slots are still checked"),
+        ("scenario denominator equals the sweep's", "reports the number of identities that appear in more than one of the surfaces and the machine answer as its denominator"),
         ("exactly one link target per link", "to exactly one link target on that surface, and that target SHALL carry the same identity"),
         ("reasoned-Unknown slot decides", "zero unfilled slots lacking the Unknown label, a reason, a route or the declared Unknown encoding"),
         ("slot filled only by a joined subject", "filled only from a subject joined to that claim by its identity"),
@@ -143,10 +154,23 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("objects are the record denominator", "enumerates every entity, relationship and claim in the machine answer — the denominator is that population — checks that each carries exactly one epistemic record"),
         ("a missing record falsifies", "an entity, relationship or claim with no epistemic record or with more than one"),
         ("every Unknown recounted", "a recount of every Unknown in the machine answer with and without it"),
+        ("Unknown sets compared by identity", "whose two sets of Unknown records by identity must be equal"),
+        ("objects in the Scope", "every entity, relationship and claim in the shared model and the machine answer, with its epistemic record"),
+        ("Inferred scenario leaves every Unknown", "appears in no Observed count, leaves every Unknown in the machine answer Unknown, and renders with the declared Inferred encoding"),
         ("signed scenario kept", "#### Scenario: Unknown looks the same everywhere"),
         ("Inferred scenario", "#### Scenario: An agent assertion stays Inferred"),
     ),
 }
+
+
+#: Whitespace-normalized phrases an amendment row of the named clause must
+#: carry in Part A: the attribution the RFC6-1 and RFC6-3 covered rows rest
+#: on, and the reading the RFC2-25 "never green" row rests on.
+COVERAGE_ROW_PHRASES = (
+    ("RFC6-1", "the machine-answer attribution", "its oracle attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries"),
+    ("RFC6-3", "the machine-answer attribution", "POC-REQ-054's oracle attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries"),
+    ("RFC2-25", "the Inferred reading of never green", "`[Inferred]` the covered reading of \"never green\" is \"rendered unlike Observed\""),
+)
 
 
 #: The six signed reader-notes lines the amendment rewraps (the group list and
@@ -422,6 +446,10 @@ def coverage_findings(
     for clause in MOVED_FROM_B2:
         if clause not in clauses["A"]:
             findings.append(f"{clause} left Part B2 but is not in Part A")
+    for clause, label, phrase in COVERAGE_ROW_PHRASES:
+        rows = [normalized(r) for r in new_parts["A"] if _clause(r) == clause and AMENDMENT_MARK in r]
+        if not any(normalized(phrase) in row for row in rows):
+            findings.append(f"{clause} amendment rows lack {label}")
 
     sys.path.insert(0, str(ROOT / "scripts"))
     import build_three_surface_poc_spec_dependencies as generator
@@ -726,8 +754,88 @@ def selftest() -> int:
         ),
         "054 unowned subjects unchecked": (
             SPEC,
-            _replace(proposed[SPEC], "Zero subjects whose elements or\n  records carry more than one identity value, ", ""),
+            _replace(proposed[SPEC], "zero subjects whose elements or records carry more than one identity\n  value, ", ""),
             "POC-REQ-054 lacks one identity value per subject decides",
+        ),
+        "054 records attributed by their identity": (
+            SPEC,
+            _replace(proposed[SPEC], "element and record to its subject by the source record it renders or\n  answers for, never by the identity it carries;", "element to its subject by the source record it renders, and each\n  record by the identity it carries;"),
+            "POC-REQ-054 lacks records attributed like elements",
+        ),
+        "054 unattributed carrier not observed": (
+            SPEC,
+            _replace(proposed[SPEC], "every element and record carrying a subject identity\n  is attributed to one subject; every", "every"),
+            "POC-REQ-054 lacks unattributed carrier observed",
+        ),
+        "054 unattributed carrier passes": (
+            SPEC,
+            _replace(proposed[SPEC], "Zero elements or\n  records carrying a subject identity that are attributed to no subject,\n  zero subjects", "Zero subjects"),
+            "POC-REQ-054 lacks unattributed carrier decides",
+        ),
+        "054 unattributed carrier not a falsifier": (
+            SPEC,
+            _replace(proposed[SPEC], "- **Falsifier**: an element or record carrying a subject identity that\n  renders or answers for no source record the shared model reads; one", "- **Falsifier**: one"),
+            "POC-REQ-054 lacks unattributed carrier falsifies",
+        ),
+        "054 records outside the equality limb": (
+            SPEC,
+            _replace(proposed[SPEC], "per-element and per-record identity equality", "per-element identity equality"),
+            "POC-REQ-054 lacks per-record identity equality",
+        ),
+        "054 ownership sentence deleted": (
+            SPEC,
+            _replace(proposed[SPEC], " Whether a subject is owned is decided by the\n  procedure the required behavior states: the source record that an\n  element renders or a record answers for carries a non-empty identifier\n  of its source's own record format.", ""),
+            "POC-REQ-054 lacks ownership procedure in the oracle",
+        ),
+        "054 identifier field left undeclared": (
+            SPEC,
+            _replace(proposed[SPEC], "is declared, per source, by the\n  implementation slice that lands the identity's form;", "is a matter of judgment;"),
+            "POC-REQ-054 lacks identifier field declared per source",
+        ),
+        "054 Unknown ownership passes": (
+            SPEC,
+            _replace(proposed[SPEC], "are reported Unknown for the identity-equality limb, never as\n  owned, unowned or passing.", "pass the identity-equality limb."),
+            "POC-REQ-054 lacks Unknown ownership never passes",
+        ),
+        "054 consistency limb dropped for unowned subjects": (
+            SPEC,
+            _replace(proposed[SPEC], ", and the consistency\n  limb, its link targets and its slots are still checked.", "."),
+            "POC-REQ-054 lacks unowned subjects still checked",
+        ),
+        "054 scenario denominator narrowed": (
+            SPEC,
+            _replace(proposed[SPEC], "reports the number of identities that appear in more than one of the\n  surfaces and the machine answer as its denominator", "reports the number of identities rendered on more than one surface as\n  its denominator"),
+            "POC-REQ-054 lacks scenario denominator equals the sweep's",
+        ),
+        "060 Unknown sets not compared": (
+            SPEC,
+            _replace(proposed[SPEC], "it, whose two sets of Unknown records by identity must be equal, and an", "it, and an"),
+            "POC-REQ-060 lacks Unknown sets compared by identity",
+        ),
+        "060 Scope reverted to records": (
+            SPEC,
+            _replace(proposed[SPEC], "and every\n  entity, relationship and claim in the shared model and the machine\n  answer, with its epistemic record.", "and every\n  epistemic record in the shared model and the machine answer."),
+            "POC-REQ-060 lacks objects in the Scope",
+        ),
+        "060 Inferred scenario keeps no Unknown": (
+            SPEC,
+            _replace(proposed[SPEC], "appears in no Observed count, leaves every Unknown in\n  the machine answer Unknown, and renders", "appears in no Observed count, and renders"),
+            "POC-REQ-060 lacks Inferred scenario leaves every Unknown",
+        ),
+        "RFC6-1 row attribution dropped": (
+            COVERAGE,
+            _replace(proposed[COVERAGE], ", its oracle attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries, and which", ", and which"),
+            "RFC6-1 amendment rows lack the machine-answer attribution",
+        ),
+        "RFC6-3 row narrowed to elements": (
+            COVERAGE,
+            _replace(proposed[COVERAGE], "POC-REQ-054's oracle attributes each element and record to its subject by the source record it renders or answers for", "POC-REQ-054's oracle attributes each element to its subject by the source record it renders"),
+            "RFC6-3 amendment rows lack the machine-answer attribution",
+        ),
+        "RFC2-25 never-green reading untagged": (
+            COVERAGE,
+            _replace(proposed[COVERAGE], "; `[Inferred]` the covered reading of", "; the covered reading of"),
+            "RFC2-25 amendment rows lack the Inferred reading of never green",
         ),
         "055 literals imported": (
             SPEC,
