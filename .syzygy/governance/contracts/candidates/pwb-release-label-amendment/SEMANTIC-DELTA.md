@@ -21,6 +21,17 @@ round 3 read these bytes and returned `REVISE`
 (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` line 4). The bytes
 stay unconfirmed; see `ROUND-3-DISPOSITIONS.md`.)*
 
+**Repaired again:** 2026-10-14 (cycle 2), over `main` at `814fbcc1`, under
+the owner's direction of that day to run one more cycle (relayed by the lead
+session): every round-3 finding, notes included, repaired once, then one
+fresh review under the same stopping rule. The repairs are mapped in
+`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)". **Round-3
+findings repaired once on 2026-10-14, unconfirmed pending round 4.** The
+account below describes this version. The base moved because the
+anchor-resolution amendment (P-96) was signed v1.0 at `7f43802f`, which
+changed the signed PWB `spec.md`; the derived patches and the manifest were
+regenerated over it with the builder's `--write`.
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
@@ -78,13 +89,25 @@ both. Added:
   same surface. Every claim, evaluation identity, link and comparison binds to
   the object id, never to a tag name. The label is a presentation of the
   revision identity, not a project-shape claim.
-  - Polaris *names* the revision wherever its owner-visible text shows the
-    full object id, its first twelve hexadecimal digits, or the project's
-    name followed by a captured tag's name. Attribute values, link targets
-    and identities are not owner-visible text.
-  - Each such place shows one *label unit*: the label, its statement, the
-    full object id beneath and any moved-tag disclosure, exposed as one
-    element of the page so that a checker finds it without judgment.
+  - Polaris *names* the revision only in a *label unit*: one marked element
+    of the page holding the label, its statement, the full object id
+    beneath, the expansion of any tied names and any moved-tag disclosure.
+    A checker finds each unit by its mark, without judgment. Every Polaris
+    page presents at least one.
+  - Outside a label unit, visible text may not show the revision's full or
+    twelve-digit id, or the project's name followed by a captured tag name.
+    Three marked kinds of element are excepted:
+    - *provenance stamps*, whose whole text is a revision id giving where a
+      claim, source, leaf or refusal was read or is bound. They are the
+      identity a claim binds to, not a naming, and carry no label;
+    - Butlers-declared text that PWB-REQ-014 keeps verbatim, or that the
+      exact-source route serves under PWB-REQ-011. It stays byte-identical,
+      so PWB-REQ-014's verbatim rule is never in conflict with this one;
+    - the shared operability status line, which the POC specification
+      governs (§"Scope: Polaris only"; Question 5).
+
+    Attribute values and link targets are not visible text; the tag-name
+    sweep covers them.
 - **Two captured inputs.** Each is a deterministic evaluation input with its
   own identity:
   - the captured tag set: every ref under `refs/tags/`, each paired with the
@@ -117,12 +140,14 @@ both. Added:
   Test 3 is reached only after the tag set was read, so it does not say the
   tags were not read. Neither form ever says "untagged". Ties are broken by
   codepoint order of tag name, and every tied name is carried in the machine
-  answer.
+  answer and in the label unit's expansion.
 - **Moved tags.** An evaluation names, as inputs, the earlier evaluations it
   is compared with. A tag one of them bound to a different commit is
   disclosed as moved, naming both commits, wherever its name is carried: in
   a label, among the tied names in the machine answer, and in the surface's
-  expansion of them. Nothing presents a tag as unmoved.
+  expansion of them. Nothing presents a tag as unmoved: no label unit, label
+  record or other visible text holding a tag name says it is unmoved,
+  unchanged or stable, and a fifth sweep checks this.
 - **Machine answer.** Its label record carries the form, the test that
   applied, the statement, tag name, distance, tied names, moved-tag
   disclosures, the identities of the three inputs and the full object id.
@@ -132,17 +157,27 @@ both. Added:
   shallow clones (one hiding the only reaching tag, one whose captured part
   holds a reaching tag), one revision under two tag sets, a moved tag, and a
   moved tag that is tied at the revision but not shown first.
-  - The denominator is the naming sites: every occurrence, in owner-visible
-    text, of the short or full id or of the project name followed by a
-    captured tag name, plus the machine answer's label record. Each must
-    lie in a label unit. Link targets and identities are not sites; the
-    tag-name sweep covers them.
-  - It computes each expected form, statement and value from its own
-    recorded Git listing, never from the observer's inputs, and decides on
-    exact equality, the statement included.
-  - Its sweeps cover four things: tag names in identities and links, the tag
-    message in served bytes, distinct identities for differing tag sets, and
-    every moved-tag disclosure, tied names included.
+  - The denominator is the naming sites: every marked label unit on every
+    Polaris page, plus the machine answer's label record. The label-unit
+    predicates apply to page sites only; the record is decided by equality
+    alone.
+  - A separate text sweep counts every visible short or full id of the
+    revision, and every project name followed by a captured tag name, and
+    decides that none lies outside a label unit and the three excepted
+    elements. Each stamp must hold only an id, and each excepted Butlers
+    text must equal its source.
+  - As it builds each fixture the checker records the conditions it imposes:
+    whether the tag-set and ancestry reads are admitted, which ref fails to
+    read or peel, which commit is unreadable, and any shallow or graft
+    boundary. Tests 1 and 3 are decided from those construction records,
+    and tests 2, 4 and 5 from its own Git listing and commit count. Neither
+    is taken from the observer's inputs, and it decides on exact equality,
+    the statement included.
+  - Its sweeps cover five things: tag names in identities and links, the tag
+    message in served bytes, distinct identities for differing tag sets,
+    every moved-tag disclosure, tied names included, and the terms
+    `unmoved`, `not moved`, `unchanged`, `stable` and `still points` beside a
+    tag name.
 - **Four new scenarios.** A tagged revision; a revision no tag reaches; unread
   tags never shown as untagged; a moved tag disclosed.
 - **Warrants.** VIS-2 joins the doctrine list, and RFC2-2 and RFC2-24 join the
@@ -211,7 +246,9 @@ therefore cited as an analogy only and is not a warrant (rule 5).
     only reaching tag (no untagged statement), and the shallow clone whose
     captured history holds a reaching tag, where a count over the partial
     history would give a described label and the expected form is not read.
-    The falsifier names "a count of later commits computed from incomplete
+    In both, the checker takes the not-read expectation from its own record
+    of the shallow boundary it imposed, so the oracle can compute it. The
+    falsifier names "a count of later commits computed from incomplete
     ancestry".
   - `RFC4-11.r2`, the PR-fact consequence, still believed not applicable.
     No PR fact is rendered.
@@ -245,7 +282,8 @@ egress change. There is a read change.
   `resource-limits`. None of them is a tag ref or commit ancestry.
 - [Observed] Today's implementation resolves only `rev-parse HEAD` in the
   observed repository (`apps/three-surface-poc/src/git-observation.ts` lines
-  62 and 106).
+  62 and 106 at `0a10977b`; re-measured 2026-10-14 at `814fbcc1`: lines 62,
+  106 and 161, all `rev-parse HEAD`, and no `refs/tags` read).
 
 Every form but not-read needs the tag set. The described and untagged forms
 also need complete commit ancestry: the first to count commits back to a tag,
@@ -271,6 +309,24 @@ specification. Their revision display is POC-REQ-001's. Today's renderers show
 the first twelve hexadecimal digits in the shared page footer
 (`apps/three-surface-poc/src/page-shell.ts` line 41) and in Orrery's eyebrow
 (`apps/three-surface-poc/src/orrery.ts` line 187).
+*(Marked 2026-10-14: those line numbers were measured at `0a10977b`, and
+"footer" was wrong. Re-measured at `814fbcc1`: the prefix is in the shared
+operability status line, `humanStatusLine` at `page-shell.ts` line 47,
+rendered between the page header and the main content (line 127), and in
+Orrery at `orrery.ts` lines 197 and 212. Trajectory's eyebrow carries it
+too, at `trajectory.ts` line 236.)*
+
+**One shared component reaches Polaris.** [Observed at `814fbcc1`] Polaris
+renders the same status line through `pageShell({ …, status })`
+(`apps/three-surface-poc/src/polaris.ts` lines 1870–1882), so on Polaris it
+shows the observed revision's twelve-digit prefix. A single shared component
+cannot owe a label unit on Polaris and a short id on Trajectory and Orrery
+without a surface switch inside a POC-governed file. This version therefore
+excepts the status line by name from PWB-REQ-001's visible-id prohibition,
+leaves it to the POC specification, and changes nothing in `page-shell.ts`.
+Question 5 asks the owner whether the Polaris status line should carry the
+label unit instead, which would touch that POC-governed component and so
+interacts with Question 3.
 
 The POC specification already has one open amendment package, the identity
 amendment in register row P-84, and the owner was advised to answer it with
@@ -292,6 +348,17 @@ successor after P-84 is disposed of.
    still holds is that nothing binds to a tag and the full object id is
    always shown, so a reader can compare ids. The specification forbids
    stating that a tag is unmoved.
+   *(Marked 2026-10-14: the reason above is stale. Re-measured at
+   `814fbcc1`: the same grep still returns nothing, but
+   `packages/three-surface-poc-core/src/reevaluation.ts` (last changed
+   `c069f5f5`, 2026-10-03) records "the identity it supersedes" (line 5)
+   and says "the prior one stays nameable beside it" (line 23), so an
+   evaluation can already name an earlier one, the natural carrier for a
+   compared evaluation. The conclusion stands for another reason: no
+   evaluation captures a tag set — `git-observation.ts` reads no
+   `refs/tags` at that commit — so a compared evaluation holds no tag
+   binding to compare, and the moved-tag limb cannot fire until the read
+   in Question 2 is admitted and implemented.)*
 4. **Which tags count.** The package counts every ref under `refs/tags/`. A
    project whose non-release tags sit there would see them as labels.
    [Unknown] Butlers' tag population was not read, since reading it is the
@@ -323,7 +390,18 @@ also patch the PWB spec: the accessible-name (P-99), anchor-resolution
 (P-96), class-granular extraction (P-86) and opening-index (P-98)
 amendments. This builder's `--check` applies all five spec patches in every
 order and requires one result, and each sibling builder's `--check` passes
-over this repaired patch. Class-granular also adds design decision 12 and
+over this repaired patch.
+*(Marked 2026-10-14: no longer the population. P-96 was signed v1.0 at
+`7f43802f` and is now a performed sibling. [Observed at `814fbcc1` plus the
+cycle-2 repair] Three unsigned packages remain: accessible-name,
+class-granular extraction and opening-index. This builder's `--check`
+applies all four spec patches in every order and requires one result, and
+passes. Each of the three sibling builders' `--check` fails at `814fbcc1`
+before reaching the order check, on its own derived
+`GOVERNING-DEPENDENCIES.md.patch`, which P-96's sign-off made stale; they
+are being regenerated on their own branches.)*
+
+Class-granular also adds design decision 12 and
 capability row 34, so whichever of it and this package is signed second is
 regenerated over the first's applied bytes and reviewed again (P-86's
 Question 5).
@@ -345,6 +423,32 @@ before round 3, and each can be changed by answering Question 1 *Revise*.
    obligation on the implementation. It is what lets the naming-site sweep
    decide "inside a label unit" without judgment.
 
+## Choices the cycle-2 repair made
+
+The drafter made four more choices while repairing round 3. Each can be
+changed by answering Question 1 *Revise*; the one that needs an owner
+content choice is put as Question 5 instead.
+
+1. **A naming site is a marked label unit, and every Polaris page has at
+   least one.** The visible-id rule is then a separate prohibition with
+   three marked exceptions, so the checker never judges which visible id
+   "names" the revision. The floor of one unit per page is the drafter's
+   reading of "the human surface leads with the release label".
+2. **Provenance stamps carry no label.** A per-claim stamp is the identity
+   that claim binds to, which the direction keeps "beneath" the label. A
+   label unit per anchored claim would repeat the label once per claim and
+   [Inferred] press on the `/polaris` response ceiling. Each stamp's whole
+   text must be a revision id, so a stamp cannot hide a naming.
+3. **Butlers-declared verbatim text is excepted, and PWB-REQ-014 wins.**
+   Butlers text that holds "Butlers" followed by a tag name stays verbatim
+   and byte-identical; it is never a naming site. [Unknown] Whether any
+   Butlers source holds such text was not read.
+4. **Stability is swept by a closed term list** (`unmoved`, `not moved`,
+   `unchanged`, `stable`, `still points`) over each label unit, the label
+   record and every other visible text node holding a captured tag name.
+   As with PWB-REQ-012's prohibited terms, the list is closed, so a
+   paraphrase outside it is not caught.
+
 ## Residuals the sign-off change must carry
 
 Each is [Observed] at `0a10977b` unless it names another commit.
@@ -362,13 +466,22 @@ Each is [Observed] at `0a10977b` unless it names another commit.
      broken chain and stale digests until the signing change appends this
      package's sign-off to that tuple. `record_versioned_signoff.py` does
      not make this edit.
+   - *(Marked 2026-10-14: the census, chain and line figures above are
+     stale. Re-measured at `814fbcc1`, after the anchor-resolution
+     sign-off: the literal census `EXPECTED_TOTALS` reads 17 requirements
+     and 52 scenarios, with PWB-REQ-001 at 1; after `--apply` they read
+     17, 56 and 5 (the builder's `--check` prints 56). The PWB child's
+     `successors` tuple (lines 244–257) holds the tree-framing and
+     anchor-resolution sign-offs, and this package's sign-off is appended
+     after them. The docstring paragraph recording earlier re-derivations
+     is at lines 141–146.)*
 3. **The battery.** Add the builder's `--check` line to `PROJECT-STATUS.md`
    at sign-off, under the CG-26 coupled-triple rule. A draft leaves the
    battery alone.
 4. **Implementation consumers.** Eight implementation files cite
    PWB-REQ-001 at `8f1fbec7` (`IMPACT-LEDGER.md`, re-measured 2026-10-14;
-   seven at `0a10977b`). Sign-off authorizes none of their
-   changes; a separate implementation authorization does.
+   seven at `0a10977b`; still eight at `814fbcc1`). Sign-off authorizes
+   none of their changes; a separate implementation authorization does.
 
 ## What this does not do
 
@@ -376,4 +489,5 @@ Each is [Observed] at `0a10977b` unless it names another commit.
   admit tag refs or commit ancestry to the observer.
 - It changes no requirement but PWB-REQ-001, no contract-coverage row, no
   doctrine, contract, policy, registry entry or performed act.
-- It changes nothing on Trajectory or Orrery.
+- It changes nothing on Trajectory or Orrery, and nothing in the shared
+  operability status line.

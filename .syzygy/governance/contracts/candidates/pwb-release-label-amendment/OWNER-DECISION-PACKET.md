@@ -1,8 +1,8 @@
 # Owner decision packet — PWB release-label amendment
 
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
-> accepted. This packet puts four questions to the owner, and only the owner's
-> answer binds anything (VIS-4).
+> accepted. This packet puts five questions to the owner (the fifth added
+> 2026-10-14), and only the owner's answer binds anything (VIS-4).
 
 **Status:** drafted 2026-10-03 under your direction of 2026-10-02 on bead
 `syzygy-l362`. Rounds 1 and 2 both returned `REVISE`; their dispositions are
@@ -25,6 +25,16 @@ did not clear this version. Under the stopping rule recorded in
 not repaired again and comes to you with those findings open;
 `ROUND-3-DISPOSITIONS.md` beside this file classifies them.)*
 
+**Round-3 findings repaired once on 2026-10-14, unconfirmed pending round
+4.** Later on 2026-10-14 you directed one more cycle: repair every round-3
+finding, notes included, then one fresh review under the same stopping
+rule. This is that version; the repairs are mapped in
+`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)". No round has
+read these bytes, so it is **not offered for sign-off** until round 4
+returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. Questions
+1–4 are unchanged, and one repair needed a content choice that is yours,
+so it is added as Question 5.
+
 ## What you would be signing
 
 One amendment to PWB-REQ-001 in the signed PWB specification. Read
@@ -45,12 +55,19 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
 
   A tag set nobody read is never shown as "untagged". "Release tags" means
   the tags the label counts, which is whatever Question 4 decides.
-- **Every place that shows the revision shows the label.** Wherever a page's
-  visible text shows the short or full id, it sits in one label unit with
-  the label and the full id beneath it.
+- **Polaris names the revision only in a label unit.** Each unit is one
+  marked element holding the label, its statement, the full id beneath, the
+  tied names and any moved-tag disclosure, and every Polaris page has at
+  least one. Elsewhere the visible text may not show the revision's id or
+  "Butlers" followed by a tag name, with three exceptions:
+  - the short id stamped beside each claim's source, which is the identity
+    the claim binds to and carries no label;
+  - Butlers' own text shown verbatim, which stays byte-identical;
+  - the shared status line above every surface's content (Question 5).
 - **Moved tags** are disclosed when an earlier evaluation, named as compared,
   saw the tag on another commit, wherever the tag's name appears, tied names
-  included. Nothing ever says a tag is unmoved.
+  included. Nothing ever says a tag is unmoved, unchanged or stable, and the
+  checker searches for those words.
 - **Determinism is kept.** The tags are an input of the evaluation. Your
   "some cost in determinism" is paid only here: the same commit can show a
   different label once its tags change.
@@ -70,6 +87,13 @@ the round-2 repair made"): one tag that cannot be peeled makes the whole tag
 set read as failed; the three statements are fixed wording; and each label
 unit is one element of the page, so a checker can count them. Answer
 *Revise* if you want any of them otherwise.
+
+**Four more choices the cycle-2 repair made** (`SEMANTIC-DELTA.md`
+§"Choices the cycle-2 repair made"): every Polaris page shows at least one
+label unit; per-claim source stamps keep a bare short id with no label;
+Butlers' verbatim text is never rewritten to carry a label; and "unmoved"
+is caught by a closed list of five terms. Answer *Revise* if you want any
+of them otherwise.
 
 **What signing does not do.**
 
@@ -120,5 +144,19 @@ one with Revise.
 |---|---|
 | **Every tag under `refs/tags/`** (recommended; this version) | There is no new declaration. A project's non-release tags would show as labels if they sit nearest the revision. |
 | A declared release-tag pattern | A project's profile names a pattern (for example `v*`). That is a new profile field and a new version of this package. |
+
+## Question 5 — the shared status line on Polaris (added 2026-10-14, cycle 2)
+
+Every surface, Polaris included, shows one shared status line above its
+content, and it shows the revision's short id ("project" followed by twelve
+hexadecimal digits).
+That line is built by one component that the Three-Surface POC
+specification governs, not the PWB one. This version leaves it alone and
+excepts it from the label rule, so on Polaris the short id there stays.
+
+| Option | Meaning |
+|---|---|
+| **Leave it to the POC specification** (this version) | The status line keeps its short id on every surface. If you want the label there too, it travels with Trajectory and Orrery under Question 3. |
+| Label it on Polaris now | The status line on Polaris carries a label unit. The shared component then behaves differently on Polaris, which changes a POC-governed file, so this needs a POC amendment beside this one (Question 3) and a new version of this package. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

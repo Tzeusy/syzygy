@@ -25,6 +25,9 @@ a scratch copy. Never apply them in the tree.
 - **The signed subject.** The eleven artifacts the manifest names. Their
   current bytes are those signed at
   `.syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md`.
+  *(Marked 2026-10-14: since the anchor-resolution sign-off at `7f43802f`,
+  the current bytes are those signed at
+  `.syzygy/governance/decisions/PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md`.)*
 - **The sign-off scope.**
   `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`.
 - **The specification bar.** CC-SPEC-1…11 in
@@ -159,3 +162,59 @@ manifest, and never the proposed spec's digest.
 read; its notes are dispositioned beside the package, never by editing
 those bytes. Any other verdict sends the package to the owner with its
 findings open. No round 4 is dispatched without a new owner instruction.
+
+*(Marked 2026-10-14: "not yet dispatched" in the heading above is no longer
+true. Round 3 ran under this section and returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` line 4). The new
+owner instruction this sentence anticipates was given the same day; see
+Round 4 below.)*
+
+## Round 4 (added 2026-10-14, cycle 2; not yet dispatched)
+
+Round 3 returned `REVISE`: two revise findings and five notes. On
+2026-10-14 the owner directed one more cycle: repair every round-3 finding,
+notes included, then one fresh review under the same stopping rule. The
+repair was made over `main` at `814fbcc1`, after the anchor-resolution
+sign-off moved the signed `spec.md`, so the derived patches and the
+manifest were regenerated. It also adds Question 5 to the packet. Round 4
+reviews these bytes against the same seven criteria, on their own merits.
+
+**Read the prior round.** Unlike rounds 2 and 3, you SHOULD read
+`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` and
+`ROUND-3-DISPOSITIONS.md` (its §"Repairs, 2026-10-14 (cycle 2)" maps each
+finding to its repair) and verify, finding by finding, that each repair
+closes what the raw found. Judge the repair against the raw, never against
+the mapping's own account of it. You may also read the implementation
+files the round-3 raw cites (`apps/three-surface-poc/src/polaris.ts`,
+`page-shell.ts`, `verbatim-route.ts`, `capability-detail.ts`, `orrery.ts`,
+`git-observation.ts`, and
+`packages/three-surface-poc-core/src/reevaluation.ts`), and PWB-REQ-011
+and PWB-REQ-014 in the signed spec, to check the delta's re-measured
+`[Observed]` claims. Do not read `ROUND-1-DISPOSITIONS.md`,
+`ROUND-2-DISPOSITIONS.md` or any other raw.
+
+**Raw-head digest predicate.** Over the first four non-blank lines of your
+raw:
+
+- line 1 is the title;
+- line 2 is `Reviewed commit: ` followed by the 40-hex commit you read;
+- line 3 is `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of
+  the bytes of the manifest **file**
+  `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the reviewed commit,
+  computed by script (`git show <commit>:<path> | sha256sum`). It is never a
+  row inside the manifest, and never the proposed spec's digest;
+- line 4 is `Verdict: ` followed by exactly one of `CONFIRM`,
+  `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+**Sibling note.** At `814fbcc1` the three pending sibling builders
+(accessible-name, class-granular extraction, opening-index) fail their own
+`--check` on their stale derived dependency patches, before their order
+check runs; they are being repaired on their own branches. This builder's
+`--check` composes all four pending spec patches in every order itself.
+Report what you observe at the reviewed commit.
+
+**Stopping rule, set before this round.** A notes-only round (`CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with every finding a note) clears the bytes it
+read; its notes are dispositioned beside the package, never by editing
+those bytes. Any other verdict sends the package to the owner with its
+findings open. No round 5 is dispatched without a new owner instruction.

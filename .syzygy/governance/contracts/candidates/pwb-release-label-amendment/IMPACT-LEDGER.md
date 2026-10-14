@@ -18,6 +18,11 @@
 - **Second method, implementation files only:** `git grep -l PWB-REQ-001`
   over `apps` and `packages` gives 8 files at `8f1fbec7` and 7 at
   `0a10977b`, equal to the script's rows below.
+- **Re-measured 2026-10-14 at `814fbcc1` for the cycle-2 repair.** The
+  same script gives 2,683 paths and 96 files. The one added file is under
+  `docs/reviews/` (22 there now): this package's round-3 raw. Every other
+  area count below is unchanged, and the second method still gives 8
+  implementation files. The rows below keep their `8f1fbec7` figures.
 
 | Area | Files | Effect of this amendment |
 |---|---:|---|
@@ -45,6 +50,26 @@
   line 41 renders the project revision in the footer shared by all surfaces,
   and `apps/three-surface-poc/src/orrery.ts` line 187 renders it in Orrery's
   eyebrow. Both are POC-governed on Trajectory and Orrery.
+  *(Marked 2026-10-14: those lines and "footer" were measured at
+  `0a10977b`, and the bullet missed that the shared component reaches
+  Polaris. Re-measured at `814fbcc1`: `page-shell.ts` `humanStatusLine`
+  (line 47) shows the project revision's twelve-digit prefix in the
+  operability status line every surface renders, Polaris included, through
+  `pageShell({ …, status })` (`polaris.ts` lines 1870–1882). Orrery shows it
+  at `orrery.ts` lines 197 and 212. This version excepts that status line by
+  name from PWB-REQ-001's visible-id prohibition and changes nothing in
+  `page-shell.ts`; whether it should carry the label on Polaris is
+  `OWNER-DECISION-PACKET.md` Question 5, which interacts with Question 3.)*
+- **Polaris visible ids an implementation would mark.** [Observed at
+  `814fbcc1`; Inferred as to what each needs] Polaris shows revision
+  prefixes as per-claim provenance stamps (`polaris.ts` lines 241, 299,
+  1200 and 1244, each a `data-parity-field="provenance-revision"` code
+  element), in the shape fact line (line 1209), in prose sentences (lines
+  298 and 1190) and in refusal sentences (`verbatim-route.ts` line 82;
+  `capability-detail.ts` lines 231 and 238). Under this version each stamp
+  is marked as a provenance stamp and carries no label; each prose or
+  refusal occurrence either wraps its id in a marked stamp or becomes a
+  label unit. Sign-off authorizes none of these changes.
 
 ## Registry entry
 
