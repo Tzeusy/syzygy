@@ -8,6 +8,7 @@ import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution
 import { PERMITTING_ARM_ENABLED } from './execution-rule.js';
 import { createPackageGateSources, type GateSources } from './gate-sources.js';
 import { initRun } from './init.js';
+import { isLaunchedRun } from './launched.js';
 import { checkInventory, inventoryBrief } from './inventory.js';
 import { preflight } from './preflight.js';
 import type { ReverifyOptions } from './reverify.js';
@@ -357,6 +358,9 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const revision = options.values.get('--revision'), declare = options.values.get('--declare');
     if (revision === undefined) return usageError('allow-execution requires --revision <pinned revision>');
     if (declare === undefined) return usageError(`allow-execution requires --declare ${Object.keys(DECLARATIONS).join(',')}`);
+    if (isLaunchedRun(options.positional[0]!)) {
+      return refused({ command: 'allow-execution', outcome: 'refused', stage: 'launched', reason: 'this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing' });
+    }
     const result = await allowExecution(options.positional[0]!, { revision, declarations: declare.split(',') }, { sources: sources(), now, ...openReader });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }

@@ -15,6 +15,7 @@ import {
 } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
+import { isLaunchedRun, launchFormRefusal } from './launched.js';
 import { reverifyPinnedRevision, type ReverifiedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
@@ -373,7 +374,7 @@ export async function checkInventory(runDir: string, request: { readonly invento
   return checkSubject(runDir, request.inventoryFile, deps, INVENTORY_PLAN);
 }
 
-export const LAUNCH_FORMS = Object.freeze(['terminal', 'bang'] as const);
+export const LAUNCH_FORMS = Object.freeze(['terminal', 'bang', 'syzygy-launched'] as const);
 export type LaunchForm = (typeof LAUNCH_FORMS)[number];
 
 /** A value a session or the operator declared: shown and recorded only with who declared it and its label, never Observed. */
@@ -387,7 +388,7 @@ export const INVENTORY_INFERRED = Object.freeze({
 export type InventoryOfRecord =
   | {
     readonly counts: true; readonly revision: number; readonly file: string; readonly sha256: string; readonly session: number;
-    readonly sessionId: Declared<string>; readonly launchForm: Declared<LaunchForm>;
+    readonly sessionId: Declared<string>; readonly launchForm: { readonly value: LaunchForm; readonly declaredBy: string; readonly label: 'Inferred' | 'Observed' };
     readonly independence: { readonly label: 'Inferred'; readonly basis: string };
     readonly completeness: { readonly label: 'Inferred'; readonly basis: string };
     readonly label: 'Inferred';
@@ -423,13 +424,14 @@ export function inventoryOfRecord(runDir: string): InventoryOfRecord {
   const launch = readRecord(path.join(run, RUN_LAYOUT.inventory, launchRecordName(number)));
   if (launch === undefined) return no(`no launch form is recorded for inventory session ${number}: run \`syzygy dossier launch-form ${run} inventory terminal|bang\` with the operator's answer`);
   const form = isObj(launch['form']) ? launch['form'] : {};
-  if (!(LAUNCH_FORMS as readonly unknown[]).includes(form['value']) || form['declaredBy'] !== 'operator' || form['label'] !== 'Inferred' || launch['role'] !== 'inventory' || launch['session'] !== number || launch['promptSha256'] !== promptSha) {
-    return no(`the launch-form record of inventory session ${number} is not a terminal or bang launch of that session's prompt`);
+  const formRefusal = launchFormRefusal(run, form);
+  if (formRefusal !== null || launch['role'] !== 'inventory' || launch['session'] !== number || launch['promptSha256'] !== promptSha) {
+    return no(`the launch-form record of inventory session ${number} is not ${isLaunchedRun(run) ? 'a syzygy-launched' : 'a terminal or bang'} launch of that session's prompt`);
   }
   return {
     counts: true, revision, file: frozen, sha256: inventory['sha256'] as string, session: number,
     sessionId: { value: sessionId, declaredBy: 'the inventory session', label: 'Inferred' },
-    launchForm: { value: form['value'] as LaunchForm, declaredBy: 'operator', label: 'Inferred' },
+    launchForm: { value: form['value'] as LaunchForm, declaredBy: form['declaredBy'] as string, label: form['label'] as 'Inferred' | 'Observed' },
     independence: { label: 'Inferred', basis: INVENTORY_INFERRED.independence },
     completeness: { label: 'Inferred', basis: INVENTORY_INFERRED.completeness },
     label: 'Inferred',

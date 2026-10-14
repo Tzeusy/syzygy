@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, reviewVerdict, type TrackedText } from '@syzygy/polaris-generation-core';
+import { isLaunchedRun, launchFormRefusal } from './launched.js';
 import { CHECK_RECORD_FORMAT, collectBlocks, collectCitations, declaredSessionId, nextRevision } from './check.js';
 import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOTATION_FORM, checkDraftShape, localVerdictSchema, verdictSchemaDocument } from './draft-schema.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
@@ -601,13 +602,13 @@ export type ReviewOfRecord =
       readonly declaredBy: 'the review session'; readonly label: 'Inferred';
     };
     readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
-    readonly launchForm: { readonly value: 'terminal' | 'bang'; readonly declaredBy: 'operator'; readonly label: 'Inferred' };
+    readonly launchForm: { readonly value: 'terminal' | 'bang' | 'syzygy-launched'; readonly declaredBy: 'operator' | 'syzygy'; readonly label: 'Inferred' | 'Observed' };
     readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
   }
   | { readonly counts: false; readonly why: string };
 
 type CheckedVerdict =
-  | { readonly ok: true; readonly number: number; readonly session: number; readonly verdict: Readonly<Record<string, unknown>>; readonly form: 'terminal' | 'bang' }
+  | { readonly ok: true; readonly number: number; readonly session: number; readonly verdict: Readonly<Record<string, unknown>>; readonly form: 'terminal' | 'bang' | 'syzygy-launched' }
   | { readonly ok: false; readonly why: string };
 
 /** The latest checked verdict of a kind, validated, its frozen bytes unchanged, written in a session whose launch form is recorded against
@@ -637,10 +638,11 @@ function latestCheckedVerdict(run: string, kind: ReviewKind, packetCheck: (verdi
   const launch = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewLaunchRecordName(kind, session)));
   if (launch === undefined) return no(`no launch form is recorded for ${kind} session ${session}: run \`syzygy dossier launch-form ${run} review terminal|bang${kind === 'design' ? ' --kind design' : ''}\` with the operator's answer`);
   const form = isObj(launch['form']) ? launch['form'] : {};
-  if ((form['value'] !== 'terminal' && form['value'] !== 'bang') || form['declaredBy'] !== 'operator' || form['label'] !== 'Inferred' || launch['role'] !== 'review' || launch['kind'] !== kind || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
-    return no(`the launch-form record of ${kind} session ${session} is not a terminal or bang launch of that session's prompt`);
+  const formRefusal = launchFormRefusal(run, form);
+  if (formRefusal !== null || launch['role'] !== 'review' || launch['kind'] !== kind || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
+    return no(`the launch-form record of ${kind} session ${session} is not ${isLaunchedRun(run) ? 'a syzygy-launched' : 'a terminal or bang'} launch of that session's prompt`);
   }
-  return { ok: true, number, session, verdict, form: form['value'] };
+  return { ok: true, number, session, verdict, form: form['value'] as 'terminal' | 'bang' | 'syzygy-launched' };
 }
 
 /** The fidelity review that counts, if any: the latest checked verdict, validated, its frozen bytes unchanged, naming the packet Syzygy
@@ -665,7 +667,7 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
       declaredBy: 'the review session', label: 'Inferred',
     },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
-    launchForm: { value: form, declaredBy: 'operator', label: 'Inferred' },
+    launchForm: form === 'syzygy-launched' ? { value: form, declaredBy: 'syzygy', label: 'Observed' } : { value: form, declaredBy: 'operator', label: 'Inferred' },
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
     inferred: { basis: REVIEW_INFERRED, label: 'Inferred' },
     label: 'Inferred',
@@ -677,7 +679,7 @@ export type DesignReviewOfRecord =
     readonly counts: true; readonly kind: 'design'; readonly number: number; readonly session: number; readonly packetSha256: string;
     readonly verdict: { readonly readiness: 'ready' | 'not-ready'; readonly blocking: boolean; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
     readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
-    readonly launchForm: { readonly value: 'terminal' | 'bang'; readonly declaredBy: 'operator'; readonly label: 'Inferred' };
+    readonly launchForm: { readonly value: 'terminal' | 'bang' | 'syzygy-launched'; readonly declaredBy: 'operator' | 'syzygy'; readonly label: 'Inferred' | 'Observed' };
     readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
   }
   | { readonly counts: false; readonly why: string };
@@ -698,7 +700,7 @@ export function designReviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, b
     counts: true, kind: 'design', number, session, packetSha256: built.sha256,
     verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: designBlocking(verdict), declaredBy: 'the review session', label: 'Inferred' },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
-    launchForm: { value: form, declaredBy: 'operator', label: 'Inferred' },
+    launchForm: form === 'syzygy-launched' ? { value: form, declaredBy: 'syzygy', label: 'Observed' } : { value: form, declaredBy: 'operator', label: 'Inferred' },
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
     inferred: { basis: DESIGN_REVIEW_INFERRED, label: 'Inferred' },
     label: 'Inferred',

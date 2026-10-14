@@ -134,3 +134,32 @@ Ordered by dependency.
 8. **First launched Redis run.** One attended `syzygy polaris
    https://github.com/redis/redis` at a consented revision, evidence record
    retained. *Depends on 7; closes the motif.*
+
+## Prototype status (2026-10-14)
+
+Slices 1 to 5 exist as a prototype on branch `feat/polaris-one-command-prototype`
+(bead `syzygy-1z8m`), under the follow-up of
+`POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14`. Where it departs from the sketch
+above:
+
+- **Process parent.** Sessions run in tmux windows, so each session's parent
+  is the tmux server, not the supervisor. The launch record holds the pane's
+  process identifier. REQ-041's "child of the supervisor" is not met as
+  written; sibling-ness (no session is another's child) is.
+- **Command broker.** A session cannot reach the run directory, so its
+  `syzygy` command is a shim that forwards to the supervisor over a
+  per-session Unix socket (`broker.ts`, `broker-client.ts`). Helpers may run
+  only `dossier await` on their own directory; the author only the dossier
+  check and run-report commands on its run. This is local IPC beside the "no route" sweep, which
+  exempts those two files and checks they listen on a path only.
+- **Private agent configuration.** Each session gets its own
+  `CLAUDE_CONFIG_DIR` with a copy of the operator's Claude Code credentials,
+  so no session can read another's transcripts in `~/.claude/projects`, and
+  the operator's hooks, skills and CLAUDE.md do not load in launched
+  sessions.
+- **Author view.** The run directory read-only and `drafts/` writable, rather
+  than "own directory plus draft path".
+- **Not built:** question detection in the state window (REQ-043 names the
+  pane holding a question), the attached/detached interval record, the
+  Observed launch record for the author, slice 6's fixture battery and
+  slice 8's Redis run.

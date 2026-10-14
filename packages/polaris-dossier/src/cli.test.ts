@@ -114,14 +114,27 @@ describe('no route and no credential', () => {
   // credential. A static sweep of the package's sources: no module that opens a socket is imported.
   const SRC = path.dirname(fileURLToPath(import.meta.url));
   const NETWORK = /from\s+['"](?:node:)?(?:net|http|https|http2|tls|dgram)['"]|import\(\s*['"](?:node:)?(?:net|http|https|http2|tls|dgram)['"]\s*\)/;
-  const sources = fs.readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
+  const all = fs.readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
+  // The launched run's broker (candidate REQ-polaris-generation-041, prototype under POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) talks to
+  // its own sessions over Unix-domain sockets on the local file system: it imports node:net for that alone, listens on a path and never on
+  // a port or host. Those two files are checked by the test below instead.
+  const UNIX_SOCKET_ONLY = ['broker-client.ts', 'broker.ts'];
+  const sources = all.filter((name) => !UNIX_SOCKET_ONLY.includes(name));
 
   it('sweeps a non-empty population of source files', async () => {
-    expect(sources).toEqual(['brief.ts', 'check.ts', 'class-gate.ts', 'cli.ts', 'clone-head.ts', 'clone-shape.ts', 'close.ts', 'credential-probe.ts', 'design-review.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-flags.ts', 'execution-rule.ts', 'full-run.testkit.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'preflight.ts', 'render.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'state-directory.ts', 'status.ts', 'waiting-sessions.ts']);
+    expect(sources).toEqual(['brief.ts', 'check.ts', 'class-gate.ts', 'cli.ts', 'clone-head.ts', 'clone-shape.ts', 'close.ts', 'credential-probe.ts', 'design-review.ts', 'doctrine-quote.ts', 'draft-schema.ts', 'execution-choice.ts', 'execution-flags.ts', 'execution-rule.ts', 'full-run.testkit.ts', 'gate-sources.ts', 'git-object-reader.ts', 'github-url.ts', 'governed.ts', 'index.ts', 'init.ts', 'inventory.ts', 'launched.ts', 'polaris.ts', 'preflight.ts', 'render.ts', 'reverify.ts', 'review.ts', 'run-config.ts', 'run-record.ts', 'screen.ts', 'session-handover.ts', 'session-view.ts', 'state-directory.ts', 'status.ts', 'waiting-sessions.ts']);
   });
 
   it.each(sources.map((name) => [name]))('%s imports no network module', (name) => {
     expect(NETWORK.test(fs.readFileSync(path.join(SRC, name), 'utf8'))).toBe(false);
+  });
+
+  it.each(UNIX_SOCKET_ONLY.map((name) => [name]))('%s uses node:net for Unix-domain sockets only', (name) => {
+    const text = fs.readFileSync(path.join(SRC, name), 'utf8');
+    expect(all).toContain(name);
+    expect(/from\s+['"](?:node:)?(?:http|https|http2|tls|dgram)['"]/.test(text)).toBe(false);
+    expect(/\.listen\(\s*(?!socket\b)/.test(text)).toBe(false);
+    expect(/createConnection\(\s*(?!socket\b)/.test(text)).toBe(false);
   });
 
   it('the sweep pattern catches a network import (its own mutant)', async () => {
