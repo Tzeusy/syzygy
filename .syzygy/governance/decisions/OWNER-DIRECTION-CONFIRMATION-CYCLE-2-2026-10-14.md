@@ -153,11 +153,21 @@ These are [Observed 2026-10-14] on branch
   tracked files. None was cited in full or by a 12-character prefix.
 - **Package digests that move.** The P-101 and P-102 directory digests
   cover every tracked file in their packages, so the new dispositions
-  records and the status marks move them away from the digests above.
+  records and the status marks move them away from the digests above:
+  - P-101: `cc9709730aeab80f51256b57f1ac5d27515d9be229f3e957df6c66524af1490f`
+    → `059a5119071b07f06a0e785d8bd75c97c3f512c39064f5e4d33274f5b4f45b44`
+    (seven files);
+  - P-102: `801ad3c05edb70f87784e8129ea2da6414518fe48a6f4c2cb5a096dfde35eaad`
+    → `1d2508948989c46e3dbd72c74dad349faf2eb59b51655b6b289ca3d27a20fba2`
+    (seven files).
+
   Neither is cleared, so no clearance is retired. The P-100 directory now
   also holds `ROUND-3-DISPOSITIONS.md`, which its round-3 brief placed
-  there. The cleared digest stays the one over the ten files the round
-  read, and those ten files are byte-identical on this branch. The
+  there, so the brief's command over the whole directory gives
+  `b9c9c5b4335da12c663cfd7cab85649638761a088a43981b1bdb37cfdfb72b66`
+  (eleven files). The cleared digest stays the one over the ten files the
+  round read; over those ten on this branch the method still gives
+  `9d97c13d78689784f0f85556821e04ae72b0dd338b372d7bdb8ccc651a8bbbcc`. The
   sign-off recorder treats sibling `ROUND-<n>-DISPOSITIONS.md` records as
   outside the package bytes (`scripts/record_versioned_signoff.py`,
   docstring item 5).
