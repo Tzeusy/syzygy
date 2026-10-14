@@ -1,0 +1,77 @@
+{
+  "subject": "scripts/check_governance.py",
+  "subjectSha256": "e5d755bbaa6f982bcc78199694e2a3f248eabf6f31ce06d848b1d50182d8c7b5",
+  "commit": "4746b62f2a96157e5488b2427b8c3a1db68c17c3",
+  "method": "each mutant rewrites every copy of `old` with `new`, runs --selftest, restores",
+  "unmutatedSelftest": "402 fixtures, 0 failing — a check that cannot fail is not a check",
+  "mutants": [
+    {
+      "id": "cg7h-poc-block",
+      "name": "aggregate block not required",
+      "old": "            if not record_body or act_record.count(marker) != 1:\n",
+      "new": "            if not record_body:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "CG-7h POC coverage drift stays a finding when no aggregate block"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "cg7h-poc-record",
+      "name": "dedicated record not required",
+      "old": "            if not record_body or act_record.count(marker) != 1:\n",
+      "new": "            if act_record.count(marker) != 1:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "CG-7h POC coverage drift stays a finding when its dedicated record is absent"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "cg7h-poc-digest",
+      "name": "successor digest not compared",
+      "old": "        if actual != expected and later is not None and later[0] == actual:\n",
+      "new": "        if actual != expected and later is not None:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "CG-7h POC coverage drift stays a finding when its row names other bytes",
+        "CG-7h POC coverage drift stays a finding when a later sign-off names other bytes"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "cg7h-poc-latest",
+      "name": "earliest successor wins",
+      "old": "                    latest = (sha, package, version)\n",
+      "new": "                    latest = latest or (sha, package, version)\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "CG-7h POC coverage drift stays a finding when a later sign-off names other bytes"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "cg7h-poc-path",
+      "name": "path not matched",
+      "old": "                if row_path == rel:\n",
+      "new": "                if True:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "CG-7h POC coverage drift stays a finding when its row names another path"
+      ],
+      "crash_tail": []
+    }
+  ],
+  "killed": 5,
+  "total": 5
+}
