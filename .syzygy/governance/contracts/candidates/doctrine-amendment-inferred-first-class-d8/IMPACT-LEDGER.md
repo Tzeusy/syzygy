@@ -7,7 +7,12 @@
 > its findings were **repaired once on 2026-10-14, unconfirmed pending
 > round 3** (`ROUND-2-DISPOSITIONS.md`). *(Marked 2026-10-14, round 3:
 > round 3 returned `REVISE`, one revise-level finding and four notes, all
-> open in `ROUND-3-DISPOSITIONS.md`; the bytes stay unconfirmed.)* The term sweep (§1), the decision
+> open in `ROUND-3-DISPOSITIONS.md`; the bytes stay unconfirmed.)*
+> *(Marked 2026-10-14, cycle 3: "all open" is no longer true; every
+> round-3 finding was repaired once on the owner's cycle-3 direction
+> (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)").)*
+> **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+> round 4.** The term sweep (§1), the decision
 > rows (§3.2), the static reader sweep and the digest census (§4) were
 > re-derived on 2026-10-14 at commit
 > `09c7a61d759bd582227c38b6bec648fe1758fade` (`origin/main` when the
@@ -177,6 +182,26 @@ input drift" on the same path [Observed, this session]. Moving (e) and
 (d1) changed no command's outcome. VIS-7 still moves from line 250 to 257
 in the applied clone; the contract-index line figures in the table are the
 `59fbf787` run's and were not re-read.)*
+*(Marked 2026-10-14, cycle 3: that re-run is valid only for the cycle-2
+bytes; the cycle-3 repair changed blocks (a), (d2) and (e). **Re-run
+2026-10-14 over the cycle-3 bytes** [Observed, this session]: two scratch
+worktrees detached at `origin/main` `7460aec8`, where the three doctrine
+digests above still hold. In one, the seven blocks were extracted by
+script from this package's repaired `OWNER-DECISION-PACKET.md` (exactly
+seven `markdown` fences, each block's first line asserted) and inserted
+at their stated positions, each anchor line asserted first; the other was
+left unapplied. The canonical battery block was read from each tree's
+`PROJECT-STATUS.md` and run line by line. Baseline: **100 commands (the
+99 checks plus the `git tag` line), 0 nonzero**; applied: **100 commands,
+6 nonzero**, the same six commands as the table below, with the same
+messages: CG-18 16 findings over 10 fixtures × 2 predicates; budget-report
+DRIFT in fixtures 1, 3, 5, 6, 7, 8, 9 and 10 and `CONTEXT-BUDGET-REPORT.md`;
+`05-CONTRACT-INDEX.yaml` differs; "DIRECTIVE-REGISTER.md is stale"; the
+recorder's `--check` "review retired by changed input:
+.syzygy/governance/doctrine/vision.md" and `--selftest` "candidate input
+drift" on the same path. Repaired (d2) is three lines longer, so VIS-7 now
+moves from line 250 to 260 in the applied tree. The step-3 glossary edit
+is not drafted and was not applied (below).)*
 
 | Command | Failure | What application must do |
 |---|---|---|
@@ -225,6 +250,20 @@ name is `security.md` or `v1.md` (one test names a made-up fixture file under `d
 and `execution-choice.test.ts` names only the directory, creating it empty
 in a scratch tree) [Observed: `git grep` over the 13 at `09c7a61d`]. D8 touches neither
 file, so none of them is a D8 reader; the applied probe above agrees.
+*(Marked 2026-10-14, cycle 3, round-3 note 4: "every doctrine file they
+name is `security.md` or `v1.md`" and "none of them is a D8 reader" are
+not right as stated.
+`packages/polaris-dossier/src/gate-acts.test.ts` line 298 names
+`.syzygy/governance/doctrine/README.md` and copies its real bytes into a
+fixture (`write(root, readme, real(readme))`), hashing them live with
+`sha(real(readme))` [Observed: re-read at `7460aec8`; a fixed-string
+`git grep` for `doctrine/README` over the 13 files returns this one
+line]. Packet §9 step
+3 edits that README's glossary, so this test reads a file D8's recipe
+changes. Because it hashes the live bytes it should stay green after the
+edit [Inferred: not run]. The application probes above insert only the
+seven blocks, not the step-3 glossary edit, which is not drafted, so the
+glossary edit's battery effect is **unprobed**.)*
 
 | Reader | On application |
 |---|---|
@@ -282,4 +321,9 @@ digest is in a performed act's manifest.
    on D8's `vision.md` insertion with "review retired by changed input",
    so the two ledgers still disagree about the same script [Observed: both
    texts; D7's insertion itself not probed]. Routed again to the
-   coordinator and to D7's round 3.)*
+   coordinator and to D7's round 3.)* *(Marked 2026-10-14, cycle 3: the
+   disagreement is resolved. D7's cycle-3 repair, landing with this one,
+   corrects its ledger's recorder row to "a gate, not a regeneration",
+   records its own probe of D7's `vision.md` insertion at `7460aec8`
+   (`--check` fails "review retired by changed input"; `--selftest` fails
+   "candidate input drift"), and adds D7 Q6 beside this packet's Q-A1.)*

@@ -13,6 +13,12 @@
 > *(Marked 2026-10-14, round 3: "pending round 3" is no longer true. Round
 > 3 returned `REVISE`, one revise-level finding and five notes, all open
 > in `ROUND-3-DISPOSITIONS.md`. The bytes stay unconfirmed.)*
+> *(Marked 2026-10-14, cycle 3: "all open" is no longer true. On the
+> owner's cycle-3 direction every round-3 finding was repaired once
+> (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)").)*
+> **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+> round 4.** Section 1's proposed bytes did not change in that repair
+> either.
 
 **Artifact(s):** `.syzygy/governance/doctrine/vision.md` (sha256
 `93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d`) and
@@ -143,11 +149,18 @@ VIS-4's stated bounds (packet Q1), since its heading states that reason.
   155–157 and 245–247): stay as written and stricter than D7. Every
   evaluation that captures the merge fact still runs inside a deliberately
   triggered pass, whatever D7's trigger. What "the merge fact" reaches has
-  two readings (`OWNER-DECISION-PACKET.md` §4.1): narrow, relied on — the
-  merge of a materialized work item (RFC2-18's scope), so D7 makes
-  unprompted re-observation of a repository with no materialized merged
-  work lawful at the doctrine level; wide — any merge a repository
-  snapshot carries, so it does not. Packet Q5 asks which binds.
+  two readings (`OWNER-DECISION-PACKET.md` §4.1, which also weighs a third,
+  broadest one built from RFC4's citations): narrow — the merge of a
+  materialized work item (RFC2-18's scope); wide — any merge a repository
+  snapshot carries. Which binds is a contract-act matter, **[Unknown]**
+  until a contract act fixes it; this delta, the packet and a plain owner
+  answer to Q5 fix none. Until then D7 makes unprompted re-observation
+  lawful at the doctrine level for a repository with no merge in its
+  history, and for a repository with merges but no materialized merged work
+  lawfulness is [Unknown]. Packet Q5 asks how the reading is to be fixed.
+  *(Repaired 2026-10-14, cycle 3, round-3 finding 1: this bullet
+  previously labelled the narrow reading "relied on" and said Q5 "asks
+  which binds".)*
 - **RFC4-16, RFC5-11**: untouched.
 - **P-69**: its no-timer rule stands on every arm; D7 states it generally.
 - **P-71 Q3, P-71-Q5, P-79 Q4, P-79 Q6**: untouched; the 2026-09-02
@@ -215,11 +228,14 @@ derived-reader sweep over 417 source files. Summary: no doctrine, contract,
 decision or specification sentence is made false by arm A; RFC2-19 and the
 RFC2 merge chain stay stricter and confine any unprompted evaluation that
 captures the merge fact — on the wide reading D7's headline example, on
-the narrow reading the packet relies on only the merge of a materialized
-work item (packet §4.1); the
-"autonomous behavior" exclusions are narrowed in reach, not falsified; two
-derived indexes regenerate after application; four non-authority
-observations are routed, not repaired.
+the narrow reading only the merge of a materialized work item; which
+reading binds is a contract-act matter and [Unknown] until a contract act
+fixes it (packet §4.1); the "autonomous behavior" exclusions are narrowed in
+reach, not falsified; two derived indexes regenerate after application;
+the Polaris understanding adoption recorder's `--check` fails on the
+`vision.md` insertion, a gate that needs a review or a reviewed recorder
+change (packet Q6; ledger §4, corrected 2026-10-14, cycle 3); four
+non-authority observations are routed, not repaired.
 
 ## Migration / supersession plan
 
@@ -239,6 +255,12 @@ digest are three files of one review-evidence package,
 `docs/evidence/polaris-understanding-reconciliation-2026-09-28/`, whose
 review inputs record the vision.md digest as the bytes reviewed then — a
 record of history that application would not falsify (rule 10)].
+*(Marked 2026-10-14, cycle 3: true of the records, but incomplete. The
+review those records hold is bound live by
+`scripts/record_polaris_understanding_adoption.py`, whose `--check` fails
+once `vision.md` changes, so applying arm A's `vision.md` insertion
+retires that review for the recorder's purposes [Observed: probe in
+`IMPACT-LEDGER.md` §4]. Step 1 above waits for packet Q6.)*
 
 ## Review
 
@@ -258,4 +280,8 @@ owner direction of that day (`ROUND-2-DISPOSITIONS.md` §"Repairs,
 2026-10-14 (cycle 2)"); **unconfirmed pending round 3**, whose brief is
 `REVIEW-BRIEF.md` §"Round 3". *(Marked 2026-10-14, round 3: round 3
 returned `REVISE` (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md` line
-4); see `ROUND-3-DISPOSITIONS.md`.)*
+4); see `ROUND-3-DISPOSITIONS.md`.)* Round 3's six findings were repaired
+once on 2026-10-14, on the owner's cycle-3 direction
+(`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)");
+**unconfirmed pending round 4**, whose brief is `REVIEW-BRIEF.md`
+§"Round 4".

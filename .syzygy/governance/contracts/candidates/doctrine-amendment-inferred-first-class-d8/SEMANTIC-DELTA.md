@@ -12,7 +12,12 @@
 > 2026-10-14 (cycle 2)"). *(Marked 2026-10-14, round 3: "pending round 3"
 > is no longer true. Round 3 returned `REVISE`, one revise-level finding
 > and four notes, all open in `ROUND-3-DISPOSITIONS.md`. The bytes stay
-> unconfirmed.)*
+> unconfirmed.)* *(Marked 2026-10-14, cycle 3: "all open" is no longer
+> true. On the owner's cycle-3 direction — drop the dismissal from (d2),
+> then one more cycle — every round-3 finding was repaired once
+> (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)").)*
+> **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+> round 4.** Clauses (a), (d2) and (e) changed bytes in that repair.
 
 **Artifact(s):** `.syzygy/governance/doctrine/trust-and-evidence.md`
 (sha256 `6bf79befec771447b9f70206ee85a406eaffb16b98c8ae1c05f465cd7e486b58`),
@@ -27,7 +32,9 @@ read on 2026-10-03 at `origin/main` `6bb6ef26`, and unchanged at
 (d2) sits inside VIS-6's body as a sub-bullet; VIS-6's two closed
 exceptions and its violation sentence keep every byte. The other insertions
 sit in unnumbered sections of `trust-and-evidence.md` and
-`architecture.md`. The inserted text cites VIS-4, VIS-6 and VIS-7.
+`architecture.md`. The inserted text cites VIS-4 and VIS-6. *(Marked
+2026-10-14, cycle 3: "and VIS-7" is no longer true; repaired (e) dropped
+its "(vision.md VIS-7)" citation, round-3 note 2.)*
 
 **Change class, per clause** [Inferred: the classification is this
 drafter's claim]:
@@ -101,7 +108,9 @@ meaning:
   than its stalest input, withdrawn on a broken or superseded input, and
   never an Unknown-filler. It renders as an Inferred claim, except on a
   surface that admits generated prose only as a draft, where it is that
-  draft (on Polaris, RFC7-20's `editorial-draft`) and never a claim.
+  draft (on Polaris, RFC7-20's `editorial-draft`) and no claim while it
+  stays one; RFC7-21's adoption act may later make it curated narrative
+  (repaired 2026-10-14, cycle 3, round-3 note 3: "and never a claim").
 - (b) An owner's answer about intent is a third non-evidence, non-warrant
   class: attributed, dated, withdrawable, committed out, rendered as
   Observed about the record only, beside an Unknown never in its place, and
@@ -111,14 +120,22 @@ meaning:
   declared edges, challenge authority only.
 - (d) An observed-only project is named (a governed project with a
   designated governance root that no act in force lets Syzygy write);
-  content Syzygy authors about
-  it may be committed to the observing project's `.syzygy/**`, as Syzygy's
-  attributed record, never as the project's declaration or text.
+  content Syzygy authors about it — a promoted annotation or an attributed
+  answer — may be committed to the observing project's `.syzygy/**`, as
+  Syzygy's attributed record, never as the project's declaration or text,
+  and never suppressing its gap. A dismissal of such a project's gap is not
+  among that content: it takes effect only in the project's own governed
+  plane and waits for an act naming that write (repaired 2026-10-14, cycle
+  3, round-3 finding 1, on the owner's ruling to drop the dismissal from
+  (d2)), so VIS-6's violation sentence stays intact.
 - (e) Observation records whose subject is Syzygy's own governance root
-  are never the evidence for a claim about Syzygy's own alignment,
-  convergence or genome-completeness; evidence for any of the four
-  trust-floor properties over that subject still counts; the rule sits
-  beside the status-claim triggers and adds no floor property.
+  are never the evidence for a claim that declares Syzygy's own alignment,
+  convergence or genome-completeness, and such a claim resting only on
+  them renders Unknown; evidence for any of the four trust-floor properties
+  over that subject still counts; the other status-claim triggers about
+  Syzygy are not denied; the rule sits beside the status-claim triggers,
+  cites no rule, and adds no floor property (heading, citation and
+  Unknown sentence repaired 2026-10-14, cycle 3, round-3 note 2).
 - (f) A machine-drafted presentation draft is an `editorial-draft` before a
   human authors it into presentation, and presentation, non-citable by
   RFC7-4, after: never a claim source either way.
@@ -130,7 +147,9 @@ meaning:
   freshness values: no clause adds a value (packet §2).
 - VIS-6's two closed exceptions and its violation sentence: (b) and (d)
   keep content *inside* VIS-6 by committing it out, never by adding an
-  exception.
+  exception. Since the cycle-3 repair (d2) takes no dismissal, so no
+  dismissal takes effect outside the governed plane of the project whose
+  gap it dismisses.
 - VIS-5's write roots: nothing is written into an observed project, and no
   write about one is authorized (packet §1 (d), §3).
 - The trust floor's four bullets and its closing sentence; since the
@@ -204,6 +223,9 @@ the round-2 findings are repaired once, unconfirmed pending round 3, under
 *(Marked 2026-10-14, round 3: round 3 returned `REVISE`
 (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md` line 4); see
 `ROUND-3-DISPOSITIONS.md`.)*
+*(Marked 2026-10-14, cycle 3: on the owner's cycle-3 direction the
+round-3 findings are repaired once, unconfirmed pending round 4, under
+`REVIEW-BRIEF.md` §"Round 4".)*
 **Reviewer:** a fresh agent that did not draft this package.
 **Verdict:** recorded verbatim in the raw and in `ROUND-1-DISPOSITIONS.md`.
 *(Marked 2026-10-14: round 2's verdict is in its own raw and in

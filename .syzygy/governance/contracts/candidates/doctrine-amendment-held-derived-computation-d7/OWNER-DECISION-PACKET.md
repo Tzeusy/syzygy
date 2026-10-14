@@ -38,6 +38,17 @@ finding (Q5 states its arms' consequences inconsistently) and five notes,
 all open in `ROUND-3-DISPOSITIONS.md`. Under the stopping rule the package
 is not repaired again and the bytes stay unconfirmed; it comes to you with
 those findings open.)*
+*(Marked 2026-10-14, cycle 3: "the package is not repaired again" and
+"comes to you with those findings open" are no longer true. On the owner's
+cycle-3 direction of 2026-10-14 for P-101, given in the lead session —
+"One more cycle": "Make Q5 consistent: state that choosing a reading of
+accepted text is a contract act matter (Unknown otherwise), and align §4/§6
+and the ledger. Then one fresh review." [Observed: as relayed by the lead
+session to this repair lane; not yet recorded under `decisions/`] — every
+round-3 finding, notes included, was repaired once; the mapping is
+`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)".)* **Round-3
+findings repaired once on 2026-10-14, unconfirmed pending round 4.** Q5 was
+restructured and one owner question was added (Q6, section 8).
 
 **Identifier.** `D7` is the next unused number in
 `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` as of 2026-10-03 [Observed:
@@ -54,7 +65,9 @@ template's form), `IMPACT-LEDGER.md` (the blast-radius sweeps with their
 predicates and denominators), `REVIEW-BRIEF.md` (the round-1 brief, with
 a Round 3 section added 2026-10-14), `ROUND-1-DISPOSITIONS.md` (each
 round-1 finding and its repair), `ROUND-2-DISPOSITIONS.md` (each round-2
-finding and its cycle-2 repair).
+finding and its cycle-2 repair), `ROUND-3-DISPOSITIONS.md` (each round-3
+finding and its cycle-3 repair). `REVIEW-BRIEF.md` also carries a Round 4
+section, added 2026-10-14.
 
 ---
 
@@ -83,30 +96,48 @@ a deliberately triggered pass: the one that captures a merge fact (section
 4). How far that reaches depends on how "merge fact" is read, and the
 contract supports two readings (section 4.1):
 
-- **Narrow (the reading this packet relies on):** the confinement sits
-  under RFC2-18, whose scope is "Every materialized work item that reaches
-  merge", so it reaches an evaluation that captures the merge of a
-  materialized work item in the reconciliation chain. On this reading arm A
-  makes an unprompted re-observation of a repository that carries **no
-  materialized merged work** lawful at the doctrine level, on a qualifying
-  trigger and inside every other limit of section 2. That may include the
-  pursuit's headline example — re-observing after the owner merges in a
-  repository Syzygy dispatched no work into [Inferred; whether a given
-  repository carries materialized merged work is a fact of its snapshot,
-  and this packet does not establish it for any repository: Unknown].
-  Implementation authority for the daemon behaviour stays separate
-  (section 6).
-- **Wide:** "merge fact" covers any merge a repository snapshot carries, so
-  an unprompted re-observation of any repository whose history carries a
-  merge stays unlawful after D7, and D7 does not by itself make the
-  headline example run.
+- **Narrow:** the confinement sits under RFC2-18, whose scope is "Every
+  materialized work item that reaches merge", so it reaches an evaluation
+  that captures the merge of a materialized work item in the
+  reconciliation chain.
+- **Wide:** "merge fact" covers any merge a repository snapshot carries.
 
-The packet relies on the narrow reading because it is the scope RFC2-18
-states, and because it is the wider permission, so the owner rules on the
-most arm A could license. Which reading should bind is the owner's
-question Q5 (section 8). *(Repaired 2026-10-14, round-2 finding 1: this
-paragraph previously read the wide reading silently and said it reached
-"most" repositories.)*
+Section 4.1 also weighs a third, broadest reading a reader can build from
+accepted RFC4's citations of RFC2-19, on which no unprompted
+re-observation is lawful at all; this packet weighs it as unlikely
+[Inferred], and shows it beside the other two.
+
+**Choosing among them is a contract-act matter, and this packet chooses
+none.** Which reading of accepted RFC2-18/RFC2-19 text binds is fixed
+only by a contract act; until one fixes it, the reading is **[Unknown]**
+(the owner's cycle-3 direction of 2026-10-14, quoted in the status note
+above). That holds for every reading alike: a doctrine amendment, this
+packet or a plain owner answer to Q5 fixes none of them. So arm A's reach
+today is:
+
+- **a repository whose history carries no merge at all:** unprompted
+  re-observation is lawful at the doctrine level on a qualifying trigger,
+  inside every other limit of section 2, on the narrow and wide readings
+  ([Unknown] only if the broadest reading is a live one);
+- **a repository with merges but no materialized merged work:** whether
+  arm A makes it lawful is **[Unknown]** until a contract act fixes the
+  reading (lawful on the narrow reading, unlawful on the wide). The
+  pursuit's headline example — re-observing after the owner merges in a
+  repository Syzygy dispatched no work into — sits in this row, so whether
+  D7 alone lets it run is **[Unknown]** [whether a given repository
+  carries merges or materialized merged work is a fact of its snapshot,
+  which this packet does not establish for any repository: Unknown];
+- **a repository with materialized merged work:** an unprompted evaluation
+  that captures that merge stays unlawful, on every reading.
+
+Implementation authority for any daemon behaviour stays separate on every
+row (section 6). The owner's choice is Q5 (section 8): leave the reading to
+a contract act, commission one, or narrow D7's own text. *(Repaired
+2026-10-14, cycle 3, round-3 finding 1: this paragraph previously said the
+packet "relies on the narrow reading" and that "which reading should bind"
+was the owner's Q5, which treated a Q5 answer as fixing the reading of
+accepted contract text. Earlier still, round-2 finding 1: it read the wide
+reading silently and said it reached "most" repositories.)*
 
 **Departure from the pursuit's wording, disclosed.** N14 asked for "one
 amendment to VIS-4 and the 'Not autonomous' clause". This packet leaves
@@ -248,8 +279,9 @@ act that triggered it was not a request for that computation. Opening the
 page is a request to see the page; under D7 Syzygy may, on that act, also
 compute and hold — but only what no contract confines to a deliberate pass.
 Today that excludes any evaluation that captures RFC2's merge fact: on the
-narrow reading this packet relies on, the merge of a materialized work item;
-on the wide reading, any merge a repository's history carries (section
+narrow reading, the merge of a materialized work item; on the wide reading,
+any merge a repository's history carries. Which reading binds is a
+contract-act matter and [Unknown] until a contract act fixes it (section
 4.1). Clicking a re-observe route is a request and was never in question.
 
 **Showing that a trigger was human — a named residual.** The text requires
@@ -260,10 +292,20 @@ an external loop that hits the page on a cadence is a poller by proxy,
 which P-69 and the "clock or watcher" sub-bullet aim at. Nothing in this
 packet says how a page-open trigger shows it was human, and the daemon as
 it stands has no such test [Inferred]. This is the same problem Q3 settles
-for hooks. The packet does not draft a test: it leaves held computation on
-a page open unlawful until an implementation authority supplies one, and
-lists that as a separate step (section 6 item 7). *(Added 2026-10-14,
-round-2 finding 3.)*
+for hooks, but the page-open burden does not come from Q3: it comes from
+section 1's "when the trigger is a human act", whichever way Q3 is
+answered. Section 1 states a condition, not a burden of proof: whether a
+given trigger was human is a question of fact and evidence. **This packet's
+reading, which does not travel with the doctrine bytes:** an implementation
+that cannot show its page-open trigger was human has not shown that the
+condition holds, so it should treat held computation on that page open as
+not shown lawful, and showing it is an implementation obligation, to be
+supplied with the implementation authority (section 6 item 7) [Inferred].
+The packet drafts no test. *(Added 2026-10-14, round-2 finding 3.
+Repaired 2026-10-14, cycle 3, round-3 note 3: this paragraph previously
+said the packet "leaves held computation on a page open unlawful until an
+implementation authority supplies" a test, a legal effect section 1 does
+not carry.)*
 
 ## 3. Non-expansion: each permitted effect against the ruling that already allows it narrowly
 
@@ -298,8 +340,8 @@ and clauses that bear on the trigger, each with its outcome under D7:
 | Ruling or clause | Text (quoted) | Under D7 |
 |---|---|---|
 | **P-69** (ruled B, 2026-09-21) | "No timer or background poller on any arm." M2 funnel Q4's ground: "No act found that authorizes a background poller … the 2026-09-02 authorization's 'any scope beyond the signed change' trigger is the hook" | **Unchanged, and now doctrine-backed.** D7's "a clock or watcher Syzygy owns is never a trigger" is P-69's rule stated generally. D7 does not make anything lawful under the 2026-09-02 act; that act's scope still governs new daemon behaviour. |
-| **RFC2-19** (accepted contract) | "reconciliation evaluations run inside a deliberately triggered propagate/sync or observation pass, never autonomously on merge events" (`contracts/rfcs/RFC-0002/reconciliation-chain.md` lines 245–247) | **Stays stricter than D7 wherever it reaches, for every D7 trigger, not only the hook.** It binds "reconciliation evaluations" — RFC2-17's post-merge evaluation of a merged change against the intent revision that warranted it — so its reach is the next row's (section 4.1). |
-| **RFC2 merge chain** (accepted contract, same module) | "**reconciliation-pending** attaches automatically and deterministically at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" (`reconciliation-chain.md` lines 155–157) | **Binds every unprompted evaluation that captures the merge fact; what that covers depends on the reading (section 4.1).** By section 2's own definition an unprompted computation is not a deliberately triggered pass, so an unprompted evaluation that captures the merge fact contradicts this clause, whether its trigger is a page open or a hook, and D7's "relaxes no contract that requires a deliberately triggered pass" leaves it unlawful under arm A. **Narrow reading (relied on):** that is an evaluation capturing the merge of a materialized work item (RFC2-18's scope); an unprompted re-observation of a repository with no materialized merged work is not reached, and arm A makes it lawful at the doctrine level. **Wide reading:** any merge a repository snapshot carries, so arm A leaves unprompted re-observation of any repository with merges unlawful, the headline example included. Making what stays unlawful lawful needs an RFC2 amendment (a contract act) or an explicit owner ruling on these two clauses, **in addition to** D7. [Inferred: reading of the clauses; a contradiction surfaced, not reconciled.] |
+| **RFC2-19** (accepted contract) | "reconciliation evaluations run inside a deliberately triggered propagate/sync or observation pass, never autonomously on merge events" (`contracts/rfcs/RFC-0002/reconciliation-chain.md` lines 245–247) | **Stays stricter than D7 wherever it reaches, for every D7 trigger, not only the hook.** It binds "reconciliation evaluations" — RFC2-17's post-merge evaluation of a merged change against the intent revision that warranted it — so its reach is the next row's (section 4.1). Accepted RFC4 cites RFC2-19 as governing "ordinary human-triggered observation passes" (`named-adapters.md` lines 420 and 492), which a reader can take for a third, broader reading (section 4.1). |
+| **RFC2 merge chain** (accepted contract, same module) | "**reconciliation-pending** attaches automatically and deterministically at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" (`reconciliation-chain.md` lines 155–157) | **Binds every unprompted evaluation that captures the merge fact; what that covers depends on the reading (section 4.1).** By section 2's own definition an unprompted computation is not a deliberately triggered pass, so an unprompted evaluation that captures the merge fact contradicts this clause, whether its trigger is a page open or a hook, and D7's "relaxes no contract that requires a deliberately triggered pass" leaves it unlawful under arm A. **Narrow reading:** that is an evaluation capturing the merge of a materialized work item (RFC2-18's scope); an unprompted re-observation of a repository with no materialized merged work is not reached. **Wide reading:** any merge a repository snapshot carries, so unprompted re-observation of any repository with merges stays unlawful, the headline example included. **Which reading binds is a contract-act matter:** until a contract act fixes it, whether arm A makes unprompted re-observation of a repository with merges but no materialized merged work lawful is **[Unknown]**; a repository with no merge at all is lawful at the doctrine level on both readings (section 4.1 weighs a third, broadest reading built from RFC4, on which it is not). Fixing the reading, or making lawful what stays unlawful on either reading, needs a contract act (an RFC2 amendment, or another contract act whose form is not drafted here), **in addition to** D7; neither D7 nor a plain owner answer to Q5 does it (section 8, Q5). [Inferred: reading of the clauses; a contradiction surfaced, not reconciled.] *(Repaired 2026-10-14, cycle 3, round-3 finding 1: this cell previously labelled the narrow reading "relied on" and offered "an explicit owner ruling on these two clauses" as an alternative to an RFC2 amendment.)* |
 | **RFC4-16** inter-pass interval (accepted contract) | "the loop stays human-triggered (architecture.md), so the contract binds the declaration and the honest rendering when the declared interval was exceeded, never an autonomous trigger" | Unchanged: D7 admits no clock trigger. |
 | **RFC5-11** (accepted contract) | quoted in §3 | Unchanged; it is D7's precedent. |
 | **P-71 Q3, P-71-Q5** (ruled A, 2026-09-21) | Q3 arm (b) quoted in §3; Q5 "the return path's write into Butlers is foreclosed by the 2026-09-02 act" | Unchanged. D7 writes nothing into any repository. |
@@ -308,7 +350,7 @@ and clauses that bear on the trigger, each with its outcome under D7:
 | **"Autonomous behavior" exclusions in acts in force** (10 files; `IMPACT-LEDGER.md` §1b) | e.g. `PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 134–135: "No production release, broad remote access, multi-user support, or autonomous behavior." | Not falsified, but **narrowed in reach**: by naming a class that "delegates no decision", D7 would let a reader argue that held derived computation is not "autonomous behavior" under those exclusions. The guard is that each of those acts also confines new behaviour to its signed scope, so D7 by itself authorizes no implementation under any of them; any D7 behaviour still needs its own implementation authority. |
 | **Trusted-bootstrap observation direction** | "This relaxation applies only to read-only repository observation. It does not relax or authorize: - writes to Butlers or any other observed repository; … - autonomous owner acts" | Unchanged. Installing a hook in an observed checkout is a write there; D7 does not authorize it (section 6). |
 
-### 4.1 Two readings of RFC2's merge-fact confinement
+### 4.1 Readings of RFC2's merge-fact confinement
 
 *(Added 2026-10-14, repairing round-2 finding 1.)* Every quotation below
 was read at `origin/main` `09c7a61d`, where
@@ -325,43 +367,81 @@ at lines 61, 146, 156, 158, 225, 274 and 334 of that module and line 101
 of `snapshot-and-evaluation-core.md`, `grep -F "merge fact"` over the
 RFC-0002 directory; none is a definition].
 
-- **Narrow reading — relied on by this packet.** The clause's subject is
-  the chain, and RFC2-18 states its scope: "Every materialized work item
-  that reaches merge enters a first-class chain on its durable identity"
-  (`reconciliation-chain.md` lines 141–142), where "**merged** is execution
-  state: the change reached the integration branch" (153). "The merge
-  fact" (with the definite article) is that work item's merge. RFC2-17
-  reserves "reconciliation" for "the post-merge evaluation of whether a
-  merged change satisfies the intent revision that warranted it" (122–124),
-  and RFC2-19 binds "reconciliation evaluations" (245–247). On this
-  reading the confinement reaches an evaluation that captures the merge of
-  a materialized work item, not every repository whose history carries a
-  merge commit.
+- **Narrow reading.** The clause's subject is the chain, and RFC2-18
+  states its scope: "Every materialized work item that reaches merge enters
+  a first-class chain on its durable identity" (`reconciliation-chain.md`
+  lines 141–142), where "**merged** is execution state: the change reached
+  the integration branch" (153). "The merge fact" (with the definite
+  article) is that work item's merge. RFC2-17 reserves "reconciliation" for
+  "the post-merge evaluation of whether a merged change satisfies the
+  intent revision that warranted it" (122–124), and RFC2-19 binds
+  "reconciliation evaluations" (245–247). On this reading the confinement
+  reaches an evaluation that captures the merge of a materialized work
+  item, not every repository whose history carries a merge commit.
 - **Wide reading.** RFC2-18 computes chain state from "the merge facts
-  carried by RFC2-1 items 1 and 3" (`reconciliation-chain.md` line 146),
-  and RFC2-1 item 1 is "every observed repository (governance root and each
-  consented observed-source repository) and its declared working-tree
-  state" (`snapshot-and-evaluation-core.md` lines 78–79). A reader can take
-  any merge such a snapshot carries as a merge fact, so that every
-  evaluation of a repository with merges in its history captures one.
+  carried by RFC2-1 items 1 and 3" (`reconciliation-chain.md` lines
+  145–146), and RFC2-1 item 1 is "every observed repository (governance
+  root and each consented observed-source repository) and its declared
+  working-tree state" (`snapshot-and-evaluation-core.md` lines 78–79). A
+  reader can take any merge such a snapshot carries as a merge fact, so
+  that every evaluation of a repository with merges in its history
+  captures one.
+- **What accepted RFC4 says about RFC2-19, weighed.** RFC4 cites RFC2-19
+  twice as governing ordinary observation passes: "Capture runs inside
+  ordinary human-triggered observation passes (RFC2-19)"
+  (`contracts/rfcs/RFC-0004/named-adapters.md` lines 420–421) and, in its
+  list of RFC 0002 dependencies, "ordinary human-triggered observation
+  passes (RFC2-19)" (line 492). RFC2-19's own words, "reconciliation
+  evaluations run inside a deliberately triggered propagate/sync or
+  observation pass", presuppose that observation passes are deliberately
+  triggered. A reader can build a third, **broadest reading** from these
+  lines: any held re-observation is an observation pass, and RFC2-19 places
+  every observation pass inside deliberate triggering, so arm A's "observe"
+  effect would reach no unprompted re-observation at all, whatever the
+  repository's merges. Against it: RFC4 says "human-triggered", not
+  "deliberately", and a qualifying page open is human-triggered; and
+  RFC2-19's grammatical subject is "reconciliation evaluations", so its
+  confinement binds those evaluations and does not, by its words, require
+  every observation pass to be deliberate. This packet weighs RFC4's lines
+  as describing passes rather than confining them [Inferred], but it is
+  evidence on the reading question, and the broadest reading is shown
+  beside the other two below. *(Added 2026-10-14, cycle 3, round-3 note
+  2.)*
 
-**What arm A permits, on each reading.** Arm A's text is the same on both;
-only its reach differs.
+**Choosing a reading is a contract-act matter.** All three are readings of
+accepted contract text. Which one binds is fixed only by a contract act —
+an RFC2 amendment, or another contract act whose form this packet does not
+draft — and until one fixes it, the reading is **[Unknown]** (the owner's
+cycle-3 direction of 2026-10-14, status note at the head of this packet).
+This applies to every reading alike: neither this packet, nor a doctrine
+amendment, nor a plain owner answer to Q5 chooses the narrow reading any
+more than the wide one. Whether an act in the shape of the owner's RFC7-20
+reading act (`../../../decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`,
+an exact-bytes act binding a reading of one accepted clause) would serve
+for RFC2-18/RFC2-19 is **[Unknown]** and is not drafted here. *(Repaired
+2026-10-14, cycle 3, round-3 finding 1: this section previously labelled
+the narrow reading "relied on by this packet" and asked the owner, in Q5,
+which reading "should bind", as if a plain answer could fix it.)*
 
-| Repository | Narrow reading (relied on) | Wide reading |
-|---|---|---|
-| carries no materialized merged work in the chain | unprompted re-observation, difference, staging and hold are lawful at the doctrine level on a qualifying trigger, inside every other section 2 limit | unlawful if its history carries any merge |
-| carries materialized merged work | an unprompted evaluation that captures that merge is unlawful | unlawful |
-| either | implementation authority, consent and the acts in force still govern any daemon behaviour (section 6) | the same |
+**What arm A permits, on each reading.** Arm A's text is the same on every
+reading; only its reach differs.
 
-Whether the one repository the POC observes carries materialized merged
-work is **[Unknown]** here: this packet reads no Butlers byte and no
-snapshot. If it carries none, the narrow reading makes the pursuit's
-headline example lawful at the doctrine level under arm A, which section 0
-before this repair said it would not be. The packet relies on the narrow
-reading because it is the scope RFC2-18 states and because it is the wider
-permission, so an owner who adopts arm A rules knowingly on the most it
-could license. Q5 (section 8) asks which reading should bind.
+| Repository | Narrow reading | Wide reading | Broadest reading (built from RFC4's citations) | Until a contract act fixes the reading |
+|---|---|---|---|---|
+| history carries no merge | unprompted re-observation, difference, staging and hold are lawful at the doctrine level on a qualifying trigger, inside every other section 2 limit | lawful, the same | unprompted re-observation unlawful | lawful at the doctrine level on the narrow and wide readings; **[Unknown]** only if the broadest reading, which this packet weighs against, is a live one |
+| carries merges, but no materialized merged work in the chain | lawful, as above | unlawful | unlawful | **[Unknown]** |
+| carries materialized merged work | an unprompted evaluation that captures that merge is unlawful | unlawful | unlawful | unlawful |
+| any | implementation authority, consent and the acts in force still govern any daemon behaviour (section 6) | the same | the same | the same |
+
+Whether the one repository the POC observes carries any merge, or any
+materialized merged work, is **[Unknown]** here: this packet reads no
+Butlers byte and no snapshot. So whether D7 alone lets the pursuit's
+headline example run is [Unknown]: if that repository carries merges but
+no materialized merged work, it sits in the second row, which only a
+contract act fixing the narrow reading would make lawful. The narrow
+reading is still the widest reach arm A could have, so an owner who adopts
+arm A should rule Q1 with that ceiling in view (section 7). Q5 (section 8)
+asks how the reading is to be fixed, not which reading binds.
 
 ## 5. Entry criteria for the live fleet observability mandate
 
@@ -393,15 +473,24 @@ Each item below stays outside D7 and needs its own owner step. Nothing here
 is run, installed or written by this packet.
 
 1. **Any unprompted evaluation that captures RFC2's merge fact** — RFC2
-   (section 4). On the narrow reading this packet relies on (section 4.1)
-   that is an evaluation capturing the merge of a materialized work item;
-   on the wide reading it is unprompted re-observation of any repository
-   whose history carries a merge. Making it lawful needs an RFC2 amendment
-   or an owner ruling on those clauses. **What adoption does make lawful
-   here, on the narrow reading:** unprompted re-observation of a repository
-   with no materialized merged work, at the doctrine level only — the
-   daemon behaviour still needs its own implementation authority, on either
-   reading.
+   (section 4). On the narrow reading (section 4.1) that is an evaluation
+   capturing the merge of a materialized work item; on the wide reading it
+   is unprompted re-observation of any repository whose history carries a
+   merge. Which reading binds is a contract-act matter and **[Unknown]**
+   until a contract act fixes it. Fixing the reading, or making lawful
+   what stays unlawful on the reading fixed, needs a contract act (an RFC2
+   amendment, or another contract act whose form is not drafted here); a
+   plain owner answer to Q5 does neither. **What adoption does make lawful
+   here, whatever the reading:** unprompted re-observation of a repository
+   whose history carries no merge at all, at the doctrine level only
+   ([Unknown] only on section 4.1's broadest reading, which this packet
+   weighs against). For a repository with merges but no materialized
+   merged work, lawfulness stays **[Unknown]** until a contract act fixes
+   the reading. On every row the daemon behaviour still needs its own
+   implementation authority. *(Repaired 2026-10-14, cycle 3, round-3
+   finding 1: this item previously offered "an owner ruling on those
+   clauses" as an alternative to an RFC2 amendment, and stated what
+   adoption makes lawful "on the narrow reading" this packet relied on.)*
 2. **The Butlers-side push trigger (for N2, `syzygy-u05.2`).** A hook in the
    owner's Butlers checkout that calls a loopback re-observe route. Owner
    option only. Before it could run, all of these would be needed, in
@@ -410,8 +499,10 @@ is run, installed or written by this packet.
      checkout's hooks directory is a write to an observed repository, which
      the trusted-bootstrap observation direction does not authorize and
      P-71-Q5 treats as foreclosed by the 2026-09-02 act;
-   - item 1's RFC2 amendment or ruling, wherever item 1 reaches the
-     re-observation the hook asks for (on the wide reading, always);
+   - item 1's contract act, wherever item 1 reaches the re-observation the
+     hook asks for (on the wide reading, always; until a contract act fixes
+     the reading, whether it reaches a given repository with merges is
+     [Unknown]);
    - an owner ruling that publishing the hook's text is a VIS-5 *proposal*
      artifact rather than materialized implementation code (pursuit move
      L4-M4 names this as a stretch of VIS-5);
@@ -445,10 +536,15 @@ is run, installed or written by this packet.
 6. **Autonomous spec adoption** — VIS-4's mechanism, untouched.
 7. **Held computation on a page open that is not shown to be human**
    (section 2, "Showing that a trigger was human"). The text admits only a
-   human act; an agent's or a scheduled client's page open is not one. A
-   showing that the request came from a human is an implementation
-   obligation, to be supplied with the implementation authority; this
-   packet drafts none. *(Added 2026-10-14, round-2 finding 3.)*
+   human act; an agent's or a scheduled client's page open is not one.
+   Section 1 states that condition and no burden of proof; that an
+   implementation must show the condition holds before relying on it is
+   this packet's reading, an implementation obligation to be supplied with
+   the implementation authority, and does not travel with the doctrine
+   bytes [Inferred]. It holds whichever way Q3 is answered. This packet
+   drafts no test. *(Added 2026-10-14, round-2 finding 3. Repaired
+   2026-10-14, cycle 3, round-3 note 3: the obligation is now labelled as
+   the packet's reading, not as a legal effect of section 1.)*
 
 ## 7. Why this is not self-licensing under VIS-4 (the D4 question)
 
@@ -463,13 +559,15 @@ nothing, and every result waits for a human.
 
 **The weight this puts on "not autonomous".** `vision.md`'s section intro
 (lines 86–87, "…and not autonomous.") stays true after arm A only on this
-section's classification (`IMPACT-LEDGER.md` §3). On the narrow RFC2
-reading the packet relies on (section 4.1), D7 licenses more unprompted
+section's classification (`IMPACT-LEDGER.md` §3). If a contract act ever
+fixes the narrow RFC2 reading (section 4.1), D7 licenses more unprompted
 computation than the round-1 text described — unprompted re-observation
 of any repository with no materialized merged work — so that intro, and
 the Q1 "inside" ruling it rests on, carry correspondingly more weight. Q1
-should be ruled with that reach in view. *(Added 2026-10-14, round-2
-finding 7.)*
+should be ruled with that ceiling in view, since a Q1 ruling cannot know
+which reading a later contract act will fix. *(Added 2026-10-14, round-2
+finding 7. Repaired 2026-10-14, cycle 3, round-3 finding 1: this paragraph
+previously spoke of the narrow reading "the packet relies on".)*
 
 **This packet's position, which the owner may overrule (Q1):** D7 is a
 **Normative** change — it adds a trigger the current text does not admit —
@@ -493,10 +591,15 @@ first thing to rule.
 
 ## 8. The owner's questions
 
-Five questions, to be answered in the order Q1, Q5, Q2, Q3, Q4. Q5 was
-added by the 2026-10-14 repair and is numbered last so that Q1–Q4 keep
-their numbers; it is answered second because it fixes what arm A would
-license. "Recommended" is this packet's view and binds nothing.
+Six questions, to be answered in the order Q1, Q5, Q2, Q3, Q4, Q6. Q5
+was added by the cycle-2 repair and restructured by the cycle-3 repair,
+and Q6 was added by the cycle-3 repair; each is numbered after the others
+so that earlier questions keep their numbers. Q5 is answered second
+because it states how far arm A could reach, and Q6 last because it
+arises only if arm A is applied. "Recommended" is this packet's view and
+binds nothing. *(Repaired 2026-10-14, cycle 3: this paragraph previously
+said five questions, and that Q5 "fixes what arm A would license", which a
+plain answer to Q5 cannot do; see Q5.)*
 
 **Q1 — Inside or beyond VIS-4's stated bounds?** *Recommended:* inside
 (section 7). "Inside" makes arms A, B and C all available. "Beyond" leaves
@@ -521,9 +624,9 @@ and leaves arm C.
   stated bounds; B is available only after a Q1 "inside" ruling, so that
   bar is not what B offends — repaired 2026-10-14, round-2 finding 6.) B is
   offered because the classification is the owner's to make, not the
-  drafter's, and the owner has taken the interpretation route before; this packet recommends against it. Cheaper and reversible;
-  leaves `vision.md` silent, so a reader of the doctrine alone cannot find
-  the boundary.
+  drafter's, and the owner has taken the interpretation route before; this
+  packet recommends against it. Cheaper and reversible; leaves `vision.md`
+  silent, so a reader of the doctrine alone cannot find the boundary.
 - **C — No change (decline).** Lawful, and nothing breaks today.
   Consequences, stated plainly: every unprompted computation stays
   unlawful; re-observation stays a request (N2's route, which needs no
@@ -537,10 +640,16 @@ and leaves arm C.
 
 - **Strict** (as drafted): the hook must fire only on a human act.
   *Recommended:* it is what the pursuit asked for and the only reading that
-  keeps "human act" true of every trigger. The same burden falls on page
-  opens (section 2, "Showing that a trigger was human"; section 6 item 7):
-  on this arm an implementation must show a trigger was human, for a hook
-  and for a page open alike, and this packet drafts no test for either.
+  keeps "human act" true of every trigger. On this arm an implementation
+  must show that a hook fires only on human acts, and this packet drafts
+  no test for that.
+- *Not an arm — page opens, on either arm:* the page-open condition does
+  not depend on Q3. It comes from section 1's "when the trigger is a human
+  act", whichever way Q3 is answered, and the obligation to show it is
+  this packet's reading, not a legal effect of section 1 (section 2,
+  "Showing that a trigger was human"; section 6 item 7). *(Repaired 2026-10-14,
+  cycle 3, round-3 note 3: the strict arm previously tied the page-open
+  burden to itself, "for a hook and for a page open alike".)*
 - **Installation authorizes:** a hand-installed hook is a sufficient human
   act whatever event fires it. Wider; would let agent commits trigger held
   computation in a shared checkout. Choosing it changes "fires only on a
@@ -552,29 +661,76 @@ as section 5 offers them, because doctrine says each roadmap carries them.
 The alternative is a sentence in `v1.md`'s deferral row naming them, which
 would be a second doctrine edit and is not drafted here.
 
-**Q5 — Against which reading of RFC2's merge-fact confinement is arm A
-adopted?** (Section 4.1; added 2026-10-14, round-2 finding 1.) D7's text
-"relaxes no contract", so the reading decides how much unprompted
-re-observation arm A makes lawful at the doctrine level.
+**Q5 — How is the reading of RFC2's merge-fact confinement to be fixed?**
+(Section 4.1; added 2026-10-14, round-2 finding 1; restructured 2026-10-14,
+cycle 3, round-3 finding 1.) D7's text "relaxes no contract", so the
+reading of accepted RFC2-18/RFC2-19 decides how much unprompted
+re-observation arm A makes lawful. **Choosing a reading of accepted text is
+a contract-act matter, [Unknown] until a contract act fixes it** (the
+owner's cycle-3 direction, status note at the head). That applies to the
+narrow reading exactly as to the wide one, so the round-2 arms "N, adopt
+against the narrow reading" and "W, adopt against the wide reading"
+**collapse**: neither is something a plain answer to Q5 can do. What the
+owner can decide here is only whether to leave the reading to a contract
+act, commission one, or take the question out of D7's reach:
 
-- **N — the narrow reading** (RFC2-18's scope: the merge of a materialized
-  work item). *Recommended:* it is the scope the clause states. Consequence:
-  arm A makes unprompted re-observation of a repository with no
-  materialized merged work lawful at the doctrine level; implementation
-  authority stays separate. No further step.
-- **W — the wide reading** (any merge a repository snapshot carries).
-  Consequence: arm A leaves unprompted re-observation of any repository
-  with merges unlawful, so D7's unprompted re-observation reaches only
-  repositories with no merge in their history. Choosing W is the owner
-  ruling on the meaning of accepted RFC2-18/RFC2-19 text; whether a plain
-  owner ruling suffices for that, or a contract act is needed, is
-  **[Unknown]** and is not drafted here.
-- **Narrow D7 instead:** keep the narrow reading of RFC2 but add to D7's own
-  text a bar on unprompted re-observation of a repository with merges.
-  This changes section 1's bytes and needs a redraft and a fresh review.
+- **U — Leave the reading to a contract act; fix none here.**
+  *Recommended.* Consequence: arm A, if adopted, makes unprompted
+  re-observation of a repository whose history carries no merge lawful at
+  the doctrine level; for a repository with merges but no materialized
+  merged work, lawfulness stays **[Unknown]**, so no implementation
+  authority could rest on it being lawful [Inferred]; for a repository
+  with materialized merged work it stays unlawful (section 4.1's table).
+  Whether the pursuit's headline example may run stays [Unknown]. Further
+  step: none for D7 itself; deciding the middle row needs a contract act,
+  which nothing here drafts. Reason for recommending it: it states the
+  Unknown instead of resolving it by a ruling the owner has said is a
+  contract-act matter, and it leaves D7's text unchanged.
+- **K — Commission a contract act fixing the reading.** The owner names
+  which reading the act should carry (narrow, wide or broadest); the act
+  itself — an RFC2 amendment, or another contract act whose form is
+  **[Unknown]** and not drafted here — is drafted, reviewed and performed
+  separately, and only on its performance does the reading bind. May be
+  taken together with U, and is not a substitute for it: until that act is
+  performed, U's consequences hold. Consequence: a separate drafting and
+  review cycle and an owner act; nothing in D7 changes.
+- **Narrow D7 instead:** add to D7's own text a bar on unprompted
+  re-observation of a repository whose history carries any merge. The
+  question then never decides D7's reach, because D7 itself forbids the
+  middle row, and no contract act is needed for D7. Consequence: section
+  1's bytes change, which needs a redraft and a fresh review; arm A then
+  reaches only repositories with no merge in their history.
+
+*(The round-2 arms, kept for the record: "N — the narrow reading …
+Recommended … No further step" and "W — the wide reading … whether a plain
+owner ruling suffices for that, or a contract act is needed, is
+[Unknown]". Round 3 found the two inconsistent, finding 1.)*
 
 On arm B the same question decides what the interpretation act would
-admit; on arm C it does not arise.
+admit, and the same contract-act matter applies; on arm C it does not
+arise.
+
+**Q6 — How is the Polaris understanding adoption recorder's gate resolved
+if arm A is applied?** (Added 2026-10-14, cycle 3; the ledger's §4
+correction.) Applying section 1.1 changes `vision.md`, which
+`scripts/record_polaris_understanding_adoption.py` binds as a frozen input
+of its confirmed C1 reconciliation review outside its history set, so its
+`--check` fails, "review retired by changed input:
+.syzygy/governance/doctrine/vision.md", and its `--selftest` fails,
+"candidate input drift" on the same path [Observed: probe, `IMPACT-LEDGER.md`
+§4]. This is a gate, not a regeneration. Arms:
+
+- **Reconcile:** a fresh reconciliation review over the amended
+  `vision.md`, recorded the way the recorder requires;
+- **Move to history:** a reviewed recorder change moving `vision.md` into
+  its history set, so that later doctrine edits stop retiring the review;
+- **Decline arm A**, or apply nothing until one of the above is ready.
+
+*Recommended:* none; the owner's call. Candidate D8's Q-A1
+(`../doctrine-amendment-inferred-first-class-d8/OWNER-DECISION-PACKET.md`
+§7) asks the same question for D8's `vision.md` insertion, so one answer
+can serve both packets if both are adopted [Inferred]. Arms B and C do not
+raise it.
 
 ## 9. How adoption would be recorded
 
@@ -587,7 +743,11 @@ owner rules Q1 "inside" and adopts arm A, in the owner's own words:
 2. add one row `D7` to `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` with
    the owner's words and a link to this packet;
 3. regenerate the derived indexes the ledger names (`IMPACT-LEDGER.md` §4)
-   and run the canonical battery; nothing else is propagated.
+   and run the canonical battery; nothing else is propagated. Step 1 waits
+   for Q6's answer: the Polaris understanding adoption recorder's `--check`
+   fails on any `vision.md` change, and that is resolved by a review or a
+   reviewed recorder change, not by regeneration (added 2026-10-14, cycle
+   3).
 
 Arm B is recorded as its own decision file; arm C as one register row
 closing P-101 with the decline. No arm edits this packet.
