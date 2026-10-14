@@ -1,0 +1,97 @@
+import { createHash } from 'node:crypto';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { RUN_LAYOUT } from './state-directory.js';
+
+/** Launched runs (candidate REQ-polaris-generation-040 to 044; prototype under owner direction
+ * POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14).
+ *
+ * A launched run is one `syzygy polaris` started: Syzygy, not the operator, starts every session. The run directory carries a marker,
+ * `launched.json`, written by the supervisor right after `init`, which no session can write (each session's view holds the run directory
+ * read-only or not at all). A launch record names the launch form `syzygy-launched` and what Syzygy itself did to start the session,
+ * labelled Observed: the executable, the digest of the full command line, the directory, the view's digest, the process and the instant.
+ * In a launched run the operator-declared forms `terminal` and `bang` are refused, and in any other run `syzygy-launched` is. */
+
+export const LAUNCHED_FORMAT = 'polaris-dossier-launched/1';
+export const LAUNCH_RECORD_FORMAT = 'polaris-dossier-launch-record/1';
+export const SYZYGY_LAUNCHED = 'syzygy-launched' as const;
+
+const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
+
+export interface LaunchedMarker {
+  readonly format: typeof LAUNCHED_FORMAT;
+  readonly runId: string;
+  readonly startedAt: string;
+  readonly command: 'syzygy polaris';
+  readonly executionPermitted: false;
+  readonly direction: 'POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14';
+}
+
+/** Whether the run directory carries the launched marker. */
+export function isLaunchedRun(runDir: string): boolean {
+  try {
+    const marker = JSON.parse(fs.readFileSync(path.join(runDir, RUN_LAYOUT.launched), 'utf8')) as Record<string, unknown>;
+    return marker['format'] === LAUNCHED_FORMAT;
+  } catch {
+    return false;
+  }
+}
+
+export function writeLaunchedMarker(runDir: string, runId: string, now: number): void {
+  const marker: LaunchedMarker = {
+    format: LAUNCHED_FORMAT, runId, startedAt: new Date(now).toISOString(), command: 'syzygy polaris', executionPermitted: false,
+    direction: 'POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14',
+  };
+  fs.writeFileSync(path.join(runDir, RUN_LAYOUT.launched), `${JSON.stringify(marker, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
+}
+
+/** What Syzygy did to start one session; every field Observed, because Syzygy did each itself. */
+export interface LaunchObservation {
+  readonly executable: string;
+  readonly argv: readonly string[];
+  readonly directory: string;
+  readonly viewSha256: string;
+  readonly pid: number | null;
+  readonly startedAt: number;
+}
+
+export interface LaunchFormValue {
+  readonly value: string;
+  readonly declaredBy: string;
+  readonly label: 'Inferred' | 'Observed';
+}
+
+/** The launch-form value of a Syzygy launch. */
+export const launchedForm = (): LaunchFormValue => ({ value: SYZYGY_LAUNCHED, declaredBy: 'syzygy', label: 'Observed' });
+
+/** Write the launch record of one session, once. `file` is the role's launch-record path inside the run directory. */
+export function writeLaunchRecord(
+  runDir: string, file: string, fields: { readonly role: 'inventory' | 'review'; readonly kind?: string; readonly runId: string; readonly session: number; readonly promptSha256: string },
+  observed: LaunchObservation,
+): string {
+  const record = {
+    format: LAUNCH_RECORD_FORMAT, role: fields.role, ...(fields.kind ? { kind: fields.kind } : {}), runId: fields.runId, session: fields.session,
+    form: launchedForm(), promptSha256: fields.promptSha256,
+    observed: {
+      executable: observed.executable, argvSha256: sha256(JSON.stringify(observed.argv)), directory: observed.directory,
+      viewSha256: observed.viewSha256, pid: observed.pid, startedAt: new Date(observed.startedAt).toISOString(), label: 'Observed',
+    },
+    recordedAt: new Date(observed.startedAt).toISOString(),
+    label: 'Observed',
+  };
+  const target = path.join(runDir, file);
+  fs.writeFileSync(target, `${JSON.stringify(record, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
+  return target;
+}
+
+/** Whether a recorded launch form is acceptable for this run: `terminal` or `bang`, operator-declared and Inferred, in a run Syzygy did not
+ * launch; `syzygy-launched`, recorded by Syzygy and Observed, in a run it did. Null when acceptable; the reason otherwise. */
+export function launchFormRefusal(runDir: string, form: Readonly<Record<string, unknown>>): string | null {
+  const launched = isLaunchedRun(runDir);
+  if (launched) {
+    if (form['value'] === SYZYGY_LAUNCHED && form['declaredBy'] === 'syzygy' && form['label'] === 'Observed') return null;
+    return 'a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)';
+  }
+  if ((form['value'] === 'terminal' || form['value'] === 'bang') && form['declaredBy'] === 'operator' && form['label'] === 'Inferred') return null;
+  return 'a run the operator started counts only a terminal or bang launch the operator declared';
+}

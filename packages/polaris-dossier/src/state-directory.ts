@@ -26,6 +26,7 @@ export const RUN_LAYOUT = Object.freeze({
   reviews: 'reviews',
   site: 'site',
   record: 'record.json',
+  launched: 'launched.json',
 });
 export const REVISION_FILE = /^rev-(0|[1-9][0-9]*)\.json$/;
 export const REVIEW_PACKET_DIR = /^(fidelity|design)-packet-([0-9a-f]{64})$/;

@@ -100,3 +100,8 @@ export {
   EXECUTION_RECORD_FORMAT, NO_CREDENTIAL_ISSUED, NO_PROVIDER_CALL, USAGE_NOT_RECORDED, closeRun, parseUsageFigure,
   type AgentUsage, type CloseDeps, type CloseReport, type CloseRequest, type CloseResult, type CloseStage,
 } from './close.js';
+export {
+  LAUNCHED_FORMAT, LAUNCH_RECORD_FORMAT, SYZYGY_LAUNCHED, isLaunchedRun, launchFormRefusal, launchedForm, writeLaunchRecord, writeLaunchedMarker,
+  type LaunchObservation,
+} from './launched.js';
+export { POLARIS_USAGE, runPolarisCli } from './polaris.js';
