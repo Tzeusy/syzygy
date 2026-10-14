@@ -558,7 +558,7 @@
     },
     "POLARIS": {
       "requirements": 36,
-      "scenarios": 244,
+      "scenarios": 248,
       "members": {
         "REQ-polaris-generation-001": {
           "name": "Admitted project input",
@@ -970,7 +970,11 @@
             "Verdict incomplete or inconsistent",
             "Independence and completeness disclosed as Inferred",
             "Design review survives its status region",
-            "Inventory omission blocks readiness"
+            "Inventory omission blocks readiness",
+            "Waiting session started before its packet",
+            "Packet delivered to a waiting session",
+            "Printed pre-approval for a waiting session",
+            "Continuing reviewer disclosed"
           ]
         },
         "REQ-polaris-generation-036": {

@@ -49,14 +49,28 @@ JSON document.
 - Ask at most the brief's question limit; record answers verbatim.
 - Draft to `<run>/drafts/next.json`, `syzygy dossier check <run>`, repair
   until clean or refused.
-- For the inventory, the fidelity review and (after
-  `syzygy dossier render <run>`) the design review: run
-  `syzygy dossier session-prompt <run> inventory`, or
+- Waiting sessions first: right after `syzygy dossier brief <run>`, run
+  `syzygy dossier session-prompt <run> all` and show the operator the three
+  terminal commands it prints; the operator starts each in a new terminal.
+  Each waits on its own `syzygy dossier await <session-dir>/` command,
+  reads only its own directory (the inventory session also the clone),
+  writes no file, and hands its inventory or verdict to that command on
+  standard input, in the quoted heredoc its prompt prints; Syzygy writes the
+  file. Syzygy prints no pre-approval for Codex, so what a waiting Codex
+  session runs without asking depends on the operator's Codex approval
+  policy. When a draft revision passes and the inventory counts, run
+  `syzygy dossier session-prompt <run> review --kind fidelity` to deliver
+  the packet to the waiting session; after `syzygy dossier render <run>`,
+  the same with `--kind design`; after a repair, the same command delivers
+  the next round, or add `--fresh` for a new session. If
+  `session-prompt <run> all` refuses, hand over one at a time instead: for
+  the inventory, the fidelity review and (after render) the design review,
+  run `syzygy dossier session-prompt <run> inventory`, or
   `syzygy dossier session-prompt <run> review --kind fidelity|design`,
   show the operator the terminal command it prints, and wait; the operator
-  starts that session in a new terminal. Never start it yourself, headless
-  or otherwise, or delegate it to a sub-agent. When the operator returns,
-  record the launch form with
+  starts that session in a new terminal. Either way, never start a session
+  yourself, headless or otherwise, or delegate it to a sub-agent. When the
+  operator says how each was started, record the launch form with
   `syzygy dossier launch-form <run> inventory terminal`, or
   `syzygy dossier launch-form <run> review terminal --kind fidelity|design`.
 - On a blocking finding, draft again: a new draft revision retires the
@@ -70,7 +84,9 @@ JSON document.
   a figure they did not give and never 0. Report the site path and
   `syzygy dossier status <run>` verbatim.
 - In a session started from a session prompt, do only what that prompt
-  says. An inventory session writes `inventory.json` in its directory and
+  says. A waiting session uses only its one
+  `syzygy dossier await <session-dir>/` command and writes no file itself.
+  Otherwise, an inventory session writes `inventory.json` in its directory and
   runs `syzygy dossier inventory-check <run> --inventory inventory.json`;
   a review session checks the packet with `sha256sum -c packet.sha256`,
   writes `verdict.json` and runs
