@@ -20,12 +20,25 @@ round 2 read these bytes and returned `REVISE`, three revise findings and
 nine notes (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md` line 4). The
 bytes stay unconfirmed and go to the owner with those findings open;
 `ROUND-2-DISPOSITIONS.md` beside this file classifies them.)*
+*(Marked 2026-10-14, later the same day: "go to the owner with those
+findings open" is no longer true. The owner directed one more cycle in the
+lead session on 2026-10-14: every round-2 finding, notes included, repaired
+once, then one fresh review under the same stopping rule. The twelve
+round-2 findings are **repaired once on 2026-10-14, unconfirmed pending
+round 3**; each repair is mapped in `ROUND-2-DISPOSITIONS.md`, "Repairs,
+2026-10-14 (cycle 2)", and round 3's brief is `REVIEW-BRIEF.md` §"Round 3".)*
 
 **Batched with packet A.** The bead asks for this packet to be offered
 alongside D7 (held derived computation, register row P-101; its packet is
 OWNER-DECISION-PACKET.md in the sibling directory
 doctrine-amendment-held-derived-computation-d7, in pull request #296, not
 yet on `main` when this was drafted).
+*(Marked 2026-10-14: "not yet on `main`" is no longer true. D7's package is
+on `main` at `09c7a61d`, where its packet and delta carry the `vision.md`
+and `architecture.md` digests this packet cites (ledger §4). D7 was
+repaired on its own branch concurrently with this repair, landing as
+`7071a744`; this packet edits none of D7's bytes, and §8 states what was
+re-checked.)*
 The two are independent: each may be adopted, amended or declined without
 the other (§8 states how their insertions compose).
 
@@ -34,9 +47,12 @@ the other (§8 states how their insertions compose).
 2026-10-03 [Observed]; D3 is the candidate bounded-mission packet and D4 a
 ruling; D7 is packet A. If another doctrine packet is adopted first and
 takes D8, this one takes the next free number on adoption.
+*(Marked 2026-10-14: the log now also holds D9, adopted 2026-10-06, which
+edited `security.md` and `v1.md` [Observed: log line 12]. D8 is still
+free.)*
 
 **Companions in this directory.** `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`,
-`REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`.
+`REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`.
 
 ---
 
@@ -81,7 +97,7 @@ on]:
 
 | Clause | Does doctrine forbid it today? | What actually blocks it |
 |---|---|---|
-| (a) synthesis | **No.** `trust-and-evidence.md` lines 95–96: "Inferences may be woven into explanatory narrative but must never be indistinguishable from deterministic fact"; RFC7-2(c) admits a narrative claim "Inferred with its inference provenance" | PWB-REQ-012's closed set of four copy roles names no synthesis role, and whether `project-fact` may carry an Inferred composed sentence is unruled (the PWB coverage part's RFC7-2 row, "Non-factual framing is machine-marked non-normative", is "**Unknown uncovered** — its closed roles contain no `non-normative` standing"; that row is RFC7-2(b) only, and whether `project-fact` may carry an Inferred composed sentence is this drafter's open question [Inferred]); no inference-record format exists (RFC1 defers "inference records → inference profile / RFC 0002") |
+| (a) synthesis | **No.** `trust-and-evidence.md` lines 95–96: "Inferences may be woven into explanatory narrative but must never be indistinguishable from deterministic fact"; RFC7-2(c) admits a narrative claim "Inferred with its inference provenance". **But on Polaris an accepted contract already decides how it renders:** RFC7-20 (`contracts/rfcs/RFC-0007/narrative-contract.md` line 416) reads "Generated prose appears **only** in the explicit **editorial-draft** state", "**non-citable**: never an anchor target (RFC7-10), never in the citation graph, never satisfying a claim, never green", and RFC7-2(c)'s Inferred claims exist only in curated narrative, which only an authoring act produces (RFC7-2, "The check binds the authoring act"). A Polaris synthesis composed by a declared inference process is generated prose, so today it is an `editorial-draft`, not an Inferred claim [Inferred: the drafter's reading; the owner's in-force RFC7-20 reading act of 2026-10-07 describes an agent draft the same way, "The agent draft renders as an editorial draft" (`decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`)] | On Polaris, RFC7-20 itself: a synthesis that renders as an Inferred *claim* there needs an RFC 0007 amendment (§7 Q-C3, asked, not drafted). Everywhere, PWB-REQ-012's closed set of four copy roles names no synthesis role, and whether `project-fact` may carry an Inferred composed sentence is unruled (the PWB coverage part's RFC7-2 row, "Non-factual framing is machine-marked non-normative", is "**Unknown uncovered** — its closed roles contain no `non-normative` standing"; that row is RFC7-2(b) only, and whether `project-fact` may carry an Inferred composed sentence is this drafter's open question [Inferred]); no inference-record format exists (RFC1 defers "inference records → inference profile / RFC 0002"); and the PWB coverage part's RFC7-20 row (line 74) records "PWB explicitly excludes LLM generation/inference at observation and render time" |
 | (b) attributed answer | **Not explicitly.** It is unnamed: `trust-and-evidence.md` names two non-evidence warrants, neither of which is an answer about intent; REQ-polaris-generation-031 (adopted) already requires attributed answers as a distinct class | Where it lives for a project Syzygy may not write: VIS-6 sends it "to the governed plane", and the only plane such a project has is its own (clause (d)) |
 | (c) correspondence | **No.** `trust-and-evidence.md` lines 118–119: "**Inference has no authority to establish a status — only to challenge one.**", for any subject; RFC1-16 and RFC4-26 (accepted) define class (ii) "inferred implementation mapping" for capability↔code, entering "only via the inference profile, challenge authority only" | The inference profile is undefined; the POC specification excludes class (ii) (`openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md`, RFC4-26 row; POC-REQ-050, POC-REQ-052) |
 | (d) observed-only project | **No, not in the abstract.** VIS-5 makes a project's own `openspec/**` and `.syzygy/**` lawful direct-write roots, and `architecture.md` (line 14; Definitions, lines 210–216) requires a designated governance root, not a writable one. What doctrine lacks is a *second* destination: VIS-6 names no home for content about a project other than that project's own plane | Not doctrine, today: the registered adapter declares `writeSurface` empty and the 2026-09-02 act bounds it (L2-F5's detail). P-71-Q5's ruling already names the act route into the observed project's own plane: "(1) a dated owner act naming the write, (2) a registry-entry amendment act taking `writeSurface` from empty to the named path". Clause (d) is an **alternative** to that route, one that never writes into the observed project |
@@ -91,7 +107,9 @@ on]:
 So **two clauses (b, e) fill doctrine gaps**; **one (d) offers a
 destination doctrine does not name, as an alternative to an act route that
 already exists**; and **three (a, c, f) restate what doctrine and accepted
-contracts already permit**. The packet still drafts all six, because the
+contracts already permit or, for (a) on Polaris, already decide**
+(RFC7-20; repaired 2026-10-14 after round-2 finding 2, which found this
+contract unnamed here). The packet still drafts all six, because the
 bead's acceptance asks for six and because the owner may prefer them
 stated; but it recommends **no doctrine change** for (a), (c) and (f), and
 routes their real blockers as owner questions about contract and
@@ -102,7 +120,9 @@ specification instruments (§7). Nothing here drafts those instruments.
 Each insertion below gives its anchor (exact current text, line numbers and
 the file's sha256 at `origin/main` `6bb6ef26`, read 2026-10-03), the exact
 bytes to insert, its change class, whether the packet recommends it, and its
-no-change arm. File digests:
+no-change arm. The three digests are unchanged at `09c7a61d`, where the
+2026-10-14 repairs re-read every anchor, including (e)'s and (d1)'s moved
+ones [Observed: scripted `sha256sum`]. File digests:
 
 - `trust-and-evidence.md` sha256
   `6bf79befec771447b9f70206ee85a406eaffb16b98c8ae1c05f465cd7e486b58`
@@ -126,21 +146,46 @@ closed tiers are untouched.
 
 ```markdown
   - A **synthesis** — prose a surface composes over several claims to order,
-    emphasise, relate or abstract them — is an inference: it renders Inferred,
-    names the exact claims it composes over, states no fact not derivable from
-    them, and is never itself an anchored claim. It is no fresher than its
+    emphasise, relate or abstract them — is an inference: it carries its
+    inference provenance, names the exact claims it composes over, states no
+    fact not derivable from them, and is never itself an anchored claim. It
+    renders Inferred, unless the surface admits generated prose only as a
+    draft, where it is that draft and never a claim. It is no fresher than its
     stalest input, and is withdrawn until regenerated when any input is broken
     or superseded. A synthesis never fills an Unknown.
 ```
 
+*(Repaired 2026-10-14, round-2 finding 2: the bytes above replace "it
+renders Inferred, names the exact claims…", which on Polaris contradicted
+accepted RFC7-20.)*
+
 **Class:** Normative, narrowing — it adds obligations (name the inputs,
 withdraw on a broken or superseded input) to something already
 permitted. "Never itself an anchored claim" means it is not an RFC7-2(a)
-claim; naming its inputs may still use RFC7-9/RFC7-10 anchor mechanics. **Recommended:**
-decline (no change). Doctrine already permits synthesis; what is missing is
-a copy role and an inference-record format, both below doctrine (§7 Q-S1,
-Q-C1). **No-change arm:** synthesis stays lawful and unbuilt; its rules are
-written into whatever specification amendment opens the copy role.
+claim; naming its inputs may still use RFC7-9/RFC7-10 anchor mechanics.
+**Relation to RFC7-20 (accepted).** On Polaris, RFC7-20 confines generated
+prose to the `editorial-draft` state, non-citable and "never satisfying a
+claim", and RFC7-21 makes adoption into curated narrative a human act. The
+clause's "unless the surface admits generated prose only as a draft"
+sentence defers to that rule without naming a contract (doctrine cites no
+RFC by number [Observed: 0 lines match `RFC ?[0-9]` in the six doctrine
+files at `09c7a61d`]); so on Polaris a synthesis is an `editorial-draft` with its inference
+provenance, and only on a surface no such rule governs does it render as an
+Inferred claim [Inferred: the drafter's reading, for round 3 to test]. The
+clause adds to RFC7-20 only the input, freshness and Unknown obligations.
+Making a Polaris synthesis an Inferred *claim* instead would contradict
+RFC7-20, which no doctrine clause here attempts; that route is §7 Q-C3, an
+RFC 0007 question asked, not drafted. **Recommended:** decline (no change).
+Rechecked after RFC7-20 (round-2 finding 2): doctrine (lines 95–96) already
+permits synthesis on every surface, and on Polaris an accepted contract
+already decides its rendering, so the clause would add obligations, not a
+permission. What is missing is a copy role, an inference-record format and,
+for PWB, lifting its own exclusion of generation at render time (the PWB
+coverage part's RFC7-20 row, line 74), all below doctrine (§7 Q-S1, Q-C1,
+Q-C3). The recommendation is unchanged; its reason now names RFC7-20.
+**No-change arm:** synthesis stays lawful and unbuilt; on Polaris it can
+only be an `editorial-draft`; its rules are written into whatever
+specification amendment opens the copy role.
 
 ### (b) The attributed owner answer — `trust-and-evidence.md`
 
@@ -222,20 +267,46 @@ arm:** class (ii) stays contract-defined and unbuilt.
 
 ### (d) The observed-only project — `architecture.md` and `vision.md`
 
-**Anchor 1** (`architecture.md` lines 23–25):
+**Anchor 1** (`architecture.md` lines 18–27, the definition paragraph and
+the two repository bullets under it):
 
+> A **governed project** is one or more repositories, one owner, and **exactly
+> one designated governance root**: the repository holding the project's single
+> `openspec/**` and `.syzygy/**` plane. The project has been explicitly brought
+> under Syzygy observation.
+>
 > - Any other repository in the project is a declared **observed-source
 >   repository**, read-only to Syzygy unless separately onboarded as a governed
 >   project.
+> - Onboarding is recorded, per-repository consent (security.md SEC-4).
+>   **Every observed repository consents, governance root or not.**
 
-**Insert 1** after line 25, as a sibling bullet:
+**Insert 1** after line 27, as a new paragraph after the bullet list and
+before the blank line that precedes "Syzygy governs an orthogonal" (a blank
+line on each side):
 
 ```markdown
-- An **observed-only project** is a project whose designated governance root
-  Syzygy may read under the owner's consent but may not write: its write
-  surface is empty. Syzygy writes nothing into it until an act names the write
-  (vision.md VIS-6 says where content about it lives meanwhile).
+An **observed-only project** is a governed project whose governance root
+Syzygy may read under the owner's consent but may not write: no act in force
+names a write into it. It is still governed, and its plane is still its own;
+Syzygy writes nothing there until an act names the write (vision.md VIS-6 says
+where content Syzygy authors about it lives meanwhile).
 ```
+
+*(Repaired 2026-10-14, round-2 note 8: the bytes above replace a sibling
+bullet of the repository bullets, which defined a kind of project among
+kinds of repository, and its phrase "its write surface is empty", which
+brought the registry field `writeSurface` into doctrine undefined.)* **It
+is a governed project.** Lines 18–21 make a project "explicitly brought
+under Syzygy observation" a governed project, and an observed-only project
+is one; (d1) says so, so "the governed plane" in VIS-6 and in (b) still
+means the project's own plane, which Syzygy may not write, and (d2) adds a
+second destination beside it [Inferred: the drafter's reading]. Line 14's
+"where Syzygy writes only `openspec/**` and `.syzygy/**`" bounds a write and
+grants none, so a governed project Syzygy writes nothing into stays inside
+it [Inferred]. The registry's empty `writeSurface` and the 2026-09-02 act
+are how Butlers, the case L2-F5 names, is bound today (§0); (d1) states the effect in doctrine terms, "no
+act in force names a write", and leaves the registry field to RFC material.
 
 **Anchor 2** (`vision.md` lines 232–234, in VIS-6):
 
@@ -257,12 +328,18 @@ arm:** class (ii) stays contract-defined and unbuilt.
 
 **Class:** Normative — it names a class consistent with the Definitions
 entry for **Project** (the observed-only project keeps its one designated
-governance root; only its write surface is empty) and gives VIS-6's
+governance root; only no write into it is named) and gives VIS-6's
 commit-out a second destination. It does **not** widen VIS-5: the
 destination is `.syzygy/**`, already a direct-write root, and nothing is
-written into the observed project. "Observing project" is the phrase the
-owner's P-76 Q2 ruling uses ("an observing project reading its own
-tree"). **Recommended:** adopt, as the owner's trade-off between two
+written into the observed project. **"Observing project" has two senses
+in the record** (repaired 2026-10-14, round-2 note 6, which found the
+earlier attribution to P-76 Q2 wrong). (d2) uses the M4 funnel Q3's sense,
+one project writing "a governance artifact of the observing project *about*
+the observed project" (`docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md`, Q3).
+The owner's P-76 Q2 ruling uses the phrase for self-observation, "an
+observing project reading its own tree", which is clause (e)'s subject, not
+(d)'s; (d2) defines its own sense in place ("the governed project that
+records the consent to observe it"). **Recommended:** adopt, as the owner's trade-off between two
 routes: (d) keeps every observed repository untouched but has one project
 hold records about another; P-71-Q5's act route keeps each project's
 content in its own plane but writes into the observed repository.
@@ -271,33 +348,59 @@ semantics → portfolio profile (SDR-30)", and SDR-30 says such
 relationships "come from project declarations or render
 **unconfirmed/asymmetric**". A record *about* another project is not by
 itself a relationship between their entities [Inferred]; if one ever links
-them, SDR-30 governs its rendering. Whether (d) needs the portfolio profile
-first is §7 Q-C2. **What adoption
+them, SDR-30 governs its rendering. Two of (d2)'s three examples always
+name an entity of the observed project: a dismissal names that project's
+gap, and a promoted annotation names what it annotates (round-2 note 9).
+So the question is not whether such records stay unlinked, which they
+cannot, but whether naming another project's entity is an SDR-30
+relationship or only a reference; §7 Q-C2 now asks that. **Offboarding is
+unstated.** `architecture.md` lines 115–117 keep committed-out annotations
+and dismissals "with the repository" when a project offboards. Under (d2)
+records about an observed-only project live in the observing project's
+tree, and (d2) does not say what happens to them when the observed project
+offboards; §7 Q-D1 asks, and no arm is drafted. **What adoption
 does not do:** it authorizes no write. The P-71 packet found that "writing a
 governance artifact of the observing project *about* the observed project
 is a new effect no act in force names"
 (`docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md`, Q3), and the owner ruled
 P-71 Q3 arm (b), "a pure drafter that writes no file"
 (`decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, P-71 row).
-Clause (d) names where such content *would* live; the first write still
-needs its own act, and P-71's ruling stands until one exists.
+**The arm the owner declined placed content where (d) points.** The
+funnel's recommended arm (a) had the drafter emit the packet "into Syzygy's
+own `.syzygy/governance/decisions/`", the class of destination (d2) names,
+and the funnel itself named that arm's cost: "a drafted act about the
+observed project's gaps would sit in the governance tree of a project that
+does not govern it". The owner chose (b) instead; the ruling records no reason [Observed:
+P-71 row, rulings file line 58] (round-2 note 7). (d) does not reopen that
+choice: it names in doctrine where such content *would* live, writes
+nothing, and leaves P-71 Q3's "writes no file" standing. Adopting (d) does
+make arm (a)'s destination doctrinally describable, so a later act naming
+that write would no longer need a doctrine change first; that is the
+trade-off the owner is asked to weigh, not one this packet settles. The
+first write still needs its own act, and P-71's ruling stands until one
+exists.
 **No-change arm:** content about Butlers has one lawful route, into its own
 plane by P-71-Q5's two acts; until the owner performs them it has nowhere to
 land, as L2-F5 records.
 
 ### (e) Self-observation never self-certifies — `trust-and-evidence.md`
 
-**Anchor** (lines 175–180, the end of the trust floor):
+**Anchor** (lines 57–67, "Certificate and status claims need evidence"):
 
-> - every visual encoding means exactly what its legend says;
-> - no credential or secret material appears in any surface, store, or endpoint
->   (security.md SEC-5).
+> **Certificate and status claims need evidence.** A claim is one if it:
 >
-> A change to Syzygy that breaks this floor, or presents inference as fact, may
-> be rejected however well it otherwise works.
+> - turns a badge or indicator green;
+> - declares alignment, convergence, or genome-completeness;
+> - affects a certificate *(certificates are post-V1; this trigger is
+>   future-tagged until their RFC exists)*; or
+> - says a gap is **factually resolved or absent**.
+>
+> No evidence means **Unknown**, not success. A claim that meets any trigger is
+> a status claim **whatever its prose form**: a narrative sentence doing a green
+> badge's work is judged as a badge.
 
-**Insert** after line 177, as a new paragraph between the floor's last
-bullet and the sentence beginning "A change to Syzygy" (a blank line on
+**Insert** after line 67, as a new paragraph before the blank line that
+precedes "**A gap leaves a surface in exactly two ways**" (a blank line on
 each side):
 
 ```markdown
@@ -305,10 +408,25 @@ each side):
 evaluates Syzygy's own governance root as its subject, the observation records
 may surface gaps and contradictions and render with that subject disclosed,
 but they are never the evidence for a claim about Syzygy's own alignment,
-convergence, genome-completeness or release verdict (vision.md VIS-7).
-Evidence that the pipeline is deterministic and resolves its links may come
-from any subject, this one included.
+convergence or genome-completeness (vision.md VIS-7). Evidence that any of the
+trust floor's four properties holds may come from any subject, this one
+included. The rule adds no property to the trust floor: a claim resting only on
+such records has no evidence, and renders Unknown.
 ```
+
+*(Repaired 2026-10-14, round-2 finding 1 and note 10. The bytes above
+replace a paragraph that sat between the trust floor's last bullet and its
+closing sentence (anchor lines 175–180) and denied self-observation records
+to Syzygy's "release verdict" while letting them evidence the floor, which
+is the release verdict (lines 159–161: "a Syzygy release that breaks any of
+four properties is blocked"; VIS-7). Three changes: "release verdict" is
+dropped, so the denial covers exactly the line-60 trigger, "declares
+alignment, convergence, or genome-completeness"; the permissive sentence
+now covers all four floor properties, not only determinism and links, so a
+self-observation render shown to hold no secret material (bullet 4) or
+legend-faithful encodings (bullet 3) is not under the denial; and the
+paragraph moves out of the trust floor's span to the status-claim
+triggers it qualifies, saying it is not a fifth floor property.)*
 
 **Class:** Normative, narrowing — it removes authority from a class of
 observation records that does not exist yet. **Scope, carried by the
@@ -318,11 +436,19 @@ doctrine term ("the immutable result of one identified status evaluation",
 line 144). Syzygy's tests, the canonical battery and a launch-gate
 administration are not observation records, so the clause does not reach
 them [Inferred; the round-1 reviewer reached the same reading from the
-launch-gate record's keys]. The last sentence keeps pipeline-property
-evidence (the floor's determinism and link bullets) available over this
-repository.
-**Recommended:** adopt, before any of P-74 Q3's three self-observation acts
-is performed. The owner named Syzygy itself as the first proving project
+launch-gate record's keys]. Nor does it reach the release verdict: what the
+floor blocks a release on is the four properties, and evidence for any of
+them may come from this subject. **Release-blocking?** No, as drafted
+(round-2 note 10). The rule restates, for one record class, what line 65
+already does for every claim ("No evidence means **Unknown**, not
+success"), so breaking it means rendering a status claim on records that
+cannot carry it, a defect under the status-claim rule, not a new floor
+property. If the owner wants violating (e) itself to block a release, the
+route is a fifth floor bullet, which changes VIS-7's "in short" list too;
+it is offered as Q5's second arm and not drafted [Inferred: the drafter's
+reading].
+**Recommended:** adopt as drafted, before any of P-74 Q3's three
+self-observation acts is performed. The owner named Syzygy itself as the first proving project
 (`decisions/A6-RESOURCE-ENVELOPE-DECISION.md` line 25: "The syzygy
 repository itself; second: butlers"), and P-76 Q2 already ruled that "an
 observing project reading its own tree, recorded here, needs no consent
@@ -347,7 +473,19 @@ doctrine rule against its records certifying the observatory.
 `editorial-draft` state (it "awaits a **human authorship act into a
 non-authoritative artifact**, and **stays non-citable even after that act
 completes**", as distinct from `unadopted-draft`, which binds once adopted)
-and RFC7-3/RFC7-4 already say this. **Recommended:** decline (no change); the figures stage (pursuit
+and RFC7-3/RFC7-4 already say this. **One extension, disclosed** (round-2
+note 5): RFC2-25 defines `editorial-draft` as "Narrative prose under
+revision", so applying it to a figure or a passage selection extends that
+contract state's stated semantics past prose [Inferred]. The adopted
+generator specification already does so for one kind of figure,
+"Generated diagrams SHALL remain editorial-draft until their applicable
+authorship act" (`openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`
+line 98), and a passage selection has no such precedent. Adopting (f)
+would make that extension doctrine's for every presentation draft, which
+is one more reason the packet recommends decline. **After** the human
+authorship act the draft is no longer in the `editorial-draft` state: it is
+presentation, non-citable by RFC7-4 ("adopted-after-review"), which is what
+the clause's "stays non-citable after" says. **Recommended:** decline (no change); the figures stage (pursuit
 move S3-M4) is implementation under the generator act and enters the
 feature-request funnel on its own. **No-change arm:** nothing changes.
 
@@ -361,12 +499,12 @@ surface state** [Inferred: mapping by the drafter].
 
 | Clause | Label | Tier | Freshness | Challenge / surface state |
 |---|---|---|---|---|
-| (a) synthesis | Inferred | none (bare label; RFC2-25: "an untier'd claim renders at its bare label"). Not `asserted-by-worker`, which is "an LLM worker's assertion of an outcome" | `fresh` only while every input is `fresh`; `stale` if any input is `stale`; any `broken` or `superseded` input withdraws it from the render until regenerated ("withdrawn" is a render action, not a fifth freshness value) | may be challenged; can challenge nothing, since it establishes nothing |
+| (a) synthesis | Inferred; on Polaris, not a claim: the `editorial-draft` sibling state RFC7-20 confines generated prose to, carrying its inference provenance (repaired 2026-10-14, round-2 finding 2) | none (bare label; RFC2-25: "an untier'd claim renders at its bare label"). Not `asserted-by-worker`, which is "an LLM worker's assertion of an outcome" | `fresh` only while every input is `fresh`; `stale` if any input is `stale`; any `broken` or `superseded` input withdraws it from the render until regenerated ("withdrawn" is a render action, not a fifth freshness value) | may be challenged; can challenge nothing, since it establishes nothing |
 | (b) attributed answer | Observed, as a fact about the record | `report-fact` ("'X reported Y' is Observed as a fact about the report; Y itself is not thereby Observed") | of the record's evaluation | withdrawal invalidates dependents; the answered question's implementation claims keep their own labels |
 | (c) correspondence | Inferred | none | of the evaluation that computed it | challenge authority only (RFC4-26 class (ii)) |
 | (d) observed-only record | Observed, as a fact about Syzygy's record | `report-fact`; a dismissal renders in the existing `dismissed-by-decision` state | of the record | — |
 | (e) self-observation | Observed, at its ordinary tier | its ordinary tier. The clause is a rule on which records a claim may cite, not a tier: such records never back a claim about Syzygy's own status, and since RFC2-25 makes `gate-backed` "The **only** tier that may support a positive status claim", no such claim is ever `gate-backed` from them | ordinary | may surface gaps and contradictions. "Subject disclosed" is the observation record's own repository identity, a provenance fact, not a tier or state |
-| (f) figures | — (not a claim) | — | — | `editorial-draft`, before and after the human authorship act (RFC2-25; RFC7-4) |
+| (f) figures | — (not a claim) | — | — | `editorial-draft` before the human authorship act (RFC2-25, RFC7-20); after it, presentation, non-citable (RFC7-4). Applying the state to a figure or passage selection extends RFC2-25's "Narrative prose" (§1 (f); repaired 2026-10-14, round-2 note 5) |
 
 ## 3. Non-expansion on the write universe
 
@@ -419,20 +557,24 @@ the owner may overrule].
 "Recommended" is this packet's view and binds nothing. Questions Q1–Q6 are
 one per clause; each has a no-change arm. Q-C and Q-S are about
 instruments *below* doctrine: this packet drafts none of them and only asks
-whether the owner wants them drafted.
+whether the owner wants them drafted. Q-A1 is about applying (d2); Q-D1,
+added 2026-10-14, asks about a case (d2) leaves unstated and drafts no
+bytes for it.
 
 | # | Question | Arms | Recommended |
 |---|---|---|---|
-| Q1 | (a) synthesis | adopt / decline | **decline** — doctrine already permits it |
+| Q1 | (a) synthesis | adopt / decline | **decline** — doctrine already permits it, and on Polaris accepted RFC7-20 already decides it renders as an `editorial-draft` (rechecked 2026-10-14 after round-2 finding 2; §1 (a)) |
 | Q2 | (b) attributed answer | adopt / adopt as a third VIS-6 exception instead (L3-M7; not drafted) / decline | **adopt**, with Q4 or the act route |
-| Q3 | (c) correspondence | adopt / decline | **decline** — RFC1-16/RFC4-26 already define it |
+| Q3 | (c) correspondence | adopt / decline | **decline** — `trust-and-evidence.md` lines 118–119 already bind its authority limit for every subject, and RFC1-16/RFC4-26 define it for capability↔code; the blockers are below doctrine (repaired 2026-10-14, round-2 note 11) |
 | Q4 | (d) observed-only project | adopt / use P-71-Q5's act route into the observed project instead / decline | **adopt**; the trade-off is the owner's (§1 (d)) |
-| Q5 | (e) self-observation | adopt / decline | **adopt**, before any P-74 Q3 act |
+| Q5 | (e) self-observation | adopt as drafted (beside the status-claim triggers, not a floor property) / adopt as a fifth, release-blocking trust-floor bullet instead (not drafted; it would also change VIS-7's "in short" list in `vision.md`, tripping Q-A1's gate) / decline | **adopt as drafted**, before any P-74 Q3 act (arms repaired 2026-10-14, round-2 note 10) |
 | Q6 | (f) figures | adopt / decline | **decline** — VIS-4 and RFC2-25 already cover it |
 | Q-C1 | Commission a draft of the inference profile (RFC1's deferred "inference records → inference profile / RFC 0002"), the record format both (a) and (c) need? | commission / defer | the owner's call; neither (a) nor (c) can be built without it |
-| Q-C2 | Must the portfolio profile (RFC1's deferred "Cross-project relationship semantics → portfolio profile (SDR-30)") exist before (d) is used? | yes / no, while records stay unlinked to the observed project's entities | the owner's call |
+| Q-C2 | Must the portfolio profile (RFC1's deferred "Cross-project relationship semantics → portfolio profile (SDR-30)") exist before (d) is used? A dismissal or promoted annotation always names an entity of the observed project, so the records cannot stay unlinked (arms repaired 2026-10-14, round-2 note 9) | yes, before any (d) record / no: a record that names another project's entity is a reference, not an SDR-30 relationship, and only a link *between* entities of the two projects waits for the profile | the owner's call |
+| Q-C3 | Should a synthesis on Polaris ever render as an Inferred narrative claim (RFC7-2(c)) rather than an `editorial-draft`? That needs an RFC 0007 amendment of RFC7-20 ("Generated prose appears **only** in the explicit **editorial-draft** state"), a contract act; nothing here drafts it (added 2026-10-14, round-2 finding 2) | no, RFC7-20 stands and a Polaris synthesis stays an `editorial-draft` / commission an RFC7-20 amendment draft | **no** — the drafter sees no gap RFC7-21's human adoption path leaves; the owner's call |
+| Q-D1 | When an observed-only project offboards, what happens to records about it that (d2) placed in the observing project's tree? `architecture.md` lines 115–117 keep committed-out annotations and dismissals "with the repository", which for (d2) records is the observing project's (added 2026-10-14, round-2 note 9) | they stay as the observing project's dated records and stop rendering for the offboarded project / they are exported to the owner and deleted with its projections / decide when (d) is first used | the owner's call; no arm is drafted into (d2) |
 | Q-A1 | Applying (d2) changes `vision.md`, which retires the Polaris understanding reconciliation review for `scripts/record_polaris_understanding_adoption.py --check` (ledger §4). Resolve it by a fresh reconciliation review over the amended `vision.md`, or by a reviewed recorder change moving `vision.md` into its history set? D7's `vision.md` insertion raises the same question | reconcile / move to history / decline (d2) | the owner's call; one answer serves D7 and D8 together |
-| Q-S1 | Commission a PWB specification amendment opening a synthesis copy role beside PWB-REQ-012's four? | commission / defer | after Q-C1 |
+| Q-S1 | Commission a PWB specification amendment opening a synthesis copy role beside PWB-REQ-012's four? Under RFC7-20 that role's strings would be `editorial-draft`, unless Q-C3 amends it, and PWB would also lift its own exclusion of generation at render time (coverage part, RFC7-20 row, line 74) | commission / defer | after Q-C1 and Q-C3 |
 | Q-S2 | Commission a POC specification amendment admitting RFC4-26 class (ii) correspondences on the surfaces? | commission / defer | after Q-C1 |
 
 ## 8. Composition with packet A (D7) and candidate D3
@@ -441,13 +583,41 @@ whether the owner wants them drafted.
   `architecture.md`'s loop paragraph; D3 edits the same two passages. D8's
   `vision.md` insertion is in VIS-6 and its `architecture.md` insertion is
   under "Governed projects", so no byte overlaps [Observed: line ranges
-  compared on 2026-10-03].
+  compared on 2026-10-03]. Re-checked 2026-10-14 at `09c7a61d`, where D7
+  is on `main`: D7 anchors `vision.md` lines 105–107 and `architecture.md`
+  lines 329–334 (D7 packet lines 93 and 127); D8's repaired anchors are
+  `vision.md` 232–234, `architecture.md` 18–27 and `trust-and-evidence.md`
+  57–67, 95–96 and 134–137, so no bytes overlap [Observed]. D7's
+  concurrent round-2 repair landed on `main` as `7071a744` while this
+  repair was open; this repair was rebased onto it, and at `7071a744` D7's
+  anchors are still `vision.md` lines 105–107 and `architecture.md` lines
+  329–334 (now D7 packet lines 126 and 160), its commit stating "Section
+  1's proposed doctrine bytes are unchanged" [Observed: anchor lines
+  re-read; D7's other repairs not reviewed here]. No overlap.
+- **Shared gate.** Both packets' `vision.md` insertions trip the same
+  recorder gate (Q-A1). Whichever packet is applied first changes
+  `vision.md`'s digest, so the other's anchor digest no longer matches and
+  its anchors are a changed review subject (next bullet).
 - **Line numbers move.** Whichever packet lands first shifts the other's
   anchors. D8's insertion points are defined by position (after the named
   bullet), and if an anchor's bytes have moved since the sha256 above, the
   changed anchor is a changed review subject: re-anchor through a fresh
   review (rule 10), never by applying judgment at the keyboard.
 - `trust-and-evidence.md` is touched by D8 only.
+- **D9, adopted 2026-10-06** (added 2026-10-14, round-2 note 12). D9
+  replaced SEC-3 in `security.md` and one bullet of `v1.md`
+  (`../../../decisions/DOCTRINE-AMENDMENT-LOG.md` line 12). D8 touches
+  neither file, so no bytes overlap, and the three digests D8 cites are
+  unchanged by it [Observed]. The thirteen doctrine readers added since
+  `59fbf787` read `security.md` or `v1.md` only (ledger §4).
+- **The non-governed narrative profile** (REQ-polaris-generation-032,
+  adopted 2026-10-07; found while repairing, not in either raw). It names a
+  *non-governed* subject, one with no kernel evidence drawer and no
+  `openspec/**`, adopted capability declaration or declared topology in its
+  admitted inventory. That is not (d1)'s observed-only project, which keeps
+  a designated governance root; the two are different classes, and (d2)
+  says nothing about where content about a non-governed subject would live
+  [Inferred: from REQ-032's own definition; for round 3 to test].
 
 ## 9. How adoption would be recorded
 

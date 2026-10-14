@@ -100,3 +100,86 @@ Package digest method: at the repo root of a clone at the reviewed commit,
 `sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-inferred-first-class-d8 | LC_ALL=C sort) | sha256sum`.
 Number every finding, label each `[Observed]`, `[Inferred]` or
 `[Unknown]`, and mark each as revise-level or a note.
+
+## Round 3
+
+*(Added 2026-10-14. Everything above is the round-1 brief, left as round 1
+and round 2 read it; where this section and the text above differ, this
+section governs round 3.)*
+
+**Why a round 3.** Round 2 (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md`)
+returned `REVISE`. The owner, in the lead session on 2026-10-14, directed
+one more cycle for this packet: every round-2 finding, notes included,
+repaired once, then one fresh review under the same stopping rule. The
+repairs are mapped in `ROUND-2-DISPOSITIONS.md`, "Repairs, 2026-10-14
+(cycle 2)". The repairing session dispatches no review.
+
+**Stopping rule, set before the round.** One round, the same rule the
+2026-10-14 confirmation cycle used
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`):
+
+- a verdict with no revise-level finding clears the exact bytes it read,
+  under the owner's 2026-09-26 ruling; its notes go in a sibling record
+  beside the package, and the package is not edited;
+- a verdict still `REVISE` goes to the owner with its findings; the package
+  is not repaired again and no round 4 is dispatched without a new owner
+  direction;
+- a verdict is never re-labelled.
+
+**Subject.** Every tracked file of
+`.syzygy/governance/contracts/candidates/doctrine-amendment-inferred-first-class-d8/`
+at the reviewed commit (six files at the repair commit:
+`IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`, `REVIEW-BRIEF.md`,
+`ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`, `SEMANTIC-DELTA.md`).
+
+**Governing references.** Those above, plus: RFC7-20 and RFC7-21
+(`contracts/rfcs/RFC-0007/narrative-contract.md` lines 414–440); the
+generator specification's editorial-draft rules
+(`openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`
+lines 98 and 528); the PWB coverage part's RFC7-20 row
+(`contract-coverage-parts/RFC-0007-0009.md` line 74);
+`decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`;
+`docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` Q3; `architecture.md` lines
+14–27 and 108–117; `DOCTRINE-AMENDMENT-LOG.md` (D9);
+`openspec/changes/polaris-non-governed-narrative-profile/` (REQ-032); both
+earlier raws and both dispositions records.
+
+**What to test, at least.**
+
+- Is each of the twelve round-2 findings repaired, as the cycle-2 mapping
+  claims, in the bytes rather than only in the mapping?
+- **Clause (e), moved and reworded.** Is its new position (after
+  `trust-and-evidence.md` line 67, outside the trust floor) and its "adds
+  no property to the trust floor" sentence coherent with lines 159–180 and
+  VIS-7? Is "not release-blocking as drafted" an honest reading, and is the
+  fifth-bullet arm stated fairly?
+- **Clause (a) and RFC7-20.** Does "unless the surface admits generated
+  prose only as a draft" defer to RFC7-20 without contradicting it, and is
+  Q1's rechecked "decline" rationale sound? Is Q-C3 the right instrument
+  question, and is the (a)/(f) manifesto overlap now honestly resolved?
+- **Clause (d1), reworded and moved.** Is an observed-only project rightly
+  a governed project; does "no act in force names a write into it" keep
+  the registry field out of doctrine; does the new placement read?
+- Are Q-C2's new arms and Q-D1 crisp, and does either pre-decide the owner?
+- Do the re-derived figures (term sweep 1,883 / 151 / 438 and the static
+  sweep 962 / 52, both at `09c7a61d`) and the application probe reproduce?
+
+**Output.** Write the raw review to
+docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md (a file this round
+creates). Its first four non-blank lines must be exactly:
+
+```text
+# Review - D8 doctrine amendment packet (Inferred first-class, P-102) — round 3
+Reviewed commit: <the full 40-hex commit you reviewed>
+Package digest: <sha256 by the method below, at the reviewed commit>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+```
+
+**Head contract.** `Package digest` is the package digest by this brief's
+scripted method, computed at the reviewed commit and nothing else: at the
+repo root of a clone checked out at the reviewed commit,
+`sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-inferred-first-class-d8 | LC_ALL=C sort) | sha256sum`,
+first field. It is not a doctrine file's digest, not a single file's
+digest and not a figure copied from this brief or the dispositions. Number
+every finding, label each `[Observed]`, `[Inferred]` or `[Unknown]`, and
+mark each as revise-level or a note.
