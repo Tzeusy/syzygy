@@ -13,6 +13,13 @@ carries it): one new version repairing all six round-2 findings, then one
 fresh confirmation round. The repairs are mapped in `ROUND-2-DISPOSITIONS.md`.
 **These bytes are unconfirmed:** no round has read them, and round 3 is
 pending. The account below describes the repaired version.
+*(Marked 2026-10-14: "no decision record carries it", "no round has read
+them" and "round 3 is pending" are no longer true. The direction is
+recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`, and
+round 3 read these bytes and returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` line 4). The bytes
+stay unconfirmed; see `ROUND-3-DISPOSITIONS.md`.)*
 
 ## The warrant
 

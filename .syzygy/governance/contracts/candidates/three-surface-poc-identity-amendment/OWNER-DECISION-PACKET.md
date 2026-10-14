@@ -15,6 +15,13 @@ on 2026-10-14**. The repaired bytes are **unconfirmed, pending round 5**, one
 fresh confirmation review. This version is not yet recommended for signing.
 Each repair is mapped in `ROUND-4-DISPOSITIONS.md`, and none needed a choice
 from you.
+*(Marked 2026-10-14: "pending round 5" is no longer true. Round 5 read the
+repaired bytes and returned `REVISE`, one revise finding (33) and five
+notes (34–38) (`docs/reviews/R-M9-POC-IDENTITY-AMENDMENT-5-RAW.md` line 4).
+Under the stopping rule recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md` the
+package is not repaired again and comes to you with those findings open;
+`ROUND-5-DISPOSITIONS.md` beside this file classifies them.)*
 
 ## What you would be signing
 

@@ -16,6 +16,14 @@ returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. The
 questions below are unchanged; your instruction answers Question 1 with
 *Revise* for round 2's bytes, and Question 1 is asked again of this version
 once round 3 clears it.
+*(Marked 2026-10-14: "unconfirmed pending round 3" and "No round has read
+these bytes" are no longer true. Round 3 read them and returned `REVISE`,
+two revise findings and five notes
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` line 4), so round 3
+did not clear this version. Under the stopping rule recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md` it is
+not repaired again and comes to you with those findings open;
+`ROUND-3-DISPOSITIONS.md` beside this file classifies them.)*
 
 ## What you would be signing
 

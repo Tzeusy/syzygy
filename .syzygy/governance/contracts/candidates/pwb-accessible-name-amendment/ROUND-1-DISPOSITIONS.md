@@ -20,6 +20,9 @@
   No round 2 is dispatched. The repaired bytes are not offered as cleared
   under Scope A; the owner decides between signing, a confirmation round
   and revision (register row P-99).
+  *(Marked 2026-10-14: "No round 2 is dispatched" is no longer true. The
+  owner's direction of 2026-10-14 ordered the confirmation round; it
+  returned `REVISE`. See `ROUND-2-DISPOSITIONS.md`.)*
 - **Figures** [Observed]. Re-derived after the repair by
   `scripts/build_pwb_accessible_name_amendment.py --check`: 11 proposed
   subjects, 2 patched; 17 requirements and 53 scenarios; `--selftest` 20

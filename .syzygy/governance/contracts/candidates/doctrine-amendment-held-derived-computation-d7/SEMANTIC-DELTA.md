@@ -234,3 +234,7 @@ session; brief in `REVIEW-BRIEF.md`.
 **Verdict:** round 1 `REVISE` (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-1-RAW.md`
 line 4), repaired once per `ROUND-1-DISPOSITIONS.md`; no round 2 under the
 stopping rule, so the repaired bytes are unconfirmed.
+*(Marked 2026-10-14: "no round 2" is no longer true. Round 2 ran on the
+owner's direction of 2026-10-14 and returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md` line 4); see
+`ROUND-2-DISPOSITIONS.md`. The repaired bytes remain unconfirmed.)*

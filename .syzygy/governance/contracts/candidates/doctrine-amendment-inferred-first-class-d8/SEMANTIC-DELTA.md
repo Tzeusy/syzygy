@@ -172,5 +172,9 @@ feature-request funnel; derived indexes regenerate per packet §9.
 
 **Required class:** fresh-context review (CC-REV-1), one round under
 `REVIEW-BRIEF.md`; the stopping rule there was set before the round.
+*(Marked 2026-10-14: "one round" is no longer true. A round 2 ran on the
+owner's direction of 2026-10-14 and returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md` line 4); see
+`ROUND-2-DISPOSITIONS.md`.)*
 **Reviewer:** a fresh agent that did not draft this package.
 **Verdict:** recorded verbatim in the raw and in `ROUND-1-DISPOSITIONS.md`.

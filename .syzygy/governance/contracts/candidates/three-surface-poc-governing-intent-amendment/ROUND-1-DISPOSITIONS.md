@@ -20,6 +20,10 @@ fresh-context round; on `REVISE`, one repair and no round 2. Every finding
 below was repaired once. **The repaired bytes are not cleared**: no reviewer
 has read them, so this version is not offered for sign-off. The owner decides
 whether a confirmation round comes first (register row P-100).
+*(Marked 2026-10-14: "no round 2" and "no reviewer has read them" are no
+longer true. The owner's direction of 2026-10-14 ordered the confirmation
+round; it read these bytes and returned `REVISE`. The bytes are still not
+cleared. See `ROUND-2-DISPOSITIONS.md`.)*
 
 ## Dispositions
 

@@ -3,6 +3,9 @@
 > **Candidate — binds nothing.** The drafter's record of how each round-1
 > finding was handled. A disposition is not a confirmation: no reviewer has
 > read the repaired bytes.
+> *(Marked 2026-10-14: "no reviewer has read the repaired bytes" is no
+> longer true; round 2 read them and returned `REVISE`. See
+> `ROUND-2-DISPOSITIONS.md`.)*
 
 **Round:** 1, fresh context. **Raw:**
 `docs/reviews/R-DOCTRINE-AMENDMENT-D7-1-RAW.md`, retained verbatim.
@@ -16,6 +19,9 @@ raw's own closing count.
 **Stopping rule** (set in `REVIEW-BRIEF.md` before the round): one round;
 each finding repaired once and recorded here; no round 2. The repaired
 bytes go to the owner as **repaired and unconfirmed**.
+*(Marked 2026-10-14: "no round 2" is no longer true. The owner's direction
+of 2026-10-14 ordered one fresh confirmation round; it read these repaired
+bytes and returned `REVISE`. See `ROUND-2-DISPOSITIONS.md`.)*
 
 Every repair below was re-derived from the source file, not copied from the
 raw: line numbers, clause text and counts were re-read or re-run at

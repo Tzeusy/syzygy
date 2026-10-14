@@ -13,6 +13,13 @@ only the owner's own words in the owner's own session do.
 repaired once and is recorded in `ROUND-1-DISPOSITIONS.md`; under the
 stopping rule set in `REVIEW-BRIEF.md` no round 2 ran, so these bytes are
 **repaired once, unconfirmed**.
+*(Marked 2026-10-14: "no round 2 ran" is no longer true. On the owner's
+direction of 2026-10-14
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`) a
+round 2 read these bytes and returned `REVISE`, three revise findings and
+nine notes (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md` line 4). The
+bytes stay unconfirmed and go to the owner with those findings open;
+`ROUND-2-DISPOSITIONS.md` beside this file classifies them.)*
 
 **Batched with packet A.** The bead asks for this packet to be offered
 alongside D7 (held derived computation, register row P-101; its packet is

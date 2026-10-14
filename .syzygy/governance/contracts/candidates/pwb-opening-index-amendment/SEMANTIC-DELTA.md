@@ -196,3 +196,7 @@ One fresh-context round over this package and the accessible-name package
 together returned `REVISE`. Under the coordinator's direction after the
 round, the findings were repaired once and no round 2 was dispatched; see
 `ROUND-1-DISPOSITIONS.md`. These bytes are unconfirmed.
+*(Marked 2026-10-14: "no round 2 was dispatched" is no longer true. Round 2
+ran on the owner's direction of 2026-10-14 and returned `REVISE`
+(`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-2-RAW.md` line 4); see
+`ROUND-2-DISPOSITIONS.md`. The bytes remain unconfirmed.)*
