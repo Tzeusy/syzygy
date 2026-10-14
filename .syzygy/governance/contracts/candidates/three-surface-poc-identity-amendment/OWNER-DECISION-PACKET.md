@@ -1,5 +1,18 @@
 # Owner decision packet — Three-Surface POC identity amendment
 
+> **Parked 2026-10-14 by owner direction; superseded by
+> `../three-surface-poc-vocabulary-epistemic-amendment/` (register row
+> P-108).** On 2026-10-14, in the lead session, the owner answered a
+> structured question on P-84: "Park, redraft narrower — Stop this
+> package. A fresh drafter redrafts it from the 43 findings as a smaller
+> package, for example the record-ownership machinery split from
+> 055/060." [Observed: as relayed to the redraft lane; not recorded under
+> `decisions/`.] This package is not repaired, reviewed or offered again.
+> The redraft carries POC-REQ-055 and the POC-REQ-060 amendment; POC-REQ-054
+> and the ribbon are deferred scope with owner questions in its
+> `OWNER-DECISION-PACKET.md`. Everything below, and every other file in this
+> directory, is kept as it stood when parked; its state lines are history.
+
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
 > accepted. This packet puts two questions to the owner; only the owner's
 > answer binds anything (VIS-4).
@@ -40,6 +53,9 @@ unattributed-carrier limb falsifies seeded subjects such as POC-REQ-051's
 region) and three notes, all open in `ROUND-6-DISPOSITIONS.md`. Under the
 stopping rule the package is not repaired again and this version is not
 offered for sign-off; it comes to you with those findings open.)*
+*(Marked 2026-10-14, parked: the owner received it and parked it; see the
+head of this file. The findings stay open here and are the input to the
+redraft's census.)*
 
 ## What you would be signing
 
@@ -105,6 +121,9 @@ joins the kinds of thing the table allows for that name.
 
 - It starts no implementation. M9 slices 4–8 become eligible to start under
   your ruling only after this sign-off.
+  *(Marked 2026-10-14, parked: this package will not be signed, so "only
+  after this sign-off" names no event. Which sign-off makes which slice
+  eligible is question D3 of the redraft's packet.)*
 - It does not make the Inferred arm constructible in production. Under your
   ruling (P-75 Q4) the arm stays a typed landing zone with no production
   constructor, and a production constructor needs its own act.
@@ -129,6 +148,9 @@ version under Question 1; no phrase or digest is needed, and the signing
 change registers it with `scripts/record_versioned_signoff.py`, naming that
 direction as its Scope A extension. Only Question 1 is still open. The text
 and table below are kept as drafted.
+*(Marked 2026-10-14, parked: "Only Question 1 is still open" is no longer
+true. Question 1 is not offered for this package, which is parked; the
+redraft carries its own Question 1.)*
 
 The 2026-10-02 versioned sign-off direction (Scope A) covers "the PWB
 specification deltas, the observer registry entry and the contract
