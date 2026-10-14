@@ -28,7 +28,12 @@ byte; every other signed row may only move from Part B2 to Part A, and every
 added row says it is an amendment row. Outside the rows, every other signed
 line of the matrix and of the proposal must survive, except the computed
 figures COMPUTED_LINES names, the family table that totals_findings checks and
-the clause rows that coverage_findings checks.
+the clause rows that coverage_findings checks. Every signed line of the
+specification's reader notes must survive too, except the six lines
+READER_NOTE_EDITS names, which the amendment rewraps; their replacements are
+checked by READER_NOTE_PHRASES. The proposal's new section must carry the
+P-75 Q4 sentence PROPOSAL_Q4 names. The --check success line prints the
+requirement count computed over the proposed spec.
 """
 
 from __future__ import annotations
@@ -99,6 +104,12 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("cross-cutting group", "Group: Cross-cutting experience. Form: **invariant**."),
         ("one identity, by no other", "name that subject by that identity and by no other"),
         ("held, never minted", "the shared model holds that identity and mints none of its own"),
+        ("owned decided by a stated procedure", "carries a non-empty identifier of that source's own record format"),
+        ("machine answer in the identity population", "over the union of the served surfaces and the machine answer, every element and every record carrying a subject identity"),
+        ("one identity value per subject decides", "Zero subjects whose elements or records carry more than one identity value"),
+        ("one subject per identity value decides", "zero identity values carried by elements or records of more than one subject"),
+        ("expected identity independent of the renderer", "never from the machine answer or a surface's renderer"),
+        ("attribution independent of the identity", "never by the identity the element carries"),
         ("exactly one link target per link", "to exactly one link target on that surface, and that target SHALL carry the same identity"),
         ("reasoned-Unknown slot decides", "zero unfilled slots lacking the Unknown label, a reason, a route or the declared Unknown encoding"),
         ("slot filled only by a joined subject", "filled only from a subject joined to that claim by its identity"),
@@ -117,6 +128,7 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("flag never widens the vocabulary", "it never adds a kind or a role pair to that vocabulary"),
         ("unassigned role pairs decide", "zero unflagged relationships whose mapped role pair the table does not assign that relation"),
         ("reversed roles falsify", "(reversed roles included)"),
+        ("literals never imported from the model", "none is imported from the model"),
         ("disclosure scenario", "#### Scenario: A kind outside the closed table is disclosed"),
     ),
     "POC-REQ-060": (
@@ -128,10 +140,37 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("Inferred never Observed or clearing", "SHALL never count toward an Observed total or clear an Unknown"),
         ("Inferred encoded distinctly", "render with an encoding the legend distinguishes from Observed"),
         ("Inferred fixture limb", "the Inferred limbs are exercised by a fixture record injected at the model seam"),
+        ("objects are the record denominator", "enumerates every entity, relationship and claim in the machine answer — the denominator is that population — checks that each carries exactly one epistemic record"),
+        ("a missing record falsifies", "an entity, relationship or claim with no epistemic record or with more than one"),
+        ("every Unknown recounted", "a recount of every Unknown in the machine answer with and without it"),
         ("signed scenario kept", "#### Scenario: Unknown looks the same everywhere"),
         ("Inferred scenario", "#### Scenario: An agent assertion stays Inferred"),
     ),
 }
+
+
+#: The six signed reader-notes lines the amendment rewraps (the group list and
+#: the decision-key list); every other signed reader-notes line must survive.
+READER_NOTE_EDITS = (
+    "  (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).",
+    "  Identifiers are stable and literal: minted once, amended in place,",
+    "  retired rather than reused, never renumbered (CC-SPEC-3). Gaps in the",
+    "  numbering are deliberate.",
+    "  `THREE-SURFACE-POC-MODE-DIRECTION.md` and `POC-DIR-2026-08-30` names",
+    "  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`. `contracts[]` entries come",
+)
+#: Whitespace-normalized phrases the rewrapped reader notes must carry.
+READER_NOTE_PHRASES = (
+    ("the cross-cutting group range", "*Cross-cutting experience* (054–055, 060–061)"),
+    ("the signed identifier rule", "Identifiers are stable and literal: minted once, amended in place, retired rather than reused, never renumbered (CC-SPEC-3). Gaps in the numbering are deliberate."),
+    ("the Group-line placement sentence", "their number range does not place them in the Orrery group, their `Group` line does."),
+)
+#: The proposal sentence that makes P-75 Q4's "no production constructor"
+#: binding; whitespace-normalized.
+PROPOSAL_Q4 = (
+    "This amendment does not make the arm constructible in production; "
+    "that needs its own owner act."
+)
 
 
 def sha256(data: bytes) -> str:
@@ -237,6 +276,14 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
         findings.append("the specification's title, banner or Purpose changed")
     if POC_DIR_KEY not in new_pre or POC_DIR_FILE not in new_pre:
         findings.append("reader notes do not define the POC-DIR-2026-09-21 decision key")
+    old_notes = old_pre.split("## ADDED Requirements", 1)[-1]
+    new_notes = new_pre.split("## ADDED Requirements", 1)[-1]
+    lost = _lost_lines(old_notes, new_notes, lambda line: line in READER_NOTE_EDITS)
+    if lost:
+        findings.append(f"signed reader-notes line edited or removed: {lost[0]!r}")
+    for label, phrase in READER_NOTE_PHRASES:
+        if normalized(phrase) not in normalized(new_notes):
+            findings.append(f"reader notes lack {label}")
     old_scenario = old_by_id["POC-REQ-060"].split("#### Scenario:", 1)[1].split("```yaml", 1)[0]
     new_060 = dict(new_blocks)["POC-REQ-060"]
     if "#### Scenario:" + old_scenario.rstrip("\n") not in new_060:
@@ -443,6 +490,8 @@ def companion_findings(
         findings.append("proposal does not carry the amendment section")
     if "- Inferred mappings, edges or missing intent." not in proposal:
         findings.append("proposal's non-goal against inferred mappings, edges or intent changed")
+    if normalized(PROPOSAL_Q4) not in normalized(proposal):
+        findings.append("proposal does not carry P-75 Q4's own-owner-act sentence")
     return findings
 
 
@@ -598,7 +647,7 @@ def selftest() -> int:
         ),
         "computed total drift": (
             COVERAGE,
-            _replace(proposed[COVERAGE], "102 covered,", "103 covered,"),
+            _replace(proposed[COVERAGE], "103 covered,", "104 covered,"),
             "Part A totals is not the computed figure",
         ),
         "family table drift": (
@@ -654,6 +703,46 @@ def selftest() -> int:
             PROPOSAL,
             _replace(proposed[PROPOSAL], "## Acceptance inputs", "## Inputs"),
             "signed proposal line edited or removed",
+        ),
+        "reader-notes signed line edited": (
+            SPEC,
+            _replace(proposed[SPEC], "Each requirement ends with a machine-readable", "Each requirement may end with a machine-readable"),
+            "signed reader-notes line edited or removed",
+        ),
+        "reader-notes group range edited": (
+            SPEC,
+            _replace(proposed[SPEC], "*Cross-cutting experience* (054–055,", "*Cross-cutting experience* (054,"),
+            "reader notes lack the cross-cutting group range",
+        ),
+        "054 expected identity read from the renderer": (
+            SPEC,
+            _replace(proposed[SPEC], "never\n  from the machine answer or a surface's renderer", "or\n  from the machine answer"),
+            "POC-REQ-054 lacks expected identity independent of the renderer",
+        ),
+        "054 machine answer outside the population": (
+            SPEC,
+            _replace(proposed[SPEC], "surfaces and the machine answer, every element and every record", "surfaces, every element"),
+            "POC-REQ-054 lacks machine answer in the identity population",
+        ),
+        "054 unowned subjects unchecked": (
+            SPEC,
+            _replace(proposed[SPEC], "Zero subjects whose elements or\n  records carry more than one identity value, ", ""),
+            "POC-REQ-054 lacks one identity value per subject decides",
+        ),
+        "055 literals imported": (
+            SPEC,
+            _replace(proposed[SPEC], "none is\n  imported from the model", "each is\n  imported from the model"),
+            "POC-REQ-055 lacks literals never imported from the model",
+        ),
+        "060 missing record passes": (
+            SPEC,
+            _replace(proposed[SPEC], "an entity, relationship or claim with no epistemic record\n  or with more than one; ", ""),
+            "POC-REQ-060 lacks a missing record falsifies",
+        ),
+        "proposal Q4 sentence deleted": (
+            PROPOSAL,
+            _replace(proposed[PROPOSAL], "production; that needs its own owner act. ", "production. "),
+            "proposal does not carry P-75 Q4's own-owner-act sentence",
         ),
     }
     for name, (rel, mutated, expected) in mutants.items():
@@ -742,11 +831,13 @@ def main(argv: list[str]) -> int:
             for finding in findings:
                 print(f"  {finding}")
             return 1
-        totals = coverage_totals(proposed_bytes()[COVERAGE].decode("utf-8"))
+        proposed = proposed_bytes()
+        totals = coverage_totals(proposed[COVERAGE].decode("utf-8"))
+        requirements = len(REQ_HEADING.findall(proposed[SPEC].decode("utf-8")))
         print(
             f"Three-Surface POC identity amendment manifest matches {len(SUBJECTS)} "
             f"proposed subjects ({len(PATCHED)} patched, {len(SUBJECTS) - len(PATCHED)} "
-            f"unchanged); 26 requirements, Part A {totals['a_clauses']} clauses over "
+            f"unchanged); {requirements} requirements, Part A {totals['a_clauses']} clauses over "
             f"{totals['a_rows']} rows; structure, regeneration and the preserved "
             "RFC1-26 row verify"
         )
