@@ -32,10 +32,21 @@
   - **The package is not repaired again.** The only edits after the round
     are dated status marks at the "no round 2" sentences finding 5 names
     (packet, delta and `ROUND-1-DISPOSITIONS.md`), the old text kept.
-  - **No round 3 is dispatched.**
+    *(Marked 2026-10-14, later the same day: no longer true. On the owner's
+    further direction that day, relayed by the lead session, every round-2
+    finding, notes included, was repaired once; see "Repairs, 2026-10-14
+    (cycle 2)" below.)*
+  - **No round 3 is dispatched.** *(Marked 2026-10-14, later the same day:
+    the same direction orders one fresh round 3 under the same stopping
+    rule, briefed in `../pwb-opening-index-amendment/REVIEW-BRIEF.md`
+    §"Round 3" and not yet run.)*
   - **The bytes are not cleared.** This version is not offered for sign-off.
     It goes to the owner as register row P-99, with the seven findings below
     open. This record recommends nothing on Questions 1–6.
+    *(Marked 2026-10-14, later the same day: the findings below are
+    repaired once, unconfirmed pending round 3, and the packet now carries
+    Questions 7 and 8, which the repair added; the bytes are still not
+    cleared. The dispositions below are left as written.)*
 
 Reviewed record: docs/reviews/R-PWB-ACCESSIBLE-NAME-AMENDMENT-2-RAW.md
 
@@ -81,3 +92,41 @@ sentences in the delta, the packet and P-99 are marked or updated, dated.
 line 197. With the repaired P-85 and P-86 patches landed, this builder's
 `--check` composes them live and passes. A later change to any sibling
 patch needs the check again.
+
+## Repairs, 2026-10-14 (cycle 2)
+
+**Direction.** The owner, in the lead session on 2026-10-14, directed one
+more cycle for this packet: repair every round-2 finding, notes included,
+once; then one fresh review under the same stopping rule; and where a
+repair needs the owner's content choice, put it as a question with a
+recommendation [Observed: as the lead session relayed it to the repairing
+session; no decisions file records it at `814fbcc1`]. The repairing
+session signs, records and dispatches nothing. The repaired bytes are
+**round-2 findings repaired once on 2026-10-14, unconfirmed pending round
+3** (`../pwb-opening-index-amendment/REVIEW-BRIEF.md` §"Round 3").
+
+**Base.** `origin/main` at `814fbcc1594cea812289bf7bc246bd9d9a38ef56`,
+after the anchor-resolution sign-off (P-96) moved PWB `spec.md`. The spec
+patch was rebuilt over the current `spec.md` and the dependency patch and
+manifest regenerated with `--write`. Line numbers below are of
+`proposed/spec.md.patch` as repaired. Code facts are [Observed] at
+`814fbcc1`.
+
+| # | Level | Repair (where) |
+|---|---|---|
+| 1 | revise | **Scoped, made checkable, and the identity half narrowed, with an owner question.** Patch lines 17–24: an element's visible label is "its text content with each whitespace run collapsed to one space and the ends trimmed". Where elements with different targets share one visible label on a page, each of their accessible names SHALL begin with that label. Where such an element's target is an exact-source route response, the words after the label SHALL include "the repository-relative path the machine answer carries for the source that route serves (PWB-REQ-011's machine recovery)". "These two rules bind no other element." The undefined "identity PWB-REQ-014 renders" is gone, and so is the round-1 sentence "told apart … by the item or source it belongs to", whose "belongs to" no oracle could resolve. The Oracle now groups by visible label and compares name prefixes and paths (line 70). Oracle independence takes the expected path from the machine answer (line 79). The Falsifier adds the failing element (line 85). The first new scenario now asserts the prefix and the path (line 100), and the second fails a shared-label name that does not begin with its label (line 112). All pinned, with mutants, including the raw's "free text" probe. Package A's rows fall under this only where another element with a different target shares a row's words. **Packet Question 7** asks whether to keep the narrowed identity half, drop it, or widen it |
+| 2 | note | Patch lines 42–45: "The pages are the entry page and one exact-source route response for each source the machine answer at that evaluation lists, whether that response serves the source's body or refuses it. The list comes from the machine answer, never from the links the renderer emits." The Oracle's page count now equals "the number of pages listed from the machine answer", and the second scenario says so. Pinned, with a mutant |
+| 3 | note | Patch lines 13–16 define the interactive population as the heading population is defined: every link with an `href`, button, `summary` and form control in the document after load, including those inside a closed `details`, excluding those hidden by `hidden`, `aria-hidden="true"` or `display: none`. The DOM is the population, not the accessibility tree that today's checker reads (`polaris-accessibility.ts` line 525), so a link in a closed disclosure is counted. The Oracle's per-page denominator is now "the population this requirement defines". Pinned, with a mutant |
+| 4 | note | **Exemption dropped, with an owner question.** The verbatim-heading exemption is removed. Patch lines 34–35 say no heading is exempt, "including one Polaris renders from Butlers-declared text". The Falsifier's and scenario's "outside a verbatim body" went with it. The heading population now names `h1` to `h6` and `role="heading"` at its `aria-level` (line 29). The delta's reason is replaced by the code facts. The exact-source route renders each body as escaped text in a `<pre>` (`polaris-source.ts` line 123). Butlers-declared Markdown on the entry page is re-based by `polaris-markdown.ts` line 179, so Polaris already chooses those levels. **Packet Question 8** asks whether any exemption should return |
+| 5 | note | The ledger's fixture line, the builder docstring and register row P-99 now say "every Polaris page served at one whole-project evaluation". The round-state sentences are marked at the sentence, dated, in the packet, the delta, this record and P-99. The packet's "Butlers' own headings are left as written" bullet is marked at the sentence |
+| 6 | note | The heading exclusions and the identity half are pinned as whole sentences, each with a mutant (the raw's two probes: exclusions inverted, added words made free text). The engine's prefix check is unchanged, since the engine is shared with P-85 and P-86, which are being repaired concurrently. This builder now adds a positional check: the line after each replaced line's signed predecessor must open with that line's signed stem. Its mutant inserts a line between them |
+| 7 | note | Re-checked over the current tree: this builder's `--check` composes every pending sibling live and passes at the repair commit. The repaired P-85 and P-86 patches still need composing at sign-off time. Their own builders' `--check` fails at `814fbcc1` on a stale dependency patch, as this one did before `--write`. That is theirs to regenerate, and this repair does not touch their packages |
+
+**Figures** [Observed, at the repair commit]. `--check`: 11 proposed
+subjects (2 patched), 17 requirements, 54 scenarios. `--selftest`: 27
+structure mutants (5 engine, 22 builder), each failing on its own
+predicate.
+
+**Not changed.** The distinct-name rule, the target definitions, the
+heading rule, the page scope and the three `replaced` lines are unchanged.
+Questions 1–6 stand as written, except for the dated marks.

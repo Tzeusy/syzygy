@@ -3,6 +3,8 @@
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
 > accepted. This packet puts six questions to the owner, and only the
 > owner's answer binds anything (VIS-4).
+> *(Marked 2026-10-14: eight questions now. The cycle-2 repair added
+> Questions 7 and 8.)*
 
 **Status: round 1 `REVISE`, repaired once, unconfirmed; owner decides.**
 Drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12, slice C),
@@ -21,6 +23,16 @@ finding and six notes
 (`docs/reviews/R-PWB-ACCESSIBLE-NAME-AMENDMENT-2-RAW.md` line 4). The bytes
 are still not cleared; the findings are open and classified in
 `ROUND-2-DISPOSITIONS.md` beside this file.)*
+*(Marked 2026-10-14, later the same day: "the findings are open" is no
+longer true. On your further direction that day, relayed by the lead
+session, one more cycle ran.)* **Status now: round-2 findings repaired once
+on 2026-10-14, unconfirmed pending round 3.** Every round-2 finding, notes
+included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)"). One fresh round 3 is briefed in
+`../pwb-opening-index-amendment/REVIEW-BRIEF.md` §"Round 3": a notes-only
+verdict clears the bytes it reads, and a `REVISE` comes back to you with
+its findings. Two repairs needed your content choice and are put to you as
+Questions 7 and 8.
 
 ## What you would be signing
 
@@ -31,7 +43,12 @@ sight or a mouse. Read `SEMANTIC-DELTA.md` for the full account. In short:
   reader announces a link's name, not where it sits. If many links to
   different sources are all called the same thing, a reader who cannot see
   cannot tell them apart. After this, a repeated label carries the name of
-  the item or source it belongs to.
+  the item or source it belongs to. *(Marked 2026-10-14: no longer exact.
+  In the repaired version every
+  name that shares a visible label with a link going elsewhere starts with
+  that label, and a link to an exact-source page then adds that source's
+  file path. Other repeated labels, such as a toggle repeated per figure,
+  must still differ but need not name an item (Question 7).)*
 - **Headings do not skip levels.** One top heading, and no jump from a
   level-2 heading straight to a level-4 one, so the page's outline can be
   followed by ear.
@@ -43,6 +60,12 @@ sight or a mouse. Read `SEMANTIC-DELTA.md` for the full account. In short:
 - **Butlers' own headings are left as written.** Where an exact-source page
   shows a Butlers document verbatim, its headings are counted but not held
   to the heading rule, because Polaris may not rewrite them.
+  *(Marked 2026-10-14: no longer in this version. The review found that an
+  exact-source page shows a Butlers document as plain preformatted text,
+  with no headings at all. Where Polaris does render Butlers' headings, on
+  the entry page, it already sets their levels itself. So the exemption
+  covered nothing, and now every heading is held to the rule
+  (Question 8).)*
 
 **What it touches besides PWB-REQ-016.** Only the regenerated dependency
 file, whose one changed line is the specification digest. No other
@@ -67,6 +90,11 @@ requirement, capability row, contract-coverage row or warrant moves.
 | Decline | PWB-REQ-016 stays as signed: same-named links to different places stay lawful. |
 | Revise | Name what to change; a new version gets a new review round. |
 | **Order one confirmation round** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
+
+*(Marked 2026-10-14: the confirmation-round option is spent. Round 2 ran
+and returned `REVISE`; on your direction the findings were repaired once
+and round 3 is briefed. Until round 3 returns, this version is not offered
+for signing, so Question 1 waits on round 3.)*
 
 ## Question 2 — which elements must have distinct names
 
@@ -107,6 +135,10 @@ all 120 orders of the five spec patches apply to one identical result,
 re-derived 2026-10-03 (an earlier count of 24 orders over four patches
 omitted P-96) — and P-85 and P-86 also share a design decision and a
 capability row number. Each manifest is built over the current tree.
+*(Marked 2026-10-14: the anchor-resolution package (P-96) is no longer
+pending. You signed it v1.0 that day, so four spec patches remain
+pending. This package was regenerated over the moved specification in the
+cycle-2 repair.)*
 
 | Option | Meaning |
 |---|---|
@@ -119,5 +151,39 @@ capability row number. Each manifest is built over the current tree.
 |---|---|
 | **Every Polaris page at one evaluation** (recommended; this version) | The entry page and each exact-source page. A reader reaches the exact-source pages through the same links, so they are part of what a nonvisual reader must navigate. |
 | The entry page only | A smaller build, but every other Polaris page stays unchecked. |
+
+*(Added 2026-10-14: the repaired version also says where the page list
+comes from. It is the entry page plus one exact-source page for each source
+the machine answer lists, whether that page shows the source or refuses
+it. The list never comes from the links Polaris draws.)*
+
+## Question 7 — what a shared label must add (added 2026-10-14, cycle 2)
+
+The round-1 repair said that the words a repeated label adds "name the item
+or source by the identity PWB-REQ-014 renders for it". The round-2 review
+found that nothing checked this, and that the identity was not pinned (raw
+finding 1). This version says that any element sharing its visible label
+with an element that goes elsewhere has a name that starts with that label.
+Where it leads to an exact-source page, the name then includes that
+source's file path, which the check takes from the machine answer.
+
+| Option | Meaning |
+|---|---|
+| **The label first, plus the file path for exact-source links** (recommended; this version) | Checkable from outside the renderer. Other repeated labels, such as a toggle repeated per figure, must still differ but need not name an item. [Unknown] Whether the machine answer already carries every source's path was not checked; if not, the machine answer needs it too. |
+| The label first, nothing more | Drops the path. Names still differ, but what they add is up to the renderer. |
+| Name the item or source for every repeated label | Needs the specification to say which item or source each target belongs to. Not drafted. |
+
+## Question 8 — whether any heading is exempt (added 2026-10-14, cycle 2)
+
+The round-1 version exempted headings "inside a verbatim Butlers body". The
+round-2 review found the exemption covered nothing: exact-source pages show
+Butlers documents as preformatted text with no heading elements, and
+Butlers' headings on the entry page get their levels from Polaris (raw
+finding 4). This version exempts no heading.
+
+| Option | Meaning |
+|---|---|
+| **No exemption** (recommended; this version) | Every heading Polaris renders is held to the rule. Polaris sets those levels already, so it can close a gap without changing a word of Butlers' text. |
+| Exempt headings Polaris shows exactly as Butlers wrote them | Only matters if a future mode renders Butlers' headings at their own levels. Needs a way for the check to recognize those headings. Not drafted. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.
