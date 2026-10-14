@@ -77,6 +77,31 @@ configured Butlers repository also remains Unknown. This specification does
 not turn missing
 evidence into an empty or successful state.
 
+## Amendment — governing intent on every work item
+
+This amendment adds POC-REQ-014: every served work item carries a
+governing-intent field, and under this specification its value is always
+Unknown with the reason `source-uncaptured-or-unreachable` and that reason's
+route. Both channels count those items over the served set. Trajectory shows
+that count beside how many of the items its bounded selection (POC-REQ-042)
+holds and how many fall outside it, says each is resolved by supplying its
+warrant, marks every item it renders with the Unknown encoding, and lets a
+reader narrow the board to them, as RFC8-23 requires of work with no
+traceable warrant. Nothing served ever takes a governing intent from a title,
+so the non-goal above against inferred edges and intent stands unchanged.
+
+The amendment admits no new work-item column or other input, and it defines
+no edge to a warrant. Which input, if any, may carry a warrant into the POC is
+an open owner question, recorded as P-100 in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`; whatever the
+answer, the edge itself needs a further amendment. In `CONTRACT-COVERAGE.md`,
+RFC8-22, RFC8-23 and RFC8-24 move from Part B2 to Part A, because a
+requirement now covers one of their consequences, and each limb no
+requirement observes has its own Unknown amendment row. RFC8-21, the chain
+those three clauses sit in, moves from Part B2 to Part B1: the POC now renders
+the chain's first link, so the clause applies, but no requirement walks the
+chain.
+
 ## Acceptance inputs
 
 - `CONTRACT-COVERAGE.md` carries the clause-consequence review input and its

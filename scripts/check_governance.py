@@ -1698,6 +1698,14 @@ PWB_ANCHOR_RESOLUTION_DIR = f"{CANDIDATES}/pwb-anchor-resolution-amendment"
 PWB_ANCHOR_RESOLUTION_SUBJECT = (
     f"{PWB_ANCHOR_RESOLUTION_DIR}/PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt")
 PWB_ANCHOR_RESOLUTION_ACT = f"{DECISIONS}/PWB-ANCHOR-RESOLUTION-AMENDMENT-ACT.md"
+#: The PWB class-granular extraction amendment to PWB-REQ-002 (ruling P-82
+#: (A), funnel move M15, P-86), signed by version tag 2026-10-14 after
+#: anchor resolution.
+PWB_CLASS_GRANULAR_LABEL = "SIGN OFF PWB CLASS-GRANULAR EXTRACTION AMENDMENT"
+PWB_CLASS_GRANULAR_DIR = f"{CANDIDATES}/pwb-class-granular-extraction-amendment"
+PWB_CLASS_GRANULAR_SUBJECT = (
+    f"{PWB_CLASS_GRANULAR_DIR}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt")
+PWB_CLASS_GRANULAR_ACT = f"{DECISIONS}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1935,6 +1943,7 @@ PWB_ITEM_DEPTH_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_READABILITY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_TREE_FRAMING_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_ANCHOR_RESOLUTION_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_CLASS_GRANULAR_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1972,6 +1981,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_ANCHOR_RESOLUTION_LABEL, PWB_ANCHOR_RESOLUTION_SUBJECT,
      PWB_ANCHOR_RESOLUTION_ACT, PWB_ANCHOR_RESOLUTION_SUBJECTS,
      f"{PWB_ANCHOR_RESOLUTION_DIR}/OWNER-DECISION-PACKET.md"),
+    ("class-granular", "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT",
+     PWB_CLASS_GRANULAR_LABEL, PWB_CLASS_GRANULAR_SUBJECT,
+     PWB_CLASS_GRANULAR_ACT, PWB_CLASS_GRANULAR_SUBJECTS,
+     f"{PWB_CLASS_GRANULAR_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
@@ -2035,6 +2048,21 @@ SPEC_POLICY_RESTYLE_ROWS = ((CC_IMPACT_LABEL, CC_IMPACT_SUBJECT),
 #: package manifest; its recorder
 #: (`scripts/record_three_surface_poc_readability_successor.py`) checks the
 #: six signed subjects against predecessor or successor rows.
+#: Version-tagged Three-Surface POC sign-offs, in act order:
+#: `(package, version, record, manifest)`. A manifest-less package's record
+#: carries its applied rows and is its manifest. CG-7h reads a general
+#: bootstrap transaction row for a POC path as act-time history only when the
+#: latest of these whose record and single aggregate block exist re-patched
+#: that path to exactly today's bytes (the POC analogue of the PWB chain).
+POC_VERSIONED_SUCCESSORS = (
+    ("three-surface-poc-block-provenance-amendment", "1.0",
+     f"{DECISIONS}/THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md",
+     f"{CANDIDATES}/three-surface-poc-block-provenance-amendment/"
+     "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt"),
+    ("three-surface-poc-governing-intent-amendment", "1.0",
+     f"{DECISIONS}/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+     f"{DECISIONS}/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+)
 POC_READABILITY_LABEL = "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR"
 POC_READABILITY_DIR = f"{CANDIDATES}/three-surface-poc-readability-successor"
 POC_READABILITY_SUBJECT = (
@@ -4333,7 +4361,8 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                contract_chain_inputs=None,
                                contract_chain=None,
                                spec_policy_inputs=None,
-                               impact_digest=None):
+                               impact_digest=None,
+                               poc_successor_inputs=None):
     """The performed transaction binds every current and nested subject.
 
     CG-7d permits old *performed* digests so append-only history remains true.
@@ -4379,6 +4408,11 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     aggregate must equal today's bytes whether or not the successor exists.
     `spec_policy_inputs`, when given, is `(dedicated record, manifest body,
     manifest digest)`; `impact_digest` replaces CC-IMPACT's current digest.
+    A top-level row for a Three-Surface POC path is act-time history only
+    while the latest recorded `POC_VERSIONED_SUCCESSORS` entry naming that
+    path (record present, its aggregate block exactly once) carries today's
+    digest for it; anything else stays a finding. `poc_successor_inputs`,
+    when given, maps each package to `(record body, manifest body)`.
     `contract_chain_inputs`, when given, maps each link label to
     `(dedicated record, manifest body, manifest digest)`; an absent label
     reads as no records and no manifest. `contract_chain` replaces the chain
@@ -4396,6 +4430,24 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             return current_digests.get(normalized)
         full = os.path.join(ROOT, normalized)
         return sha256_file(full) if os.path.isfile(full) else None
+
+    def poc_successor_row(rel):
+        """(digest, package, version) of the latest recorded POC sign-off
+        whose rows name `rel`, or None."""
+        latest = None
+        for package, version, record_rel, manifest_rel in POC_VERSIONED_SUCCESSORS:
+            if poc_successor_inputs is None:
+                record_body = read_if_present(record_rel)
+                body = read_if_present(manifest_rel)
+            else:
+                record_body, body = poc_successor_inputs.get(package, ("", ""))
+            marker = f"<!-- versioned-signoff:{package}:v{version} -->"
+            if not record_body or act_record.count(marker) != 1:
+                continue
+            for sha, row_path in re.findall(r"^([0-9a-f]{64})  (\S+)$", body, re.M):
+                if row_path == rel:
+                    latest = (sha, package, version)
+        return latest
 
     def manifest_rows(body, rel, expected_count):
         rows, bad_lines = [], []
@@ -4728,6 +4780,13 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"{SPEC_POLICY_RESTYLE_SUBJECT}")
             continue
         actual = current_digest(rel) if rel else None
+        later = poc_successor_row(rel) if rel else None
+        if actual != expected and later is not None and later[0] == actual:
+            details.append(
+                f"[historical] {GENERAL_BOOTSTRAP_SUBJECT}:{line_no} — act-time "
+                f"POC row superseded by the version-tagged sign-off "
+                f"{later[1]}-v{later[2]}")
+            continue
         if actual != expected:
             findings.append(
                 f"{GENERAL_BOOTSTRAP_SUBJECT}:{line_no} — `{path}` hashes to "
@@ -8593,6 +8652,19 @@ def selftest():
                   row[0] == "FAIL"
                   and any("ACT-SEMANTICS.md" in d for d in row[4])))
 
+    row = _selftest_cg7h("poc-successor-history")
+    cases.append(("CG-7h a POC coverage row a recorded version-tagged sign-off re-patched "
+                  "to today's bytes is history",
+                  row[0] == "OK"
+                  and any("act-time POC row superseded" in d for d in row[4])))
+    for poc_kind, why in (("poc-successor-unrecorded", "no aggregate block"),
+                          ("poc-successor-other-digest", "its row names other bytes"),
+                          ("poc-successor-overridden", "a later sign-off names other bytes")):
+        row = _selftest_cg7h(poc_kind)
+        cases.append((f"CG-7h POC coverage drift stays a finding when {why}",
+                      row[0] == "FAIL"
+                      and any("poc/CONTRACT-COVERAGE.md` hashes to" in d for d in row[4])))
+
     row = _selftest_cg7h("nested-contract-drift")
     cases.append(("CG-7h nested contract row drift detected",
                   row[0] == "FAIL"
@@ -10288,6 +10360,22 @@ def _selftest_cg7h(kind):
                 current[f"{CONTRACT_ROOT}/{path}"] = sha
                 current[f"{CANDIDATES}/{path}"] = sha
 
+    # A version-tagged POC sign-off that re-patched the POC coverage row.
+    poc_inputs = {}
+    if kind.startswith("poc-successor"):
+        poc_path = top_paths[5]
+        current[poc_path] = digest("poc-successor")
+        (early_pkg, early_ver, *_e), (late_pkg, late_ver, *_l) = POC_VERSIONED_SUCCESSORS[-2:]
+        late_row = (digest("poc-other") if kind == "poc-successor-other-digest"
+                    else digest("poc-successor"))
+        if kind == "poc-successor-overridden":
+            poc_inputs[early_pkg] = ("record\n", f"{digest('poc-successor')}  {poc_path}\n")
+            performed += f"<!-- versioned-signoff:{early_pkg}:v{early_ver} -->\n"
+            late_row = digest("poc-other")
+        poc_inputs[late_pkg] = ("record\n", f"{late_row}  {poc_path}\n")
+        if kind != "poc-successor-unrecorded":
+            performed += f"<!-- versioned-signoff:{late_pkg}:v{late_ver} -->\n"
+
     # CC-IMPACT (act 7) and the specification-policy restyle successor.
     impact = digest("impact")
     # Ahead of every link's section, so no link's section scoping sees it.
@@ -10359,7 +10447,8 @@ def _selftest_cg7h(kind):
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
                         if kind == "restyle-three-link-cascade" else None),
-        spec_policy_inputs=spec_inputs)
+        spec_policy_inputs=spec_inputs,
+        poc_successor_inputs=poc_inputs)
     PWB_SUCCESSOR_CHAIN = kept_chain
     return c.row("CG-7h")
 

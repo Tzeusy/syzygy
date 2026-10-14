@@ -37,6 +37,10 @@ gap visible, and reads Butlers only under owner authority.
     lists of container shapes and item key forms. Butlers keeps a built-in
     grammar only until its profile is declared, and a loaded profile has no
     built-in fallback.
+  - Each class of a source is read on its own: one class that fails leaves
+    only itself Unknown, a heading the grammar does not enumerate is
+    surfaced rather than skipped, and a count made without a read root index
+    says so.
 - **Conflicts stay visible.** Project-fact identity and precedence use a
   closed grammar.
   - The live eight-versus-nine domain-butler disagreement is one required

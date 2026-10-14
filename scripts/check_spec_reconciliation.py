@@ -212,6 +212,17 @@ CHILDREN = (
                       "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt",
           "proposed": f"{CANDIDATES}/three-surface-poc-block-provenance-amendment/"
                       "proposed"},
+         # No manifest: the sign-off record carries the applied rows in
+         # manifest-row form and stands in as the manifest.
+         {"kind": "versioned",
+          "package": "three-surface-poc-governing-intent-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/"
+                    "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{DECISIONS}/"
+                      "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+          "proposed": f"{CANDIDATES}/three-surface-poc-governing-intent-amendment/"
+                      "proposed"},
      )},
     {"key": "polaris-base", "bead": "syzygy-73e.5.3", "kind": "digest",
      "change": BASE_CHANGE,
@@ -254,6 +265,12 @@ CHILDREN = (
           "manifest": f"{CANDIDATES}/pwb-anchor-resolution-amendment/"
                       "PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt",
           "proposed": f"{CANDIDATES}/pwb-anchor-resolution-amendment/proposed"},
+         {"kind": "versioned", "package": "pwb-class-granular-extraction-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/"
+                      "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/proposed"},
      )},
 )
 
@@ -353,16 +370,16 @@ EXPECTED = {
         "051 052 053 060 061 062 063 064".split(),
         (1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1))),
-    "POC": dict.fromkeys(
+    "POC": {**dict.fromkeys(
         "001 002 003 004 010 011 012 013 020 021 022 030 031 032 040 041 042 "
-        "043 050 051 052 053 060 061".split(), 1),
+        "043 050 051 052 053 060 061".split(), 1), "014": 2},
     "PWB": dict(zip(
         "001 002 003 004 005 006 007 010 011 012 013 014 015 016 020 021 "
         "022".split(),
-        (1, 6, 1, 3, 5, 3, 5, 2, 5, 1, 1, 9, 1, 1, 1, 2, 5))),
+        (1, 10, 1, 3, 5, 3, 5, 2, 5, 1, 1, 9, 1, 1, 1, 2, 5))),
     "POLARIS": None,  # totals only below; per-requirement counts in census.json
 }
-EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (24, 24), "PWB": (17, 52),
+EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (25, 26), "PWB": (17, 56),
                    "POLARIS": (31, 182)}
 
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.M)
