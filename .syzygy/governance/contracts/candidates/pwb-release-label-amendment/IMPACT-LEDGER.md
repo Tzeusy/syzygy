@@ -5,23 +5,30 @@
 
 ## Predicate and population
 
-[Observed, computed 2026-10-03 at `0a10977b`]
+[Observed, re-measured 2026-10-14 at `8f1fbec7` for the round-2 repair]
 
-- **Population:** every tracked file, 1,947 paths (`git ls-files -z`).
+- **Population:** every tracked file at that commit, 2,658 paths
+  (`git ls-tree -r -z --name-only 8f1fbec7`).
 - **Predicate:** Python `re`, run form included:
   `PWB-REQ-(\d{3})((?:[ \t]*(?:/|,|–|\.\.|…|and)[ \t]*\d{3}\b)*)`. A file
   counts when any match's first number or any continuation number is `001`.
-- **Result:** 74 files cite PWB-REQ-001.
+- **Result:** 95 files cite PWB-REQ-001. The same script at `0a10977b` gives
+  1,947 paths and 74 files, the figures this ledger first published on
+  2026-10-03.
+- **Second method, implementation files only:** `git grep -l PWB-REQ-001`
+  over `apps` and `packages` gives 8 files at `8f1fbec7` and 7 at
+  `0a10977b`, equal to the script's rows below.
 
 | Area | Files | Effect of this amendment |
 |---|---:|---|
-| `docs/reviews/` raw reviews | 19 | None. Raw output is never edited (CC-REV-6). |
-| Other `docs/` (plans, designs, evidence, pursuits) | 16 | None. Evidence records name the bytes they measured. |
-| `.syzygy/governance/contracts/candidates/` sibling packages | 15 | None. Every sibling is performed or declined; none is pending against the PWB spec. The builder's sibling classification checks this. |
+| `docs/reviews/` | 21 | None. Raw output is never edited (CC-REV-6). Two of them are this package's round-1 and round-2 raws. |
+| Other `docs/` (plans, designs, evidence, pursuits) | 17 | None. Evidence records name the bytes they measured. |
+| `.syzygy/governance/contracts/candidates/` | 29 | Nine are this package's own files. Four are files of three pending PWB packages: the accessible-name, class-granular (two files) and opening-index amendments, which name this package as a pending sibling; each of their builders' `--check`, which composes every pending spec patch in every order, passes over the repaired spec patch. One is the SEC-3 doctrine amendment's ledger, which cites PWB-REQ-001 and does not patch the PWB spec. The other fifteen belong to performed packages and repins: none. |
 | `openspec/changes/polaris-project-wide-butlers-model/` | 11 | Five patched (spec, capability coverage, design, proposal, contract-coverage repair delta) and two regenerated (`GOVERNING-DEPENDENCIES.md`, `CONTRACT-COVERAGE.md`). The three matrix files, the three parts files and `tasks.md` are unchanged. |
-| `scripts/` | 5 | At sign-off, `check_spec_reconciliation.py` changes twice: its literal census (17 requirements, 55 scenarios, PWB-REQ-001 at 5) and the PWB child's successor chain. The others are unchanged: the coverage and dependency builders regenerate, and the two sibling builders are history. |
+| `scripts/` | 7 | At sign-off, `check_spec_reconciliation.py` changes twice: its literal census (17 requirements, 55 scenarios, PWB-REQ-001 at 5) and the PWB child's successor chain. This package's builder is the guard itself. The others are unchanged: the coverage and dependency builders regenerate, and the three sibling builders are history. |
 | `packages/three-surface-poc-core/src/` | 5 | Implementation consumers. Sign-off authorizes no change to them. |
-| `apps/three-surface-poc/src/` | 2 | The mutation sweep cites PWB-REQ-001's oracle. Sign-off authorizes no change. |
+| `apps/three-surface-poc/src/` | 3 | The mutation sweep (two files) cites PWB-REQ-001's oracle, and `polaris-reconciliation.test.ts` cites the requirement. Sign-off authorizes no change. |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 1 | Register row P-85 itself. |
 | `AGENTS.md` | 1 | None. |
 
 ## Files a later implementation would touch

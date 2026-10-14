@@ -138,3 +138,24 @@ give it a finding of whatever severity you find:
 `CONFIRM` or `CONFIRM WITH EXCEPTIONS` with every finding a note, clears the
 bytes it read. Any other verdict sends the package to the owner with its
 findings open. No round 3 is dispatched.
+
+## Round 3 (added 2026-10-14; not yet dispatched)
+
+Round 2 returned `REVISE`. On 2026-10-14 the owner instructed one new
+version repairing all six round-2 findings, then one fresh confirmation
+round. Round 3 reviews the repaired bytes against the same seven criteria,
+on their own merits. Do not read `ROUND-1-DISPOSITIONS.md`,
+`ROUND-2-DISPOSITIONS.md` or anything under `docs/reviews/`.
+
+**Raw-head digest predicate.** Unchanged from round 2: over the first four
+non-blank lines, line 3 is `Manifest SHA-256: ` followed by the lowercase
+64-hex sha256 of the bytes of the **file**
+`PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the reviewed commit, computed
+by `git show <commit>:<path> | sha256sum`. It is never a row inside the
+manifest, and never the proposed spec's digest.
+
+**Stopping rule, set before this round.** A notes-only round (`CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with every finding a note) clears the bytes it
+read; its notes are dispositioned beside the package, never by editing
+those bytes. Any other verdict sends the package to the owner with its
+findings open. No round 4 is dispatched without a new owner instruction.

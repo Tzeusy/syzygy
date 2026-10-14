@@ -39,6 +39,15 @@
   repairs Findings 1–6, and one fresh round over it. Q2–Q4 can be ruled now;
   Q4's answer settles the wording in Finding 4.
 
+- **Repaired 2026-10-14 (owner-instructed).** The owner instructed one new
+  version repairing Findings 1–6, then one fresh confirmation round — the
+  drafter's recommendation above. Every finding is mapped to its repair
+  under "Repairs, 2026-10-14" at the end of this record. The dispositions
+  between here and there are kept as written on 2026-10-03; their **Open**
+  marks describe the round-2 bytes. The repaired bytes are **unconfirmed**:
+  no round has read them, and round 3 is pending. This record dispatches
+  nothing.
+
 Reviewed record: docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-2-RAW.md
 
 ## Dispositions
@@ -108,3 +117,30 @@ is not plainly "reading it failed".
 Proposed repair: state that a moved tag is disclosed wherever its name is
 carried (the machine answer and the expansion included), add a tie-plus-move
 fixture, and say which form a single failed peel yields.
+
+## Repairs, 2026-10-14
+
+Made under the owner's instruction of 2026-10-14, over `main` at
+`8f1fbec7`. Every repair is in the proposed bytes the builder applies, and
+the generated patches and manifest were regenerated with `--write`, never
+hand-edited. **Unconfirmed:** these repairs are what round 3 reviews; none is
+"accepted" until it does.
+
+| # | Finding | Repair |
+|---|---|---|
+| 1 | Not-read statement false under test 3 (revise) | Each not-read test now names its own statement: test 1 "release tags were not read", test 3 "the history needed to judge release tags was not read". The scenario, `SEMANTIC-DELTA.md`, the packet and design decision 12 (its form list and two flowchart nodes) say the same. A decide-line now checks "exact equality of form, statement, …", the machine answer's label record carries the test that applied and its statement, and the falsifier gains "a not-read or untagged label whose statement is not its test's". |
+| 2 | `RFC4-11.r1` claims more than the fixtures observe (revise) | The fixture "a shallow clone whose captured history holds a reaching tag" is added (expected form: not read, since test 3 precedes test 4), and so is the falsifier limb "a count of later commits computed from incomplete ancestry". The r1 row is unchanged; the delta now names both shallow-clone fixtures as what observes it. |
+| 3 | Naming-site denominator counts label-free sites (revise) | Polaris *names* the revision where its owner-visible text shows the full id, the twelve-digit prefix, or the project name followed by a captured tag name. Attribute values, link targets and identities are not owner-visible text and are left to the tag-name sweep. Each naming is one *label unit* (label, statement, full id, moved-tag disclosures), exposed as one element of the page. Sites are those occurrences plus the machine answer's label record, and the decide-line is "zero sites outside a label unit". |
+| 4 | "Release tag" undefined (note) | The tag-set definition now says "These are the release tags the label counts", so the term follows the tag set and whatever Question 4 rules. The untagged statement is fixed as "no release tag reaches this revision". |
+| 5 | Signed PWB-REQ-001 sentences extended and unguarded (note) | The spec patch now leaves every signed line of PWB-REQ-001 byte-identical: the Observable, Oracle-independence and Falsifier additions start on new lines. Only the doctrine and contracts warrant lines change. The builder applies the lost-line guard to the whole signed PWB-REQ-001 block, exempting only those two warrant lines, and checks that each list keeps every signed identifier. New selftest mutants delete a signed Oracle clause, edit a signed Falsifier clause and a signed Observable clause, and drop the signed SEC-3 warrant; each fails on its own predicate. |
+| 6 | Moved tags on tied, unnamed tags; a single failed peel (note) | A moved tag is disclosed "wherever its name is carried": in a label, among the tied names in the machine answer, and in the surface's expansion of them. A fixture now has two tags tied at the revision, the later in codepoint order moved. "When any ref under `refs/tags/` cannot be read or peeled, reading the tag set failed", so test 1 applies, with the fixture "a tag set one of whose refs fails to peel while the others read". This fail-closed reading is a drafter's choice named in `SEMANTIC-DELTA.md` §"Choices the round-2 repair made". |
+
+**Builder.** `REQUIRED_ONCE` gains one or more pinned phrases per finding.
+The selftest now runs 30 structure mutants (19 before): 11 are new, and the
+existing mutants were re-pointed at the repaired wording. `--check` and
+`--selftest` pass. Requirement, scenario and contract-coverage figures are
+unchanged: 17 requirements and 55 scenarios, and the regenerated
+`CONTRACT-COVERAGE.md.patch` is byte-identical to round 2's.
+
+**Left for the owner.** No finding needed an owner choice. The three
+drafter choices named under Finding 6 and in the delta can be changed by answering Question 1 *Revise*.
