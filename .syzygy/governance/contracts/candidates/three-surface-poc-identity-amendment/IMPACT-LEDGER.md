@@ -94,6 +94,23 @@ file counts for `POC-REQ-060` and the spec path.
   > M9 planning files above, they are this package and its builder, the
   > block-provenance package (3), the register, `docs/README.md` and the
   > four round raws. No implementation file names them.]
+  >
+  > **Marked 2026-10-14, cycle 2.** Two sentences of the note above went
+  > stale the same day:
+  > - "two later candidates" — the block-provenance amendment is no longer
+  >   a candidate. The owner signed it v1.0 on 2026-10-14
+  >   (`../../../decisions/THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md`),
+  >   and its bytes are in the signed tree. This package's four patches
+  >   were regenerated over them. [Observed 2026-10-14: before
+  >   regeneration this builder's `--check` failed, "GOVERNING-DEPENDENCIES.md.patch
+  >   does not apply"; the spec patch applied at a 54-line offset with no
+  >   content change; after regeneration `--check` passes.]
+  > - "Both packets ask their sign-off route to follow this package's
+  >   Question 2" — the route is now set for both by
+  >   `../../../decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md`.
+  >
+  > The governing-intent pair stays mutually exclusive;
+  > `SEMANTIC-DELTA.md` residual 5 names the regeneration step.
 - **Route pages.** `PROJECT-STATUS.md`, `openspec/README.md`, `README.md` and
   `AGENTS.md` do not name the new identifiers. Naming them there before
   sign-off would fail the reconciliation checker's R4, and would describe an

@@ -45,6 +45,12 @@ round reads them.
 (`docs/reviews/R-M9-POC-IDENTITY-AMENDMENT-5-RAW.md` line 4), so "until a
 fifth fresh-context round reads them" no longer describes the state. The
 repairs stay unconfirmed; see `ROUND-5-DISPOSITIONS.md`.)*
+*(Marked 2026-10-14, cycle 2: on the owner's further direction that day,
+relayed by the lead session, one more cycle ran. **Round-5 findings
+repaired once on 2026-10-14, unconfirmed pending round 6**; each repair is
+mapped in `ROUND-5-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)", and
+round 6 is briefed in `REVIEW-BRIEF.md` §"Round 6". The patches were also
+regenerated over `main` after the P-97 sign-off moved the signed spec.)*
 
 ## What the ruling settled, verbatim
 
@@ -102,9 +108,29 @@ Two value-free limbs then hold for every subject, owned or not: every
 element and record attributed to one subject carries one identity value,
 and no identity value is carried by elements or records of two subjects.
 The checker attributes each element and record to its subject by the
-source record it renders, never by the identity it carries. Only the
-equality limb, the identity against its owning source's identifier, is
-limited to owned subjects.
+source record it renders or answers for, never by the identity it carries.
+*(Repaired 2026-10-14, cycle 2, round-5 finding 33: the sentence above was
+true of this delta and not of the requirement, whose oracle-independence
+bullet, ownership test and equality limb spoke of elements only. The
+proposed POC-REQ-054 now says "each element and record … by the source
+record it renders or answers for, never by the identity it carries" in all
+three places, and the builder guards each phrase.)* An element or record
+carrying a subject identity that renders or answers for no source record
+the shared model reads is attributed to no subject, and that falsifies the
+requirement: without this limb a machine-answer record could name a
+phantom subject that no other limb sees. Only the equality limb, the
+identity against its owning source's identifier, is limited to owned
+subjects.
+
+Which field of a source's record format is "that source's own identifier"
+is not fixed here. It is declared, per source, by the implementation slice
+that lands the identity's form. Until it is declared for a source, that
+source's subjects are of Unknown ownership: the equality limb reports them
+Unknown, never as owned, unowned or passing, and the consistency limbs
+still hold. [Inferred] For a Beads work item the field is plainly the issue
+id; for a code region the obvious candidates are the path, which RFC6-1
+bars as a selection identity, and the blob or tree id, which is not
+durable, so code regions may stay of Unknown ownership until slice 6.
 
 A second paragraph carries the **ribbon**: where a surface renders one claim's
 desired, execution and observed states together, each slot is filled only by
@@ -346,9 +372,17 @@ an Unknown row. The `asserted-by-worker` row's Authority column reads
 "Visible, never green, challengeable, never a status input", and each of its
 words now has its own row:
 
-- **"never green"** — covered. The claim sits inside its parent label,
-  Inferred, and renders with the declared Inferred encoding, which the legend
-  distinguishes from Observed.
+- **"never green"** — covered, on a reading. The claim sits inside its
+  parent label, Inferred, and renders with the declared Inferred encoding,
+  which the legend distinguishes from Observed. [Inferred] That reads "never
+  green" as "rendered unlike Observed". RFC2-25's own `gate-backed` row lists
+  "green" among positive status claims ("Aligned, Converged, reconciled,
+  green"), so the word can also be read as "never rendered as a positive
+  status". On that reading this limb is the Unknown positive-status row
+  below, and POC-REQ-060's oracle does not check that the declared Inferred
+  encoding is not itself a positive or green treatment. The covered row
+  carries an `[Inferred]` tag saying so, and the builder guards it.
+  *(Added 2026-10-14, cycle 2, round-5 finding 35.)*
 - **"never a status input"** — split. Covered for the two computations the
   POC performs: the claim counts toward no Observed total and clears no
   Unknown. Unknown for any positive status (Aligned, Converged, reconciled,
@@ -415,13 +449,32 @@ change does not discover it.
    therefore needs either the owner's word that Scope A reaches it, or the
    phrase-and-digest form with a dedicated recorder. That choice is the
    owner's; `OWNER-DECISION-PACKET.md` puts it.
+   *(Marked 2026-10-14, cycle 2: the choice is made.
+   `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md`
+   extends the Scope A version-tag route to Three-Surface POC specification
+   amendments and names this package as following it when it clears. What
+   the signing change still carries is item 3.)*
 2. **`scripts/check_spec_reconciliation.py`.** R3 hard-codes the POC-REQ
    census at 24, and R2 binds the six subjects to the readability successor's
    rows. Both fail after `--apply` until the signing change registers this
    package as the POC child's successor and updates `census.json`.
+   *(Marked 2026-10-14, cycle 2: since the P-97 sign-off the POC child has a
+   first versioned successor, the block-provenance amendment, and the
+   checker composes chained versioned successors over the bytes each left.
+   This package would be registered as the next link after it, not as the
+   first. [Inferred: from the P-97 signing commit's message; the checker's
+   chain for this package is the signing change's to write.])*
 3. **`scripts/record_versioned_signoff.py`.** If the version-tag route is
    chosen, the package must be added to `real_packages()`, which today lists
    only PWB packages.
 4. **Implementation consumers of POC-REQ-060.** Three implementation files
    cite POC-REQ-060 (`IMPACT-LEDGER.md`). They are affected only when slices
    4a/4b land, not by sign-off.
+5. **The mutually exclusive sibling.** [Observed 2026-10-14] This package
+   and the governing-intent amendment (`three-surface-poc-governing-intent-amendment/`,
+   register row P-100) both rewrite the spec's reader-notes group list, so
+   no order applies both sets of patches. Whichever is signed second must
+   first be regenerated over the first's applied bytes, with its builder's
+   `--write`, and reviewed again over the regenerated bytes.
+   `IMPACT-LEDGER.md` §"Consumers, by kind" carries the detail. *(Added
+   2026-10-14, cycle 2, round-5 finding 38.)*
