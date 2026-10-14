@@ -5,7 +5,9 @@
 > `syzygy-u05.15`. Round 1 returned `REVISE`; this is the once-repaired,
 > unconfirmed text (`ROUND-1-DISPOSITIONS.md`). Round 2 returned `REVISE`;
 > its findings were **repaired once on 2026-10-14, unconfirmed pending
-> round 3** (`ROUND-2-DISPOSITIONS.md`). The term sweep (§1), the decision
+> round 3** (`ROUND-2-DISPOSITIONS.md`). *(Marked 2026-10-14, round 3:
+> round 3 returned `REVISE`, one revise-level finding and four notes, all
+> open in `ROUND-3-DISPOSITIONS.md`; the bytes stay unconfirmed.)* The term sweep (§1), the decision
 > rows (§3.2), the static reader sweep and the digest census (§4) were
 > re-derived on 2026-10-14 at commit
 > `09c7a61d759bd582227c38b6bec648fe1758fade` (`origin/main` when the

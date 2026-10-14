@@ -27,6 +27,14 @@ once, then one fresh review under the same stopping rule. The twelve
 round-2 findings are **repaired once on 2026-10-14, unconfirmed pending
 round 3**; each repair is mapped in `ROUND-2-DISPOSITIONS.md`, "Repairs,
 2026-10-14 (cycle 2)", and round 3's brief is `REVIEW-BRIEF.md` §"Round 3".)*
+*(Marked 2026-10-14, round 3: "pending round 3" is no longer true. Round 3
+ran and returned `REVISE` (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md`
+line 4): one revise-level finding (under the packet's own reading of "the
+governed plane", a (d2) dismissal either cannot take effect or violates
+VIS-6, and the packet does not say which) and four notes, all open in
+`ROUND-3-DISPOSITIONS.md`. Under the stopping rule the package is not
+repaired again and the bytes stay unconfirmed; it comes to you with those
+findings open.)*
 
 **Batched with packet A.** The bead asks for this packet to be offered
 alongside D7 (held derived computation, register row P-101; its packet is

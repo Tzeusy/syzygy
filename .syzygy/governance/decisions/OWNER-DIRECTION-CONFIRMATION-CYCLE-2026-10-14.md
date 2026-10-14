@@ -81,8 +81,15 @@ hashed again) for the three doctrine and governing-intent packages.
   owner's to answer.
 - **The other eight are `REVISE` and go to the owner with their findings
   open.** Under the stopping rule none is repaired again and no further
-  round is dispatched. Each has a dispositions record for this round beside
-  its package, which classifies its findings and repairs nothing:
+  round is dispatched. *(Marked 2026-10-14, later the same day: "none is
+  repaired again and no further round is dispatched" is no longer true.
+  The owner then directed one more cycle for all eight — repair every
+  finding, notes included, then one fresh review under the same stopping
+  rule — recorded in
+  [`OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md`](OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md),
+  which also records what each further round returned.)* Each has a
+  dispositions record for this round beside its package, which classifies
+  its findings and repairs nothing:
   - P-84: `ROUND-5-DISPOSITIONS.md`.
   - P-85 and P-86: `ROUND-3-DISPOSITIONS.md`.
   - P-98, P-99, P-100, P-101 and P-102: `ROUND-2-DISPOSITIONS.md`.

@@ -9,7 +9,10 @@
 > `ROUND-1-DISPOSITIONS.md` and are unconfirmed. Round 2 (2026-10-14)
 > returned `REVISE`; its twelve findings were **repaired once on 2026-10-14,
 > unconfirmed pending round 3** (`ROUND-2-DISPOSITIONS.md`, "Repairs,
-> 2026-10-14 (cycle 2)").
+> 2026-10-14 (cycle 2)"). *(Marked 2026-10-14, round 3: "pending round 3"
+> is no longer true. Round 3 returned `REVISE`, one revise-level finding
+> and four notes, all open in `ROUND-3-DISPOSITIONS.md`. The bytes stay
+> unconfirmed.)*
 
 **Artifact(s):** `.syzygy/governance/doctrine/trust-and-evidence.md`
 (sha256 `6bf79befec771447b9f70206ee85a406eaffb16b98c8ae1c05f465cd7e486b58`),
@@ -198,6 +201,9 @@ owner's direction of 2026-10-14 and returned `REVISE`
 *(Marked 2026-10-14, later the same day: the owner directed one more cycle;
 the round-2 findings are repaired once, unconfirmed pending round 3, under
 `REVIEW-BRIEF.md` §"Round 3".)*
+*(Marked 2026-10-14, round 3: round 3 returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md` line 4); see
+`ROUND-3-DISPOSITIONS.md`.)*
 **Reviewer:** a fresh agent that did not draft this package.
 **Verdict:** recorded verbatim in the raw and in `ROUND-1-DISPOSITIONS.md`.
 *(Marked 2026-10-14: round 2's verdict is in its own raw and in

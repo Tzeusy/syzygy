@@ -12,7 +12,9 @@
 > breakdown not summing to its figure; both were repaired once on
 > 2026-10-14 (`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)").
 > **Round-2 findings repaired once on 2026-10-14, unconfirmed pending
-> round 3.**
+> round 3.** *(Marked 2026-10-14, round 3: round 3 returned `REVISE`, one
+> revise-level finding and five notes, all open in
+> `ROUND-3-DISPOSITIONS.md`. The bytes stay unconfirmed.)*
 
 ## 1. The trigger sweep
 

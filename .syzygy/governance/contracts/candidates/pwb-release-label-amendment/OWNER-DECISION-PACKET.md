@@ -34,6 +34,14 @@ read these bytes, so it is **not offered for sign-off** until round 4
 returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. Questions
 1–4 are unchanged, and one repair needed a content choice that is yours,
 so it is added as Question 5.
+*(Marked 2026-10-14, round 4: "unconfirmed pending round 4" and "No round
+has read these bytes" are no longer true. Round 4 ran and returned
+`REVISE` (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-4-RAW.md` line 4):
+one revise finding (the provenance-stamp exception is decided by the
+implementation's own mark) and seven notes, all open in
+`ROUND-4-DISPOSITIONS.md`. Under the stopping rule the package is not
+repaired again and this version is not offered for sign-off; it comes to
+you with those findings open.)*
 
 ## What you would be signing
 

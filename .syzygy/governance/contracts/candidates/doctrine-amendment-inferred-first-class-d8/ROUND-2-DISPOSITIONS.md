@@ -41,7 +41,8 @@ round 3 is dispatched" are superseded. The owner, in the lead session on
 finding, notes included, once, then one fresh review under the same
 stopping rule. The repair is below; round 3 is briefed in
 `REVIEW-BRIEF.md` §"Round 3" and is not dispatched by the repairing
-session.)*
+session.)* *(Marked 2026-10-14, round 3: round 3 was dispatched and
+returned `REVISE`; see `ROUND-3-DISPOSITIONS.md`.)*
 
 | # | Level | Finding (short) | Raw line | Disposition |
 |---|---|---|---|---|
@@ -66,7 +67,11 @@ once; then one fresh review under the same stopping rule [Observed: as the
 lead session relayed it to the repairing session; no decisions file
 records it at `09c7a61d`]. The repairing session adopts, records and
 dispatches nothing. The repaired bytes are **repaired once on 2026-10-14,
-unconfirmed pending round 3** (`REVIEW-BRIEF.md` §"Round 3").
+unconfirmed pending round 3** (`REVIEW-BRIEF.md` §"Round 3"). *(Marked
+2026-10-14, round 3: "no decisions file records it" and "pending round 3"
+are no longer true. The direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md`,
+and round 3 returned `REVISE`; see `ROUND-3-DISPOSITIONS.md`.)*
 
 **Base.** Repairs were made on `09c7a61d759bd582227c38b6bec648fe1758fade`
 (`origin/main` when the repair began). Every line number, quotation and

@@ -255,3 +255,8 @@ ran on the owner's direction of 2026-10-14 and returned `REVISE`
 notes included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
 2026-10-14 (cycle 2)"). One fresh round 3 is briefed in `REVIEW-BRIEF.md`
 §"Round 3" and has not run. The repair added packet questions 8 and 9.
+*(Marked 2026-10-14, round 3: "unconfirmed pending round 3" and "has not
+run" are no longer true. Round 3 returned `REVISE`
+(`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-3-RAW.md` line 4), one revise
+finding and nine notes, all open in `ROUND-3-DISPOSITIONS.md`. The bytes
+are not cleared.)*

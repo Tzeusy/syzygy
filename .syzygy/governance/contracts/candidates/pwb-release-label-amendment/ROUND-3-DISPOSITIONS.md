@@ -43,6 +43,8 @@
     round-3 heading; the round-3 text above them is unedited.
     Round-3 findings repaired once on 2026-10-14, unconfirmed pending
     round 4. This record dispatches nothing.)*
+    *(Marked 2026-10-14, round 4: "pending round 4" is no longer true.
+    Round 4 ran and returned `REVISE`; see `ROUND-4-DISPOSITIONS.md`.)*
   - **The bytes are not cleared.** This version is not offered for sign-off
     under Scope A item 3. It goes to the owner as register row P-85, with
     the seven findings below open.
@@ -113,6 +115,8 @@ manifest were regenerated with `--write`, never hand-edited.
 **Round-3 findings repaired once on 2026-10-14, unconfirmed pending round
 4.** The dispositions above keep their **Open** marks: they describe the
 round-3 bytes. None of these repairs is accepted until round 4 reads it.
+*(Marked 2026-10-14, round 4: round 4 has read them and returned
+`REVISE`, so none is accepted; see `ROUND-4-DISPOSITIONS.md`.)*
 
 Line numbers below are in `proposed/spec.md.patch` (`spec`) and
 `scripts/build_pwb_release_label_amendment.py` (`builder`) at this commit.
