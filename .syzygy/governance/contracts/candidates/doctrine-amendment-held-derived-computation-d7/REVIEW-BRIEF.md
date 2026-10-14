@@ -10,6 +10,12 @@ One round. Whatever the verdict, the drafter repairs each finding once and
 records each finding and its repair in `ROUND-1-DISPOSITIONS.md`; no round
 2 is dispatched. Repaired bytes go to the owner marked as repaired and
 unconfirmed. A verdict is never re-labelled.
+*(Marked 2026-10-14: "no round 2 is dispatched" is no longer true. A round
+2 ran on the owner's direction of 2026-10-14
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`;
+raw `docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md`), and on the owner's
+further direction the same day its findings were repaired and a round 3
+is briefed in §"Round 3" below. This round-1 brief is otherwise unchanged.)*
 
 ## Subject
 
@@ -88,3 +94,80 @@ Package digest method: at the repo root of a clone at the reviewed commit,
 `sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7 | LC_ALL=C sort) | sha256sum`.
 Number every finding, label each `[Observed]`, `[Inferred]` or
 `[Unknown]`, and mark each as revise-level or a note.
+
+## Round 3
+
+*(Added 2026-10-14, before the round, by the cycle-2 repair lane. Nothing
+above this heading governs round 3 except where this section says so.)*
+
+**Warrant.** The owner's direction of 2026-10-14, given in the lead session
+and relayed to the repair lane: repair every round-2 finding, notes
+included, then one fresh review under the same stopping rule [Observed: as
+relayed; not yet recorded under `decisions/`].
+
+**Stopping rule, set before the round.** One round.
+
+- A verdict with **no revise-level finding** (`CONFIRM`, or `CONFIRM WITH
+  EXCEPTIONS` whose findings are all notes) clears the exact bytes it read,
+  under the owner's 2026-09-26 ruling
+  (`../../../decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1).
+  Its notes go in a sibling `ROUND-3-DISPOSITIONS.md`, and the package's
+  other files are not edited.
+- A verdict of **`REVISE`** (any revise-level finding) goes back to the
+  owner with its findings open: no further repair and no round 4 without a
+  new owner direction.
+- A clearance is not adoption; the owner's questions Q1–Q5 stay the
+  owner's (VIS-4). A verdict is never re-labelled.
+
+**Subject.** Every tracked file of
+`.syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7/`
+at the reviewed commit: `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`,
+`REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`,
+`SEMANTIC-DELTA.md`.
+
+**Governing references.** Those listed above for round 1, plus: the two
+earlier raws, `docs/reviews/R-DOCTRINE-AMENDMENT-D7-1-RAW.md` and
+`docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md`; RFC2-17, RFC2-18 and RFC2-19
+in `contracts/rfcs/RFC-0002/reconciliation-chain.md`, and RFC2-1 in
+`contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md`.
+
+**What to test, at least.**
+
+- Is each of the eight round-2 findings repaired as
+  `ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)" says, and did
+  any repair introduce a new inaccuracy?
+- Finding 1: are both readings of "merge fact" in packet §4.1 stated
+  fairly from the clause text, is the reading the packet relies on labelled
+  and argued, and do §0, §2, §4, §6, the ledger and the delta now say the
+  same thing about what arm A permits on each reading? Is Q5 a well-formed
+  owner question with honest consequences?
+- Finding 2: re-run the ledger §4 reader sweep at `66d42d09` and check the
+  enumeration sums to its figure.
+- Finding 3: is the page-open residual named without changing section 1's
+  text, and does anything now claim a test exists?
+- Are the dated status marks at the stale sentences, with the old text
+  kept, and is any stale sentence left unmarked?
+- Re-check that section 1's proposed doctrine bytes are unchanged from the
+  bytes round 2 read, and that the anchors' sha256 values still hold.
+
+**Output.** Write the raw review to
+docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md (a file this round
+creates; left out of code span so the path check does not ask it to exist
+first). **Head contract:** its first four non-blank lines must be
+exactly these, with nothing appended to the title line:
+
+```text
+# Review - D7 doctrine amendment packet (held derived computation, P-101), round 3
+Reviewed commit: <the full 40-hex commit you reviewed>
+Package digest: <sha256 by the method below>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+```
+
+`Package digest` is the brief's scripted method **at the reviewed commit**,
+unchanged from round 1: at the repo root of a clean clone or worktree
+whose `git rev-parse HEAD` is the reviewed commit,
+`sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7 | LC_ALL=C sort) | sha256sum`,
+over the six files above. It is the digest of the package's own tracked
+bytes, not of any single file, and it includes this brief. Number every
+finding, label each `[Observed]`, `[Inferred]` or `[Unknown]`, and mark
+each as revise-level or a note; close with the count of each.

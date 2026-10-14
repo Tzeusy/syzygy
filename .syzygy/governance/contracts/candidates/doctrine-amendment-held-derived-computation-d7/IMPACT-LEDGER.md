@@ -7,6 +7,12 @@
 > outside every population. Round 1 (`REVISE`) found three coverage gaps
 > in this ledger; §1a, §1b, the two RFC2 rows in §3 and the widened §4 are
 > their repairs (`ROUND-1-DISPOSITIONS.md`), unconfirmed.
+> Round 2 (`REVISE`, 2026-10-14) found the two RFC2 rows in §3 read the
+> merge-fact confinement wider than RFC2-18 states and §4's reader
+> breakdown not summing to its figure; both were repaired once on
+> 2026-10-14 (`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)").
+> **Round-2 findings repaired once on 2026-10-14, unconfirmed pending
+> round 3.**
 
 ## 1. The trigger sweep
 
@@ -104,11 +110,11 @@ file, the same one.
 
 | File | Line(s) | What it says | Disposition |
 |---|---|---|---|
-| `doctrine/vision.md` | 45; 86–87 (wrapped, §1a); 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the section intro "…and not autonomous."; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent; 86–87 consistent: it summarizes the bullet below, and D7 places its class inside VIS-4's stated bounds, so "not autonomous" stays true of Syzygy — on a Q1 "inside" ruling, which section 1's text requires anyway |
+| `doctrine/vision.md` | 45; 86–87 (wrapped, §1a); 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the section intro "…and not autonomous."; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent; 86–87 consistent: it summarizes the bullet below, and D7 places its class inside VIS-4's stated bounds, so "not autonomous" stays true of Syzygy — on a Q1 "inside" ruling, which section 1's text requires anyway. On the narrow RFC2 reading the packet relies on (packet §4.1), D7 licenses unprompted re-observation of any repository with no materialized merged work, more than round 1's text described, so this intro carries correspondingly more weight on that ruling (packet §7, added 2026-10-14, round-2 finding 7) |
 | `doctrine/architecture.md` | 332 | the loop is human-triggered | D7's anchor |
 | `doctrine/v1.md` | 89 | "Human-triggered propagation at full breadth" | consistent: D7 forbids unprompted dispatch |
-| `contracts/rfcs/RFC-0002/reconciliation-chain.md` | 26 (sources list); 245, 247 | RFC2-19, "never autonomously on merge events" | **stays stricter, and binds every D7 trigger whose evaluation captures a merge fact**, not only the hook (packet §4, §6 item 1) |
-| `contracts/rfcs/RFC-0002/reconciliation-chain.md` (no predicate match; found by round 1) | 155–157 | reconciliation-pending attaches "at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" | **binds D7's headline example**: an unprompted evaluation capturing a merge fact contradicts it. D7's text "relaxes no contract that requires a deliberately triggered pass", so arm A leaves the clause true and the example unlawful until RFC2 is amended (packet §4) |
+| `contracts/rfcs/RFC-0002/reconciliation-chain.md` | 26 (sources list); 245, 247 | RFC2-19, "never autonomously on merge events" | **stays stricter, and binds every D7 trigger whose evaluation is a reconciliation evaluation**, not only the hook; its reach is the next row's (packet §4, §4.1, §6 item 1) |
+| `contracts/rfcs/RFC-0002/reconciliation-chain.md` (no predicate match; found by round 1) | 155–157 | reconciliation-pending attaches "at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" | **binds every unprompted evaluation that captures the merge fact**; D7's text "relaxes no contract that requires a deliberately triggered pass", so arm A leaves the clause true. Its reach depends on the reading (packet §4.1): **narrow (relied on)** — the merge of a materialized work item, RFC2-18's scope (lines 141–142), so unprompted re-observation of a repository with no materialized merged work is not reached and arm A makes it lawful at the doctrine level; **wide** — any merge a repository snapshot carries (line 146, RFC2-1 item 1), so the headline example stays unlawful until RFC2 is amended. Q5 asks which binds (repaired 2026-10-14, round-2 finding 1) |
 | `contracts/rfcs/RFC-0004/named-adapters.md` | 26, 420, 433, 435, 492, 526 | RFC4-16, "never an autonomous trigger"; observation passes are human-triggered | consistent: no clock trigger |
 | `contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md` | 26 | cites the human-triggered loop as a source | consistent |
 | `contracts/rfcs/RFC-0005/admission-and-boundary.md` | 323, 590 | RFC5-11 and its q6: revocation forces an evaluation | D7's precedent (packet §3) |
@@ -141,8 +147,10 @@ file, the same one.
 
 No authority-lane sentence is made false by arm A [Inferred: from reading
 every line listed]. The RFC2 rows are the reason that holds: D7 is drafted
-to yield to them rather than to amend them, at the cost of its headline
-example. A sentence elsewhere that confines computation to a deliberate
+to yield to them rather than to amend them. What that costs depends on the
+reading of the merge-fact confinement: on the wide reading, D7's headline
+example; on the narrow reading the packet relies on, only evaluations that
+capture the merge of a materialized work item (packet §4.1). A sentence elsewhere that confines computation to a deliberate
 pass without using a §1 literal would be missed by this sweep; round 1
 found one (RFC2 line 157), and the predicate is not claimed complete.
 
@@ -153,14 +161,37 @@ file), and by a reader sweep: Python `re`
 `governance/doctrine|doctrine/(vision|architecture)\.md` over every tracked
 file at `66d42d09` under `apps/`, `packages/` and `scripts/` ending `.ts`,
 `.py`, `.js`, `.mjs`, `.json`, `.yaml` or `.yml` — **417 files, 11
-readers** — plus the generated YAML index below. Of the 11: the two
-generators and the two scripts in the table; `scripts/check_governance.py`
-(CG messages naming `doctrine/vision.md` as a rule's home, no bytes read);
-five tests and one script using a doctrine path as a fixture path
-(`apps/three-surface-poc/src/git-blob-batch.test.ts`,
-`packages/cap1-conformance/src/req-023`, `req-061` and
-`req-integration` conformance tests, `scripts/polaris_generator_approval.py`),
-none reading today's bytes; and the self-corpus row below.
+readers** — plus the generated YAML index below. Of the 11, enumerated
+(re-derived 2026-10-14 at `66d42d09` by the same Python predicate over the
+same 417 files, and confirmed by `git grep -l -E` over the same pathspecs,
+11 and 11):
+
+- the directive-register generator, `scripts/build_directive_register.py`
+  — 1;
+- the two scripts in the table,
+  `scripts/check_polaris_response_ceiling_reading.py` and
+  `scripts/record_polaris_understanding_adoption.py` — 2;
+- `scripts/check_governance.py` (CG messages naming `doctrine/vision.md` as
+  a rule's home, no bytes read) — 1;
+- four tests using a doctrine path as a fixture path
+  (`apps/three-surface-poc/src/git-blob-batch.test.ts` and the
+  `packages/cap1-conformance/src/` `req-023`, `req-061` and
+  `req-integration` conformance tests), none reading today's bytes — 4;
+- one script using a doctrine path the same way,
+  `scripts/polaris_generator_approval.py` — 1;
+- the self-corpus pair in the table's last row,
+  `apps/three-surface-poc/src/polaris-generation/self-corpus.ts` and
+  `self-corpus.test.ts` — 2.
+
+1 + 2 + 1 + 4 + 1 + 2 = 11. The contract-index generator is **not** one of
+the 11: it lives at
+`.syzygy/governance/contracts/candidates/scripts/build_contract_index.py`,
+outside the population, and names the doctrine directory only by the
+relative path `../../doctrine` (line 46), which the predicate does not
+match. It was found by the other route — the generated
+`05-CONTRACT-INDEX.yaml` carries a word count for each doctrine file.
+*(Repaired 2026-10-14, round-2 finding 2: this paragraph previously said
+"the two generators" and "five tests", which do not sum to 11.)*
 
 | Artifact | Reads | On application of arm A |
 |---|---|---|
