@@ -183,3 +183,99 @@ first field. It is not a doctrine file's digest, not a single file's
 digest and not a figure copied from this brief or the dispositions. Number
 every finding, label each `[Observed]`, `[Inferred]` or `[Unknown]`, and
 mark each as revise-level or a note.
+
+## Round 4
+
+*(Added 2026-10-14, before the round, by the cycle-3 repair lane.
+Everything above is the brief rounds 1 to 3 read; where this section and
+the text above differ, this section governs round 4.)*
+
+**Why a round 4.** Round 3 (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md`)
+returned `REVISE`. On 2026-10-14 the owner, in the lead session, ruled on
+its finding and directed one more cycle for P-102: "Drop dismissal from
+(d2)" — "Dismissals of an observed-only project's gaps can't live in the
+observing project's tree, so VIS-6 stays intact. Then one more cycle."
+[Observed: as relayed by the lead session to the repair lane; not yet
+recorded under `decisions/`.] The repairs, notes included, are mapped in
+`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)". The repairing
+session dispatches no review.
+
+**Stopping rule, set before the round.** One round.
+
+- A verdict with **no revise-level finding** (`CONFIRM`, or
+  `CONFIRM WITH EXCEPTIONS` whose findings are all notes) clears the exact
+  bytes it read, under the owner's 2026-09-26 ruling
+  (`../../../decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1).
+  Its notes go in a sibling `ROUND-4-DISPOSITIONS.md`, and the package's
+  other files are not edited.
+- A verdict of **`REVISE`** (any revise-level finding) goes back to the
+  owner with its findings open: no further repair and no round 5 without a
+  new owner direction.
+- A clearance is not adoption; every question in packet §7 stays the
+  owner's (VIS-4). A verdict is never re-labelled.
+
+**Subject.** Every tracked file of
+`.syzygy/governance/contracts/candidates/doctrine-amendment-inferred-first-class-d8/`
+at the reviewed commit: `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`,
+`REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`,
+`ROUND-3-DISPOSITIONS.md`, `SEMANTIC-DELTA.md`.
+
+**Governing references.** Those listed above for rounds 1 and 3, plus:
+`trust-and-evidence.md` lines 36–49 and 57–67; VIS-6 in `vision.md`
+(lines 229–248), including its violation sentence (246–248);
+`packages/polaris-dossier/src/gate-acts.test.ts` around line 298;
+`scripts/record_polaris_understanding_adoption.py`; and candidate D7's
+packet Q6 and ledger §4
+(`../doctrine-amendment-held-derived-computation-d7/`). The reviewer
+**SHOULD** read the earlier raws
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D8-1-RAW.md`,
+`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md` and
+`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md`) and
+`ROUND-3-DISPOSITIONS.md`, and check each round-3 finding against the
+current bytes, not against the dispositions' account of them.
+
+**What to test, at least.**
+
+- Is each of the five round-3 findings repaired as `ROUND-3-DISPOSITIONS.md`
+  §"Repairs, 2026-10-14 (cycle 3)" says, and did any repair introduce a
+  new inaccuracy?
+- **Clause (d2), on the owner's ruling.** Is the dismissal gone from
+  (d2)'s content, both as an example and from the general "content Syzygy
+  authors" phrase? Does the new sentence state where such a dismissal can
+  lawfully live without contradicting `trust-and-evidence.md` lines 42–43
+  or VIS-6's violation sentence? Is "a promoted annotation" right where
+  the old bytes said "a promoted note", and does "never suppresses a gap"
+  overreach? Do §1 (d), §2's (d) row, Q-C2, Q-D1 and the delta now say the
+  same thing?
+- **Clause (e).** Is the heading no wider than the rule, is the Unknown
+  sentence scoped to the denied claim, and is dropping the VIS-7 citation
+  right? Is the new Q5 arm stated fairly?
+- **Clause (a).** Does "is no claim while it stays one" carry the
+  intended reading without licensing more than RFC7-20 and RFC7-21 allow?
+- **Ledger §4.** Is the `gate-acts.test.ts` correction right, and does the
+  re-run application probe over the repaired blocks reproduce?
+- Are the dated status marks at the stale sentences, with the old text
+  kept, and is any stale sentence left unmarked?
+
+**Output.** Write the raw review to
+docs/reviews/R-DOCTRINE-AMENDMENT-D8-4-RAW.md (a file this round
+creates). **Head contract:** its first four non-blank lines must be
+exactly these, with nothing appended to the title line:
+
+```text
+# Review - D8 doctrine amendment packet (Inferred first-class, P-102) — round 4
+Reviewed commit: <the full 40-hex commit you reviewed>
+Package digest: <sha256 by the method below, at the reviewed commit>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+```
+
+`Package digest` is the package digest by this brief's scripted method,
+computed **at the reviewed commit** and nothing else: at the repo root of
+a clean clone or worktree whose `git rev-parse HEAD` is the reviewed
+commit,
+`sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-inferred-first-class-d8 | LC_ALL=C sort) | sha256sum`,
+first field, over the seven files above. It is not a doctrine file's
+digest, not a single file's digest and not a figure copied from this brief
+or the dispositions. Number every finding, label each `[Observed]`,
+`[Inferred]` or `[Unknown]`, and mark each as revise-level or a note;
+close with the count of each.
