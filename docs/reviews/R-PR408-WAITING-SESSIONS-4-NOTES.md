@@ -39,12 +39,12 @@ Reviewed record: docs/reviews/R-PR408-WAITING-SESSIONS-4-RAW.md
 ## Where the notes go
 
 None changes what version 1.2 requires. Each is carried here, not repaired
-in the reviewed bytes. Two follow-up beads are **to be filed** by the lead;
-this record files neither.
+in the reviewed bytes. Each is deferred to one of two follow-up beads,
+filed by the lead.
 
-- **First bead (to be filed):** code and printed-text follow-ups: round-4
+- **`syzygy-syoj`:** code and printed-text follow-ups: round-4
   findings 1, 2 and 4, and round-3 notes 1, 2, 3 and 5.
-- **Second bead (to be filed):** settings layers and the heredoc hand-over:
+- **`syzygy-zzt5`:** settings layers and the heredoc hand-over:
   round-3 note 4 and round-4 finding 3.
 
 ## Round 4 findings
@@ -55,7 +55,7 @@ Under an approval policy of `on-request`, Codex leaves the decision to ask
 to the model, so the printed sentence can be false for a call made while
 nobody is present [Inferred: from `codex --help`, not observed in a
 session]. The spec's residual list names settings layers, not the agent
-tool's own approval behaviour. Deferred to the first bead (to be filed):
+tool's own approval behaviour. Deferred to `syzygy-syoj`:
 say in the printed note and the packet that what a waiting Codex session
 runs without asking depends on Codex's approval policy, and in a later
 version add that dependence to the requirement's Inferred list. Same root
@@ -64,16 +64,14 @@ as round-3 note 5.
 ### 2 — The owner packet's cost paragraph says a waiting session "cannot" write a file or run the project
 
 An allow rule in the operator's own settings can still run unattended,
-which the packet itself says earlier. Deferred to the first bead (to be
-filed): qualify the "cannot" as "cannot, through anything the printed
+which the packet itself says earlier. Deferred to `syzygy-syoj`: qualify the "cannot" as "cannot, through anything the printed
 command pre-approves" wherever that sentence is printed or carried forward.
 The packet's own bytes are reviewed and stay as they are.
 
 ### 3 — Whether Claude Code's prefix rule admits the multi-line heredoc hand-over without asking is Unknown
 
 If the matcher asks, the failure is safe, but the submission stalls
-unattended, which is what option B removes. Deferred to the second bead
-(to be filed): record one attended observation of a real waiting session's
+unattended, which is what option B removes. Deferred to `syzygy-zzt5`: record one attended observation of a real waiting session's
 submission before relying on unattended runs.
 
 ### 4 — The continuity item renders whatever the sign-off state
@@ -82,8 +80,7 @@ submission before relying on unattended runs.
 without consulting `waitModeSignedIn`, so "v1.1 behaviour is unchanged
 while this package is unsigned" overstates for the rendering. It adds a
 disclosure, never a permission, and the merge order (code merges only
-after the v1.2 sign-off) makes it moot. Deferred to the first bead (to be
-filed): scope the sentence to every wait-mode step, or gate the render
+after the v1.2 sign-off) makes it moot. Deferred to `syzygy-syoj`: scope the sentence to every wait-mode step, or gate the render
 item.
 
 ## Round 3 notes
@@ -92,8 +89,7 @@ item.
 
 The sessions root and the session directory are checked, then resolved
 again or written through by path. A writer racing in the state root between
-the two could still redirect a write. Deferred to the first bead (to be
-filed): resolve once and write only through the resolved, checked path, or
+the two could still redirect a write. Deferred to `syzygy-syoj`: resolve once and write only through the resolved, checked path, or
 at least name the race in the code comment. The window is a few synchronous
 calls wide, and the writer is the party the F1 threat already names
 [Inferred: the raw did not reproduce it].
@@ -102,8 +98,7 @@ calls wide, and the writer is the party the F1 threat already names
 
 `appliedSubjectHolds` reads only the raw's `Manifest SHA-256`, not its
 `Verdict:`, its `Reviewed commit:` or the package key that the recorder's
-`parse_head` and `review_binds` require. Deferred to the first bead (to be
-filed): mirror the recorder's head predicate in the gate. The residual is
+`parse_head` and `review_binds` require. Deferred to `syzygy-syoj`: mirror the recorder's head predicate in the gate. The residual is
 the one `RECORDS_WITHIN_REACH` already discloses: anything that can write
 Syzygy's checkout can forge a record.
 
@@ -112,7 +107,7 @@ Syzygy's checkout can forge a record.
 When the record exists but the installed spec no longer hashes to the
 reviewed digest, every wait-mode step says the owner has not signed off.
 Failing closed is right; only the stated reason is wrong in that state.
-Deferred to the first bead (to be filed): tell "no record" apart from "a
+Deferred to `syzygy-syoj`: tell "no record" apart from "a
 record whose applied subject no longer matches" in the refusal.
 
 ### Round-3 note 4 — The settings-layer residual reads as unclosable
@@ -121,8 +116,7 @@ record whose applied subject no longer matches" in the refusal.
 either might drop the user, project and local allow rules that the
 disclosure names as the residual. The owner was told this limit stands and
 that a flag which might lift it would be evaluated as a follow-up (the
-sign-off question, residual (1)). Deferred to the second bead (to be
-filed): evaluate `--setting-sources` and `--restricted --tools …` in a
+sign-off question, residual (1)). Deferred to `syzygy-zzt5`: evaluate `--setting-sources` and `--restricted --tools …` in a
 session, including what else they drop (the operator's model or
 authentication settings), then print one or reword the owner packet's
 "cannot switch it off" to "does not switch it off", with the reason.
@@ -132,6 +126,6 @@ authentication settings), then print one or reword the owner packet's
 The printed Codex note says a waiting Codex session asks before each call;
 an operator's `~/.codex/config.toml` may set an approval policy of `never`.
 The owner was told this limit (the sign-off question, residual (3)).
-Deferred to the first bead (to be filed): say in the printed note that it
+Deferred to `syzygy-syoj`: say in the printed note that it
 depends on the operator's Codex configuration, as the Claude Code
 disclosure does for its settings layers.
