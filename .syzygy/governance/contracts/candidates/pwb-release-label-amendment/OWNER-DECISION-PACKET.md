@@ -3,6 +3,8 @@
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
 > accepted. This packet puts five questions to the owner (the fifth added
 > 2026-10-14), and only the owner's answer binds anything (VIS-4).
+> *(Marked 2026-10-14, cycle 3: six questions now; the sixth was added by
+> the cycle-3 repair.)*
 
 **Status:** drafted 2026-10-03 under your direction of 2026-10-02 on bead
 `syzygy-l362`. Rounds 1 and 2 both returned `REVISE`; their dispositions are
@@ -42,6 +44,24 @@ implementation's own mark) and seven notes, all open in
 `ROUND-4-DISPOSITIONS.md`. Under the stopping rule the package is not
 repaired again and this version is not offered for sign-off; it comes to
 you with those findings open.)*
+*(Marked 2026-10-14, cycle 3: "the package is not repaired again" no
+longer holds. Later that day you directed "One more cycle each" for P-85
+and P-98, and the repair below was made.)*
+
+**Round-4 findings repaired once on 2026-10-14, unconfirmed pending round
+5.** On 2026-10-14, by structured question in the lead session, you
+directed one more cycle: repair every round-4 finding, notes included, then
+one fresh review under the same stopping rule. This is that version; the
+repairs are mapped in `ROUND-4-DISPOSITIONS.md` §"Repairs, 2026-10-14
+(cycle 3)". It is also regenerated over P-86's applied bytes, because P-86
+was signed first ("First ready lands first", P-86 Question 5), so this
+package's design decision is now 13 and its capability row 35. No round has
+read these bytes, so it is **not offered for sign-off** until round 5
+returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. A
+`REVISE` comes back to you. Questions 1–5 are unchanged in substance;
+Question 5's table now says that no requirement governs the status line.
+One repair has an alternative that is yours to choose, so it is added as
+Question 6.
 
 ## What you would be signing
 
@@ -65,17 +85,25 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
   the tags the label counts, which is whatever Question 4 decides.
 - **Polaris names the revision only in a label unit.** Each unit is one
   marked element holding the label, its statement, the full id beneath, the
-  tied names and any moved-tag disclosure, and every Polaris page has at
-  least one. Elsewhere the visible text may not show the revision's id or
-  "Butlers" followed by a tag name, with three exceptions:
-  - the short id stamped beside each claim's source, which is the identity
-    the claim binds to and carries no label;
+  tied names and any moved-tag disclosure. Every Polaris page has at least
+  one; the Polaris pages are `/polaris` and each exact-source page. On each
+  page the first mention of the revision is in a unit (the status line
+  aside), and in each unit the label comes before the id. Elsewhere the
+  visible text may not show the revision's id or "Butlers" followed by a
+  tag name, with four exceptions:
+  - the short id stamped in each claim's source citation, which is the
+    identity the claim binds to and carries no label. Only a citation's
+    revision counts; an id in a sentence or heading never does
+    (Question 6);
+  - an identity shown whole, such as the evaluation identity in the page
+    footer, which contains the full id;
   - Butlers' own text shown verbatim, which stays byte-identical;
   - the shared status line above every surface's content (Question 5).
 - **Moved tags** are disclosed when an earlier evaluation, named as compared,
   saw the tag on another commit, wherever the tag's name appears, tied names
-  included. Nothing ever says a tag is unmoved, unchanged or stable, and the
-  checker searches for those words.
+  included. Nothing says a tag is unmoved, unchanged or stable, and the
+  checker searches for five such words. A rewording outside those five is
+  not caught, and the text says so.
 - **Determinism is kept.** The tags are an input of the evaluation. Your
   "some cost in determinism" is paid only here: the same commit can show a
   different label once its tags change.
@@ -102,6 +130,15 @@ label unit; per-claim source stamps keep a bare short id with no label;
 Butlers' verbatim text is never rewritten to carry a label; and "unmoved"
 is caught by a closed list of five terms. Answer *Revise* if you want any
 of them otherwise.
+
+**Five more choices the cycle-3 repair made** (`SEMANTIC-DELTA.md`
+§"Choices the cycle-3 repair made"): a source stamp counts only inside a
+citation of a real record (Question 6); "the label leads" means it comes
+first on the page; identities such as the footer's evaluation identity are
+shown whole; the Polaris pages are `/polaris` and the exact-source pages;
+and the stability words are read per paragraph, list item or cell, with the
+five-word list stated as a limit. Answer *Revise* if you want any of the
+last four otherwise.
 
 **What signing does not do.**
 
@@ -161,10 +198,30 @@ hexadecimal digits).
 That line is built by one component that the Three-Surface POC
 specification governs, not the PWB one. This version leaves it alone and
 excepts it from the label rule, so on Polaris the short id there stays.
+*(Marked 2026-10-14, cycle 3: "that the Three-Surface POC specification
+governs" was wrong. Round 4 found that no POC requirement names the line,
+and neither does any PWB requirement. The component is shared with
+Trajectory and Orrery, which the POC specification governs, but the line's
+revision display is governed by neither specification. Under this version
+it stays ungoverned on Polaris, and because it sits above the content, a
+reader meets its short id before the label.)*
 
 | Option | Meaning |
 |---|---|
 | **Leave it to the POC specification** (this version) | The status line keeps its short id on every surface. If you want the label there too, it travels with Trajectory and Orrery under Question 3. |
 | Label it on Polaris now | The status line on Polaris carries a label unit. The shared component then behaves differently on Polaris, which changes a POC-governed file, so this needs a POC amendment beside this one (Question 3) and a new version of this package. |
+
+## Question 6 — may a short id stand alone in a sentence? (added 2026-10-14, cycle 3)
+
+Polaris today shows the revision's short id in sentences such as "Declared
+project shape of butlers at revision 1a2b3c4d5e6f." and in the "Revision …"
+line of the shape identity. Round 4 found that if such an id may be marked
+as a "provenance stamp", every mention of the revision can be marked that
+way, and the label then leads nowhere a reader looks.
+
+| Option | Meaning |
+|---|---|
+| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)", and the checker confirms the record it cites carries that revision. Every sentence, heading or identity line that names the revision shows the label instead, or drops the id. The label then leads wherever the revision is named. |
+| Bare ids in sentences may stay | An id in a sentence is allowed with no label. The label still appears once per page and first, but the claim that a stamp "cannot hide a naming" is withdrawn, and a reader may meet many bare ids. This needs a new version of this package. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

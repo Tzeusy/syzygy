@@ -35,6 +35,25 @@ account below describes this version. The base moved because the
 anchor-resolution amendment (P-96) was signed v1.0 at `7f43802f`, which
 changed the signed PWB `spec.md`; the derived patches and the manifest were
 regenerated over it with the builder's `--write`.
+*(Marked 2026-10-14, cycle 3: "The account below describes this version"
+is no longer true of the cycle-2 version; it describes the cycle-3 version
+named next.)*
+
+**Repaired a third time:** 2026-10-14 (cycle 3), over `main` at `7460aec8`,
+under the owner's direction of that day, given in the lead session by
+structured question: "One more cycle each" for P-85 and P-98, that is,
+repair every round-4 finding, notes included, then one fresh review under
+the same stopping rule. The repairs are mapped in `ROUND-4-DISPOSITIONS.md`
+§"Repairs, 2026-10-14 (cycle 3)". **Round-4 findings repaired once on
+2026-10-14, unconfirmed pending round 5.** The account below describes this
+version. The base moved again: the class-granular extraction amendment
+(P-86) was signed v1.0 at `235b71eb` under its Question 5 answer "First
+ready lands first". It changed the signed `spec.md`, `design.md`,
+`proposal.md` and `CAPABILITY-COVERAGE.md`, and took design decision 12 and
+capability row 34. This package's capability patch no longer applied, so
+the authored patches were rewritten over P-86's applied bytes, as design
+decision 13 and capability row 35. The derived patches and the manifest
+were regenerated with `--write`.
 
 ## The warrant
 
@@ -93,22 +112,44 @@ both. Added:
   same surface. Every claim, evaluation identity, link and comparison binds to
   the object id, never to a tag name. The label is a presentation of the
   revision identity, not a project-shape claim.
+  - The *Polaris pages* are a closed population: the human HTML responses to
+    `GET /polaris` and to every request of PWB-REQ-011's exact-source route,
+    served or refused, in every mount form. The machine answer, PWB-REQ-020's
+    derived machine views and generation draft view (which "carries no
+    project-shape identity"), and the response to a human re-observation
+    request are not Polaris pages.
   - Polaris *names* the revision only in a *label unit*: one marked element
     of the page holding the label, its statement, the full object id
     beneath, the expansion of any tied names and any moved-tag disclosure.
     A checker finds each unit by its mark, without judgment. Every Polaris
     page presents at least one.
+  - *The label leads*, and this is now decided: within each unit the label
+    precedes the full object id, and on each page the first visible id of
+    the revision, or project name followed by a tag name, that the text
+    sweep finds outside the shared status line lies in a label unit.
   - Outside a label unit, visible text may not show the revision's full or
     twelve-digit id, or the project's name followed by a captured tag name.
-    Three marked kinds of element are excepted:
-    - *provenance stamps*, whose whole text is a revision id giving where a
-      claim, source, leaf or refusal was read or is bound. They are the
-      identity a claim binds to, not a naming, and carry no label;
+    Four marked kinds of element are excepted. The mark only lets the
+    checker find each one; what the checker reads decides whether it is of
+    that kind:
+    - a *provenance stamp* is only the revision element of a *citation*: an
+      element holding a cite and its stamp and no other letter or digit. The
+      cite names, by identity, one anchor the machine narrative serves or one
+      source record the machine answer serves, and the stamp's whole text is
+      that record's revision, in full or its first twelve digits. A revision
+      id in a sentence, a heading or other running text is therefore never a
+      stamp. Stamps carry no label;
+    - an *identity* shown whole, whose text equals the evaluation identity
+      the machine answer serves or a served record's own `identity`, and is
+      not a bare revision id. This covers the page footer's evaluation
+      identity and the exact-source route's source identity, both of which
+      contain the full revision;
     - Butlers-declared text that PWB-REQ-014 keeps verbatim, or that the
       exact-source route serves under PWB-REQ-011. It stays byte-identical,
       so PWB-REQ-014's verbatim rule is never in conflict with this one;
-    - the shared operability status line, which the POC specification
-      governs (§"Scope: Polaris only"; Question 5).
+    - the shared operability status line. No requirement of either
+      specification names it; this requirement excepts it on Polaris and
+      governs nothing else in it (§"Scope: Polaris only"; Question 5).
 
     Attribute values and link targets are not visible text; the tag-name
     sweep covers them.
@@ -150,8 +191,14 @@ both. Added:
   disclosed as moved, naming both commits, wherever its name is carried: in
   a label, among the tied names in the machine answer, and in the surface's
   expansion of them. Nothing presents a tag as unmoved: no label unit, label
-  record or other visible text holding a tag name says it is unmoved,
-  unchanged or stable, and a fifth sweep checks this.
+  record or *block* of visible text holding a tag name carries one of five
+  closed stability terms (`unmoved`, `not moved`, `unchanged`, `stable`,
+  `still points`), and a fifth sweep checks this. A block is the nearest
+  enclosing paragraph, list item, table cell, heading, caption or summary,
+  read whole, so a tag name and a term in different inline elements are
+  read together. The requirement says the list is closed and that a
+  paraphrase outside it is not decided, and the falsifier limb names the
+  terms rather than any presentation of stability.
 - **Machine answer.** Its label record carries the form, the test that
   applied, the statement, tag name, distance, tied names, moved-tag
   disclosures, the identities of the three inputs and the full object id.
@@ -159,16 +206,22 @@ both. Added:
   revision and at a distance, an annotated tag with a distinctive message, a
   tag peeling to a tree, a tag set with one ref that fails to peel, two
   shallow clones (one hiding the only reaching tag, one whose captured part
-  holds a reaching tag), one revision under two tag sets, a moved tag, and a
-  moved tag that is tied at the revision but not shown first.
+  holds a reaching tag), a complete clone observed three ways (ancestry read
+  not admitted while the tag-set read is, one commit made unreadable, a
+  graft boundary imposed), one revision under two tag sets, a moved tag,
+  and a moved tag that is tied at the revision but not shown first. Each of
+  test 3's three conditions therefore has a fixture.
   - The denominator is the naming sites: every marked label unit on every
     Polaris page, plus the machine answer's label record. The label-unit
     predicates apply to page sites only; the record is decided by equality
     alone.
   - A separate text sweep counts every visible short or full id of the
-    revision, and every project name followed by a captured tag name, and
-    decides that none lies outside a label unit and the three excepted
-    elements. Each stamp must hold only an id, and each excepted Butlers
+    revision, and every project name followed by a captured tag name, with
+    its position in document order. It decides that none lies outside a
+    label unit and the four excepted elements, and that the first one
+    outside the status line lies in a label unit. For each stamp the
+    checker reads the citation around it and the record its cite names; for
+    each identity, the served identity it must equal; each excepted Butlers
     text must equal its source.
   - As it builds each fixture the checker records the conditions it imposes:
     whether the tag-set and ancestry reads are admitted, which ref fails to
@@ -190,10 +243,11 @@ both. Added:
 **Companions.**
 
 - `proposal.md` gains one "What Changes" bullet.
-- `design.md` gains decision 12, "Name the revision by its release label",
-  with a flowchart of the four forms.
-- `CAPABILITY-COVERAGE.md` gains row 34, covered by PWB-REQ-001. The totals
-  become 28 covered, 6 lawfully out of scope, 0 Unknown, 34 in all.
+- `design.md` gains decision 13, "Name the revision by its release label",
+  with a flowchart of the four forms. (Decision 12 is P-86's, signed first.)
+- `CAPABILITY-COVERAGE.md` gains row 35, covered by PWB-REQ-001. The totals
+  become 29 covered, 6 lawfully out of scope, 0 Unknown, 35 in all. (Row 34
+  is P-86's, signed first.)
 - `CONTRACT-COVERAGE-REPAIR-DELTA.md` supersedes one base row, `RFC4-11.c4`,
   with two repair rows. See §"Coverage matrix".
 - `GOVERNING-DEPENDENCIES.md` and `CONTRACT-COVERAGE.md` are regenerated over
@@ -253,7 +307,10 @@ therefore cited as an analogy only and is not a warrant (rule 5).
     In both, the checker takes the not-read expectation from its own record
     of the shallow boundary it imposed, so the oracle can compute it. The
     falsifier names "a count of later commits computed from incomplete
-    ancestry".
+    ancestry". Since the cycle-3 repair, the three complete-clone fixtures
+    (ancestry read not admitted, an unreadable commit, a graft boundary)
+    observe the same consequence for the other two ways history can be
+    unreachable.
   - `RFC4-11.r2`, the PR-fact consequence, still believed not applicable.
     No PR fact is rendered.
 - **Totals.** The repair delta declares 94 rows over 78 superseded base rows.
@@ -328,6 +385,18 @@ cannot owe a label unit on Polaris and a short id on Trajectory and Orrery
 without a surface switch inside a POC-governed file. This version therefore
 excepts the status line by name from PWB-REQ-001's visible-id prohibition,
 leaves it to the POC specification, and changes nothing in `page-shell.ts`.
+*(Marked 2026-10-14, cycle 3: "leaves it to the POC specification" claimed
+more than either specification says. Round 4 swept `openspec/**` and found
+no POC requirement naming the line (raw Note 3). [Observed at `7460aec8`]
+The terms `operability`, `status line` and `page shell` return no hit in
+the POC spec. The amended text now says so: no requirement of either
+specification names the line, and PWB-REQ-001 excepts it on Polaris and
+governs nothing else in it. So its revision display on Polaris is governed
+by neither specification, which Question 5 now states. The mark: [Observed
+at `7460aec8`] the line's element already carries the attribute
+`data-human-status` (`page-shell.ts` line 55), which [Inferred] can serve as
+its mark, so the exception needs no change to `page-shell.ts`. The
+requirement names no attribute, as the signed spec names none.)*
 Question 5 asks the owner whether the Polaris status line should carry the
 label unit instead, which would touch that POC-governed component and so
 interacts with Question 3.
@@ -409,6 +478,22 @@ Class-granular also adds design decision 12 and
 capability row 34, so whichever of it and this package is signed second is
 regenerated over the first's applied bytes and reviewed again (P-86's
 Question 5).
+*(Marked 2026-10-14, cycle 3: the population above is no longer current.
+P-86 was signed v1.0 at `235b71eb`, first, so this package is the second
+and was regenerated over P-86's applied bytes as decision 13 and row 35;
+round 5 is its fresh review. [Observed at `7460aec8` plus the cycle-3
+repair] Two unsigned packages remain over the PWB spec, accessible-name
+and opening-index. Each patches only `spec.md` and the derived
+`GOVERNING-DEPENDENCIES.md`. This builder's `--check` applies the three
+spec patches in every order and requires one result, and passes. It now
+runs the same search over every companion subject this package patches
+(`design.md`, `CAPABILITY-COVERAGE.md`, `proposal.md`, the repair delta)
+that a pending sibling also patches; today none does. It also requires the
+design decisions and the capability rows to stay numbered 1..n, which is
+what a silent duplicate number would break (round-4 Note 8). Both sibling
+builders' `--check` fail at `7460aec8` before reaching their order check,
+on their own derived `GOVERNING-DEPENDENCIES.md.patch`, which P-86's
+sign-off made stale; they are regenerated on their own branches.)*
 
 ## Choices the round-2 repair made
 
@@ -443,6 +528,10 @@ content choice is put as Question 5 instead.
    label unit per anchored claim would repeat the label once per claim and
    [Inferred] press on the `/polaris` response ceiling. Each stamp's whole
    text must be a revision id, so a stamp cannot hide a naming.
+   *(Marked 2026-10-14, cycle 3: "so a stamp cannot hide a naming" did not
+   hold and is withdrawn. A bare id is exactly what a naming looks like,
+   and the kind was decided by the implementation's own mark (round-4
+   Finding 1). Choice 1 of the cycle-3 repair replaces it.)*
 3. **Butlers-declared verbatim text is excepted, and PWB-REQ-014 wins.**
    Butlers text that holds "Butlers" followed by a tag name stays verbatim
    and byte-identical; it is never a naming site. [Unknown] Whether any
@@ -452,6 +541,53 @@ content choice is put as Question 5 instead.
    record and every other visible text node holding a captured tag name.
    As with PWB-REQ-012's prohibited terms, the list is closed, so a
    paraphrase outside it is not caught.
+   *(Marked 2026-10-14, cycle 3: "every other visible text node" is
+   replaced by blocks read whole, and the gap is now stated in the
+   requirement itself; see choice 5 of the cycle-3 repair.)*
+
+## Choices the cycle-3 repair made
+
+The drafter made five more choices while repairing round 4. Choice 1 has
+an alternative the round-4 raw offered as the owner's, so it is put as
+Question 6 with a recommendation; the others can be changed by answering
+Question 1 *Revise*.
+
+1. **A provenance stamp is structural.** It is only the revision element of
+   a citation whose cite names a served anchor or source record, the
+   citation holds no other letter or digit, and the stamp's text must be
+   that record's revision. So a revision id in a sentence, a heading or the
+   shape-identity line is never a stamp; it is a label unit, or it goes. The
+   mark finds the element, and the citation and the record decide it. This
+   is the raw's proposed repair (raw lines 124–129). The alternative it
+   offered, bare stamps allowed in prose with the "cannot hide a naming"
+   claim withdrawn, is Question 6.
+2. **"The label leads" means first in document order.** On each page, the
+   first id of the revision the text sweep finds lies in a label unit, and
+   in each unit the label precedes the full id. The status line is the one
+   element exempt from this order. On Polaris it sits above the main
+   content, so a reader still meets its short id first, as Question 5
+   discloses.
+3. **Identities shown whole are excepted** (round-4 Note 2). The footer's
+   evaluation identity begins with the full revision, and the exact-source
+   route's source identity contains it. Excepting an identity whose whole
+   text equals a served identity keeps RFC6-15's evaluation stamp and the
+   signed Observable's "every deterministic input and per-emission
+   identity" visible, rather than reformatting them. An identity that is a
+   bare revision id is not excepted, and an identity holding a tag name
+   already fails the tag-name sweep.
+4. **The page population is closed** (round-4 Note 6): `/polaris` and every
+   exact-source route response, served or refused, in every mount form.
+   PWB-REQ-020's machine views and draft view are out, the draft view
+   because it "carries no project-shape identity". The re-observation
+   action's result page is out too. [Observed at `7460aec8`] It is a `POST`
+   response that shows the new evaluation's identity
+   (`reobserve-action.ts` line 25), not a reading page.
+5. **Stability is read per block, and the closed list is stated as a gap**
+   (round-4 Note 4). The sweep reads each block's whole text, so
+   `<code>v1.0.23</code> unchanged` is found. The requirement says that a
+   paraphrase outside the five terms is not decided, and the falsifier limb
+   is now "a stability term in a label unit, the label record or a block
+   holding a captured tag name", aligned with the list.
 
 ## Residuals the sign-off change must carry
 
@@ -479,13 +615,21 @@ Each is [Observed] at `0a10977b` unless it names another commit.
      anchor-resolution sign-offs, and this package's sign-off is appended
      after them. The docstring paragraph recording earlier re-derivations
      is at lines 141–146.)*
+   - *(Marked 2026-10-14, cycle 3: re-measured at `7460aec8`, after the
+     class-granular sign-off. `EXPECTED_TOTALS` reads 17 requirements and
+     56 scenarios, with PWB-REQ-001 at 1; after `--apply` they read 17, 60
+     and 5 (the builder's `--check` prints 60). The `successors` tuple
+     (lines 255–274) holds the tree-framing, anchor-resolution and
+     class-granular sign-offs, and this package's sign-off is appended
+     after them.)*
 3. **The battery.** Add the builder's `--check` line to `PROJECT-STATUS.md`
    at sign-off, under the CG-26 coupled-triple rule. A draft leaves the
    battery alone.
 4. **Implementation consumers.** Eight implementation files cite
    PWB-REQ-001 at `8f1fbec7` (`IMPACT-LEDGER.md`, re-measured 2026-10-14;
-   seven at `0a10977b`; still eight at `814fbcc1`). Sign-off authorizes
-   none of their changes; a separate implementation authorization does.
+   seven at `0a10977b`; still eight at `814fbcc1` and at `7460aec8`).
+   Sign-off authorizes none of their changes; a separate implementation
+   authorization does.
 
 ## What this does not do
 

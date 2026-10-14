@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/proposal.md b/openspec/changes/polaris-project-wide-butlers-model/proposal.md
-index 2d4ecc3..307b699 100644
+index 6a48c85..d3a24ac 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/proposal.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/proposal.md
 @@ -27,6 +27,14 @@ gap visible, and reads Butlers only under owner authority.

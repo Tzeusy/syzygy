@@ -1,35 +1,57 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 4de677a..9bd8e14 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -288,4 +288,99 @@
+@@ -366,24 +366,267 @@ readers SHALL receive those identities, the capture instant and the same source
+ population. Every emitted project-shape fact SHALL carry its source identity,
  scope, capture instant and observer identity/version.
-
+ 
 +- **Release label.** Wherever Polaris names the observed revision, it SHALL
 +  lead with that revision's release label, and SHALL show the revision's full
 +  Git object id beneath the label, on the same surface and without expanding
 +  anything.
++  - The Polaris pages are the human HTML responses to `GET /polaris` and to
++    every request of PWB-REQ-011's exact-source route, served or refused, in
++    every mount form. The machine answer, PWB-REQ-020's derived machine views
++    and generation draft view, and the response to a human re-observation
++    request are not Polaris pages.
 +  - Polaris names the observed revision only in a label unit. A label unit
 +    holds the label, the statement its form requires, the full object id
 +    beneath them, the expansion of any tied names and any moved-tag
 +    disclosure. It is exposed as one element of the page, marked as a label
 +    unit, so that a checker finds it without judgment. Every Polaris page
 +    SHALL present at least one label unit.
++  - The label leads. Within each label unit the label precedes the full
++    object id in document order. On each Polaris page, the first occurrence
++    in document order that the text sweep below finds outside the
++    operability status line lies in a label unit.
 +  - Outside a label unit, owner-visible Polaris text SHALL NOT show the
 +    observed revision's full object id, its first twelve hexadecimal digits,
-+    or the project's name followed by a captured tag's name. Three kinds of
-+    element are excepted, each marked as its kind so that a checker finds it
-+    without judgment:
-+    - a provenance stamp, whose whole text is a revision's full object id or
-+      its first twelve hexadecimal digits, giving the revision at which a
-+      claim, source, leaf or refusal was read or to which it is bound. It is
-+      the identity that claim binds to, not a naming of the revision, and it
-+      carries no label;
++    or the project's name followed by a captured tag's name. Four kinds of
++    element are excepted. Each is marked as its kind so that a checker finds
++    it, and what the checker reads decides each kind, never the mark alone:
++    - a provenance stamp, the revision element of one citation. A citation
++      is an element holding a cite and its stamp, and no letter or digit
++      outside the cite's text and the stamp's. The cite names, by its
++      identity, one anchor the machine narrative serves or one source record
++      the machine answer serves at the same evaluation, and the stamp's whole
++      text is the revision that record carries, in full or as its first
++      twelve hexadecimal digits. A revision id in a sentence, a heading or
++      any other running text is therefore never a stamp. A stamp carries no
++      label;
++    - an identity, whose whole text equals the evaluation identity that the
++      machine answer serves for that page's evaluation, or the whole value of
++      an `identity` field of a record of its own that the machine answer
++      serves at that evaluation, and is not a revision's id alone. It shows
++      that identity whole;
 +    - Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf,
 +      or that the exact-source route serves under PWB-REQ-011. It stays
 +      byte-identical to its source, and its words are never a naming of the
 +      revision;
-+    - the operability status line that the Three-Surface POC's shared page
-+      shell renders on every surface, which the POC specification governs.
++    - the operability status line that the shared page shell renders on
++      every surface, Polaris included. No requirement of this specification
++      or of the Three-Surface POC specification names that line; this
++      requirement excepts it on Polaris and governs nothing else in it.
 +  - Attribute values and link targets are not owner-visible text; the
 +    tag-name sweep below covers them.
 +  - The object id stays the revision's identity: every claim, evaluation
@@ -89,9 +111,13 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +    both evaluations. Its name is carried in a label, among the tied names in
 +    the machine answer, and in the surface's expansion of those names.
 +  - Nothing presents a tag as unmoved. Where an evaluation names no compared
-+    evaluation, no stability is stated. No label unit, label record or other
-+    owner-visible text holding a captured tag name states that the tag is
-+    unmoved, unchanged or stable.
++    evaluation, no stability is stated. No label unit, label record or block
++    of owner-visible text that holds a captured tag name carries a stability
++    term: `unmoved`, `not moved`, `unchanged`, `stable` or `still points`,
++    matched case-insensitively. A block is the nearest enclosing paragraph,
++    list item, table cell, heading, caption or summary element, read as its
++    whole text. The term list is closed: a paraphrase outside it is not
++    decided by this requirement.
 +- **Machine answer.** The machine answer SHALL carry each label's form, the
 +  test that applied, its statement, tag name, distance, tied names and
 +  moved-tag disclosures, the identities of the captured tag set, the captured
@@ -100,8 +126,8 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  record.
 +
  **Verification.**
-
-@@ -293,7 +388,36 @@
+ 
+ - **Case**: observe a repository at a known revision whose five-pillar index
    and roster population are known independently, including a source-claimed
    instant distinct from the capture instant.
 +  - For the release label, observe fixture repositories whose tags are known
@@ -117,6 +143,10 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +      whose refs fails to peel while the others read;
 +    - a shallow clone whose missing history holds the only reaching tag;
 +    - a shallow clone whose captured history holds a reaching tag;
++    - a complete clone with a tag on an ancestor and none at the revision,
++      observed three ways: with the tag-set read admitted and the ancestry
++      read not admitted, with one commit of the revision's history made
++      unreadable, and with a graft boundary imposed on its object database;
 +    - one revision observed twice with different tag sets;
 +    - a tag moved between two evaluations, the second naming the first as
 +      compared;
@@ -134,11 +164,11 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
    paths, source count, capture instant and every deterministic input and
    per-emission identity.
 +  For the release label, they also expose every label unit's form,
-+  statement, values and full object id, and the mark of every label unit
-+  and every excepted element.
++  statement, values and full object id, the mark of every label unit and
++  every excepted element, and the identity each citation's cite names.
  - **Oracle**: compare the exposed paths and revision to an independent Git tree
    listing and the closed discovery rules; exhaust every emitted fact's source,
-@@ -301,9 +425,77 @@
+   scope, capture-instant and observer-version stamp; verify capture time remains
    distinct from source-claimed time. Exact set, stamp and input-identity
    equality decides.
 +  - For the release label, the naming sites are every label unit on every
@@ -149,8 +179,12 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +    revision's first twelve hexadecimal digits, alone or opening its full
 +    object id, and every occurrence of the project's name followed by a
 +    captured tag's name. It reports each occurrence's enclosing label unit
-+    or excepted element, or none, with the occurrence count as this sweep's
-+    own denominator.
++    or excepted element, or none, and its position in document order, with
++    the occurrence count as this sweep's own denominator.
++  - For each element marked as a provenance stamp or an identity, the
++    checker reads the record it names or equals from the machine answer and
++    the machine narrative at the same evaluation, and the citation around
++    each stamp from the page, and decides the kind from those alone.
 +  - For each fixture, the checker computes the expected form, statement and
 +    values by applying the rule above. Tests 1 and 3 apply to its
 +    construction records: test 1 holds where the tag-set read is not
@@ -168,16 +202,26 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +      revision;
 +    - it compares every moved-tag disclosure, in labels, among tied names and
 +      in their expansion, with its own recorded listings;
-+    - it searches the text of every label unit, the label record, and every
-+      other owner-visible text node outside the excepted Butlers-declared
-+      text that holds a captured tag name, case-insensitively, for the terms
-+      `unmoved`, `not moved`, `unchanged`, `stable` and `still points`.
++    - it searches the whole text of every label unit, of the label record,
++      and of every block holding a captured tag name outside the excepted
++      Butlers-declared text, case-insensitively, for the stability terms, so
++      a tag name and a term in different inline elements of one block are
++      read together.
 +  - The following decide:
 +    - at least one label unit on every Polaris page;
++    - on every Polaris page, the first swept occurrence outside the
++      operability status line inside a label unit, and in each label unit
++      the label before the full object id;
 +    - zero swept occurrences outside a label unit and the excepted elements;
-+    - every provenance stamp's whole text a full object id or its first
-+      twelve hexadecimal digits, and every excepted Butlers-declared text
-+      byte-identical to its source in the checker's own Git read;
++    - every provenance stamp inside a citation whose cite names one anchor or
++      source record served at that evaluation, no letter or digit in the
++      citation outside the cite and the stamp, and the stamp's whole text
++      that record's revision in full or its first twelve hexadecimal digits;
++    - every excepted identity's whole text equal to the evaluation identity
++      or to a record's own identity served at that evaluation, and not a
++      revision's id alone;
++    - every excepted Butlers-declared text byte-identical to its source in
++      the checker's own Git read;
 +    - exact equality of form, statement, tag name, distance, tied names and
 +      moved-tag disclosures in each label unit, its expansion included, and
 +      in the label record; the label-unit predicates apply to page sites
@@ -194,16 +238,24 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
    indexes, not from the POC model.
 +  Expected labels come from the checker's own Git listing of each fixture
 +  and its own construction records, never from the observer's captured
-+  inputs.
++  inputs. No excepted element's kind is taken from its mark: the mark only
++  finds it.
  - **Falsifier**: one source is absent, one arbitrary source is included, one
    deterministic input identity is missing, or exposed sources use different
    revisions.
 +  For the release label, any of these falsifies it:
 +  - a Polaris page with no label unit;
++  - a Polaris page whose first swept occurrence outside the operability
++    status line lies outside a label unit, or a label unit whose full object
++    id precedes its label;
 +  - the observed revision's id, or the project's name followed by a captured
 +    tag's name, shown outside a label unit and the excepted elements;
-+  - a provenance stamp holding anything but a revision's id, or excepted
-+    Butlers-declared text that differs from its source;
++  - a naming of the observed revision marked as a provenance stamp: a stamp
++    outside a citation, a citation holding other words, or a stamp whose
++    cite names no served record or whose text is not that record's revision;
++  - an element marked as an identity whose text is not a served identity, or
++    is a revision's id alone;
++  - excepted Butlers-declared text that differs from its source;
 +  - a label in a form other than the first whose condition holds;
 +  - a not-read or untagged label whose statement is not its test's;
 +  - a label unit with no full object id;
@@ -211,14 +263,17 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  - an uncaptured tag set or incomplete ancestry stated as untagged;
 +  - a count of later commits computed from incomplete ancestry;
 +  - a moved tag not disclosed wherever its name is carried;
-+  - a tag presented as unmoved, unchanged or stable;
++  - a stability term in a label unit, the label record or a block holding a
++    captured tag name;
 +  - a tag message rendered;
 +  - one evaluation identity for two different tag sets.
-
+ 
  #### Scenario: Source population is complete at one revision
-@@ -313,9 +505,45 @@
+ 
+@@ -391,11 +634,47 @@ scope, capture instant and observer identity/version.
+ - **THEN** every admitted project-shape source resolves at R
  - **AND** the human and machine views expose the same complete source set
-
+ 
 +#### Scenario: A tagged revision leads with its release label
 +
 +- **WHEN** Butlers is observed at revision R and a captured tag `v1.0.23`
@@ -264,3 +319,4 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  contracts: [RFC2-1, RFC2-2, RFC2-24, RFC4-1, RFC4-2, RFC4-3, RFC4-11, RFC6-15, RFC7-10]
    policies: [CC-SPEC-4, CC-TEST-3]
    decisions: [POLARIS-DIR-2026-08-31]
+   topology: []

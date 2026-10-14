@@ -23,6 +23,16 @@
   `docs/reviews/` (22 there now): this package's round-3 raw. Every other
   area count below is unchanged, and the second method still gives 8
   implementation files. The rows below keep their `8f1fbec7` figures.
+- **Re-measured 2026-10-14 at `7460aec8` for the cycle-3 repair.** The
+  same script gives 2,704 paths and 99 files. Against `814fbcc1`, three
+  files are added: one under `docs/reviews/` (23 there now), this package's
+  round-4 raw; and two under `contracts/candidates/` (31 there now), this
+  package's `ROUND-3-DISPOSITIONS.md` and the accessible-name package's
+  `ROUND-3-DISPOSITIONS.md`. The class-granular package's two files now
+  belong to a performed package (P-86, signed v1.0 at `235b71eb`), so two
+  pending packages remain among the citers, accessible-name and
+  opening-index. Every other area count is unchanged, and the second method
+  still gives 8 implementation files.
 
 | Area | Files | Effect of this amendment |
 |---|---:|---|
@@ -70,6 +80,44 @@
   is marked as a provenance stamp and carries no label; each prose or
   refusal occurrence either wraps its id in a marked stamp or becomes a
   label unit. Sign-off authorizes none of these changes.
+  *(Marked 2026-10-14, cycle 3: "wraps its id in a marked stamp" is
+  withdrawn. It is the route round 4 found let a page mark every naming as
+  a stamp (raw Finding 1), and under this version a stamp is only the
+  revision element of a citation, so a prose or refusal occurrence can no
+  longer be one. The inventory also missed occurrences. Re-measured at
+  `7460aec8`, with the treatment this version intends for each [Inferred as
+  to what each needs]:*
+  - *Citation stamps: `polaris.ts` lines 241, 299 and 1200. Each is a
+    `provenance-revision` code element after a cite whose attributes come
+    from `anchorAttrs`, which writes a `data-anchor-id` (line 216); at 299
+    and 1200 the pair sits in a `citation` span. They stay stamps once the
+    element around each pair holds nothing else, the cite names its record
+    and the stamp's text is that record's revision. Line 1244's cite
+    carries a `data-proposal-artifact` digest, not a record identity; it
+    needs one to stay a stamp.*
+  - *Running text, which becomes a label unit or drops the id: the shape
+    statement (line 1190), the shape identity line "Revision …" (line 1209),
+    the code-structure sentence (line 298), the currency-probe band
+    "Evaluated at revision …", which shows the full observed revision
+    (line 466; its `pinnedRevision` is the observed revision,
+    `main.ts` lines 107 and 144), and the refusal sentences
+    (`verbatim-route.ts` line 82; `capability-detail.ts` lines 231 and
+    238).*
+  - *Identities shown whole, excepted: the footer's evaluation identity on
+    `/polaris` (`polaris.ts` line 1881) and on the exact-source route
+    (`polaris-source.ts` line 140), whose text begins with the full revision
+    (`production-reobserve.ts` lines 85–89), and the exact-source route's
+    source identity line (`polaris-source.ts` line 117), whose identity
+    holds it too (round-4 Note 2).*
+  - *A naming before any label unit: the exact-source route's eyebrow,
+    "Polaris · Butlers" followed by the twelve-digit prefix
+    (`polaris-source.ts` line 135). Under the lead rule it becomes the
+    page's label unit or drops the id.*
+  - *Not a Polaris page under this version: the re-observation result
+    (`reobserve-action.ts` line 25).*
+  - *The Dolt revision in the work-items sentence and citation (`polaris.ts`
+    lines 319–320) is not the observed Butlers revision, so the sweep does
+    not count it.*
 
 ## Registry entry
 

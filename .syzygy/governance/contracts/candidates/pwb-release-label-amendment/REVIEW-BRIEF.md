@@ -28,6 +28,9 @@ a scratch copy. Never apply them in the tree.
   *(Marked 2026-10-14: since the anchor-resolution sign-off at `7f43802f`,
   the current bytes are those signed at
   `.syzygy/governance/decisions/PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md`.)*
+  *(Marked again 2026-10-14, cycle 3: since the class-granular sign-off at
+  `235b71eb`, the current bytes are those signed at
+  `.syzygy/governance/decisions/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md`.)*
 - **The sign-off scope.**
   `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`.
 - **The specification bar.** CC-SPEC-1…11 in
@@ -218,3 +221,70 @@ Report what you observe at the reviewed commit.
 read; its notes are dispositioned beside the package, never by editing
 those bytes. Any other verdict sends the package to the owner with its
 findings open. No round 5 is dispatched without a new owner instruction.
+
+*(Marked 2026-10-14, cycle 3: "not yet dispatched" in the heading above
+is no longer true. Round 4 ran under this section and returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-4-RAW.md` line 4). The new
+owner instruction this sentence anticipates was given the same day; see
+Round 5 below.)*
+
+## Round 5 (added 2026-10-14, cycle 3; not yet dispatched)
+
+Round 4 returned `REVISE`: one revise finding and seven notes. On
+2026-10-14 the owner directed "One more cycle each" for this package and
+P-98: repair every round-4 finding, notes included, then one fresh review
+under the same stopping rule. The repair was made over `main` at
+`7460aec8`. The class-granular amendment (P-86) had been signed first, so
+this package was regenerated over P-86's applied bytes, as design decision
+13 and capability row 35. The repair also adds Question 6 to the packet.
+Round 5 reviews these bytes against the same seven criteria, on their own
+merits.
+
+**Read the prior round.** You SHOULD read
+`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-4-RAW.md` and
+`ROUND-4-DISPOSITIONS.md`, whose §"Repairs, 2026-10-14 (cycle 3)" maps
+each finding to its repair. Verify, finding by finding, that each repair
+closes what the raw found. Judge the repair against the raw, never against
+the mapping's own account of it.
+
+You may also read these, to check the delta's and the ledger's re-measured
+`[Observed]` claims:
+
+- the implementation files the round-4 raw and the ledger cite:
+  `apps/three-surface-poc/src/polaris.ts`, `polaris-source.ts`,
+  `page-shell.ts`, `verbatim-route.ts`, `capability-detail.ts`,
+  `production-reobserve.ts`, `reobserve-action.ts` and `main.ts`;
+- PWB-REQ-011, PWB-REQ-014 and PWB-REQ-020 in the signed spec, and a term
+  sweep of the POC spec;
+- `PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md`, for the
+  renumbering.
+
+Do not read `ROUND-1-DISPOSITIONS.md` to `ROUND-3-DISPOSITIONS.md` or any
+other raw.
+
+**Raw-head digest predicate.** Over the first four non-blank lines of your
+raw:
+
+- line 1 is the title;
+- line 2 is `Reviewed commit: ` followed by the 40-hex commit you read;
+- line 3 is `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of
+  the bytes of the manifest **file**
+  `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the reviewed commit,
+  computed by script (`git show <commit>:<path> | sha256sum`). It is never a
+  row inside the manifest, and never the proposed spec's digest;
+- line 4 is `Verdict: ` followed by exactly one of `CONFIRM`,
+  `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+**Sibling note.** At `7460aec8` the two pending sibling builders
+(accessible-name, opening-index) fail their own `--check`, before their
+order check runs, on derived dependency patches made stale by P-86's
+sign-off; they are regenerated on their own branches. This builder's
+`--check` composes the three pending spec patches in every order itself,
+and runs the same search over any companion subject a pending sibling also
+patches. Report what you observe at the reviewed commit.
+
+**Stopping rule, set before this round.** A notes-only round (`CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with every finding a note) clears the bytes it
+read; its notes are dispositioned beside the package, never by editing
+those bytes. Any other verdict sends the package to the owner with its
+findings open. No round 6 is dispatched without a new owner instruction.
