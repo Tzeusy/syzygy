@@ -6,7 +6,10 @@
 > act. The owner's questions and arms live in `OWNER-DECISION-PACKET.md`
 > (this directory); where the two differ, the packet's section 1 text is
 > the proposed text. Round 1 returned `REVISE`; the repairs are recorded in
-> `ROUND-1-DISPOSITIONS.md` and are unconfirmed.
+> `ROUND-1-DISPOSITIONS.md` and are unconfirmed. Round 2 returned `REVISE`
+> (2026-10-14); **round-2 findings repaired once on 2026-10-14, unconfirmed
+> pending round 3** (`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14
+> (cycle 2)"). Section 1's proposed bytes did not change in that repair.
 
 **Artifact(s):** `.syzygy/governance/doctrine/vision.md` (sha256
 `93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d`) and
@@ -67,8 +70,9 @@ apply that reading in their own scopes.
 ## Proposed meaning
 
 The current text stays, verbatim. Three sub-bullets are added under the
-`vision.md` bullet, and the `architecture.md` paragraph's last line is
-extended by one sentence. Exact bytes, reproduced from
+`vision.md` bullet, and one sentence is appended to the `architecture.md`
+paragraph: its sixth (last) line is extended and four lines are added, so
+the resulting paragraph has ten lines. Exact bytes, reproduced from
 `OWNER-DECISION-PACKET.md` §1.1 and §1.2 so this delta is complete on its
 own:
 
@@ -134,8 +138,13 @@ VIS-4's stated bounds (packet Q1), since its heading states that reason.
   breadth" is untouched.
 - **RFC2-19 and the RFC2 merge chain** (`reconciliation-chain.md` lines
   155–157 and 245–247): stay as written and stricter than D7. Every
-  evaluation that captures a merge fact still runs inside a deliberately
-  triggered pass, whatever D7's trigger (`OWNER-DECISION-PACKET.md` §4).
+  evaluation that captures the merge fact still runs inside a deliberately
+  triggered pass, whatever D7's trigger. What "the merge fact" reaches has
+  two readings (`OWNER-DECISION-PACKET.md` §4.1): narrow, relied on — the
+  merge of a materialized work item (RFC2-18's scope), so D7 makes
+  unprompted re-observation of a repository with no materialized merged
+  work lawful at the doctrine level; wide — any merge a repository
+  snapshot carries, so it does not. Packet Q5 asks which binds.
 - **RFC4-16, RFC5-11**: untouched.
 - **P-69**: its no-timer rule stands on every arm; D7 states it generally.
 - **P-71 Q3, P-71-Q5, P-79 Q4, P-79 Q6**: untouched; the 2026-09-02
@@ -201,7 +210,10 @@ dispositioned; a wrap-tolerant re-run; an "autonomous behavior" sweep over
 212 authority files (10 hits); a notification sweep over 229 files; and a
 derived-reader sweep over 417 source files. Summary: no doctrine, contract,
 decision or specification sentence is made false by arm A; RFC2-19 and the
-RFC2 merge chain stay stricter and confine D7's headline example; the
+RFC2 merge chain stay stricter and confine any unprompted evaluation that
+captures the merge fact — on the wide reading D7's headline example, on
+the narrow reading the packet relies on only the merge of a materialized
+work item (packet §4.1); the
 "autonomous behavior" exclusions are narrowed in reach, not falsified; two
 derived indexes regenerate after application; four non-authority
 observations are routed, not repaired.
@@ -238,3 +250,7 @@ stopping rule, so the repaired bytes are unconfirmed.
 owner's direction of 2026-10-14 and returned `REVISE`
 (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md` line 4); see
 `ROUND-2-DISPOSITIONS.md`. The repaired bytes remain unconfirmed.)*
+Round 2's eight findings were repaired once on 2026-10-14, on a further
+owner direction of that day (`ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)"); **unconfirmed pending round 3**, whose brief is
+`REVIEW-BRIEF.md` §"Round 3".
