@@ -7,6 +7,13 @@
 
 **Drafted:** 2026-10-03, bead `syzygy-l362`, over `main` at `0a10977b`.
 
+**Repaired:** 2026-10-14, over `main` at `8f1fbec7`, under the owner's
+instruction of that day (relayed by the lead session; no decision record
+carries it): one new version repairing all six round-2 findings, then one
+fresh confirmation round. The repairs are mapped in `ROUND-2-DISPOSITIONS.md`.
+**These bytes are unconfirmed:** no round has read them, and round 3 is
+pending. The account below describes the repaired version.
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
@@ -54,18 +61,30 @@ by version tag. It is not yet registered in `scripts/record_versioned_signoff.py
 One requirement, PWB-REQ-001, plus its companions. Every other requirement is
 byte-identical, and the builder checks that.
 
-**PWB-REQ-001 (amended).** The signed paragraph and its one scenario stay as
-they are. Added:
+**PWB-REQ-001 (amended).** Every signed line of the requirement stays as it
+is, and so does its one scenario. The only signed lines that change are the
+two warrant lists, which gain identifiers and lose none; the builder checks
+both. Added:
 
 - **Release label.** Wherever Polaris names the observed revision, it leads
   with the release label and shows the full Git object id beneath it, on the
   same surface. Every claim, evaluation identity, link and comparison binds to
   the object id, never to a tag name. The label is a presentation of the
   revision identity, not a project-shape claim.
+  - Polaris *names* the revision wherever its owner-visible text shows the
+    full object id, its first twelve hexadecimal digits, or the project's
+    name followed by a captured tag's name. Attribute values, link targets
+    and identities are not owner-visible text.
+  - Each such place shows one *label unit*: the label, its statement, the
+    full object id beneath and any moved-tag disclosure, exposed as one
+    element of the page so that a checker finds it without judgment.
 - **Two captured inputs.** Each is a deterministic evaluation input with its
   own identity:
   - the captured tag set: every ref under `refs/tags/`, each paired with the
-    object it peels to;
+    object it peels to. These are the *release tags* the label counts, so
+    the term is defined by the tag set and follows whatever Question 4
+    rules. If any one ref cannot be read or peeled, reading the tag set
+    failed;
   - the captured ancestry: the parent ids of the revision's history, complete
     only when every commit in it was read.
 
@@ -73,37 +92,50 @@ they are. Added:
   message is read into the model or rendered, and a tag peeling to anything
   but a commit reaches nothing.
 - **Four forms, decided by five ordered tests:**
-  1. *not read* — the tag set was not captured;
+  1. *not read* — the tag set was not captured. Statement: "release tags
+     were not read";
   2. *tagged* — one or more tags peel to the revision itself: "Butlers
      v1.0.23";
   3. *not read* — the ancestry is incomplete (a shallow or grafted clone, an
-     unreadable commit or an unadmitted read);
+     unreadable commit or an unadmitted read). Statement: "the history
+     needed to judge release tags was not read";
   4. *described* — the nearest reaching tag is some commits behind: the tag's
      name and the count of later commits;
   5. *untagged* — no tag reaches the revision: the project name and the first
-     twelve hexadecimal digits, with a statement that no release tag reaches
-     it.
+     twelve hexadecimal digits, with the statement "no release tag reaches
+     this revision".
 
-  The not-read form shows the first twelve hexadecimal digits, says release
-  tags were not read, and gives the reason `source-uncaptured-or-unreachable`
-  and its route. It never says "untagged". Ties are broken by codepoint order
-  of tag name, and every tied name is carried in the machine answer.
+  Each not-read form shows the first twelve hexadecimal digits, its own
+  statement, and the reason `source-uncaptured-or-unreachable` and its route.
+  Test 3 is reached only after the tag set was read, so it does not say the
+  tags were not read. Neither form ever says "untagged". Ties are broken by
+  codepoint order of tag name, and every tied name is carried in the machine
+  answer.
 - **Moved tags.** An evaluation names, as inputs, the earlier evaluations it
   is compared with. A tag one of them bound to a different commit is
-  disclosed as moved, naming both commits. Nothing presents a tag as unmoved.
-- **Machine answer.** It carries the form, tag name, distance, tied names,
-  moved-tag disclosures, the identities of the three inputs and the full
-  object id.
+  disclosed as moved, naming both commits, wherever its name is carried: in
+  a label, among the tied names in the machine answer, and in the surface's
+  expansion of them. Nothing presents a tag as unmoved.
+- **Machine answer.** Its label record carries the form, the test that
+  applied, the statement, tag name, distance, tied names, moved-tag
+  disclosures, the identities of the three inputs and the full object id.
 - **Verification.** Fixture repositories cover every form, ties at the
   revision and at a distance, an annotated tag with a distinctive message, a
-  tag peeling to a tree, a shallow clone hiding the only reaching tag, one
-  revision under two tag sets, and a moved tag.
-  - The checker enumerates every naming site as the denominator.
-  - It computes each expected label from its own recorded Git listing, never
-    from the observer's inputs.
+  tag peeling to a tree, a tag set with one ref that fails to peel, two
+  shallow clones (one hiding the only reaching tag, one whose captured part
+  holds a reaching tag), one revision under two tag sets, a moved tag, and a
+  moved tag that is tied at the revision but not shown first.
+  - The denominator is the naming sites: every occurrence, in owner-visible
+    text, of the short or full id or of the project name followed by a
+    captured tag name, plus the machine answer's label record. Each must
+    lie in a label unit. Link targets and identities are not sites; the
+    tag-name sweep covers them.
+  - It computes each expected form, statement and value from its own
+    recorded Git listing, never from the observer's inputs, and decides on
+    exact equality, the statement included.
   - Its sweeps cover four things: tag names in identities and links, the tag
     message in served bytes, distinct identities for differing tag sets, and
-    the moved-tag disclosure.
+    every moved-tag disclosure, tied names included.
 - **Four new scenarios.** A tagged revision; a revision no tag reaches; unread
   tags never shown as untagged; a moved tag disclosed.
 - **Warrants.** VIS-2 joins the doctrine list, and RFC2-2 and RFC2-24 join the
@@ -167,9 +199,13 @@ therefore cited as an analogy only and is not a warrant (rule 5).
   - `RFC4-11.r1`, "A count over commit history is computed only from
     completely captured ancestry and is never reconstructed from history the
     adapter cannot reach", covered by PWB-REQ-001. It rests on RFC4-11's
-    words "it never reconstructs commit history it cannot reach"; the
-    incomplete-ancestry not-read test and the shallow-clone fixture observe
-    it.
+    words "it never reconstructs commit history it cannot reach". Two
+    fixtures observe it: the shallow clone whose missing history holds the
+    only reaching tag (no untagged statement), and the shallow clone whose
+    captured history holds a reaching tag, where a count over the partial
+    history would give a described label and the expected form is not read.
+    The falsifier names "a count of later commits computed from incomplete
+    ancestry".
   - `RFC4-11.r2`, the PR-fact consequence, still believed not applicable.
     No PR fact is rendered.
 - **Totals.** The repair delta declares 94 rows over 78 superseded base rows.
@@ -253,7 +289,9 @@ successor after P-84 is disposed of.
    project whose non-release tags sit there would see them as labels.
    [Unknown] Butlers' tag population was not read, since reading it is the
    read this package is waiting on. Question 4 offers a declared tag pattern
-   instead.
+   instead. The text calls the counted tags *release tags* and defines them
+   as the captured tag set, so the label's statements stay true under either
+   answer, and a pattern would change only the tag-set definition.
 5. **The direction names "PWB-REQ-007/020 tuple"; this package amends
    PWB-REQ-001 only.**
    - PWB-REQ-007 governs "Every project entity and project-fact claim" and
@@ -271,9 +309,38 @@ successor after P-84 is disposed of.
      the label inside PWB-REQ-007's tuple, so that it is challengeable and
      carries a tier, can answer "Revise".
 
+## Pending siblings
+
+[Observed 2026-10-14 at `8f1fbec7` plus this repair] Four unsigned packages
+also patch the PWB spec: the accessible-name (P-99), anchor-resolution
+(P-96), class-granular extraction (P-86) and opening-index (P-98)
+amendments. This builder's `--check` applies all five spec patches in every
+order and requires one result, and each sibling builder's `--check` passes
+over this repaired patch. Class-granular also adds design decision 12 and
+capability row 34, so whichever of it and this package is signed second is
+regenerated over the first's applied bytes and reviewed again (P-86's
+Question 5).
+
+## Choices the round-2 repair made
+
+The drafter made three choices while repairing round 2. None needs a ruling
+before round 3, and each can be changed by answering Question 1 *Revise*.
+
+1. **One ref that fails to peel makes the whole tag set unread.** The
+   alternative, dropping that ref and judging the rest, could state
+   "untagged" when the dropped tag was the one that reaches (VIS-2). The
+   fixture "a tag set one of whose refs fails to peel while the others read"
+   observes it.
+2. **The three statements are worded exactly in the requirement**, so the
+   oracle compares them by string equality and no reviewer has to judge
+   whether a statement is true.
+3. **A label unit is exposed as one element of the page.** This is a markup
+   obligation on the implementation. It is what lets the naming-site sweep
+   decide "inside a label unit" without judgment.
+
 ## Residuals the sign-off change must carry
 
-Each is [Observed] at `0a10977b`.
+Each is [Observed] at `0a10977b` unless it names another commit.
 
 1. **The recorder.** Add the package to `scripts/record_versioned_signoff.py`
    `real_packages()`.
@@ -291,8 +358,9 @@ Each is [Observed] at `0a10977b`.
 3. **The battery.** Add the builder's `--check` line to `PROJECT-STATUS.md`
    at sign-off, under the CG-26 coupled-triple rule. A draft leaves the
    battery alone.
-4. **Implementation consumers.** Seven implementation files cite
-   PWB-REQ-001 (`IMPACT-LEDGER.md`). Sign-off authorizes none of their
+4. **Implementation consumers.** Eight implementation files cite
+   PWB-REQ-001 at `8f1fbec7` (`IMPACT-LEDGER.md`, re-measured 2026-10-14;
+   seven at `0a10977b`). Sign-off authorizes none of their
    changes; a separate implementation authorization does.
 
 ## What this does not do
