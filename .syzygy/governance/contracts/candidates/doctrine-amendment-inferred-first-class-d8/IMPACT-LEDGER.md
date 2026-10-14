@@ -3,13 +3,20 @@
 > **Candidate — binds nothing.** The blast-radius record for
 > `OWNER-DECISION-PACKET.md` (this directory), drafted 2026-10-03 for
 > `syzygy-u05.15`. Round 1 returned `REVISE`; this is the once-repaired,
-> unconfirmed text (`ROUND-1-DISPOSITIONS.md`). Every figure here was
-> computed at commit `59fbf78700d72b14d1551926c2b55b464c61aa5e` (the
-> round-1 reviewed commit, on `origin/main` `d8f0aeec`) with this package's
-> own directory excluded; it is valid for that commit only (rule 7) and is
-> re-derived, never read, after any later edit to the population. The
-> drafting figures at `6bb6ef26` (1,540 files, 145 hit files, 405
-> occurrences) are superseded.
+> unconfirmed text (`ROUND-1-DISPOSITIONS.md`). Round 2 returned `REVISE`;
+> its findings were **repaired once on 2026-10-14, unconfirmed pending
+> round 3** (`ROUND-2-DISPOSITIONS.md`). The term sweep (§1), the decision
+> rows (§3.2), the static reader sweep and the digest census (§4) were
+> re-derived on 2026-10-14 at commit
+> `09c7a61d759bd582227c38b6bec648fe1758fade` (`origin/main` when the
+> repair began) with this package's own directory excluded (round-2 note
+> 12); each is valid for that commit only (rule 7) and is re-derived, never
+> read, after any later edit to the population. The round-1 figures at
+> `59fbf78700d72b14d1551926c2b55b464c61aa5e` (1,554 files, 147 hit files,
+> 407 occurrences; 686 files, 39 readers), reproduced exactly by this
+> repair's scripts before the re-derivation, and the drafting figures at
+> `6bb6ef26` (1,540 files, 145 hit files, 405 occurrences) are superseded.
+> §4's application probes name their own commits.
 
 ## 1. The term sweep
 
@@ -26,27 +33,37 @@ lines match.
 
 **Population:** every tracked file under `.syzygy/`, `openspec/` and
 `docs/`, plus `AGENTS.md`, `README.md` and `PROJECT-STATUS.md`, ending
-`.md`, `.json`, `.yaml` or `.txt` — **1,554 files**.
+`.md`, `.json`, `.yaml` or `.txt` — **1,883 files** at `09c7a61d`.
 
-**Result:** **147 files, 407 occurrences.**
+**Result:** **151 files, 438 occurrences.**
 
-**Second method:** `git grep -l -i -E` with the same alternation (POSIX
-`[[:space:]]` for `\s`) over the same paths, filtered to the same four
-extensions and the same exclusion: **147 files** [Observed: both run this
-session; set-equality was confirmed at `6bb6ef26` and the round-1 reviewer
-re-confirmed it independently at both commits].
+**Second method:** `git grep -l -i -E -z` at `09c7a61d` with the same
+alternation (POSIX `[[:space:]]` for `\s`) over the same paths, filtered to
+the same four extensions and the same exclusion: **151 files, set-equal to
+the first method's** (0 files in either difference) [Observed: both run on
+2026-10-14 by scripts that first reproduced the round-1 figures and lane
+rows exactly at `59fbf787`].
 
 | Lane | Files | Occurrences | Disposition |
 |---|---|---|---|
 | Doctrine | 1 | 4 | §3.1 |
 | Accepted contract (`contracts/rfcs/`) | 0 | 0 | — |
-| Decision | 7 | 10 | §3.2 (plus one raw in `decisions/`) |
+| Decision | 7 | 19 | §3.2 (plus one raw in `decisions/`) |
 | Specification (`openspec/`) | 14 | 24 | §3.3 |
-| Candidate | 26 | 37 | not authority; untouched |
+| Candidate | 26 | 39 | not authority; untouched |
 | Other | 9 | 18 | not authority; untouched |
-| Evidence (`docs/evidence`, `docs/pursuits`) | 57 | 247 | records; never edited |
-| Raw review | 31 | 64 | CC-REV-6; never edited |
+| Evidence (`docs/evidence`, `docs/pursuits`) | 58 | 248 | records; never edited |
+| Raw review | 34 | 83 | CC-REV-6; never edited |
 | Historical (`round-*`, `_bootstrap`, `history/`) | 2 | 3 | never edited |
+
+**What moved since `59fbf787`** (1,554 → 1,883 files, 147 → 151 hit files,
+407 → 438 occurrences): the doctrine, accepted-contract, decision and
+specification file sets are identical at both commits [Observed: the
+authority-lane path lists compared]. The decision lane's nine new
+occurrences are all in this packet's own register row P-102
+(`PENDING-OWNER-DECISIONS.md` line 1179); the other moves are candidate,
+evidence and raw files outside authority. The round-2 reviewer's figures at
+`8f1fbec7` (1,864, 149, 427) sit between the two and were not copied here.
 
 The lane is assigned by path prefix, first match wins, in this order:
 doctrine; accepted contract; raw (`docs/reviews/`, a `-RAW.md` suffix or a
@@ -88,8 +105,9 @@ test this.
 | `ACCEPTANCE-ACT-RECORD.md`:833, 839, 1144 | `SYNTHESIS-MAP.json` row; "synthesis" in two act scopes | the specification-synthesis sense (an amendment synthesized from agreed sources), not clause (a)'s; unaffected |
 | `POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md`:35, 41; `POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md`:34 | the same rows and scopes | the same; unaffected |
 | `PROCESS-LESSONS.md`:49 | "A synthesis wrote 'PASS with…'" (verdict smoothing) | a review synthesis; consistent with (a)'s rule that a synthesis states no fact not derivable from its inputs; unaffected |
-| `DECISION-HISTORY.md`:48; `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`:64 | P-74 Q3, "three acts scoped to a test-only self-observation (consent record, second registry entry, secret-policy extension)" | **interaction.** Clause (e) is consistent with these acts and adds no fourth; the packet recommends adopting (e) before any of the three is performed (packet §1 (e)). A test-only self-observation that never renders a certifying claim is untouched by (e) |
-| `PENDING-OWNER-DECISIONS.md`:1042 | P-98 (PWB opening-index amendment), "Q5: the copy roles of the new strings" | **interaction with Q-S1.** P-98 assigns copy roles inside PWB-REQ-012's closed set; it opens no synthesis role. If the owner commissions Q-S1, it lands after or beside P-98's ruling on the same closed set |
+| `DECISION-HISTORY.md`:88 (line 48 at `59fbf787`); `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`:64 | P-74 Q3, "three acts scoped to a test-only self-observation (consent record, second registry entry, secret-policy extension)" | **interaction.** Clause (e) is consistent with these acts and adds no fourth; the packet recommends adopting (e) before any of the three is performed (packet §1 (e)). A test-only self-observation that never renders a certifying claim is untouched by (e) |
+| `PENDING-OWNER-DECISIONS.md`:1179 | P-102, this packet's own register row (9 occurrences) | this packet's summary; not an interaction |
+| `PENDING-OWNER-DECISIONS.md`:1175 (line 1042 at `59fbf787`) | P-98 (PWB opening-index amendment), "Q5: the copy roles of the new strings" | **interaction with Q-S1.** P-98 assigns copy roles inside PWB-REQ-012's closed set; it opens no synthesis role. If the owner commissions Q-S1, it lands after or beside P-98's ruling on the same closed set |
 | `DOCTRINE-AMENDMENT-D6-TREE-STYLE-REVIEW-2-RAW.md`:25 (raw lane) | quotes line 54's "recorded human decision" | a retained raw; never edited |
 
 ### 3.3 Specifications
@@ -97,7 +115,7 @@ test this.
 | File:line | Hit | Disposition |
 |---|---|---|
 | `polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md`:337, 508, 640; `design.md`:58 | REQ-polaris-generation-031 and its record shapes: "Attributed answers, presentation preferences and adopted intent SHALL remain distinct existing classes", withdrawal invalidation | **consistent with (b).** (b) states at doctrine level what REQ-031 already requires; it adds the rendering (Observed as a fact about the record) and the VIS-6 commit-out. REQ-031's "Missing input/persistence consent SHALL preserve the limitation without silently retaining or using the answer" stays the rule wherever (d) gives no destination |
-| `polaris-manifesto-generation/specs/polaris-generation/spec.md`:755; amendment `spec.md`:422; `design.md`:24, 31, 149; `INTERFACES.md`:318; `CAPABILITY-COVERAGE.md`:56 | "synthesis" as the generator's task of explaining a project's argument | **a different sense.** The generator's output is a generated asset governed by its own specification and adoption path; clause (a) is scoped to prose "a surface composes over several claims". Whether a generated manifesto shown on a surface before adoption is also a clause-(a) synthesis is **[Unknown]** here: (f) would render it an `editorial-draft`, (a) would render it Inferred, and the two may both apply. The reviewer is asked to test this |
+| `polaris-manifesto-generation/specs/polaris-generation/spec.md`:755; amendment `spec.md`:422; `design.md`:24, 31, 149; `INTERFACES.md`:318; `CAPABILITY-COVERAGE.md`:56 | "synthesis" as the generator's task of explaining a project's argument | **a different sense.** The generator's output is a generated asset governed by its own specification and adoption path; clause (a) is scoped to prose "a surface composes over several claims". *(Repaired 2026-10-14, round-2 finding 2: the earlier [Unknown] here, whether a generated manifesto shown before adoption is a clause-(a) synthesis rendering Inferred or an (f) `editorial-draft`, is a special case of RFC7-20 and is now answered by bytes already in force.)* The adopted generator specification says "A generated bundle SHALL remain editorial-draft until the existing effective-owner-act predicate under RFC3-16 and RFC7-21 admits an attributed per-block authorship act" (base `spec.md` line 528), and repaired (a) yields to a surface that admits generated prose only as a draft, so such a manifesto is an `editorial-draft` under both clauses [Inferred: the drafter's reading of the two texts] |
 | amendment `COVERAGE.md`:1, 4; `SYNTHESIS-MAP.json`:2; `proposal.md`:8, 58; `tasks.md`:8, 10; amendment `spec.md`:3 | specification-synthesis sense | unaffected |
 | `polaris-project-wide-butlers-model/specs/…/spec.md`:1374; `design.md`:499 | "one copy role is `project-fact`" (openings) | PWB-REQ-012's closed roles; untouched. Clause (a) does not open a role (packet §6, Q-S1) |
 | `polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0007-0009.md`:35 | the RFC7-2 row "Non-factual framing is machine-marked non-normative", recorded "**Unknown uncovered** — its closed roles contain no `non-normative` standing" | RFC7-2(b) only, not the whole three-way classification; whether `project-fact` may carry an Inferred sentence is this drafter's open question [Inferred]; the gap behind Q-S1; untouched |
@@ -116,7 +134,9 @@ directly in §3.4.
 | RFC1-16, same file lines 378–390 | "Class (ii) enters only via the inference profile, challenge authority only." | (c) restates "challenge authority only"; the profile stays undefined (Q-C1) |
 | RFC1 deferrals, same file lines 1003–1004 | "Challenge machinery beyond the admissibility floor, and inference records → inference profile / RFC 0002." | untouched; the reason (a) and (c) cannot be built yet |
 | RFC4-26, `RFC-0004/fidelity-joins-and-mappings.md` lines 154–162 | "class (ii) inferred mappings enter only through the inference profile with challenge authority only." | the same |
-| RFC2-25, `RFC-0002/rendering-vocabularies.md` lines 168–189 | six closed tiers; "an untier'd claim renders at its bare label"; three sibling surface states | every clause maps into it (packet §2); nothing added |
+| RFC2-25, `RFC-0002/rendering-vocabularies.md` lines 168–189 | six closed tiers; "an untier'd claim renders at its bare label"; three sibling surface states | every clause maps into it (packet §2); nothing added. Its `editorial-draft` paragraph says "Narrative prose under revision", which (f) would extend to figures and passage selections (packet §1 (f)) |
+| RFC7-20, `RFC-0007/narrative-contract.md` line 416 (added 2026-10-14, round-2 finding 2) | "Generated prose appears **only** in the explicit **editorial-draft** state", "**non-citable**: never an anchor target (RFC7-10), never in the citation graph, never satisfying a claim, never green" | **binds (a) on Polaris.** A Polaris synthesis is generated prose, so it is an `editorial-draft`, not an Inferred claim; repaired (a) defers to that rule; making it a claim needs an RFC7-20 amendment (packet §7 Q-C3). Nothing made false |
+| RFC7-21, same file line 432 | "A draft becomes curated narrative only through an attributed human adoption act" | (a) and (f) leave the adoption path as it is |
 
 The POC specification's coverage row for RFC4-26
 (`three-surface-poc-experience/CONTRACT-COVERAGE.md` line 119, routed to
@@ -134,7 +154,27 @@ commit was run the same way as a baseline [Observed, both this session]:
 
 - baseline: **80 commands, 0 nonzero**;
 - applied: **80 commands, 6 nonzero**, every one attributable to the
-  insertion:
+  insertion.
+
+*(Marked 2026-10-14: that probe ran over the pre-repair bytes at
+`59fbf787` and is valid only there. Round-2 note 12 found the battery had
+grown. **Re-run 2026-10-14 over the repaired bytes:** in two scratch clones
+at `09c7a61d`, the seven repaired blocks were extracted from this
+package's `OWNER-DECISION-PACKET.md` by script (exactly seven `markdown`
+fences) and inserted into one clone after each anchor's file digest was
+checked, and the canonical battery block was read from that clone's
+`PROJECT-STATUS.md` and run line by line in both. Baseline: **96 commands
+(the 95 checks plus the `git tag` line), 0 nonzero**; applied: **96
+commands, 6 nonzero**, the same six commands as the table below, with the
+same failure messages: CG-18 16 findings over 10 fixtures × 2 predicates;
+budget-report DRIFT in fixtures 1, 3, 5, 6, 7, 8, 9, 10 and
+`CONTEXT-BUDGET-REPORT.md`; `05-CONTRACT-INDEX.yaml` differs; the directive
+register is stale; the recorder's `--check` "review retired by changed
+input: .syzygy/governance/doctrine/vision.md" and `--selftest` "candidate
+input drift" on the same path [Observed, this session]. Moving (e) and
+(d1) changed no command's outcome. VIS-7 still moves from line 250 to 257
+in the applied clone; the contract-index line figures in the table are the
+`59fbf787` run's and were not re-read.)*
 
 | Command | Failure | What application must do |
 |---|---|---|
@@ -173,7 +213,16 @@ below. The static sweep misses `build_contract_index.py`, which reaches
 doctrine through a relative directory (`GOV_SOURCES`, `"../../doctrine"`),
 so method 1 is the one relied on. `build_capability_1_views.py` carries
 doctrine identifiers from its charter, not doctrine bytes, and stayed
-green.
+green. **Re-run 2026-10-14 at `09c7a61d`** (round-2 note 12): **962
+files, 52 readers**. The 39 above are all still readers; the 13 new ones
+are the dossier in-force `params.json`, one dossier mutation evidence
+record, nine `packages/polaris-dossier/src/` files and
+`scripts/build_dossier_local_agent_acts.py` and
+`scripts/record_dossier_local_agent_acts.py`, and every doctrine file they
+name is `security.md` or `v1.md` (one test names a made-up fixture file under `doctrine/`,
+and `execution-choice.test.ts` names only the directory, creating it empty
+in a scratch tree) [Observed: `git grep` over the 13 at `09c7a61d`]. D8 touches neither
+file, so none of them is a D8 reader; the applied probe above agrees.
 
 | Reader | On application |
 |---|---|
@@ -187,7 +236,15 @@ green.
 
 Neither `trust-and-evidence.md`'s nor `architecture.md`'s digest occurs in
 any tracked file; `vision.md`'s occurs only in the three evidence files
-above [Observed]. No doctrine digest is in a performed act's manifest.
+above [Observed]. *(Marked 2026-10-14, round-2 note 12: true at
+`59fbf787`, no longer true.)* At `09c7a61d`, outside this package:
+`trust-and-evidence.md`'s digest occurs in no tracked file;
+`architecture.md`'s occurs in D7's `OWNER-DECISION-PACKET.md` (line 128)
+and `SEMANTIC-DELTA.md` (line 14); `vision.md`'s occurs in those two D7
+files (lines 94 and 12) and the three evidence files above [Observed:
+`git grep -F` for the three digests at `09c7a61d`]. D7's copies are
+candidate anchors, not act arguments, and change nothing here. No doctrine
+digest is in a performed act's manifest.
 
 ## 5. Observations routed, not repaired
 
@@ -196,15 +253,31 @@ above [Observed]. No doctrine digest is in a performed act's manifest.
    departure.
 2. **Clause (e) and the launch-gate battery.** The launch-gate
    administration (`decisions/launch-gate/`) and the canonical battery are
-   tooling runs over Syzygy's own tree. Clause (e) is drafted to bind only
-   observation-pipeline records ("observes its own repository as an
-   observed project"); if the owner reads a battery run as
-   self-observation, (e) would deny it the floor, which no one intends.
-   The scope sentence is the clause's main risk and is flagged to the
-   reviewer.
-3. **The (a)/(f) overlap for a generated manifesto** (§3.3) is unresolved
-   and left to the owner or a later specification.
+   tooling runs over Syzygy's own tree. *(Repaired 2026-10-14, round-2
+   finding 3: this item quoted (e)'s pre-repair trigger, "observes its own
+   repository as an observed project", as current text.)* Clause (e)'s
+   current trigger is "When Syzygy's observation pipeline evaluates
+   Syzygy's own governance root as its subject", and its bound object is
+   "the observation records", a defined doctrine term (`trust-and-evidence.md`
+   line 144). A battery run or a launch-gate administration is not an
+   observation record, so (e) does not reach it [Inferred], and its denial
+   no longer touches the floor at all: it covers only claims of alignment,
+   convergence or genome-completeness, while evidence for any of the four
+   floor properties may come from this subject (packet §1 (e), repaired the
+   same day for round-2 finding 1). The scope sentence is still flagged for
+   round 3 to test, no longer as the clause's main risk.
+3. **The (a)/(f) overlap for a generated manifesto** (§3.3). *(Marked
+   2026-10-14: "unresolved" is no longer true.)* The adopted generator
+   specification keeps a generated bundle `editorial-draft` until its
+   authorship act, and repaired (a) yields to it (§3.3).
 4. **D7 shares the recorder gate** (§4): its `vision.md` insertion would
    fail `record_polaris_understanding_adoption.py --check` the same way.
    D7's ledger lists that script as "unaffected". Routed to the
-   coordinator; D7's bytes are not edited here.
+   coordinator; D7's bytes are not edited here. *(Marked 2026-10-14: D7's
+   round-2 repair landed as `7071a744`, and its ledger line 201 still
+   reads "unaffected: it reads history, not today's bytes". This repair's
+   re-run probe at `09c7a61d` (§4) shows the recorder's `--check` failing
+   on D8's `vision.md` insertion with "review retired by changed input",
+   so the two ledgers still disagree about the same script [Observed: both
+   texts; D7's insertion itself not probed]. Routed again to the
+   coordinator and to D7's round 3.)*
