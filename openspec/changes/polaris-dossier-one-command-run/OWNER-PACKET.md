@@ -50,7 +50,7 @@ operator-started flow, its launch forms and REQ-035 stay exactly as signed.
 Alternative: supersede them outright and retire the operator-started flow;
 not recommended while execution runs (D9) still need it.
 
-**Q2. Whose act are the agents' provider transmissions in a launched run?**
+**Q2. Whose act are the agents' provider transmissions in a launched run?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 REQ-033 says Syzygy makes "no model-provider call" and that the sessions'
 transmissions are "the operator's own act". The 2026-10-08 packet warned that
 if Syzygy launches, that disclosure "turns false" and RFC7-20 and the public
@@ -62,19 +62,19 @@ provider call, resolves no route and sends no content itself. The pages say
 so. Alternative: treat launched runs as Syzygy egress under RFC7-20, which
 needs an egress record per provider before any launched run.
 
-**Q3. New change, or v1.3 of the local-agent mode?**
+**Q3. New change, or v1.3 of the local-agent mode?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: a new change, as drafted, following the arbitrary-repo
 precedent: added requirements that name the exact predecessor text they
 displace, no byte of REQ-033 to 036 edited. Alternative: a v1.3 amendment
 package of `polaris-dossier-local-agent-mode` through CC-REV-2.
 
-**Q4. Refuse launched runs where isolation cannot be built?**
+**Q4. Refuse launched runs where isolation cannot be built?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: yes, fail closed and point to `syzygy dossier init`. A
 launched run without isolation would be weaker than today, because nobody
 would be attending each launch. [Observed 2026-10-14 on this host:
 bubblewrap 0.11.1 builds an unprivileged view.]
 
-**Q5. May a launched run continue while you are detached?**
+**Q5. May a launched run continue while you are detached?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: yes, but only through reading, checking, freezing,
 delivering and rendering, with each detached interval recorded; no session
 gains any permission while detached. This is the "walk away" you asked for,
@@ -82,11 +82,11 @@ and it is within what the waiting-sessions direction already allowed ("an
 unattended stretch of a run is a reading-only stretch").
 Alternative: pause the run whenever no operator is attached.
 
-**Q6. The command's name.**
+**Q6. The command's name.** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: `syzygy polaris <url>`, your words, with `--resume <run>`.
 Alternative: `syzygy dossier run <url>`, beside the existing subcommands.
 
-**Q7. Which agent tools first?**
+**Q7. Which agent tools first?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: Claude Code first, since its provider statement and the
 waiting-session tool rules exist; Codex once its statement is in force.
 

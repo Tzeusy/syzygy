@@ -7,7 +7,9 @@
 
 - [x] Owner direction recorded 2026-10-14, answering Q0 and Q1
       (`decisions/POLARIS-DOSSIER-ONE-COMMAND-RUN-DIRECTION.md`).
-- [ ] Owner answers Q2 to Q7; strike or narrow requirements per the answers (Q2 changes
+- [x] Owner answered Q2 to Q7 with the recommendations, and authorized a
+      prototype of slices 1 to 5 (direction follow-up, 2026-10-14). Nothing
+      to strike; strike or narrow requirements per the answers (Q2 changes
       REQ-041's disclosure; Q4 no changes REQ-042's refusal; Q5 no adds a
       pause rule to REQ-043; Q6 renames the command throughout).
 - [ ] Generate `GOVERNING-DEPENDENCIES.md` with
