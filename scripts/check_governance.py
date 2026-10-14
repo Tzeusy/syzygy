@@ -8659,7 +8659,9 @@ def selftest():
                   and any("act-time POC row superseded" in d for d in row[4])))
     for poc_kind, why in (("poc-successor-unrecorded", "no aggregate block"),
                           ("poc-successor-other-digest", "its row names other bytes"),
-                          ("poc-successor-overridden", "a later sign-off names other bytes")):
+                          ("poc-successor-overridden", "a later sign-off names other bytes"),
+                          ("poc-successor-no-record", "its dedicated record is absent"),
+                          ("poc-successor-other-path", "its row names another path")):
         row = _selftest_cg7h(poc_kind)
         cases.append((f"CG-7h POC coverage drift stays a finding when {why}",
                       row[0] == "FAIL"
@@ -10372,7 +10374,9 @@ def _selftest_cg7h(kind):
             poc_inputs[early_pkg] = ("record\n", f"{digest('poc-successor')}  {poc_path}\n")
             performed += f"<!-- versioned-signoff:{early_pkg}:v{early_ver} -->\n"
             late_row = digest("poc-other")
-        poc_inputs[late_pkg] = ("record\n", f"{late_row}  {poc_path}\n")
+        poc_inputs[late_pkg] = ("" if kind == "poc-successor-no-record" else "record\n",
+                                f"{late_row}  "
+                                f"{'openspec/changes/poc/design.md' if kind == 'poc-successor-other-path' else poc_path}\n")
         if kind != "poc-successor-unrecorded":
             performed += f"<!-- versioned-signoff:{late_pkg}:v{late_ver} -->\n"
 
