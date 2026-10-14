@@ -51,6 +51,10 @@ repaired once on 2026-10-14, unconfirmed pending round 6**; each repair is
 mapped in `ROUND-5-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)", and
 round 6 is briefed in `REVIEW-BRIEF.md` §"Round 6". The patches were also
 regenerated over `main` after the P-97 sign-off moved the signed spec.)*
+*(Marked 2026-10-14, round 6: "pending round 6" is no longer true. Round 6
+returned `REVISE` (`docs/reviews/R-M9-POC-IDENTITY-AMENDMENT-6-RAW.md`
+line 4), two revise findings and three notes, all open in
+`ROUND-6-DISPOSITIONS.md`. The bytes stay unconfirmed.)*
 
 ## What the ruling settled, verbatim
 

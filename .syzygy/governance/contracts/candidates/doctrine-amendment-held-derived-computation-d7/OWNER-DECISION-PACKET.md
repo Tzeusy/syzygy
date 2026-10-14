@@ -29,6 +29,15 @@ was repaired once; the mapping is `ROUND-2-DISPOSITIONS.md` §"Repairs,
 2026-10-14 (cycle 2)".)* **Round-2 findings repaired once on 2026-10-14,
 unconfirmed pending round 3.** One owner question was added by the repair
 (Q5, section 8).
+*(Marked 2026-10-14, round 3: "pending round 3" and "not yet recorded
+under `decisions/`" are no longer true. The direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md`.
+Round 3 ran and returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md` line 4): one revise-level
+finding (Q5 states its arms' consequences inconsistently) and five notes,
+all open in `ROUND-3-DISPOSITIONS.md`. Under the stopping rule the package
+is not repaired again and the bytes stay unconfirmed; it comes to you with
+those findings open.)*
 
 **Identifier.** `D7` is the next unused number in
 `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` as of 2026-10-03 [Observed:

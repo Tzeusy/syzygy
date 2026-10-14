@@ -10,6 +10,9 @@
 > (2026-10-14); **round-2 findings repaired once on 2026-10-14, unconfirmed
 > pending round 3** (`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14
 > (cycle 2)"). Section 1's proposed bytes did not change in that repair.
+> *(Marked 2026-10-14, round 3: "pending round 3" is no longer true. Round
+> 3 returned `REVISE`, one revise-level finding and five notes, all open
+> in `ROUND-3-DISPOSITIONS.md`. The bytes stay unconfirmed.)*
 
 **Artifact(s):** `.syzygy/governance/doctrine/vision.md` (sha256
 `93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d`) and
@@ -253,4 +256,6 @@ owner's direction of 2026-10-14 and returned `REVISE`
 Round 2's eight findings were repaired once on 2026-10-14, on a further
 owner direction of that day (`ROUND-2-DISPOSITIONS.md` §"Repairs,
 2026-10-14 (cycle 2)"); **unconfirmed pending round 3**, whose brief is
-`REVIEW-BRIEF.md` §"Round 3".
+`REVIEW-BRIEF.md` §"Round 3". *(Marked 2026-10-14, round 3: round 3
+returned `REVISE` (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md` line
+4); see `ROUND-3-DISPOSITIONS.md`.)*

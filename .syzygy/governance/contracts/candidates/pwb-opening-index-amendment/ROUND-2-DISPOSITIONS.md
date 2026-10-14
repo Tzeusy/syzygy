@@ -46,6 +46,9 @@
     repaired once, unconfirmed pending round 3, and the packet now carries
     Questions 8 and 9, which the repair added; the bytes are still not
     cleared. The dispositions below are left as written.)*
+    *(Marked 2026-10-14, round 3: "not yet run" and "unconfirmed pending
+    round 3" are no longer true. Round 3 returned `REVISE`; see
+    `ROUND-3-DISPOSITIONS.md`.)*
 
 Reviewed record: docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-2-RAW.md
 
@@ -111,7 +114,9 @@ recommendation [Observed: as the lead session relayed it to the repairing
 session; no decisions file records it at `814fbcc1`]. The repairing
 session signs, records and dispatches nothing. The repaired bytes are
 **round-2 findings repaired once on 2026-10-14, unconfirmed pending round
-3** (`REVIEW-BRIEF.md` §"Round 3").
+3** (`REVIEW-BRIEF.md` §"Round 3"). *(Marked 2026-10-14, round 3: round 3
+has run and returned `REVISE`; the repaired bytes stay unconfirmed. See
+`ROUND-3-DISPOSITIONS.md`.)*
 
 **Base.** `origin/main` at `814fbcc1594cea812289bf7bc246bd9d9a38ef56`,
 after the anchor-resolution sign-off (P-96) moved PWB `spec.md`. That move

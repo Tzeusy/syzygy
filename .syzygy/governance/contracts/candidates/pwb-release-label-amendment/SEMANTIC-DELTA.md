@@ -26,7 +26,11 @@ the owner's direction of that day to run one more cycle (relayed by the lead
 session): every round-3 finding, notes included, repaired once, then one
 fresh review under the same stopping rule. The repairs are mapped in
 `ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)". **Round-3
-findings repaired once on 2026-10-14, unconfirmed pending round 4.** The
+findings repaired once on 2026-10-14, unconfirmed pending round 4.**
+*(Marked 2026-10-14, round 4: "pending round 4" is no longer true. Round 4
+returned `REVISE` (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-4-RAW.md`
+line 4), one revise finding and seven notes, all open in
+`ROUND-4-DISPOSITIONS.md`. The bytes stay unconfirmed.)* The
 account below describes this version. The base moved because the
 anchor-resolution amendment (P-96) was signed v1.0 at `7f43802f`, which
 changed the signed PWB `spec.md`; the derived patches and the manifest were

@@ -31,6 +31,15 @@ finding, notes included, is repaired and mapped in `ROUND-5-DISPOSITIONS.md`
 §"Round 6" and not yet run. A notes-only round 6 clears these bytes; a
 `REVISE` comes back to you. No repair needed a choice from you, and no
 question was added.)*
+*(Marked 2026-10-14, round 6: "unconfirmed pending round 6" and "not yet
+run" are no longer true. Round 6 ran and returned `REVISE`
+(`docs/reviews/R-M9-POC-IDENTITY-AMENDMENT-6-RAW.md` line 4): two revise
+findings (39, the declared identifier field is written by the slice under
+test while the RFC6-1 covered row keeps its claim; 40, the new
+unattributed-carrier limb falsifies seeded subjects such as POC-REQ-051's
+region) and three notes, all open in `ROUND-6-DISPOSITIONS.md`. Under the
+stopping rule the package is not repaired again and this version is not
+offered for sign-off; it comes to you with those findings open.)*
 
 ## What you would be signing
 

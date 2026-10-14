@@ -32,6 +32,12 @@ included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
 §"Round 3": a notes-only verdict clears the bytes it reads, and a `REVISE`
 comes back to you with its findings. Two repairs needed your content
 choice and are put to you as Questions 8 and 9.
+*(Marked 2026-10-14, round 3: "unconfirmed pending round 3" and "One fresh
+round 3 is briefed" are no longer true. Round 3 ran and returned `REVISE`
+(`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-3-RAW.md` line 4): one revise
+finding and nine notes, all open in `ROUND-3-DISPOSITIONS.md`. Under the
+stopping rule the package is not repaired again and the bytes are not
+cleared; it comes to you with those findings open.)*
 
 ## What you would be signing
 
@@ -83,6 +89,9 @@ requirement, capability row, contract-coverage row or warrant moves.
 and returned `REVISE`; on your direction the findings were repaired once
 and round 3 is briefed. Until round 3 returns, this version is not offered
 for signing, so Question 1 waits on round 3.)*
+*(Marked 2026-10-14, round 3: round 3 has returned `REVISE`, so this
+version is still not offered for signing. Question 1 now waits on your
+direction on the round-3 findings.)*
 
 ## Question 2 — what the rows are keyed to
 
