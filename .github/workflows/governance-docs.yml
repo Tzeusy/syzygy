@@ -137,6 +137,12 @@ jobs:
       - name: record_versioned_signoff --check pwb-tree-framing-amendment
         run: python3 scripts/record_versioned_signoff.py --check pwb-tree-framing-amendment --version 1.0
 
+      - name: record_versioned_signoff --check pwb-anchor-resolution-amendment
+        run: python3 scripts/record_versioned_signoff.py --check pwb-anchor-resolution-amendment --version 1.0
+
+      - name: record_versioned_signoff --check three-surface-poc-block-provenance-amendment
+        run: python3 scripts/record_versioned_signoff.py --check three-surface-poc-block-provenance-amendment --version 1.0
+
       - name: record_versioned_signoff --check polaris-dossier-local-agent-mode
         run: python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0
 
