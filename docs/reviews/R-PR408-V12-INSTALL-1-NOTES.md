@@ -13,10 +13,14 @@ Reviewed record: docs/reviews/R-PR408-V12-INSTALL-1-RAW.md
 
 ## What was confirmed
 
-- **Subject:** the four commits from `a3cdb3e6` to
-  `e9ab09f8f405e201e54fdd2305b07527abc3e9d7` on PR #408: the round-3 and
-  round-4 raws, the notes record, the v1.2 recording and install, and the
-  authority-sweep test change.
+- **Subject:** the five commits from `a3cdb3e6` to
+  `5a2b2f6b3b00f42d480e475655d66398f933f87c` on PR #408, the head that
+  merged as `068d5f1f`: the round-3 and round-4 raws, the notes record, the
+  v1.2 recording and install, the authority-sweep test change, and
+  `5a2b2f6b`'s citation of the filed beads. The raw was re-issued at
+  `5a2b2f6b` after a first pass at `e9ab09f8`; criteria 1–5 rest on
+  `e9ab09f8`, which `5a2b2f6b` does not change, and the Python battery was
+  re-run at `5a2b2f6b` (the raw's criterion 6).
 - **Verdict:** `CONFIRM WITH EXCEPTIONS`, on line 2 of the raw named above,
   with five findings, each tagged `(note)`. PR #408 merged at `068d5f1f`,
   and the tag `polaris-dossier-local-agent-mode-v1.2` sits on the rebased
@@ -44,21 +48,27 @@ Not repaired here. The lead appends it to `syzygy-syoj`.
 Not repaired here. The lead appends it to `syzygy-syoj`, beside round-4
 finding 2, which is the same class.
 
-### 4 — The notes record's "to be filed" is not digest-bound
+### 4 — The edit at `5a2b2f6b` to the notes record is lawful, but rewrites in place
 
-[Observed] The review read `R-PR408-WAITING-SESSIONS-4-NOTES.md` as it
-stood at `e9ab09f8`, saying the two follow-up beads were "to be filed".
-Commit `5a2b2f6b` (merged as `068d5f1f`) then rewrote those words in place
-to cite `syzygy-syoj` and `syzygy-zzt5`, at the lead's direction and
-before this review's suggestion to add a dated line instead was known. The
-record is not digest-bound: the sign-off record names it by path only, and
-the recorder checks only that it names the reviewed raw and carries the
-same finding numbers, which still holds. Nor did the rewrite move the tag:
-`polaris-dossier-local-agent-mode-v1.2` sits on the recording commit
-`77fc9f6e`, whose notes record still carries the original "to be filed"
-text this review confirmed. The current bytes differ from the reviewed ones
-only in naming the filed beads. They are not re-reviewed, and the record is
-not edited further.
+The review covers the edit: commit `5a2b2f6b` touched only `docs/README.md`
+(the campaign row) and `docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md`,
+replacing "to be filed" with `syzygy-syoj` and `syzygy-zzt5`, and the raw
+finds no digest of that record bound anywhere and the recorder's `--check`
+passing at that commit.
+
+One fact the raw could not see: it says the tag would freeze the
+`5a2b2f6b` bytes once created. [Observed] The tag
+`polaris-dossier-local-agent-mode-v1.2` was created after the merge, on
+`77fc9f6e`, the rebased recording commit, whose copy of the notes record
+still carries the original "to be filed" text
+(`git show 77fc9f6e:docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md`). The
+tag therefore freezes the pre-rewrite text; `main` carries the rewrite.
+
+The two remaining points are not repaired here. The record is not edited
+again: a rewrite to restore the old text with a dated addition would be a
+second in-place edit of the same file. The bead notes that call the record
+bound and unedited, and `syzygy-syoj`'s stale path to the deleted round-3
+notes file, are in the tracker, outside this change, and go to the lead.
 
 ### 5 — The partition sentence carries the new count under the old date
 
