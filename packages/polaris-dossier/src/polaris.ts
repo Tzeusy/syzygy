@@ -377,8 +377,8 @@ function launchSession(options: Options, ports: CliPorts, state: SupervisorState
     toolPaths: [path.dirname(executable), path.dirname(path.dirname(process.execPath))], shimDir, brokerSocket: socket, socketDir,
   });
   const claudeArgs: string[] = plan.role === 'author'
-    ? [plan.prompt, '--model', state.model, ...(state.authorSkipPermissions ? ['--dangerously-skip-permissions'] : ['--permission-mode', 'acceptEdits', '--allowedTools', `Bash(syzygy dossier check ${state.run}:*)`, `Bash(syzygy dossier status ${state.run}:*)`])]
-    : [plan.prompt, '--model', state.model, '--permission-mode', 'default', '--tools', WAITING_TOOLS.join(','), ...(plan.allowedTools ? ['--allowedTools', ...plan.allowedTools] : []),
+    ? [plan.prompt, '--model', state.model, ...(state.authorSkipPermissions ? ['--dangerously-skip-permissions'] : ['--permission-mode', 'auto', '--allowedTools', `Bash(syzygy dossier check ${state.run}:*)`, `Bash(syzygy dossier status ${state.run}:*)`])]
+    : [plan.prompt, '--model', state.model, '--permission-mode', 'auto', '--tools', WAITING_TOOLS.join(','), ...(plan.allowedTools ? ['--allowedTools', ...plan.allowedTools] : []),
       '--disallowedTools', ...WAITING_DENIED_TOOLS, '--strict-mcp-config'];
   // The clone lies outside the session's working directory; name it as an added directory so reading it asks nothing (the view already
   // limits what the session can reach).
