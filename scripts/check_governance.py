@@ -1691,6 +1691,13 @@ PWB_TREE_FRAMING_DIR = f"{CANDIDATES}/pwb-tree-framing-amendment"
 PWB_TREE_FRAMING_SUBJECT = (
     f"{PWB_TREE_FRAMING_DIR}/PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt")
 PWB_TREE_FRAMING_ACT = f"{DECISIONS}/PWB-TREE-FRAMING-AMENDMENT-ACT.md"
+#: The PWB anchor-resolution amendment to PWB-REQ-014 (`syzygy-u05.9`, N9
+#: PWB half), signed by version tag 2026-10-14 after tree framing.
+PWB_ANCHOR_RESOLUTION_LABEL = "SIGN OFF PWB ANCHOR-RESOLUTION AMENDMENT"
+PWB_ANCHOR_RESOLUTION_DIR = f"{CANDIDATES}/pwb-anchor-resolution-amendment"
+PWB_ANCHOR_RESOLUTION_SUBJECT = (
+    f"{PWB_ANCHOR_RESOLUTION_DIR}/PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt")
+PWB_ANCHOR_RESOLUTION_ACT = f"{DECISIONS}/PWB-ANCHOR-RESOLUTION-AMENDMENT-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1927,6 +1934,7 @@ PWB_CONTAINER_SHAPE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_ITEM_DEPTH_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_READABILITY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_TREE_FRAMING_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_ANCHOR_RESOLUTION_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1960,6 +1968,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_TREE_FRAMING_LABEL, PWB_TREE_FRAMING_SUBJECT,
      PWB_TREE_FRAMING_ACT, PWB_TREE_FRAMING_SUBJECTS,
      f"{PWB_TREE_FRAMING_DIR}/OWNER-DECISION-PACKET.md"),
+    ("anchor-resolution", "PWB-ANCHOR-RESOLUTION-AMENDMENT",
+     PWB_ANCHOR_RESOLUTION_LABEL, PWB_ANCHOR_RESOLUTION_SUBJECT,
+     PWB_ANCHOR_RESOLUTION_ACT, PWB_ANCHOR_RESOLUTION_SUBJECTS,
+     f"{PWB_ANCHOR_RESOLUTION_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier

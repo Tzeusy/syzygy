@@ -605,6 +605,12 @@ VERSIONED_LATER = {
                      "pwb-tree-framing-amendment/"
                      "PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt"),
     ),
+    "pwb-anchor-resolution-amendment": (
+        DECISIONS / "PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-anchor-resolution-amendment/"
+                     "PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt"),
+    ),
 }
 
 

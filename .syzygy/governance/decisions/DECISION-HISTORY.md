@@ -12,6 +12,29 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-10-14 (P-96, P-97 — the N9 machine-channel amendments signed v1.0)
+
+The owner answered both packets on 2026-10-14 in the lead Claude Code
+session, by structured questions, after the round-2 review
+(`docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-2-RAW.md`) returned
+`CONFIRM WITH EXCEPTIONS` with notes only for both halves. Records:
+[`PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md`](PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md),
+[`THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md`](THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md)
+and the route direction
+[`OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md`](OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md).
+
+| # | What happened |
+|---|---|
+| P-96 | **Signed v1.0** by version tag under Scope A (tag `pwb-anchor-resolution-amendment-v1.0`); the nine notes stay open in the sibling `ROUND-2-DISPOSITIONS.md`. Q2 "Keep RFC7-3": no contract amendment commissioned. Q3 "Leave it": no PWB-REQ-015 delta. Q4 "Machine only". Authorizes no implementation. Signing moved PWB `spec.md`, so the P-95 re-pin package is stale (`syzygy-fxro`, `syzygy-2g0d`) |
+| P-97 | **Signed v1.0** by version tag (tag `three-surface-poc-block-provenance-amendment-v1.0`); the eight notes stay open in the PWB half's `ROUND-2-DISPOSITIONS.md`. Q2 "Extend Scope A to POC": Scope A now covers Three-Surface POC specification amendments, so P-84 and P-100 follow it when they clear. Q3 "Two identity values". Authorizes no implementation |
+
+The rows as they stood in the register:
+
+| # | Decision | Type | Blocks / earliest gate | Owning record |
+|---|---|---|---|---|
+| P-96 | PWB anchor-resolution amendment (`syzygy-u05.9`, pursuit move N9, PWB half): PWB-REQ-014 gains one anchor shape that names its block, and an `anchorsResolved` pair (anchors that resolve against the machine answer, over anchors) on each anchored block and the narrative; every narrative unit stays `non-citable`. [Observed] 883 of 902 at Butlers `32f38feb`. Q1: sign v1.0, decline or revise. Q2 (open, not drafted): keep RFC7-3 as accepted, or commission a contract amendment making citability follow resolved anchors. Q3: leave the deep-dive's second source-reference shape, or commission a PWB-REQ-015 delta. Q4: the pair machine-only, or rendered too. Signing it moves PWB `spec.md` again, so it interacts with P-95 (see its packet). Round 1 (2026-10-03, one round over both N9 packages) was `REVISE` for both; every finding was repaired once. Round 2 over the repaired bytes (2026-10-14, on your direction in `decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`; `docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-2-RAW.md`) was `CONFIRM WITH EXCEPTIONS` for this half: 0 revise findings and nine notes. Under your 2026-09-26 ruling the bytes it read are **cleared** (manifest digest on the raw's line 3); the notes are dispositioned, open, in `ROUND-2-DISPOSITIONS.md` beside the packet, and the package is not edited. Q1's *order one confirmation round* arm is spent; Q1–Q4 stay open. The sign-off recorder does not yet accept this raw's two-package head (see that record) | specification sign-off (Scope A) | its implementation slice (needs a fresh authorization after sign-off) | `contracts/candidates/pwb-anchor-resolution-amendment/OWNER-DECISION-PACKET.md`; `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md` beside it |
+| P-97 | Three-Surface POC block-provenance amendment (`syzygy-u05.9`, pursuit move N9, POC half): POC-REQ-001 and POC-REQ-010 each state their observation's provenance once, in the shape the machine answer's entities use, and no row restates the observation's revision or capture instant. [Observed] Today every one of 7,952 work items and 6,950 files repeats it: 772,900 bytes, 13.44% of `/api/poc`. Q1: sign v1.0, decline or revise. Q2: the sign-off route, recommended to follow your P-84 Q2 answer. Q3: the two identity values only, or every header value. Round 1 (2026-10-03, one round over both N9 packages) was `REVISE` for both; every finding was repaired once. Round 2 over the repaired bytes (2026-10-14, on your direction in `decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`; `docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-2-RAW.md`) was `CONFIRM WITH EXCEPTIONS` for this half: 0 revise findings and eight notes. Under your 2026-09-26 ruling the bytes it read are **cleared** (manifest digest on the raw's line 4); the notes are dispositioned, open, in the PWB half's `ROUND-2-DISPOSITIONS.md`, and the package is not edited. Q1's *order one confirmation round* arm is spent; Q1–Q3 stay open. The sign-off recorder does not yet accept this raw's two-package head (see that record) | specification sign-off (route per P-84 Q2) | its implementation slice (needs a fresh authorization after sign-off) | `contracts/candidates/three-surface-poc-block-provenance-amendment/OWNER-DECISION-PACKET.md`; the PWB half's `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md` |
+
 ## Resolved on 2026-10-14 (P-18, P-49, P-50, P-51 — questionnaire answers of 2026-09-27)
 
 The owner answered these rows on 2026-09-27 in a local questionnaire

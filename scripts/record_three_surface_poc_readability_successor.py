@@ -119,7 +119,13 @@ def rows(root):
 
 
 def subjects(root):
-    return {rel: digest(read(root, rel)) for rel in PREDECESSOR}
+    """Subject digests as this successor installed them: a later recorded
+    sign-off's applied patches are reversed first (the builder's
+    ``installed_bytes_at``), so a registered successor is history, not drift."""
+    for rel in PREDECESSOR:
+        read(root, rel)  # the symlink and path guards, on every subject
+    installed = builder(root).installed_bytes_at(root)
+    return {rel: digest(installed[Path(rel)]) for rel in PREDECESSOR}
 
 
 def validate_pins(root, pins):
