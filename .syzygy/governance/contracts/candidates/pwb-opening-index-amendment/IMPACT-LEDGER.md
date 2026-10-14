@@ -41,10 +41,17 @@ requirement only in run form (`PWB-REQ-001/002/…/010/…`, line 226).
   rows, the offsets and the stopping line at the head of the first reading
   level.
 - **Offsets.** A word counter over the document as the browser holds it
-  after load, at a declared viewport, for the index, and a second one,
+  after load, at the viewport the page loads at, for the index, and a second one,
   sharing no code, for the oracle. *(Repaired 2026-10-14: this line first
   said "over the served HTML", which the round-1 repair had already ruled
-  out; round-2 finding 6.)*
+  out; round-2 finding 6.)* *(Repaired 2026-10-14, cycle 3: the renderer's
+  counter runs in the page after load. The numbers a page shows are those
+  of the viewport it has when it loads, so a counter run on the server, or
+  at one assumed width, would be wrong wherever a media query hides text;
+  round-3 finding 5. [Inferred] If a page script writes the offsets after
+  load, an oracle enumerates the document after its scripts run, not the
+  served HTML, as the AGENTS note on script-created elements already
+  requires.)*
 - **Copy.** The PWB-REQ-012 copy sweep, so the new strings carry their roles
   and stay inside its word and term rules.
 - **Not touched.** The walkthrough readiness seam
@@ -79,6 +86,12 @@ day, so its patch is part of the signed `spec.md`, and the builder now
 composes this package with the three still pending: P-99, P-86 and P-85.
 This package was regenerated with `--write` over the moved `spec.md` in
 the cycle-2 repair.)*
+*(Marked 2026-10-14, cycle 3: P-86 is no longer pending either. It was
+signed v1.0 that day
+(`.syzygy/governance/decisions/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md`),
+so the builder composes this package with the two still pending, P-99 and
+P-85, and this package was regenerated with `--write` over the moved
+`spec.md` in the cycle-3 repair.)*
 
 ## Registry entry and policy
 
