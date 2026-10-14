@@ -1,7 +1,8 @@
 # One-command Polaris dossier run
 
 > **Candidate — binds nothing.** Drafted 2026-10-14 from the owner's request
-> in an operator session, not yet recorded as an owner direction (packet Q0).
+> in an operator session, recorded the same day as the owner direction
+> `POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14`.
 > It is not adopted, performs no act, and grants no read, egress, write,
 > launch or execution. Effect comes only from owner acts over exact reviewed
 > bytes; `OWNER-PACKET.md` in this directory lists them. Tracking bead:
@@ -17,9 +18,9 @@ brief, past a three-hour deadline [Observed: that run's `run.json`, deadline
 
 ## Why
 
-**Warrant (pending):** the owner's words in an operator session on
-2026-10-14, to be recorded as a plain owner direction before any review of
-these bytes counts (packet Q0):
+**Warrant:** the owner direction `POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14`
+(`decisions/POLARIS-DOSSIER-ONE-COMMAND-RUN-DIRECTION.md`), a plain owner
+direction that directs this draft and performs no act. The owner's words:
 
 > "The UX is pretty important here; a user of syzygy shouldn't have multiple
 > start-stop episodes when trying to generate Polaris for a repository. In
@@ -117,10 +118,10 @@ runs and edits no byte of REQ-033 to 036.
 
 ## Acts this needs before it can bind
 
-1. A plain owner direction recording the request and superseding, for
-   launched runs only, the 2026-10-08 "No Syzygy-launched sessions" item, the
-   2026-10-03 item 2 as it applies to the product, and the 2026-10-05 item 2
-   (packet Q0, Q1).
+1. Done 2026-10-14: the plain owner direction recording the request and
+   superseding, for launched runs only, the 2026-10-08 "No Syzygy-launched
+   sessions" item, the 2026-10-03 item 2 as it applies to the product, and
+   the 2026-10-05 item 2 (packet Q0, Q1).
 2. This spec, signed by version tag, after fresh-context review.
 
 The owner packet orders them and recommends answers.

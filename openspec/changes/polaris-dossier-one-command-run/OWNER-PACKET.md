@@ -37,12 +37,14 @@ context was fresh, and that the view held for the session's whole life.
 
 ## Questions
 
-**Q0. Record the request as an owner direction.**
+**Q0. Record the request as an owner direction.** *Answered yes 2026-10-14
+(`decisions/POLARIS-DOSSIER-ONE-COMMAND-RUN-DIRECTION.md`).*
 Recommendation: yes, as `POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14`, a plain
 direction that directs this draft and performs no act. Without it this
 draft has no warrant and no review of it counts.
 
-**Q1. Supersede the three directions for launched runs only.**
+**Q1. Supersede the three directions for launched runs only.** *Answered
+yes 2026-10-14, same direction.*
 Recommendation: yes, and only for runs started with `syzygy polaris`. The
 operator-started flow, its launch forms and REQ-035 stay exactly as signed.
 Alternative: supersede them outright and retire the operator-started flow;
