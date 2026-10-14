@@ -371,7 +371,7 @@ CAMPAIGNS = (
     campaign(
         "pr408-waiting-sessions",
         "Pre-started waiting sessions",
-        r"R-PR408-WAITING-SESSIONS-.*\.md",
+        r"R-PR408-(?:WAITING-SESSIONS|V12-INSTALL)-.*\.md",
     ),
 )
 
