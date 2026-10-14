@@ -113,8 +113,8 @@ export async function runPolarisCli(argv: readonly string[], ports: CliPorts = {
   const started = spawnSync('tmux', ['new-session', '-d', '-s', name, '-n', 'run', '-x', '220', '-y', '50', ...envArgs, '--', process.execPath, MAIN, 'polaris', ...forward], { stdio: 'inherit' });
   if (started.status !== 0) return refuse('tmux could not start the run\'s session');
   spawnSync('tmux', ['set-option', '-t', name, 'remain-on-exit', 'on'], { stdio: 'ignore' });
-  process.stdout.write(`Started launched run in tmux session ${name}.\n  attach: tmux attach -t ${name}\n  stop:   syzygy polaris --stop <run>  (or tmux kill-session -t ${name})\n`);
-  if (options.attach && process.stdout.isTTY) return spawnSync('tmux', ['attach', '-t', name], { stdio: 'inherit' }).status ?? 0;
+  process.stdout.write(`Started launched run in tmux session ${name}.\n  attach: tmux attach -t ${name}   (inside tmux: tmux switch-client -t ${name})\n  stop:   syzygy polaris --stop <run>  (or tmux kill-session -t ${name})\n`);
+  if (options.attach && process.stdout.isTTY) return attachTo(name);
   return 0;
 }
 
@@ -182,7 +182,13 @@ function attach(options: Options): number {
   const state = readState(options.stateRoot, options.run!);
   if (state === null) return refuse(`no launched run ${options.run} under ${options.stateRoot}`);
   if (!tmuxHas(state.tmuxSession)) return refuse(`run ${state.runId} has no live view; resume it with syzygy polaris --resume ${state.runId}`);
-  return spawnSync('tmux', ['attach', '-t', state.tmuxSession], { stdio: 'inherit' }).status ?? 0;
+  return attachTo(state.tmuxSession);
+}
+
+/** Attach to the run's view; from inside tmux, switch the current client to it instead of nesting. */
+function attachTo(name: string): number {
+  const inside = process.env['TMUX'] !== undefined && process.env['TMUX'] !== '';
+  return spawnSync('tmux', inside ? ['switch-client', '-t', name] : ['attach', '-t', name], { stdio: 'inherit' }).status ?? 0;
 }
 
 function stop(options: Options): number {
