@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-index 092711e..e3eae73 100644
+index 092711e..7e949ea 100644
 --- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 +++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-@@ -29,16 +29,20 @@ Reader notes, binding on how this file is read:
+@@ -29,16 +29,20 @@
    named in each requirement's `Group` line: *Code-structure
    observation* (001–004), *Work-item observation* (010–013), *Client
    rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
@@ -29,7 +29,7 @@ index 092711e..e3eae73 100644
    from the CC-SPEC-8 sweep recorded in this change's
    `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
    found the requirement's oracle observes one of that clause's
-@@ -937,27 +941,210 @@ warrants:
+@@ -937,27 +941,234 @@
    parent_requirements: []
  ```
  
@@ -45,8 +45,10 @@ index 092711e..e3eae73 100644
 +identity, held once in the shared model, and every surface and the machine
 +answer SHALL name that subject by that identity and by no other. Where a
 +source authority owns a subject's identity (a work item's tracker, a code
-+region's source adapter), the shared model holds that identity and mints none
-+of its own. A link on one surface to a subject another surface renders SHALL
++region's source adapter) — that is, where the source record the shared model
++reads for the subject carries a non-empty identifier of that source's own
++record format — the shared model holds that identity and mints none of its
++own. A link on one surface to a subject another surface renders SHALL
 +resolve, by that identity, to exactly one link target on that surface, and
 +that target SHALL carry the same identity.
 +
@@ -57,25 +59,35 @@ index 092711e..e3eae73 100644
 +a score, a verdict or styled as a positive state — and the machine answer SHALL
 +carry the same three slots for the same identity.
 +
-+- **Scope.** every element on any surface that carries a subject identity,
-+  every link between surfaces, and every slot of every three-state view.
++- **Scope.** every element on any surface and every record in the machine
++  answer that carries a subject identity, every link between surfaces, and
++  every slot of every three-state view.
 +
 +- **Case (sweep)**: a checker enumerates, over the union of the served
-+  surfaces, every element carrying a subject identity — the denominators
-+  are that element population and the number of identities rendered on
-+  more than one surface — follows every link between surfaces, and
-+  enumerates every three-state slot on the surfaces and in the machine
-+  answer.
-+- **Observable**: each element's identity equals the expected identity of
-+  its subject; each link between surfaces resolves to exactly one target
++  surfaces and the machine answer, every element and every record
++  carrying a subject identity — the denominators are that population, the
++  number of subjects it is attributed to, and the number of identities
++  that appear in more than one of the surfaces and the machine answer —
++  follows every link between surfaces, and enumerates every three-state
++  slot on the surfaces and in the machine answer.
++- **Observable**: every element and record attributed to one subject
++  carries one identity value, and no identity value is carried by elements
++  or records attributed to two subjects; each owned subject's identity
++  equals its expected identity; each link between surfaces resolves to
++  exactly one target
 +  carrying the same identity; each slot is a joined subject, or an
 +  Unknown carrying a reason, a route and the declared Unknown encoding,
 +  identically on the surface and in the machine answer.
-+- **Oracle**: per-element identity equality with an independently
-+  derived expected identity, HTTP/anchor resolution per link with a count
-+  of link targets defined more than once, and per-slot comparison with
-+  independently derived joins, over the exhausted populations. Zero
-+  mismatched identities, zero dangling, mis-resolving or duplicated link
++- **Oracle**: per-subject identity consistency over every element and
++  record attributed to it, per-element identity equality with an
++  independently derived expected identity for each owned subject,
++  HTTP/anchor resolution per link with a count of link targets defined
++  more than once, and per-slot comparison with independently derived
++  joins, over the exhausted populations. Zero subjects whose elements or
++  records carry more than one identity value, zero identity values
++  carried by elements or records of more than one subject, zero
++  mismatched identities of owned subjects, zero dangling, mis-resolving
++  or duplicated link
 +  targets, zero absent or unjoined slots, zero unfilled slots lacking the
 +  Unknown label, a reason, a route or the declared Unknown encoding, zero
 +  unfilled slots carrying a score or a verdict, and zero slot differences
@@ -86,10 +98,15 @@ index 092711e..e3eae73 100644
 +  item's or code region's own reference to the claim it names — never
 +  from the machine answer or a surface's renderer. It attributes each
 +  element to its subject by the source record the element renders, never
-+  by the identity the element carries. A subject no source authority owns
-+  has no independently derived identity; the identity-equality limb makes
-+  no claim for it, and its link targets and slots are still checked.
-+- **Falsifier**: one element whose identity differs from its subject's
++  by the identity the element carries. Whether a subject is owned is decided
++  by the procedure the required behavior states: the source record the
++  element renders carries a non-empty identifier of its source's own
++  record format. A subject no source authority owns has no independently
++  derived identity; the identity-equality limb makes no claim for it, and
++  the consistency limb, its link targets and its slots are still checked.
++- **Falsifier**: one subject named by two identity values across the
++  surfaces and the machine answer, one identity value naming two subjects,
++  one element or record whose identity differs from its owned subject's
 +  expected identity, a link between surfaces resolving to no target, to a
 +  duplicated target or to a different subject, or a three-state slot
 +  rendered absent, filled from a subject not joined by the identity,
@@ -130,8 +147,7 @@ index 092711e..e3eae73 100644
 +### Requirement: POC-REQ-055 — Every relationship is named in or flagged outside the closed vocabulary
 +
 +Group: Cross-cutting experience. Form: **invariant**.
- 
--- **Scope.** every epistemic encoding across the three surfaces.
++
 +**Required behavior.** Every relationship the shared model emits SHALL either
 +carry a relation name from RFC1-25's closed table, emitted with its source and
 +target in the roles that table assigns the relation — read through a
@@ -179,7 +195,8 @@ index 092711e..e3eae73 100644
 +  relationship's outside-closed-vocabulary flag and reason, and the check
 +  reports the number of relationships and of distinct kinds as its
 +  denominators
-+
+ 
+-- **Scope.** every epistemic encoding across the three surfaces.
 +```yaml
 +warrants:
 +  primary: VIS-1
@@ -209,15 +226,17 @@ index 092711e..e3eae73 100644
 +with an encoding the legend distinguishes from Observed.
 +
 +- **Scope.** every epistemic encoding across the three surfaces, and every
-+  epistemic record in the shared model and the machine answer.
++  entity, relationship and claim in the shared model and the machine
++  answer, with its epistemic record.
  
  - **Case (sweep)**: a checker enumerates every epistemic encoding on
    all three surfaces — the denominator is that population — and
 -  compares each against the declared token/encoding table.
 +  compares each against the declared token/encoding table; it
-+  enumerates every epistemic record in the machine answer — the
-+  denominator is that population — and validates each against the
-+  closed label, tier and reason vocabularies. While no agent has
++  enumerates every entity, relationship and claim in the machine answer —
++  the denominator is that population — checks that each carries exactly
++  one epistemic record, and validates each record against the closed
++  label, tier and reason vocabularies. While no agent has
 +  asserted anything, the Inferred limbs are exercised by a fixture
 +  record injected at the model seam.
  - **Observable**: identical states render with identical declared
@@ -228,32 +247,37 @@ index 092711e..e3eae73 100644
 -  the sweep reads served output.
 -- **Falsifier**: one surface encoding Unknown (or Observed) differently
 -  from the declared table, or a surface styling epistemic state ad hoc.
-+  encodings on every surface; every record carries the closed-vocabulary
-+  shape; an Inferred record names the agent assertion it arises from, is
-+  absent from every Observed total, leaves each Unknown it addresses
-+  Unknown, and renders distinctly from Observed.
-+- **Oracle**: per-encoding equality with the declared table and
-+  per-record vocabulary validation over the exhausted populations; for
-+  each Inferred record, a check that it names an agent assertion, a
-+  recount of every Observed total without it, a comparison of each
-+  Unknown it addresses before and after it is added, and an encoding
-+  comparison with the declared Inferred entry; the table is a checked-in
-+  declaration; zero records off the closed-vocabulary shape (label, tier
-+  nesting, exactly one primary reason with its route) and zero breached
-+  Inferred limbs decide.
++  encodings on every surface; every entity, relationship and claim
++  carries exactly one record, in the closed-vocabulary shape; an Inferred
++  record names the agent assertion it arises from, is absent from every
++  Observed total, leaves every Unknown in the machine answer Unknown, and
++  renders distinctly from Observed.
++- **Oracle**: per-encoding equality with the declared table, and
++  per-object record presence and per-record vocabulary validation, over
++  the exhausted populations; for each Inferred record, a check that it
++  names an agent assertion, a recount of every Observed total without
++  it, a recount of every Unknown in the machine answer with and without
++  it, whose two sets of Unknown records by identity must be equal, and an
++  encoding comparison with the declared Inferred entry; the table is a
++  checked-in declaration; zero entities, relationships or claims without
++  exactly one record, zero records off the closed-vocabulary shape
++  (label, tier nesting, exactly one primary reason with its route) and
++  zero breached Inferred limbs decide.
 +- **Oracle independence**: the declared table and the closed RFC2-24 and
 +  RFC2-25 lists are expected values written as literals; the sweep reads
 +  served output and the machine answer.
 +- **Falsifier**: one surface encoding Unknown (or Observed, or Inferred)
 +  differently from the declared table, or a surface styling epistemic
-+  state ad hoc; a record with no label, a tier outside its parent label,
++  state ad hoc; an entity, relationship or claim with no epistemic record
++  or with more than one; a record with no label, a tier outside its parent
++  label,
 +  a reason outside the twelve or an Unknown with no route; or an
 +  Inferred record counted as Observed, clearing an Unknown, naming no
 +  agent assertion, or rendered with the Observed encoding.
  
  #### Scenario: Unknown looks the same everywhere
  
-@@ -966,13 +1153,22 @@ reasons) identically wherever they appear.
+@@ -966,13 +1177,23 @@
  - **THEN** all three render it with the declared Unknown encoding from
    the shared token set
  
@@ -262,8 +286,9 @@ index 092711e..e3eae73 100644
 +- **WHEN** an agent-asserted record is present in the shared model
 +  beside Observed records of the same kind
 +- **THEN** it carries the label Inferred and names the agent assertion
-+  it arises from, appears in no Observed count, leaves any Unknown it
-+  addresses Unknown, and renders with the declared Inferred encoding on
++  it arises from, appears in no Observed count, leaves every Unknown in
++  the machine answer Unknown, and renders with the declared Inferred
++  encoding on
 +  every surface where it appears
 +
  ```yaml

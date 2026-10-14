@@ -73,6 +73,27 @@ file counts for `POC-REQ-060` and the spec path.
   2026-09-29, and the tree carries its successor bytes. [Observed: all six
   subjects hash to its manifest rows.] So there is no composition order to
   declare.
+
+  > **Stale since 2026-10-03; marked 2026-10-14.** The sentence above was
+  > true at `ab22492` and is not true now. Two later candidates patch this
+  > change too:
+  > - `three-surface-poc-block-provenance-amendment/` (register row P-97)
+  >   patches `spec.md` and `GOVERNING-DEPENDENCIES.md`. [Observed
+  >   2026-10-14] its builder's `--check` applies its spec patch with this
+  >   package's in both orders and passes over the repaired bytes.
+  > - `three-surface-poc-governing-intent-amendment/` (register row P-100)
+  >   patches the same four files. The block-provenance builder declares
+  >   this pair mutually exclusive, and the governing-intent package, which
+  >   has no builder, says the same: both rewrite the reader notes' group
+  >   list, so whichever is signed second is regenerated over the first's
+  >   applied bytes.
+  >
+  > Both packets ask their sign-off route to follow this package's
+  > Question 2. [Observed 2026-10-14, `git grep -lE 'POC-REQ-05[45]'` at
+  > `8f1fbec7`: 25 tracked files name the new identifiers. Beyond the three
+  > M9 planning files above, they are this package and its builder, the
+  > block-provenance package (3), the register, `docs/README.md` and the
+  > four round raws. No implementation file names them.]
 - **Route pages.** `PROJECT-STATUS.md`, `openspec/README.md`, `README.md` and
   `AGENTS.md` do not name the new identifiers. Naming them there before
   sign-off would fail the reconciliation checker's R4, and would describe an
@@ -83,7 +104,10 @@ file counts for `POC-REQ-060` and the spec path.
 Nothing, until sign-off. After it:
 
 - the specification reads 26 requirements and 28 scenarios [Observed:
-  counted over the proposed bytes by heading];
-- the matrix reads 78 mapped clauses;
+  counted over the proposed bytes by heading; re-counted 2026-10-14 over the
+  repaired bytes, unchanged];
+- the matrix reads 78 mapped clauses, in 139 Part A rows (103 covered, 36
+  Unknown) [Observed 2026-10-14: computed by the builder's `--check` and
+  re-counted by an independent script over the applied bytes];
 - one signed row stands beside an amendment row and a disclosure that tells
   the reader which of the two to trust.
