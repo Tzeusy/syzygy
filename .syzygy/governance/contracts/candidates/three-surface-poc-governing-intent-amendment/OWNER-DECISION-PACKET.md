@@ -18,6 +18,16 @@ confirmation round ran over these bytes and returned `REVISE`, four revise
 findings and five notes (`docs/reviews/R-N10-POC-GOVERNING-INTENT-2-RAW.md`
 line 4). The bytes stay unconfirmed and not offered for sign-off; the
 findings are open and classified in `ROUND-2-DISPOSITIONS.md`.)*
+*(Marked 2026-10-14, later the same day: "the findings are open" is no
+longer true. On your further direction that day, relayed by the lead
+session, one more cycle ran.)* **Round-2 findings repaired once on
+2026-10-14, unconfirmed pending round 3.** Every finding, notes included,
+was repaired once; the mapping is in `ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)". Round 3 is briefed in `REVIEW-BRIEF.md` §"Round 3"
+and has not run. This version is still not offered for sign-off: a round 3
+with no revise-level finding would clear it, and a `REVISE` comes back to
+you with its findings open. No new question needed your choice; the one
+content change you should know about is under "What is already drafted".
 
 ## The problem in one paragraph
 
@@ -69,9 +79,24 @@ adds one requirement, POC-REQ-014, to the Three-Surface POC specification:
 
 - Every work item shows its intent link as **Unknown**, with the reason "the
   input that would say was not captured".
-- Trajectory counts these items ("N of N"), marks each one, says that an item
-  is resolved by supplying its intent, and lets you filter to them.
+- Trajectory counts these items ("N of N"), says that an item is resolved by
+  supplying its intent, marks each item it shows, and lets you filter to
+  them.
 - Nothing is ever guessed from a title.
+
+**Changed in the 2026-10-14 repair.** Trajectory shows only part of the
+board: the signed rule POC-REQ-042 lets it show a bounded selection (its own
+example: 192 items of 6,964) as long as it says how many are left out. The
+earlier draft required Trajectory to mark *every* item, which no board
+following POC-REQ-042 could do. The repaired draft marks every item
+Trajectory shows, and next to the count says how many of the counted items
+are on the board and how many are not. Items off the board are counted but
+cannot be filtered on it; the coverage table lists that as Unknown. The
+repair also drops one sentence about "orphaned work" (work tracked in two
+places that disagree): the POC never detects orphaned work, so the sentence
+could not be tested, and it now waits for the change that adds that
+detection. [Inferred: neither change needs your choice; both follow from
+rules already signed.]
 
 It reads **no new field**, and it does not yet allow a link to be shown at
 all. Showing real links needs one more amendment, whichever way you answer
@@ -82,7 +107,7 @@ Question 1. The point of this one is that the board tells the truth now.
 | Option | What it means | What it needs before anything is built |
 |---|---|---|
 | **Syzygy's own records only** (drafter's recommendation) | Syzygy reads no new Butlers field. It keeps the intent reference in its own record whenever it creates a work item, and shows the link from there. Butlers' existing items stay Unknown until someone supplies their intent through Syzygy. | A specification amendment adding the link and naming Syzygy's record as its source, your sign-off of it, and an implementation authorization. No consent or secret-policy act. |
-| **Also read `external_ref`** | Syzygy reads one more Butlers field, which RFC4-15 already allows. It treats the value as an identifier only, never as intent, and shows a link only when the value matches a record Syzygy itself made. | Three owner acts first, because this is a new kind of Butlers content (PWB-REQ-005): you extend your consent to this field, the secret-scanning rules are extended to cover it, and the list of what Syzygy may read from Butlers (the registry entry) gains it. Then everything in the row above. |
+| **Also read `external_ref`** | Syzygy reads one more Butlers field, which RFC4-15 already allows. It treats the value as an identifier only, never as intent, and shows a link only when the value matches a record Syzygy itself made. | Three owner acts first, because this is a new kind of Butlers content (the rule for that is PWB-REQ-005, in the signed specification for how Polaris reads the Butlers project, called "PWB" for short): you extend your consent to this field, the secret-scanning rules are extended to cover it, and the list of what Syzygy may read from Butlers (the registry entry) gains it. Then everything in the row above. |
 | **Also read `external_ref`, `description` and `design`** | Syzygy reads free text written by people and agents in Butlers, and pulls intent identifiers out of it by a strict grammar. | Everything in the row above, plus a contract amendment to RFC 0004, because RFC4-15 says this database is "never intent". The text may hold secrets, so the secret-scanning rules must handle it before any read. |
 
 **Why the drafter recommends Syzygy's own records only.** It is the only
@@ -108,22 +133,40 @@ else is needed. That agreement (called "Scope A") named the PWB specification
 changes, the Butlers read list and the contract changes queued behind them. It
 did not name changes to the Three-Surface POC specification, which this is.
 P-84 asks the same question for the other pending POC change.
+*(Marked 2026-10-14: the two sentences "It did not name changes to the
+Three-Surface POC specification" and "P-84 asks the same question" are no
+longer current, and the route table below is answered. On 2026-10-14, in
+answering P-97's second question, you extended Scope A to Three-Surface POC
+specification amendments generally
+(`../../../decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md`).
+So this change, once a review clears it, is signed the short way: you pick
+"Sign v1.0" in the table above, and that is the sign-off. The route is no
+longer a question for you. The table is kept below as it stood.)*
 
 | Option | Meaning |
 |---|---|
 | **Use the same short way for this change** (recommended, the same answer as P-84) | You sign by picking a version. |
 | The longer way | A small script is written for this one change, and you type a fixed sentence that includes a long checksum identifying the exact text you approve. |
 
-**Order against P-84.** Both changes edit the same four POC files at
-neighbouring lines. Whichever you sign second is redone on top of the first
-before it is applied. Neither changes the other's requirements.
+**Order against the other POC changes.** Two other changes edit the same POC
+specification.
+
+- **The block-provenance change (P-97)**, which you signed as v1.0 on
+  2026-10-14, changed two of the four files this one edits. This change has
+  been redone on top of it, so it applies to the specification as it stands
+  now.
+- **The identity change (P-84)**, still unsigned, edits the same four files
+  at neighbouring lines, and the two cannot both be applied as drafted.
+  Whichever of the two you sign second is redone on top of the first before
+  it is applied. Neither changes the other's requirements.
 
 ## Question 3 — the deferred part
 
 The pursuit move also asked for a "source-to-claims" index: given one intent
 source, list every claim that rests on it, so a change to that source shows
-everything it touches. That belongs to the PWB specification and the shared
-model, where only one change runs at a time. It is **deferred**, not drafted.
+everything it touches. That belongs to the PWB specification (how Polaris
+reads the Butlers project) and to the one data model all three surfaces
+share, where only one change runs at a time. It is **deferred**, not drafted.
 It takes its turn in that one-at-a-time slot, and then needs its own PWB
 change and sign-off.
 
