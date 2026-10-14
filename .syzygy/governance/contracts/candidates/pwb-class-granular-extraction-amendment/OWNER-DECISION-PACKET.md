@@ -2,7 +2,8 @@
 
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
 > accepted. This packet puts seven questions to the owner, and only the
-> owner's answer binds anything (VIS-4).
+> owner's answer binds anything (VIS-4). *(Marked 2026-10-14: the cycle-2
+> repairs added question 8, so the packet now puts eight questions.)*
 
 **Status:** drafted 2026-10-03 under your ruling P-82 (A) of 2026-09-21, on
 bead `syzygy-dov.15.1`. Round 1 returned `REVISE`: findings 1–9 were
@@ -12,10 +13,19 @@ repaired and finding 10, which named residual risks, changed nothing
 (`ROUND-2-DISPOSITIONS.md`). On 2026-10-14 you directed one new version
 repairing all eight, then one fresh round. **All eight round-2 findings
 were repaired once on 2026-10-14. These bytes are unconfirmed, pending
-round 3**, and are not cleared to sign until a round over them returns
+round 3** *(marked 2026-10-14: round 3 ran at `00e24fd2` and returned
+`REVISE`, one revise finding and four notes, `ROUND-3-DISPOSITIONS.md`)*,
+and are not cleared to sign until a round over them returns
 `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. The repairs added
 question 7 below; questions 1–6 are unchanged except where round 2 asked
 for it (question 4's recommended arm, finding 5).
+
+On 2026-10-14 you directed one more cycle. **Round-3 findings repaired
+once on 2026-10-14, unconfirmed pending round 4.** The repairs state which
+rule names a source that two rules admit (round-3 finding 1), which adds
+question 8 below and a fourth new scenario; the four notes changed only
+the builder's selftest, one scenario line and the package's own prose.
+Questions 1–7 are unchanged except question 1's count of scenarios.
 
 ## What you would be signing
 
@@ -65,7 +75,7 @@ dependency file. No other requirement, no contract-coverage row, no warrant.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended only once a round-3 dispositions record beside this file records the repaired bytes cleared) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains three scenarios. |
+| **Sign v1.0** (recommended only once a round-4 dispositions record beside this file records the repaired bytes cleared; until 2026-10-14 this said round 3) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains four scenarios (three until the 2026-10-14 cycle-2 repairs). |
 | Decline | PWB-REQ-002 stays as signed: one failing class keeps making its whole source Unknown. |
 | Revise | Name what to change, and a new version gets a new review round. |
 
@@ -130,5 +140,27 @@ and it is yours to confirm.
 |---|---|
 | **Read means its body was read** (recommended; this version) | If the body reads, the root index is read even when part of it fails its grammar. A pillar root it does not name clearly leaves that pillar's files out, and a root-summary or precedence table that fails is reported as that table's failure. Baseline-spec and roster counts carry no "made without the root index" note, because they never use the root index's grammar. This matches how today's code records the root index. |
 | Read means its body read and its grammar held | Any root-grammar failure also counts as an unread root index. The pillar rules would then mint nothing from any pillar, and baseline-spec and roster counts would carry the note whenever any root table fails, though nothing in those counts came from that table. |
+
+## Question 8 — which rule names a source that two rules admit? (added 2026-10-14, cycle 2)
+
+Round 3 found the rule names undecidable for a file two rules admit. That
+can happen on Butlers: the code's own comment says Butlers declares its
+Spec and Spine pillar at `openspec/`, so that pillar's index can name a
+baseline spec that rule 3 also admits. Today's
+code settles it by an order the text never stated. The repair writes an
+order into the text; it is yours to confirm.
+
+The order as drafted: the root index is always `root-index`; a pillar's
+index file is always `pillar-index`; a baseline spec or roster
+`butler.toml` keeps its tree rule's name and class whoever else names it;
+any other file a pillar's index names, a roster `MANIFESTO.md` included, is
+`pillar-named-file`. For a loaded profile, a file one of its tree
+populations admits keeps that population's name, and a file two of them
+admit takes the first the profile declares.
+
+| Option | Meaning |
+|---|---|
+| **The order as drafted, code changed at build where it differs** (recommended; this version) | For Butlers it is today's code in every case but one. The exception needs one declared pillar root inside another: the code files that inner pillar's index as a named file of the outer pillar, and the text files it as a pillar index. Whether Butlers has nested roots is unknown (no Butlers body was read). The build would change the code for that case. The loaded-profile clauses follow the code's reason for rules 3 and 4: the tree rule carries the class. No loader exists yet, so no code changes for them. |
+| The code's order, written into the text | The text says sources are registered pillar by pillar in a fixed pillar order, and the first registration wins, with the same tree-rule exception. No code changes. A nested pillar's index would lose its pillar-index classes. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

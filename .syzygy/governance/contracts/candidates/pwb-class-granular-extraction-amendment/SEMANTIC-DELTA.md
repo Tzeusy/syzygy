@@ -20,13 +20,24 @@ comply now.
 **Author:** a drafting session (Claude), bead `syzygy-dov.15.1`.
 **Date:** 2026-10-03, over `main` at `ef5d5f03`. Repaired 2026-10-14 over
 `main` at `8f1fbec7`, under the owner's direction of that day (relayed to
-the drafting session by the lead session; no decision record holds it yet),
+the drafting session by the lead session; no decision record holds it yet
+— *marked 2026-10-14: the direction is now recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`*),
 for the eight round-2 findings (`ROUND-2-DISPOSITIONS.md`). [Observed] The
 signed change directory and the two code files cited below are
 byte-identical at the two commits (`git diff --stat ef5d5f03 8f1fbec7` over
 those paths is empty), so every [Observed at `ef5d5f03`] claim about them
 still holds. These repaired bytes are **unconfirmed**: no round has read
-them.
+them. *(Marked 2026-10-14: round 3 read them at `00e24fd2` and returned
+`REVISE`.)* Repaired again 2026-10-14 (cycle 2), over `main` at `814fbcc1`,
+for the five round-3 findings (`ROUND-3-DISPOSITIONS.md`), on a further
+owner direction of that day for one more cycle. [Observed] The anchor-resolution
+sign-off (P-96, v1.0) moved the signed `spec.md` and its regenerated
+dependency file between `8f1fbec7` and `814fbcc1`; the patches were
+regenerated over those bytes by the builder's `--write`. The two code files
+cited below are byte-identical at `8f1fbec7` and `814fbcc1` (`git diff
+--stat` over them is empty). **Round-3 findings repaired once on
+2026-10-14, unconfirmed pending round 4.**
 
 ## Warrant
 
@@ -198,6 +209,45 @@ population rule declares whether it needs the root index read.
 
   A source that a loaded profile's tree population admits carries that
   population's `pathPattern` as its rule name.
+  - **A source two rules admit carries one name** (added 2026-10-14 for
+    round-3 finding 1). The four signed rules overlap: a pillar declared at
+    `openspec/` can name a baseline spec, a pillar declared at `roster/` a
+    `butler.toml` or a `MANIFESTO.md`, and a pillar's index file could be
+    named by another pillar's index. The reader definitions now state the
+    order: the root index is always `root-index`; a pillar's index file is
+    always `pillar-index`; a baseline spec, a roster `butler.toml`, or a
+    source of a loaded profile's tree population, is admitted by that tree
+    population alone, with its class, whoever else names it; any other file a
+    pillar's index names, a roster `MANIFESTO.md` included, is
+    `pillar-named-file`; and a source two tree populations of one loaded
+    profile admit takes the first the profile declares.
+    - [Observed at `814fbcc1`] For Butlers' built-in grammar this is the
+      code's order in `project-shape-manifest.ts`: `addSource` keeps the
+      first registration (line 393); the root index is registered first
+      (lines 403–405); rule 2 skips a named blob matching the baseline-spec
+      or roster `butler.toml` pattern so that rules 3 and 4 own it "whoever
+      names it" (lines 470–478); and a roster `MANIFESTO.md` is not skipped,
+      so a pillar-named one keeps `pillar-named-file` (line 478 tests only
+      `butler.toml`). The earlier text's "the fourth admits … its
+      `MANIFESTO.md` … as `roster-tree`" stays true for a `MANIFESTO.md` no
+      pillar index names, which is the only case the fourth rule alone
+      admits.
+    - [Inferred] One case differs from the code. The code registers pillars
+      one at a time in `PILLAR_KEYS` order (line 47), each pillar's index and
+      then its named files, so a pillar index that an *earlier* pillar's
+      index names (possible only when one declared pillar root lies inside
+      another) is filed `pillar-named-file`. The text files it
+      `pillar-index`. [Unknown] Whether Butlers declares nested pillar roots
+      at `32f38feb`; no Butlers body was read. The packet puts the choice to
+      the owner as question 8: the text's order, with the code changed at
+      build, or the code's order written into the text.
+    - [Inferred] The loaded-profile clauses are readings: no loader exists
+      (no `pathPattern` occurs in `packages/` at `814fbcc1`), so no code
+      settles them. They follow the code's own reason for rules 3 and 4,
+      that the tree population carries the class. Question 8 covers them.
+    - The oracle and falsifier now decide a doubly admitted source by this
+      order, and a fourth new scenario asserts the `openspec/` and `roster/`
+      cases.
   - [Observed at `8f1fbec7`] These are exactly the five values of
     `SOURCE_RULES` in `packages/three-surface-poc-core/src/project-shape-manifest.ts`
     line 71, and that module's own comment files the root index under
@@ -290,6 +340,16 @@ Proposed:
     its `MANIFESTO.md`, as `roster-tree`. A source that a loaded profile's tree
     population admits carries that population's `pathPattern` as its rule
     name.
+  - A source that more than one rule admits carries one rule name, decided
+    in this order: the root index is `root-index`, whatever else admits it;
+    a pillar's index file is `pillar-index`, even when another pillar's
+    index names it; a baseline spec, a roster `butler.toml`, or a source a
+    loaded profile's tree population admits, is admitted by that tree
+    population alone and carries its name, even when a pillar's index names
+    it; and any other file a pillar's index names, a roster `MANIFESTO.md`
+    included, is `pillar-named-file`. A source that two tree populations of
+    one loaded profile admit carries the name of the first the profile
+    declares.
   - Each rule declares whether it needs the root index read. The flag belongs
     to the rule; a loaded profile sets it for each tree population it
     declares. The first and second rules need the root index; the third and
@@ -459,8 +519,10 @@ Proposed:
 ```text
   loaded profile; also a source assigned three classes in which one class
   fails and two read, a section enclosing the V1 catalog headings that holds
-  a tenth level-3 heading, and an observation whose root index was not read
-  while baseline specs and roster directories exist in the tree.
+  a tenth level-3 heading, an observation whose root index was not read
+  while baseline specs and roster directories exist in the tree, and a
+  pillar index that names a baseline spec, a roster `butler.toml` and that
+  roster directory's `MANIFESTO.md`.
 [… signed lines between are unchanged …]
   the machine answer and reachable from Polaris, together with each partially
   extracted source's per-class outcome, each unenumerated heading with its
@@ -489,7 +551,8 @@ Proposed:
   section finds every unenumerated heading, the count per source and class
   equals the count the answer gives, and each one is surfaced; every source
   names the rule that an independent derivation of the source-path
-  population admits it under; and with the root index unread, every source a
+  population admits it under, by the stated order for a source more than
+  one rule admits; and with the root index unread, every source a
   rule that does not need it admitted carries the qualification, while no
   source of a rule that needs it mints an item.
 [… signed lines between are unchanged …]
@@ -500,9 +563,11 @@ Proposed:
   whose item denominator is Unknown presents its own item denominator as
   known, an unenumerated heading is skipped or mints an item or is
   miscounted, a source names no rule or a rule other than the one that
-  admitted it, a count derived without a read root index is shown without
-  that qualification, a rule that needs the root index mints an item when it
-  was not read, a known source disappears, an admitted item appears twice or
+  admitted it, a source that more than one rule admits names a rule other
+  than the one the stated order gives it, a count derived without a read
+  root index is shown without that qualification, a rule that needs the
+  root index mints an item when it was not read, a known source disappears,
+  an admitted item appears twice or
 ```
 
 ### Hunk 10 — PWB-REQ-002 — scenarios
@@ -543,14 +608,24 @@ Proposed:
 
 - **WHEN** the root index was not read and the tree holds baseline specs and
   roster directories
-- **THEN** the baseline-spec and roster sources are admitted and every class
-  and category count that includes them states that it was derived without a
-  read root index
+- **THEN** the baseline-spec and roster sources are admitted, and every class
+  and category count, and the source-path population total, that includes
+  them states that it was derived without a read root index
 - **AND** no source of a rule that needs the root index mints an item, nor
   does any source of a loaded profile's tree population that does not
   declare `rootIndexRequired`
 - **AND** every admitted source names the rule that admitted it, the root
   index itself as `root-index`
+
+#### Scenario: A source two rules admit carries one rule name
+
+- **WHEN** a pillar's index names a baseline spec, a roster `butler.toml`
+  and that roster directory's `MANIFESTO.md`
+- **THEN** the baseline spec is named `baseline-spec-tree` and the
+  `butler.toml` `roster-tree`, each with its tree population's class
+- **AND** the `MANIFESTO.md` is named `pillar-named-file`
+- **AND** the root index is named `root-index` and each pillar's index file
+  `pillar-index`, whichever index also names them
 ```
 
 ## What explicitly does NOT change
@@ -605,10 +680,23 @@ short:
   and the regenerated dependency file.
 - **Implementation:** the extraction, coverage and manifest modules and
   their tests. Sign-off authorizes none of it.
-- **The pending sibling:** the release-label amendment (P-85) also adds a
-  design decision 12 and a capability row 34. Whichever is signed second is
-  regenerated over the first's applied bytes and re-reviewed. Both builders
-  classify the other as pending.
+- **The pending siblings** (as of 2026-10-14 at `814fbcc1`; until that day
+  this bullet named the release-label amendment alone, which round 3 found
+  short of the builder's list): three unsigned packages patch the same PWB
+  spec, and the builder's `PENDING_SIBLINGS` lists all three.
+  - The release-label amendment (P-85) also adds a design decision 12 and a
+    capability row 34. Whichever is signed second is regenerated over the
+    first's applied bytes and re-reviewed.
+  - The opening-index amendment (P-98, PWB-REQ-010) and the accessible-name
+    amendment (P-99, PWB-REQ-016) each touch one other requirement and the
+    generated dependency file: they compose, all orders checked.
+  - The anchor-resolution amendment (P-96, PWB-REQ-014), pending when round
+    3 read this package, was signed v1.0 on 2026-10-14; the builder now
+    lists it as performed, and these patches are regenerated over its
+    applied bytes.
+  - [Observed at `814fbcc1`] The builder's all-orders check applies this
+    spec patch and the three pending siblings' in every order and gets one
+    result.
 - **The drafted registry fields:** `syzygy-dov.24` (PR #123, open) drafts the
   loaded profile's registry fields. `rootIndexRequired` would join them; that
   package does not carry it today.
@@ -624,14 +712,23 @@ short:
      `real_packages()`.
   2. `scripts/check_spec_reconciliation.py` hard-codes the PWB census. After
      `--apply` it reads 17 requirements and 54 scenarios, with PWB-REQ-002
-     at 9 (it is 51 and 6 today). The signing change updates the literal
-     census and `census.json`, and appends this sign-off to the PWB child's
-     successor tuple.
+     at 9 (it is 51 and 6 today). *Marked 2026-10-14: those figures were
+     right at `ef5d5f03`; [Observed at `814fbcc1`] the builder's `--check`
+     now reads 17 requirements and 56 proposed scenarios, with PWB-REQ-002
+     at 10, against 52 and 6 signed — the anchor-resolution sign-off added
+     one scenario, and the cycle-2 repairs a fourth new one here.* The
+     signing change updates the literal census and `census.json`, and
+     appends this sign-off to the PWB child's successor tuple.
   3. Add the builder's `--check` to the `PROJECT-STATUS.md` battery under
      the CG-26 coupled-triple rule. A draft leaves the battery alone.
   4. The observer registry entry and the secret-classification policy pin a
      PWB spec digest; both are already stale and Unknown until their own
-     act (`syzygy-jloi`). Signing this moves the digest again.
+     act (`syzygy-jloi`). *Marked 2026-10-14 (round-3 finding 3):
+     `syzygy-jloi` was performed on 2026-10-02 and is closed. [Observed at
+     `814fbcc1`] `check_spec_reconciliation.py --check` R6 attributes both
+     stale pins to `syzygy-2g0d`, the tree-framing re-pin package routed to
+     the owner as P-95, whose acts are unperformed.* Signing this moves the
+     digest again.
 - **Open owner question, not a signing-change task.** Half of the Q3
   ruling, unenumerated root-summary and precedence headings, is not designed
   here. Packet question 6 asks whether a separate PWB-REQ-004 delta carries
@@ -656,4 +753,11 @@ one revise finding and seven notes, dispositioned in
 repairing all eight, then one fresh round. All eight were repaired once
 that day; the repaired bytes are **unconfirmed** pending round 3, and are
 not offered for sign-off until a round over them returns `CONFIRM`, or
-`CONFIRM WITH EXCEPTIONS` with notes only.
+`CONFIRM WITH EXCEPTIONS` with notes only. *(Marked 2026-10-14: round 3 has
+run.)* Round 3, over `00e24fd2`, returned `REVISE`, copied from
+`docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-3-RAW.md` line 4:
+one revise finding and four notes, dispositioned in
+`ROUND-3-DISPOSITIONS.md`. On 2026-10-14 the owner directed one more
+cycle. **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+round 4**; the bytes are not offered for sign-off until a round over them
+returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only.
