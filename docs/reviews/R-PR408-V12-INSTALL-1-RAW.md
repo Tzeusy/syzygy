@@ -1,11 +1,15 @@
 # Review — PR 408 v1.2 recording and install
 Verdict: CONFIRM WITH EXCEPTIONS
-Reviewed commit: e9ab09f8f405e201e54fdd2305b07527abc3e9d7
+Reviewed commit: 5a2b2f6b3b00f42d480e475655d66398f933f87c
 Reviewer: fresh-context
 
 ## Scope and method
 
-- Subject: the four commits `a3cdb3e6..e9ab09f8` (`10da68e2`, `3e688141`, `9fd203b1`, `e9ab09f8`): 19 files, 15 modified and 4 added [Observed, `git diff --name-status`]. Earlier PR #408 bytes were not re-reviewed.
+- Subject: the five commits `a3cdb3e6..5a2b2f6b`:
+  - `10da68e2`, `3e688141`, `9fd203b1` and `e9ab09f8`: 19 files, 15 modified and 4 added [Observed, `git diff --name-status`];
+  - `5a2b2f6b`, which touches only `docs/README.md` (the campaign row) and `docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md` (it replaces "to be filed" with `syzygy-syoj` and `syzygy-zzt5`).
+  - Earlier PR #408 bytes were not re-reviewed.
+- I first reviewed `e9ab09f8`. When the subject moved, I ran the Python battery again in a second scratch clone at `5a2b2f6b`, as listed under criterion 6. Criteria 1–5 rest on `e9ab09f8`, and `5a2b2f6b` changes none of their inputs.
 - Inputs: AGENTS.md, the owner selection record `scratchpad/owner-selection-v1-2-2026-10-14.md`, the scratchpad raws 3 and 4, and the repository at the reviewed commit. Network use: `git fetch` only.
 - Everything ran in a scratch clone at `e9ab09f8` under the scratchpad, with `TMPDIR` set to a scratchpad directory. After `npm ci` and `npm run build`, the clone was removed. Scripts: `v12rev_quote_check.py`, `v12rev_apply_check.py`, `v12rev_bound_check.py`, `v12rev_battery_count.py`, `v12rev_sweep_mutants.py`, `v12rev_vitest_failures.py`.
 
@@ -71,7 +75,16 @@ Reviewer: fresh-context
    - `check_docs_review_campaign_partition.py`: "total=393 assigned=393 … unmatched=0 overlaps=0". The campaign row counts 5.
    - Full `vitest run` gives 4,560 passed, 6 failed and 19 skipped. All six failures are "browser exited with signal before announcing a DevTools endpoint" (a Chrome crash-report lock under `~/.config/google-chrome`). Two further suites fail at the browser start for the same reason. [Inferred: these are environmental, and none is in a file the range touched.] The two changed test files pass: 11 of 11.
 
-7. **The notes record and "to be filed"**: see note 4.
+   - **Re-run at `5a2b2f6b`** [Observed, output read]:
+     - `check_governance.py`: "32 OK, 21 WARN, 0 FAIL (53 checks)", with the same WARN set.
+     - The recorder `--check` for 1.2 gives "regenerates exactly; applied tree verified"; for 1.1 and 1.0, "regenerates exactly; superseded by a later version".
+     - The v1.0, v1.1 and v1.2 builders' `--check` give the same OK lines as above.
+     - `openspec validate … --strict` reports the change valid.
+     - `check_spec_reconciliation.py --check`: "7 of 7 predicates without FAIL; PASS".
+     - The partition reports "total=393 assigned=393 … unmatched=0 overlaps=0".
+     - npm and vitest were not run again: `5a2b2f6b` changes no code or test.
+
+7. **The notes record and the edit at `5a2b2f6b`**: lawful. See note 4.
 
 ## Findings
 
@@ -100,21 +113,32 @@ Reviewer: fresh-context
 - Failing input [Inferred]: the operator's `~/.claude` settings allow `Bash(make test:*)`. A waiting inventory session can then run it unattended. Or the prefix matcher asks on the heredoc, and the operator who "can then walk away" returns to a stalled submission.
 - The skill is an instruction text, not a surface. The spec forbids only stating these as Observed on a surface. This is the same class as round-4 finding 2, which is deferred to `syzygy-syoj`. Fold it into that bead.
 
-**4 — The notes record's "to be filed" is not digest-bound; it can take a dated addition, but nothing in the record should be rewritten** (note)
+**4 — The edit at `5a2b2f6b` to the notes record after recording is lawful: no digest of the record is bound, and the recorder's `--check` still passes. It rewrites in place rather than adding a dated line, and two bead notes now say the opposite** (note)
 
-- Concerns: `docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md:42-48`: "Two follow-up beads are **to be filed** by the lead; this record files neither." Both beads now exist: `syzygy-syoj` and `syzygy-zzt5`, read with `bd --readonly show`.
-- [Observed] The sign-off record names the notes record by path only (`Disposition:` line). The recorder's `validate_disposition` (`scripts/record_versioned_signoff.py:398-415`) checks only three things: that the file exists, that it names the reviewed raw, and that its finding numbers match. No digest of it appears in any tracked file. The recorder's own selftest asserts the following (`:1190-1193`): "an edited sibling disposition record is not package bytes". So an edit fails no `--check`.
-- [Inferred] So the record is not bound in the act-digest sense. Two things still freeze it:
-  1. the annotated tag `polaris-dossier-local-agent-mode-v1.2`, which the record names as "the binding", once it is created on the commit carrying these bytes (it is not yet created; `git tag --list` shows only v1.0 and v1.1);
-  2. this review, which confirms the bytes at `e9ab09f8` (rule 10).
-- The beads' own notes say that the record "is bound by the v1.2 sign-off and is not edited". As a binding claim, that overstates. As a working rule, it is the right one.
-- Suggestion: leave the record as it is, and let the beads point back at it, which they already do. If the filing must show in the repo, add a dated line below the original rather than rewriting "to be filed".
-- Aside: `syzygy-syoj`'s description names `docs/reviews/R-PR408-WAITING-SESSIONS-3-NOTES.md`. Commit `3e688141` deleted that file. The bead's notes field names the right file. This is outside the PR's bytes.
+- Concerns: `docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md:41-48` and seven "Deferred to …" sentences. At `9fd203b1`/`e9ab09f8` they read "Two follow-up beads are **to be filed** by the lead; this record files neither" and "Deferred to the first bead (to be filed)". At `5a2b2f6b` they read "Each is deferred to one of two follow-up beads, filed by the lead" and "Deferred to `syzygy-syoj`".
+- How the record is cited [Observed]:
+  - The sign-off record cites it by path only: `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md:23`, ``Disposition: docs/reviews/R-PR408-WAITING-SESSIONS-4-NOTES.md``.
+  - The aggregate block cites it the same way, in its `Review outcome` row.
+  - Over the 2,655 tracked files at `5a2b2f6b`, I searched for the record's sha256 at `3e688141`, `9fd203b1` and `e9ab09f8`, all the same, `87761a57…`. I also searched for its sha256 at `5a2b2f6b` (`8b78949d…`) and for both git blob ids (`e3ff8af2…`, `d187001b…`), each at 8, 12 and 16 hex characters and in full. **0 hits.**
+  - The record's path appears in four files: `ACCEPTANCE-ACT-RECORD.md`, `PENDING-OWNER-DECISIONS.md`, the v1.2 sign-off record and `docs/README.md`. `check_governance.py` is not among them, so it is not in `ACT_DIGEST_COPY_FILES`.
+- What the recorder checks [Observed]:
+  - `validate_disposition` (`scripts/record_versioned_signoff.py:398-415`) checks only three things: that the file exists, that it names the reviewed raw, and that its finding numbers match.
+  - The recorder's own selftest asserts this (`:1190-1193`): "an edited sibling disposition record is not package bytes".
+  - At `5a2b2f6b`, `--check … --version 1.2` prints "recorded polaris-dossier-local-agent-mode v1.2 sign-off regenerates exactly; applied tree verified". 1.1 and 1.0 regenerate exactly too.
+- Was the substance kept? [Observed] Yes. The mapping is unchanged: the "first bead" (round-4 findings 1, 2 and 4; round-3 notes 1, 2, 3 and 5) is now `syzygy-syoj`, and the "second bead" (round-3 note 4; round-4 finding 3) is now `syzygy-zzt5`. That matches both beads' descriptions (read with `bd --readonly show`). The `Reviewed record:` line and every finding heading are unchanged.
+- [Inferred] So nothing binds the old bytes:
+  - There is no act digest, no registered copy and no raw that quotes the record's digest.
+  - The annotated tag `polaris-dossier-local-agent-mode-v1.2`, which the sign-off record names as "the binding", does not exist yet: `git tag --list` shows only v1.0 and v1.1. When it is created on the merged commit, it will freeze the `5a2b2f6b` bytes.
+  - The only review that read the old bytes is this one, at its earlier subject `e9ab09f8`. That pass was never retained and is superseded by this one at `5a2b2f6b` (rule 10).
+  - `9fd203b1`'s path citation now resolves to different bytes. The citation asserts nothing about content beyond the three predicates the recorder checks, and those still hold.
+- Two notes remain:
+  - The edit rewrites the prior wording in place, with no dated marker. The repository's own practice for a sentence that has become stale is a dated addition that keeps the old text, as with the register's "Updated …" notes and the AGENTS.md stale-sentence lesson. `git log` keeps the old bytes, so this is a style point, not a defect. The rewrapped lines at `:67`, `:74`, `:83`, `:92`, `:101` and `:119` now run past the 78-column wrap.
+  - The beads' notes fields say the opposite of what happened. `syzygy-syoj`: "bound by the v1.2 sign-off, not edited"; `syzygy-zzt5`: "the record is bound by the v1.2 sign-off and is not edited". Both are now false and should be corrected in the tracker. Separately, `syzygy-syoj`'s description names `docs/reviews/R-PR408-WAITING-SESSIONS-3-NOTES.md`, which `3e688141` deleted. Both are outside the PR's bytes.
 
 **5 — The `docs/README.md` partition sentence carries the new count under the old date** (note)
 
 - Concerns: `docs/README.md:143-144`: "393 files, 393 assigned, no remainder [Observed — re-derived for HEAD dated 2026-10-09 …".
-- [Observed] The helper at `e9ab09f8` prints `total=393 … observed=2026-10-14`. The figure is right, but its as-of date is the date of the previous derivation.
+- [Observed] The helper at `e9ab09f8` and again at `5a2b2f6b` prints `total=393 … observed=2026-10-14`. The figure is right, but its as-of date is the date of the previous derivation.
 - Suggestion: set the date to the derivation that produced 393.
 
 No finding is revise. The install matches the reviewed patches, the records regenerate, and the battery is clean apart from the browser-environment failures named in criterion 6.
