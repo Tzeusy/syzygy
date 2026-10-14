@@ -30,6 +30,9 @@
     the notes would leave the revise findings standing. The owner reads
     the bytes the reviewer read.
   - No round 3 is dispatched.
+    *(Marked 2026-10-14: no longer true. The owner's direction of
+    2026-10-14 ordered round 3, which read the repaired bytes and returned
+    `REVISE`. See `ROUND-3-DISPOSITIONS.md`.)*
   - Every finding below is **open**, with the drafter's proposed repair. It
     goes to the owner as register row P-85.
 - **The two carried wording notes.** The round-2 brief carried two notes from
@@ -47,6 +50,10 @@
   marks describe the round-2 bytes. The repaired bytes are **unconfirmed**:
   no round has read them, and round 3 is pending. This record dispatches
   nothing.
+  *(Marked 2026-10-14: "no round has read them" and "round 3 is pending"
+  are no longer true; round 3 returned `REVISE`
+  (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-3-RAW.md` line 4). The
+  repaired bytes stay unconfirmed. See `ROUND-3-DISPOSITIONS.md`.)*
 
 Reviewed record: docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-2-RAW.md
 

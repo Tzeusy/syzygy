@@ -11,6 +11,13 @@ the stopping rule, no round 2 was dispatched. **The repaired bytes are
 unconfirmed, and this version is not offered for sign-off**; the drafter
 recommends one confirmation round before you sign. How each finding was
 handled is in `ROUND-1-DISPOSITIONS.md` beside this file.
+*(Marked 2026-10-14: "no round 2 was dispatched" is no longer true. On your
+direction of 2026-10-14
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`) the
+confirmation round ran over these bytes and returned `REVISE`, four revise
+findings and five notes (`docs/reviews/R-N10-POC-GOVERNING-INTENT-2-RAW.md`
+line 4). The bytes stay unconfirmed and not offered for sign-off; the
+findings are open and classified in `ROUND-2-DISPOSITIONS.md`.)*
 
 ## The problem in one paragraph
 

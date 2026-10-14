@@ -41,6 +41,10 @@ compliance consequence.]
 owner's direction of that day; the repairs are mapped in
 `ROUND-4-DISPOSITIONS.md` and are unconfirmed until a fifth fresh-context
 round reads them.
+*(Marked 2026-10-14: the fifth round has read them and returned `REVISE`
+(`docs/reviews/R-M9-POC-IDENTITY-AMENDMENT-5-RAW.md` line 4), so "until a
+fifth fresh-context round reads them" no longer describes the state. The
+repairs stay unconfirmed; see `ROUND-5-DISPOSITIONS.md`.)*
 
 ## What the ruling settled, verbatim
 

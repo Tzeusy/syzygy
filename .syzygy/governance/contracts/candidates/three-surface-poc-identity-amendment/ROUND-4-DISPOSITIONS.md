@@ -115,7 +115,10 @@ by the coordinating session: repair where needed, then one fresh
 confirmation review per packet before the owner is asked the content
 questions. No decision record in `.syzygy/governance/decisions/` names that
 direction yet [Observed: three files there carry the date, and each concerns
-the P-107 v1.2 sign-off]. The direction
+the P-107 v1.2 sign-off]. *(Marked 2026-10-14: "No decision record …
+names that direction yet" is no longer true; it is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`.)*
+The direction
 answers this record's recommendation ("answer Question 1 with **Revise**")
 in substance. It is not an answer to the packet's Question 1 or Question 2,
 both of which stay open.
@@ -126,6 +129,9 @@ both of which stay open.
   an owner choice.
 - The repair retires the round-4 review (rule 10). The repaired bytes are
   **unconfirmed, pending round 5**.
+  *(Marked 2026-10-14: round 5 has run and returned `REVISE`, so "pending
+  round 5" no longer holds; the bytes stay unconfirmed. See
+  `ROUND-5-DISPOSITIONS.md`.)*
 - The manifest was regenerated with the builder's `--write`. The patches
   were regenerated from an applied scratch copy, and
   `GOVERNING-DEPENDENCIES.md` from the dependency generator over the

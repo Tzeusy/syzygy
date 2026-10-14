@@ -14,6 +14,13 @@ nothing; only the owner's own words in the owner's own session do.
 once, recorded in `ROUND-1-DISPOSITIONS.md` (this directory). Under the
 stopping rule set before the round, no round 2 was dispatched: **these
 repaired bytes are unconfirmed**, and the owner decides on them as such.
+*(Marked 2026-10-14: "no round 2 was dispatched" is no longer true. On the
+owner's direction of 2026-10-14
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md`) a
+round 2 read these bytes and returned `REVISE`, one revise finding and seven
+notes (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md` line 4). The bytes
+stay unconfirmed and go to the owner with those findings open;
+`ROUND-2-DISPOSITIONS.md` beside this file classifies them.)*
 
 **Identifier.** `D7` is the next unused number in
 `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` as of 2026-10-03 [Observed:
