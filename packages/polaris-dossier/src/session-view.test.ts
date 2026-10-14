@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { authorRule, awaitRule } from './broker.js';
 import { isLaunchedRun, launchFormRefusal, writeLaunchedMarker } from './launched.js';
+import { blockingWhy } from './polaris.js';
 import { bwrapArgs, viewFor, viewSha256, type ViewRole } from './session-view.js';
 
 // Candidate REQ-polaris-generation-041/042 (prototype under POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): each launched session reaches
@@ -106,5 +107,20 @@ describe('launch forms by kind of run', () => {
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBeNull();
     expect(launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();
+  });
+});
+
+describe('supervisor messages', () => {
+  it('names unconfirmed rows, not blocking findings, when a verdict has only advisory findings', () => {
+    const run = fs.mkdtempSync(path.join(os.tmpdir(), 'polaris-why-'));
+    try {
+      fs.mkdirSync(path.join(run, 'reviews'));
+      fs.writeFileSync(path.join(run, 'reviews', 'fidelity-verdict-2.json'), JSON.stringify({
+        findings: [{ severity: 'advisory' }], blockSupport: [{ verdict: 'supported' }, { verdict: 'unresolved' }], inventoryAccuracy: [{ accuracy: 'unresolved' }], inventoryCoverage: [{ disposition: 'represented' }],
+      }));
+      const why = blockingWhy(run, 'fidelity', 2);
+      expect(why).not.toMatch(/blocking finding/);
+      expect(why).toMatch(/^2 block or entry row\(s\) not confirmed/);
+    } finally { fs.rmSync(run, { recursive: true, force: true }); }
   });
 });

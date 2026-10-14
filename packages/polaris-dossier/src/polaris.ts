@@ -433,9 +433,31 @@ function tell(state: SupervisorState, role: ViewRole, message: string): void {
 }
 const tellAuthor = (state: SupervisorState, message: string): void => tell(state, 'author', message);
 
+function readMaxRepairCycles(run: string): number {
+  try {
+    const declared = (JSON.parse(fs.readFileSync(path.join(run, 'run.json'), 'utf8')) as { declared?: { maxRepairCycles?: unknown } }).declared?.maxRepairCycles;
+    return typeof declared === 'number' ? declared : Number.POSITIVE_INFINITY;
+  } catch { return Number.POSITIVE_INFINITY; }
+}
+
+/** Why a validated verdict is not ready, from its own rows: blocking findings, and rows the reviewer could not resolve (for instance
+ * because screening withheld the cited span), which the author can repair only by citing evidence the review can see. */
+export function blockingWhy(run: string, kind: 'fidelity' | 'design', n: number): string {
+  let doc: Record<string, unknown>;
+  try { doc = JSON.parse(fs.readFileSync(path.join(run, RUN_LAYOUT.reviews, `${kind}-verdict-${n}.json`), 'utf8')) as Record<string, unknown>; } catch { return 'its verdict is unreadable'; }
+  const rows = (key: string): Record<string, unknown>[] => (Array.isArray(doc[key]) ? (doc[key] as Record<string, unknown>[]) : []);
+  const blocking = rows('findings').filter((f) => f['severity'] === 'blocking').length;
+  const unresolved = [...rows('blockSupport').filter((r) => r['verdict'] !== 'supported'), ...rows('inventoryAccuracy').filter((r) => r['accuracy'] !== 'accurate')].length;
+  const uncovered = rows('inventoryCoverage').filter((r) => r['disposition'] !== 'represented' && r['disposition'] !== 'justified-omission').length;
+  const parts = [blocking > 0 ? `${blocking} blocking finding(s)` : null, unresolved > 0 ? `${unresolved} block or entry row(s) not confirmed; spans screening withheld cannot be confirmed, so cite admitted evidence instead` : null,
+    uncovered > 0 ? `${uncovered} inventory entr(ies) not represented` : null].filter((p) => p !== null);
+  return parts.length > 0 ? parts.join('; ') : 'the reviewer declared it not ready';
+}
+
 async function loop(options: Options, ports: CliPorts, state: SupervisorState, screen: Screen): Promise<number> {
   const run = state.run;
   let phase = 'drafting';
+  const maxRepairCycles = readMaxRepairCycles(run);
   for (;;) {
     const deadline = state.briefIssuedAt + state.deadlineSeconds * 1000;
     if (Date.now() >= deadline) { phase = 'deadline passed'; break; }
@@ -451,6 +473,8 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
       if (packet?.[key] !== value) return 'none';
       return (rec.doc['readiness'] as Record<string, unknown> | undefined)?.['blocking'] === false ? 'ready' : 'blocking';
     };
+    // A draft revision n is repair cycle n (check.ts); once the declared limit is reached, a not-ready verdict cannot be repaired.
+    const repairsSpent = draft !== null && draft.n >= maxRepairCycles;
     const fidelityState = verdictFor(fidelity, 'draftRevision', passedDraft);
     const designState = verdictFor(design, 'site', site);
 
@@ -466,8 +490,10 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
       screen.event(r.exit === 0 ? `delivered the fidelity packet for draft revision ${passedDraft}` : `fidelity delivery refused: ${r.doc ? String(r.doc['reason']) : r.stderr.trim()}`);
       state.fidelityDeliveredFor.push(passedDraft); saveState(options.stateRoot, state);
     }
+    if (fidelityState === 'blocking' && repairsSpent) { phase = `blocked: fidelity verdict ${fidelity!.n} is not ready (${blockingWhy(run, 'fidelity', fidelity!.n)}) and all ${maxRepairCycles} repair cycles are spent`; break; }
+    if (designState === 'blocking' && repairsSpent) { phase = `blocked: design verdict ${design!.n} is not ready (${blockingWhy(run, 'design', design!.n)}) and all ${maxRepairCycles} repair cycles are spent`; break; }
     if (fidelityState === 'blocking' && !state.notified.includes(`fidelity-${fidelity!.n}`)) {
-      tellAuthor(state, `Syzygy: the fidelity review of draft revision ${passedDraft} found blocking findings. Read ${run}/${RUN_LAYOUT.reviews}/fidelity-verdict-${fidelity!.n}.json, repair the draft in ${RUN_LAYOUT.drafts}/next.json, and run syzygy dossier check ${run} again.`);
+      tellAuthor(state, `Syzygy: the fidelity review of draft revision ${passedDraft} is not ready (${blockingWhy(run, 'fidelity', fidelity!.n)}). Read ${run}/${RUN_LAYOUT.reviews}/fidelity-verdict-${fidelity!.n}.json, repair the draft in ${RUN_LAYOUT.drafts}/next.json, and run syzygy dossier check ${run} again.`);
       state.notified.push(`fidelity-${fidelity!.n}`); saveState(options.stateRoot, state);
       screen.event(`told the author: fidelity verdict ${fidelity!.n} blocks`);
     }
@@ -484,7 +510,7 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
       state.designDeliveredFor.push(siteNow); saveState(options.stateRoot, state);
     }
     if (designState === 'blocking' && !state.notified.includes(`design-${design!.n}`)) {
-      tellAuthor(state, `Syzygy: the rendered-design review of site ${site} found blocking findings. Read ${run}/${RUN_LAYOUT.reviews}/design-verdict-${design!.n}.json, repair the draft in ${RUN_LAYOUT.drafts}/next.json, and run syzygy dossier check ${run} again.`);
+      tellAuthor(state, `Syzygy: the rendered-design review of site ${site} is not ready (${blockingWhy(run, 'design', design!.n)}). Read ${run}/${RUN_LAYOUT.reviews}/design-verdict-${design!.n}.json, repair the draft in ${RUN_LAYOUT.drafts}/next.json, and run syzygy dossier check ${run} again.`);
       state.notified.push(`design-${design!.n}`); saveState(options.stateRoot, state);
       screen.event(`told the author: design verdict ${design!.n} blocks`);
     }
