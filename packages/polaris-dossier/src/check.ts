@@ -83,6 +83,19 @@ export interface ExcludedQuotation {
   readonly unknownReason: 'excluded-content';
 }
 
+/** The cited files the review session will not see, from a check's cited blobs (bead syzygy-olmr). The fidelity packet carries a span's
+ * text only when screening admits its file, so a block or inventory entry that cites only withheld files stays unresolved in review, and
+ * an unresolved row blocks readiness. Reported to the author at check time so it can prefer admitted evidence before spending repair
+ * cycles; it is advice, never a finding, and the check record is unchanged. */
+export function reviewVisibility(citedBlobs: readonly CitedBlob[]): { readonly withheld: readonly { readonly path: string; readonly outcome: ScreenExclusion }[]; readonly note: string } | null {
+  const withheld = citedBlobs.flatMap((blob) => (blob.outcome === 'admitted' ? [] : [{ path: blob.path ?? '(a path a secret detector matches)', outcome: blob.outcome }]));
+  if (withheld.length === 0) return null;
+  return {
+    withheld,
+    note: `screening withholds ${withheld.length} cited file(s) from the review session, so it cannot confirm the blocks and inventory entries that rest on them; unconfirmed rows block readiness. Where the same fact is stated in an admitted file, cite that file as well or instead.`,
+  };
+}
+
 /** A cited blob as this step found it. A path a secret detector matches is named by neither path nor object identifier. */
 export interface CitedBlob {
   readonly path: string | null;

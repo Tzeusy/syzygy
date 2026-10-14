@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { issueBrief } from './brief.js';
-import { checkDraft } from './check.js';
+import { checkDraft, reviewVisibility } from './check.js';
 import { closeRun } from './close.js';
 import { createCredentialProbe, credentialListFromEnv } from './credential-probe.js';
 import { DECLARATIONS, RUN_DIRECTORY_CHOICES, allowExecution } from './execution-choice.js';
@@ -241,7 +241,8 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
       sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
     });
     if (!result.ok) return refused(result.refusal);
-    return report(result.report, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
+    const visibility = reviewVisibility(result.report.citedBlobs);
+    return report(visibility === null ? result.report : { ...result.report, reviewVisibility: visibility }, result.report.outcome === 'passed' ? EXIT.clean : EXIT.refused);
   }
   if (command === 'session-prompt') {
     const fresh = rest.filter((arg) => arg === '--fresh').length;
