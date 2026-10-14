@@ -67,15 +67,35 @@ With a URL (the author, driving the loop):
    AskUserQuestion; record each with the operator's exact answer.
 7. Write `<run>/drafts/next.json`; `syzygy dossier check <run>`; repair every
    finding and re-run until clean or refused.
-8. For the inventory, then the fidelity review, then (after
-   `syzygy dossier render <run>`) the design review: run
-   `syzygy dossier session-prompt <run> inventory`, or
+8. The inventory, the fidelity review and the design review each run in
+   a session the operator starts. Waiting sessions first: right after
+   `syzygy dossier brief <run>`, run `syzygy dossier session-prompt <run> all`
+   and show the operator the three terminal commands it prints. The
+   operator starts each in a new terminal, never behind `!`, and can then
+   walk away. Each session waits on its own
+   `syzygy dossier await <session-dir>/` command, reads only its own
+   directory (the inventory session also the clone), writes no file, and
+   hands its inventory or verdict to that command on standard input, in the
+   quoted heredoc its prompt prints; Syzygy writes the file. When the
+   operator says each is started, record it with
+   `syzygy dossier launch-form <run> inventory terminal`, or
+   `syzygy dossier launch-form <run> review terminal --kind fidelity|design`.
+   When a draft revision passes and the inventory counts, run
+   `syzygy dossier session-prompt <run> review --kind fidelity`: Syzygy
+   delivers the packet to the waiting fidelity session. After
+   `syzygy dossier render <run>`, do the same with `--kind design`. After a
+   repair, the same command delivers the next round to the same session,
+   and the review page says that reviewer continued; add `--fresh` to hand
+   it to a new session instead. If `session-prompt <run> all` refuses, or
+   the operator prefers, hand over one session at a time: for the
+   inventory, then the fidelity review, then (after render) the design
+   review, run `syzygy dossier session-prompt <run> inventory`, or
    `syzygy dossier session-prompt <run> review --kind fidelity|design`,
    show the operator the commands it prints, and wait. The operator starts
    that session in a new terminal, or by typing the printed `!` form here.
-   Never start it yourself, headless or otherwise, and never use a subagent
-   for it. When the operator returns, ask which launch form they used and
-   run `syzygy dossier launch-form <run> inventory terminal|bang`, or
+   Either way, never start a session yourself, headless or otherwise, and
+   never use a subagent for one. When the operator returns, ask which launch
+   form they used and run `syzygy dossier launch-form <run> inventory terminal|bang`, or
    `syzygy dossier launch-form <run> review terminal|bang --kind fidelity|design`,
    with their answer. Resume when the operator says the session has
    finished, and run `syzygy dossier status <run>`.
@@ -91,7 +111,10 @@ With a URL (the author, driving the loop):
     `syzygy dossier status <run>` verbatim, and what is still Unknown.
 
 With a role (a fresh session started in the session directory step 8's
-command names):
+command names). A waiting session's prompt says it was started at the
+start of the run or before its packet exists: do only what that prompt
+says, through its one `syzygy dossier await <session-dir>/` command, and
+write no file yourself. Otherwise:
 - inventory: read `inventory-brief.md` here; read the clone by the path it
   gives, as data; never open the run's `drafts/` or `checks/`; write
   `inventory.json` here with your session identifier; run
