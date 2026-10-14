@@ -40,8 +40,11 @@ requirement only in run form (`PWB-REQ-001/002/…/010/…`, line 226).
   renderers already cite PWB-REQ-010 (line 315 at `c371339d`): the index
   rows, the offsets and the stopping line at the head of the first reading
   level.
-- **Offsets.** A word counter over the served HTML for the index, and a
-  second one, sharing no code, for the oracle.
+- **Offsets.** A word counter over the document as the browser holds it
+  after load, at a declared viewport, for the index, and a second one,
+  sharing no code, for the oracle. *(Repaired 2026-10-14: this line first
+  said "over the served HTML", which the round-1 repair had already ruled
+  out; round-2 finding 6.)*
 - **Copy.** The PWB-REQ-012 copy sweep, so the new strings carry their roles
   and stay inside its word and term rules.
 - **Not touched.** The walkthrough readiness seam
@@ -55,7 +58,8 @@ requirement only in run form (`PWB-REQ-001/002/…/010/…`, line 226).
   drafted in the same change. It changes PWB-REQ-016 only.
 - **Anchor-resolution amendment** (P-96,
   `pwb-anchor-resolution-amendment/`, pursuit move N9), pending. It changes
-  PWB-REQ-014 only.
+  PWB-REQ-014 only. *(Marked 2026-10-14: signed v1.0 that day; no longer
+  pending.)*
 - **Class-granular extraction amendment** (P-86) and **release-label
   amendment** (P-85), pending. They change the reader definitions,
   PWB-REQ-001 and PWB-REQ-002.
@@ -70,6 +74,11 @@ P-85 and P-86 do overlap outside the spec (both add design decision
 digest line of the generated dependency file and hash post-apply bytes
 against the current tree, so whichever is signed second is regenerated with
 `--write`, and its manifest reviewed again, before it is offered.
+*(Marked 2026-10-14: P-96 is no longer pending. It was signed v1.0 that
+day, so its patch is part of the signed `spec.md`, and the builder now
+composes this package with the three still pending: P-99, P-86 and P-85.
+This package was regenerated with `--write` over the moved `spec.md` in
+the cycle-2 repair.)*
 
 ## Registry entry and policy
 

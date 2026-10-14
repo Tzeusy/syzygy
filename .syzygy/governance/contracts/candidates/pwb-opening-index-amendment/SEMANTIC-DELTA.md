@@ -62,6 +62,9 @@ material ends.
 ## Proposed meaning
 
 Three additions to PWB-REQ-010, plus verification limbs and two scenarios.
+*(Repaired 2026-10-14, cycle 2: this section describes the bytes as
+repaired for the round-2 findings; `ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)" maps each change.)*
 
 1. **An opening index of nine rows.** The first reading level begins with
    nine rows, one per PWB-REQ-021 answer identity, in PWB-REQ-021's order.
@@ -72,19 +75,24 @@ Three additions to PWB-REQ-010, plus verification limbs and two scenarios.
    statements, and the V1 scope and success-criteria statements. No run,
    reader or model decides a target. If a target is not rendered, its row
    says so and routes nowhere; it never routes to a substitute. A row
-   routes to its target's heading, or its first element when it has none,
-   and its accessible name names its question.
-2. **Reach offsets.** Each row shows its target's word offset: the number
-   of counted words before the target's first counted word. Exactly one
-   stopping line stands right after the first element of the
-   last-beginning target and gives that offset and the page's word total.
-   Words are counted one declared way, over the document as the browser
-   holds it after load: maximal non-whitespace runs in text nodes, in
-   document order. Left out: `script`, `style`, `template` and `noscript`
-   content; anything hidden (`hidden`, `aria-hidden="true"`,
-   `display: none`, `visibility: hidden`); the content of a `details`
-   closed on first load, except its `summary`, which a reader sees; and the
-   index and stopping line themselves.
+   shows its declared row name and routes to its target's heading, or its
+   first element when it has none.
+2. **Reach offsets.** Each row whose target is rendered shows its target's
+   word offset: the number of counted words before the target's first
+   element. An unrendered row shows none. Exactly one stopping line stands
+   right after the first element of the last-beginning target and gives
+   that offset and the page's word total. On a tie the later element wins;
+   if that element sits inside a `details` closed on first load, the line
+   goes after the outermost such `details`; if no target renders, the line
+   follows the index and gives only the total. Words are counted one
+   declared way, over the document as the browser holds it after load, at
+   a viewport the oracle declares and publishes: maximal non-whitespace
+   runs in text nodes, in document order. Left out: `script`, `style`,
+   `template` and `noscript` content; anything under `hidden`,
+   `aria-hidden="true"` or `display: none`; a text node whose own parent is
+   not computed `visible`; the content of a `details` closed on first load,
+   except its `summary`, which a reader sees; and the index and stopping
+   line themselves.
 3. **Not a verdict.** The index, the offsets and the stopping line are
    presentation measurements. They carry no epistemic tuple, join no
    PWB-REQ-020 parity family, enter no PWB-REQ-021 record or readiness arm,
@@ -99,15 +107,17 @@ Three additions to PWB-REQ-010, plus verification limbs and two scenarios.
 The verification limbs add: a Case with every target rendered and one with
 the opening Unknown aggregate absent; an Oracle in which an independent word
 counter recomputes every offset and the total from the document after load,
-each row's target is compared with the requirement's table (located by a
-recognizer whose selectors are published with the oracle), never the
-renderer's mapping, and exactly one stopping line must stand where the
-requirement places it; and Falsifier limbs for a missing, duplicated,
-misordered or misrouted row, a routed unrendered row, an offset that
-differs from the independent count, a missing, repeated or misplaced
-stopping line or one whose offset is not the largest, a stopping line that
-claims an answer, and an offset presented as a claim, parity fact or
-walkthrough fact.
+each row's name and target are compared with the requirement's table
+(targets located by a recognizer whose published selectors key only on
+visible heading text, claim identities the machine answer serves and the
+exact-source route form, never on markup the renderer emits to mark an
+index target), never the renderer's mapping, and exactly one stopping line
+must stand where the requirement places it; and Falsifier limbs for a
+missing, duplicated, misordered, misnamed or misrouted row, an unrendered
+row that routes or shows an offset, an offset that differs from the
+independent count, a missing, repeated or misplaced stopping line or one
+whose offset is not the largest, a stopping line that claims an answer, and
+an offset presented as a claim, parity fact or walkthrough fact.
 
 New scenarios: "The opening index shows where each project question's
 material begins" and "An unrendered index target is stated, not
@@ -138,6 +148,38 @@ substituted".
 - **Why the stopping line says only numbers.** "Everything you need ends
   here" would be the verdict RFC7-31 reserves to the owner. The line marks
   where the last declared target begins, and nothing about understanding.
+- **Why the stopping line stands where it does, and keeps its name.** A
+  target is declared by its first element, and the requirement gives no
+  target an end, so the start of the last-beginning target is the one
+  place a machine can fix without judging where an answer's material ends.
+  The line therefore stands before that target's material, not after it.
+  It does not tell a reader to stop there: its text is the two numbers and
+  nothing else, and "stopping line" is the specification's name for it,
+  never shown to a reader. The round-2 review noted that the name and the
+  placement together could invite that reading (raw finding 5), so the
+  name and placement are put to the owner (packet, question 9).
+- **Why the offset counts words before the target's first element.** Every
+  rendered target has a first element, but a target can hold no counted
+  word, for example when it lies wholly inside a closed disclosure.
+  Counting up to the first element keeps every rendered target's offset
+  defined.
+- **Why the viewport is fixed and visibility is per text node.** A computed
+  style can change with the viewport, so two counters at different widths
+  could disagree; the oracle names its viewport. A descendant of a
+  `visibility: hidden` element can be set back to visible, and a reader
+  then sees it, so visibility is read from each text node's own parent.
+  `display: none` hides a whole subtree, so it stays an ancestor rule.
+- **Why the recognizer may not key on the renderer's markers.** If the
+  selectors that find a target matched attributes the renderer emits to
+  mark that target, the recognizer would be the renderer's own mapping by
+  another name, which the Oracle forbids (CC-SPEC-4's independence limb).
+- **Why the rows carry no accessible-name rule.** An earlier repair said a
+  row's accessible name "names its question". No clause defines a
+  question's words, so no oracle could check it (round-2 finding 2). The
+  rows now show their declared row names, which the table fixes and the
+  Oracle compares. Telling a row apart from another link with the same
+  words is PWB-REQ-016's job if P-99 is signed. Declaring per-row
+  accessible names instead is put to the owner (packet, question 8).
 
 ## What explicitly does NOT change
 
@@ -182,6 +224,13 @@ touch are named there for planning only; signing authorizes no build.
   manifest hashes post-apply bytes against the current tree, so whichever is
   signed second is regenerated with `--write` first and its new manifest is
   reviewed again.
+  *(Marked 2026-10-14: the anchor-resolution amendment (P-96) is no longer
+  pending. It was signed v1.0 that day
+  (`.syzygy/governance/decisions/PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md`), so its
+  patch is now part of the signed `spec.md`, and four spec patches stay
+  pending: this one, P-99, P-86 and P-85. This package was regenerated
+  over the moved `spec.md` in the cycle-2 repair, as the sentence above
+  foresaw.)*
 - Signing moves PWB `spec.md`, so it interacts with the P-95
   behaviour-contract re-pin: pins re-written to the tree-framing sign-off
   go stale again, and P-95's acts, if not yet performed, are regenerated
@@ -200,3 +249,9 @@ round, the findings were repaired once and no round 2 was dispatched; see
 ran on the owner's direction of 2026-10-14 and returned `REVISE`
 (`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-2-RAW.md` line 4); see
 `ROUND-2-DISPOSITIONS.md`. The bytes remain unconfirmed.)*
+
+**Round-2 findings repaired once on 2026-10-14, unconfirmed pending round
+3.** On the owner's further direction that day, every round-2 finding,
+notes included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)"). One fresh round 3 is briefed in `REVIEW-BRIEF.md`
+§"Round 3" and has not run. The repair added packet questions 8 and 9.
