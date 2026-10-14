@@ -29,7 +29,16 @@ validates, in this order, and writes nothing until every step passes:
    is provenance and the base of step 5's comparison, never the binding; a
    rebase-merged review commit stays fetchable from its pull request's ref.
    The raw must also name the package's key, so a review of another package
-   cannot be offered for this one;
+   cannot be offered for this one. A raw judging two packages at once carries
+   a two-package head instead: its first six non-blank lines hold exactly one
+   `Reviewed commit:` line and, for exactly two distinct labels, one
+   `<LABEL> manifest SHA-256: <64 hex>` and one `<LABEL> verdict:` line each;
+   a package declaring that `head_label` binds by its own two lines only, and
+   an unlabelled manifest or verdict line beside them, any other head line
+   naming a verdict or a digest, a half-labelled or repeated label, or a
+   package with no label or a label the head lacks refuses as ambiguous. A
+   package signed under a plain owner direction extending Scope A names that
+   direction (`extension`), which must exist;
 4. for `CONFIRM WITH EXCEPTIONS`, the raw's `## Findings` section numbers its
    findings continuously as `**Finding N — title** (blocking|revise|note)`,
    where the severity word may carry a qualifier after it ("(note, for the
@@ -81,6 +90,7 @@ import record_pwb_behavior_amendment_acts as beh  # noqa: E402
 DECISIONS = pathlib.Path(".syzygy/governance/decisions")
 AGGREGATE_REL = DECISIONS / "ACCEPTANCE-ACT-RECORD.md"
 DIRECTION_REL = DECISIONS / "OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md"
+POC_EXTENSION_REL = DECISIONS / "OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md"
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
 VERSION_RE = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -97,6 +107,15 @@ SEVERITY_RE = re.compile(
 QUALIFIER_CLAUSES = ("for the owner", "for the owner's view", "reported for the owner",
                      "not resolved", "editorial")
 MANIFEST_DIGEST_RE = re.compile(r"^Manifest SHA-256: ([0-9a-f]{64})$")
+#: A two-package head (one raw judging two packages, as N9's round 2 did):
+#: each package binds by its own labelled manifest line and its own labelled
+#: verdict line, all within the first six non-blank lines.
+LABELLED_MANIFEST_RE = re.compile(r"^([A-Z][A-Z0-9]*) manifest SHA-256: ([0-9a-f]{64})$")
+LABELLED_VERDICT_RE = re.compile(r"^([A-Z][A-Z0-9]*) verdict:\s*(.*?)\s*$")
+#: Any head line naming a verdict or a digest; in a two-package head each must
+#: be one exact labelled form, so a near miss is refused rather than skipped.
+HEAD_KEYWORD_RE = re.compile(r"verdict|sha-?256", re.IGNORECASE)
+TWO_PACKAGE_HEAD_LINES = 6
 SIBLING_RECORD_RE = re.compile(r"(^|/)ROUND-\d+-DISPOSITIONS\.md$")
 FINDINGS_HEADING = "## Findings"
 
@@ -131,6 +150,13 @@ class Package:
     #: For a package with options: the options the applied tree carries, so
     #: ``--check`` holds the record's options line to the tree.
     applied_options: Callable[[pathlib.Path], frozenset[str]] | None = None
+    #: The label this package's lines carry in a two-package review head
+    #: (``<LABEL> manifest SHA-256:`` and ``<LABEL> verdict:``). A package
+    #: without one is never bound by a two-package head.
+    head_label: str | None = None
+    #: A plain owner direction extending Scope A to this package's kind; the
+    #: record names it, and recording or checking refuses when it is missing.
+    extension: pathlib.Path | None = None
 
 
 def _module(name: str):
@@ -168,6 +194,10 @@ def real_packages() -> dict[str, Package]:
     git_source = lambda: _module("build_public_git_source_acquisition_local_agent")  # noqa: E731
     dossier11 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_1")  # noqa: E731
     dossier12 = lambda: _module("build_polaris_dossier_local_agent_mode_v1_2")  # noqa: E731
+    anchor = lambda: _module("build_pwb_anchor_resolution_amendment")  # noqa: E731
+    provenance = lambda: _module("build_three_surface_poc_block_provenance_amendment")  # noqa: E731
+    anchor_dir = CANDIDATES / "pwb-anchor-resolution-amendment"
+    provenance_dir = CANDIDATES / "three-surface-poc-block-provenance-amendment"
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -228,6 +258,35 @@ def real_packages() -> dict[str, Package]:
             lambda root: tree_framing().check()[0],
             lambda root: tree_framing().apply(True),
             lambda root: _rows_hash_tree(root, tree_framing().MANIFEST_OUT),
+        ),
+        # The N9 pair, judged by one raw with a two-package head: each binds
+        # by its own labelled manifest digest and verdict line.
+        "pwb-anchor-resolution-amendment": Package(
+            "pwb-anchor-resolution-amendment",
+            "PWB anchor-resolution amendment",
+            "behavior amendment",
+            anchor_dir,
+            "PWB-ANCHOR-RESOLUTION-AMENDMENT",
+            lambda root: anchor().check(anchor().PACKAGE)[0],
+            lambda root: anchor().apply(anchor().PACKAGE, True),
+            lambda root: _rows_hash_tree(root, anchor().PACKAGE.manifest),
+            subject=anchor_dir / "PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt",
+            head_label="PWB",
+        ),
+        # A Three-Surface POC specification amendment: Scope A reaches it only
+        # through the owner's 2026-10-14 extension, which the record names.
+        "three-surface-poc-block-provenance-amendment": Package(
+            "three-surface-poc-block-provenance-amendment",
+            "Three-Surface POC block-provenance amendment",
+            "specification amendment",
+            provenance_dir,
+            "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT",
+            lambda root: provenance().engine.check(provenance().PACKAGE)[0],
+            lambda root: provenance().engine.apply(provenance().PACKAGE, True),
+            lambda root: _rows_hash_tree(root, provenance().PACKAGE.manifest),
+            subject=provenance_dir / "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt",
+            head_label="POC",
+            extension=POC_EXTENSION_REL,
         ),
         "polaris-dossier-local-agent-mode": Package(
             "polaris-dossier-local-agent-mode",
@@ -350,11 +409,68 @@ def validate_inputs(version: str, date: str, quote: str, pkg: Package | None = N
                          f"Scope A does not name")
 
 
-def parse_head(review: str) -> tuple[str, str]:
-    """(reviewed commit, verdict) from the first four non-blank lines."""
-    head = [line for line in review.splitlines() if line.strip()][:4]
+def _verdict_allowed(verdict: str) -> str:
+    if verdict not in VERDICTS:
+        raise ValueError(f"review verdict {verdict!r} is not CONFIRM or "
+                         "CONFIRM WITH EXCEPTIONS")
+    return verdict
+
+
+def parse_two_package_head(head: list[str], label: str | None) -> tuple[str, str, str]:
+    """(commit, verdict, manifest digest) for ``label`` from a two-package head.
+
+    The head is the first six non-blank lines. It carries exactly one
+    `Reviewed commit:` line and, for exactly two distinct labels, exactly one
+    `<LABEL> manifest SHA-256:` and one `<LABEL> verdict:` line each. Anything
+    ambiguous refuses: an unlabelled manifest or verdict line beside the
+    labelled ones, any other line naming a verdict or a digest, a label with
+    one line and not the other, a repeated label, or a package that declares
+    no label or a label the head does not carry."""
     commits = [m.group(1) for line in head if (m := COMMIT_LINE_RE.fullmatch(line))]
-    manifests = [line for line in head if MANIFEST_LINE_RE.fullmatch(line)]
+    if len(commits) != 1:
+        raise ValueError("review head does not carry exactly one `Reviewed commit:` line")
+    if any(MANIFEST_LINE_RE.fullmatch(line) or VERDICT_LINE_RE.fullmatch(line) for line in head):
+        raise ValueError("two-package review head also carries an unlabelled "
+                         "`Manifest SHA-256:` or `Verdict:` line; ambiguous")
+    manifests: dict[str, list[str]] = {}
+    verdicts: dict[str, list[str]] = {}
+    for line in head:
+        if (m := LABELLED_MANIFEST_RE.fullmatch(line)):
+            manifests.setdefault(m.group(1), []).append(m.group(2))
+        elif (m := LABELLED_VERDICT_RE.fullmatch(line)):
+            verdicts.setdefault(m.group(1), []).append(m.group(2))
+        elif not line.startswith("#") and HEAD_KEYWORD_RE.search(line):
+            raise ValueError(f"two-package review head line {line!r} names a verdict or "
+                             "a digest in no labelled form; ambiguous")
+    if set(manifests) != set(verdicts):
+        raise ValueError(f"two-package review head labels its manifests {sorted(manifests)} "
+                         f"and its verdicts {sorted(verdicts)}; each label needs both")
+    if len(manifests) != 2:
+        raise ValueError(f"two-package review head carries {len(manifests)} labels, not 2")
+    repeated = sorted(k for k in manifests if len(manifests[k]) != 1 or len(verdicts[k]) != 1)
+    if repeated:
+        raise ValueError(f"two-package review head repeats the lines of label(s) {repeated}")
+    if label is None:
+        raise ValueError("a two-package review head binds a package only by its declared "
+                         "head label, and this package declares none")
+    if label not in manifests:
+        raise ValueError(f"two-package review head carries no `{label}` lines "
+                         f"(labels: {sorted(manifests)})")
+    return commits[0], _verdict_allowed(verdicts[label][0]), manifests[label][0]
+
+
+def parse_head(review: str, label: str | None = None) -> tuple[str, str, str]:
+    """(reviewed commit, verdict, head manifest digest).
+
+    A single-package head is the first four non-blank lines. A head whose first
+    six non-blank lines carry a labelled manifest line is a two-package head,
+    read by ``parse_two_package_head`` for ``label``."""
+    lines = [line for line in review.splitlines() if line.strip()]
+    if any(LABELLED_MANIFEST_RE.fullmatch(line) for line in lines[:TWO_PACKAGE_HEAD_LINES]):
+        return parse_two_package_head(lines[:TWO_PACKAGE_HEAD_LINES], label)
+    head = lines[:4]
+    commits = [m.group(1) for line in head if (m := COMMIT_LINE_RE.fullmatch(line))]
+    manifests = [m.group(1) for line in head if (m := MANIFEST_DIGEST_RE.fullmatch(line))]
     verdicts = [m.group(1) for line in head if (m := VERDICT_LINE_RE.fullmatch(line))]
     if len(commits) != 1:
         raise ValueError("review head does not carry exactly one `Reviewed commit:` line")
@@ -362,10 +478,7 @@ def parse_head(review: str) -> tuple[str, str]:
         raise ValueError("review head does not carry exactly one `Manifest SHA-256:` line")
     if len(verdicts) != 1:
         raise ValueError("review head does not carry exactly one `Verdict:` line")
-    if verdicts[0] not in VERDICTS:
-        raise ValueError(f"review verdict {verdicts[0]!r} is not CONFIRM or "
-                         "CONFIRM WITH EXCEPTIONS")
-    return commits[0], verdicts[0]
+    return commits[0], _verdict_allowed(verdicts[0]), manifests[0]
 
 
 def qualifier_allowed(qualifier: str) -> bool:
@@ -414,13 +527,13 @@ def validate_disposition(root: pathlib.Path, review_rel: str, disposition_rel: s
                          f"the review's {sorted(findings)}")
 
 
-def validate_review(root: pathlib.Path, review_rel: str, disposition_rel: str | None
-                    ) -> tuple[str, str]:
+def validate_review(root: pathlib.Path, review_rel: str, disposition_rel: str | None,
+                    label: str | None = None) -> tuple[str, str]:
     path = root / review_rel
     if not path.is_file():
         raise ValueError(f"missing review raw: {review_rel}")
     review = path.read_text(encoding="utf-8")
-    commit, verdict = parse_head(review)
+    commit, verdict, _digest = parse_head(review, label)
     if verdict == "CONFIRM WITH EXCEPTIONS":
         findings = review_findings(review)
         if not findings:
@@ -441,21 +554,27 @@ def review_binds(root: pathlib.Path, pkg: Package, review_rel: str) -> None:
         raise ValueError(f"review raw does not name the package `{pkg.key}`")
     if pkg.subject is None:
         return
-    head = [line for line in review.splitlines() if line.strip()][:4]
-    digests = [m.group(1) for line in head if (m := MANIFEST_DIGEST_RE.fullmatch(line))]
+    _commit, _verdict, head_digest = parse_head(review, pkg.head_label)
     subject = root / pkg.subject
     if not subject.is_file():
         raise ValueError(f"reviewed subject {pkg.subject.as_posix()} is missing")
     actual = beh.digest(pkg.subject_bytes(root) if pkg.subject_bytes else subject.read_bytes())
-    if digests != [actual]:
+    if head_digest != actual:
         raise ValueError(f"review head digest is not the sha256 of the reviewed subject "
                          f"{pkg.subject.as_posix()}")
+
+
+def extension_present(root: pathlib.Path, pkg: Package) -> None:
+    """A package signed under an extension of Scope A needs that direction."""
+    if pkg.extension is not None and not (root / pkg.extension).is_file():
+        raise ValueError(f"missing Scope A extension direction: {pkg.extension.as_posix()}")
 
 
 def verify_reviewed(root: pathlib.Path, pkg: Package, review_rel: str,
                     disposition_rel: str | None) -> tuple[str, str]:
     """Every check that binds the bytes on disk to the review; writes nothing."""
-    commit, verdict = validate_review(root, review_rel, disposition_rel)
+    commit, verdict = validate_review(root, review_rel, disposition_rel, pkg.head_label)
+    extension_present(root, pkg)
     review_binds(root, pkg, review_rel)
     package_unchanged(root, pkg, commit, disposition_rel)
     return commit, verdict
@@ -542,6 +661,14 @@ def options_line(pkg: Package, options: frozenset[str]) -> str:
     return f"Options: {', '.join(sorted(options)) or 'none'}\n\n"
 
 
+def extension_line(pkg: Package) -> str:
+    """The record's Scope A extension line; empty for a package Scope A names."""
+    if pkg.extension is None:
+        return ""
+    return (f"Scope A extension: `{pkg.extension.as_posix()}` extends the direction "
+            "below to this package's kind\n\n")
+
+
 def render_record(pkg: Package, version: str, date: str, quote: str, review: str,
                   commit: str, verdict: str, disposition: str | None,
                   options: frozenset[str] = frozenset(), *,
@@ -570,7 +697,7 @@ Review verdict: {verdict}
 
 Disposition: {disposition or "none"}
 
-{installed_lines(pkg, root, instant)}{options_line(pkg, options)}{DIRECTION_NOTE}
+{installed_lines(pkg, root, instant)}{options_line(pkg, options)}{extension_line(pkg)}{DIRECTION_NOTE}
 
 ## What this records
 
@@ -605,6 +732,9 @@ def aggregate_scope(pkg: Package) -> str:
 def render_aggregate(pkg: Package, version: str, date: str, review: str,
                      verdict: str, disposition: str | None) -> str:
     start, end = block_markers(pkg, version)
+    direction = f"`{DIRECTION_REL.as_posix()}`"
+    if pkg.extension is not None:
+        direction += f", extended by `{pkg.extension.as_posix()}`"
     review_row = f"`{review}`: `{verdict}`"
     if disposition:
         review_row += f"; disposition: `{disposition}`"
@@ -620,7 +750,7 @@ Claude Code CLI (quoted in the dedicated record).
 | Kind | {pkg.kind} |
 | Review outcome | {review_row} |
 | Recording | `{record_rel(pkg, version).as_posix()}`; annotated tag `{tag_for(pkg, version)}` on the commit carrying these records and the applied result |
-| Direction | `{DIRECTION_REL.as_posix()}` |
+| Direction | {direction} |
 
 {aggregate_scope(pkg)}
 {end}
@@ -725,7 +855,8 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         f = parse_record(text)
         disposition = None if f["Disposition"] == "none" else f["Disposition"]
         validate_inputs(version, f["Date"], f["Owner selection"], pkg)
-        commit, verdict = validate_review(root, f["Review"], disposition)
+        commit, verdict = validate_review(root, f["Review"], disposition, pkg.head_label)
+        extension_present(root, pkg)
         if (commit, verdict) != (f["Reviewed commit"], f["Review verdict"]):
             raise ValueError("record's reviewed commit or verdict differs from the review")
         instant = None
@@ -840,27 +971,28 @@ def selftest() -> int:
     args = dict(version="1.0", date="2026-10-02", quote='Selected "Sign off" on the stub question',
                 review_rel=STUB_REVIEW, disposition_rel=None)
 
-    def run_record(tmp, **override):
+    def run_record(tmp, package=None, **override):
         merged = {**args, **override}
         import io
         import contextlib
         with contextlib.redirect_stdout(io.StringIO()) as out:
-            code = record(tmp, pkg, merged["version"], merged["date"], merged["quote"],
+            code = record(tmp, package or pkg, merged["version"], merged["date"], merged["quote"],
                           merged["review_rel"], merged["disposition_rel"])
         return code, out.getvalue()
 
-    def run_check(tmp, version):
+    def run_check(tmp, version, package=None):
         import io
         import contextlib
         with contextlib.redirect_stdout(io.StringIO()):
-            return check(tmp, pkg, version)
+            return check(tmp, package or pkg, version)
 
-    def refused(name, *, review=None, disposition=None, mutate=None, expect=None, **override):
+    def refused(name, *, review=None, disposition=None, mutate=None, expect=None, package=None,
+                **override):
         with tempfile.TemporaryDirectory() as t:
             tmp, commit = make_fixture(pathlib.Path(t), review, disposition)
             if mutate:
                 mutate(tmp, commit)
-            code, out = run_record(tmp, **override)
+            code, out = run_record(tmp, package, **override)
             clean = not (tmp / "applied.txt").exists() and not (tmp / record_rel(pkg, "1.0")).exists()
             results.append((f"refused: {name}",
                             code == 1 and clean and (expect is None or expect in out)))
@@ -951,6 +1083,128 @@ def selftest() -> int:
     refused("verdict pushed past the four-line head",
             review=lambda c: f"# R\nReviewed commit: {c}\n\nManifest SHA-256: {'ab' * 32}\n"
                              f"\nsome line\nVerdict: CONFIRM\n", expect="exactly one `Verdict:`")
+    # A two-package head (the N9 round-2 raw's form): each package binds by
+    # its own labelled manifest and verdict line.
+    import dataclasses as _dc
+    labelled = _dc.replace(pkg, head_label="PWB")
+    other_label = _dc.replace(pkg, head_label="POC")
+    stub_digest = beh.digest(STUB_SUBJECT_BYTES)
+
+    def two_head(commit, *, lines=None, findings="No findings.", title=True):
+        head = lines if lines is not None else [
+            f"Reviewed commit: {commit}",
+            f"PWB manifest SHA-256: {stub_digest}",
+            f"POC manifest SHA-256: {'cd' * 32}",
+            "PWB verdict: CONFIRM",
+            "POC verdict: CONFIRM WITH EXCEPTIONS"]
+        return (("# Review — stub-package (two halves)\n" if title else "")
+                + "\n".join(head) + "\n\nstub-package"
+                + f"\n\n## Findings\n\n{findings}\n")
+
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t), two_head)
+        code, _ = run_record(tmp, labelled)
+        results.append(("a two-package head binds a labelled package by its own lines, and checks",
+                        code == 0 and run_check(tmp, "1.0", labelled) == 0
+                        and "Review verdict: CONFIRM\n" in (tmp / record_rel(pkg, "1.0")).read_text()))
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t), lambda c: two_head(c, findings=NOTES),
+                                   stub_disposition())
+        swapped = _dc.replace(other_label)
+        code, _ = run_record(tmp, _dc.replace(swapped, subject=None),
+                             disposition_rel=STUB_DISPOSITION)
+        results.append(("the other label reads its own verdict (CONFIRM WITH EXCEPTIONS) "
+                        "and needs the disposition",
+                        code == 0 and "Review verdict: CONFIRM WITH EXCEPTIONS\n"
+                        in (tmp / record_rel(pkg, "1.0")).read_text()))
+
+    def head_lines(commit, **change):
+        lines = {"commit": f"Reviewed commit: {commit}",
+                 "pwb_manifest": f"PWB manifest SHA-256: {stub_digest}",
+                 "poc_manifest": f"POC manifest SHA-256: {'cd' * 32}",
+                 "pwb_verdict": "PWB verdict: CONFIRM",
+                 "poc_verdict": "POC verdict: CONFIRM"}
+        lines.update(change)
+        return [v for v in lines.values() if v is not None]
+
+    refused("two-package head: a package with no head label",
+            review=lambda c: two_head(c), expect="declares none")
+    refused("two-package head: a label the head does not carry",
+            review=lambda c: two_head(c), package=_dc.replace(pkg, head_label="CAP"),
+            expect="carries no `CAP` lines")
+    refused("two-package head: an unlabelled manifest line beside the labelled ones",
+            review=lambda c: two_head(c, lines=head_lines(
+                c, poc_verdict=f"Manifest SHA-256: {stub_digest}")),
+            package=labelled, expect="unlabelled")
+    refused("two-package head: an unlabelled verdict line beside the labelled ones",
+            review=lambda c: two_head(c, lines=head_lines(c, poc_verdict="Verdict: CONFIRM")),
+            package=labelled, expect="unlabelled")
+    refused("two-package head: a label with a manifest line and no verdict line",
+            review=lambda c: two_head(c, lines=head_lines(c, poc_verdict=None)),
+            package=labelled, expect="each label needs both")
+    refused("two-package head: one label only",
+            review=lambda c: two_head(c, lines=head_lines(
+                c, poc_manifest=f"PWB manifest SHA-256: {stub_digest}",
+                poc_verdict="PWB verdict: CONFIRM")),
+            package=labelled, expect="carries 1 labels, not 2")
+    refused("two-package head: a repeated label (untitled head)",
+            review=lambda c: two_head(c, title=False, lines=head_lines(c)[:2]
+                                      + [f"PWB manifest SHA-256: {stub_digest}"]
+                                      + head_lines(c)[2:]),
+            package=labelled, expect="repeats the lines of label(s) ['PWB']")
+    refused("two-package head: a stray label with one line",
+            review=lambda c: two_head(c, lines=head_lines(
+                c, pwb_verdict=f"CAP manifest SHA-256: {'ef' * 32}")),
+            package=labelled, expect="each label needs both")
+    refused("two-package head: a near-miss verdict line",
+            review=lambda c: two_head(c, lines=head_lines(c, pwb_verdict="PWB Verdict: CONFIRM")),
+            package=labelled, expect="no labelled form")
+    refused("two-package head: a near-miss digest line",
+            review=lambda c: two_head(c, lines=head_lines(
+                c, poc_manifest=f"POC manifest sha256: {'cd' * 32}")),
+            package=labelled, expect="no labelled form")
+    refused("two-package head: two reviewed-commit lines",
+            review=lambda c: two_head(c, lines=head_lines(c, poc_verdict=f"Reviewed commit: {c}")),
+            package=labelled, expect="exactly one `Reviewed commit:`")
+    refused("two-package head: this label's verdict REVISE",
+            review=lambda c: two_head(c, lines=head_lines(c, pwb_verdict="PWB verdict: REVISE")),
+            package=labelled, expect="not CONFIRM")
+    refused("two-package head: the other label's digest is not this subject's",
+            review=lambda c: two_head(c, lines=head_lines(
+                c, pwb_manifest=f"PWB manifest SHA-256: {'cd' * 32}",
+                poc_manifest=f"POC manifest SHA-256: {stub_digest}")),
+            package=labelled, expect="head digest is not the sha256")
+    refused("two-package head: a verdict line pushed past the six-line head",
+            review=lambda c: two_head(c, lines=head_lines(c, poc_verdict=None)
+                                      + ["Reviewer: x", "POC verdict: CONFIRM"]),
+            package=labelled, expect="each label needs both")
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t), two_head)
+        results.append(("a single-package head still reads its four lines (no label needed)",
+                        parse_head(stub_review(commit)) == (commit, "CONFIRM", stub_digest)))
+    # A package signed under a Scope A extension names the direction.
+    extended = _dc.replace(pkg, extension=DECISIONS / "EXTENSION.md")
+    refused("an extension direction that is missing", package=extended,
+            expect="missing Scope A extension direction")
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t))
+        (tmp / DECISIONS / "EXTENSION.md").write_text("direction\n")
+        code, _ = run_record(tmp, extended)
+        text = (tmp / record_rel(pkg, "1.0")).read_text()
+        agg = (tmp / AGGREGATE_REL).read_text()
+        ok = (code == 0 and "Scope A extension: `" + (DECISIONS / "EXTENSION.md").as_posix() in text
+              and "extended by `" in agg and run_check(tmp, "1.0", extended) == 0)
+        (tmp / DECISIONS / "EXTENSION.md").unlink()
+        results.append(("an extension direction is named in both records; --check refuses "
+                        "once it is gone", ok and run_check(tmp, "1.0", extended) == 1))
+    real_pair = real_packages()
+    results.append(("the real N9 pair bind by labels PWB and POC, and only the POC half "
+                    "names the extension",
+                    real_pair["pwb-anchor-resolution-amendment"].head_label == "PWB"
+                    and real_pair["pwb-anchor-resolution-amendment"].extension is None
+                    and real_pair["three-surface-poc-block-provenance-amendment"].head_label == "POC"
+                    and real_pair["three-surface-poc-block-provenance-amendment"].extension
+                    == POC_EXTENSION_REL))
     refused("missing review raw", review_rel="docs/reviews/none-RAW.md", expect="missing review raw")
     refused("reviewed commit unknown to the repository",
             review=lambda c: stub_review("1" * 40), expect="not in this repository")
