@@ -262,6 +262,15 @@ async function main(): Promise<number> {
     }, { renderer: renderDossier });
   }
 
+  // `syzygy polaris <url>` is the one-command launched run (prototype under
+  // owner direction POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): it runs the
+  // `dossier` steps in process and starts the agent sessions in views.
+  if (argv[0] === 'polaris') {
+    const { runPolarisCli } = await import('@syzygy/polaris-dossier');
+    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');
+    return runPolarisCli(argv.slice(1), { renderer: renderDossier });
+  }
+
   let parsed = parseCli(process.argv.slice(2), process.env);
   if (parsed.kind === 'run') {
     // Symlink reality (RTF-1): the pure lexical check in parseCli
