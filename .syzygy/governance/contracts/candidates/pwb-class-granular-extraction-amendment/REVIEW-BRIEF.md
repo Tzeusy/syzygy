@@ -154,7 +154,8 @@ commit, by script, never a manifest row) and `Verdict:`.
 its notes are answered in a sibling `ROUND-2-DISPOSITIONS.md`, and the
 package is not edited. Any other verdict leaves the bytes uncleared: the
 package is not edited, no round 3 is dispatched, and the findings go to the
-owner.
+owner. *(Marked 2026-10-14: superseded by the owner's direction of that
+day, which ordered one repair and a round 3; see §"Round 3".)*
 
 ## Round 3 (added 2026-10-14)
 
@@ -189,4 +190,53 @@ names; and `Verdict: `.
 the bytes it read; its notes are answered in a sibling
 `ROUND-3-DISPOSITIONS.md` and the package is not edited. Any other verdict
 leaves the bytes uncleared: the package is not edited, no round 4 is
-dispatched, and the findings go to the owner.
+dispatched, and the findings go to the owner. *(Marked 2026-10-14: round 3
+returned `REVISE`, and the owner's direction of that day for one more cycle
+supersedes "the package is not edited" and "no round 4 is dispatched": the
+round-3 findings were repaired once and a round 4 is prepared below.)*
+
+## Round 4 (added 2026-10-14, cycle 2)
+
+Round 3 (`docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-3-RAW.md`)
+returned `REVISE`: one revise finding (rule provenance undecidable for a
+source two rules admit) and four notes. On 2026-10-14 the owner directed
+one more cycle. Every finding, notes included, was repaired once; the
+mapping is in `ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)".
+This section prepares round 4; it does not dispatch it.
+
+Round 4 reviews the repaired bytes against the same seven criteria, the two
+round-2 additions and the round-3 addition. **Unlike rounds 2 and 3, the
+reviewer SHOULD read the prior round's raw
+(`docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-3-RAW.md`) and
+`ROUND-3-DISPOSITIONS.md`, to verify that each round-3 finding was
+repaired**, and then judge the current bytes on their own merits. It need
+not read rounds 1 and 2's raws or dispositions. Two more additions:
+
+- **Criterion 2** also covers the stated order for a source more than one
+  rule admits. Check that the provenance oracle can now be decided without
+  judgment for every admitted source — the root index, a pillar's index
+  file named by another index, a pillar-named baseline spec, roster
+  `butler.toml` or `MANIFESTO.md`, and a source two of a loaded profile's
+  tree populations admit — and that the order has its oracle, falsifier and
+  scenario limbs.
+- **Criterion 5** also covers the delta's code claims for that order: that
+  `project-shape-manifest.ts` at the reviewed commit gives the stated order
+  for Butlers' built-in grammar except the one case the delta names (a
+  pillar index an earlier pillar's index names), and that packet question 8
+  puts that case and the loaded-profile clauses to the owner fairly.
+
+**Raw head.** The output contract above stands. Over the first four
+non-blank lines: the title; `Reviewed commit: ` and the 40-hex commit read;
+`Manifest SHA-256: ` and the lowercase 64-hex sha256 of the **bytes of the
+file** `PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt` at that
+commit, computed by `git show <commit>:<path> | sha256sum` — never a row
+inside the manifest, and never the digest of any subject the manifest
+names; and `Verdict: ` with exactly one of `CONFIRM`,
+`CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+**Stopping rule for round 4**, set before it runs. A notes-only round
+(`CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with every finding a note) clears
+the bytes it read; its notes are answered in a sibling
+`ROUND-4-DISPOSITIONS.md` and the package is not edited. Any other verdict
+leaves the bytes uncleared: no round 5 is dispatched, and the package goes
+to the owner with its findings open, unless the owner directs otherwise.

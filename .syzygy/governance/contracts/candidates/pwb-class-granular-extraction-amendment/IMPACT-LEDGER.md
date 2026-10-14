@@ -17,7 +17,7 @@
 |---|---:|---|
 | `docs/reviews/` raw reviews | 23 | None. Raw output is never edited (CC-REV-6). |
 | Other `docs/` (plans, designs, evidence, pursuits) | 22 | None. Evidence records name the bytes they measured. The M15 funnel packet is the question this package answers and is not edited. |
-| `.syzygy/governance/contracts/candidates/` sibling packages | 23 | None. Every sibling but one is performed or declined. The pending one, the release-label amendment, cites PWB-REQ-002 only in its regenerated dependency patch. |
+| `.syzygy/governance/contracts/candidates/` sibling packages | 23 | None. Every sibling but one is performed or declined. The pending one, the release-label amendment, cites PWB-REQ-002 only in its regenerated dependency patch. *Marked 2026-10-14 (round-3 finding 4): true at `ef5d5f03` only. At `814fbcc1` the builder's `PENDING_SIBLINGS` holds three — release-label (P-85), opening-index (P-98) and accessible-name (P-99) — and anchor-resolution (P-96), pending when round 3 read this, is signed; see "Packages and fields this collides with".* |
 | Other `.syzygy/` | 5 | None. Decision records and registers cite the requirement as history. |
 | `openspec/changes/polaris-project-wide-butlers-model/` | 10 | Four patched (spec, capability coverage, design, proposal) and one regenerated (`GOVERNING-DEPENDENCIES.md`). `CONTRACT-COVERAGE.md`, the three matrix files, the three parts files and `tasks.md` are unchanged. |
 | `scripts/` | 4 | At sign-off, `check_spec_reconciliation.py` changes its literal census and the PWB successor chain. `record_pwb_behavior_amendment_acts.py` and the container-shape builder are history. The release-label builder now lists this package as a pending sibling. |
@@ -60,6 +60,15 @@ row for row:
 - **Effect of the round-2 repairs on this census:** none. They change this
   package's patches, builder and prose, and no other file.
 
+### Cycle 2, 2026-10-14 at `814fbcc1`
+
+[Unknown] The citer census above was not re-derived at `814fbcc1`; its
+figures are as of `8f1fbec7`. The cycle-2 repairs change this package's
+patches, builder and prose, the beside-package dispositions and the P-86
+register row, and no other file. [Observed] The anchor-resolution sign-off
+(`7f43802f`) moved the signed `spec.md` and `GOVERNING-DEPENDENCIES.md`;
+both patches were regenerated over those bytes.
+
 ## Files a later implementation would touch
 
 [Inferred — named for planning, not authorized]
@@ -79,7 +88,13 @@ row for row:
   where root independence is declared and stamped. The funnel's falsifier
   for that slice applies: Butlers' manifest digest must not move. Its
   `SOURCE_RULES` (line 71) already holds the five rule names the repaired
-  reader definitions bind, so rule provenance needs no rename.
+  reader definitions bind, so rule provenance needs no rename. Its
+  first-registration order (lines 393 and 470–478) already gives a
+  pillar-named baseline spec or roster `butler.toml` to rules 3 and 4 and a
+  pillar-named `MANIFESTO.md` to rule 2, as the stated order does. If the
+  owner takes the text's order in packet question 8, a pillar index that an
+  earlier pillar's index names must be filed `pillar-index` rather than
+  first-registered as `pillar-named-file` (added 2026-10-14, cycle 2).
 - **Parity.** Each new machine field (per-class outcome, unenumerated
   heading, root-index qualification) joins the PWB-REQ-020 parity sweep as
   its own family.
@@ -88,6 +103,18 @@ row for row:
 
 ## Packages and fields this collides with
 
+*As of 2026-10-14 at `814fbcc1`* (until then this list named the
+release-label amendment as the only pending spec package; round-3 finding
+4). [Observed] The builder's `PENDING_SIBLINGS` holds three packages,
+listed here with what each collides with:
+
+- **The opening-index amendment** (P-98, PWB-REQ-010) and **the
+  accessible-name amendment** (P-99, PWB-REQ-016), pending. Each patches one
+  other requirement and the regenerated dependency file; they compose with
+  this package, all orders checked by the builder.
+- **The anchor-resolution amendment** (P-96, PWB-REQ-014) is no longer
+  pending: it was signed v1.0 on 2026-10-14 and the builder lists it as
+  performed. This package was regenerated over its applied bytes.
 - **The release-label amendment** (P-85,
   `contracts/candidates/pwb-release-label-amendment/`), pending. Both
   packages patch `spec.md`, `design.md`, `proposal.md`,
@@ -111,5 +138,9 @@ row for row:
 [Observed] The observer registry entry and the secret-classification policy
 each pin a PWB spec digest that is already not the current one, and are
 Unknown until their own act (`syzygy-jloi`); `check_spec_reconciliation.py`
-reports both. This package edits neither. Signing it moves the spec digest
-again.
+reports both. *Marked 2026-10-14 (round-3 finding 3): that attribution was
+true at `ef5d5f03`. `syzygy-jloi` was performed on 2026-10-02 and is
+closed; [Observed at `814fbcc1`] R6 now attributes both stale pins to
+`syzygy-2g0d`, the tree-framing re-pin package routed to the owner as P-95,
+whose acts are unperformed.* This package edits neither. Signing it moves
+the spec digest again.
