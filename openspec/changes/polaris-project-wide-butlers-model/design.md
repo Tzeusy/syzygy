@@ -86,6 +86,16 @@ extraction rules mint items from it.
      and
   4. top-level roster directories that contain `butler.toml`, plus their
      `MANIFESTO.md` when present.
+- **Root independence.** Rules 1 and 2 need the root index read; rules 3
+  and 4 do not, and what they admit without it is qualified (decision 12).
+- **Rule names.** Each source names the rule that admitted it: rule 1 admits
+  the root index itself as `root-index` and each pillar's index file as
+  `pillar-index`; rule 2's files are `pillar-named-file`, rule 3's
+  `baseline-spec-tree` and rule 4's `roster-tree`. A source two rules admit
+  takes one name: the root index stays `root-index` and a pillar's index
+  file `pillar-index`; a baseline spec or roster `butler.toml` takes its
+  tree rule's name whoever names it; any other file a pillar's index
+  names, a roster `MANIFESTO.md` included, is `pillar-named-file`.
 - **No recursion.** Narrative links do not recurse. Active changes are
   inventoried separately for capability drill-down and never enter the
   current project account.
@@ -527,6 +537,54 @@ flowchart TD
     R --> V{"SVG passes<br/>the allow-list?"}
     V -- "yes" --> S["Inline SVG beside its text equivalent,<br/>which names each listed element not drawn"]
     V -- "no" --> F["No SVG emitted; text equivalent<br/>kept; failure disclosed"]
+```
+
+### 12. Read each class of a source on its own
+
+A fact the model holds does not vanish because a different fact beside it
+could not be read.
+
+- **Per class, not per source.** A grammar failure fails the one class whose
+  row it reads, in that one source. The source's other classes keep their
+  items and denominators.
+  - The extraction outcome gains a third kind beside extracted and Unknown:
+    *partially extracted*. It carries items and denominators for the classes
+    that read, and for each class that failed a record drawn from the same
+    closed failure reasons.
+  - A failed class's own denominator, its class total and its category total
+    are Unknown. A class that read never masks a failed sibling.
+  - The two independent extractors are compared per source and class.
+- **Unenumerated headings.** Where a list or table row names several headings
+  at one level, such as the nine V1 catalog headings, any other heading at
+  that level in the sections that hold them is surfaced as an
+  unenumerated heading: counted, anchored and routed, minting nothing.
+  - The row's own items stay modeled; its denominator in that source is
+    Unknown, because the items under the extra heading are not read.
+  - No `catalog-count` declaration is minted for it; that family stays
+    closed at nine.
+- **Root independence.** Each population rule declares whether it needs the
+  root index. A loaded profile's tree population declares
+  `rootIndexRequired` and needs the root index unless it says otherwise.
+  - The root index is read when its body is read. A body that reads but
+    whose grammar fails is still read: that failure is the grammar's own,
+    and qualifies no rule 3 or rule 4 count.
+  - Under an unread root index, a rule that needs it mints nothing and keeps
+    each source it can still name counted as Unknown. Rule 1 then admits only
+    the root index itself.
+  - A rule that does not need it still admits its sources, and every
+    aggregate that counts them says it was derived without a read root
+    index.
+  - Butlers' baseline-spec and roster rules declare that they do not need
+    it, so its manifest admits the same sources as before.
+
+```mermaid
+flowchart TD
+    S["Admitted source,<br/>classes C1..Cn"] --> R["Read each class<br/>on its own"]
+    R --> A{"Every class<br/>reads?"}
+    A -- "yes" --> X["Extracted:<br/>items and denominators"]
+    A -- "some" --> P["Partially extracted:<br/>read classes keep items;<br/>failed classes Unknown with reason"]
+    A -- "none" --> U["Unknown:<br/>every class fails"]
+    P --> T["Class and category totals<br/>that count a failed class<br/>are Unknown"]
 ```
 
 ## Risks / Trade-offs

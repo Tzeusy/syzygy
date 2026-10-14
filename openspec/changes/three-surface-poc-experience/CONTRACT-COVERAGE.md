@@ -50,9 +50,9 @@ Every clause was judged exactly once and lands in exactly one part:
 | RFC5 | 27 | 1 | 15 | 11 |
 | RFC6 | 28 | 10 | 1 | 17 |
 | RFC7 | 41 | 12 | 4 | 25 |
-| RFC8 | 32 | 5 | 0 | 27 |
+| RFC8 | 32 | 8 | 1 | 23 |
 | RFC9 | 60 | 17 | 2 | 41 |
-| **Total** | **324** | **74** | **27** | **223** |
+| **Total** | **324** | **77** | **28** | **219** |
 
 The Part A clause set is exactly the `contracts[]` union in the
 generated `GOVERNING-DEPENDENCIES.md` (verified below).
@@ -97,7 +97,7 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
 | RFC2-20 | Scheduler closure/merge/activity never rendered as reconciled/satisfied | covered — Near-verbatim match to the closure-fallacy prohibition, applied to Trajectory | POC-REQ-043 |
 | RFC2-23 | Observer-failed / source-unreachable → Unknown with named reason, never invisible failure | covered — Two of six degradation states touched; Consent-withdrawn, Excluded-content, Missing-quantity are not (no consent revocation, no partial-content capture, no absent-measure rendering in POC) | POC-REQ-003, POC-REQ-013 |
 | RFC2-23 | Partial/failed observation never presented as complete | covered — "never partial-as-complete" is near-verbatim to the Partial-snapshot rendering obligation | POC-REQ-003 |
-| RFC2-24 | Unknown claim carries reason #10 `source-uncaptured-or-unreachable` | covered — Inferred reuse of the Cap1 closed reason vocabulary via the shared runtime spine; exact reason string not directly quoted in the digest | POC-REQ-003, POC-REQ-013 |
+| RFC2-24 | Unknown claim carries reason #10 `source-uncaptured-or-unreachable` | covered — Inferred reuse of the Cap1 closed reason vocabulary via the shared runtime spine; exact reason string not directly quoted in the digest. Amendment: POC-REQ-014's oracle reads this exact reason, and its RFC2-24 route, on every served item's governing-intent claim | POC-REQ-003, POC-REQ-013, POC-REQ-014 |
 | RFC2-24 | Reason #5 `mapping-coverage-absent` — absence/Unknown regions justified by a coverage record, never a silent gap | covered — Empty-plot-rule pattern; borderline since digest doesn't name the reason explicitly | POC-REQ-051 |
 | RFC4-2 | Output determinism class declared/exhibited (derivation-deterministic) | covered — "structure facts deterministic per revision" is item 5's determinism-class vocabulary | POC-REQ-004 |
 | RFC4-2 | Failure states named + mapped to rendering | covered — item 6's failure-state mapping duty | POC-REQ-003, POC-REQ-013 |
@@ -116,6 +116,7 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
 | RFC4-15 | Work-item identity + status vocabulary faithfully, capture-stamped transmitted as substrate declares (never hardcoded) | covered — direct match | POC-REQ-010 |
 | RFC4-15 | Reads only the live/authoritative substrate, never a derived passive export, as a work-item source | covered — export-mutation oracle is exactly this authority-boundary check | POC-REQ-012 |
 | RFC4-15 | Degraded mode: substrate unreadable renders Unknown-with-reason, distinct from a genuinely empty result | covered — matches "export unavailable → last-good marked stale," applied as Unknown-vs-empty distinction | POC-REQ-013 |
+| RFC4-15 | Authority is work lifecycle state, never intent: the work-item title, the only free text the POC reads, is never read as a work item's governing intent | covered — Amendment row; the fixture-title counterexample observes it | POC-REQ-014 |
 | RFC4-26 | Capability/entity↔code mappings are declared-only, inferred mappings excluded | covered — Orrery's declared-mappings-only design is exactly class (i) with class (ii) excluded, matching the scope's "no inferred mappings or edges" | POC-REQ-050, POC-REQ-052 |
 | RFC4-27 | Unmapped/absence claim requires an executed coverage record with reconciling counts, never silent absence | covered — "unmapped code a visible Unknown region with reconciling counts" is this clause's coverage-record duty applied to Orrery | POC-REQ-051 |
 | RFC5-16 | (a) Observation-capture ingest screening for Butlers repo structure | covered — POC-REQ-002's "never indexed contents" sentinel sweep structurally avoids most of the screening concern for code bodies, but doesn't test the secret-detection-policy mechanism itself | POC-REQ-002 (partial) |
@@ -155,6 +156,20 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
 | RFC8-2 | Beads closure/activity never rendered as done/green/complete | covered — Anti-thesis limb (b) matches directly; limb (a) [no editable store — POC never writes] and limb (c) [fleet-change/cost/authority accounting] aren't touched by POC scope, so only (b) rows here | POC-REQ-043 |
 | RFC8-12 | Kanban state field renders only a declared, closed set of status values — no minted/free-form values | covered — POC's "declared closed status-vocabulary mapping" exercises the closed-vocabulary/no-minting invariant; the specific 13-value partition, chain-state field separation, and `reconciled` carve-out aren't adopted since Trajectory renders no reconciliation chain state | POC-REQ-040 |
 | RFC8-15 | Closure without a merge/verification fact never rendered as a normalized "done"/complete/finished/resolved label | covered — Matches the terminal-state closure-fallacy rule (`closed-unmerged` analog) this clause states directly | POC-REQ-043 |
+| RFC8-22 | The unestablished first link of the chain, work item to warrant, renders Unknown with its RFC2-24 reason, never silently skipped | covered — Amendment row | POC-REQ-014 |
+| RFC8-22 | A join is never reconstructed by similarity, interpolation or inference | covered — Amendment row; the fixture-title counterexample observes the title case | POC-REQ-014 |
+| RFC8-22 | Everything downstream of a broken link renders with provenance degraded accordingly | **Unknown** — Amendment row; the POC renders no link downstream of the work item, and no requirement observes degraded downstream provenance | — |
+| RFC8-23 | A work item with no traceable warrant renders Unknown-provenance: counted over the served set, filterable within Trajectory's rendered selection, never green, its route resolvable by supplying a warrant stated beside the count | covered — Amendment row; the oracle decides the count, the narrowed board over the rendered selection, the Unknown encoding against POC-REQ-060's table, and the resolution statement by literal match | POC-REQ-014 |
+| RFC8-23 | Unknown-provenance items outside Trajectory's rendered selection are filterable | **Unknown** — Amendment row; POC-REQ-042 lets Trajectory render a selection, so items outside it are counted on Trajectory but not rendered, and no requirement observes filtering them | — |
+| RFC8-23 | Unknown-provenance work is never silently pooled into warranted work | **Unknown** — Amendment row; no served item is warranted, so the oracle has no warranted population to keep it apart from | — |
+| RFC8-23 | Unknown-provenance is never an ingest rejection | **Unknown** — Amendment row; POC-REQ-014's denominator is the served set, so an item dropped before serving is invisible to its oracle | — |
+| RFC8-23 | A substrate-side warrant-field edit is an annotation, not a competing warrant | **Unknown** — Amendment row; the POC reads no warrant field | — |
+| RFC8-23 | Unknown-provenance never absorbs orphaned work: where an item is both, the orphaned-work Contradiction governs | **Unknown** — Amendment row; the POC detects no orphaned work, and POC-REQ-014's Scope leaves this limb to the amendment that specifies orphaned-work detection, so no requirement observes the Contradiction governing | — |
+| RFC8-24 | Trajectory renders `source-uncaptured-or-unreachable` on a claim with its route visible | covered — Amendment row; the governing-intent claim on every work item | POC-REQ-014 |
+| RFC8-24 | The other reasons Trajectory renders (`missing-evidence`, `no-currency-bound-declared`, `stale-beyond-currency-bound`, `missing-declaration`), and a retention loss rendered citing the retention event | **Unknown** — Amendment row; no requirement observes them on Trajectory's claims | — |
+| RFC8-24 | Unknown aggregation follows RFC2-24's rendering rule: the governing-intent Unknowns aggregate to one count, disclose their reason count, and expand to their members within Trajectory's rendered selection | covered — Amendment row; one reason, so the served count is that reason's count; the narrowed board is the expansion over the rendered selection | POC-REQ-014 |
+| RFC8-24 | The rest of the aggregation rule: expansion to members outside Trajectory's rendered selection, and the full RFC6-17 disclosure the rendering rule cites (per-label, per-tier, per-freshness counts, the equivalence tuple) for this aggregate | **Unknown** — Amendment row; no requirement observes either for the governing-intent count | — |
+| RFC8-24 | These are claim reasons only: the normalized state's four absence values take no reason, are counted separately, and are never absorbed by an aggregate of Unknowns | **Unknown** — Amendment row; Trajectory renders no RFC8-12 normalized state with absence values, so no requirement observes the separation | — |
 | RFC8-30 | No aggregate, badge, progress bar, or prose sentence renders closed work as done/complete/satisfied absent verification evidence | covered — Same closure-fallacy prohibition restated at module-3 level; disclosed fold — RFC8-2(b), RFC8-15, and RFC8-30 all map to the same one POC requirement from three angles | POC-REQ-043 |
 | RFC8-31 | Every rendered state/cause/absence value recoverable by text alone (no colour/position-only encoding); every traversal keyboard-operable | covered — Non-visual-parity limb matches the design-token/epistemic-encoding and accessibility-floor requirements directly; the RFC 0006 selection/drawer/scenario-context conformance bundle this clause also invokes is not touched (no drawer/selection UX in the POC-REQ list), so that limb is omitted rather than rowed | POC-REQ-060, POC-REQ-061 |
 | RFC9-1 | Map surface is a non-authoritative projection of the shared fact model | covered — POC's Orrery projects the same shared fact model that parity (020) enforces; intended/proposed/historical planes and RFC2/RFC6 vocabulary limbs not touched | POC-REQ-020 |
@@ -180,8 +195,8 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
 | RFC9-48 | A tabular/non-3D equivalent serves as the screen-reader-accessible surface | covered — Every Orrery entity links to its exact-table route; parity keeps that route truthful | POC-REQ-053, POC-REQ-020 |
 
 Part A totals `[Observed, computed by the sweep in "Verifying this
-table"]`: **107 consequence rows over 74 clauses — 92 covered,
-15 Unknown.**
+table"]`: **122 consequence rows over 77 clauses — 98 covered,
+24 Unknown.**
 
 ## Part B1 — applicable clauses no requirement covers
 
@@ -223,11 +238,12 @@ direct requirement additions.
 | RFC7-3 | No other component/citation resolves to a Polaris rendering as authority | **Unknown** — applicable since Polaris is built and Cap1 runtime is reused, but no POC-REQ oracle checks cross-component citation | — |
 | RFC7-12 | Adjudicative source material (e.g. work-item text) rendered as owned text, never paraphrased in normative position | **Unknown** — applicable to any quoted work-item/structure fact; no POC-REQ tests verbatim-vs-paraphrase | — |
 | RFC7-16 | Status renders minimal (label+tier+reason+freshness), no composite maturity number/metric walls | **Unknown** — reuses Cap1 epistemic vocabulary; no POC-REQ tests the no-composite-score prohibition | — |
+| RFC8-21 | Trajectory walks the warrant→plan→materialization→work-item→run→PR→merge→reconciliation chain in both directions, each link with its declared basis, thinness rendered as thinness | **Unknown** — Amendment row, moved from Part B2: POC-REQ-014 renders the chain's first link, work item to warrant, as Unknown (RFC8-22), so the POC now renders part of the chain this clause governs; no requirement walks the chain or renders any other link | — |
 | RFC9-15 | Adding an entity must not perturb existing declared entities' coordinates across re-observations | **Unknown** — Borderline: POC's digest doesn't say whether coordinates are stable across repeated observations of an evolving repo one way or the other | — |
 | RFC9-26 | Channel/encoding meaning is declared once and stays consistent, never repurposed or unlegended | **Unknown** — POC-REQ-060's one-token-set requirement is adjacent, but no requirement tests a fail-closed unregistered-channel behavior or a formal registry | — |
 
-Part B1 totals `[Observed, computed]`: **28 consequence rows over
-27 clauses — all Unknown.**
+Part B1 totals `[Observed, computed]`: **29 consequence rows over
+28 clauses — all Unknown.**
 
 ## Part B2 — clauses believed not applicable (author's reading, non-binding)
 
@@ -414,10 +430,6 @@ are listed so the owner can review or contest each one directly.
 | RFC8-18 | Independent cost measures, no composite "effort" score; POC scope excludes cost accounting |
 | RFC8-19 | Absent-cost-means-Unknown-never-zero aggregation; same cost-machinery exclusion as RFC8-18 |
 | RFC8-20 | Execution-Record-sourced telemetry staging; POC has no Execution Records or telemetry |
-| RFC8-21 | Warrant→plan→materialization→work-item→run→PR→merge→reconciliation change-accounting chain; POC deliberately leaves this relationship Unknown, building no chain |
-| RFC8-22 | Broken-join rendering within that same change-accounting chain; no chain exists in POC to break |
-| RFC8-23 | Unknown-provenance rendering from failed warrant-tracing; POC attempts no warrant tracing for work items |
-| RFC8-24 | The RFC2-24 claim-reasons Trajectory renders within that warrant/accounting context; same chain POC doesn't build |
 | RFC8-25 | Inherited-mutation sub-entry accounting and warrant-coverage test; no diff/mutation attribution in POC |
 | RFC8-26 | Compaction preservation set (what survives compaction); no compaction machinery in POC |
 | RFC8-27 | Expired-detail tier rendering after compaction/retention events; no compaction/retention machinery in POC |
@@ -466,15 +478,15 @@ are listed so the owner can review or contest each one directly.
 | RFC9-51 | Illumination/highlight as non-truth-bearing interaction state; no highlighting feature established in POC scope |
 | RFC9-52 | The RFC-prose-to-OpenSpec authority boundary and coverage-matrix obligation; this non-binding sweep doesn't cite RFC9 as binding authority for the POC spec |
 
-Part B2 total `[Observed, computed]`: **223 clauses.**
+Part B2 total `[Observed, computed]`: **219 clauses.**
 
 ## Verifying this table
 
 - Denominator: re-run the two counting methods named above; both must
-  return 324 for RFC1–9, and 74 + 27 + 223 = 324.
+  return 324 for RFC1–9, and 77 + 28 + 219 = 324.
 - Mapped set: `python3 scripts/build_three_surface_poc_spec_dependencies.py
   --check` — Part A's clause column must equal the generated
-  `contracts[]` union (74 identifiers).
+  `contracts[]` union (77 identifiers).
 - Totals: count rows and dispositions in this file's tables (e.g.
   Python over the `| RFC` rows); the printed totals must match the
   count — they were computed that way, not transcribed.

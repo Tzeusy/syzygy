@@ -1,6 +1,6 @@
 # Capability coverage — polaris-project-wide-butlers-model
 
-Population: 33 positive obligations and refusals declared by `proposal.md`,
+Population: 34 positive obligations and refusals declared by `proposal.md`,
 `design.md` and the specification's Purpose definitions.
 
 | # | Declared obligation or refusal | Disposition |
@@ -38,8 +38,9 @@ Population: 33 positive obligations and refusals declared by `proposal.md`,
 | 31 | Refuse to treat answer-readiness failures as unlawful owner acts or as new PWB-REQ-022 denominator arms | covered — PWB-REQ-021, PWB-REQ-022 |
 | 32 | Admit an attributed, reasoned, expiring governed-plane dismissal of an Unknown claim, decided at each evaluation's as-of instant, replacing the rendering and never the facts | covered — PWB-REQ-007 |
 | 33 | Open each group of Syzygy-authored framing with its model-derived answer, keep Butlers text verbatim beneath it, and draw supported relationships as allow-listed static SVG with a text equivalent, disclosing unsupported ones | covered — PWB-REQ-014 |
+| 34 | Account for each class of a source on its own: a failing class leaves only itself Unknown, a heading the grammar does not enumerate is surfaced rather than skipped, and a count made without a read root index says so | covered — PWB-REQ-002 |
 
-Totals: 27 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 33 total.
+Totals: 28 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 34 total.
 
 This table is author-produced and requires confirmation by a fresh reviewer as
 required by CC-SPEC-11.

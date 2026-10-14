@@ -27,7 +27,7 @@ Reader notes, binding on how this file is read:
   observation points for every oracle below.
 - **Groups.** Requirements are organized into seven literal groups,
   named in each requirement's `Group` line: *Code-structure
-  observation* (001–004), *Work-item observation* (010–013), *Client
+  observation* (001–004), *Work-item observation* (010–014), *Client
   rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
   (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).
   Identifiers are stable and literal: minted once, amended in place,
@@ -430,6 +430,108 @@ warrants:
   contracts: [RFC1-31, RFC2-2, RFC2-23, RFC2-24, RFC4-2, RFC4-4, RFC4-15, RFC9-24, RFC9-27]
   policies: []
   decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-014 — Every work item's governing intent renders as a counted Unknown
+
+Group: Work-item observation. Form: **invariant**.
+
+**Required behavior.** Every served work item SHALL carry a governing-intent
+field (`governedBy`) whose value is `Unknown` with the primary reason
+`source-uncaptured-or-unreachable` and that reason's RFC2-24 resolution
+route. Both channels SHALL serve how many served items carry that Unknown,
+over the served item set. Trajectory SHALL show that count beside how many of
+those items its rendered selection (POC-REQ-042) holds and how many fall
+outside it, SHALL state beside the count the reason, its route and that an
+item is resolved by supplying its warrant, SHALL mark each item it renders,
+and SHALL let a reader narrow the board to the marked items. No served item's
+`governedBy` SHALL name an identifier taken from its title. Every item
+Trajectory renders SHALL render its governing intent with the encoding the
+declared table of POC-REQ-060 gives Unknown, never with an encoding for a
+warranted, green or complete state.
+
+- **Scope.** every served work item in the machine answer, and on Trajectory
+  every item its rendered selection holds; items outside that selection are
+  counted on Trajectory, not rendered, as POC-REQ-042 permits. This
+  requirement admits no work-item column and no other input: the projection
+  stays as POC-REQ-010 to POC-REQ-013 bound it. It defines no edge. An edge
+  to a warrant, and the input that would carry one, need a further
+  amendment. It makes no claim about orphaned work: the POC detects none, so
+  how this Unknown sits beside an orphaned-work Contradiction (RFC8-23: the
+  Contradiction governs) is left to the amendment that specifies orphaned-work
+  detection.
+
+- **Case (sweep + counterexample schema)**: a checker enumerates every served
+  work item from the machine answer — the denominator is the complete served
+  item set (POC-REQ-011) — and reads each item's `governedBy`. It then
+  enumerates every item Trajectory renders — the second denominator is the
+  rendered selection — before and after narrowing the board. Separately, the
+  checker supplies a fixture work-item database (or an injected work-item
+  read) holding one item whose title names a requirement identifier, for
+  example "Implement POC-REQ-010", and observes that item.
+- **Observable**: each served item's `governedBy` value, reason and route;
+  the served Unknown count and item count on both channels; on Trajectory,
+  the count with its inside and outside figures, the text beside the count,
+  each rendered item's governing-intent encoding, and the items the board
+  shows once narrowed.
+- **Oracle**: decided by equality, set membership and literal match.
+  - Every enumerated served item's `governedBy` is `Unknown` with the reason
+    `source-uncaptured-or-unreachable` and the route RFC2-24 gives that
+    reason; the served Unknown count equals the enumerated item count, and
+    the two channels serve the same count.
+  - On Trajectory, the count equals that enumerated count; its inside figure
+    equals the number of rendered items the checker enumerated, and inside
+    plus outside equals the count.
+  - Read as text alone, the region holding the count contains the reason
+    name and its RFC2-24 route literally, and the word "warrant" in a
+    statement that supplying it resolves an item.
+  - Every rendered item's governing-intent encoding equals the encoding the
+    declared table of POC-REQ-060 gives Unknown, and none carries an
+    encoding the table gives any other state.
+  - The narrowed board lists exactly the items the un-narrowed board
+    renders, since every one carries the Unknown.
+  - The fixture item's `governedBy` is that same Unknown, naming no
+    identifier.
+- **Oracle independence**: both denominators are the checker's own
+  enumerations, not served counts; the reason and its route are read from
+  RFC2-24; the expected encoding is POC-REQ-060's checked-in table; the
+  fixture title is the checker's own.
+- **Falsifier**: a served item with no `governedBy`; a `governedBy` holding
+  anything other than that Unknown, including an identifier from its title;
+  any other reason, or a route that is not RFC2-24's route for this reason;
+  a count that does not equal the enumeration or differs between the
+  channels; inside and outside figures that do not reconcile with the
+  rendered selection and the count; a count region missing the reason, the
+  route or the resolution statement; a rendered item without the Unknown
+  encoding, or with an encoding for a warranted, green or complete state; or
+  a narrowed board that drops or adds an item.
+
+#### Scenario: Every item's governing intent is Unknown
+
+- **WHEN** the machine answer serves N work items and Trajectory renders a
+  selection of R of them (POC-REQ-042)
+- **THEN** both channels serve N of N with `governedBy` Unknown for the
+  reason `source-uncaptured-or-unreachable` and its route, and Trajectory
+  shows N with R inside its selection and N − R outside, states the reason,
+  its route and that each item is resolved by supplying its warrant, marks
+  all R items it renders with the Unknown encoding, and once narrowed still
+  lists the same R
+
+#### Scenario: A title names a requirement
+
+- **WHEN** a served item's title reads "Implement POC-REQ-010"
+- **THEN** that item's `governedBy` is the same Unknown, and nothing served
+  for it names POC-REQ-010 as its governing intent
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2, VIS-6]
+  contracts: [RFC2-24, RFC4-15, RFC8-22, RFC8-23, RFC8-24]
+  policies: []
+  decisions: []
   topology: []
   parent_requirements: []
 ```

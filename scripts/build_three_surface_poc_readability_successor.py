@@ -104,6 +104,14 @@ LATER_SIGNOFFS = (
                   "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt"),
      pathlib.Path(".syzygy/governance/contracts/candidates/"
                   "three-surface-poc-block-provenance-amendment/proposed")),
+    # No manifest: its sign-off record carries the applied rows in
+    # manifest-row form and serves as the manifest.
+    (pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-governing-intent-amendment/proposed")),
 )
 
 

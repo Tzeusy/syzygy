@@ -1535,3 +1535,39 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:three-surface-poc-block-provenance-amendment:v1.0 -->
+
+<!-- versioned-signoff:pwb-class-granular-extraction-amendment:v1.0 -->
+## Versioned sign-off — pwb-class-granular-extraction-amendment — v1.0 — recorded 2026-10-14
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | behavior amendment |
+| Review outcome | `docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/pwb-class-granular-extraction-amendment/ROUND-4-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `pwb-class-granular-extraction-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:pwb-class-granular-extraction-amendment:v1.0 -->
+
+<!-- versioned-signoff:three-surface-poc-governing-intent-amendment:v1.0 -->
+## Versioned sign-off — three-surface-poc-governing-intent-amendment — v1.0 — recorded 2026-10-14
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification amendment |
+| Review outcome | `docs/reviews/R-N10-POC-GOVERNING-INTENT-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/ROUND-3-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `three-surface-poc-governing-intent-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, extended by `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:three-surface-poc-governing-intent-amendment:v1.0 -->
