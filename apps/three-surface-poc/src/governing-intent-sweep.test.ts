@@ -195,7 +195,6 @@ describe('POC-REQ-014: every work item\'s governing intent renders as a counted 
     for (const item of items(answer)) {
       expect(item.governedBy).toEqual({
         label: 'Unknown',
-        reason: 'No governing intent was captured for this work item: the observation reads no link from an item to the intent that warrants it, and none is taken from its title.',
         closedReason: 'source-uncaptured-or-unreachable',
         resolutionRoutes: [{ reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer/source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' }],
       });
