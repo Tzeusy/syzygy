@@ -19,6 +19,18 @@
 > **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
 > round 4.** Section 1's proposed bytes did not change in that repair
 > either.
+> *(Marked 2026-10-15, round 4: "unconfirmed pending round 4" is no longer
+> true. Round 4 returned `REVISE`
+> (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-4-RAW.md` line 4): one revise-level
+> finding (the one-position rule is applied to the narrow and wide readings
+> but not to the broadest) and four notes, all open in
+> `ROUND-4-DISPOSITIONS.md`. "Not yet recorded under `decisions/`" is no
+> longer true either: the cycle-3 direction is recorded in
+> `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+> After round 4 the owner answered "Park until RFC2 decided": the packet is
+> parked, an RFC2-18/19 contract clarification fixing which reading binds is
+> commissioned, and D7 is redrafted against it. The bytes stay
+> unconfirmed.)*
 
 **Artifact(s):** `.syzygy/governance/doctrine/vision.md` (sha256
 `93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d`) and
@@ -285,3 +297,14 @@ once on 2026-10-14, on the owner's cycle-3 direction
 (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)");
 **unconfirmed pending round 4**, whose brief is `REVIEW-BRIEF.md`
 §"Round 4".
+*(Marked 2026-10-15, round 4: "unconfirmed pending round 4" is no longer
+true. Round 4 returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D7-4-RAW.md` line 4): one revise-level
+finding (the one-position rule is applied to the narrow and wide readings
+but not to the broadest) and four notes, all open in
+`ROUND-4-DISPOSITIONS.md`. "Not yet recorded under `decisions/`" is no
+longer true either: the cycle-3 direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+After round 4 the owner answered "Park until RFC2 decided": the packet is
+parked, an RFC2-18/19 contract clarification fixing which reading binds is
+commissioned, and D7 is redrafted against it. The bytes stay unconfirmed.)*

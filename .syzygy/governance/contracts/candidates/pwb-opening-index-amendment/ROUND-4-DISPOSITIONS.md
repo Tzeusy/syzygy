@@ -1,0 +1,113 @@
+> # Record beside the package — not authority, binds nothing
+>
+> Dispositions of the fourth fresh-context review of the PWB opening-index
+> amendment package (PWB-REQ-010, P-98, slice A). This record is not a
+> package artifact: the manifest does not hash it and no builder reads it.
+> It is the sibling record the owner's 2026-09-26 ruling provides for a
+> notes-only round
+> (`../../../decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1),
+> named by the brief (`REVIEW-BRIEF.md` §"Round 4"). It offers nothing and
+> performs no act (VIS-4).
+
+# Round 4 dispositions — PWB opening-index amendment
+
+Reviewed record: docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-4-RAW.md
+
+Manifest SHA-256: fe0791ef8699083ad88871b2ed0a2a183fd5a8f469e99ae1306f45f9ed441867
+
+Revise-severity findings: 0
+
+- **Reviewed commit (raw line 2):**
+  `83b29c96775d9c2215292fa41e1599080f0b802c`.
+- **Verdict (raw line 4):** `CONFIRM WITH EXCEPTIONS`. Seven findings,
+  every one a note; no revise and no blocking finding (raw line 164:
+  "Every finding below is a note."). The raw has no closing count; the
+  seven were counted by script from its `**Finding N — …** (note)`
+  headings. Finding 7 applies to this package and to the accessible-name
+  package (P-99).
+- **Why the round ran.** The owner's cycle-3 direction for P-98, "One more
+  cycle each" (with P-85), recorded in
+  `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+  The brief's §"Round 4" set the stopping rule before the round.
+- **What clears.** Under the 2026-09-26 ruling, a round with no
+  revise-severity finding clears the exact bytes it read: the manifest
+  whose file digest stands above, at the reviewed commit, the proposed
+  bytes it hashes, and the package prose beside it. [Observed 2026-10-15
+  on `governance/cycle-3-records` over `origin/main` `60995b23`, before
+  the P-99 sign-off in the same change] the manifest file hashes to that
+  digest, and the builder's `--check` passes.
+- **Nothing in the package is edited.** Every note below is dispositioned
+  here, not in the reviewed bytes. Each is **open**, with the repair the
+  raw suggests.
+- **What the clearance is not.** It is not a sign-off. The owner answered
+  Q1–Q12 and "Carry if review clears" after this round (the cycle-3
+  record): Q1 "Sign v1.0" carries to the version regenerated over the
+  signed P-99 only if that version's confirmation review is notes-only
+  and `proposed/spec.md.patch` is byte-identical. This package is **not
+  signed** here: the P-99 sign-off in the same change moves PWB `spec.md`,
+  so this package must be regenerated over it first, by another lane.
+
+## Corrections carried here instead of in the package
+
+These sentences in the cleared bytes are no longer true as of 2026-10-15.
+This record, not an edit, carries the correction:
+
+- `OWNER-DECISION-PACKET.md` lines 46–47 and `SEMANTIC-DELTA.md` line
+  345, "round-3 findings repaired once on 2026-10-14, unconfirmed pending
+  round 4"; `ROUND-3-DISPOSITIONS.md` lines 92–93, the same words, and
+  line 50, "§"Round 4" and not yet run". Round 4 has run and clears the
+  bytes it read.
+- The packet's and delta's account of the owner's "One more cycle each"
+  direction as given in the lead session: it is now recorded under
+  `decisions/` in the cycle-3 record.
+- The three prose sentences finding 3 names (`OWNER-DECISION-PACKET.md`
+  lines 69–70, 105 and 251; `SEMANTIC-DELTA.md` line 184): they stand as
+  the raw describes, open below.
+- `ROUND-3-DISPOSITIONS.md` §"Composition at the integration branch": the
+  round-3-era composition (finding 7).
+
+`REVIEW-BRIEF.md` is not edited. Register row P-98 and `docs/README.md`'s
+opening-index and accessible-name row sit outside the package and are
+updated directly.
+
+## Dispositions
+
+### 1 — The first scenario's AND is a disjunction weaker than the rule, and two new obligations have only generic limbs (note)
+
+**Open.** Raw line 168. Suggested repair: one more Case evaluation, for a
+target whose first element lies inside a `p` or list, and a scenario that
+pins the single place; Oracle limbs for the load-time viewport rule and
+the stopping line's visible text.
+
+### 2 — "Its numbers and their unit, and nothing else" leaves separators undecided, and on the strict reading the line cannot say which number is which (note)
+
+**Open.** Raw line 200. Suggested repair: say what may join the two
+numbers, or put the choice to the owner beside Q9.
+
+### 3 — Three prose sentences go beyond the bytes after the cycle-3 repair (note)
+
+**Open.** Raw line 223. "Before that target's material", "always between
+blocks" and "two scenarios" overclaim; the ledger's in-place edit does not
+quote the old words. Carried in the section above; the packet is not
+edited.
+
+### 4 — Six scenario clauses added or relied on in cycle 3 are unpinned (note)
+
+**Open.** Raw line 264. Suggested repair: pin the WHEN and AND clauses the
+raw lists.
+
+### 5 — One sub-predicate pair of the positional check has no fixture (note)
+
+**Open.** Raw line 285. Suggested repair: two fixtures, a replaced line
+that occurs twice and one that is the block's first line; return a named
+finding instead of a `ValueError`.
+
+### 6 — Rows must route into a closed disclosure where a target lies inside one; the repository's own guardrail warns against that (note)
+
+**Open.** Raw line 306. A presentation consequence for the implementation
+or a later owner question.
+
+### 7 — Composition and sibling state at this commit (applies to both packages) (note)
+
+**Open.** Raw line 323. After the P-99 sign-off in the same change this
+package's builder is expected to fail until it is regenerated over P-99.

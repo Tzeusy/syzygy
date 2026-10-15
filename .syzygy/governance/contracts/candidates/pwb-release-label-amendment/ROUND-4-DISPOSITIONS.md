@@ -50,6 +50,17 @@ Reviewed record: docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-4-RAW.md
     Every round-4 finding, notes included, was repaired once; see the
     section at the end. Round-4 findings repaired once on 2026-10-14,
     unconfirmed pending round 5. This record dispatches nothing.)*
+  - *(Marked 2026-10-15, round 5: "unconfirmed pending round 5" is no longer
+    true. Round 5 returned `REVISE`
+    (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-5-RAW.md` line 4): one revise
+    finding (the citation predicate leaves the cite's visible text free, so a
+    sentence naming the revision can be cast as a citation) and seven notes,
+    all open in `ROUND-5-DISPOSITIONS.md`. The cycle-3 direction is recorded
+    in
+    `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+    After round 5 the owner answered "One more cycle": one more repair and a
+    round 6, made by a separate change. These bytes are not cleared and are
+    not offered for sign-off.)*
 - **What the round confirmed.** Round-3 finding 2 and notes 3–7 are
   repaired; round-3 finding 1 is partly repaired (raw lines 59–67). Every
   check passes in a clone, the sibling builders pass, and criteria 3, 4, 5
@@ -98,6 +109,16 @@ to round 4's, so the contract-coverage totals are unchanged.
 **Round-4 findings repaired once on 2026-10-14, unconfirmed pending round
 5.** The dispositions above keep their **Open** marks: they describe the
 round-4 bytes. None of these repairs is accepted until round 5 reads it.
+*(Marked 2026-10-15, round 5: "unconfirmed pending round 5" is no longer
+true. Round 5 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-5-RAW.md` line 4): one revise
+finding (the citation predicate leaves the cite's visible text free, so a
+sentence naming the revision can be cast as a citation) and seven notes, all
+open in `ROUND-5-DISPOSITIONS.md`. The cycle-3 direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+After round 5 the owner answered "One more cycle": one more repair and a
+round 6, made by a separate change. These bytes are not cleared and are not
+offered for sign-off.)*
 
 Line numbers below are in `proposed/spec.md.patch` (`spec`) and
 `scripts/build_pwb_release_label_amendment.py` (`builder`) at this commit.

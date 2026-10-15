@@ -32,6 +32,10 @@
   briefed; a `REVISE` in round 2 goes back to the owner with no further
   repair. The repair lane dispatched no review and signed or recorded
   nothing.
+  *(Marked 2026-10-15, records lane: "not recorded under `decisions/`" is
+  no longer true. The direction, and "Park, redraft narrower" before it,
+  are recorded in
+  `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.)*
 
 ## Repairs, 2026-10-15
 
@@ -66,3 +70,15 @@ rendering). No other repair needed an owner choice. No ruling is recorded.
 RFC1-26 closure row and the signed POC-REQ-060 scenario are byte-identical,
 as the builder checks. The census table's membership and counts, the
 deferred scope and the five residuals are unchanged.
+
+## Recorded beside the raw, 2026-10-15 (cycle-3 records lane)
+
+Reviewed record: docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-1-RAW.md
+
+[Observed 2026-10-15] The raw is now retained verbatim under
+`docs/reviews/` (compared byte for byte with the dispatching session's
+copy). Its head digest re-derives from the manifest file's bytes at the
+reviewed commit `6d3923f3`. The finding count was re-derived by script
+from its `**Finding N — …** (severity)` headings: findings 1 and 2
+`(revise)`, 3–9 `(note)`, matching raw line 297. This section adds no
+disposition; the table above maps every finding.

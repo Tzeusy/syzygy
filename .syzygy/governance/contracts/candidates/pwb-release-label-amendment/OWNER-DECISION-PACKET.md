@@ -62,6 +62,16 @@ returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. A
 Question 5's table now says that no requirement governs the status line.
 One repair has an alternative that is yours to choose, so it is added as
 Question 6.
+*(Marked 2026-10-15, round 5: "unconfirmed pending round 5" is no longer
+true. Round 5 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-5-RAW.md` line 4): one revise
+finding (the citation predicate leaves the cite's visible text free, so a
+sentence naming the revision can be cast as a citation) and seven notes, all
+open in `ROUND-5-DISPOSITIONS.md`. The cycle-3 direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+After round 5 the owner answered "One more cycle": one more repair and a
+round 6, made by a separate change. These bytes are not cleared and are not
+offered for sign-off.)*
 
 ## What you would be signing
 

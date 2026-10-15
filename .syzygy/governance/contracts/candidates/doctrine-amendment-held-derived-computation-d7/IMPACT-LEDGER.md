@@ -23,6 +23,18 @@
 > corrected from a 2026-10-14 application probe at `7460aec8`.)*
 > **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
 > round 4.**
+> *(Marked 2026-10-15, round 4: "unconfirmed pending round 4" is no longer
+> true. Round 4 returned `REVISE`
+> (`docs/reviews/R-DOCTRINE-AMENDMENT-D7-4-RAW.md` line 4): one revise-level
+> finding (the one-position rule is applied to the narrow and wide readings
+> but not to the broadest) and four notes, all open in
+> `ROUND-4-DISPOSITIONS.md`. "Not yet recorded under `decisions/`" is no
+> longer true either: the cycle-3 direction is recorded in
+> `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+> After round 4 the owner answered "Park until RFC2 decided": the packet is
+> parked, an RFC2-18/19 contract clarification fixing which reading binds is
+> commissioned, and D7 is redrafted against it. The bytes stay
+> unconfirmed.)*
 
 ## 1. The trigger sweep
 
