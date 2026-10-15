@@ -113,7 +113,7 @@ export function projectOrrery(
 
   return {
     kind: 'observed',
-    revision: structure.revision,
+    revision: structure.provenance.revision,
     districts,
     mappedRegions,
     mappedFileCount,

@@ -199,12 +199,12 @@ describe('shared model observation wiring', () => {
 
     expect(model.codeStructure.kind).toBe('observed');
     if (model.codeStructure.kind !== 'observed') throw new Error('unreachable');
-    expect(model.codeStructure.revision).toBe(revision);
+    expect(model.codeStructure.provenance.revision).toBe(revision);
     expect(model.codeStructure.files.some((file) => file.path === 'src/butlers/identity.py')).toBe(true);
 
     expect(model.workItems.kind).toBe('observed');
     if (model.workItems.kind !== 'observed') throw new Error('unreachable');
-    expect(model.workItems.doltRevision).toBe('dolt-rev-fixture');
+    expect(model.workItems.provenance.revision).toBe('dolt-rev-fixture');
     expect(model.workItems.items).toHaveLength(1);
 
     expect(model.orrery.kind).toBe('observed');

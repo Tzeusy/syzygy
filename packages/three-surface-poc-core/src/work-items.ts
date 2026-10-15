@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
+import type { PocProvenance } from './model.js';
+
 export const WORK_ITEM_STATUSES = [
   'open',
   'in_progress',
@@ -21,13 +23,19 @@ export interface WorkItemFact {
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly closedAt: string | null;
-  readonly doltRevision: string;
 }
 
+/**
+ * POC-REQ-010 "One statement of provenance": the observation names its Dolt
+ * revision once, in the shared `PocProvenance` shape the entities and
+ * relationships carry, and no work-item fact restates it. `capturedAt` is the
+ * second half of the observation's identity, not a second statement of
+ * provenance; an item's created, updated and closed times are database facts.
+ */
 export interface WorkItemsObserved {
   readonly kind: 'observed';
   readonly beadPrefix: string;
-  readonly doltRevision: string;
+  readonly provenance: PocProvenance;
   readonly capturedAt: string;
   readonly items: readonly WorkItemFact[];
 }
@@ -134,7 +142,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
     return {
       kind: 'observed',
       beadPrefix: input.beadPrefix,
-      doltRevision: revisionValue,
+      provenance: doltProvenance(input.beadPrefix, revisionValue),
       capturedAt: input.capturedAt,
       items: [],
     };
@@ -171,15 +179,18 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
       createdAt: raw.created_at,
       updatedAt: raw.updated_at,
       closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,
-      doltRevision,
     });
   }
 
   return {
     kind: 'observed',
     beadPrefix: input.beadPrefix,
-    doltRevision: doltRevision as string,
+    provenance: doltProvenance(input.beadPrefix, doltRevision as string),
     capturedAt: input.capturedAt,
     items,
   };
+}
+
+function doltProvenance(beadPrefix: string, revision: string): PocProvenance {
+  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };
 }

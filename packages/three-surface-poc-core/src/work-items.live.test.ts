@@ -26,7 +26,7 @@ describeLive('live Butlers observation (SYZYGY_POC_BUTLERS_REPO gated)', () => {
     });
     expect(structure.kind).toBe('observed');
     if (structure.kind !== 'observed') throw new Error('unreachable');
-    expect(structure.revision).toBe(expectedGitRevision);
+    expect(structure.provenance.revision).toBe(expectedGitRevision);
     expect(structure.files.length).toBeGreaterThan(0);
 
     const workItems = observeWorkItems({
@@ -43,7 +43,7 @@ describeLive('live Butlers observation (SYZYGY_POC_BUTLERS_REPO gated)', () => {
       { encoding: 'utf8' },
     );
     const expected = (JSON.parse(expectedRevision) as readonly { revision: string }[])[0];
-    expect(workItems.doltRevision).toBe(expected?.revision);
+    expect(workItems.provenance.revision).toBe(expected?.revision);
     expect(workItems.items.every((item) => item.id.startsWith('bu-'))).toBe(true);
 
     const sampled = workItems.items[0];

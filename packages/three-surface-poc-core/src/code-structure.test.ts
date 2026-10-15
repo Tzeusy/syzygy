@@ -51,9 +51,10 @@ describe('code-structure observer', () => {
     const result = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-08-30T00:00:00Z' });
     expect(result.kind).toBe('observed');
     if (result.kind !== 'observed') throw new Error('unreachable');
-    expect(result.revision).toBe(revision);
+    expect(result.provenance).toEqual({ kind: 'git-revision', source: 'Observed repository', revision });
     expect(result.files.length).toBe(4);
-    expect(result.files.every((file) => file.revision === revision)).toBe(true);
+    // Every entry takes the revision from the one record; none restates it.
+    expect(result.files.every((file) => !Object.values(file).includes(revision))).toBe(true);
 
     const sampled = result.files.find((file) => file.path === 'src/app.ts');
     expect(sampled).toBeDefined();
@@ -101,7 +102,7 @@ describe('code-structure observer', () => {
     expect(second.kind).toBe('observed');
     if (first.kind !== 'observed' || second.kind !== 'observed') throw new Error('unreachable');
     expect(second.files).toEqual(first.files);
-    expect(second.revision).toBe(first.revision);
+    expect(second.provenance).toEqual(first.provenance);
     expect(second.capturedAt).not.toBe(first.capturedAt);
   });
 });

@@ -45,7 +45,7 @@ function harness(overrides: Partial<ReobserveSessionOptions> = {}) {
       return {
         evaluation: { snapshot: `snap:${c.repositoryRevision}`, asOf: c.evidence.observationInstant, evidence: c.evidence },
         project: { revision: c.repositoryRevision },
-        workItems: { kind: 'observed', doltRevision: `dolt:${builds.length}` },
+        workItems: { kind: 'observed', provenance: { kind: 'dolt-revision', source: 'Beads Dolt database (bu)', revision: `dolt:${builds.length}` } },
       } as unknown as PocModel;
     },
     observe: () => { observeCalls += 1; return new Promise((resolve) => { release = resolve; }); },

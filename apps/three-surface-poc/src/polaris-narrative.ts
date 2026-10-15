@@ -85,6 +85,7 @@ export function claimRoleAttrs(role: NarrativeClaimRole): string {
 const PROVENANCE_CLASS: Readonly<Record<PocProvenance['kind'], AnchorTargetClass>> = {
   'repository-file': 'evidence',
   'git-revision': 'evidence',
+  'dolt-revision': 'work',
   'manual-mapping': 'evidence',
   'materialization-record': 'work',
   'test-artifact-record': 'evidence',

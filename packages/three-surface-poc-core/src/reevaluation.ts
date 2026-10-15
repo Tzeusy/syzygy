@@ -32,7 +32,7 @@ export function evaluationClocks(model: PocModel, workingTreeDigest: string): Ev
   return {
     butlersHead: model.project.revision,
     workingTreeDigest,
-    doltRevision: model.workItems.kind === 'observed' ? model.workItems.doltRevision : null,
+    doltRevision: model.workItems.kind === 'observed' ? model.workItems.provenance.revision : null,
   };
 }
 

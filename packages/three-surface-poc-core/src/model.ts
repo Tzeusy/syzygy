@@ -80,6 +80,7 @@ export interface PocProvenance {
   readonly kind:
     | 'repository-file'
     | 'git-revision'
+    | 'dolt-revision'
     | 'manual-mapping'
     | 'materialization-record'
     | 'test-artifact-record'
@@ -642,7 +643,7 @@ function resolveMaterializationEpistemic(
       {
         kind: 'materialization-record',
         source: `Beads (${workItems.beadPrefix}) — ${found.id}`,
-        revision: workItems.doltRevision,
+        revision: workItems.provenance.revision,
       },
     ],
   };
@@ -999,6 +1000,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     repoRoot,
     revision: input.repositoryRevision,
     capturedAt: input.evaluation.asOf,
+    provenanceSource: gitProvenance.source,
     ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
   });
   const workItems =

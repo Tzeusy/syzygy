@@ -6,13 +6,13 @@ import { projectOrrery } from './orrery-projection.js';
 function structureFixture(): CodeStructureObserved {
   return {
     kind: 'observed',
-    revision: 'rev-1',
+    provenance: { kind: 'git-revision', source: 'Observed repository', revision: 'rev-1' },
     capturedAt: '2026-08-30T00:00:00Z',
     files: [
-      { path: 'apps/a.ts', sizeBytes: 10, digest: 'git-blob-sha1:1', language: 'typescript', revision: 'rev-1' },
-      { path: 'apps/b.py', sizeBytes: 20, digest: 'git-blob-sha1:2', language: 'python', revision: 'rev-1' },
-      { path: 'src/butlers/identity.py', sizeBytes: 30, digest: 'git-blob-sha1:3', language: 'python', revision: 'rev-1' },
-      { path: 'README.md', sizeBytes: 5, digest: 'git-blob-sha1:4', language: 'markdown', revision: 'rev-1' },
+      { path: 'apps/a.ts', sizeBytes: 10, digest: 'git-blob-sha1:1', language: 'typescript' },
+      { path: 'apps/b.py', sizeBytes: 20, digest: 'git-blob-sha1:2', language: 'python' },
+      { path: 'src/butlers/identity.py', sizeBytes: 30, digest: 'git-blob-sha1:3', language: 'python' },
+      { path: 'README.md', sizeBytes: 5, digest: 'git-blob-sha1:4', language: 'markdown' },
     ],
   };
 }

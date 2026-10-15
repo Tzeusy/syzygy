@@ -290,13 +290,13 @@ function codeStructureSection(model: PocModel): string {
   const cs = model.codeStructure;
   const block = anchoredBlock('block:region:code-structure', [{
     claimId: 'region:code-structure',
-    anchors: [{ targetClass: 'evidence', targetId: `git-tree:${cs.revision}`, revision: cs.revision, locator: 'git-ls-tree' }],
+    anchors: [{ targetClass: 'evidence', targetId: `git-tree:${cs.provenance.revision}`, revision: cs.provenance.revision, locator: 'git-ls-tree' }],
     captured: { label: 'Observed', tier: 'report-fact', reason: 'none' },
   }]);
   return `<section class="claim-section" data-polaris-section="region:code-structure">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.revision.slice(0, 12))}, covering ${crossSurfaceLink({ model, className: 'code-count', sourceId: 'region:code-structure', target: 'orrery', targetId: null, mountPrefix: activeMountPrefix, label: `${cs.files.length} files` })}.</span>
-    <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>git-ls-tree</cite>@<code data-parity-field="provenance-revision">${escapeHtml(cs.revision.slice(0, 12))}</code>)</span></p>
+    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.provenance.revision.slice(0, 12))}, covering ${crossSurfaceLink({ model, className: 'code-count', sourceId: 'region:code-structure', target: 'orrery', targetId: null, mountPrefix: activeMountPrefix, label: `${cs.files.length} files` })}.</span>
+    <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>git-ls-tree</cite>@<code data-parity-field="provenance-revision">${escapeHtml(cs.provenance.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
 
@@ -311,13 +311,13 @@ function workItemsSection(model: PocModel): string {
   const wi = model.workItems;
   const block = anchoredBlock('block:region:work-items', [{
     claimId: 'region:work-items',
-    anchors: [{ targetClass: 'work', targetId: `beads-dolt:${wi.doltRevision}`, revision: wi.doltRevision, locator: 'beads-dolt' }],
+    anchors: [{ targetClass: 'work', targetId: `beads-dolt:${wi.provenance.revision}`, revision: wi.provenance.revision, locator: 'beads-dolt' }],
     captured: { label: 'Observed', tier: 'report-fact', reason: 'none' },
   }]);
   return `<section class="claim-section" data-polaris-section="region:work-items">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:work-items">${crossSurfaceLink({ model, className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })} under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.doltRevision.slice(0, 12))}.</span>
-    <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>beads-dolt</cite>@<code data-parity-field="provenance-revision">${escapeHtml(wi.doltRevision.slice(0, 12))}</code>)</span></p>
+    <p${block.attrs}><span data-claim-provenance="region:work-items">${crossSurfaceLink({ model, className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })} under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.provenance.revision.slice(0, 12))}.</span>
+    <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>beads-dolt</cite>@<code data-parity-field="provenance-revision">${escapeHtml(wi.provenance.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
 

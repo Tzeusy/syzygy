@@ -116,10 +116,10 @@ function expectedAnchors(model: PocModel, claimId: string, blockId: string): Exp
     return provenance.map((item) => ({ cls: PROVENANCE_CLASS[item.kind] as string, target: `${item.kind}:${item.digest ?? item.revision}`, revision: item.revision }));
   }
   if (claimId === 'region:code-structure' && model.codeStructure.kind === 'observed') {
-    return [{ cls: 'evidence', target: `git-tree:${model.codeStructure.revision}`, revision: model.codeStructure.revision }];
+    return [{ cls: 'evidence', target: `git-tree:${model.codeStructure.provenance.revision}`, revision: model.codeStructure.provenance.revision }];
   }
   if (claimId === 'region:work-items' && model.workItems.kind === 'observed') {
-    return [{ cls: 'work', target: `beads-dolt:${model.workItems.doltRevision}`, revision: model.workItems.doltRevision }];
+    return [{ cls: 'work', target: `beads-dolt:${model.workItems.provenance.revision}`, revision: model.workItems.provenance.revision }];
   }
   // A proposal is never an anchored block (PWB-REQ-015: non-anchorable); the
   // capability-detail test asserts its absence from the anchor population.
