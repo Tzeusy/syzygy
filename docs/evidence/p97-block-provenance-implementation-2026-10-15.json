@@ -19,7 +19,7 @@
     "measuredOn": "the shared synthetic fixture model (apps/three-surface-poc/src/test-model-fixture.ts buildFixtureModel defaults: 5 work items, 8 files), serialized as GET /api/poc serializes it (JSON.stringify(model)); no Butlers read",
     "note": "The body names its temporary fixture repository path, so its sha256 differs per run; the byte count is stable for a fixed TMPDIR length. Both runs used TMPDIR=/home/tze/.cache/syzygy-impl-lane/tmp.",
     "before": {
-      "commit": "72a16236",
+      "commit": "72a16236f43744082d353be06877919dcbec4575",
       "bytes": 28218,
       "sha256": "c756f99b4a105c3a38c40149f93b1cb32057fa00458fd080c3369b908b2faca9",
       "workItemsBytes": 1327,
@@ -32,17 +32,23 @@
       "workItemsBytes": 1202,
       "codeStructureBytes": 1434
     },
-    "deltaBytes": -490
+    "deltaBytes": -490,
+    "measuredWith": "node measure-body.mjs <checkout> after npm ci and npm run build:poc at each commit: buildFixtureModel(cleanups) with defaults, Buffer.byteLength(JSON.stringify(model))"
+  },
+  "readings": {
+    "sharedShape": "The provenance record's 'shape' is read as its field structure: the record carries exactly the fields every entity/relationship provenance element carries (kind, source, revision) and none outside the union of their fields (which adds the optional digest). 'dolt-revision' is a new value of the existing kind field, not a new field; no entity carries it (R-IMPL-P97-BLOCK-PROVENANCE-1 note 2).",
+    "outOfObservation": "orrery.revision and trajectory.doltRevision are separate projection blocks of the model, not the code-structure or work-item observation, and keep their header revision (review note 8).",
+    "measurementScript": "scripts/measure_machine_channel_provenance.py measured the 2026-10-03 captures, which predate this change; it reads the removed fields and applies to those captures only (review note 3)."
   },
   "rule6Mutants": {
-    "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
+    "ranAt": "each mutant's own ranAt (M01-M15 at the implementation commit, M16 at the evidence commit; the mutated source is byte-identical between them)",
     "tests": [
       "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
       "packages/three-surface-poc-core/src/code-structure.test.ts",
       "packages/three-surface-poc-core/src/work-items.test.ts"
     ],
-    "population": 15,
-    "killed": 15,
+    "population": 16,
+    "killed": 16,
     "mutants": [
       {
         "id": "P97-M01",
@@ -50,6 +56,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n",
         "new": "      source: input.provenanceSource ?? 'Observed repository',\n      revision: `${input.revision.slice(0, -1)}0`,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 3,
@@ -65,6 +72,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      sizeBytes: Number(sizeText),\n",
         "new": "      sizeBytes: Number(sizeText) + 1,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
@@ -79,6 +87,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      digest: `git-blob-sha1:${match[3]}`,\n",
         "new": "      digest: `git-blob-sha1:${(match[3] ?? '').slice(1)}0`,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
@@ -93,6 +102,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "    kind: 'observed',\n    provenance: {\n      kind: 'git-revision',\n      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n    },\n",
         "new": "    kind: 'observed',\n    ...({} as { provenance: PocProvenance }),\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 19,
@@ -124,6 +134,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      kind: 'git-revision',\n      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n    },\n",
         "new": "      kind: 'git-revision',\n      revision: input.revision,\n    } as PocProvenance,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
@@ -138,6 +149,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "    capturedAt: input.capturedAt,\n    files,\n",
         "new": "    capturedAt: input.capturedAt,\n    ...({ revision: input.revision } as object),\n    files,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 1,
@@ -151,6 +163,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      language: classifyLanguage(path),\n    });\n",
         "new": "      language: classifyLanguage(path),\n      ...({ revision: input.revision } as object),\n    });\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 3,
@@ -166,6 +179,7 @@
         "file": "packages/three-surface-poc-core/src/code-structure.ts",
         "old": "      language: classifyLanguage(path),\n    });\n",
         "new": "      language: classifyLanguage(path),\n      ...({ observedAt: input.capturedAt } as object),\n    });\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
@@ -180,6 +194,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };\n",
         "new": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision: `${revision}-x` };\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 5,
@@ -197,6 +212,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n",
         "new": "    ...({} as { provenance: PocProvenance }),\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 19,
@@ -228,6 +244,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };\n",
         "new": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision, ...({ capturedAt: beadPrefix } as object) } as PocProvenance;\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 3,
@@ -243,6 +260,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n",
         "new": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n    ...({ doltRevision } as object),\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
@@ -257,6 +275,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n    });\n",
         "new": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n      ...({ doltRevision } as object),\n    });\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 5,
@@ -274,6 +293,7 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n    });\n",
         "new": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n      ...({ observedAt: input.capturedAt } as object),\n    });\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 4,
@@ -290,12 +310,31 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "      updatedAt: raw.updated_at,\n",
         "new": "      updatedAt: raw.created_at,\n",
+        "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
         "outcome": "killed",
         "testsRun": 30,
         "testsFailed": 2,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison"
+        ]
+      },
+      {
+        "id": "P97-M16",
+        "limb": "POC-REQ-010: a served work-item observation with no Dolt revision (the record present, its revision absent)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };\n",
+        "new": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, ...({} as { revision: string }) };\n",
+        "ranAt": "ffb3fc5936ff9a5d516ace175f9c8ee2e075d349",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 5,
+        "killedBy": [
+          "work-items.test.ts > work-items observer reads items via bd sql and stamps them with the Dolt revision read (POC-REQ-010)",
+          "work-items.test.ts > work-items observer distinguishes an observed-empty result from Unknown",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision"
         ]
       }
     ]
