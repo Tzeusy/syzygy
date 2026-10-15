@@ -388,6 +388,11 @@ CAMPAIGNS = (
         "Local agent CLI subprocess runner",
         r"R-DOSSIER-CLI-SUBPROCESS-.*\.md",
     ),
+    campaign(
+        "dov24-loaded-profile",
+        "P-74 loaded-profile registry gate",
+        r"R-DOV24-.*\.md",
+    ),
 )
 
 
