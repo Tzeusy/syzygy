@@ -814,7 +814,8 @@ def reconciliation_selftest():
     if (ROOT / RAW).exists():
         match = re.search(r'^Reviewed commit: ([0-9a-f]{40})$', source.current(RAW).decode(), re.M)
         require(match is not None, 'selftest C1 identity')
-        for path in HISTORY_PATHS:
+        # vision.md too: today's may be a later one a reconciliation review confirmed.
+        for path in (*HISTORY_PATHS, VISION):
             before[path] = source.blob(match.group(1), path)
     history_paths = [EVIDENCE + 'HISTORY-REVIEW-' + str(n) + '-RAW.md' for n in range(1, 11)]
     history_path = history_paths[-1]
@@ -1150,6 +1151,9 @@ def reconciliation_selftest():
     mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40,
            new=b'Reviewed commit: bad-commit')
     mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40 + b'\n', new=b'')
+    # Forty characters that are not lowercase hex (history review 18, N1).
+    mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40,
+           new=b'Reviewed commit: ' + b'A' * 40)
     mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40 + b'\n',
            new=b'Reviewed commit: ' + b'a' * 40 + b'\nReviewed commit: ' + b'a' * 40 + b'\n')
     mutate(latest, 'review retired by changed input: ' + VISION, old=digest(amended).encode(), new=b'1' * 64)
@@ -1158,6 +1162,9 @@ def reconciliation_selftest():
     mutate(latest, 'reconciliation review input population', old=template_line, new=template_line * 2)
     mutate(latest, 'reconciliation review input population', old=template_line,
            new=template_line + ('- `' + SPEC + '`: `' + '2' * 64 + '`\n').encode())
+    # A binding line with trailing text is no binding line (history review 18, N1).
+    mutate(latest, 'reconciliation review input population', old=template_line,
+           new=template_line[:-1] + b' extra\n')
     mutate(TEMPLATE, 'review retired by changed input: ' + TEMPLATE)
     # A fixed input rebound to new bytes by the review itself.
     saved_template, saved_latest = fixture.files[TEMPLATE], fixture.files[latest]
@@ -1166,6 +1173,15 @@ def reconciliation_selftest():
                                                  digest(fixture.files[TEMPLATE]).encode(), 1)
     refused('reconciliation review moved a fixed input: ' + TEMPLATE, 'rebind-fixed-input', TEMPLATE)
     fixture.files[TEMPLATE], fixture.files[latest] = saved_template, saved_latest
+    # review-inputs.json is not one of its own rows, so for it the fixed-input
+    # test is the only guard (history review 18, M1): new bytes, same rows.
+    saved_inputs = fixture.files[INPUTS]
+    fixture.files[INPUTS] = (json.dumps(json.loads(saved_inputs), indent=4) + '\n').encode()
+    require(fixture.files[INPUTS] != saved_inputs, 'selftest re-indented inputs unchanged')
+    fixture.files[latest] = saved_latest.replace(c1_digests[INPUTS].encode(),
+                                                 digest(fixture.files[INPUTS]).encode(), 1)
+    refused('reconciliation review moved a fixed input: ' + INPUTS, 'rebind-review-inputs', INPUTS)
+    fixture.files[INPUTS], fixture.files[latest] = saved_inputs, saved_latest
     # vision.md written back to its C1 bytes while the review binds the amendment.
     fixture.files[VISION] = before[VISION]
     refused('review retired by changed input: ' + VISION, 'vision-written-back', VISION)
