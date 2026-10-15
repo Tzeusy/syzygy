@@ -78,8 +78,7 @@ lead session; the transcript itself is not stored in this repository.]
   and that package's provider-route question. This direction says nothing of
   the same manifest's row 2, the Git source-acquisition entry; the
   source-acquisition entry signed on 2026-10-07 is a separate local-agent
-  version (`PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md`), which
-  this direction leaves in force.
+  version, which this direction leaves in force.
 - **Route B's registry material.** The whole candidate package
   `.syzygy/governance/contracts/candidates/provider-route-messages-api-entry/`
   (merged as a candidate in PR #273), its recorder
@@ -100,18 +99,20 @@ lead session; the transcript itself is not stored in this repository.]
   of the content it reads. Target-repository content may go through a
   launched CLI only where an act already in force covers that repository,
   that content class and that agent tool with its provider:
-  - **redis/redis:** under its observation consent
-    (`PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`), the public-source
-    screening-scope act in force
-    (`PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md`)
-    and the Claude Code with Anthropic agent-provider statement
-    (`DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md`). No Codex or OpenAI
-    statement exists for Redis, so a Codex launch over Redis content has no
-    act to stand on until one is signed.
-  - **Butlers:** only under its own acts (`PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`
-    and the PWB registry and policy acts), which consent to Syzygy's own
-    reads and name no agent tool or provider. No act lets a launched CLI
-    receive Butlers content.
+  - **redis/redis:** under its observation consent, the screening-scope
+    act in force (version 3) and the Claude Code with Anthropic
+    agent-provider statement (version 2), each listed in
+    [`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md). No Codex or
+    OpenAI statement exists for Redis, so a Codex launch over Redis content
+    has no act to stand on until one is signed.
+  - **Butlers:** only under its own observation consent and the PWB
+    registry and policy acts, which consent to Syzygy's own reads and name no
+    agent tool or provider. No act lets a launched CLI receive Butlers
+    content.
+
+  (The acts are named in words, not by file, on purpose: the dossier's
+  admission and gate readers sweep every file in this directory and refuse
+  when one outside their closed list names an admission or policy record.)
   - **Any other repository:** nothing.
 
   One limit stands beside this [Inferred, from round 1 of the delta's
