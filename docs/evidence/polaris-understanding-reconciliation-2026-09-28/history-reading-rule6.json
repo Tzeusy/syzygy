@@ -1081,6 +1081,296 @@
       "old": "            require(row != CONTESTED, 'two performed successors claim ' + path\n",
       "predicate": "contested test skipped for written-back bytes",
       "refusal": "FAIL exact digest reconciliation unresolved: written-back refusal: subject written back over its performed successor row: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or not malformed, 'malformed reconciliation review name: '",
+      "old": "require(not malformed, 'malformed reconciliation review name: '",
+      "predicate": "malformed-name guard",
+      "refusal": "AssertionError: reconciliation mutation accepted: add-malformed-reconciliation-name"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "and RECONCILIATION_REVIEW_LIKE.match(p.rsplit('/', 1)[-1])",
+      "old": "and RECONCILIATION_REVIEW_LIKE.search(p.rsplit('/', 1)[-1])",
+      "predicate": "near-miss pattern searched, not matched",
+      "refusal": "AssertionError: reconciliation mutation accepted: add-malformed-reconciliation-name"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "RECONCILIATION_REVIEW_LIKE = re.compile(r'understanding[-]*reconciliation', re.IGNORECASE)",
+      "old": "RECONCILIATION_REVIEW_LIKE = re.compile(r'understanding[^a-z0-9]*reconciliation', re.IGNORECASE)",
+      "predicate": "near-miss separator class",
+      "refusal": "AssertionError: reconciliation mutation accepted: add-malformed-reconciliation-name"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or not twice, 'reconciliation review added more than once: '",
+      "old": "require(not twice, 'reconciliation review added more than once: '",
+      "predicate": "added-once guard",
+      "refusal": "AssertionError: reconciliation mutation accepted: add-reconciliation-review-twice"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or [number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation review numbering",
+      "old": "require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation review numbering",
+      "predicate": "numbering 1..n",
+      "refusal": "AssertionError: reconciliation mutation accepted: remove-reconciliation-review"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "reviews = sorted(added | listed)\n    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation",
+      "old": "reviews = sorted(added | listed, key=number)\n    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation",
+      "predicate": "numeric order",
+      "refusal": "FAIL exact digest reconciliation unresolved: reconciliation review numbering is not 1..n"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "reviews = sorted(added, key=number)\n    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation",
+      "old": "reviews = sorted(added | listed, key=number)\n    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),\n            'reconciliation",
+      "predicate": "on-disk raws joined to the population",
+      "refusal": "AssertionError: reconciliation mutation accepted: add-uncommitted-reconciliation-review"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or not deleted, 'reconciliation review deleted: '",
+      "old": "require(not deleted, 'reconciliation review deleted: '",
+      "predicate": "deletion guard",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong refusal: missing evidence: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md; wanted reconciliation review deleted"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or intro is not None, 'reconciliation review not retained: '",
+      "old": "require(intro is not None, 'reconciliation review not retained: '",
+      "predicate": "retained (introduced) guard",
+      "refusal": "FAIL exact digest reconciliation unresolved: can only concatenate str (not \"NoneType\") to str"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or intro != c2, 'reconciliation review must follow C2: '",
+      "old": "require(intro != c2, 'reconciliation review must follow C2: '",
+      "predicate": "introduced after C2",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong reconciliation refusal: Git evidence unavailable: cat-file -t eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md; wanted reconciliation review must follow C2"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        pass\n",
+      "old": "        evidence.ancestor(c2, intro)\n",
+      "predicate": "C2 is an ancestor of the introduction",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong reconciliation refusal: Git evidence unavailable: cat-file -t 9999999999999999999999999999999999999999:docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md; wanted Git evidence unavailable: merge-base --is-ancestor eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or evidence.blob(intro, path) == evidence.current(path),\n                'retained reconciliation",
+      "old": "require(evidence.blob(intro, path) == evidence.current(path),\n                'retained reconciliation",
+      "predicate": "retained bytes unchanged",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),\n            'latest reconciliation",
+      "old": "require(verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),\n            'latest reconciliation",
+      "predicate": "latest verdict confirming",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "text = evidence.current(reviews[0]).decode()",
+      "old": "text = evidence.current(latest).decode()",
+      "predicate": "latest raw read, not the first",
+      "refusal": "FAIL exact digest reconciliation unresolved: latest reconciliation review not confirming: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or len(commits) == 1 and re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,",
+      "old": "require(len(commits) == 1 and re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,",
+      "predicate": "reviewed-commit header guard",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,",
+      "old": "require(len(commits) == 1 and re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,",
+      "predicate": "exactly one reviewed-commit header",
+      "refusal": "IndexError: list index out of range"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),",
+      "old": "require(sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),",
+      "predicate": "bound population guard",
+      "refusal": "FAIL exact digest reconciliation unresolved: 'docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json'"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(set(p for p, _ in bindings) == set(SUCCESSOR_BOUND),",
+      "old": "require(sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),",
+      "predicate": "bound population counted, not a set",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or bound[path] == c1_bindings[path],",
+      "old": "require(bound[path] == c1_bindings[path],",
+      "predicate": "fixed inputs keep their C1 digest",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong reconciliation refusal: candidate input drift: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json; wanted reconciliation review moved a fixed input: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if path not in REBINDABLE + (TEMPLATE,):\n            require(bound[path]",
+      "old": "        if path not in REBINDABLE:\n            require(bound[path]",
+      "predicate": "only REBINDABLE is exempt from the C1 digest",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong reconciliation refusal: candidate input drift: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json; wanted reconciliation review moved a fixed input: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(digest(evidence.current(path)) == sha,",
+      "old": "require(digest(evidence.current(path)) == successor.get(path, sha),",
+      "predicate": "current bytes compared with the review's binding",
+      "refusal": "FAIL exact digest reconciliation unresolved: review retired by changed input: .syzygy/governance/doctrine/vision.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "return (evidence.blob(c1, path) if path in HISTORY_PATHS",
+      "old": "return (evidence.blob(c1, path) if path in HISTORY_PATHS or path in REBINDABLE",
+      "predicate": "frozen view reads REBINDABLE at C1",
+      "refusal": "FAIL exact digest reconciliation unresolved: candidate input drift: .syzygy/governance/doctrine/vision.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "REBINDABLE = ()",
+      "old": "REBINDABLE = (VISION,)",
+      "predicate": "REBINDABLE population",
+      "refusal": "FAIL exact digest reconciliation unresolved: reconciliation review moved a fixed input: .syzygy/governance/doctrine/vision.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "SUCCESSOR_BOUND = tuple(sorted({*FROZEN_PATHS, INPUTS}))",
+      "old": "SUCCESSOR_BOUND = tuple(sorted({*FROZEN_PATHS, INPUTS} - set(HISTORY_PATHS)))",
+      "predicate": "SUCCESSOR_BOUND excludes history paths",
+      "refusal": "FAIL exact digest reconciliation unresolved: reconciliation review input population: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "    if not reviews:\n        pass\n",
+      "old": "    if not reviews:\n        return {}\n",
+      "predicate": "no review means C1 alone",
+      "refusal": "IndexError: list index out of range"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        log = git_output(self.root, 'log', '--full-history',\n                         '--diff-merges=combined', '--diff-filter=A', '--name-only', '-z',\n                         '--format=', 'HEAD', '--', RECONCILIATION_DIR)",
+      "old": "        log = git_output(self.root, 'log', '--no-renames', '--full-history',\n                         '--diff-merges=combined', '--diff-filter=A', '--name-only', '-z',\n                         '--format=', 'HEAD', '--', RECONCILIATION_DIR)",
+      "predicate": "population query: rename detection off",
+      "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: renamed then deleted reconciliation raw refused as deleted"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "'--name-only',\n                         '--format=', 'HEAD', '--', RECONCILIATION_DIR)",
+      "old": "'--name-only', '-z',\n                         '--format=', 'HEAD', '--', RECONCILIATION_DIR)",
+      "predicate": "population query: NUL-separated",
+      "refusal": "FAIL exact digest reconciliation unresolved: malformed reconciliation review name: docs/reviews/R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-1-RAW.md\ndocs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "'--format=', 'HEAD', '--', EVIDENCE)",
+      "old": "'--format=', 'HEAD', '--', RECONCILIATION_DIR)",
+      "predicate": "population query: reconciliation directory",
+      "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: renamed then deleted reconciliation raw refused as deleted"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "ea764977a90adbc2e82fa53e17a492d9fb6576d0",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "    successor = {}\n",
+      "old": "    successor = successor_bindings(evidence, dict(bindings), c2)\n",
+      "predicate": "reconciliation check wired into the reviewed template",
+      "refusal": "FAIL exact digest reconciliation unresolved: review retired by changed input: .syzygy/governance/doctrine/vision.md"
     }
   ],
   "version": 1
