@@ -1,0 +1,154 @@
+{
+  "subject": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts README-onramp test budget (syzygy-128g)",
+  "measuredOn": {
+    "commit": "00eba2194dbc6eef61d4750a243bed06ef2fa50b",
+    "host": "12 cores; other lanes concurrently active",
+    "dateRecorded": "2026-10-15"
+  },
+  "method": "Scripted replica of the test's steps in a local clone (clone, refused bare run, npm ci, explicit build:poc, documented command). Synthetic load: 70 busy shell loops added until load1 >= 55; load1 sampled at each step start via os.loadavg(). Load is CPU-spinner load plus other lanes, not the original incident's load shape. [Observed]",
+  "runs": [
+    {
+      "label": "run1",
+      "stepSeconds": {
+        "clone": 0.534,
+        "refusedBareRun": 0.145,
+        "npmCi": 0.846,
+        "buildPoc": 10.167,
+        "documentedCommand": 10.772
+      },
+      "load1AtStepStart": {
+        "start": 7.94,
+        "clone": 7.94,
+        "refusedBareRun": 7.94,
+        "npmCi": 7.94,
+        "buildPoc": 7.94,
+        "documentedCommand": 7.64,
+        "end": 7.47
+      },
+      "totalWithoutRedundantBuildPoc": 12.3,
+      "totalAsWritten": 22.5
+    },
+    {
+      "label": "loaded1",
+      "stepSeconds": {
+        "clone": 3.205,
+        "refusedBareRun": 2.252,
+        "npmCi": 19.053,
+        "buildPoc": 187.767,
+        "documentedCommand": 200.594
+      },
+      "load1AtStepStart": {
+        "start": 55.57,
+        "clone": 55.57,
+        "refusedBareRun": 58.49,
+        "npmCi": 58.49,
+        "buildPoc": 65.93,
+        "documentedCommand": 90.5,
+        "end": 87.78
+      },
+      "totalWithoutRedundantBuildPoc": 225.1,
+      "totalAsWritten": 412.9
+    },
+    {
+      "label": "loaded2",
+      "stepSeconds": {
+        "clone": 5.222,
+        "refusedBareRun": 2.653,
+        "npmCi": 18.621,
+        "buildPoc": 170.838,
+        "documentedCommand": 141.641
+      },
+      "load1AtStepStart": {
+        "start": 76.64,
+        "clone": 76.64,
+        "refusedBareRun": 78.28,
+        "npmCi": 78.57,
+        "buildPoc": 82.02,
+        "documentedCommand": 85.69,
+        "end": 83.41
+      },
+      "totalWithoutRedundantBuildPoc": 168.1,
+      "totalAsWritten": 338.9
+    },
+    {
+      "label": "loaded3",
+      "stepSeconds": {
+        "clone": 2.488,
+        "refusedBareRun": 2.226,
+        "npmCi": 11.939,
+        "buildPoc": 210.77,
+        "documentedCommand": 176.263
+      },
+      "load1AtStepStart": {
+        "start": 82.98,
+        "clone": 82.98,
+        "refusedBareRun": 82.98,
+        "npmCi": 82.9,
+        "buildPoc": 82.69,
+        "documentedCommand": 85.3,
+        "end": 89.54
+      },
+      "totalWithoutRedundantBuildPoc": 192.9,
+      "totalAsWritten": 403.7
+    }
+  ],
+  "finding": "The documented command (npm run poc:generator-demo) runs build:poc itself, so the explicit build:poc step was a redundant second full build (170-211 s under load vs 10 s idle). Removing it brings the max loaded total to the figure below; as written, the max loaded total exceeds the old 180 s test budget.",
+  "maxLoadedTotalWithoutRedundantBuildPoc": 225.1,
+  "maxLoadedTotalAsWritten": 412.9,
+  "decision": {
+    "option": "A (keep in npm test)",
+    "stepTimeoutsMs": {
+      "clone": 30000,
+      "refusedRun": 30000,
+      "install": 120000,
+      "documented": 270000
+    },
+    "testBudgetMs": 450000,
+    "rule": "test budget = sum of inner step timeouts (previously 420 s of inner timeouts under a 180 s test budget); about 2x the max measured loaded total of 225 s; documented step 270 s vs 200.6 s measured max (1.35x)"
+  },
+  "postChangeVerification": {
+    "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts -t 'README command'",
+    "runs": [
+      {
+        "run": 1,
+        "load1AtStart": 56.41,
+        "load1AtEnd": 84.83,
+        "wallSeconds": 183,
+        "result": "pass"
+      },
+      {
+        "run": 2,
+        "load1AtStart": 84.83,
+        "load1AtEnd": 84.3,
+        "wallSeconds": 195,
+        "result": "pass"
+      },
+      {
+        "run": 3,
+        "load1AtStart": 84.3,
+        "load1AtEnd": 94.18,
+        "wallSeconds": 211,
+        "result": "pass"
+      }
+    ],
+    "note": "All three passes exceed the former 180 s budget in wall time (vitest startup included), so they would have timed out before. Longest observed wall time 294 s (load1 87-95) is inside the 450 s budget (1.5x).",
+    "earlierAttemptRuns": [
+      {
+        "load1AtStart": 66.9,
+        "load1AtEnd": 87.45,
+        "wallSeconds": 228,
+        "result": "pass"
+      },
+      {
+        "load1AtStart": 87.45,
+        "load1AtEnd": 95.18,
+        "wallSeconds": 294,
+        "result": "pass"
+      },
+      {
+        "load1AtStart": 95.18,
+        "result": "interrupted (harness killed the driver before the third run finished; not counted)"
+      }
+    ]
+  }
+}

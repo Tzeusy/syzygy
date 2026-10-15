@@ -10,6 +10,13 @@ import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
 // starves vitest's worker RPC, which then fails the run with "Timeout calling
 // onTaskUpdate" even though every test passed. execFile always pipes stdio.
 const run = promisify(execFile);
+// Onramp step budgets (syzygy-128g). The test budget is the sum of the inner
+// timeouts so no step can outlive the test; the figures come from
+// docs/evidence/pipeline-demo-onramp-budget-2026-10-15.json (max measured
+// total 225 s at load1 55-90, about 2x margin). The documented command runs
+// build:poc itself, so the onramp test does not build separately.
+const ONRAMP_STEP_TIMEOUT_MS = { clone: 30_000, refusedRun: 30_000, install: 120_000, documented: 270_000 };
+const ONRAMP_TEST_BUDGET_MS = Object.values(ONRAMP_STEP_TIMEOUT_MS).reduce((a, b) => a + b, 0);
 const cleanups: string[] = [];
 afterEach(() => { for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true }); });
 
@@ -49,22 +56,21 @@ describe('concrete source-to-draft pipeline exercise', () => {
     cleanups.push(scratch);
     const checkout = join(scratch, 'checkout');
     const output = join(scratch, 'outputs');
-    await run('git', ['clone', '--quiet', '--local', '--no-hardlinks', process.cwd(), checkout], { timeout: 30_000 });
+    await run('git', ['clone', '--quiet', '--local', '--no-hardlinks', process.cwd(), checkout], { timeout: ONRAMP_STEP_TIMEOUT_MS.clone });
     const argv = commands[2].split(' ');
     expect(argv.slice(0, 5)).toEqual(['npm', 'run', 'poc:generator-demo', '--', '--out']);
     const documented = [argv[0]!, ...argv.slice(1, -1), output];
     try {
-      await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: 30_000 });
+      await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.refusedRun });
       throw new Error('missing install unexpectedly succeeded');
     } catch (error) {
       if (error instanceof Error && error.message === 'missing install unexpectedly succeeded') throw error;
       expect((error as { stderr?: string }).stderr).toContain('npm ci');
     }
-    await run('npm', commands[1].split(' ').slice(1), { cwd: checkout, timeout: 120_000 });
-    await run('npm', ['run', 'build:poc', '--silent'], { cwd: checkout, timeout: 120_000 });
-    await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: 120_000 });
+    await run('npm', commands[1].split(' ').slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.install });
+    await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.documented });
     expect(readdirSync(output).sort()).toEqual(['archive.html', 'archive.json', 'garden-changed.html', 'garden-changed.json', 'garden.html', 'garden.json', 'report.json']);
-  }, 180_000);
+  }, ONRAMP_TEST_BUDGET_MS);
 
   it('repeats the complete SEC-2 operator boundary at every prompt-handling site', () => {
     const boundary = 'This kit grants no source access, provider egress, authorship adoption or release.';
