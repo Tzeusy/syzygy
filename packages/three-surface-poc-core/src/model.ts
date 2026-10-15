@@ -3,7 +3,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { observeCodeStructure, type CodeStructureResult } from './code-structure.js';
-import { observeWorkItems, type WorkItemsResult } from './work-items.js';
+import { GOVERNING_INTENT_UNKNOWN_BASIS, observeWorkItems, type WorkItemsResult } from './work-items.js';
 import { observeWorkerChange, type WorkerChangeResult } from './worker-change-observation.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
@@ -528,6 +528,14 @@ export function workItemVerificationId(itemId: string): string {
   return `work-item:${itemId}/verification`;
 }
 
+/** POC-REQ-014: the governing-intent disclosure on a rendered card, and the
+ * Trajectory region that counts the served items carrying it. */
+export function workItemGoverningIntentId(itemId: string): string {
+  return `work-item:${itemId}/governed-by`;
+}
+
+export const WORK_ITEM_GOVERNING_INTENT_REGION_ID = 'region:work-item-governing-intent' as const;
+
 export function workerChangeVerificationId(beadId: string): string {
   return `worker-change:${beadId}/verification`;
 }
@@ -562,6 +570,16 @@ function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknown
   if (input.proposedWork !== null && lifecycle?.kind === 'unknown') add(`${input.proposedWork.id}/lifecycle`, lifecycle.reason, lifecycle.closedReason);
   if (input.trajectory.kind === 'observed') {
     for (const item of input.trajectory.rendered) add(workItemVerificationId(item.id), WORK_ITEM_VERIFICATION_BASIS, 'missing-evidence');
+    if (input.workItems.kind === 'observed') {
+      // POC-REQ-014: the machine twin of each rendered card's mark is that
+      // item's own `governedBy`, and the count region's is the same Unknown.
+      const served = new Map(input.workItems.items.map((item) => [item.id, item.governedBy]));
+      for (const item of input.trajectory.rendered) {
+        const governedBy = served.get(item.id);
+        if (governedBy !== undefined) subjects.push({ id: workItemGoverningIntentId(item.id), epistemic: governedBy });
+      }
+      add(WORK_ITEM_GOVERNING_INTENT_REGION_ID, GOVERNING_INTENT_UNKNOWN_BASIS, 'source-uncaptured-or-unreachable');
+    }
     const change = input.workerChange;
     if (change.kind === 'observed' && input.trajectory.rendered.some((item) => item.id === change.beadId)) {
       const verification = input.testArtifactVerification;

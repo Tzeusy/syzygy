@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
-import type { PocProvenance } from './model.js';
+import type { PocProvenance, PocUnknown } from './model.js';
+import { resolutionRoute } from './project-shape-model.js';
 
 export const WORK_ITEM_STATUSES = [
   'open',
@@ -23,6 +24,33 @@ export interface WorkItemFact {
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly closedAt: string | null;
+  /** POC-REQ-014: the item's governing intent. Always the one Unknown below:
+   * the observation reads no link from an item to the intent that warrants
+   * it, and nothing is taken from the title. */
+  readonly governedBy: PocUnknown;
+}
+
+/** The basis sentence of every work item's governing-intent Unknown. */
+export const GOVERNING_INTENT_UNKNOWN_BASIS =
+  'No governing intent was captured for this work item: the observation reads no link from an item to the intent that warrants it, and none is taken from its title.';
+
+/** POC-REQ-014: `Unknown`, primary reason `source-uncaptured-or-unreachable`,
+ * and that reason's RFC2-24 route. The same value for every item. */
+export function governingIntentUnknown(): PocUnknown {
+  return {
+    label: 'Unknown',
+    reason: GOVERNING_INTENT_UNKNOWN_BASIS,
+    closedReason: 'source-uncaptured-or-unreachable',
+    resolutionRoutes: [resolutionRoute('source-uncaptured-or-unreachable')],
+  };
+}
+
+/** How many items carry the governing-intent Unknown, counted over the
+ * served item set (POC-REQ-014), never assumed equal to its length. */
+export function countGoverningIntentUnknown(items: readonly WorkItemFact[]): number {
+  return items.filter(
+    (item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason === 'source-uncaptured-or-unreachable',
+  ).length;
 }
 
 /**
@@ -38,6 +66,8 @@ export interface WorkItemsObserved {
   readonly provenance: PocProvenance;
   readonly capturedAt: string;
   readonly items: readonly WorkItemFact[];
+  /** POC-REQ-014: the served items whose `governedBy` is the Unknown. */
+  readonly governedByUnknownCount: number;
 }
 
 export interface WorkItemsUnknown {
@@ -145,6 +175,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
       provenance: doltProvenance(input.beadPrefix, revisionValue),
       capturedAt: input.capturedAt,
       items: [],
+      governedByUnknownCount: 0,
     };
   }
 
@@ -179,6 +210,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
       createdAt: raw.created_at,
       updatedAt: raw.updated_at,
       closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,
+      governedBy: governingIntentUnknown(),
     });
   }
 
@@ -188,6 +220,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
     provenance: doltProvenance(input.beadPrefix, doltRevision as string),
     capturedAt: input.capturedAt,
     items,
+    governedByUnknownCount: countGoverningIntentUnknown(items),
   };
 }
 
