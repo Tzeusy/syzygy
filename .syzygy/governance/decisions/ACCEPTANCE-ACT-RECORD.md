@@ -1607,3 +1607,39 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:pwb-opening-index-amendment:v1.0 -->
+
+<!-- versioned-signoff:three-surface-poc-vocabulary-epistemic-amendment:v1.0 -->
+## Versioned sign-off — three-surface-poc-vocabulary-epistemic-amendment — v1.0 — recorded 2026-10-15
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification amendment |
+| Review outcome | `docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/ROUND-2-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `three-surface-poc-vocabulary-epistemic-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, extended by `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:three-surface-poc-vocabulary-epistemic-amendment:v1.0 -->
+
+<!-- versioned-signoff:cap1-trusted-bootstrap-consent:v1.0 -->
+## Versioned sign-off — cap1-trusted-bootstrap-consent — v1.0 — recorded 2026-10-15
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification adoption |
+| Review outcome | `docs/reviews/R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `docs/reviews/R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-4-DISPOSITION.md` |
+| Recording | `.syzygy/governance/decisions/CAP1-TRUSTED-BOOTSTRAP-CONSENT-SIGNOFF-v1.0.md`; annotated tag `cap1-trusted-bootstrap-consent-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, extended by `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-CAP1-TRUSTED-BOOTSTRAP-CONSENT-2026-10-15.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:cap1-trusted-bootstrap-consent:v1.0 -->

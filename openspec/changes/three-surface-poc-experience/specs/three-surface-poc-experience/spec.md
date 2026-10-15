@@ -29,16 +29,21 @@ Reader notes, binding on how this file is read:
   named in each requirement's `Group` line: *Code-structure
   observation* (001–004), *Work-item observation* (010–014), *Client
   rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
-  (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).
+  (040–043), *Orrery* (050–053), *Cross-cutting experience* (055, 060–061).
   Identifiers are stable and literal: minted once, amended in place,
   retired rather than reused, never renumbered (CC-SPEC-3). Gaps in the
   numbering are deliberate.
+  POC-REQ-055 carries the identifier the owner's ruling named; its number
+  range does not place it in the Orrery group; its `Group` line places it
+  in *Cross-cutting experience*.
 - **Warrants.** Each requirement ends with a machine-readable
   `warrants` block in CC-SPEC-2's six classes. `decisions` entries cite
   recorded owner directions by their record file in
   `.syzygy/governance/decisions/`: `POC-DIR-2026-08-29` names
-  `THREE-SURFACE-POC-MODE-DIRECTION.md` and `POC-DIR-2026-08-30` names
-  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`. `contracts[]` entries come
+  `THREE-SURFACE-POC-MODE-DIRECTION.md`, `POC-DIR-2026-08-30` names
+  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md` and `POC-DIR-2026-09-21`
+  names `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md` (ruling
+  P-75). `contracts[]` entries come
   from the CC-SPEC-8 sweep recorded in this change's
   `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
   found the requirement's oracle observes one of that clause's
@@ -1093,27 +1098,157 @@ warrants:
   parent_requirements: []
 ```
 
-### Requirement: POC-REQ-060 — One design language, one epistemic encoding
+### Requirement: POC-REQ-055 — Every relationship is named in or flagged outside the closed vocabulary
+
+Group: Cross-cutting experience. Form: **invariant**.
+
+**Required behavior.** Every relationship the shared model emits SHALL either
+carry a relation name from RFC1-25's closed table, emitted with its source and
+target in the roles that table assigns the relation — read through a
+checked-in declaration that maps each shared-model entity kind to the RFC 0001
+class it corresponds to, or to none — or carry an explicit
+outside-closed-vocabulary flag with a stated reason. The flag and its reason
+SHALL be carried in the machine answer and rendered in every rendered element
+that marks the relationship; an element marks a relationship when it carries
+the relationship's served `id` in one of the surfaces' declared relationship
+markers. A flag discloses that a relationship is outside the closed
+vocabulary; it never adds a kind or a role pair to that vocabulary. A
+rendering of a relationship that carries no declared relationship marker is
+outside this requirement's sweep.
+
+- **Scope.** every relationship in the machine answer, and every rendered
+  element on any surface that marks a relationship.
+
+- **Case (sweep)**: a checker enumerates every relationship in the
+  machine answer — the denominators are that population and its distinct
+  kinds — and, for each, checks its kind against a copy of RFC1-25's
+  relation names and its source and target kinds, mapped through the
+  declared correspondence, against the set of role pairs the table
+  assigns that relation; it loads each surface and extracts every
+  rendered element carrying a declared relationship marker — the
+  denominator is the complete marker population, which the check counts
+  and reports — and checks every flagged relationship for a non-empty
+  reason in the machine answer and in every element that marks it.
+- **Observable**: every relationship is a closed relation name in a role
+  pair the table assigns it, or is flagged with a reason in the machine
+  answer and in every rendered element that marks it.
+- **Oracle**: per-relationship membership-or-flag over the exhausted
+  population, and per-element reason presence over the exhausted marker
+  population. Zero unflagged relationships whose kind is outside the
+  table, zero unflagged relationships whose mapped role pair the table
+  does not assign that relation, zero flagged relationships whose kind
+  and mapped role pair the table assigns, and zero flagged relationships
+  answered without their reason or marked by a rendered element that
+  carries no reason decide.
+- **Oracle independence**: the relation names and each relation's set of
+  role pairs are literals transcribed from RFC1-25's table, and the
+  kind-to-class correspondence is a checked-in declaration; none is
+  imported from the model. The marker population is read from served
+  output.
+- **Falsifier**: an unflagged relationship whose kind is outside
+  RFC1-25's table, an unflagged closed name in a role pair the table does
+  not assign it (reversed roles included), a flag on a relationship whose
+  kind and mapped role pair the table assigns, or a flagged relationship
+  answered without its reason or marked by a rendered element that
+  carries no reason.
+
+#### Scenario: A kind outside the closed table is disclosed
+
+- **WHEN** the shared model emits a relationship whose kind has no
+  counterpart in RFC1-25's closed table
+- **THEN** the machine answer and every rendered element that marks the
+  relationship carry its outside-closed-vocabulary flag and reason, and
+  the check reports the number of relationships, of distinct kinds and of
+  relationship markers as its denominators
+
+```yaml
+warrants:
+  primary: VIS-1
+  doctrine: [VIS-1, VIS-7]
+  contracts: [RFC1-25, RFC1-26]
+  policies: []
+  decisions: [POC-DIR-2026-09-21]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-060 — One design language, one epistemic encoding and record shape
 
 Group: Cross-cutting experience. Form: **invariant**.
 
 **Required behavior.** The three surfaces SHALL draw from one declared set of
-design tokens, and SHALL encode epistemic states (Observed, Unknown, and their
-reasons) identically wherever they appear.
+design tokens, and SHALL encode epistemic states (Observed, Inferred, Unknown,
+and their reasons) identically wherever they appear. Every entity and every
+relationship the shared model holds SHALL carry its epistemic state in one
+record shape, in the shared model and in the machine answer: a label from the
+closed three (Observed, Inferred, Unknown); a rendering tier, where the record
+carries one, from RFC2-25's closed six and always inside its parent label;
+and, where the label is Unknown, exactly one primary reason from RFC2-24's
+closed twelve with its resolution route. The declared token/encoding table
+SHALL give Observed, Inferred and Unknown three pairwise distinct entries. An
+Inferred state SHALL arise only from an agent's assertion, SHALL never count
+toward an Observed total or clear an Unknown, SHALL name the agent assertion
+it arises from, and SHALL render with the declared table's Inferred entry in
+every rendered element that marks its record; an element marks a record when
+it carries the record's served `id` in one of the surfaces' declared record
+markers.
 
-- **Scope.** every epistemic encoding across the three surfaces.
+- **Scope.** every epistemic encoding across the three surfaces, and every
+  element of the machine answer's entity and relationship lists, with its
+  epistemic record. No other epistemic value the machine answer serves is
+  in the record-shape population. The shared model's records are observed
+  through the machine answer, which serves the shared model's fact set
+  (POC-REQ-020); no check reads the shared model directly. An Observed
+  total is every count the machine answer serves, except a count the
+  machine answer declares to be of Inferred records.
 
 - **Case (sweep)**: a checker enumerates every epistemic encoding on
   all three surfaces — the denominator is that population — and
-  compares each against the declared token/encoding table.
+  compares each against the declared token/encoding table; it
+  enumerates every element of the machine answer's entity and
+  relationship lists — the denominator is that population — checks that
+  each carries exactly one epistemic record, and validates each record
+  against the closed label, tier and reason vocabularies. While no agent
+  has asserted anything, the Inferred limbs are exercised by a fixture
+  record injected at the model seam; for that record the checker
+  extracts every rendered element carrying a declared record marker that
+  names it — the denominator is that marker population, which the check
+  counts and reports.
 - **Observable**: identical states render with identical declared
-  encodings on every surface.
-- **Oracle**: per-encoding equality with the declared table over the
-  exhausted population; the table is a checked-in declaration.
-- **Oracle independence**: the declared table is the expected value;
-  the sweep reads served output.
-- **Falsifier**: one surface encoding Unknown (or Observed) differently
-  from the declared table, or a surface styling epistemic state ad hoc.
+  encodings on every surface, and the table's three label entries are
+  pairwise distinct; every entity and relationship carries exactly one
+  record, in the closed-vocabulary shape; an Inferred record names the
+  agent assertion it arises from, is absent from every Observed total,
+  leaves every Unknown entity and relationship record Unknown, and
+  renders with the table's Inferred entry in every element that marks
+  it.
+- **Oracle**: per-encoding equality with the declared table, a pairwise
+  comparison of the table's Observed, Inferred and Unknown entries, and
+  per-element record presence and per-record vocabulary validation, over
+  the exhausted populations; for each Inferred record, a check that it
+  names an agent assertion, a recount of every Observed total without
+  it, each of which must equal the count served with it, a recount of
+  the entity and relationship records labelled Unknown with and without
+  it, whose two sets, each member keyed by the list it is served in and
+  the identifier the machine answer serves it under and the injected
+  record excluded, must be equal, and an encoding comparison of every
+  rendered element that marks it with the declared Inferred entry; the
+  table is a checked-in declaration; zero equal label entries, zero
+  entities or relationships without exactly one record, zero records off
+  the closed-vocabulary shape (label, tier nesting, exactly one primary
+  reason with its route) and zero breached Inferred limbs decide.
+- **Oracle independence**: the declared table and the closed RFC2-24 and
+  RFC2-25 lists are expected values written as literals; the sweep reads
+  served output and the machine answer.
+- **Falsifier**: one surface encoding Unknown (or Observed, or Inferred)
+  differently from the declared table, or a surface styling epistemic
+  state ad hoc; a declared table giving two of the three labels one
+  entry; an entity or relationship with no epistemic record or with more
+  than one; a record with no label, a tier outside its parent label, a
+  reason outside the twelve or an Unknown with no route; or an Inferred
+  record counted in an Observed total, clearing an Unknown, naming no
+  agent assertion, or marked by a rendered element whose encoding is not
+  the declared Inferred entry.
 
 #### Scenario: Unknown looks the same everywhere
 
@@ -1122,13 +1257,24 @@ reasons) identically wherever they appear.
 - **THEN** all three render it with the declared Unknown encoding from
   the shared token set
 
+#### Scenario: An agent assertion stays Inferred
+
+- **WHEN** an agent-asserted record is present in the shared model
+  beside Observed records of the same kind
+- **THEN** it carries the label Inferred and names the agent assertion
+  it arises from, changes no Observed total the machine answer serves,
+  leaves every Unknown entity and relationship record in the machine
+  answer Unknown, and renders with the declared Inferred encoding in
+  every rendered element that marks it, and the check reports that
+  marker population as its denominator
+
 ```yaml
 warrants:
   primary: VIS-3
-  doctrine: [VIS-1, VIS-3]
-  contracts: [RFC6-18, RFC6-22, RFC8-31]
+  doctrine: [VIS-1, VIS-2, VIS-3]
+  contracts: [RFC2-24, RFC2-25, RFC6-14, RFC6-18, RFC6-22, RFC8-31]
   policies: []
-  decisions: [POC-DIR-2026-08-30]
+  decisions: [POC-DIR-2026-08-30, POC-DIR-2026-09-21]
   topology: []
   parent_requirements: []
 ```

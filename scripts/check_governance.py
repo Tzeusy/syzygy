@@ -2086,6 +2086,10 @@ POC_VERSIONED_SUCCESSORS = (
     ("three-surface-poc-governing-intent-amendment", "1.0",
      f"{DECISIONS}/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
      f"{DECISIONS}/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+    ("three-surface-poc-vocabulary-epistemic-amendment", "1.0",
+     f"{DECISIONS}/THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md",
+     f"{CANDIDATES}/three-surface-poc-vocabulary-epistemic-amendment/"
+     "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt"),
 )
 POC_READABILITY_LABEL = "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR"
 POC_READABILITY_DIR = f"{CANDIDATES}/three-surface-poc-readability-successor"
