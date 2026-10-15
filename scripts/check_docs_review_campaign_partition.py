@@ -383,6 +383,11 @@ CAMPAIGNS = (
         "CAP1 trusted-bootstrap consent amendment",
         r"R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-\d+-(?:RAW|DISPOSITION)\.md",
     ),
+    campaign(
+        "dossier-cli-subprocess",
+        "Local agent CLI subprocess runner",
+        r"R-DOSSIER-CLI-SUBPROCESS-.*\.md",
+    ),
 )
 
 
