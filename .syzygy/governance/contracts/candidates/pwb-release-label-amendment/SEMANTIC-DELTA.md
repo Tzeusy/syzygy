@@ -112,6 +112,32 @@ The cycle-4 change to the requirement, in short:
   addition and the page exclusions as one whole sentence, each with a
   selftest mutant.
 
+**Repaired a fifth time:** 2026-10-15 (cycle 5), over `main` with P-98 and
+P-99 signed, under the owner's answer to round 6, "Weaker wording + review
+(Rec.)" ("Drop 'never a stamp', state both gaps as limits, then one review;
+it comes back to you to sign."), recorded verbatim in
+`ROUND-6-DISPOSITIONS.md`. **Round-6 findings repaired once on 2026-10-15,
+unconfirmed pending round 7.** The account below describes this version.
+In short:
+
+- **"Therefore never a stamp" is withdrawn (round-6 Finding 1).** The
+  requirement now says: "Two limits stay. Where a citation sits is not
+  decided by this requirement", and "Which tokens an anchor's served locator
+  holds is not decided either". The fifth scenario is renamed "A citation's
+  contents are decided, not its placement"; its THEN covers the sentence
+  outside a citation, and an AND states the placement gap. Question 6's
+  recommended row no longer promises that the label leads wherever the
+  revision is named. The "Named limit" bullet above is now carried by the
+  requirement itself.
+- **Guards (round-6 Note 1).** The six wordings the reviewer deleted without
+  a content finding are in `REQUIRED_ONCE`, each with a mutant.
+- **Design and delta carried (round-6 Note 2).** Design decision 13 names
+  the cite-text rule, the two gaps and the closed identity population;
+  §"What changes" here does the same and says five scenarios.
+- **Naming defined by the sweep (round-6 Note 3).** The prohibition says its
+  three namings are what "names the observed revision" means, and that a
+  shorter prefix is not decided; design decision 13 says the same.
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
@@ -193,12 +219,16 @@ both. Added:
       element holding a cite and its stamp and no other letter or digit. The
       cite names, by identity, one anchor the machine narrative serves or one
       source record the machine answer serves, and the stamp's whole text is
-      that record's revision, in full or its first twelve digits. A revision
-      id in a sentence, a heading or other running text is therefore never a
-      stamp. Stamps carry no label;
+      that record's revision, in full or its first twelve digits. The cite's
+      whole text equals that record's served locator or path, holds no
+      whitespace unless it is a real path, and holds no swept occurrence.
+      Stamps carry no label. Two limits are stated in the requirement and
+      not decided: where the citation sits (one placed inside a sentence
+      passes), and which tokens a served locator holds;
     - an *identity* shown whole, whose text equals the evaluation identity
-      the machine answer serves or a served record's own `identity`, and is
-      not a bare revision id. This covers the page footer's evaluation
+      the machine answer serves or the source identity of one served source
+      record, and no other record's, and is not a bare revision id. This
+      covers the page footer's evaluation
       identity and the exact-source route's source identity, both of which
       contain the full revision;
     - Butlers-declared text that PWB-REQ-014 keeps verbatim, or that the
@@ -292,8 +322,14 @@ both. Added:
     every moved-tag disclosure, tied names included, and the terms
     `unmoved`, `not moved`, `unchanged`, `stable` and `still points` beside a
     tag name.
-- **Four new scenarios.** A tagged revision; a revision no tag reaches; unread
-  tags never shown as untagged; a moved tag disclosed.
+- **Five new scenarios.** A tagged revision; a revision no tag reaches; unread
+  tags never shown as untagged; a moved tag disclosed; a citation's contents
+  decided, not its placement.
+  *(Updated 2026-10-15, cycle 5, for round-6 Note 2: this section read "Four
+  new scenarios", an identity equal to "a served record's own `identity`",
+  and "A revision id in a sentence, a heading or other running text is
+  therefore never a stamp"; the fifth scenario came in cycle 4, the closed
+  identity population in cycle 4, and the claim was withdrawn in cycle 5.)*
 - **Warrants.** VIS-2 joins the doctrine list, and RFC2-2 and RFC2-24 join the
   contracts.
 

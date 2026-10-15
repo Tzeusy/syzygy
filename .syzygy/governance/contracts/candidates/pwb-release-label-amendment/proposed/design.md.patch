@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
-index a11e58d..3e53869 100644
+index a11e58d..80c60c6 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -587,6 +587,76 @@ flowchart TD
+@@ -587,6 +587,79 @@ flowchart TD
      P --> T["Class and category totals<br/>that count a failed class<br/>are Unknown"]
  ```
  
@@ -40,15 +40,18 @@ index a11e58d..3e53869 100644
 +  exact-source route response, shows at least one, and on each page the
 +  first visible id of the revision, the shared status line aside, is in a
 +  unit, with the label before the id. A checker counts the units by their
-+  marks, then sweeps the visible text for any other short or full id of the
-+  revision, or project name followed by a tag name. Four marked kinds are
-+  excepted, and the checker decides each from what it reads, not from the
-+  mark:
++  marks, then sweeps the visible text for the revision's full id or its
++  first twelve digits, or project name followed by a tag name; a shorter
++  prefix is not decided. Four marked kinds are excepted, and the checker
++  decides each from what it reads, not from the mark:
 +  - a per-claim provenance stamp, which is only the revision element of a
 +    citation whose cite names a served anchor or source record carrying
-+    that revision, so a sentence or heading never holds one;
-+  - an identity shown whole, equal to the evaluation identity or a served
-+    record's own identity;
++    that revision, and whose cite text is that record's served locator or
++    path. Two gaps stay open and are stated in the requirement: where the
++    citation sits (inside a sentence passes), and which tokens a served
++    locator holds;
++  - an identity shown whole, equal to the evaluation identity or to one
++    served source record's source identity, and no other record's;
 +  - Butlers-declared text kept verbatim;
 +  - the shared operability status line, which no requirement of either
 +    specification names.

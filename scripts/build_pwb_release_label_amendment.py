@@ -180,7 +180,7 @@ REQUIRED_ONCE = (
     "Attribute values and link targets are not owner-visible text",
     "marked as a label unit, so that a checker finds it without judgment",
     "zero swept occurrences outside a label unit and the excepted elements",
-    "Polaris names the observed revision only in a label unit.",
+    "Polaris names the observed revision only in a label unit, a naming being one that the text sweep below finds, and the excepted elements below the only exceptions.",
     "Every Polaris page SHALL present at least one label unit.",
     "Outside a label unit, owner-visible Polaris text SHALL NOT show",
     "Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf",
@@ -193,7 +193,21 @@ REQUIRED_ONCE = (
     "no letter or digit outside the cite's text and the stamp's",
     "The cite names, by its identity, one anchor the machine narrative serves or one source record the machine answer serves at the same evaluation",
     "the stamp's whole text is the revision that record carries, in full or as its first twelve hexadecimal digits",
-    "A revision id in a sentence, a heading or any other running text is therefore never a stamp.",
+    # Round 6, Finding 1 (owner: "Weaker wording + review"): "therefore never
+    # a stamp" is withdrawn and both gaps are stated as limits.
+    "Two limits stay. Where a citation sits is not decided by this requirement: a citation placed inside a sentence, a heading or other running text passes these tests",
+    "Which tokens an anchor's served locator holds is not decided either: PWB-REQ-014's anchor shape requires a locator and fixes no values, so a one-token locator that reads as a phrase passes",
+    "**AND** whether that citation sits inside the sentence is not decided by this requirement",
+    "**THEN** outside a citation the sentence shows neither R's full object id nor its first twelve hexadecimal digits",
+    # Round 6, Note 1: the cycle-4 wordings the digest alone guarded.
+    "It holds no occurrence that the text sweep below finds.",
+    "holding no whitespace or equal to a path in the checker's own Git listing, and holding no swept occurrence",
+    "holds whitespace and is not a path in the checker's own Git listing, or holds a swept occurrence",
+    "So a stamp's citation holds only a served name with no space in it, or a real path, beside the revision.",
+    "with no whitespace unless it is a path in R's tree, and R's id as its stamp",
+    # Round 6, Note 3: a naming is what the sweep finds; a shorter prefix is
+    # a stated gap.
+    "These three are the namings the text sweep below finds, and \"names the observed revision\" means them: a shorter prefix of the object id is not decided by this requirement.",
     "Within each label unit the label precedes the full object id in document order.",
     "the first occurrence in document order that the text sweep below finds outside the operability status line lies in a label unit",
     "decides the kind from those alone",
@@ -271,7 +285,7 @@ NEW_SCENARIOS = (
     "#### Scenario: A revision no tag reaches is labelled honestly",
     "#### Scenario: Unread tags are never shown as untagged",
     "#### Scenario: A moved tag is disclosed, not trusted",
-    "#### Scenario: A sentence naming the revision is not a provenance stamp",
+    "#### Scenario: A citation's contents are decided, not its placement",
 )
 #: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
 WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
@@ -309,6 +323,10 @@ DECISION_RE = re.compile(r"^### (\d+)\. ", re.MULTILINE)
 DESIGN_PHRASES = (
     "### 13. Name the revision by its release label",
     "until a registry amendment does, every label takes the not-read form.",
+    # Round 6, Note 2: decision 13 carries the cycle-4 and cycle-5 rules.
+    "and whose cite text is that record's served locator or path. Two gaps stay open and are stated in the requirement",
+    "an identity shown whole, equal to the evaluation identity or to one served source record's source identity, and no other record's",
+    "first twelve digits, or project name followed by a tag name; a shorter prefix is not decided.",
 )
 
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
@@ -860,16 +878,64 @@ def selftest() -> int:
         # Round 4, Finding 1: the stamp is structural and record-verified, and
         # "the label leads" is decided.
         "stamp kind taken from its mark": (
-            SPEC, _replace(proposed[SPEC], "it, and what the checker reads decides each kind, never the mark alone:", "it, and the mark decides each kind:"),
+            SPEC, _replace(proposed[SPEC], "it, and what the checker reads\n    decides each kind, never the mark alone:", "it, and the mark decides each kind:"),
             phrase_finding("what the checker reads decides each kind, never the mark alone"),
         ),
         "stamp purpose clause deleted": (
             SPEC, _replace(proposed[SPEC], " The cite names, by its\n      identity, one anchor the machine narrative serves or one source record\n      the machine answer serves at the same evaluation, and the stamp's whole\n      text is the revision that record carries, in full or as its first\n      twelve hexadecimal digits.", ""),
             phrase_finding("The cite names, by its identity, one anchor the machine narrative serves or one source record the machine answer serves at the same evaluation"),
         ),
-        "stamp allowed in running text": (
-            SPEC, _replace(proposed[SPEC], " A revision id in a sentence, a\n        heading or any other running text is therefore never a stamp.", ""),
-            phrase_finding("A revision id in a sentence, a heading or any other running text is therefore never a stamp."),
+        # Round 6, Finding 1: the two stated limits, and the claim withdrawn.
+        "placement limit withdrawn": (
+            SPEC, _replace(proposed[SPEC], "      - Two limits stay. Where a citation sits is not decided by this\n        requirement: a citation placed inside a sentence, a heading or other\n        running text passes these tests,", "      - A revision id in a sentence, a heading or any other running text is\n        therefore never a stamp,"),
+            phrase_finding("Two limits stay. Where a citation sits is not decided by this requirement: a citation placed inside a sentence, a heading or other running text passes these tests"),
+        ),
+        "locator limit withdrawn": (
+            SPEC, _replace(proposed[SPEC], " Which tokens an anchor's served\n        locator holds is not decided either: PWB-REQ-014's anchor shape\n        requires a locator and fixes no values, so a one-token locator that\n        reads as a phrase passes;", ";"),
+            phrase_finding("Which tokens an anchor's served locator holds is not decided either: PWB-REQ-014's anchor shape requires a locator and fixes no values, so a one-token locator that reads as a phrase passes"),
+        ),
+        "scenario placement limit dropped": (
+            SPEC, _replace(proposed[SPEC], "- **AND** whether that citation sits inside the sentence is not decided by\n  this requirement\n", ""),
+            phrase_finding("**AND** whether that citation sits inside the sentence is not decided by this requirement"),
+        ),
+        "scenario THEN back to the overclaim": (
+            SPEC, _replace(proposed[SPEC], "- **THEN** outside a citation the sentence shows", "- **THEN** the sentence shows"),
+            phrase_finding("**THEN** outside a citation the sentence shows neither R's full object id nor its first twelve hexadecimal digits"),
+        ),
+        # Round 6, Note 1: the reviewer's six digest-only deletions.
+        "cite swept-occurrence clause dropped": (
+            SPEC, _replace(proposed[SPEC], " It holds no\n        occurrence that the text sweep below finds.", ""),
+            phrase_finding("It holds no occurrence that the text sweep below finds."),
+        ),
+        "cite decide-line tail dropped": (
+            SPEC, _replace(proposed[SPEC], "      path, holding no whitespace or equal to a path in the checker's own\n      Git listing, and holding no swept occurrence;", "      path;"),
+            phrase_finding("holding no whitespace or equal to a path in the checker's own Git listing, and holding no swept occurrence"),
+        ),
+        "cite falsifier tail dropped": (
+            SPEC, _replace(proposed[SPEC], " holds\n    whitespace and is not a path in the checker's own Git listing, or holds\n    a swept occurrence;", ";"),
+            phrase_finding("holds whitespace and is not a path in the checker's own Git listing, or holds a swept occurrence"),
+        ),
+        "cite consequence dropped": (
+            SPEC, _replace(proposed[SPEC], "      - So a stamp's citation holds only a served name with no space in it,\n        or a real path, beside the revision. ", "      - "),
+            phrase_finding("So a stamp's citation holds only a served name with no space in it, or a real path, beside the revision."),
+        ),
+        "scenario whitespace clause dropped": (
+            SPEC, _replace(proposed[SPEC], "only the record's served locator or path, with no whitespace unless it is\n  a path in R's tree, and R's id as its stamp", "only the record's served locator or path and R's id as its stamp"),
+            phrase_finding("with no whitespace unless it is a path in R's tree, and R's id as its stamp"),
+        ),
+        # Round 6, Note 3: the sweep defines a naming.
+        "short-prefix gap unstated": (
+            SPEC, _replace(proposed[SPEC], " These three\n    are the namings the text sweep below finds, and \"names the observed\n    revision\" means them: a shorter prefix of the object id is not decided\n    by this requirement.", ""),
+            phrase_finding("These three are the namings the text sweep below finds, and \"names the observed revision\" means them: a shorter prefix of the object id is not decided by this requirement."),
+        ),
+        # Round 6, Note 2: design decision 13 matches the requirement.
+        "design identity population reopened": (
+            DESIGN, _replace(proposed[DESIGN], "equal to the evaluation identity or to one\n    served source record's source identity, and no other record's;", "equal to the evaluation identity or a served\n    record's own identity;"),
+            "design lacks",
+        ),
+        "design cite-text rule dropped": (
+            DESIGN, _replace(proposed[DESIGN], "that revision, and whose cite text is that record's served locator or\n    path. Two gaps", "that revision. Two gaps"),
+            "design lacks",
         ),
         "stamp citation decide-line dropped": (
             SPEC, _replace(proposed[SPEC], "    - every provenance stamp inside a citation whose cite names one anchor or\n      source record served at that evaluation,", "    - every provenance stamp"),
@@ -947,7 +1013,7 @@ def selftest() -> int:
             phrase_finding("the identity each citation's cite names, and that record's served locator or path"),
         ),
         "citation scenario dropped": (
-            SPEC, _replace(proposed[SPEC], "#### Scenario: A sentence naming the revision is not a provenance stamp", "#### Scenario: A sentence naming the revision"),
+            SPEC, _replace(proposed[SPEC], "#### Scenario: A citation's contents are decided, not its placement", "#### Scenario: A citation's contents are decided"),
             "PWB-REQ-001 lacks exactly one",
         ),
         # Round 5, Note 1: the reviewer's identity-population mutants.
