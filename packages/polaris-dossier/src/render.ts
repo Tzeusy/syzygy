@@ -187,7 +187,7 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   if (typeof pending === 'string') return refuse('render', pending);
   const reviewed = buildDesignPacket({ run, runId, pinnedRevision: pinned, files: pending });
   if (!reviewed.ok) return refuse('render', `the rendered pages cannot be compared outside the review-status region: ${reviewed.reason}`);
-  const design = designReviewOfRecord(opened, reviewed);
+  const design = await designReviewOfRecord(opened, reviewed, { sources: deps.sources, now: () => now });
   const local: LocalRenderInput = { ...built.local, reviewStatus: built.local.reviewStatus.map((item) => (item.id === 'review-status/design' ? designStatusItem(design, run) : item)) };
   const files = draw(local);
   if (typeof files === 'string') return refuse('render', files);

@@ -10,6 +10,7 @@ import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, 
 import { INVENTORY_INFERRED, authoringSessionIds, errno, inventoryOfRecord, logStep, openRun, readRecord, sessionsRoot, type OpenedRun } from './inventory.js';
 import { buildDesignPacket, designBlocking, readLatestSite, validateDesignVerdict, type DesignPacketBuild } from './design-review.js';
 import type { ReverifyRefusal } from './reverify.js';
+import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
 import { CLASS_NOT_CONSENTED, unconsentedClass } from './class-gate.js';
 import { loadDossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
 import { REVISION_FILE, RUN_LAYOUT } from './state-directory.js';
@@ -142,7 +143,7 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   if (!draftRev.ok) return { ok: false, stage: 'draft', reason: draftRev.reason };
   const draftDoc = parseSubject(draftRev.bytes);
   if (draftDoc === undefined) return { ok: false, stage: 'draft', reason: `draft revision ${draftRev.revision} is not one bounded JSON object` };
-  const counted = inventoryOfRecord(run);
+  const counted = await inventoryOfRecord(run, { sources: deps.sources, now: deps.now() });
   if (!counted.counts) return { ok: false, stage: 'inventory', reason: `no inventory counts, so no fidelity packet is built: ${counted.why}` };
   let inventoryBytes: Uint8Array;
   try { inventoryBytes = new Uint8Array(fs.readFileSync(path.join(run, counted.file))); } catch (cause) { return { ok: false, stage: 'inventory', reason: `the frozen inventory ${counted.file} cannot be read (${errno(cause)})` }; }
@@ -603,17 +604,25 @@ export type ReviewOfRecord =
     };
     readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
     readonly launchForm: { readonly value: 'terminal' | 'bang' | 'syzygy-launched'; readonly declaredBy: 'operator' | 'syzygy'; readonly label: 'Inferred' | 'Observed' };
+    /** The per-project statement the review session's work stands on now; null when the run relies on none. */
+    readonly providerStatement: SessionStatementOfRecord | null;
     readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
   }
   | { readonly counts: false; readonly why: string };
 
 type CheckedVerdict =
-  | { readonly ok: true; readonly number: number; readonly session: number; readonly verdict: Readonly<Record<string, unknown>>; readonly form: 'terminal' | 'bang' | 'syzygy-launched' }
+  | {
+    readonly ok: true; readonly number: number; readonly session: number; readonly verdict: Readonly<Record<string, unknown>>; readonly form: 'terminal' | 'bang' | 'syzygy-launched';
+    readonly providerStatement: SessionStatementOfRecord | null;
+  }
   | { readonly ok: false; readonly why: string };
 
 /** The latest checked verdict of a kind, validated, its frozen bytes unchanged, written in a session whose launch form is recorded against
- * that session's prompt. Whether it still names the packet rebuilt now is the caller's. */
-function latestCheckedVerdict(run: string, kind: ReviewKind, packetCheck: (verdict: Readonly<Record<string, unknown>>, number: number) => string | undefined): CheckedVerdict {
+ * that session's prompt and whose cited per-project statement still governs the session's pair at `now` (`recheckSessionStatement`).
+ * Whether it still names the packet rebuilt now is the caller's. */
+async function latestCheckedVerdict(
+  run: string, kind: ReviewKind, packetCheck: (verdict: Readonly<Record<string, unknown>>, number: number) => string | undefined, recheck: Pick<ReviewDeps, 'sources' | 'now'>,
+): Promise<CheckedVerdict> {
   const no = (why: string): CheckedVerdict => ({ ok: false, why });
   const number = nextVerdictNumber(path.join(run, RUN_LAYOUT.reviews), kind) - 1;
   if (number < 0) return no(`no ${kind} verdict has been checked`);
@@ -642,7 +651,9 @@ function latestCheckedVerdict(run: string, kind: ReviewKind, packetCheck: (verdi
   if (formRefusal !== null || launch['role'] !== 'review' || launch['kind'] !== kind || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
     return no(`the launch-form record of ${kind} session ${session} is not ${isLaunchedRun(run) ? 'a syzygy-launched' : 'a terminal or bang'} launch of that session's prompt`);
   }
-  return { ok: true, number, session, verdict, form: form['value'] as 'terminal' | 'bang' | 'syzygy-launched' };
+  const statement = await recheckSessionStatement(run, `${kind} session ${session}`, prompt!, recheck.sources, recheck.now());
+  if (!statement.ok) return no(statement.why);
+  return { ok: true, number, session, verdict, form: form['value'] as 'terminal' | 'bang' | 'syzygy-launched', providerStatement: statement.statement };
 }
 
 /** The fidelity review that counts, if any: the latest checked verdict, validated, its frozen bytes unchanged, naming the packet Syzygy
@@ -652,13 +663,13 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
   const { run } = opened;
   if (nextVerdictNumber(path.join(run, RUN_LAYOUT.reviews), 'fidelity') === 0) return { counts: false, why: 'no fidelity verdict has been checked' };
   const built = await buildFidelityPacket(opened, deps);
-  const checked = latestCheckedVerdict(run, 'fidelity', (verdict, number) => {
+  const checked = await latestCheckedVerdict(run, 'fidelity', (verdict, number) => {
     if (!built.ok) return `the packet cannot be rebuilt now: ${built.reason}`;
     const problems = validateVerdict(verdict, built, authoringSessionIds(run).ids);
     return problems.length === 0 ? undefined : `fidelity verdict ${number} no longer validates against the packet rebuilt now (${problems.map((problem) => problem.kind).join(', ')}); a revision of the draft or the inventory retires it`;
-  });
+  }, deps);
   if (!checked.ok || !built.ok) return { counts: false, why: checked.ok ? 'the packet cannot be rebuilt now' : checked.why };
-  const { number, session, verdict, form } = checked;
+  const { number, session, verdict, form, providerStatement } = checked;
   return {
     counts: true, kind: 'fidelity', number, session, packetSha256: built.sha256,
     verdict: {
@@ -668,6 +679,7 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
     },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
     launchForm: form === 'syzygy-launched' ? { value: form, declaredBy: 'syzygy', label: 'Observed' } : { value: form, declaredBy: 'operator', label: 'Inferred' },
+    providerStatement,
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
     inferred: { basis: REVIEW_INFERRED, label: 'Inferred' },
     label: 'Inferred',
@@ -680,6 +692,7 @@ export type DesignReviewOfRecord =
     readonly verdict: { readonly readiness: 'ready' | 'not-ready'; readonly blocking: boolean; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
     readonly sessionId: { readonly value: string; readonly declaredBy: 'the review session'; readonly label: 'Inferred' };
     readonly launchForm: { readonly value: 'terminal' | 'bang' | 'syzygy-launched'; readonly declaredBy: 'operator' | 'syzygy'; readonly label: 'Inferred' | 'Observed' };
+    readonly providerStatement: SessionStatementOfRecord | null;
     readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly label: 'Inferred';
   }
   | { readonly counts: false; readonly why: string };
@@ -687,20 +700,24 @@ export type DesignReviewOfRecord =
 /** The rendered-design review that counts for `built`, the design packet of the pages a render has just produced: the latest checked
  * design verdict, validated, its frozen bytes unchanged, still valid against that packet (so naming its digest), under an identifier the
  * authoring session does not declare, written in a session whose launch form is recorded. Any change to the pages outside the
- * review-status region changes the packet, so it retires the review. */
-export function designReviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, built: Extract<DesignPacketBuild, { ok: true }>): DesignReviewOfRecord {
+ * review-status region changes the packet, so it retires the review; so does the withdrawal of the statement the session was handed over
+ * under (`recheckSessionStatement`). */
+export async function designReviewOfRecord(
+  opened: Extract<OpenedRun, { ok: true }>, built: Extract<DesignPacketBuild, { ok: true }>, recheck: Pick<ReviewDeps, 'sources' | 'now'>,
+): Promise<DesignReviewOfRecord> {
   const { run } = opened;
-  const checked = latestCheckedVerdict(run, 'design', (verdict, number) => {
+  const checked = await latestCheckedVerdict(run, 'design', (verdict, number) => {
     const problems = validateDesignVerdict(verdict, built, opened.subject.pinnedRevision.commit, authoringSessionIds(run).ids);
     return problems.length === 0 ? undefined : `design verdict ${number} no longer validates against the packet built from these pages (${problems.map((problem) => problem.kind).join(', ')}); a change to the pages outside the review-status region retires it`;
-  });
+  }, recheck);
   if (!checked.ok) return { counts: false, why: checked.why };
-  const { number, session, verdict, form } = checked;
+  const { number, session, verdict, form, providerStatement } = checked;
   return {
     counts: true, kind: 'design', number, session, packetSha256: built.sha256,
     verdict: { readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: designBlocking(verdict), declaredBy: 'the review session', label: 'Inferred' },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
     launchForm: form === 'syzygy-launched' ? { value: form, declaredBy: 'syzygy', label: 'Observed' } : { value: form, declaredBy: 'operator', label: 'Inferred' },
+    providerStatement,
     observed: { packetSha256: built.sha256, verdictNamesPacket: true, label: 'Observed' },
     inferred: { basis: DESIGN_REVIEW_INFERRED, label: 'Inferred' },
     label: 'Inferred',

@@ -16,6 +16,7 @@ import {
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { isLaunchedRun, launchFormRefusal } from './launched.js';
+import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
 import { reverifyPinnedRevision, type ReverifiedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
@@ -29,7 +30,8 @@ import { REVISION_FILE, RUN_ID, RUN_LAYOUT, resolvePathIntent, within } from './
  * checks it as `check` checks a draft (the same derivation at the pinned revision, with the inventory's own rules), refuses an
  * inventory that declares the authoring session's identifier, and freezes it as `inventory/rev-N.json` with its result in
  * `inventory/checks/rev-N.json`. An inventory counts only when its latest revision passed and the launch form of the session it was
- * written in is recorded (`inventoryOfRecord`). Every stored value is within the agent sessions' write reach and Inferred; the
+ * written in is recorded and the per-project statement its session was handed over under still governs that session's pair
+ * (`inventoryOfRecord`, `session-statement.ts`). Every stored value is within the agent sessions' write reach and Inferred; the
  * inventory's completeness over the clone is the inventory session's self-report and never verified. */
 
 export const INVENTORY_BRIEF_VERSION = 'polaris-dossier-inventory-brief-v1';
@@ -391,13 +393,18 @@ export type InventoryOfRecord =
     readonly sessionId: Declared<string>; readonly launchForm: { readonly value: LaunchForm; readonly declaredBy: string; readonly label: 'Inferred' | 'Observed' };
     readonly independence: { readonly label: 'Inferred'; readonly basis: string };
     readonly completeness: { readonly label: 'Inferred'; readonly basis: string };
+    /** The per-project statement the session's work stands on now; null when the run relies on none. */
+    readonly providerStatement: SessionStatementOfRecord | null;
     readonly label: 'Inferred';
   }
   | { readonly counts: false; readonly why: string };
 
 /** The inventory that counts, if any: the latest checked revision, passed, its frozen bytes unchanged since the check, under a declared
- * session identifier no frozen draft declares, written in a session whose launch form is recorded against that session's prompt. */
-export function inventoryOfRecord(runDir: string): InventoryOfRecord {
+ * session identifier no frozen draft declares, written in a session whose launch form is recorded against that session's prompt, and
+ * whose prompt record cites the per-project statement that still, at `now`, is the one governing the session's agent tool with the run's
+ * provider (`recheckSessionStatement`: a withdrawn statement stops the inventory counting; a prompt record from before citations counts
+ * only when the re-check admits a statement now, its citation Unknown). */
+export async function inventoryOfRecord(runDir: string, recheck: { readonly sources: GateSources; readonly now: number }): Promise<InventoryOfRecord> {
   const run = path.resolve(runDir);
   const no = (why: string): InventoryOfRecord => ({ counts: false, why });
   let names: string[];
@@ -428,12 +435,15 @@ export function inventoryOfRecord(runDir: string): InventoryOfRecord {
   if (formRefusal !== null || launch['role'] !== 'inventory' || launch['session'] !== number || launch['promptSha256'] !== promptSha) {
     return no(`the launch-form record of inventory session ${number} is not ${isLaunchedRun(run) ? 'a syzygy-launched' : 'a terminal or bang'} launch of that session's prompt`);
   }
+  const statement = await recheckSessionStatement(run, `inventory session ${number}`, prompt!, recheck.sources, recheck.now);
+  if (!statement.ok) return no(statement.why);
   return {
     counts: true, revision, file: frozen, sha256: inventory['sha256'] as string, session: number,
     sessionId: { value: sessionId, declaredBy: 'the inventory session', label: 'Inferred' },
     launchForm: { value: form['value'] as LaunchForm, declaredBy: form['declaredBy'] as string, label: form['label'] as 'Inferred' | 'Observed' },
     independence: { label: 'Inferred', basis: INVENTORY_INFERRED.independence },
     completeness: { label: 'Inferred', basis: INVENTORY_INFERRED.completeness },
+    providerStatement: statement.statement,
     label: 'Inferred',
   };
 }
