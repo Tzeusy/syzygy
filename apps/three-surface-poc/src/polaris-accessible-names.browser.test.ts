@@ -82,6 +82,12 @@ describe('PWB-REQ-016 distinct-name rules (pure)', () => {
     ], PATHS);
     expect(result.sharedLabelGroups).toBe(1);
     expect(result.violations.map((violation) => [violation.kind, violation.where])).toEqual([['shared-label-name-does-not-begin-with-label', 'a[2] "Read"']]);
+    // Containing the label is not beginning with it.
+    const inside = distinctNameViolations([
+      link(1, 'http://h/x', 'Read', 'Read the overview'),
+      link(2, 'http://h/y', 'Read', 'Then Read the catalog'),
+    ], PATHS);
+    expect(inside.violations.map((violation) => [violation.kind, violation.where])).toEqual([['shared-label-name-does-not-begin-with-label', 'a[2] "Read"']]);
   });
 
   it('requires the machine answer\'s source path after a shared label on an exact-source target', () => {
@@ -231,6 +237,26 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
     } finally { await tab.close(); }
   });
 
+  it('excludes an element carrying the hidden attribute even where CSS or until-found leaves it displayed', async () => {
+    const url = await page(`<style>.shown[hidden]{display:inline}</style><h1>Hidden</h1>
+      <a href="#a" class="shown" hidden>Overridden</a><div hidden="until-found"><a href="#b">Until found</a><h2>Found</h2></div><a href="#c">Kept</a>`, 'hidden-attribute');
+    const tab = await browser.newPage();
+    try {
+      const measured = await measurePage(tab, url);
+      expect({ links: measured.elements.map((element) => element.label), headings: measured.headings.map((heading) => heading.text) }).toEqual({ links: ['Kept'], headings: ['Hidden'] });
+    } finally { await tab.close(); }
+  });
+
+  it('reads a role="heading" at its aria-level and treats each summary\'s details as its target', async () => {
+    const tab = await browser.newPage();
+    try {
+      const deep = await checkNamesAndHeadings(tab, await page('<h1>T</h1><div role="heading" aria-level="3">Deep</div>', 'role-heading'), 'role-heading', new Map());
+      expect(deep.violations.map((violation) => violation.kind)).toEqual(['heading-level-skipped']);
+      const summaries = await checkNamesAndHeadings(tab, await page('<h1>T</h1><details><summary>More</summary>a</details><details><summary>More</summary>b</details>', 'summaries'), 'summaries', new Map());
+      expect(summaries.violations.map((violation) => violation.kind)).toEqual(['shared-name-different-targets']);
+    } finally { await tab.close(); }
+  });
+
   it('computes the name of a link inside a closed details, as the browser would once it opens', async () => {
     const url = await page(`<h1>Closed</h1><details><summary>First</summary><a href="#a">Same</a></details><details><summary>Second</summary><a href="#b" aria-label="Same">Other</a></details>`, 'closed');
     const tab = await browser.newPage();
@@ -286,6 +312,20 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
     // one of them carries its source path (the rule is exercised, not vacuous).
     expect((report.pages[0] as PageNameHeadingReport).sharedLabelGroups).toBeGreaterThan(0);
     expect(report.violations).toEqual([]);
+  }, 240_000);
+
+  it('fails a listed page the daemon does not serve, never skipping it', async () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
+    const { baseUrl, token } = await serve(model, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC);
+    const answer = await fetch(`${baseUrl}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } }).then(async (response) => response.json() as Promise<PocModel>);
+    const tab = await browser.newPage();
+    try {
+      // The status probe reports the last listed page as 404.
+      let probes = 0;
+      const report = await sweepPolarisNamesAndHeadings(tab, baseUrl, answer, POLARIS_HUMAN_PATH, POLARIS_SOURCE_PATH, async () => (probes += 1) === 17 ? 404 : 200);
+      expect({ listed: report.pagesListed, swept: report.pagesSwept }).toEqual({ listed: 17, swept: 16 });
+      expect(report.violations.map((violation) => violation.kind)).toEqual(['page-not-served', 'page-not-swept']);
+    } finally { await tab.close(); }
   }, 240_000);
 
   // Every shape and judgment state the task-4.4 variants render, each served
