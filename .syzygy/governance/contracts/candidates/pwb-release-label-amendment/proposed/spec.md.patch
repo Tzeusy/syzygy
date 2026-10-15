@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 4de677a..9bd8e14 100644
+index aa4c032..f717519 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -366,24 +366,267 @@ readers SHALL receive those identities, the capture instant and the same source
+@@ -366,24 +366,285 @@ readers SHALL receive those identities, the capture instant and the same source
  population. Every emitted project-shape fact SHALL carry its source identity,
  scope, capture instant and observer identity/version.
  
@@ -36,13 +36,23 @@ index 4de677a..9bd8e14 100644
 +      identity, one anchor the machine narrative serves or one source record
 +      the machine answer serves at the same evaluation, and the stamp's whole
 +      text is the revision that record carries, in full or as its first
-+      twelve hexadecimal digits. A revision id in a sentence, a heading or
-+      any other running text is therefore never a stamp. A stamp carries no
-+      label;
++      twelve hexadecimal digits.
++      - The cite's whole visible text, whitespace-normalized, equals one
++        value the checker reads from the record it names: the locator of
++        that anchor, as the machine narrative serves it, or the path of
++        that source record, as the machine answer serves it.
++      - That text holds no whitespace, or it is a path that the checker's
++        own Git listing of the observed revision holds. It holds no
++        occurrence that the text sweep below finds.
++      - So a stamp's citation holds only a served name with no space in it,
++        or a real path, beside the revision. A revision id in a sentence, a
++        heading or any other running text is therefore never a stamp. A
++        stamp carries no label;
 +    - an identity, whose whole text equals the evaluation identity that the
-+      machine answer serves for that page's evaluation, or the whole value of
-+      an `identity` field of a record of its own that the machine answer
-+      serves at that evaluation, and is not a revision's id alone. It shows
++      machine answer serves for that page's evaluation, or the source
++      identity of one source record that the machine answer serves at that
++      evaluation, and is not a revision's id alone. These two are the whole
++      population: an identity of any other record is not excepted. It shows
 +      that identity whole;
 +    - Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf,
 +      or that the exact-source route serves under PWB-REQ-011. It stays
@@ -165,7 +175,8 @@ index 4de677a..9bd8e14 100644
    per-emission identity.
 +  For the release label, they also expose every label unit's form,
 +  statement, values and full object id, the mark of every label unit and
-+  every excepted element, and the identity each citation's cite names.
++  every excepted element, the identity each citation's cite names, and that
++  record's served locator or path.
  - **Oracle**: compare the exposed paths and revision to an independent Git tree
    listing and the closed discovery rules; exhaust every emitted fact's source,
    scope, capture-instant and observer-version stamp; verify capture time remains
@@ -217,9 +228,12 @@ index 4de677a..9bd8e14 100644
 +      source record served at that evaluation, no letter or digit in the
 +      citation outside the cite and the stamp, and the stamp's whole text
 +      that record's revision in full or its first twelve hexadecimal digits;
++    - every such cite's whole text equal to its record's served locator or
++      path, holding no whitespace or equal to a path in the checker's own
++      Git listing, and holding no swept occurrence;
 +    - every excepted identity's whole text equal to the evaluation identity
-+      or to a record's own identity served at that evaluation, and not a
-+      revision's id alone;
++      or to the source identity of one source record served at that
++      evaluation, and not a revision's id alone;
 +    - every excepted Butlers-declared text byte-identical to its source in
 +      the checker's own Git read;
 +    - exact equality of form, statement, tag name, distance, tied names and
@@ -253,8 +267,12 @@ index 4de677a..9bd8e14 100644
 +  - a naming of the observed revision marked as a provenance stamp: a stamp
 +    outside a citation, a citation holding other words, or a stamp whose
 +    cite names no served record or whose text is not that record's revision;
-+  - an element marked as an identity whose text is not a served identity, or
-+    is a revision's id alone;
++  - a cite whose text is not its record's served locator or path, holds
++    whitespace and is not a path in the checker's own Git listing, or holds
++    a swept occurrence;
++  - an element marked as an identity whose text is neither the evaluation
++    identity nor one served source record's source identity, or is a
++    revision's id alone;
 +  - excepted Butlers-declared text that differs from its source;
 +  - a label in a form other than the first whose condition holds;
 +  - a not-read or untagged label whose statement is not its test's;
@@ -270,7 +288,7 @@ index 4de677a..9bd8e14 100644
  
  #### Scenario: Source population is complete at one revision
  
-@@ -391,11 +634,47 @@ scope, capture instant and observer identity/version.
+@@ -391,11 +652,57 @@ scope, capture instant and observer identity/version.
  - **THEN** every admitted project-shape source resolves at R
  - **AND** the human and machine views expose the same complete source set
  
@@ -309,6 +327,16 @@ index 4de677a..9bd8e14 100644
 +  names or in their expansion, Polaris and the machine answer disclose the
 +  tag as moved, naming A, B and both evaluations
 +- **AND** every claim still binds to the current revision's full object id
++
++#### Scenario: A sentence naming the revision is not a provenance stamp
++
++- **WHEN** a Polaris page has a sentence about the observed revision R
++  outside every label unit
++- **THEN** the sentence shows neither R's full object id nor its first twelve
++  hexadecimal digits
++- **AND** where the page cites a served anchor or source record carrying R,
++  the citation holds only the record's served locator or path, with no
++  whitespace unless it is a path in R's tree, and R's id as its stamp
 +
  ```yaml
  warrants:
