@@ -378,6 +378,11 @@ CAMPAIGNS = (
         "Pre-started waiting sessions",
         r"R-PR408-(?:WAITING-SESSIONS|V12-INSTALL)-.*\.md",
     ),
+    campaign(
+        "cap1-trusted-bootstrap-consent",
+        "CAP1 trusted-bootstrap consent amendment",
+        r"R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-\d+-(?:RAW|DISPOSITION)\.md",
+    ),
 )
 
 

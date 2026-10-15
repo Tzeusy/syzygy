@@ -32,8 +32,11 @@ Both review-1 findings are recorded there as resolved.
 
 ## Rebase onto current main — 2026-10-15
 
-[Observed] The candidate was never committed; it sat untracked in the main
-checkout. Re-hashing BASELINE.json's 13 protected predecessors against main at
+[Observed] Until 2026-10-15 the candidate was never committed to main or to
+any pushed ref; it sat untracked in the main checkout. (One local, unpushed
+commit, c596fda4ab35edd0a99c85cb3fec26895bd33f3d of 2026-10-04 on the local
+branch governance/redis-sitting-simulation, carries all 14 files with blobs
+equal to review 2's subject, per review 3, finding 1.) Re-hashing BASELINE.json's 13 protected predecessors against main at
 2d6a36328f638d3ce52605e88328c1ac7b4c9895 found 11 unchanged and 2 moved: the
 Capability 1 proposal.md and design.md, both replaced by the owner-signed
 readability successor of 2026-09-29
