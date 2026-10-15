@@ -248,12 +248,12 @@ function provenanceCitations(provenance: readonly PocProvenance[], anchors: read
  * action route when one exists, and the basis sentence the page has always
  * rendered (M4 slice 1). */
 function pocUnknownBody(id: string, epistemic: PocUnknown, model?: PocModel): string {
-  const action = model === undefined ? '' : actionRouteLink(model, id, epistemic, activeMountPrefix, copyText('label.action-route'));
+  const action = model === undefined ? '' : actionRouteLink(model, id, epistemic, activeMountPrefix, copyText('label.action-route'), 'label-first');
   return `${copy('label.unknown')} — ${unknownReasonRef(epistemic.closedReason)}. ${unknownRoute(epistemic, copy('label.route'))}${action}<br><small>${escapeHtml(epistemic.reason)}</small>`;
 }
 
 function entitySection(entity: PocEntity, model: PocModel, blockAttrs = ` data-polaris-section="${escapeHtml(entity.id)}"`): string {
-  const link = crossSurfaceLink({ model, className: 'reality-entity', sourceId: entity.id, target: 'orrery', targetId: entity.id,
+  const link = crossSurfaceLink({ model, nameForm: 'label-first', className: 'reality-entity', sourceId: entity.id, target: 'orrery', targetId: entity.id,
     mountPrefix: activeMountPrefix, label: entity.title });
   const title = `<h3 id="polaris-${escapeHtml(entity.id)}"${FACT}>${link}</h3>`;
   if (entity.epistemic.label === 'Observed') {
@@ -295,7 +295,7 @@ function codeStructureSection(model: PocModel): string {
   }]);
   return `<section class="claim-section" data-polaris-section="region:code-structure">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.provenance.revision.slice(0, 12))}, covering ${crossSurfaceLink({ model, className: 'code-count', sourceId: 'region:code-structure', target: 'orrery', targetId: null, mountPrefix: activeMountPrefix, label: `${cs.files.length} files` })}.</span>
+    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.provenance.revision.slice(0, 12))}, covering ${crossSurfaceLink({ model, nameForm: 'label-first', className: 'code-count', sourceId: 'region:code-structure', target: 'orrery', targetId: null, mountPrefix: activeMountPrefix, label: `${cs.files.length} files` })}.</span>
     <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>git-ls-tree</cite>@<code data-parity-field="provenance-revision">${escapeHtml(cs.provenance.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
@@ -316,7 +316,7 @@ function workItemsSection(model: PocModel): string {
   }]);
   return `<section class="claim-section" data-polaris-section="region:work-items">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:work-items">${crossSurfaceLink({ model, className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })} under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.provenance.revision.slice(0, 12))}.</span>
+    <p${block.attrs}><span data-claim-provenance="region:work-items">${crossSurfaceLink({ model, nameForm: 'label-first', className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })} under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.provenance.revision.slice(0, 12))}.</span>
     <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>beads-dolt</cite>@<code data-parity-field="provenance-revision">${escapeHtml(wi.provenance.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
@@ -609,7 +609,10 @@ function reasonRouteParts(reason: string): { lead: string; list: string } {
   };
 }
 
-function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
+/** `place` names where a disclosure sits when one claim's disclosure renders
+ * in several sections (an unobserved shape's claim stands in for each), so
+ * each disclosure's accessible name stays distinct (PWB-REQ-016, P-99). */
+function unknownRoutes(claim: ProjectShapeClaim, prefix: string, place?: string): string {
   if (!('reasons' in claim.epistemic)) {
     return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${copy('label.deferred')}.</p>`;
   }
@@ -617,7 +620,7 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   const secondaryLine = secondary.length === 0
     ? ''
     : `<br><small>${copy('label.also')} ${secondary.map((reason) => `${escapeHtml(reason)} (${copy('label.route').toLowerCase()} ${escapeHtml(routeOf(claim, reason))})`).join('; ')}</small>`;
-  return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
+  return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary aria-label="${escapeHtml(`${copyText('label.source-remedies')} — ${claim.claimId}${place === undefined ? '' : ` — ${place}`}`)}"${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
 }
 
 function readingFigure(figure: ReadingFigure, anchorId?: string): string {
@@ -654,7 +657,7 @@ function accountStatement(statement: ProjectAccountStatement, revision: string):
         const reading = projectReading(statement.statement, statement.key);
         return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${renderProjectReading(reading, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')} — ${escapeHtml(statement.key)}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
       })()
-    : unknownRoutes(statement.claim, '');
+    : unknownRoutes(statement.claim, '', copyText(`account.${statement.key}`));
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">
     ${heading(3, `polaris-account-${statement.key}`, `account.${statement.key}`)}
     ${body}
@@ -785,7 +788,7 @@ function shapeUnknownBlock(shape: Exclude<ProjectShape, { kind: 'observed' }>, g
       break;
   }
   return `<section class="claim-section" data-polaris-section="shape:${escapeHtml(group)}">
-    ${unknownRoutes(shape.claim, '')}
+    ${unknownRoutes(shape.claim, '', copyText(`group.${group}`))}
     ${detail}
     ${shape.authority === undefined || group !== 'overview' ? '' : authorityLine(shape.authority)}
     ${tupleLine(shape.claim)}
@@ -1177,7 +1180,7 @@ function shapeEvidence(shape: ProjectShape): string {
   if (shape.kind !== 'observed') {
     return `<section class="claim-section" data-polaris-section="shape:evidence">
       ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
-      ${unknownRoutes(shape.claim, `${copy('sentence.no-source-read')} `)}
+      ${unknownRoutes(shape.claim, `${copy('sentence.no-source-read')} `, copyText('evidence.sources'))}
       ${tupleLine(shape.claim)}
     </section>
     <section class="claim-section" data-polaris-section="shape:gaps">

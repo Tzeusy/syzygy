@@ -4,7 +4,14 @@ import { renderPolarisMarkdown } from './polaris-markdown.js';
 describe('Polaris admitted-text Markdown presentation', () => {
   it('formats headings and paragraphs without adding fragment identities', () => {
     expect(renderPolarisMarkdown('# Context\n\nOnly **observed** evidence\nmay count.\n\n### C#'))
-      .toBe('<h4>Context</h4>\n<p>Only <strong>observed</strong> evidence\nmay count.</p>\n<h6>C#</h6>');
+      .toBe('<h4>Context</h4>\n<p>Only <strong>observed</strong> evidence\nmay count.</p>\n<h5>C#</h5>');
+  });
+
+  it('never renders a declared heading more than one level deeper than the one before it (PWB-REQ-016, P-99 v1.0)', () => {
+    // `#` then `###` declares a skip; it renders h4 then h5, not h6.
+    expect(renderPolarisMarkdown('# A\n\n### B\n\n#### C\n\n## D')).toBe('<h4>A</h4>\n<h5>B</h5>\n<h6>C</h6>\n<h5>D</h5>');
+    // The clamp carries into nested blocks in document order.
+    expect(renderPolarisMarkdown('# A\n\n> ### B\n\n- #### C', undefined, 2)).toBe('<h3>A</h3>\n<blockquote><h4>B</h4></blockquote>\n<ul><li><h5>C</h5></li></ul>');
   });
 
   it('starts a shallowest ### one below its anchor while retaining relative depth', () => {

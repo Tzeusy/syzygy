@@ -35,6 +35,11 @@ export interface BrowserPage {
   /** Dispatches a real key press (down + up) through the browser's input pipeline. */
   press(key: KeyName, modifiers?: { readonly shift?: boolean }): Promise<void>;
   axTree(): Promise<readonly AxNode[]>;
+  /** The browser-computed accessible name of each element of the array
+   * `expression` evaluates to, in order (PWB-REQ-016 distinct names). The
+   * name comes from the browser's own accessibility computation for that
+   * DOM node, never from page script. */
+  accessibleNames(expression: string): Promise<readonly string[]>;
   /** Closes this page's target; the browser stays open for other pages. */
   close(): Promise<void>;
 }
@@ -214,6 +219,25 @@ class CdpPage implements BrowserPage {
       ...(node.backendDOMNodeId === undefined ? {} : { backendDOMNodeId: node.backendDOMNodeId }),
       childIds: node.childIds ?? [],
     }));
+  }
+
+  async accessibleNames(expression: string): Promise<readonly string[]> {
+    const array = await this.connection.send<{ readonly result: { readonly objectId?: string }; readonly exceptionDetails?: { readonly text: string } }>('Runtime.evaluate', { expression, returnByValue: false }, this.sessionId);
+    if (array.exceptionDetails !== undefined || array.result.objectId === undefined) throw new Error(`page script failed: ${array.exceptionDetails?.text ?? 'no element array'}`);
+    const properties = await this.connection.send<{ readonly result: readonly { readonly name: string; readonly value?: { readonly objectId?: string } }[] }>('Runtime.getProperties', { objectId: array.result.objectId, ownProperties: true }, this.sessionId);
+    const elements = properties.result
+      .filter((property) => /^[0-9]+$/.test(property.name))
+      .sort((a, b) => Number(a.name) - Number(b.name));
+    const names: string[] = [];
+    for (const element of elements) {
+      const objectId = element.value?.objectId;
+      if (objectId === undefined) throw new Error(`array entry ${element.name} is not an element`);
+      const partial = await this.connection.send<{ readonly nodes: readonly RawAxNode[] }>('Accessibility.getPartialAXTree', { objectId, fetchRelatives: false }, this.sessionId);
+      const node = partial.nodes[0];
+      names.push(typeof node?.name?.value === 'string' ? node.name.value : '');
+    }
+    await this.connection.send('Runtime.releaseObject', { objectId: array.result.objectId }, this.sessionId);
+    return names;
   }
 }
 

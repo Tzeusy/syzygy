@@ -34,7 +34,9 @@ function blobObjectId(text: string): string {
   return createHash('sha1').update(`blob ${body.byteLength}\0`).update(body).digest('hex');
 }
 
-function modelFor(variant: AccessibilityVariant, cleanups: string[]): PocModel {
+/** The model one variant renders (also served whole by the PWB-REQ-016
+ * names-and-headings sweep). */
+export function variantModel(variant: AccessibilityVariant, cleanups: string[]): PocModel {
   const judgment = variant.judgment === 'not-evaluated' ? {} : { walkthroughJudgment: walkthroughJudgmentFixture(variant.judgment) };
   switch (variant.shape) {
     case 'not-evaluated':
@@ -73,7 +75,7 @@ export interface RenderedVariant {
 
 /** Renders one variant's Polaris page and lists its required targets. */
 export function renderVariant(variant: AccessibilityVariant, cleanups: string[]): RenderedVariant {
-  const model = modelFor(variant, cleanups);
+  const model = variantModel(variant, cleanups);
   const html = renderPolarisPage(model);
   // Every rendered group and capability deep dive must be reachable by a
   // link: the expectation comes from the ids present, not from the links.

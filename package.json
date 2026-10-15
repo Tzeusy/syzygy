@@ -21,6 +21,7 @@
     "poc:redis-shaped-discovery": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/redis-shaped-measure-main.js",
     "poc:fresh-checkout-demo": "npm run build:poc --silent && node apps/three-surface-poc/dist/fresh-checkout-demo-main.js",
     "poc:keyboard-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-keyboard-sweep-main.js",
+    "poc:accessible-names-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-accessible-names-main.js",
     "poc:pwb-mutation-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-sweep-main.js",
     "poc:pwb-n8-coverage-matrix": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-n8-synthetic-corpus-coverage-matrix-main.js",
     "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier",

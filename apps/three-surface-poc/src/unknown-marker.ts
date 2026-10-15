@@ -24,10 +24,10 @@ export function unknownRoute(epistemic: PocUnknown, label = 'Route:'): string {
 
 /** The action route, mount-prefix-aware, as a marked cross-surface link.
  * Following it writes nothing: it opens the read-only materialize preview. */
-export function actionRouteLink(model: PocModel, id: string, epistemic: PocUnknown, mountPrefix: string, label = 'Materialize preview'): string {
+export function actionRouteLink(model: PocModel, id: string, epistemic: PocUnknown, mountPrefix: string, label = 'Materialize preview', nameForm?: 'label-first'): string {
   const action = epistemic.actionRoute;
   if (action === undefined) return '';
-  return ` ${crossSurfaceLink({ model, className: 'action-route', sourceId: id, target: action.surface, targetId: action.anchor, mountPrefix, label })}`;
+  return ` ${crossSurfaceLink({ model, className: 'action-route', sourceId: id, target: action.surface, targetId: action.anchor, mountPrefix, label, ...(nameForm === undefined ? {} : { nameForm }) })}`;
 }
 
 /** The model's Unknown for a non-claim subject; a disclosure with no
