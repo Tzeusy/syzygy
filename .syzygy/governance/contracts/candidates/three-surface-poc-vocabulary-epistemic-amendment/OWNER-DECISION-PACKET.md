@@ -1,14 +1,22 @@
 # Owner decision packet — Three-Surface POC vocabulary and epistemic-record amendment
 
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
-> accepted. This packet puts one sign-off question and four deferred-scope
-> questions to the owner; only the owner's answer binds anything (VIS-4).
+> accepted. This packet puts two questions on this version and four
+> deferred-scope questions to the owner; only the owner's answer binds
+> anything (VIS-4).
 
 **Status:** drafted 2026-10-14. On your direction of that day you parked
 P-84 (`../three-surface-poc-identity-amendment/`) and asked for a narrower
-redraft from its 43 findings. This is that redraft, register row P-108. It
-has had **no review yet**: round 1 is briefed in `REVIEW-BRIEF.md`, and
-this version is not offered for signing until that round clears.
+redraft from its 43 findings. This is that redraft, register row P-108.
+*(Marked 2026-10-15: "It has had **no review yet**: round 1 is briefed in
+`REVIEW-BRIEF.md`" is no longer true.)* Round 1
+(docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-1-RAW.md) was
+`REVISE`, with two revise findings and seven notes. On your direction of
+2026-10-15 ("One cycle", as relayed by the lead session) every finding was
+**repaired once on 2026-10-15, unconfirmed pending round 2**, mapped in
+`ROUND-1-DISPOSITIONS.md`. Round 2 is briefed in `REVIEW-BRIEF.md`
+§"Round 2". This version is not offered for signing until a round clears
+it; a `REVISE` in round 2 comes back to you with its findings open.
 
 ## What you would be signing
 
@@ -33,13 +41,30 @@ and the findings census behind the narrowing.
   assertion, and never counts as Observed or clears an Unknown. Nothing
   produces one today.
 
-This is the parked package's POC-REQ-055 unchanged, and its POC-REQ-060
-with three changes. The record shape covers entities and relationships, not
-"claims", which the POC specification never defines. The Inferred recount
-names records by the identifier the machine answer already serves, not by
-the deferred subject identity. And a tier is checked where a record carries
-one, rather than "where one applies". `SEMANTIC-DELTA.md` §2 gives the
-reason for each.
+This started as the parked package's POC-REQ-055 unchanged, and its
+POC-REQ-060 with three changes. The record shape covers entities and
+relationships, not claims: the project-shape plane's claims are PWB-REQ-007's
+under P-75 Q2, and the governing-intent claim on each work item, signed under
+P-100, is POC-REQ-014's. *(Marked 2026-10-15: the first draft said "not
+"claims", which the POC specification never defines"; P-100 made that
+false, as round 1's finding 5 found.)* The Inferred recount names records by
+the list and the identifier the machine answer already serves, not by the
+deferred subject identity. And a tier is checked where a record carries one,
+rather than "where one applies". `SEMANTIC-DELTA.md` §2 gives the reason for
+each.
+
+**What round 1 changed.** [Inferred] Rendering obligations now reach the
+rendered elements that carry a relationship's or record's served `id` in a
+declared marker, the form POC-REQ-020 uses, and each unmarked rendering is
+an Unknown row (Question 2). The declared encoding table must give
+Observed, Inferred and Unknown three different entries, which also keeps
+POC-REQ-014's encoding check decidable. "Observed total" now names its
+population. The coverage matrix gains three Unknown rows, one of them for
+the tier meanings (`gate-backed` without a gate artifact, for example) that
+the oracle does not check. The delta also now says that POC-REQ-060 keeps
+Inferred records inline, not in a separate stored layer excluded from the
+VIS-7 identity test as doctrine asks, and defers both to the production
+constructor's act.
 
 **What is not in it.** The subject identity requirement (POC-REQ-054), the
 three-state ribbon scenario, the cross-surface link row and the join key.
@@ -86,6 +111,21 @@ extension. [Inferred] No route question is asked, because that record
 already answers it for every POC amendment.
 
 **If unanswered,** nothing is signed and the package stays a candidate.
+
+## Question 2 — which renderings must show the flag and the Inferred encoding?
+
+Round 1 found that "rendered wherever the relationship is rendered" names a
+population no check can list: a Polaris sentence that mentions a flagged
+relationship without any marker is a rendering no sweep finds. The repair
+chose one of two readings the reviewer offered.
+
+| Option | Meaning |
+|---|---|
+| **Marked renderings only** (recommended; this version) | The flag and reason, and the Inferred encoding, are required in every rendered element that carries the served `id` in a declared marker. The check counts that marker population and reports it. An unmarked rendering is outside the check and is an Unknown row in the coverage matrix. |
+| Every rendering, marked or not | The requirements also say every rendering of a relationship or record SHALL carry a marker. [Inferred] No sweep can find an unmarked rendering, so that limb would still have no deciding oracle. |
+
+Signing v1.0 answers this with the recommended option. To choose the other,
+answer Question 1 with "Revise" and say so.
 
 ## Deferred scope
 

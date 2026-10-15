@@ -120,7 +120,10 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("closed-table name in its roles", "a relation name from RFC1-25's closed table, emitted with its source and target in the roles that table assigns the relation"),
         ("outside flag with a reason", "carry an explicit outside-closed-vocabulary flag with a stated reason"),
         ("declared kind-to-class correspondence", "read through a checked-in declaration that maps each shared-model entity kind to the RFC 0001 class it corresponds to, or to none"),
-        ("flag carried and rendered", "carried in the machine answer and rendered wherever the relationship is rendered"),
+        ("flag carried and rendered", "carried in the machine answer and rendered in every rendered element that marks the relationship"),
+        ("a marker names the relationship's served id", "an element marks a relationship when it carries the relationship's served `id` in one of the surfaces' declared relationship markers"),
+        ("unmarked renderings outside the sweep", "A rendering of a relationship that carries no declared relationship marker is outside this requirement's sweep."),
+        ("marker population is the rendering denominator", "the denominator is the complete marker population, which the check counts and reports — and checks every flagged relationship for a non-empty reason in the machine answer and in every element that marks it"),
         ("flag never widens the vocabulary", "it never adds a kind or a role pair to that vocabulary"),
         ("unassigned role pairs decide", "zero unflagged relationships whose mapped role pair the table does not assign that relation"),
         ("admitted relationships never flagged", "zero flagged relationships whose kind and mapped role pair the table assigns"),
@@ -137,15 +140,20 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("Inferred only from an agent", "An Inferred state SHALL arise only from an agent's assertion"),
         ("Inferred never Observed or clearing", "SHALL never count toward an Observed total or clear an Unknown"),
         ("Inferred names its assertion", "SHALL name the agent assertion it arises from"),
-        ("Inferred encoded distinctly", "render with an encoding the legend distinguishes from Observed"),
+        ("Inferred encoded distinctly", "SHALL render with the declared table's Inferred entry in every rendered element that marks its record"),
+        ("label entries pairwise distinct", "The declared token/encoding table SHALL give Observed, Inferred and Unknown three pairwise distinct entries"),
+        ("label entries compared", "a pairwise comparison of the table's Observed, Inferred and Unknown entries"),
+        ("shared model observed through the machine answer", "The shared model's records are observed through the machine answer"),
+        ("Observed totals named", "An Observed total is every count the machine answer serves, except a count the machine answer declares to be of Inferred records"),
+        ("Inferred marker denominator", "for that record the checker extracts every rendered element carrying a declared record marker that names it — the denominator is that marker population, which the check counts and reports"),
         ("record-shape population bounded", "No other epistemic value the machine answer serves is in the record-shape population"),
         ("lists are the record denominator", "enumerates every element of the machine answer's entity and relationship lists — the denominator is that population — checks that each carries exactly one epistemic record"),
         ("Inferred fixture limb", "the Inferred limbs are exercised by a fixture record injected at the model seam"),
-        ("Observed totals recounted", "a recount of every Observed total without it"),
+        ("Observed totals recounted", "a recount of every Observed total without it, each of which must equal the count served with it"),
         ("Unknown records recounted", "a recount of the entity and relationship records labelled Unknown with and without it"),
-        ("Unknown sets compared by served identifier", "each member named by the identifier the machine answer serves it under and the injected record excluded, must be equal"),
+        ("Unknown sets compared by list and served identifier", "each member keyed by the list it is served in and the identifier the machine answer serves it under and the injected record excluded, must be equal"),
         ("a missing record falsifies", "an entity or relationship with no epistemic record or with more than one"),
-        ("Inferred scenario leaves every Unknown", "appears in no Observed count, leaves every Unknown entity and relationship record in the machine answer Unknown, and renders with the declared Inferred encoding"),
+        ("Inferred scenario leaves every Unknown", "changes no Observed total the machine answer serves, leaves every Unknown entity and relationship record in the machine answer Unknown, and renders with the declared Inferred encoding in every rendered element that marks it"),
         ("signed scenario kept", "#### Scenario: Unknown looks the same everywhere"),
         ("Inferred scenario heading", "#### Scenario: An agent assertion stays Inferred"),
     ),
@@ -157,6 +165,8 @@ COVERAGE_ROW_PHRASES = (
     ("RFC1-25", "the slice-written correspondence", "the slice that emits the relationships also writes it"),
     ("RFC2-25", "the Inferred reading of never green", "`[Inferred]` the covered reading of \"never green\" is \"rendered unlike Observed\""),
     ("RFC2-25", "the bounded Unknown recount", "it clears no Unknown among the machine answer's entity and relationship records"),
+    ("RFC1-26", "the marked-rendering disclosure", "in the machine answer and in every rendered element that marks it with a declared relationship marker"),
+    ("RFC2-25", "the marked-rendering encoding", "which differs from its Observed entry, in every rendered element that marks it with a declared record marker"),
     ("RFC6-14", "the list denominator", "POC-REQ-060's denominator is every element of the machine answer's entity and relationship lists"),
 )
 
@@ -164,6 +174,9 @@ COVERAGE_ROW_PHRASES = (
 UNKNOWN_ROWS = (
     ("RFC1-25", "The declared kind-to-class correspondence matches RFC 0001's class definitions"),
     ("RFC1-26", "No relation outside the closed table is emitted at all"),
+    ("RFC1-26", "A flagged relationship rendered in an element that carries no declared relationship marker shows its flag and reason there"),
+    ("RFC2-25", "An `asserted-by-worker` claim renders unlike Observed in a rendering that carries no declared record marker"),
+    ("RFC2-25", "A record carries a tier only where that tier's Semantics column holds"),
     ("RFC2-25", "An `asserted-by-worker` claim clears no Unknown outside the machine answer's entity and relationship lists"),
     ("RFC6-14", "Every claim instance, and every other epistemic value the machine answer serves outside its entity and relationship lists, carries the same record"),
 )
@@ -178,7 +191,7 @@ READER_NOTE_EDITS = (
 #: Whitespace-normalized phrases the rewritten reader notes must carry.
 READER_NOTE_PHRASES = (
     ("the cross-cutting group range", "*Cross-cutting experience* (055, 060–061)."),
-    ("the Group-line placement sentence", "its number range does not place it in the Orrery group, its `Group` line does."),
+    ("the Group-line placement sentence", "its number range does not place it in the Orrery group; its `Group` line places it in *Cross-cutting experience*."),
     ("the signed decision keys", "`POC-DIR-2026-08-29` names `THREE-SURFACE-POC-MODE-DIRECTION.md`, `POC-DIR-2026-08-30` names `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`"),
 )
 #: The proposal sentence that makes P-75 Q4's "no production constructor"
@@ -678,7 +691,7 @@ def build_mutants(
             p055 + "declared kind-to-class correspondence",
         ),
         "055 flag not rendered": (
-            S, _replace(proposed[S], "SHALL be carried in the machine answer and rendered wherever the relationship\nis rendered.", "SHALL be carried in the machine answer."),
+            S, _replace(proposed[S], "SHALL be carried in the machine answer and rendered in every rendered element\nthat marks the relationship;", "SHALL be carried in the machine answer;"),
             p055 + "flag carried and rendered",
         ),
         "055 role pairs undecided": (
@@ -697,6 +710,18 @@ def build_mutants(
             S, _replace(proposed[S], "none is\n  imported from the model", "each is\n  imported from the model"),
             p055 + "literals never imported from the model",
         ),
+        "055 marker attribution dropped": (
+            S, _replace(proposed[S], " an element marks a relationship when it carries\nthe relationship's served `id` in one of the surfaces' declared relationship\nmarkers.", " an element marks a relationship when it renders it."),
+            p055 + "a marker names the relationship's served id",
+        ),
+        "055 unmarked renderings claimed": (
+            S, _replace(proposed[S], " A\nrendering of a relationship that carries no declared relationship marker is\noutside this requirement's sweep.", ""),
+            p055 + "unmarked renderings outside the sweep",
+        ),
+        "055 marker denominator dropped": (
+            S, _replace(proposed[S], "it loads each surface and extracts every\n  rendered element carrying a declared relationship marker — the\n  denominator is the complete marker population, which the check counts\n  and reports — and checks every flagged relationship for a non-empty\n  reason in the machine answer and in every element that marks it.", "it checks every flagged relationship for a non-empty\n  reason in the machine answer and beside every rendering."),
+            p055 + "marker population is the rendering denominator",
+        ),
         "055 warrants drop the ruling key": (
             S, _replace(proposed[S], "  contracts: [RFC1-25, RFC1-26]\n  policies: []\n  decisions: [POC-DIR-2026-09-21]", "  contracts: [RFC1-25, RFC1-26]\n  policies: []\n  decisions: [POC-DIR-2026-08-30]"),
             "POC-REQ-055 warrants do not cite ruling P-75's decision key",
@@ -707,7 +732,7 @@ def build_mutants(
             p060 + "cross-cutting group",
         ),
         "060 Inferred encoded like Observed": (
-            S, _replace(proposed[S], "SHALL render\nwith an encoding the legend distinguishes from Observed.", "MAY render\nwith the Observed encoding."),
+            S, _replace(proposed[S], "SHALL render with the declared table's Inferred entry in\nevery rendered element that marks its record;", "MAY render with the Observed encoding;"),
             p060 + "Inferred encoded distinctly",
         ),
         "060 signed scenario renamed": (
@@ -731,19 +756,19 @@ def build_mutants(
             p060 + "tier only where carried, inside its parent",
         ),
         "060 Unknown route dropped": (
-            S, _replace(proposed[S], "closed twelve with its resolution route. An Inferred", "closed twelve. An Inferred"),
+            S, _replace(proposed[S], "closed twelve with its resolution route. The declared", "closed twelve. The declared"),
             p060 + "closed reasons with a route",
         ),
         "060 Inferred counted as Observed": (
-            S, _replace(proposed[S], "SHALL never count toward an Observed total or clear\nan Unknown,", "MAY count toward an Observed total,"),
+            S, _replace(proposed[S], "SHALL never count\ntoward an Observed total or clear an Unknown,", "MAY count\ntoward an Observed total,"),
             p060 + "Inferred never Observed or clearing",
         ),
         "060 Inferred names nothing": (
-            S, _replace(proposed[S], " SHALL name the agent assertion it arises from, and SHALL render", " and SHALL render"),
+            S, _replace(proposed[S], " SHALL name the agent assertion\nit arises from, and SHALL render", " and SHALL render"),
             p060 + "Inferred names its assertion",
         ),
         "060 Inferred from any source": (
-            S, _replace(proposed[S], "An Inferred state SHALL arise only\nfrom an agent's assertion,", "An Inferred state MAY arise\nfrom any source,"),
+            S, _replace(proposed[S], "An\nInferred state SHALL arise only from an agent's assertion,", "An\nInferred state MAY arise from any source,"),
             p060 + "Inferred only from an agent",
         ),
         "060 population unbounded": (
@@ -755,28 +780,48 @@ def build_mutants(
             p060 + "lists are the record denominator",
         ),
         "060 fixture limb dropped": (
-            S, _replace(proposed[S], " While no agent\n  has asserted anything, the Inferred limbs are exercised by a fixture\n  record injected at the model seam.", ""),
+            S, _replace(proposed[S], " While no agent\n  has asserted anything, the Inferred limbs are exercised by a fixture\n  record injected at the model seam;", " Then"),
             p060 + "Inferred fixture limb",
         ),
         "060 Observed totals not recounted": (
-            S, _replace(proposed[S], "a recount of every Observed total without\n  it,", "a sample of one Observed total,"),
+            S, _replace(proposed[S], "a recount of every Observed total without\n  it, each of which must equal the count served with it,", "a sample of one Observed total,"),
             p060 + "Observed totals recounted",
         ),
         "060 Unknown records not recounted": (
-            S, _replace(proposed[S], "a recount of the entity and relationship records labelled Unknown\n  with and without it, whose two sets,", "a count of Unknown records, whose two sets,"),
+            S, _replace(proposed[S], "a recount of\n  the entity and relationship records labelled Unknown with and without\n  it, whose two sets,", "a count of\n  Unknown records, whose two sets,"),
             p060 + "Unknown records recounted",
         ),
         "060 Unknown sets compared by count": (
-            S, _replace(proposed[S], "each member named by the\n  identifier the machine answer serves it under and the injected record\n  excluded, must be equal", "must be equal in size"),
-            p060 + "Unknown sets compared by served identifier",
+            S, _replace(proposed[S], "each member keyed by the list it is served in and\n  the identifier the machine answer serves it under", "each member named by\n  the identifier the machine answer serves it under"),
+            p060 + "Unknown sets compared by list and served identifier",
         ),
         "060 missing record passes": (
-            S, _replace(proposed[S], "an entity or relationship with no epistemic record or\n  with more than one; ", ""),
+            S, _replace(proposed[S], "an entity or relationship with no epistemic record or with more\n  than one; ", ""),
             p060 + "a missing record falsifies",
         ),
         "060 Inferred scenario keeps no Unknown": (
-            S, _replace(proposed[S], "appears in no Observed count, leaves every Unknown\n  entity and relationship record in the machine answer Unknown, and\n  renders", "appears in no Observed count, and renders"),
+            S, _replace(proposed[S], "changes no Observed total the machine answer serves,\n  leaves every Unknown entity and relationship record in the machine\n  answer Unknown, and renders", "changes no Observed total the machine answer serves,\n  and renders"),
             p060 + "Inferred scenario leaves every Unknown",
+        ),
+        "060 label entries may coincide": (
+            S, _replace(proposed[S], " The declared token/encoding table\nSHALL give Observed, Inferred and Unknown three pairwise distinct entries.", ""),
+            p060 + "label entries pairwise distinct",
+        ),
+        "060 label entries not compared": (
+            S, _replace(proposed[S], " a pairwise\n  comparison of the table's Observed, Inferred and Unknown entries, and", " and"),
+            p060 + "label entries compared",
+        ),
+        "060 shared model read directly": (
+            S, _replace(proposed[S], " The shared model's records are observed\n  through the machine answer,", " The shared model's records are read\n  directly,"),
+            p060 + "shared model observed through the machine answer",
+        ),
+        "060 Observed total undefined": (
+            S, _replace(proposed[S], " An Observed\n  total is every count the machine answer serves, except a count the\n  machine answer declares to be of Inferred records.", ""),
+            p060 + "Observed totals named",
+        ),
+        "060 Inferred marker denominator dropped": (
+            S, _replace(proposed[S], "; for that record the checker\n  extracts every rendered element carrying a declared record marker that\n  names it — the denominator is that marker population, which the check\n  counts and reports.", "."),
+            p060 + "Inferred marker denominator",
         ),
         "060 signed scenario edited": (
             S, _replace(proposed[S], "- **THEN** all three render it with the declared Unknown encoding from\n  the shared token set", "- **THEN** all three render it with an Unknown encoding"),
@@ -800,7 +845,7 @@ def build_mutants(
             "reader notes lack the cross-cutting group range",
         ),
         "reader-notes placement sentence dropped": (
-            S, _replace(proposed[S], "  POC-REQ-055 carries the identifier the owner's ruling named; its number\n  range does not place it in the Orrery group, its `Group` line does.\n", ""),
+            S, _replace(proposed[S], "range does not place it in the Orrery group; its `Group` line places it\n  in *Cross-cutting experience*.", "range does not place it in the Orrery group, its `Group` line does."),
             "reader notes lack the Group-line placement sentence",
         ),
         "reader-notes signed key dropped": (
@@ -847,6 +892,26 @@ def build_mutants(
         "outside-list clearing claimed covered": (
             C, _replace(proposed[C], "outside the machine answer's entity and relationship lists | **Unknown** —", "outside the machine answer's entity and relationship lists | covered —"),
             "RFC2-25 Unknown row missing or not Unknown: An `asserted-by-worker` claim clears no Unknown outside the machine answer's entity and relationship lists",
+        ),
+        "unmarked relationship rendering claimed covered": (
+            C, _replace(proposed[C], "carries no declared relationship marker shows its flag and reason there | **Unknown** —", "carries no declared relationship marker shows its flag and reason there | covered —"),
+            "RFC1-26 Unknown row missing or not Unknown: A flagged relationship rendered in an element that carries no declared relationship marker shows its flag and reason there",
+        ),
+        "unmarked Inferred rendering claimed covered": (
+            C, _replace(proposed[C], "in a rendering that carries no declared record marker | **Unknown** —", "in a rendering that carries no declared record marker | covered —"),
+            "RFC2-25 Unknown row missing or not Unknown: An `asserted-by-worker` claim renders unlike Observed in a rendering that carries no declared record marker",
+        ),
+        "tier Semantics row dropped": (
+            C, "\n".join(line for line in cov.split("\n") if not line.startswith("| RFC2-25 | A record carries a tier only where")).encode("utf-8"),
+            "RFC2-25 Unknown row missing or not Unknown: A record carries a tier only where that tier's Semantics column holds",
+        ),
+        "disclosure row widened to every rendering": (
+            C, _replace(proposed[C], ", in the machine answer and in every rendered element that marks it with a declared relationship marker, never presented", ", wherever it is rendered, never presented"),
+            "RFC1-26 amendment rows lack the marked-rendering disclosure",
+        ),
+        "never-green row widened to every rendering": (
+            C, _replace(proposed[C], "which differs from its Observed entry, in every rendered element that marks it with a declared record marker |", "which differs from its Observed entry, wherever it is rendered |"),
+            "RFC2-25 amendment rows lack the marked-rendering encoding",
         ),
         "correspondence author unstated": (
             C, _replace(proposed[C], ", the slice that emits the relationships also writes it,", ","),

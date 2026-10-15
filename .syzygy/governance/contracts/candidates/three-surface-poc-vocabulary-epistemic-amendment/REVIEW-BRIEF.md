@@ -156,3 +156,88 @@ Then add a `## Findings` section. Number findings from 1 as
 
 The docs review-campaign partition (`docs/README.md`) needs a row and a
 pattern for this raw's basename in the same commit that lands it.
+
+## Round 2
+
+*(Added 2026-10-15.)* Round 1
+(docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-1-RAW.md) was
+`REVISE`: two revise findings (1, RFC2-25's Semantics column listed as an
+Unknown limb for one tier only; 2, the rendering limbs of POC-REQ-055 and
+POC-REQ-060 quantified over "every rendering" with no population or
+denominator) and seven notes (3–9). Under the round-1 stopping rule above
+that verdict went back to the owner. The owner's direction of 2026-10-15,
+"One cycle" [Observed: as relayed by the lead session; not recorded under
+`decisions/`], is one repair and one fresh review. Every finding, notes
+included, was repaired once on 2026-10-15; `ROUND-1-DISPOSITIONS.md`
+§"Repairs, 2026-10-15" maps each finding to its repair. The repaired bytes
+are unconfirmed pending this round.
+
+**What you are reviewing.** The same package, at the commit you are given:
+the four regenerated patches, the regenerated manifest, the three prose
+files and the builder. The governing references and the acceptance
+criteria above are unchanged.
+
+**Read the prior round.** You SHOULD read the round-1 raw and
+`ROUND-1-DISPOSITIONS.md` before judging the repairs, and say for each
+round-1 finding whether its repair closes it. Do not take a figure,
+population or commit from either without re-deriving it at the reviewed
+commit. A new defect in repair text is a finding of this round, not a
+re-opening of round 1.
+
+**What to test, at least, in addition to the list above.**
+
+- The marker populations (finding 2): POC-REQ-055's relationship markers
+  and POC-REQ-060's record markers. Is each rendering limb now decided over
+  a stated, counted population, and is every rendering outside it an
+  Unknown row (RFC1-26 and RFC2-25)?
+- The pairwise-distinct label entries (finding 4): re-judge POC-REQ-014's
+  encoding arm against the amended POC-REQ-060 again.
+- "An Observed total" (finding 7): is the population decidable without
+  judgment, and does the recount decide "never count toward an Observed
+  total"?
+- The new Unknown rows: recount Part A (the builder prints 147 rows over 78
+  clauses, 105 covered and 42 Unknown) with your own script.
+- The new phrase guards: the selftest now reports 82 structure mutants;
+  run probes of your own against at least one new guard and one sentence
+  outside the guards.
+
+**Stopping rule for round 2, set before it runs.** The same rule as round
+1, applied once more.
+
+- A verdict with **no revise-level finding** (`CONFIRM`, or `CONFIRM WITH
+  EXCEPTIONS` whose findings are all notes) clears the exact bytes it read,
+  under the owner's 2026-09-26 ruling
+  (`../../../decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1).
+  Its notes go in a sibling `ROUND-2-DISPOSITIONS.md`, and the package is
+  not edited.
+- A verdict of **`REVISE`** (any revise-level finding) goes back to the
+  owner with its findings open. There is no repair and no round 3 without a
+  new owner direction.
+- A clearance is not a sign-off. Questions 1 and 2 stay the owner's
+  (VIS-4). A verdict is never re-labelled.
+
+**Output contract.** Write the raw review verbatim to
+docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-2-RAW.md (a file this
+round creates; it is left out of code span so the path check does not ask
+it to exist first). **Head contract:** its first four non-blank lines must
+be exactly these, with nothing appended to the title line:
+
+```text
+# R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-2 — fresh-context review, round 2, Three-Surface POC vocabulary and epistemic-record amendment
+Reviewed commit: <the full 40-hex commit you reviewed>
+Manifest SHA-256: <sha256 of THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt, the file>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+```
+
+`Manifest SHA-256` is the sha256 of the manifest **file**
+`THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt` at the
+reviewed commit, computed by script (`sha256sum` at a clean checkout whose
+`git rev-parse HEAD` is the reviewed commit). It is not any row inside the
+manifest, and not the digest of any proposed subject.
+
+Then add a `## Findings` section numbered from 10, continuing round 1's
+numbering, as `**Finding N — title** (blocking|revise|note)`; label each
+`[Observed]`, `[Inferred]` or `[Unknown]`, and close with the count of each
+level. `CONFIRM WITH EXCEPTIONS` means every finding is a `note`. The docs
+review-campaign partition (`docs/README.md`) needs a row and a pattern for
+this raw's basename in the same commit that lands it.

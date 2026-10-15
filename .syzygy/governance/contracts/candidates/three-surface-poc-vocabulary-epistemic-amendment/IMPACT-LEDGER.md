@@ -119,8 +119,10 @@ Nothing, until sign-off. After it:
 
 - the specification reads 26 requirements and 28 scenarios [Observed:
   counted over the proposed bytes by heading];
-- the matrix reads 78 mapped clauses in 144 Part A rows, 105 covered and 39
-  Unknown [Observed: computed by the builder's `--check`, and re-counted by
-  a separate script that imports nothing from the builder];
+- the matrix reads 78 mapped clauses in 147 Part A rows, 105 covered and 42
+  Unknown [Observed: computed by the builder's `--check` over the round-1
+  repaired bytes of 2026-10-15, and re-counted by a separate script that
+  imports nothing from the builder; the first draft read 144 rows and 39
+  Unknown before round 1's three added Unknown rows];
 - one signed row stands beside an amendment row and a disclosure that tells
   the reader which of the two to trust.
