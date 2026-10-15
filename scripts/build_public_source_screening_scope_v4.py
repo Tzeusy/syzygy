@@ -69,8 +69,12 @@ MANIFEST = PKG / "PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt"
 V3_BASE_VARIANT = "all"
 VARIANTS = ("span", "span-guides")
 
-#: Detectors whose match does not hold the secret it signals: the key body follows the header line.
-WHOLE_ARTIFACT_DETECTORS = ["private-key-material"]
+#: Detectors whose match does not hold the secret it signals: a key's material follows its header line,
+#: and an AWS access-key id (AKIA...) is paired with a secret key no detector matches (round 1, finding 1).
+WHOLE_ARTIFACT_DETECTORS = ["private-key-material", "known-token-formats"]
+#: A body holding any of these anywhere is never retained as redacted-span: a PEM block whose header the
+#: private-key literals do not list (an EC key, for example) is key material no detector matches (finding 3).
+WHOLE_ARTIFACT_FRAGMENTS = ["-----BEGIN "]
 GUARD_LINES = 1
 
 #: Root prose names RFC5-14's own list covers (guides, tutorials, how-to and overview documents,
@@ -104,22 +108,28 @@ REDACTION = {
         "draft, an inventory, a verdict, a finding) is not such a body and is screened as before"),
     "redactionClass": "redacted-span",
     "wholeArtifactDetectors": WHOLE_ARTIFACT_DETECTORS,
+    "wholeArtifactFragments": WHOLE_ARTIFACT_FRAGMENTS,
     "guardLines": GUARD_LINES,
     "rule": (
         "every detector runs over the complete transient body exactly as before, including inert code contexts. "
-        "When at least one detector matches and none of the matches is from a detector in wholeArtifactDetectors, "
-        "the body is retained as redacted-span (RFC5-17) instead of excluded whole. Lines are split at LF, CRLF "
+        "Here a detector's matches are every match it makes starting at any offset of the text, overlapping "
+        "matches included, not only those a left-to-right non-overlapping scan reports. When at least one "
+        "detector matches, none of the matches is from a detector in wholeArtifactDetectors, and the body holds "
+        "none of wholeArtifactFragments (compared exactly, case-sensitively), the body is retained as "
+        "redacted-span (RFC5-17) instead of excluded whole. Lines are split at LF, CRLF "
         "or CR, as the generator counts lines; a match touches every line that holds any of its characters. A "
         "line a match touches, and guardLines lines before and after it, is a withheld line. Every detector then "
         "runs again over the retained text, which is the body with each withheld line replaced by an empty line "
         "of the same terminator; a match there excludes the whole artifact as excluded-artifact. A body with a "
-        "match from a detector in wholeArtifactDetectors, or with a match the consumer cannot place on lines, is "
-        "excluded whole as before"),
+        "match from a detector in wholeArtifactDetectors, a body holding one of wholeArtifactFragments, and a body "
+        "with a match the consumer cannot place on lines, is excluded whole as before"),
     "withheldLines": (
         "a withheld line is never stored, logged, rendered, sent, quoted, used to verify a quotation, or given to "
         "an agent session, and no digest of a withheld line, or of any part of one, is recorded. Wherever the "
-        "retained body is shown or carried, the withheld lines are replaced by a marker that names the redaction "
-        "and the count of withheld lines in the body"),
+        "retained body is shown or carried, each run of consecutive withheld lines is replaced by one marker that "
+        "names the redaction and the total count of withheld lines in the body. The whole body's content digest "
+        "and its Git object id remain recorded (RFC5-17 requires the digest), so a guess at short withheld lines "
+        "can be checked against them; the target being public does not lift this residual"),
     "citedSpanRule": (
         "a cited span (a start line and an end line of the body) that includes a withheld line is withheld whole, "
         "never shown in part, and every claim that depends on it renders Unknown with reason excluded-content "
@@ -136,11 +146,12 @@ REDACTION = {
         "content classes, the consent and egress rules and rawBodyHandling are unchanged; a withheld line changes "
         "no class"),
     "consequence": (
-        "[Inferred] a body whose only detector matches are single-line forms (a token in a badge URL, a "
-        "placeholder password in an example) keeps every line outside the matched lines and their guards; the "
-        "trial of 2026-10-14 withheld all 41 cited spans of one README for one match on its first line. A secret "
-        "that continues past the guard line onto further lines, and any secret the detectors do not match, is "
-        "admitted, where whole-blob screening excluded the first case"),
+        "[Inferred] a body whose only detector matches are credential-assignment or credential-bearing-url forms "
+        "(a token in a badge URL, a placeholder password in an example) keeps every line outside the matched "
+        "lines and their guards; the trial of 2026-10-14 withheld all 41 cited spans of one README for one match "
+        "on its first line. The cost: a body with a match is evidence that the file carries credentials, and "
+        "whole-blob screening withheld everything in it; under this rule a secret in such a body that no "
+        "detector matches (one beyond the guard line, or one continuing past it) is admitted"),
 }
 
 ROOT_RULE_OLD = ("a path with one segment whose name, after removing rootStemNumericPrefix when it is present and then "
@@ -267,6 +278,7 @@ def is_documentation(path: str, policy_text: str) -> bool:
 
 
 _NO_RESCREEN = False  # selftest mutant switch
+_NON_OVERLAPPING = False  # selftest mutant switch: a plain left-to-right scan
 
 
 def withheld_lines(body: str, policy_text: str) -> set[int] | None:
@@ -288,6 +300,8 @@ def withheld_lines(body: str, policy_text: str) -> set[int] | None:
         return lo + 1
 
     def matches(text: str) -> list[tuple[str, int, int]]:
+        if not _NON_OVERLAPPING:
+            return all_offsets(text)
         out = []
         for d in doc["detectors"]:
             if d["kind"] == "literal-fragment":
@@ -300,10 +314,25 @@ def withheld_lines(body: str, policy_text: str) -> set[int] | None:
                     out.append((d["id"], m.start(), m.end()))
         return out
 
+    def all_offsets(text: str) -> list[tuple[str, int, int]]:
+        out = []
+        for d in doc["detectors"]:
+            if d["kind"] == "literal-fragment":
+                for v in d["values"]:
+                    out += [(d["id"], i, i + len(v)) for i in range(len(text)) if text.startswith(v, i)]
+            else:
+                rx = re.compile(d["pattern"], re.I if "i" in d.get("flags", "") else 0)
+                for i in range(len(text)):
+                    m = rx.match(text, i)
+                    if m:
+                        out.append((d["id"], m.start(), m.end()))
+        return out
+
     found = matches(body)
     if not found:
         return set()
-    if red is None or any(i in red["wholeArtifactDetectors"] for i, _, _ in found):
+    if red is None or any(i in red["wholeArtifactDetectors"] for i, _, _ in found) or any(
+            f in body for f in red.get("wholeArtifactFragments", [])):
         return None
     g = red["guardLines"]
     held: set[int] = set()
@@ -345,6 +374,10 @@ BODY_FIXTURES = [
     ("private key header", "a\n-----BEGIN " + "PRIVATE KEY-----\nMIIB\n-----END PRIVATE KEY-----\n", None),
     ("CRLF lines", f"a\r\n{_TOKEN}\r\nc\r\nd\r\n", {1, 2, 3}),
     ("emptied lines join a new match", "pass" + f"word\nx\na {_TOKEN}\ny\n= abcdefgh12345678\n", None),
+    ("AWS access-key id with its secret key", 'provider "aws" {\n  access_key = "AKIA' + "ABCDEFGHIJKLMNOP" + '"\n'
+     '  region = "us-east-1"\n  secret_key = "wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY12"\n}\n', None),
+    ("hidden overlapping match", "intro\nsecret: pass" + "word\n\n\n: Hunter2Hunter2Real\nend\n", {1, 2, 3, 4, 5, 6}),
+    ("EC key beside a badge", f"[b](https://x/y?{_TOKEN})\n\n-----BEGIN EC " + "PRIVATE KEY-----\nMHcC\n-----END EC PRIVATE KEY-----\n", None),
 ]
 
 
@@ -372,8 +405,13 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
         bad.append("secretRedaction is not exactly the declared object")
     if not isinstance(red, dict):
         return bad + ["secretRedaction missing"]
-    if "private-key-material" not in red.get("wholeArtifactDetectors", []):
-        bad.append("private-key-material no longer excludes the whole artifact")
+    for det in WHOLE_ARTIFACT_DETECTORS:
+        if det not in red.get("wholeArtifactDetectors", []):
+            bad.append(f"{det} no longer excludes the whole artifact")
+    if "-----BEGIN " not in red.get("wholeArtifactFragments", []):
+        bad.append("a PEM header no longer excludes the whole artifact")
+    if "overlapping matches included" not in red.get("rule", ""):
+        bad.append("the match set is no longer every match from every offset")
     det_ids = {d["id"] for d in new["detectors"]}
     if not set(red.get("wholeArtifactDetectors", [])) <= det_ids:
         bad.append("a wholeArtifactDetectors id names no detector")
@@ -544,6 +582,13 @@ def selftest() -> int:
             lambda d: d[SCOPE_KEY]["activeContent"].__setitem__("rule", "x"), "scope keys changed")
         sem("private-key-material moved to redaction caught", "span",
             lambda d: red(d)["wholeArtifactDetectors"].remove("private-key-material"), "private-key-material")
+        sem("known-token-formats moved to redaction caught", "span",
+            lambda d: red(d)["wholeArtifactDetectors"].remove("known-token-formats"), "known-token-formats")
+        sem("a dropped PEM fragment caught", "span",
+            lambda d: red(d).__setitem__("wholeArtifactFragments", []), "PEM header")
+        sem("a non-overlapping match set caught", "span-guides",
+            lambda d: red(d).__setitem__("rule", REDACTION["rule"].replace(", overlapping matches included", "")),
+            "every match from every offset")
         sem("a zero guard caught", "span-guides", lambda d: red(d).__setitem__("guardLines", 0), "guardLines")
         sem("a dropped re-screen caught", "span",
             lambda d: red(d).__setitem__("rule", REDACTION["rule"].replace(
@@ -561,6 +606,14 @@ def selftest() -> int:
         finally:
             _NO_RESCREEN = False
         results.append(("the oracle's re-screen is what excludes a joined match (mutant observed)", got == {2, 3, 4}))
+        global _NON_OVERLAPPING
+        _NON_OVERLAPPING = True
+        try:
+            got = withheld_lines(BODY_FIXTURES[8][1], propose(base, "span"))
+        finally:
+            _NON_OVERLAPPING = False
+        results.append(("a non-overlapping scan leaks the hidden match's value line (mutant observed)",
+                        got is not None and 5 not in got))
         sem("a partly shown span caught", "span",
             lambda d: red(d).__setitem__("citedSpanRule", "a span shows its surviving lines"), "withheld whole")
         sem("an allowed withheld-line digest caught", "span",
@@ -602,6 +655,7 @@ def selftest() -> int:
         base, _ = base_bytes(tmp)
         prop = json.loads(propose(base, "span"))
         prop[SCOPE_KEY]["secretRedaction"]["wholeArtifactDetectors"] = []
+        prop[SCOPE_KEY]["secretRedaction"]["wholeArtifactFragments"] = []
         got = withheld_lines(BODY_FIXTURES[4][1], v2.dump(prop))
         results.append(("the oracle redacts a key header only when the rule allows it (mutant observed)", got == {1, 2, 3}))
 
