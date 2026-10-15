@@ -5,6 +5,12 @@
     "host": "12 cores; other lanes concurrently active",
     "dateRecorded": "2026-10-15"
   },
+  "subjectDigest": {
+    "commit": "5b954436",
+    "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "sha256": "aea7072e2ac6c39d5b0d3e8a7c9c40956c5ae093cc5fd149e72d3b150d00eb1e",
+    "note": "post-merge subject (PR 442): the test file with the sized budget committed; sha256 computed by script over `git show 5b954436:<path>`. Named subjectDigest because the existing subject key is a string label."
+  },
   "method": "Scripted replica of the test's steps in a local clone (clone, refused bare run, npm ci, explicit build:poc, documented command). Synthetic load: 70 busy shell loops added until load1 >= 55; load1 sampled at each step start via os.loadavg(). Load is CPU-spinner load plus other lanes, not the original incident's load shape. [Observed]",
   "runs": [
     {
