@@ -1371,6 +1371,36 @@
       "old": "    successor = successor_bindings(evidence, dict(bindings), c2)\n",
       "predicate": "reconciliation check wired into the reviewed template",
       "refusal": "FAIL exact digest reconciliation unresolved: review retired by changed input: .syzygy/governance/doctrine/vision.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "f3e5ffa79a3e448c6c120c73005a6acb5ed1499e",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if path not in REBINDABLE + (INPUTS,):\n            require(bound[path]",
+      "old": "        if path not in REBINDABLE:\n            require(bound[path]",
+      "predicate": "fixed-input test covers review-inputs.json (history review 18 M1)",
+      "refusal": "AssertionError: reconciliation mutation accepted: rebind-review-inputs"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "f3e5ffa79a3e448c6c120c73005a6acb5ed1499e",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`', text, re.M)\n    require(sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),",
+      "old": "bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`$', text, re.M)\n    require(sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),",
+      "predicate": "binding line anchored at its end (history review 18 N1)",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "f3e5ffa79a3e448c6c120c73005a6acb5ed1499e",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(len(commits) == 1 and re.fullmatch(r' .{40}', commits[0]) is not None,",
+      "old": "require(len(commits) == 1 and re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,",
+      "predicate": "reviewed commit is lowercase hex (history review 18 N1)",
+      "refusal": "AssertionError: mutation accepted: docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-10-RAW.md"
     }
   ],
   "version": 1
