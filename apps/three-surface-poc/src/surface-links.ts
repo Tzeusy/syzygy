@@ -38,6 +38,10 @@ export function crossSurfaceLink(input: {
   readonly targetId: string | null;
   readonly mountPrefix: string;
   readonly label: string;
+  /** `label-first`: the accessible name begins with the visible label, as
+   * PWB-REQ-016 requires on a Polaris page where a differently targeted
+   * element shares that label (P-99 v1.0). Absent: the surface's form. */
+  readonly nameForm?: 'label-first';
 }): string {
   const href = crossSurfaceHref(input.model, input.target, input.targetId, input.mountPrefix);
   const exactTarget = input.targetId === null ? input.target
@@ -45,5 +49,6 @@ export function crossSurfaceLink(input: {
   const attrs = `data-cross-surface-class="${input.className}" data-cross-source="${escapeHtml(input.sourceId)}" data-cross-target="${escapeHtml(exactTarget)}"`;
   if (href === null) return `<span class="cross-surface-unavailable" data-cross-surface-unavailable="${input.className}" ${attrs}>${escapeHtml(input.label)} — target unavailable in this evaluation</span>`;
   const targetName = input.model.surfaces.find(surface => surface.id === input.target)?.title ?? input.target;
-  return `<a href="${escapeHtml(href)}" aria-label="Read ${escapeHtml(input.label)} on ${escapeHtml(targetName)}" ${attrs}>${escapeHtml(input.label)}</a>`;
+  const name = input.nameForm === 'label-first' ? `${input.label} — read on ${targetName}` : `Read ${input.label} on ${targetName}`;
+  return `<a href="${escapeHtml(href)}" aria-label="${escapeHtml(name)}" ${attrs}>${escapeHtml(input.label)}</a>`;
 }

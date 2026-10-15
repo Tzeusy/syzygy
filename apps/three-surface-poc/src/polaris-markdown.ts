@@ -112,7 +112,7 @@ function flowDiagram(body: readonly string[], anchorId?: string): string | undef
   return `<ol class="source-flow" data-visual-provenance="curated" style="--flow-columns:${nodes.length}"${nodes.length > 6 ? ' data-flow-long' : ''}>${nodes.map((node, index) => `<li><span class="flow-node"${diagramNodeAttrs(anchorId)}>${escapeHtml(node)}</span>${index < nodes.length - 1 ? '<span class="flow-arrow" aria-hidden="true"> --&gt; </span>' : ''}</li>`).join('')}</ol>`;
 }
 
-function relationshipDiagram(body: readonly string[], depth: number, anchorId: string | undefined, anchorHeadingLevel: number, shallowestHeading: number): string | undefined {
+function relationshipDiagram(body: readonly string[], depth: number, anchorId: string | undefined, anchorHeadingLevel: number, shallowestHeading: number, headings: HeadingState): string | undefined {
   let rows: unknown;
   try { rows = JSON.parse(body.join('\n')); } catch { return undefined; }
   if (!Array.isArray(rows) || rows.length === 0 || rows.length > 8) return undefined;
@@ -123,7 +123,7 @@ function relationshipDiagram(body: readonly string[], depth: number, anchorId: s
       || typeof row.to !== 'string' || !row.to.trim() || row.to.length > 128
       || typeof row.description !== 'string' || !row.description.trim() || row.description.length > 8000) return undefined;
   }
-  return `<div class="source-relationships" data-visual-provenance="curated">${rows.map((row) => `<section class="source-relationship" data-visual-provenance="curated"><div class="relationship-nodes"><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.from)}</strong><span class="relationship-arrow" aria-hidden="true">→</span><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.to)}</strong></div><div class="relationship-description">${blocks(row.description.split('\n'), depth + 1, anchorId, anchorHeadingLevel, shallowestHeading)}</div></section>`).join('')}</div>`;
+  return `<div class="source-relationships" data-visual-provenance="curated">${rows.map((row) => `<section class="source-relationship" data-visual-provenance="curated"><div class="relationship-nodes"><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.from)}</strong><span class="relationship-arrow" aria-hidden="true">→</span><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.to)}</strong></div><div class="relationship-description">${blocks(row.description.split('\n'), depth + 1, anchorId, anchorHeadingLevel, shallowestHeading, headings)}</div></section>`).join('')}</div>`;
 }
 
 /** Ignore fenced/indented code while finding the fragment's own heading root. */
@@ -146,7 +146,11 @@ function minimumHeadingDepth(lines: readonly string[]): number {
   return minimum === 7 ? 1 : minimum;
 }
 
-function blocks(lines: string[], depth = 0, anchorId?: string, anchorHeadingLevel = 3, shallowestHeading = 1): string {
+/** The level of the last heading emitted, shared across nested blocks in
+ * document order. */
+interface HeadingState { last: number }
+
+function blocks(lines: string[], depth: number, anchorId: string | undefined, anchorHeadingLevel: number, shallowestHeading: number, headings: HeadingState): string {
   if (depth >= MAX_NESTING) return `<pre>${escapeHtml(lines.join('\n'))}</pre>`;
   const output: string[] = [];
   let i = 0;
@@ -170,13 +174,17 @@ function blocks(lines: string[], depth = 0, anchorId?: string, anchorHeadingLeve
       while (i < lines.length && !closing.test(lines[i]!)) body.push(lines[i++]!);
       if (i < lines.length) i++;
       const language = fence[2]!.trim();
-      const diagram = language === 'flow' ? flowDiagram(body, anchorId) : language === 'relations' ? relationshipDiagram(body, depth, anchorId, anchorHeadingLevel, shallowestHeading) : undefined;
+      const diagram = language === 'flow' ? flowDiagram(body, anchorId) : language === 'relations' ? relationshipDiagram(body, depth, anchorId, anchorHeadingLevel, shallowestHeading, headings) : undefined;
       output.push(diagram ?? `<pre><code>${escapeHtml(body.join('\n'))}</code></pre>`);
       continue;
     }
     const heading = /^ {0,3}(#{1,6}) +(.+?)(?: +#+)? *$/.exec(line);
     if (heading) {
-      const level = Math.min(6, anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading);
+      // PWB-REQ-016 (P-99 v1.0): no heading is more than one level deeper
+      // than the heading before it, Butlers-declared text included, so a
+      // declared skip (`#` then `###`) renders one level deeper, not two.
+      const level = Math.min(6, anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading, headings.last + 1);
+      headings.last = level;
       output.push(`<h${level}>${inline(heading[2]!)}</h${level}>`);
       i++;
       continue;
@@ -184,7 +192,7 @@ function blocks(lines: string[], depth = 0, anchorId?: string, anchorHeadingLeve
     if (/^ *>/.test(line)) {
       const quote: string[] = [];
       while (i < lines.length && /^ *>/.test(lines[i]!)) quote.push(lines[i++]!.replace(/^ *> ?/, ''));
-      output.push(`<blockquote>${blocks(quote, depth + 1, anchorId, anchorHeadingLevel, shallowestHeading)}</blockquote>`);
+      output.push(`<blockquote>${blocks(quote, depth + 1, anchorId, anchorHeadingLevel, shallowestHeading, headings)}</blockquote>`);
       continue;
     }
     if (tableHeader(lines, i)) {
@@ -216,7 +224,7 @@ function blocks(lines: string[], depth = 0, anchorId?: string, anchorHeadingLeve
         }
         // Preserve explicit numbering, including gaps in a source list.
         const value = ordered ? ` value="${Number.parseInt(item[2]!, 10)}"` : '';
-        items.push(`<li${value}>${blocks(content, depth + 1, anchorId, anchorHeadingLevel, shallowestHeading)}</li>`);
+        items.push(`<li${value}>${blocks(content, depth + 1, anchorId, anchorHeadingLevel, shallowestHeading, headings)}</li>`);
       }
       output.push(`<${tag}>${items.join('')}</${tag}>`);
       continue;
@@ -236,5 +244,5 @@ function blocks(lines: string[], depth = 0, anchorId?: string, anchorHeadingLeve
 export function renderPolarisMarkdown(text: string, anchorId?: string, anchorHeadingLevel = 3): string {
   if (!Number.isInteger(anchorHeadingLevel) || anchorHeadingLevel < 1 || anchorHeadingLevel > 5) throw new Error('invalid Markdown anchor heading level');
   const lines = text.replace(/\r\n?/g, '\n').split('\n');
-  return blocks(lines, 0, anchorId, anchorHeadingLevel, minimumHeadingDepth(lines));
+  return blocks(lines, 0, anchorId, anchorHeadingLevel, minimumHeadingDepth(lines), { last: anchorHeadingLevel });
 }
