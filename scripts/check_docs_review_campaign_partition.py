@@ -403,6 +403,11 @@ CAMPAIGNS = (
         "Signed-amendment implementation chain",
         r"R-IMPL-(?:P97|P100|P86|P96|TREE-FRAMING)-.*\.md",
     ),
+    campaign(
+        "pwb-accessible-name-implementation",
+        "PWB accessible-name implementation",
+        r"R-PWB-ACCESSIBLE-NAME-IMPL-.*\.md",
+    ),
 )
 
 
