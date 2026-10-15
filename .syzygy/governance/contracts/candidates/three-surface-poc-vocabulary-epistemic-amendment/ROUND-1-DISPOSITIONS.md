@@ -9,6 +9,11 @@
 > unconfirmed pending round 2.** Every finding below, notes included, was
 > repaired once; see "Repairs, 2026-10-15". Round 2 is briefed in
 > `REVIEW-BRIEF.md` §"Round 2" and has not run.
+> *(Marked 2026-10-15: "unconfirmed pending round 2" and "has not run" are
+> no longer true. Round 2 ran over `a4a864e6` and was `CONFIRM WITH
+> EXCEPTIONS`, seven notes, which clears those bytes; see
+> `ROUND-2-DISPOSITIONS.md`. Its note 15 finds row 1's "quoted" below
+> inaccurate to the bytes, which paraphrase; the row is kept as written.)*
 
 # Round 1 dispositions — Three-Surface POC vocabulary and epistemic-record amendment
 
