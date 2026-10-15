@@ -59,6 +59,11 @@ same arguments re-verifies a record afterwards.
    (finding F7). The route-B recorder refuses until its package has a
    confirming review and `FROZEN_SUBJECT` is set from that commit, and refuses
    while route A's entry sits in the installed home.
+   *(Marked 2026-10-15: this row is no longer offered. The owner declined to
+   un-park either provider route and directed that Syzygy run the local
+   `codex` or `claude` binary as a subprocess instead
+   (`.syzygy/governance/decisions/OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`).
+   The text above is kept.)*
 3. **Row 3, Git source adapter.**
    `python3 scripts/record_public_admission_registry_entries_acts.py --record git-source-acquisition <ARGUMENT> ...`
 4. **Row 4, requests observation.**
