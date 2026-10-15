@@ -609,6 +609,9 @@ def real_packages() -> dict[str, Package]:
             # The round-2 raw closes `## Findings` with a numbered recap of
             # round 1's findings 1-9 (raw lines 276-309).
             findings_end="**Round-1 findings, closed or not, at the reviewed bytes**",
+            # The raw names the package only by its builder (raw line 25)
+            # and its manifest filename; the subject digest still binds.
+            review_alias="build_three_surface_poc_vocabulary_epistemic_amendment.py",
             record_note=(
                 "Question 2 is answered with its recommended arm, \"Marked renderings only\",\n"
                 "which this version carries: the packet says \"Signing v1.0 answers this with\n"
