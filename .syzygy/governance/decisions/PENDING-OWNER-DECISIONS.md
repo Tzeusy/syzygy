@@ -1214,6 +1214,15 @@
 > acceptance-act rows, **33** in all, every id distinct [Observed: counted
 > 2026-10-15 by `^| P-[0-9]+[^ |]*` rows per `##` section, on this branch
 > after rebasing onto `main`; 27 and 32 before this change].
+>
+> **Updated 2026-10-15 (P-110).** **P-110** is added: public-source
+> screening scope version 4 (`syzygy-olmr`). Its round 1 returned REVISE
+> and was repaired once; the act is not offered. The notes above are as of
+> their dates and are not edited. Now **29** rows under the open heading
+> below and **5** acceptance-act rows, **34** in all, every id distinct
+> [Observed: counted 2026-10-15 by `^| P-[0-9]+[^ |]*` rows per `##`
+> section, on this branch after rebasing onto `main`; 28 and 33 before this
+> change].
 
 ## The acceptance acts (four performed; the rest open)
 
