@@ -113,6 +113,15 @@ lead session; the transcript itself is not stored in this repository.]
     reads and name no agent tool or provider. No act lets a launched CLI
     receive Butlers content.
   - **Any other repository:** nothing.
+
+  One limit stands beside this [Inferred, from round 1 of the delta's
+  review, finding 4]: a launched session can read the whole clone, so the
+  tool can send its provider content of classes the statement does not
+  list. The 2026-10-05 ruling (item 2 of the local-agent mode direction)
+  treats the agent's own reading and sending as the operator's act, which is
+  the basis on which that is disclosed rather than refused. Whether to
+  disclose it or to refuse such runs is the owner's question, carried as
+  P-111 Q2; this direction does not settle it.
 - It adopts no registry entry, records no egress, and does not make a
   launched session's transmissions anything other than what the one-command
   run's packet Q2 answer says they are.

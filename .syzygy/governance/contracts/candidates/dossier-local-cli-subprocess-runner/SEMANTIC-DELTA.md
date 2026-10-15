@@ -25,7 +25,9 @@ change, not a second change.
 
 **Stable IDs affected:** REQ-polaris-generation-045 is proposed (free at
 `origin/main` `2d6a3632`: no occurrence in `openspec/`, `.syzygy/`,
-`packages/` or `docs/`, by a fixed-string sweep this session). It refines
+`packages/` or `docs/`, by a fixed-string sweep this session; the round-1
+reviewer's sweep at `113fe505` found it only in this package and the P-111
+row). It refines
 REQ-polaris-generation-041 ("with the agent tool, version and model the
 operator declared for the run") and REQ-polaris-generation-042 ("the agent
 tool's own installation and configuration as the tool requires") without
@@ -36,10 +38,12 @@ is whatever the operator declared and is started however the supervisor
 chooses; nothing says what reaches the tool from outside the run, which
 agent tools may be launched, what happens when the binary is missing, or
 that no provider client may be built. Under this delta a build that launches
-an undeclared binary, lets the operator's user, project or local settings
-widen a launched session, passes instructions or guidance implicitly, links
-a provider SDK or API client into the model step, runs a session with no
-time bound, or reports a run as ready when its binary is absent fails.
+an undeclared binary or provider, lets the operator's settings or
+environment or the clone's own settings and instruction files widen or
+redirect a launched session, uses a bypass-permissions mode, passes
+instructions or guidance implicitly, links a provider SDK or API client into
+the model step, runs a session with no time bound, reports a run as ready
+when its binary is absent, or omits the unlimited-reading disclosure fails.
 
 **Author:** agent drafting for the owner direction (lane
 `dossier-local-cli-subprocess`).
@@ -97,6 +101,14 @@ skills or MCP guidance reach the tool, how the operator's own settings are
 kept out, or that no SDK or API client may be used. So a delta is needed,
 and it binds only with the one-command-run change's sign-off.
 
+The Redis agent-provider statement in force scopes itself to "operator-agent
+runs over this one repository with this one tool and provider"
+(`DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md`). That it also covers a
+session Syzygy launches rests on the one-command run's packet Q2 answer,
+which reads a launch of the operator's own tool as keeping the transmissions
+the operator's act [Inferred: a direction's adopted recommendation, not a
+reading of the statement act itself].
+
 ## Current meaning
 
 At the candidate REQ-polaris-generation-041 and 042, a launched session runs
@@ -123,15 +135,15 @@ The requirement text to fold in, in the spec's own form:
 ~~~~markdown
 ### Requirement: Local agent CLI subprocess runner
 
-In a launched run Syzygy SHALL perform every model step only by starting the operator's locally installed agent command-line tool as a child process of the run's supervisor, and by no other means. The tool SHALL be one of a closed set, `claude` (Claude Code) and `codex` (Codex CLI), and SHALL be the one the operator declared for the run by name and absolute executable path; Syzygy SHALL NOT search for, substitute or fall back to another tool, path or version. Syzygy SHALL NOT contain, load or call a model-provider SDK or API client, hold or read a provider credential, or resolve a provider route for this step; authentication is the tool's own, under the operator's account, and Syzygy neither parses nor transmits it; at most it copies the tool's own credential file, unparsed, to where the tool expects it inside the session's view, and records that it did.
+In a launched run Syzygy SHALL perform every model step only by starting the operator's locally installed agent command-line tool as a child process of the run's supervisor, and by no other means. The tool SHALL be one of a closed set, `claude` (Claude Code) and `codex` (Codex CLI). The operator SHALL declare for the run the tool by name, absolute executable path and version, and the model provider the tool is to use; Syzygy SHALL NOT search for, substitute or fall back to another tool, path, version or provider. Syzygy SHALL start the tool with a process environment it writes and records in full, from an allow-list that admits no variable selecting, redirecting or authenticating a model provider other than the declared one, and with every provider-selecting option of the tool (such as a configuration profile, a configuration override, or a local or third-party provider switch) either absent or set by Syzygy to the declared provider. Syzygy SHALL NOT start the tool in any mode that bypasses the tool's permission checks. Syzygy SHALL NOT contain, load or call a model-provider SDK or API client, open a connection to a model provider, or resolve a provider route for this step. Syzygy SHALL read no provider credential except to copy the tool's own credential file, unparsed, to where the tool expects it inside the session's view, and SHALL record that it did; authentication is the tool's own, under the operator's account.
 
-Syzygy SHALL give the tool, explicitly on its command line or in files it names there, and in no other way: the session's workspace directory (its working directory and its only writable path, as REQ-polaris-generation-042 states); the role's instructions file, written by Syzygy and recorded by digest; the artifacts output path the session's result is handed in through; and the skill and MCP guidance for the role, each skill as a named file or directory and each MCP server as an explicit configuration, or the explicit statement that the role has none. Syzygy SHALL start the tool with its user, project and local settings layers, its user-level instruction files, its plugins, its hooks and its ambient MCP configuration excluded, using the tool's own flags for each where they exist, and otherwise a private configuration home inside the session's view holding only what Syzygy wrote there. Where the tool offers no means to exclude a layer, Syzygy SHALL record that layer as not excluded, labelled Observed as Syzygy's own finding about the tool, and the run page SHALL disclose it; Syzygy SHALL NOT start the session if that layer could grant a permission the role is not allowed.
+Syzygy SHALL give the tool, explicitly on its command line or in files it names there, and in no other way: the session's workspace directory (its working directory and its only writable path, as REQ-polaris-generation-042 states); the role's instructions file, written by Syzygy and recorded by digest; the artifacts output path the session's result is handed in through; and the skill and MCP guidance for the role, each skill as a named file or directory and each MCP server as an explicit configuration, or the explicit statement that the role has none. Every other settings, instruction and MCP source SHALL be excluded: the tool's user, project and local settings layers; user-level and project-level instruction files (such as `CLAUDE.md` and `AGENTS.md`); the settings, instruction and MCP files of every directory the session can read, the clone included; plugins; hooks; and ambient MCP configuration. Syzygy SHALL exclude each by the tool's own flags where they exist, and otherwise by a private configuration home inside the session's view holding only what Syzygy wrote there. A source counts as excluded only once its exclusion has been observed for the declared tool and version, in a stand-in or attended run whose record is retained as evidence; until then it counts as not excluded. Where any source other than the tool's administrator-managed settings is not excluded, Syzygy SHALL refuse the launched run before any session starts, naming the source. Administrator-managed settings, which neither tool offers a flag to exclude, SHALL be recorded as not excluded, labelled Observed as Syzygy's own finding about the tool, and disclosed on the run page; Syzygy does not read them.
 
 Before `init`, Syzygy SHALL check that the declared executable exists at its path, is executable, and reports the declared version; where any check fails it SHALL refuse the launched run, naming the failure, start no session, and report the run's readiness and every claim that depends on the model step as Unknown, never as ready, passed or empty. Each session SHALL carry a time bound, declared for the run and no later than the run deadline; Syzygy SHALL stop a session that exceeds it, record the stop, and leave the session's result absent and its dependent claims Unknown. A session that exits non-zero, writes no result at its artifacts path, or writes one that fails validation SHALL count as no result.
 
-For each launched session the launch record of REQ-polaris-generation-041 SHALL also hold, labelled Observed: the tool's name, executable path and reported version; the digest of the instructions file; the artifacts output path; the exact skill and MCP guidance given, by path and digest, or that none was given; each settings layer and whether it was excluded, and by what means; and the session's time bound and whether it was reached.
+For each launched session the launch record of REQ-polaris-generation-041 SHALL also hold, labelled Observed: the tool's name, executable path and reported version; the declared provider; the process environment the tool was started with, by digest and by variable name; the digest of the instructions file; the artifacts output path; the exact skill and MCP guidance given, by path and digest, or that none was given; each settings layer and whether it was excluded, and by what means; and the session's time bound and whether it was reached.
 
-This requirement grants no consent. Every transmission the tool makes to its provider remains subject to the consents and agent-provider statements in force for the repository and content class; a run whose declared tool and provider have no agent-provider statement in force for the target SHALL be refused before any session starts.
+This requirement grants no consent. A run whose declared tool and provider have no agent-provider statement in force for the target SHALL be refused before any session starts, naming the missing statement. Packets Syzygy itself writes for a launched session SHALL carry only the content classes that statement lists. A launched session can read the whole clone, so the tool can transmit to its provider content of any class in the clone, listed or not; that rests on the owner's rulings that the agent session's own reading and sending are the operator's own act (`POLARIS-DOSSIER-LOCAL-AGENT-MODE-2026-10-05` item 2, and for launched runs the one-command run's packet Q2), not on the statement. The run page SHALL disclose this: it SHALL name the statement and the classes it lists, and state that the tool's reading of the clone was not limited to them.
 
 ID: REQ-polaris-generation-045
 Source: VIS-2; governing warrants below.
@@ -147,7 +159,19 @@ Scope: v1-mandatory
 
 - **WHEN** the operator's user, project and local settings for the tool carry an allow rule, a hook, a plugin and an MCP server that the role is not given
 - **THEN** none of them is in effect in the launched session: the allow rule grants nothing, the hook does not fire, and the plugin and MCP server are absent
-- **AND** where the tool offers no exclusion for a layer, the run is refused if that layer could grant a permission the role is not allowed
+- **AND** where an exclusion has not been observed for the declared tool and version, the launched run is refused before any session starts, naming the source
+
+#### Scenario: Clone carries tool settings and instructions
+
+- **WHEN** the clone holds tool settings, an MCP configuration and instruction files (`.claude/settings.json`, `.mcp.json`, `CLAUDE.md`, `AGENTS.md`, `.codex/`) granting an allow rule, starting an MCP server and telling the agent to write outside its directory
+- **THEN** none of them is in effect in any launched session that can read the clone
+- **AND** where their exclusion has not been observed for the declared tool and version, the launched run is refused before any session starts
+
+#### Scenario: Provider redirected by the environment
+
+- **WHEN** the operator's environment carries a variable or tool option that selects, redirects or authenticates a model provider other than the declared one
+- **THEN** the launched session's environment and command line carry none of it, and the session's effective provider is the declared one
+- **AND** the launch record lists the environment Syzygy wrote by variable name
 
 #### Scenario: Binary absent
 
@@ -163,22 +187,28 @@ Scope: v1-mandatory
 
 #### Scenario: No provider client
 
-- **WHEN** the built Syzygy packages and their resolved dependencies are inspected
-- **THEN** no model-provider SDK or API client is present in or reachable from the launched-run code, and no code path reads a provider credential variable
-- **AND** the only process that contacts a model provider in a launched run is the declared tool
+- **WHEN** the built, non-test runtime output of the Syzygy packages and the lockfile are inspected, and a launched run is made with stand-in tools under a network observation
+- **THEN** no model-provider SDK or API client, no provider endpoint host and no read of a provider credential variable or credential file (other than the recorded copy of the tool's own file) is present in or reachable from the launched-run code
+- **AND** no process that is not the declared tool or a process it started opens a connection to a model-provider endpoint during the run
 
 #### Scenario: Tool without a provider statement
 
 - **WHEN** the operator declares `codex` for a target that has an agent-provider statement in force only for Claude Code with Anthropic
 - **THEN** Syzygy refuses the launched run before any session starts, naming the missing statement
 
+#### Scenario: Run page discloses unlimited reading
+
+- **WHEN** a launched run renders its pages
+- **THEN** the run page names the agent-provider statement and the content classes it lists
+- **AND** states that the tool could read the whole clone and its reading was not limited to those classes
+
 Form: event-response.
 
-- **Case:** Launched runs with stand-in `claude` and `codex` executables that record their own argv, environment, parent process and the files they can read; an operator home seeded with a permissive allow rule, a hook that writes a marker file, a plugin and an MCP server; runs with the binary removed, made non-executable and reporting a wrong version; a stand-in that never exits; a declared tool with no provider statement for the target; a dependency inspection of the built packages.
-- **Observable:** Each stand-in's recorded argv and readable files, the hook's marker file, the process tree, the launch records, the refusals and their wording, each page's readiness wording, the stop records, and the dependency inspection's output.
-- **Oracle:** The expected argv, guidance and settings-exclusion list per role and tool, and the refusal and Unknown wording, written before the run; a list of known provider SDK package names and credential variable names for the inspection.
-- **Oracle independence:** Argv, readable files and markers come from the stand-ins and the file system, not from Syzygy's launch record; the dependency inspection reads the lockfile and built output, not Syzygy's own claims.
-- **Falsifier:** A session starts with an undeclared tool or path; an operator allow rule, hook, plugin or MCP server takes effect; instructions or guidance reach the tool by any route not on its command line or in a file it names; a missing or mismatched binary leaves any readiness or claim other than Unknown, or a session starts; a session runs past its bound; a provider SDK, API client or credential read is present; or a run without a provider statement for its tool starts a session.
+- **Case:** Launched runs with stand-in `claude` and `codex` executables that record their own argv, environment, parent process and the files they can read; an operator home seeded with a permissive allow rule, a hook that writes a marker file, a plugin and an MCP server; a clone seeded with tool settings, an MCP configuration and instruction files; an operator environment seeded with a provider-redirecting variable and a provider-selecting tool option; a declared bypass-permissions mode; runs with the binary removed, made non-executable and reporting a wrong version; a stand-in that never exits; a declared tool with no provider statement for the target; an inspection of the built non-test runtime output and the lockfile; a run in a network namespace whose connection attempts are recorded per process, with the provider endpoints resolved to a local recorder.
+- **Observable:** Each stand-in's recorded argv, environment and readable files, the hook's and the clone's marker files, the process tree, the per-process connection record, the launch records, the refusals and their wording, each page's readiness and disclosure wording, the stop records, and the inspection's output.
+- **Oracle:** The expected argv, environment allow-list, guidance and settings-exclusion list per role and tool, and the refusal, disclosure and Unknown wording, written before the run; for the inspection, the known provider SDK package names, provider endpoint hosts, credential variable names and credential file paths, scoped to built non-test runtime output and the lockfile so that test fixtures holding those strings as sentinels are out of scope.
+- **Oracle independence:** Argv, environment, readable files, markers and connections come from the stand-ins, the file system and the network namespace, not from Syzygy's launch record; the inspection reads the lockfile and built output, not Syzygy's own claims.
+- **Falsifier:** A session starts with an undeclared tool, path, version or provider, or in a bypass-permissions mode; an operator or clone allow rule, hook, plugin, MCP server or instruction file takes effect; a provider-redirecting variable or option reaches the tool; instructions or guidance reach the tool by any route not on its command line or in a file it names; a run starts with an unobserved exclusion; a missing or mismatched binary leaves any readiness or claim other than Unknown, or a session starts; a session runs past its bound; a provider SDK, API client, endpoint host or credential read is present in runtime output; a process other than the declared tool or its descendants opens a connection to a model-provider endpoint; a run without a provider statement for its tool starts a session; or the run page omits the unlimited-reading disclosure.
 
 ```yaml
 warrants:
@@ -211,6 +241,9 @@ waiting sessions.]
 | Codex | `--ignore-user-config` | "Do not load `$CODEX_HOME/config.toml`; auth still uses `CODEX_HOME`". | Direct fit for the user layer, keeping the operator's login. |
 | Codex | `--ignore-rules` | "Do not load user or project execpolicy `.rules` files". | Direct fit for the rules layers. |
 | Codex | `-s read-only`, `-C <dir>`, `--add-dir`, `--ephemeral`, `-o <file>`, `--output-schema <file>` | Sandbox policy, working root, extra writable dirs, no session files, last-message file, response schema. | Workspace (`-C`), artifacts path (`-o`), schema, and no persisted transcript. `--add-dir` makes a directory *writable*, so the clone must not be passed that way. |
+| Codex | `-p, --profile`, `-c, --config <key=value>`, `--oss`, `--local-provider` | A profile layered on the user config, a config override, an open-source provider, a local provider. | Provider-selecting: absent, or set by Syzygy to the declared provider (REQ-045 first paragraph). |
+| Codex | `--dangerously-bypass-hook-trust`, `--dangerously-bypass-approvals-and-sandbox` | Run hooks without persisted trust; skip all approvals and sandboxing. | Forbidden: bypass modes. Whether `--ignore-user-config` also suppresses hooks and a user-level `AGENTS.md` under `CODEX_HOME` is [Unknown]; until observed, those sources count as not excluded and a Codex run is refused. |
+| Claude Code | `--dangerously-skip-permissions`, `--permission-mode bypassPermissions` | Bypass all permission checks. | Forbidden: bypass modes; `--restricted` itself "refuses bypassPermissions". |
 
 The prototype today does not pass `--setting-sources` or `--restricted`; it
 relies on a private home (`prepareAgentHome`) holding only a copied
@@ -218,7 +251,9 @@ credential file and a seeded onboarding record, which keeps the operator's
 user settings out of the view [Inferred: from the code; not observed in a
 run]. Project and local settings of the session's own directory are Syzygy's
 to write, and are empty. Whether Claude Code reads project settings from an
-`--add-dir` directory such as the clone is Unknown.
+`--add-dir` directory such as the clone is Unknown; REQ-045 counts those
+files as not excluded, and so refuses the run, until their exclusion is
+observed.
 
 ## What explicitly does NOT change
 
@@ -244,7 +279,11 @@ as green) and SEC-2 (no consent is widened).
   `claudeExecutable()` resolves only `claude`, or the stand-in named by
   `SYZYGY_POLARIS_AGENT`; `launchSession` passes `--permission-mode`,
   `--tools`, `--allowedTools`, `--disallowedTools` and `--strict-mcp-config`
-  and no settings-source flag.
+  and no settings-source flag; for the authoring session it can instead pass
+  `--dangerously-skip-permissions` (`state.authorSkipPermissions`), which
+  REQ-045 forbids in a launched run; and it passes the clone to the author
+  and inventory roles with `--add-dir`, which is why the clone's own settings
+  and instruction files are named among the excluded sources.
 - [Observed] no `@anthropic-ai` dependency in the root, `polaris-dossier`,
   `polaris-generation-core` or `three-surface-poc` `package.json` at
   `2d6a3632`; the Agent SDK and Messages API adapters exist only on the
@@ -274,7 +313,21 @@ as green) and SEC-2 (no consent is widened).
 - Nothing is superseded by this delta; the direction record states what the
   direction supersedes.
 
+## Owner question carried with the delta
+
+The content-class trade-off is the owner's, not the drafter's. This draft
+takes the disclosure arm: the tool may read and send any class in the
+clone, Syzygy's own packets carry only listed classes, and the page says so.
+The other arm refuses a launched run unless the statement lists every
+content class present in the readable clone; it holds the line the direction
+record states, at the cost that a Redis run may not start until the
+statement is widened. Register row P-111 asks this as Q2.
+
 ## Review
 
 **Required class:** Full review per CC-REV-1 (Normative), fresh context, on
 the egress and trust boundary; brief in `REVIEW-BRIEF.md` beside this file.
+Round 1 (`docs/reviews/R-DOSSIER-CLI-SUBPROCESS-1-RAW.md`) was `REVISE`; its
+eleven findings were repaired once, mapped in `ROUND-1-DISPOSITIONS.md`.
+Under the stopping rule set in the brief, the repair is unconfirmed and no
+round 2 is dispatched by the drafting lane.
