@@ -109,6 +109,9 @@ DECISIONS = pathlib.Path(".syzygy/governance/decisions")
 AGGREGATE_REL = DECISIONS / "ACCEPTANCE-ACT-RECORD.md"
 DIRECTION_REL = DECISIONS / "OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md"
 POC_EXTENSION_REL = DECISIONS / "OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md"
+#: The owner's 2026-10-15 extension of Scope A to the one CAP1 package.
+CAP1_CONSENT_EXTENSION_REL = (DECISIONS /
+                              "OWNER-DIRECTION-SCOPE-A-CAP1-TRUSTED-BOOTSTRAP-CONSENT-2026-10-15.md")
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
 VERSION_RE = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -354,6 +357,10 @@ def real_packages() -> dict[str, Package]:
     opening_dir = CANDIDATES / "pwb-opening-index-amendment"
     intent_dir = CANDIDATES / "three-surface-poc-governing-intent-amendment"
     intent_record = DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"
+    vocabulary = lambda: _module("build_three_surface_poc_vocabulary_epistemic_amendment")  # noqa: E731
+    vocabulary_dir = CANDIDATES / "three-surface-poc-vocabulary-epistemic-amendment"
+    consent = lambda: _module("build_cap1_trusted_bootstrap_consent_adoption")  # noqa: E731
+    consent_change = pathlib.Path("openspec/changes/cap1-trusted-bootstrap-consent")
 
     def intent_findings(root):
         return patch_package_findings(root, intent_dir / "proposed", POC_SUBJECTS, POC_SPEC,
@@ -577,6 +584,73 @@ def real_packages() -> dict[str, Package]:
                 "also re-judges POC-REQ-014's encoding arm and its RFC2-24 and RFC8-24\n"
                 "rows against P-84's amended POC-REQ-060, which that arm now reads (the\n"
                 "round-3 raw's note 4). The P-84 package is not edited by this sign-off.\n"),
+        ),
+        # P-108, cleared by its round-2 notes-only raw; signed 2026-10-15
+        # under the POC extension (its item 1 reaches any package patching
+        # the POC change).
+        "three-surface-poc-vocabulary-epistemic-amendment": Package(
+            "three-surface-poc-vocabulary-epistemic-amendment",
+            "Three-Surface POC vocabulary and epistemic-record amendment",
+            "specification amendment",
+            vocabulary_dir,
+            "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT",
+            lambda root: vocabulary().check(),
+            lambda root: vocabulary().apply(True),
+            lambda root: _rows_hash_tree(root, vocabulary().MANIFEST_OUT),
+            subject=vocabulary_dir / "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt",
+            extension=POC_EXTENSION_REL,
+            record_note=(
+                "Question 2 is answered with its recommended arm, \"Marked renderings only\",\n"
+                "which this version carries: the packet says \"Signing v1.0 answers this with\n"
+                "the recommended option\". Review-2 note 13 (a zero or implementation-chosen\n"
+                "marker population passes both rendering limbs at a reported zero) is not\n"
+                "closed by this version; the owner's option named a follow-up, bead\n"
+                "`syzygy-nw3o`, a later POC amendment so that zero reads Unknown.\n"
+                "\n"
+                "Deferred-scope questions D1-D4 were not asked and stay open (bead\n"
+                "`syzygy-vk3f`). Signing starts no implementation: under the POC extension\n"
+                "each amendment needs its own implementation authorization, and none\n"
+                "covers this one yet.\n"
+                "\n"
+                "Review-2 note 11: the package's sentences saying the owner's two\n"
+                "directions are \"not recorded under `decisions/`\" (`SEMANTIC-DELTA.md`,\n"
+                "and the packet's D4) and the packet's \"unconfirmed pending round 2\" are\n"
+                "no longer true; both directions are in\n"
+                "`decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`. The cleared\n"
+                "package is not edited; this record and `decisions/DECISION-HISTORY.md`\n"
+                "carry the correction.\n"),
+        ),
+        # P-109: a CAP1 OpenSpec change adopted under the owner's 2026-10-15
+        # extension of Scope A to this one package. The candidate is the
+        # change directory itself; the reviewed subject is the round-4
+        # subject record, and the builder checks every file it lists.
+        "cap1-trusted-bootstrap-consent": Package(
+            "cap1-trusted-bootstrap-consent",
+            "CAP1 trusted-bootstrap consent amendment",
+            "specification adoption",
+            consent_change,
+            "CAP1-TRUSTED-BOOTSTRAP-CONSENT",
+            lambda root: consent().check(root),
+            lambda root: consent().apply(root),
+            lambda root: consent().applied(root),
+            subject=pathlib.Path("docs/evidence/cap1-trusted-bootstrap-consent-2026-10-15/"
+                                 "review-4-subject.json"),
+            extension=CAP1_CONSENT_EXTENSION_REL,
+            record_note=(
+                "Adopted as the full replacement of CAP1-REQ-011 and CAP1-REQ-046. The\n"
+                "bound Capability 1 change is not edited: the effective specification is\n"
+                "the composition the change's `GOVERNING-DEPENDENCIES.json` declares, and\n"
+                "the change's generated `ADOPTION.md` supersedes, in place, every\n"
+                "predecessor coverage surface round-4 note 1 names (the RFC3-16(a) row,\n"
+                "the Part A totals, the family table, the 38-mapped and 286-unmapped\n"
+                "sentences, the Part B RFC3 line and total, the self-check, and the\n"
+                "generated `GOVERNING-DEPENDENCIES.md`).\n"
+                "\n"
+                "Round-4 note 2 stays a known gap: CAP1-REQ-046's refusal disclosure does\n"
+                "not on its own require the refused artifact's identity (bead\n"
+                "`syzygy-0v4l`, a v1.1). Implementation is authorized separately, bounded,\n"
+                "by `decisions/OWNER-DIRECTION-CAP1-CONSENT-IMPLEMENTATION-2026-10-15.md`;\n"
+                "this record authorizes nothing itself.\n"),
         ),
         "polaris-dossier-local-agent-mode": Package(
             "polaris-dossier-local-agent-mode",
@@ -1601,6 +1675,20 @@ def package_digest_fixtures(results, refused, run_record, run_check, pkg) -> Non
                     and intent.extension == POC_EXTENSION_REL
                     and not real["pwb-class-granular-extraction-amendment"].package_digest
                     and not real["pwb-accessible-name-amendment"].package_digest))
+    vocabulary = real["three-surface-poc-vocabulary-epistemic-amendment"]
+    vocabulary_builder = _module("build_three_surface_poc_vocabulary_epistemic_amendment")
+    results.append(("the real P-108 entry binds its builder's manifest and names the POC extension",
+                    vocabulary.subject == vocabulary_builder.MANIFEST_OUT
+                    and vocabulary.extension == POC_EXTENSION_REL and not vocabulary.package_digest))
+    consent = real["cap1-trusted-bootstrap-consent"]
+    consent_builder = _module("build_cap1_trusted_bootstrap_consent_adoption")
+    results.append(("the real P-109 entry is the CAP1 change itself, binds the builder's review "
+                    "subject and names only the CAP1 extension",
+                    consent.candidate == consent_builder.CHANGE
+                    and consent.subject == consent_builder.SUBJECT
+                    and consent.extension == CAP1_CONSENT_EXTENSION_REL
+                    and consent.extension != POC_EXTENSION_REL
+                    and consent.installed is None and consent.also == ()))
 
 
 def selftest() -> int:
