@@ -162,10 +162,14 @@ change and are not recorded here.
   `spec.md`, so under the carry-over rule P-98 is regenerated over it and
   reviewed again first, by another change.
 - **P-85, P-101 and P-108 are `REVISE`.** Each has a dispositions record
-  beside its package, which classifies its findings and repairs nothing:
-  P-85 `ROUND-5-DISPOSITIONS.md`, P-101 `ROUND-4-DISPOSITIONS.md`, P-108
-  `ROUND-1-DISPOSITIONS.md`. Under the owner's answers, P-85 and P-108
-  each get one more repair and one fresh round, made by separate changes;
+  beside its package: P-85 `ROUND-5-DISPOSITIONS.md` and P-101
+  `ROUND-4-DISPOSITIONS.md` classify their findings and repair nothing.
+  P-108's `ROUND-1-DISPOSITIONS.md` was written by the separate repair
+  lane (PR #445, `b5a7e27a`), which repaired the round-1 findings once on
+  2026-10-15, notes included; the repair is unconfirmed until round 2, which
+  is briefed and not yet run. This change only adds a section to that
+  file, naming the raw that now lands. Under the owner's answers, P-85 gets
+  one more repair and one fresh round, made by a separate change.
   P-101 is **parked** (a dated banner heads its packet) until the
   commissioned RFC2-18/19 clarification exists and D7 is redrafted
   against it.
@@ -175,7 +179,8 @@ change and are not recorded here.
 ## Integration facts
 
 [Observed 2026-10-15 on branch `governance/cycle-3-records` over
-`origin/main` `60995b23`.]
+`origin/main` `60995b23`. Re-checked after rebasing onto `b5a7e27a`:
+`git diff 83b29c96 b5a7e27a` over the paths below is empty.]
 
 - **The cleared packages are unchanged since their reviewed commits.**
   `git diff --stat 83b29c96` over the P-99 package directory, its builder,
@@ -189,9 +194,11 @@ change and are not recorded here.
   "unconfirmed pending round N" and "not yet recorded under `decisions/`"
   sentences in the packet, delta, ledger and latest dispositions record
   are marked at the sentence, dated 2026-10-15, with the old text kept.
-  Raws and review briefs are not edited. The P-108 package is not edited
-  at all: a concurrent repair lane owns its edits, so its stale sentences
-  are corrected in its `ROUND-1-DISPOSITIONS.md`.
+  Raws and review briefs are not edited. In the P-108 package this change
+  edits only `ROUND-1-DISPOSITIONS.md`, which the repair lane wrote: it
+  marks that file's "not recorded under `decisions/`" sentence at the
+  sentence and appends a section naming the raw. The packet, delta and
+  brief belong to that lane.
 - **Package digests that move.** The P-101 directory digest covers every
   tracked file in its package, so the new record and the marks move it
   away from the head digest above; it is not cleared, so no clearance is
