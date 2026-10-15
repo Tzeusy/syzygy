@@ -268,7 +268,15 @@ it already read the status pages and the governance checker, at C1.
   absent commit), the one-header count (an index error), the bound
   population guard (a key error), the fixed-input test and its scope (the
   original freeze's candidate input drift) and the no-review case (an index
-  error).
+  error). Rows 145 and 146 exempt inputs the original freeze already
+  guards, so they do not show the fixed-input test is needed (round 18's
+  M1). Three more (round 19's subject, at `f3e5ffa7`, rows 156 to 158) pin
+  it for `review-inputs.json`, the one input that is not one of its own
+  rows, so that only the fixed-input test refuses it rebound to new bytes
+  with unchanged rows; the end anchor of the binding line; and the
+  lowercase-hex class of the reviewed commit (round 18's N1). All 32 new
+  mutants, rows 127 to 158, were re-run at `f3e5ffa7` and each fails the
+  selftest; rows 127 to 155 keep the commit they first ran at.
   Recorded refusals replace temporary directory names with `<tmpdir>`; row
   42 predates that form. Row 120's refusal embeds a set-ordered dict, so
   only its text before the colon reproduces byte for byte (round 16's N2).
@@ -421,6 +429,21 @@ it already read the status pages and the governance checker, at C1.
     - N4: in `baseline_proof` the successor row rebinds the loop's `row`
       name. Behaviour is correct; renaming it is left for the recorder's
       next change, since any edit retires this review.
+  - Round 18 (`HISTORY-REVIEW-18-RAW.md`, REVISE) reviewed the fresh
+    reconciliation review's first form (`syzygy-5rxi`). M1, no fixture
+    killing the fixed-input test where it is the only guard
+    (`review-inputs.json`), is answered by that fixture and row 156. N1, the
+    binding line's end anchor and the reviewed commit's hex class unpinned,
+    by two fixtures and rows 157 and 158. N2 (the PASS line does not name
+    the reconciliation raw that bound `vision.md`) is not changed: the raw
+    is named in this page and in the D8 log row. N3 (an uncommitted edit
+    beside a committed raw passes) is the predecessor's behaviour for every
+    input. N4 (quote the raw-head contract in the dispatch brief) was done
+    for reconciliation review 1. The repair also makes the selftest's C1
+    fixture read `vision.md` at C1, as it reads the history inputs: round
+    18 reviewed a commit before (d2) was applied, and with (d2) applied
+    the unrepaired selftest failed ("candidate input drift: vision.md"),
+    because its fixture took today's `vision.md` as C1's.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
