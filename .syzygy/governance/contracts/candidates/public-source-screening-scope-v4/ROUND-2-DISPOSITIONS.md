@@ -6,6 +6,9 @@
 > the lead's round-2 direction (a REVISE is classified, not repaired, and the
 > lane stops), the package bytes are left exactly as round 2 read them, they
 > carry no confirmation, and P-110 is **not offered**.
+> *(Marked 2026-10-15: no longer true of the package bytes. A later lead
+> direction took one final repair cycle; the repairs are in `ROUND-2-REPAIR.md`.
+> This classification is kept as written.)*
 
 | Finding | Severity | Classification (not repaired) |
 |---|---|---|
