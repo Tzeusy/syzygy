@@ -3,7 +3,7 @@
   "requirement": "PWB-REQ-010",
   "signedText": "pwb-opening-index-amendment-v1.0",
   "subject": {
-    "syzygyCommit": "4ba447e5969b8157fc5027201e967f1190fc251c",
+    "syzygyCommit": "89b969798862d497be7982e0a228eafab2c139e8",
     "oracle": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
     "renderer": "apps/three-surface-poc/src/polaris-opening-index.ts"
   },
@@ -21,10 +21,12 @@
   "casesSigned": {
     "everyTargetRenders": "observed-degraded-unlawful (both viewports)",
     "openingUnknownAggregateAbsent": "observed (both viewports)",
-    "tieOnLargestOffset": "tie (synthetic body, hand-counted)",
+    "tieOnLargestOffset": "tie (synthetic body, hand-counted): no fixture render puts two indexed targets at the largest offset, so the renderer's own index and script run over a hand-written body",
     "setterInsideClosedDetails": "observed and observed-degraded-unlawful: the first exact-source link sits in a closed item population and sets the line",
-    "noTargetRendered": "none (synthetic body, hand-counted)"
+    "noTargetRendered": "none (synthetic body, hand-counted): no renderPolarisPage output can render no indexed target, because the claim-state legend always renders"
   },
+  "keyboard": "Two further tests follow the exact-requirement row by keyboard (focus, Enter, Tab) on the observed fixture and on a synthetic disclosure with a later control: Chrome opens the closed disclosure, focuses the target link, and Tab continues from it. They characterize the browser over renderer output; no renderer code backs them (a focus handler added for review finding 1 was removed when all three of its mutants survived).",
+  "scriptingOff": "Offsets and the stopping line are written by the page after load (owner answer Q10), so with scripting off the rows show their names and no offset, and no stopping line stands.",
   "reports": [
     {
       "page": "observed-degraded-unlawful",
@@ -549,7 +551,7 @@
   ],
   "violations": 0,
   "pages": 10,
-  "testsPassed": "Tests  12 passed (12)",
+  "testsPassed": "Tests  14 passed (14)",
   "liveCapture": {
     "projectRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
     "servedFromSyzygyCommit": "0883ecfa80ca0a31c140d1571c9790f73a5e8da0",
