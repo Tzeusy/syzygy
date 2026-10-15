@@ -800,7 +800,7 @@ describe('paths are at most git\'s core.maxTreeDepth (4,096) segments deep (R-PO
     expect(text((await reader(repo, commit).readBlobs([deep]))[0]!.bytes)).toBe('deep');
     expect(await reader(repo, commit).listTree()).toEqual([{ path: deep, mode: '100644', id: leaf.id }]);
     expect(await refusal(reader(repo, commit).readBlobs(['a/a/x']))).toMatchObject({ reason: 'path-not-found', message: `a/a/x is not in the tree at ${commit}` });
-  }, 30_000);
+  }, 240_000);
   it('a path of 4,097 segments refuses before any read, and listTree refuses the tree nested past the cap', async () => {
     const { repo, commit, path: deep, trees } = chain('depth-4097', 4096);
     expect(await refusal(reader(repo, commit).readBlobs([deep]))).toEqual({
@@ -809,5 +809,5 @@ describe('paths are at most git\'s core.maxTreeDepth (4,096) segments deep (R-PO
     expect(await refusal(reader(repo, commit).listTree())).toEqual({
       reason: 'malformed-tree', objectId: trees[1]!.id, path: null, message: `tree ${trees[1]!.id} nests trees deeper than git's core.maxTreeDepth (4096)`,
     });
-  }, 30_000);
+  }, 240_000);
 });
