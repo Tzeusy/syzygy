@@ -256,6 +256,19 @@ HISTORY_REVIEW_LIKE = re.compile(r'history[^a-z0-9]*review', re.IGNORECASE)
 POLICY_ACT = re.compile(r'^CONFIRM CRAFT AMENDMENT: CC-SPEC@([0-9a-f]{64})$', re.M)
 TREE_REVIEWS = tuple('.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-'
                      + str(n) + '-RAW.md' for n in range(1, 5))
+# A fresh reconciliation review (owner answer Q-A1 to doctrine amendment D8,
+# 2026-10-15) may confirm a later vision.md, which C1 froze and nothing else
+# may move. Its raws are numbered and retained in docs/reviews/; the latest
+# one binds every input C1 compares against today's bytes. Only REBINDABLE
+# may differ from its C1 digest; every other input it binds must still hash
+# as C1 confirmed. REVIEW-RAW.md is never overwritten.
+RECONCILIATION_DIR = 'docs/reviews/'
+RECONCILIATION_REVIEW = re.compile(r'R-POLARIS-UNDERSTANDING-RECONCILIATION-([1-9][0-9]*)-RAW\.md')
+# A basename is a reconciliation-review name, and so must be strictly
+# RECONCILIATION_REVIEW, when it matches this pattern (re.IGNORECASE, re.search).
+RECONCILIATION_REVIEW_LIKE = re.compile(r'understanding[^a-z0-9]*reconciliation', re.IGNORECASE)
+REBINDABLE = (VISION,)
+SUCCESSOR_BOUND = tuple(sorted({*FROZEN_PATHS, INPUTS} - set(HISTORY_PATHS)))
 
 
 def require(condition, reason):
@@ -381,6 +394,20 @@ class Evidence:
         log = [p for p in log if p]
         base = self.root / EVIDENCE
         return log, [EVIDENCE + p.relative_to(base).as_posix()
+                     for p in base.rglob('*') if p.is_file()]
+
+    def reconciliation_population(self):
+        """Reconciliation raws ever added on HEAD's history, and those on disk.
+
+        The same Git query as history_population, over RECONCILIATION_DIR.
+        """
+        log = git_output(self.root, 'log', '--no-renames', '--full-history',
+                         '--diff-merges=combined', '--diff-filter=A', '--name-only', '-z',
+                         '--format=', 'HEAD', '--', RECONCILIATION_DIR).decode(
+                             'utf-8', 'replace').split('\0')
+        log = [p for p in log if p]
+        base = self.root / RECONCILIATION_DIR
+        return log, [RECONCILIATION_DIR + p.relative_to(base).as_posix()
                      for p in base.rglob('*') if p.is_file()]
 
     def introduction(self, path):
@@ -586,17 +613,24 @@ def reviewed_template(evidence):
     bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`$', text, re.M)
     require(len(bindings) == len(set(p for p, _ in bindings)), 'duplicate C1 review input')
     require(set(p for p, _ in bindings) == set(FROZEN_PATHS) | {INPUTS}, 'C1 review input population')
+    successor = successor_bindings(evidence, dict(bindings), c2)
     for path, sha in bindings:
         require(digest(evidence.blob(c1, path)) == sha, 'C1 review blob mismatch: ' + path)
         if path not in HISTORY_PATHS:
-            require(digest(evidence.current(path)) == sha, 'review retired by changed input: ' + path)
+            # The latest fresh reconciliation review, when one exists, binds
+            # today's bytes; otherwise C1's digest does.
+            require(digest(evidence.current(path)) == successor.get(path, sha),
+                    'review retired by changed input: ' + path)
     performed = set(POLICY_ACT.findall(evidence.current(AGGREGATE).decode()))
     require(digest(evidence.blob(c1, POLICY)) in performed, 'C1 CC-SPEC bytes are no performed CC-SPEC digest')
     history_review(evidence)
     # Validate the complete original freeze using its own immutable doc before-images.
+    # A rebindable input is read at C1 too: today's bytes were compared above,
+    # against the digest the latest reconciliation review confirmed.
     class Frozen(Evidence):
         def current(self, path):
-            return evidence.blob(c1, path) if path in HISTORY_PATHS else evidence.current(path)
+            return (evidence.blob(c1, path) if path in HISTORY_PATHS or path in REBINDABLE
+                    else evidence.current(path))
         def blob(self, commit, path):
             return evidence.blob(commit, path)
         def ancestor(self, earlier, later):
@@ -648,6 +682,69 @@ def history_review(evidence):
     bindings = re.findall(r'^- `' + re.escape(SCRIPT) + r'`: `([0-9a-f]{64})`$', text, re.M)
     require(bindings == [digest(evidence.current(SCRIPT))],
             'latest history review does not bind the current recorder: ' + reviews[-1])
+
+
+def reconciliation_reviews(evidence):
+    """Every fresh reconciliation review, numbered 1..n, none deleted after it was committed."""
+    population = evidence.reconciliation_population()
+    def strict(path):
+        return (path.startswith(RECONCILIATION_DIR)
+                and RECONCILIATION_REVIEW.fullmatch(path[len(RECONCILIATION_DIR):]) is not None)
+    malformed = sorted({p for paths in population for p in paths
+                        if p.startswith(RECONCILIATION_DIR)
+                        and RECONCILIATION_REVIEW_LIKE.search(p.rsplit('/', 1)[-1])
+                        and not strict(p)})
+    require(not malformed, 'malformed reconciliation review name: ' + ', '.join(malformed))
+    twice = sorted({p for p in population[0] if population[0].count(p) > 1 and strict(p)})
+    require(not twice, 'reconciliation review added more than once: ' + ', '.join(twice))
+    added, listed = ({p for p in paths if strict(p)} for paths in population)
+    def number(path):
+        return int(RECONCILIATION_REVIEW.fullmatch(path[len(RECONCILIATION_DIR):]).group(1))
+    reviews = sorted(added | listed, key=number)
+    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),
+            'reconciliation review numbering is not 1..n')
+    deleted = sorted(added - listed)
+    require(not deleted, 'reconciliation review deleted: ' + ', '.join(deleted))
+    return reviews
+
+
+def successor_bindings(evidence, c1_bindings, c2):
+    """{path: sha256} the latest fresh reconciliation review confirms, or {} when none exists.
+
+    Each raw must be retained unchanged since a commit that follows C2. The
+    latest carries exactly one Verdict header, CONFIRM or CONFIRM WITH
+    EXCEPTIONS, exactly one full-SHA Reviewed commit header (provenance only:
+    a rebase-merged review commit is unreachable from main), and exactly one
+    binding line per SUCCESSOR_BOUND path, in the form C1's raw uses. Every
+    bound input outside REBINDABLE must keep its C1 digest.
+    """
+    reviews = reconciliation_reviews(evidence)
+    if not reviews:
+        return {}
+    for path in reviews:
+        intro = evidence.introduction(path)
+        require(intro is not None, 'reconciliation review not retained: ' + path)
+        require(intro != c2, 'reconciliation review must follow C2: ' + path)
+        evidence.ancestor(c2, intro)
+        require(evidence.blob(intro, path) == evidence.current(path),
+                'retained reconciliation review changed: ' + path)
+    latest = reviews[-1]
+    text = evidence.current(latest).decode()
+    verdicts = re.findall(r'^Verdict:([^\n]*)$', text, re.M)
+    require(verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),
+            'latest reconciliation review not confirming: ' + latest)
+    commits = re.findall(r'^Reviewed commit:([^\n]*)$', text, re.M)
+    require(len(commits) == 1 and re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None,
+            'reconciliation review commit: ' + latest)
+    bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`$', text, re.M)
+    require(sorted(p for p, _ in bindings) == list(SUCCESSOR_BOUND),
+            'reconciliation review input population: ' + latest)
+    bound = dict(bindings)
+    for path in SUCCESSOR_BOUND:
+        if path not in REBINDABLE:
+            require(bound[path] == c1_bindings[path],
+                    'reconciliation review moved a fixed input: ' + path)
+    return bound
 
 
 def check_evidence(evidence):
@@ -723,6 +820,7 @@ def reconciliation_selftest():
     history_path = history_paths[-1]
     decoy_path = EVIDENCE + 'HISTORY-REVIEW-011-RAW.md'
     history_commit = 'c' * 40
+    reconciliation_commit = 'b' * 40
 
     class Fixture(Evidence):
         def __init__(self):
@@ -733,6 +831,8 @@ def reconciliation_selftest():
                                   **{path: history_commit for path in history_paths}}
             self.added = list(history_paths)
             self.recorded = {}
+            self.reconciliation_added = []
+            self.unrelated = set()
             # Today's performed successors, so the fixture tracks installed restyles.
             self.successors = dict(source.successor_rows())
         def successor_rows(self):
@@ -749,12 +849,14 @@ def reconciliation_selftest():
                 return before[path]
             if commit == c2 and path == RAW:
                 return raw
-            if commit == history_commit and path in self.introductions:
+            if commit in (history_commit, reconciliation_commit) and path in self.introductions:
                 return self.files[path]
             if commit == c3:
                 return self.recorded[path]
             return source.blob(commit, path)
         def ancestor(self, earlier, later):
+            require((earlier, later) not in self.unrelated,
+                    'Git evidence unavailable: merge-base --is-ancestor ' + earlier + ' ' + later)
             if set((earlier, later)) & {c1, c2, c3}:
                 return
             return source.ancestor(earlier, later)
@@ -764,6 +866,10 @@ def reconciliation_selftest():
             listed = [p for p, data in self.files.items()
                       if p.startswith(EVIDENCE) and data is not None]
             return list(self.added), listed
+        def reconciliation_population(self):
+            listed = [p for p, data in self.files.items()
+                      if p.startswith(RECONCILIATION_DIR) and data is not None]
+            return list(self.reconciliation_added), listed
 
     fixture = Fixture()
     raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
@@ -996,7 +1102,121 @@ def reconciliation_selftest():
             raise AssertionError('introduction mutation accepted')
         finally:
             fixture.introductions[path] = saved
-    print('PASS reconciliation selftest: 3 valid states (before C3, committed C3, later docs); ' + str(len(witnesses)) + ' trust-boundary mutations refused; owner direction and technical proof remain distinct.')
+    # A fresh reconciliation review (D8 Q-A1) admits a later vision.md, and
+    # nothing else, without touching REVIEW-RAW.md.
+    reconciliation = [RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-RECONCILIATION-' + str(n) + '-RAW.md'
+                      for n in range(1, 11)]
+    latest = reconciliation[-1]
+    c1_digests = {path: digest(data) for path, data in before.items()}
+    amended = before[VISION] + b'\n  - amended\n'
+    # The bound population as a literal, never read back from SUCCESSOR_BOUND.
+    bound_population = (EVIDENCE + 'README.md', PROOF, TEMPLATE, DOC_PATCH, DOC_IMAGES, INPUTS,
+                        '.syzygy/governance/doctrine/vision.md')
+    def reconciliation_raw(verdict, vision):
+        rows = {path: c1_digests[path] for path in bound_population}
+        rows[VISION] = vision
+        return ('# Reconciliation review\nVerdict: ' + verdict + '\nReviewed commit: ' + 'a' * 40 + '\n'
+                + ''.join('- `' + p + '`: `' + s + '`\n' for p, s in sorted(rows.items()))).encode()
+    def refused(reason, operation, path):
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(reason in str(exc), 'wrong reconciliation refusal: ' + str(exc) + '; wanted ' + reason)
+            witnesses.append({'commit': commit, 'path': path, 'operation': operation,
+                              'old': None, 'new': None, 'refusal': str(exc)})
+        else:
+            raise AssertionError('reconciliation mutation accepted: ' + operation)
+    fixture.files[VISION] = amended
+    refused('review retired by changed input: ' + VISION, 'vision-without-reconciliation-review', VISION)
+    # Nine superseded REVISE raws and the confirming tenth, as for history
+    # reviews; an unrelated raw whose name holds "understanding" passes.
+    for path in reconciliation[:-1]:
+        fixture.files[path] = reconciliation_raw('REVISE', '0' * 64)
+    fixture.files[latest] = reconciliation_raw('CONFIRM', digest(amended))
+    unrelated_raw = RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-1-RAW.md'
+    fixture.files[unrelated_raw] = b'Verdict: REVISE\n'
+    fixture.reconciliation_added = [*reconciliation, unrelated_raw]
+    for path in reconciliation:
+        fixture.introductions[path] = reconciliation_commit
+    check_evidence(fixture)
+    fixture.files[latest] = reconciliation_raw('CONFIRM WITH EXCEPTIONS', digest(amended))
+    check_evidence(fixture)
+    fixture.files[latest] = reconciliation_raw('CONFIRM', digest(amended))
+    mutate(latest, 'latest reconciliation review not confirming', old=b'Verdict: CONFIRM\n', new=b'Verdict: REVISE\n')
+    mutate(latest, 'latest reconciliation review not confirming', old=b'Verdict: CONFIRM\n',
+           new=b'Verdict: CONFIRM\nVerdict: REVISE\n')
+    mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ',
+           new=b'Reviewed commit: wrong\nReviewed commit: ')
+    mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40,
+           new=b'Reviewed commit: bad-commit')
+    mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40 + b'\n', new=b'')
+    mutate(latest, 'reconciliation review commit', old=b'Reviewed commit: ' + b'a' * 40 + b'\n',
+           new=b'Reviewed commit: ' + b'a' * 40 + b'\nReviewed commit: ' + b'a' * 40 + b'\n')
+    mutate(latest, 'review retired by changed input: ' + VISION, old=digest(amended).encode(), new=b'1' * 64)
+    template_line = ('- `' + TEMPLATE + '`: `' + c1_digests[TEMPLATE] + '`\n').encode()
+    mutate(latest, 'reconciliation review input population', old=template_line, new=b'')
+    mutate(latest, 'reconciliation review input population', old=template_line, new=template_line * 2)
+    mutate(latest, 'reconciliation review input population', old=template_line,
+           new=template_line + ('- `' + SPEC + '`: `' + '2' * 64 + '`\n').encode())
+    mutate(TEMPLATE, 'review retired by changed input: ' + TEMPLATE)
+    # A fixed input rebound to new bytes by the review itself.
+    saved_template, saved_latest = fixture.files[TEMPLATE], fixture.files[latest]
+    fixture.files[TEMPLATE] = saved_template + b'\n'
+    fixture.files[latest] = saved_latest.replace(c1_digests[TEMPLATE].encode(),
+                                                 digest(fixture.files[TEMPLATE]).encode(), 1)
+    refused('reconciliation review moved a fixed input: ' + TEMPLATE, 'rebind-fixed-input', TEMPLATE)
+    fixture.files[TEMPLATE], fixture.files[latest] = saved_template, saved_latest
+    # vision.md written back to its C1 bytes while the review binds the amendment.
+    fixture.files[VISION] = before[VISION]
+    refused('review retired by changed input: ' + VISION, 'vision-written-back', VISION)
+    fixture.files[VISION] = amended
+    mutate(latest, 'retained reconciliation review changed', historical=reconciliation_commit)
+    mutate(reconciliation[2], 'retained reconciliation review changed', historical=reconciliation_commit)
+    mutate(latest, 'reconciliation review deleted', missing=True)
+    mutate(reconciliation[4], 'reconciliation review deleted', missing=True)
+    for intro, reason in ((None, 'reconciliation review not retained'),
+                          (c2, 'reconciliation review must follow C2'),
+                          ('9' * 40, 'Git evidence unavailable: merge-base --is-ancestor ' + c2)):
+        fixture.introductions[latest] = intro
+        fixture.unrelated.add((c2, '9' * 40))
+        try:
+            refused(reason, 'replace-reconciliation-introduction', latest)
+        finally:
+            fixture.introductions[latest] = reconciliation_commit
+            fixture.unrelated.clear()
+    saved_added, saved_raw = list(fixture.reconciliation_added), fixture.files[reconciliation[4]]
+    fixture.reconciliation_added.remove(reconciliation[4])
+    fixture.files[reconciliation[4]] = None
+    refused('reconciliation review numbering is not 1..n', 'remove-reconciliation-review', reconciliation[4])
+    fixture.reconciliation_added, fixture.files[reconciliation[4]] = saved_added, saved_raw
+    fixture.reconciliation_added.append(reconciliation[0])
+    refused('reconciliation review added more than once', 'add-reconciliation-review-twice', reconciliation[0])
+    fixture.reconciliation_added.pop()
+    uncommitted = RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-RECONCILIATION-11-RAW.md'
+    fixture.files[uncommitted] = fixture.files[latest]
+    refused('reconciliation review not retained', 'add-uncommitted-reconciliation-review', uncommitted)
+    del fixture.files[uncommitted]
+    for malformed in (RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-RECONCILIATION-011-RAW.md',
+                      RECONCILIATION_DIR + 'r-polaris-understanding-reconciliation-11-raw.md',
+                      RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING_RECONCILIATION-11-RAW.md',
+                      RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDINGRECONCILIATION-11-RAW.md',
+                      RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-RECONCILIATION-11-RAW-ADDENDUM.md',
+                      RECONCILIATION_DIR + 'sub/R-POLARIS-UNDERSTANDING-RECONCILIATION-11-RAW.md'):
+        fixture.reconciliation_added.append(malformed)
+        fixture.files[malformed] = reconciliation_raw('REVISE', '0' * 64)
+        try:
+            refused('malformed reconciliation review name', 'add-malformed-reconciliation-name', malformed)
+        finally:
+            fixture.reconciliation_added.pop()
+            del fixture.files[malformed]
+    check_evidence(fixture)
+    for path in (*reconciliation, unrelated_raw):
+        del fixture.files[path]
+        fixture.introductions.pop(path, None)
+    fixture.reconciliation_added = []
+    fixture.files[VISION] = before[VISION]
+    check_evidence(fixture)
+    print('PASS reconciliation selftest: 6 valid states (before C3, committed C3, later docs, a confirmed later vision.md under CONFIRM and CONFIRM WITH EXCEPTIONS, and after); ' + str(len(witnesses)) + ' trust-boundary mutations refused; owner direction and technical proof remain distinct.')
     print('RULE6-WITNESSES ' + json.dumps(witnesses, sort_keys=True))
 
 
@@ -1113,6 +1333,65 @@ def history_population_selftest():
         cases.append(('strict names and unrelated history files pass',
                       history_reviews(Evidence(root)) == [EVIDENCE + 'HISTORY-REVIEW-' + str(n)
                                                           + '-RAW.md' for n in (1, 2)]))
+    # The reconciliation-review population runs the same query over docs/reviews/.
+    def reviews_raw(root, name, text):
+        target = root / RECONCILIATION_DIR / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text)
+    strict_one = RECONCILIATION_DIR + 'R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md'
+    for label, setup, reason in (
+            ('renamed then deleted reconciliation raw refused as deleted',
+             [('add', 'draft.md'), ('mv', 'draft.md', 'R-POLARIS-UNDERSTANDING-RECONCILIATION-2-RAW.md'),
+              ('rm', 'R-POLARIS-UNDERSTANDING-RECONCILIATION-2-RAW.md')], 'reconciliation review deleted'),
+            ('near-miss reconciliation name deleted refused',
+             [('add', 'R-Polaris-Understanding_Reconciliation-2-RAW.md'),
+              ('rm', 'R-Polaris-Understanding_Reconciliation-2-RAW.md')], 'malformed reconciliation review name'),
+            ('newline-joined reconciliation near miss deleted refused',
+             [('add', 'understanding\nreconciliation.md'), ('rm', 'understanding\nreconciliation.md')],
+             'malformed reconciliation review name'),
+            ('uncommitted reconciliation raw is listed from disk', [('disk', 'R-POLARIS-UNDERSTANDING-RECONCILIATION-2-RAW.md')],
+             None)):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            git(root, 'init', '-q', '-b', 'main')
+            git(root, 'config', 'user.email', 'selftest@example.invalid')
+            git(root, 'config', 'user.name', 'selftest')
+            reviews_raw(root, 'R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md', 'Verdict: CONFIRM\n')
+            reviews_raw(root, 'R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-1-RAW.md', 'Verdict: REVISE\n')
+            git(root, 'add', '-A'); git(root, 'commit', '-qm', 'raw 1')
+            for step in setup:
+                if step[0] == 'add':
+                    reviews_raw(root, step[1], 'Verdict: REVISE\n')
+                    git(root, 'add', '-A'); git(root, 'commit', '-qm', 'add')
+                elif step[0] == 'mv':
+                    git(root, 'mv', RECONCILIATION_DIR + step[1], RECONCILIATION_DIR + step[2])
+                    git(root, 'commit', '-qm', 'rename')
+                elif step[0] == 'rm':
+                    git(root, 'rm', '-q', '-f', RECONCILIATION_DIR + step[1]); git(root, 'commit', '-qm', 'delete')
+                else:
+                    reviews_raw(root, step[1], 'Verdict: CONFIRM\n')
+            if reason is None:
+                added, listed = Evidence(root).reconciliation_population()
+                name = RECONCILIATION_DIR + setup[0][1]
+                cases.append((label, name in listed and name not in added
+                              and reconciliation_reviews(Evidence(root)) == [strict_one, name]))
+                continue
+            try:
+                reconciliation_reviews(Evidence(root))
+                ok = False
+            except ValueError as exc:
+                ok = reason in str(exc)
+            cases.append((label, ok))
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        git(root, 'init', '-q', '-b', 'main')
+        git(root, 'config', 'user.email', 'selftest@example.invalid')
+        git(root, 'config', 'user.name', 'selftest')
+        reviews_raw(root, 'R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md', 'Verdict: CONFIRM\n')
+        reviews_raw(root, 'R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-1-RAW.md', 'Verdict: REVISE\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'legitimate names')
+        cases.append(('strict reconciliation name and an unrelated understanding raw pass',
+                      reconciliation_reviews(Evidence(root)) == [strict_one]))
     for label, ok in cases:
         require(ok, 'history population selftest: ' + label)
     print('PASS history population selftest: ' + str(len(cases)) + ' real-Git cases')
