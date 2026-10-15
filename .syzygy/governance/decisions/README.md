@@ -169,6 +169,7 @@ exists and what it is about, so that a reader can find it.
 | 2026-10-06 | [`POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md`](POLARIS-DOSSIER-LOCAL-AGENT-D9-ROUND-2-DIRECTION.md) | After D9's second REVISE: permission through any Syzygy instruction on a per-run recorded choice; credential condition reaches every process the session starts; one confirming round |
 | 2026-10-07 | [`REDIS-LOCAL-AGENT-SITTING-DIRECTION.md`](REDIS-LOCAL-AGENT-SITTING-DIRECTION.md) | Redis sitting brief: 10a no ruling, 10b maintainer-stated only, 10c after the first run; `syzygy-4mbu` prints the command and ingests only the result; A–I selections stated, not acts |
 | 2026-10-15 | [`OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`](OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md) | Provider routes A and B stay parked and are not pursued; the dossier's model step runs the operator's local `codex` or `claude` binary as a subprocess with explicit inputs. A direction, not a consent |
+| 2026-10-15 | [`OWNER-DIRECTION-DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15.md`](OWNER-DIRECTION-DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15.md) | One last repair and review of the CLI runner delta; P-111 Q2 answered: disclose, on the run page, content classes the agent-provider statement does not list. A direction, not a consent; signs nothing |
 
 Dates are each file's first-commit date, not a claim about when the owner
 acted; the act's own record states that. [Observed — enumerated 2026-09-05 over
