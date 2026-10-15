@@ -137,19 +137,6 @@ export function substituteOpeningIndex(html: string, mountPrefix: string): strin
  * precede its target's first element.
  */
 export const OPENING_INDEX_SCRIPT = `<script>
-document.addEventListener('click', (event) => {
-  // A row's target can begin inside a closed disclosure (the first
-  // exact-source link sits in an item population). Following the row opens
-  // every disclosure around it and moves focus to it, so sequential focus
-  // continues from the target rather than from the disclosure's end.
-  const link = event.target instanceof Element ? event.target.closest('[data-polaris-opening-index] a[href^="#"]') : null;
-  if (!link) return;
-  let target;
-  try { target = document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1))); } catch { return; }
-  if (!target || !target.closest('details')) return;
-  for (let node = target.parentElement; node; node = node.parentElement) if (node.tagName === 'DETAILS') node.open = true;
-  setTimeout(() => target.focus(), 0);
-});
 addEventListener('load', () => {
   const index = document.querySelector('[data-polaris-opening-index]');
   if (!index) return;
