@@ -248,15 +248,15 @@ function syntheticPage(body: string): string {
 //
 // TIE: "Purpose" and "Lead words here" (4) precede the hidden-text
 // exact-source link and the architecture heading alike, so both offsets are
-// 4; the heading is
-// later in document order and sets the line, which stands after it. The
-// purpose heading starts at 0. Excluded: the hidden span, the script, the
-// style, the template, the noscript, the aria-hidden and display:none
-// blocks, the visibility:hidden span (its visible child counts), and the
-// closed details' content but not its summary.
+// 4; the heading is later in document order and sets the line, which stands
+// after it. The purpose heading starts at 0. Excluded: the hidden span
+// (displayed inline by its own style, so only the hidden attribute excludes
+// it), the script, the style, the template, the noscript, the aria-hidden
+// and display:none blocks, the visibility:hidden span (its visible child
+// counts), and the closed details' content but not its summary.
 const TIE_BODY = `<h2 id="polaris-account-purpose">Purpose</h2>
   <p>Lead <span style="visibility:hidden">ghost</span> words <span style="visibility:hidden"><span style="visibility:visible">here</span></span></p>
-  <a href="/polaris/source?identity=repo%40rev%3Aspec.md"><span hidden>exact text</span></a><h3 id="polaris-account-architecture">Architecture</h3>
+  <a href="/polaris/source?identity=repo%40rev%3Aspec.md"><span hidden style="display:inline">exact text</span></a><h3 id="polaris-account-architecture">Architecture</h3>
   <script>var notCounted = 'one two';</script><style>.x{}</style><template>tpl words</template><noscript>no script words</noscript>
   <div aria-hidden="true">aria hidden words</div><div style="display:none">display none words</div>
   <details><summary>Summary counts</summary><p>closed content not counted</p></details>
