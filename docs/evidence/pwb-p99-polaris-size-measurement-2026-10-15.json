@@ -1,0 +1,29 @@
+{
+  "task": "syzygy-u05.22",
+  "requirement": "PWB-REQ-016",
+  "signedText": "pwb-accessible-name-amendment-v1.0",
+  "subject": {
+    "syzygyCommit": "cb0d0a1d5878fa159aef3ebc7ad31bc0c9e53a0c",
+    "sweepRecord": "docs/evidence/pwb-p99-accessible-names-sweep-2026-10-15.json"
+  },
+  "method": "Private daemon (node apps/three-surface-poc/dist/main.js --port 0 --state-dir <scratch>) served from the committed worktree root at the subject commit; /polaris fetched twice with curl, direct and with Host: tzeusy.parrot-hen.ts.net. Per-item marginal cost measured on renderer output over the six task-4.4 fixture variants.",
+  "liveEvaluation": {
+    "projectRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "shape": "not-admitted",
+    "shapeReason": "source-uncaptured-or-unreachable",
+    "gateFinding": "[Observed] the policy authority reads 'invalid act' (policy:recording-tag-mismatched): the recording tag pwb-approve-policy-public-source-scope-v3-signed-2026-10-08 resolves neither in local refs nor on origin (git ls-remote --tags origin 'pwb-approve-policy*' lists only the 2026-09-02, 2026-09-05 and 2026-10-02 tags). The P1 gate therefore admits no body read and the evaluation lists no source, so the whole-surface sweep covered the entry page only."
+  },
+  "polaris": {
+    "directBytes": 113689,
+    "directSha256": "984beb2fba598bc8bed97074a166a4a22ca3164a9e802a445f1630f3dfab0142",
+    "tailnetBytes": 113929,
+    "tailnetSha256": "f4d200b1f0111c9074e3d5ef777d0affe1b06184ce73779c683ea431276d1d2c",
+    "maxHumanResponseBytes": 2097152
+  },
+  "marginalCost": {
+    "sourceRemediesSummaryName": "one aria-label per Unknown claim disclosure: 91 to 98 bytes each on the fixtures (8 summaries, 651 bytes, on observed-degraded-unlawful; 6 summaries, 524 bytes, on each unobserved variant)",
+    "crossSurfaceLinkName": "+4 bytes per Polaris cross-surface link ('Read X on Orrery' becomes 'X — read on Orrery'); 12 links per fixture variant",
+    "markdownHeadingClamp": "0 bytes (a level digit changes, never a length)"
+  },
+  "observedShapeOnButlers": "[Unknown] Not measurable at this commit: the live evaluation is not-admitted (above). The last observed capture (docs/evidence/smooth-example-live-run-2026-10-03.json) served /polaris at 1,473,252 tailnet bytes, 623,900 under the ceiling; at under 100 bytes per Unknown disclosure the added names stay far inside that headroom [Inferred]."
+}

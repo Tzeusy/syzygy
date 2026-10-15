@@ -1,0 +1,355 @@
+{
+  "task": "syzygy-u05.22",
+  "requirement": "PWB-REQ-016",
+  "signedText": "pwb-accessible-name-amendment-v1.0",
+  "commit": "dad36563676bca6a5a37da7ce8acaae8eafb00fa",
+  "ranAt": "2026-10-15T09:08:55.341270+00:00",
+  "method": "Each mutant replaces every copy of `old` with `new` in `file`, runs `npx vitest run <tests>` in a real headless Chrome, and restores the file. killed = the run exited non-zero.",
+  "mutants": [
+    {
+      "id": "shared-name-different-targets",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (targets.size > 1) {\n      violations.push({ kind: 'shared-name-different-targets'",
+      "new": "    if (targets.size > 99) {\n      violations.push({ kind: 'shared-name-different-targets'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  5 failed | 21 passed (26)"
+    },
+    {
+      "id": "shared-label-group-threshold",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (targets.size < 2) continue;",
+      "new": "    if (targets.size < 99) continue;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  5 failed | 21 passed (26)"
+    },
+    {
+      "id": "name-begins-with-label",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "      if (!element.name.startsWith(label)) {",
+      "new": "      if (!element.name.includes(label)) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "exact-source-path-after-label",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "      if (!element.name.slice(label.length).includes(path)) {",
+      "new": "      if (!element.name.includes(path)) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "exact-source-path-required",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "      if (path === undefined) continue; // the route serves no source of this evaluation",
+      "new": "      if (path !== undefined) continue; // the route serves no source of this evaluation",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 24 passed (26)"
+    },
+    {
+      "id": "exact-source-route-recognised",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  if (!url.pathname.endsWith(POLARIS_SOURCE_PATH)) return undefined;",
+      "new": "  if (!url.pathname.endsWith(POLARIS_SOURCE_PATH + \"-never\")) return undefined;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  3 failed | 23 passed (26)"
+    },
+    {
+      "id": "one-level-one-heading",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  if (levelOne.length !== 1) {",
+      "new": "  if (levelOne.length > 1) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "second-level-one-heading",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  if (levelOne.length !== 1) {",
+      "new": "  if (levelOne.length < 1) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 24 passed (26)"
+    },
+    {
+      "id": "heading-level-skipped",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (heading.level > previous.level + 1) {",
+      "new": "    if (heading.level > previous.level + 2) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  3 failed | 23 passed (26)"
+    },
+    {
+      "id": "role-heading-aria-level",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    const level = role ? (Number.isInteger(parsed) && parsed > 0 ? parsed : 2) : Number(e.tagName.slice(1));",
+      "new": "    const level = role ? 2 : Number(e.tagName.slice(1));",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "hidden-attribute-excluded",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (node.hasAttribute('hidden')) return true;",
+      "new": "    if (node.hasAttribute('data-never')) return true;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "aria-hidden-excluded",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (node.getAttribute('aria-hidden') === 'true') return true;",
+      "new": "    if (node.getAttribute('aria-hidden') === 'never') return true;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "display-none-excluded",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (getComputedStyle(node).display === 'none') return true;",
+      "new": "    if (getComputedStyle(node).display === 'never') return true;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "ancestor-hiding-counts",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  for (let node = start; node && node.nodeType === 1; node = node.parentElement) {\n    if (node.hasAttribute",
+      "new": "  for (let node = start; node && node.nodeType === 1; node = null) {\n    if (node.hasAttribute",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 24 passed (26)"
+    },
+    {
+      "id": "closed-details-included",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "const INTERACTIVE_SELECTOR = 'a[href], area[href], button, summary, input, select, textarea';",
+      "new": "const INTERACTIVE_SELECTOR = 'a[href]:not(details:not([open]) *), area[href], button, summary, input, select, textarea';",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 24 passed (26)"
+    },
+    {
+      "id": "form-controls-included",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "const INTERACTIVE_SELECTOR = 'a[href], area[href], button, summary, input, select, textarea';",
+      "new": "const INTERACTIVE_SELECTOR = 'a[href], area[href], button, summary';",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "names-computed-with-disclosures-open",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  await page.evaluate<null>(OPEN_DISCLOSURES_SCRIPT);\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  6 failed | 20 passed (26)"
+    },
+    {
+      "id": "summary-target-is-details",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "      target = details ? { kind: 'details', value: String(all.indexOf(details)) }",
+      "new": "      target = details ? { kind: 'details', value: 'one' }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "link-target-is-resolved-href",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "      target = { kind: 'href', value: e.href };",
+      "new": "      target = { kind: 'href', value: 'one' };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  4 failed | 22 passed (26)"
+    },
+    {
+      "id": "page-list-from-machine-answer",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  for (const source of sources) pages.push(",
+      "new": "  for (const source of sources.slice(1)) pages.push(",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  6 failed | 20 passed (26)"
+    },
+    {
+      "id": "every-listed-page-swept",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  for (const listed of pages) {\n    const url",
+      "new": "  for (const listed of pages.slice(0, -1)) {\n    const url",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  8 failed | 18 passed (26)"
+    },
+    {
+      "id": "coverage-page-not-swept",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  for (const page of listed) if (!sweptSet.has(page.page)) violations.push",
+      "new": "  for (const page of listed) if (sweptSet.has('never')) violations.push",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 24 passed (26)"
+    },
+    {
+      "id": "coverage-extra-page",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "  for (const page of swept) if (!listedSet.has(page)) violations.push",
+      "new": "  for (const page of swept) if (listedSet.has('never')) violations.push",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "page-not-served",
+      "file": "apps/three-surface-poc/src/polaris-accessible-names.ts",
+      "copiesReplaced": 1,
+      "old": "    if (code !== 200) {",
+      "new": "    if (code === 999) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  1 failed | 25 passed (26)"
+    },
+    {
+      "id": "renderer-label-first-cross-surface",
+      "file": "apps/three-surface-poc/src/surface-links.ts",
+      "copiesReplaced": 1,
+      "old": "input.nameForm === 'label-first' ? `${input.label} — read on ${targetName}`",
+      "new": "input.nameForm === 'label-first' ? `Read ${input.label} on ${targetName}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  8 failed | 18 passed (26)"
+    },
+    {
+      "id": "renderer-remedies-name-per-claim",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "copiesReplaced": 1,
+      "old": "<summary aria-label=\"${escapeHtml(`${copyText('label.source-remedies')} — ${claim.claimId}${place === undefined ? '' : ` — ${place}`}`)}\"",
+      "new": "<summary",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  4 failed | 22 passed (26)"
+    },
+    {
+      "id": "renderer-remedies-name-per-place",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "copiesReplaced": 1,
+      "old": "${place === undefined ? '' : ` — ${place}`}",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  3 failed | 23 passed (26)"
+    },
+    {
+      "id": "renderer-markdown-no-skip",
+      "file": "apps/three-surface-poc/src/polaris-markdown.ts",
+      "copiesReplaced": 1,
+      "old": "anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading, headings.last + 1);",
+      "new": "anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading, headings.last + 9);",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-markdown.test.ts"
+      ],
+      "outcome": "killed",
+      "summary": "Tests  2 failed | 18 passed (20)"
+    }
+  ],
+  "totals": {
+    "mutants": 28,
+    "killed": 28,
+    "survived": 0
+  },
+  "restoredRun": {
+    "exitCode": 0,
+    "summary": "Tests  46 passed (46)"
+  }
+}
