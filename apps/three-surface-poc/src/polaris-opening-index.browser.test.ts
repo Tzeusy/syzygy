@@ -21,7 +21,7 @@
 //
 // The viewport each run used is published with its result. Without a
 // browser the suite is skipped, never passed.
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -366,6 +366,17 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       expect(report.rows.filter((row) => 'offset' in row).map((row) => row.identity)).toEqual(['unknown-or-contradiction', 'claim-strength']);
     }, 60_000);
   }
+
+  // A captured page, for the dated live measurement: the served bytes are
+  // written by the operator (`SYZYGY_P98_PAGE`), never fetched here.
+  const captured = process.env.SYZYGY_P98_PAGE;
+  it.skipIf(captured === undefined)('a captured /polaris page meets the oracle at both viewports', async () => {
+    const html = readFileSync(captured as string, 'utf8');
+    for (const viewport of [WIDE, NARROW]) {
+      const report = await run('captured', html, viewport);
+      expect(report.violations).toEqual([]);
+    }
+  }, 60_000);
 
   it('a tie on the largest offset is broken by document order (synthetic body, hand-counted)', async () => {
     const report = await run('tie', syntheticPage(TIE_BODY), WIDE, false);
