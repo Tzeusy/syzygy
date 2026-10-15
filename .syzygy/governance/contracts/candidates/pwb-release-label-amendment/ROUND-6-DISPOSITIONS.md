@@ -81,6 +81,13 @@ repairs below) and `GOVERNING-DEPENDENCIES.md` (derived).
 
 **Round-6 findings repaired once on 2026-10-15, unconfirmed pending round
 7.**
+*(Marked 2026-10-15, round 7: "unconfirmed pending round 7" is no longer
+true. Round 7 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-7-RAW.md` line 4). F1 is
+repaired in the requirement but not in the packet summary and one delta
+choice, and the narrowed scenario still overclaims through an excepted
+identity. N1–N3 are repaired. Open findings are in
+`ROUND-7-DISPOSITIONS.md`.)*
 
 Line numbers are in `proposed/spec.md.patch` (`spec`) at this commit.
 

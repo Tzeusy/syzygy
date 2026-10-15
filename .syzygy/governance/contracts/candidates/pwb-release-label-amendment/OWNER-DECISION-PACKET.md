@@ -106,6 +106,15 @@ row, and repairs the three round-6 notes; mapping in
 offered for sign-off until round 7 returns `CONFIRM`, or `CONFIRM WITH
 EXCEPTIONS` with notes only; then Question 1 is yours, since this package
 has no carry-over answer. A `REVISE` comes back to you.
+*(Marked 2026-10-15, round 7: "unconfirmed pending round 7" is no longer
+true. Round 7 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-7-RAW.md` line 4). It found
+two revise findings: this packet's summary below and one delta choice still
+say an id in a sentence never counts, and an excepted identity placed in a
+sentence passes, which neither stated limit covers. It also found three
+notes. All are open in `ROUND-7-DISPOSITIONS.md`. These bytes are not
+repaired again and not cleared, no round 8 is dispatched, and this version
+is not offered for sign-off.)*
 
 ## What you would be signing
 
