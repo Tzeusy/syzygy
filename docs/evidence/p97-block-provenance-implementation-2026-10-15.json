@@ -1,0 +1,303 @@
+{
+  "record": "P-97 block-provenance implementation evidence (syzygy-u05.19)",
+  "date": "2026-10-15",
+  "subject": {
+    "requirements": [
+      "POC-REQ-001",
+      "POC-REQ-010"
+    ],
+    "signedTag": "three-surface-poc-block-provenance-amendment-v1.0",
+    "authorization": ".syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md",
+    "commit": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
+    "files": {
+      "packages/three-surface-poc-core/src/code-structure.ts": "sha256:126a454de2d8645cb91cdf643ef5a9de5ae1c32714cbaaf18e0e0a7eed6eb1be",
+      "packages/three-surface-poc-core/src/work-items.ts": "sha256:e4a5711b773e57c554434c7bcf09197ee769adc4d0ade5919ed17513904b25ca",
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts": "sha256:f3da0169e7975b1692f53be72aad17050fe414c4491d39acafd776551342a09b"
+    }
+  },
+  "machineBodySize": {
+    "measuredOn": "the shared synthetic fixture model (apps/three-surface-poc/src/test-model-fixture.ts buildFixtureModel defaults: 5 work items, 8 files), serialized as GET /api/poc serializes it (JSON.stringify(model)); no Butlers read",
+    "note": "The body names its temporary fixture repository path, so its sha256 differs per run; the byte count is stable for a fixed TMPDIR length. Both runs used TMPDIR=/home/tze/.cache/syzygy-impl-lane/tmp.",
+    "before": {
+      "commit": "72a16236",
+      "bytes": 28218,
+      "sha256": "c756f99b4a105c3a38c40149f93b1cb32057fa00458fd080c3369b908b2faca9",
+      "workItemsBytes": 1327,
+      "codeStructureBytes": 1799
+    },
+    "after": {
+      "commit": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
+      "bytes": 27728,
+      "sha256": "a03ebecaf3c320cb5e0455a2e9f64d4ec525d455d8ca52680c4af1151527e531",
+      "workItemsBytes": 1202,
+      "codeStructureBytes": 1434
+    },
+    "deltaBytes": -490
+  },
+  "rule6Mutants": {
+    "ranAt": "8c804dc1d1b7acb9d8322ba4606754e35039aa24",
+    "tests": [
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "packages/three-surface-poc-core/src/code-structure.test.ts",
+      "packages/three-surface-poc-core/src/work-items.test.ts"
+    ],
+    "population": 15,
+    "killed": 15,
+    "mutants": [
+      {
+        "id": "P97-M01",
+        "limb": "POC-REQ-001: a provenance revision that differs from the repository's own state",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n",
+        "new": "      source: input.provenanceSource ?? 'Observed repository',\n      revision: `${input.revision.slice(0, -1)}0`,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 3,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision"
+        ]
+      },
+      {
+        "id": "P97-M02",
+        "limb": "POC-REQ-001: a sampled entry's size that differs",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      sizeBytes: Number(sizeText),\n",
+        "new": "      sizeBytes: Number(sizeText) + 1,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit"
+        ]
+      },
+      {
+        "id": "P97-M03",
+        "limb": "POC-REQ-001: a sampled entry's digest that differs",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      digest: `git-blob-sha1:${match[3]}`,\n",
+        "new": "      digest: `git-blob-sha1:${(match[3] ?? '').slice(1)}0`,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit"
+        ]
+      },
+      {
+        "id": "P97-M04",
+        "limb": "POC-REQ-001: an observation served without a provenance record",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "    kind: 'observed',\n    provenance: {\n      kind: 'git-revision',\n      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n    },\n",
+        "new": "    kind: 'observed',\n    ...({} as { provenance: PocProvenance }),\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 19,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from HEAD",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb the record in another shape (a list, or a field outside the shared shape)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from the Dolt head",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb the record in another shape",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the capture instant outside a database time",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb an observation without its own capture instant"
+        ]
+      },
+      {
+        "id": "P97-M05",
+        "limb": "POC-REQ-001: the provenance record in another shape",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      kind: 'git-revision',\n      source: input.provenanceSource ?? 'Observed repository',\n      revision: input.revision,\n    },\n",
+        "new": "      kind: 'git-revision',\n      revision: input.revision,\n    } as PocProvenance,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant"
+        ]
+      },
+      {
+        "id": "P97-M06",
+        "limb": "POC-REQ-001: any other observation field holding the revision",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "    capturedAt: input.capturedAt,\n    files,\n",
+        "new": "    capturedAt: input.capturedAt,\n    ...({ revision: input.revision } as object),\n    files,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 1,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant"
+        ]
+      },
+      {
+        "id": "P97-M07",
+        "limb": "POC-REQ-001: an inventory entry that carries the observation's revision",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      language: classifyLanguage(path),\n    });\n",
+        "new": "      language: classifyLanguage(path),\n      ...({ revision: input.revision } as object),\n    });\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 3,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer binds every inventory entry to the exact revision observed (POC-REQ-001)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision"
+        ]
+      },
+      {
+        "id": "P97-M08",
+        "limb": "POC-REQ-001: an inventory entry that carries the observation's capture instant",
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "old": "      language: classifyLanguage(path),\n    });\n",
+        "new": "      language: classifyLanguage(path),\n      ...({ observedAt: input.capturedAt } as object),\n    });\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "code-structure.test.ts > code-structure observer produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant"
+        ]
+      },
+      {
+        "id": "P97-M09",
+        "limb": "POC-REQ-010: a provenance record naming a Dolt revision other than the head read",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };\n",
+        "new": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision: `${revision}-x` };\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 5,
+        "killedBy": [
+          "work-items.test.ts > work-items observer reads items via bd sql and stamps them with the Dolt revision read (POC-REQ-010)",
+          "work-items.test.ts > work-items observer distinguishes an observed-empty result from Unknown",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision"
+        ]
+      },
+      {
+        "id": "P97-M10",
+        "limb": "POC-REQ-010: an observation without a provenance record",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n",
+        "new": "    ...({} as { provenance: PocProvenance }),\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 19,
+        "killedBy": [
+          "work-items.test.ts > work-items observer reads items via bd sql and stamps them with the Dolt revision read (POC-REQ-010)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from HEAD",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb the record in another shape (a list, or a field outside the shared shape)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from the Dolt head",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb the record in another shape",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the capture instant outside a database time",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb an observation without its own capture instant"
+        ]
+      },
+      {
+        "id": "P97-M11",
+        "limb": "POC-REQ-010: the provenance record in another shape",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision };\n",
+        "new": "  return { kind: 'dolt-revision', source: `Beads Dolt database (${beadPrefix})`, revision, ...({ capturedAt: beadPrefix } as object) } as PocProvenance;\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 3,
+        "killedBy": [
+          "work-items.test.ts > work-items observer reads items via bd sql and stamps them with the Dolt revision read (POC-REQ-010)",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison"
+        ]
+      },
+      {
+        "id": "P97-M12",
+        "limb": "POC-REQ-010: any other observation field holding the Dolt revision",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n",
+        "new": "    provenance: doltProvenance(input.beadPrefix, doltRevision as string),\n    ...({ doltRevision } as object),\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison"
+        ]
+      },
+      {
+        "id": "P97-M13",
+        "limb": "POC-REQ-010: a work-item fact that carries the observation's Dolt revision",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n    });\n",
+        "new": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n      ...({ doltRevision } as object),\n    });\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 5,
+        "killedBy": [
+          "work-items.test.ts > work-items observer reads items via bd sql and stamps them with the Dolt revision read (POC-REQ-010)",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision"
+        ]
+      },
+      {
+        "id": "P97-M14",
+        "limb": "POC-REQ-010: a work-item fact that carries the capture instant outside a database time",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n    });\n",
+        "new": "      closedAt: typeof raw.closed_at === 'string' ? raw.closed_at : null,\n      ...({ observedAt: input.capturedAt } as object),\n    });\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 4,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb an observation without its own capture instant"
+        ]
+      },
+      {
+        "id": "P97-M15",
+        "limb": "POC-REQ-010: a sampled field differing from the database's value",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      updatedAt: raw.updated_at,\n",
+        "new": "      updatedAt: raw.created_at,\n",
+        "outcome": "killed",
+        "testsRun": 30,
+        "testsFailed": 2,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison"
+        ]
+      }
+    ]
+  }
+}
