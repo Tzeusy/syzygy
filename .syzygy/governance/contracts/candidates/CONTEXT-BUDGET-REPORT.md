@@ -40,13 +40,13 @@ the *measurement*, never the *selection*.
 | `context-selection-1-polaris-narrative.md` | 5 | 16,041 | 21,655 | **above the proposed trigger** by 8.3% | `79be6efbdeacbb8c…` |
 | `context-selection-10-trajectory-lifecycle.md` | 12 | 42,603 | 57,514 | **above the proposed trigger** by 187.6% | `38f34c4e98c91ded…` |
 | `context-selection-2-trajectory-adapter.md` | 8 | 21,936 | 29,614 | **above the proposed trigger** by 48.1% | `fecd5ee1792dc2cc…` |
-| `context-selection-3-orrery-lens.md` | 5 | 16,841 | 22,735 | **above the proposed trigger** by 13.7% | `b1901d135aeeef22…` |
+| `context-selection-3-orrery-lens.md` | 5 | 16,903 | 22,819 | **above the proposed trigger** by 14.1% | `68d7ff9a4a4a6a99…` |
 | `context-selection-4-execution-profile.md` | 6 | 13,236 | 17,869 | above the proposed default band, under the proposed trigger | `261916873d84a30b…` |
 | `context-selection-5-cross-project-mission.md` | 11 | 24,899 | 33,614 | **above the proposed trigger** by 68.1% | `120d199c9cd19f97…` |
-| `context-selection-6-doctrine-amendment.md` | 6 | 13,453 | 18,162 | above the proposed default band, under the proposed trigger | `2347e6132b33800c…` |
-| `context-selection-7-kernel-identity.md` | 5 | 18,360 | 24,786 | **above the proposed trigger** by 23.9% | `f5d5f881f4a2d26f…` |
+| `context-selection-6-doctrine-amendment.md` | 6 | 13,633 | 18,405 | above the proposed default band, under the proposed trigger | `f6b3956d72a7156b…` |
+| `context-selection-7-kernel-identity.md` | 5 | 18,422 | 24,870 | **above the proposed trigger** by 24.3% | `8b07c6e3f16742d0…` |
 | `context-selection-8-openspec-authoring.md` | 6 | 26,460 | 35,721 | **above the proposed trigger** by 78.6% | `18c579fdac8c19f5…` |
-| `context-selection-9-evidence-adapter.md` | 12 | 28,871 | 38,976 | **above the proposed trigger** by 94.9% | `fe8c6d892bb8722d…` |
+| `context-selection-9-evidence-adapter.md` | 12 | 29,067 | 39,240 | **above the proposed trigger** by 96.2% | `e90a3bc74e0ed23d…` |
 
 **8 of 10 fixtures are above the proposed 20,000-token trigger.**
 
@@ -103,7 +103,7 @@ printed at the foot of §5.
 
 ### `context-selection-3-orrery-lens.md`
 
-- **Measured:** 16,841 words ≈ 22,735 estimated tokens — 13.7% above the proposed trigger.
+- **Measured:** 16,903 words ≈ 22,819 estimated tokens — 14.1% above the proposed trigger.
 - **Reason:** [Unknown] — not declared in the fixture
 - **Scope:** [Unknown] — not declared in the fixture
 - **Reviewer:** [Unknown] — not declared in the fixture
@@ -121,7 +121,7 @@ printed at the foot of §5.
 
 ### `context-selection-7-kernel-identity.md`
 
-- **Measured:** 18,360 words ≈ 24,786 estimated tokens — 23.9% above the proposed trigger.
+- **Measured:** 18,422 words ≈ 24,870 estimated tokens — 24.3% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` and in the verifier's justification table, *not* in RFC-0001 itself, which records no waiver), and an identity change genuinely needs the minting/continuity scheme (RFC1-11), the evaluation identity a claim resolves against, the constitutional temporal model, and the floor text it may not weaken
 - **Scope:** Kernel identity and continuity changes — minting, successor edges, split/merge, and the continuity links recorded across them — **where CC-BAR-5 floor 7 is the declared classifier**. Does **not** cover: the adoption ceremony for such a change (RFC-0003 stays deferred to that packet, as this fixture already rules); `.syzygy/**` schema migrations that do not alter minting; changes to challenge, reconciliation or rendering semantics, which pull further RFC-0002 modules and must be re-measured (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -139,7 +139,7 @@ printed at the foot of §5.
 
 ### `context-selection-9-evidence-adapter.md`
 
-- **Measured:** 28,871 words ≈ 38,976 estimated tokens — 94.9% above the proposed trigger.
+- **Measured:** 29,067 words ≈ 39,240 estimated tokens — 96.2% above the proposed trigger.
 - **Reason:** The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (see `RFC-0004/README.md`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored
 - **Scope:** Evidence-adapter changes touching gate provenance (RFC4-13 routes), capture cadence or retention (RFC4-16), or fidelity labels (RFC4-24/25), **where the warrant spans the retention × cause coupling** — i.e. where a `reduced-fidelity` cause depends on a retention-horizon fact. A warrant touching **labels only**, with no RFC4-16 dependency, is **out of scope** and takes the smaller shard instead. Does not cover changes that also touch work-state rendering (fixture 2's class), or that add prose fields to a record, which pulls `RFC-0005/consent-egress-secrets` (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
