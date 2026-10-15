@@ -60,7 +60,14 @@ validates, in this order, and writes nothing until every step passes:
    only when each comma-separated clause is one of `QUALIFIER_CLAUSES`
    ("for the owner", "for the owner's view", "reported for the owner", "not
    resolved", "editorial"), and any other wording refuses as ambiguous; and `--disposition <record>` names the raw on a
-   `Reviewed record:` line and numbers exactly the raw's findings;
+   `Reviewed record:` line and numbers exactly the raw's findings. For either
+   verdict the `## Findings` section is read and fails closed: a line that
+   opens a finding in any other form (a heading, a bullet, an `F<n>` label),
+   or a blocking or revise severity written as a tag (first in parentheses or
+   brackets, or after `Severity:`) that the classifier did not consume,
+   refuses; a bare `CONFIRM` over a blocking or revise finding refuses as
+   self-contradictory. The package key or alias binds only as a whole token
+   on a line outside any fenced block, never as part of a longer name;
 5. the candidate package directory, and any further directory the package
    declares (a specification change under `openspec/changes/`), at the
    working tree equals the package at the commit the review read (sibling
