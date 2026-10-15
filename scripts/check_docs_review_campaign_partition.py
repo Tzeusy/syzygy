@@ -393,6 +393,11 @@ CAMPAIGNS = (
         "P-74 loaded-profile registry gate",
         r"R-DOV24-.*\.md",
     ),
+    campaign(
+        "olmr-screening-scope-v4",
+        "Screening scope version 4",
+        r"R-OLMR-SCREENING-SCOPE-V4-.*\.md",
+    ),
 )
 
 

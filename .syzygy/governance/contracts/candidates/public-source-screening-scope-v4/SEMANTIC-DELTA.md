@@ -4,6 +4,11 @@
 > comes only from an owner `approve-policy` act over the exact proposed bytes
 > of one manifest row. No target repository body was read to draft it; the
 > Redis figures below come from the bead's own text. No act is recorded here.
+>
+> **Round 1 repaired, 2026-10-15.** `docs/reviews/R-OLMR-SCREENING-SCOPE-V4-1-RAW.md`
+> returned REVISE (one blocking, four revise, four notes); every finding is
+> repaired in this package and the builder, as `ROUND-1-DISPOSITIONS.md` maps.
+> Under the owner's stopping rule no further round has run over these bytes.
 
 ## Class
 
@@ -22,7 +27,7 @@ blocked. The bead's three causes, and what this version does with each:
 
 | Cause (bead) | Spans | This version |
 |---|---|---|
-| Whole-blob secret screening: one `credential-assignment` match on README line 1 (a badge URL carrying `token=`) withholds the whole README | 41 | **Changed** by both variants: the matched line and one guard line on each side are withheld, the rest of the body is kept |
+| Whole-blob secret screening: one `credential-assignment` match on README line 1 (a badge URL carrying `token=`) withholds the whole README | 41 | **Changed** by both variants: for a `credential-assignment` or `credential-bearing-url` match the matched lines and one guard line on each side are withheld, the rest of the body is kept |
 | `SECURITY.md`, `MANIFESTO`, `TLS.md`, `redis.conf`, modules/MODULES.md (a Redis path) have no class (`unknown-extraction-class`) | 89 | **Not changed** for these five names; see "Declined" below. Variant `span-guides` adds generic root guide names, none of which is one of the five |
 | Active content in `00-RELEASENOTES` and `LICENSE.txt` | 10 | **Not changed**: the active-content scan stays whole-body |
 
@@ -41,7 +46,7 @@ recovered.
   (`excluded-content`)". It adds: "Mapping the whole artifact to a blanket
   Unknown would over-degrade usable partial evidence, which VIS-1 no more
   permits than over-claiming does."
-- **REQ-polaris-generation-024** (`openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`)
+- **REQ-polaris-generation-025** (`openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`)
   already requires: "redacted-span SHALL retain permitted surviving evidence
   at its otherwise-earned tier with disclosed count, making only claims
   dependent on removed spans Unknown. Redaction branches SHALL remain limited
@@ -86,6 +91,9 @@ and a match excludes the whole artifact with hash-not-body provenance
 
 ### Proposed `secretRedaction` (both variants)
 
+The exact bytes are in the two patches under `proposed/`; the text below is
+their reading, wrapped for this page.
+
 ```text
 appliesTo: a body of an admitted snapshot whose path this scope admits
 (code-content or project-documentation), after the denied-path, strict-UTF-8,
@@ -93,27 +101,37 @@ NUL and resource-limit rules pass. Text an agent session writes (a draft, an
 inventory, a verdict, a finding) is not such a body and is screened as before
 
 redactionClass: redacted-span
-wholeArtifactDetectors: [private-key-material]
+wholeArtifactDetectors: [private-key-material, known-token-formats]
+wholeArtifactFragments: ["-----BEGIN "]
 guardLines: 1
 
 rule: every detector runs over the complete transient body exactly as before,
-including inert code contexts. When at least one detector matches and none of
-the matches is from a detector in wholeArtifactDetectors, the body is retained
-as redacted-span (RFC5-17) instead of excluded whole. Lines are split at LF,
+including inert code contexts. Here a detector's matches are every match it
+makes starting at any offset of the text, overlapping matches included, not
+only those a left-to-right non-overlapping scan reports. When at least one
+detector matches, none of the matches is from a detector in
+wholeArtifactDetectors, and the body holds none of wholeArtifactFragments
+(compared exactly, case-sensitively), the body is retained as redacted-span
+(RFC5-17) instead of excluded whole. Lines are split at LF,
 CRLF or CR, as the generator counts lines; a match touches every line that
 holds any of its characters. A line a match touches, and guardLines lines
 before and after it, is a withheld line. Every detector then runs again over
 the retained text, which is the body with each withheld line replaced by an
 empty line of the same terminator; a match there excludes the whole artifact
 as excluded-artifact. A body with a match from a detector in
-wholeArtifactDetectors, or with a match the consumer cannot place on lines, is
-excluded whole as before
+wholeArtifactDetectors, a body holding one of wholeArtifactFragments, and a
+body with a match the consumer cannot place on lines, is excluded whole as
+before
 
 withheldLines: a withheld line is never stored, logged, rendered, sent,
 quoted, used to verify a quotation, or given to an agent session, and no
 digest of a withheld line, or of any part of one, is recorded. Wherever the
-retained body is shown or carried, the withheld lines are replaced by a marker
-that names the redaction and the count of withheld lines in the body
+retained body is shown or carried, each run of consecutive withheld lines is
+replaced by one marker that names the redaction and the total count of
+withheld lines in the body. The whole body's content digest and its Git object
+id remain recorded (RFC5-17 requires the digest), so a guess at short withheld
+lines can be checked against them; the target being public does not lift this
+residual
 
 citedSpanRule: a cited span (a start line and an end line of the body) that
 includes a withheld line is withheld whole, never shown in part, and every
@@ -140,13 +158,25 @@ under "What it gives up".
 
 ### Why each fail-closed choice
 
-- **`private-key-material` stays whole-artifact.** That detector matches the
+- **Two detectors stay whole-artifact.** `private-key-material` matches the
   literal header (`-----BEGIN PRIVATE KEY-----` and two siblings), and the key
-  material is on the lines after it. Withholding the header line and one guard
-  would release the key. Every other detector's match holds the secret it
-  signals (`credential-assignment` requires eight value characters after the
-  `=` or `:`; `credential-bearing-url` holds the user and password;
-  `known-token-formats` is the token).
+  material is on the lines after it. `known-token-formats` matches, among its
+  forms, an AWS access-key id (`AKIA…`), whose paired secret access key no
+  detector matches and may sit any number of lines away (round 1, finding 1:
+  a Terraform-shaped body released the secret key on line 4). Only
+  `credential-assignment` (the value, eight characters or more, is inside the
+  match) and `credential-bearing-url` (the user and password are inside the
+  match) are redacted by line.
+- **Any PEM header keeps the body whole.** A body holding `-----BEGIN ` is
+  never redacted: a key whose header the private-key literals do not list (an
+  EC key, for example) is key material no detector matches (round 1, finding
+  3). Such a body is excluded whole, as today, whenever any detector matches.
+- **Every match from every offset.** A left-to-right, non-overlapping scan can
+  consume a keyword that would have started a longer match: `secret: password`
+  then blank lines then `: value` reports only the first line, and the value
+  survives (round 1, finding 2). The rule counts every match from every start
+  offset (builder body fixture "hidden overlapping match", with a mutant
+  showing the plain scan leaks the value line).
 - **A match can span lines.** `credential-assignment` allows `\s*` around its
   `:` or `=`, so `password`, a blank line and `= value` is one match; every
   line it touches is withheld (builder body fixture "assignment across lines").
@@ -164,7 +194,10 @@ under "What it gives up".
   never sees half a quotation, and the claim that cites it is Unknown, which is
   exactly RFC5-17's dependent-claim rule.
 - **No digest of a withheld line.** A digest of a short secret is a guessing
-  oracle; the record carries the whole body's digest and line numbers only.
+  oracle. The whole body's digest and its Git object id stay recorded, because
+  RFC5-17 requires the content digest, and once every other line can be shown
+  they check a guess at short withheld lines just as well; the rule states
+  this residual rather than claiming the oracle closed (round 1, finding 6).
 - **Agent-written text is unchanged.** The render, close and check paths that
   screen an agent's draft or verdict prose keep whole-text screening.
 
@@ -187,9 +220,16 @@ conduct;" becomes "root files named design, governance, security, code of
 conduct, manifesto or architecture; a rootGuideStems name with no suffix;"
 ```
 
-Each name is a conventional root guide, tutorial, how-to, overview,
-contribution or credit file, the kinds RFC5-14 lists [Inferred, from general
-convention; no target was read to choose them]. Unlike `rootStems`, a guide
+Most names are a conventional root guide, tutorial, how-to or overview file,
+the kinds RFC5-14 lists [Inferred, from general convention; no target was read
+to choose them]. The credit names (`contributors`, `credits`, `thanks`,
+`acknowledg(e)ments`) are not on RFC5-14's list; they rest on its general
+definition, prose that "accompanies the project for its readers", as the
+existing root stem `authors` does. Two names come nearest to "governs its
+development": a SUPPORT file may state a version-support policy, and a
+DEVELOPMENT file may prescribe process. Both are kept because their usual
+content is how to get help or how to set up a working copy, and the variant is
+the owner's to decline. Unlike `rootStems`, a guide
 name needs a suffix: a bare `INSTALL` or `BUILDING` at a repository root may be
 a script, so it stays unclassified. `build` is absent because a root `BUILD` is
 a Bazel build file. No name carries a `docExcludedTokens` word, none repeats a
@@ -203,20 +243,25 @@ a Bazel build file. No name carries a `docExcludedTokens` word, none repeats a
 | Root `MANIFESTO` | declined | The owner chose version-2 variant `none` over variant `manifesto` on 2026-10-07; the packet's reason was that a manifesto "is also plausibly doctrine, which RFC5-14 puts in `governance-text`". The trial adds the cost, not new evidence about the file's class. The lawful route is a `governance-text` rule and a consent listing that class, a separate package |
 | Root `TLS` | declined | One project's topic name; a generic list cannot grow one target at a time, and a rule admitting any root `.md` would also admit agent-instruction files (for example AGENTS.md), which govern development |
 | `redis.conf` | declined | Configuration, not prose; no RFC5-14 class but `code-content` fits it, and adding `.conf` to `sourceExtensions` would class every root config file as code without a review of what config files carry |
-| modules/MODULES.md (a Redis path) | declined | A document below the root outside `docs/`; the version-2 packet's Q4 withholds nested documents because they are often a vendored library's |
+| modules/MODULES.md (a Redis path) | declined | A document below the root outside `docs/` and `doc/`: no path rule maps it (the rule's `notMapped` lists nested documentation); widening that is a new path rule, and the version-2 packet's Q4 reason for nested READMEs, that they are often a vendored library's, applies to it too |
 | Active content per line (the 10 spans) | not offered | The active-content scan is Markdown-context aware, and a code fence spans lines, so a per-line rule has no sound definition here |
-| Option C: screening-withheld rows non-blocking | declined | REQ-polaris-generation-035 counts every unresolved row; marking a row whose support was never read as non-blocking would let readiness be declared over claims with no evidence, which VIS-2 forbids ("Nothing turns green ... without current evidence"). It also needs a specification delta, not a policy act |
+| Option C: screening-withheld rows non-blocking | declined | REQ-polaris-generation-035 requires the verdict to record "draft-to-source support for every claim block" and keeps REQ-polaris-generation-006's "rule that unresolved material omissions prevent readiness"; the bead names the readiness basis that counts unresolved rows as blocking, which is implementation. Marking a row whose support was never read as non-blocking would let readiness be declared over claims with no evidence, which VIS-2 forbids ("Nothing turns green, and no project is declared aligned, converged, or genome-complete ... without current evidence"). It would also need a specification delta, not a policy act |
 
 ## What it gives up
 
+- **The main cost: co-location.** A body with a detector match is evidence
+  that the file carries credentials, and version 3 withheld everything in it.
+  Under version 4, in a body whose matches are all `credential-assignment` or
+  `credential-bearing-url`, a secret that no detector matches is admitted
+  unless it falls on a matched line or a guard line [Inferred; round 1,
+  finding 3]. The two whole-artifact detectors and the PEM fragment close the
+  two cases the review constructed; they do not close the class.
 - [Inferred] A secret that a detector matches on one line and that continues
-  past the guard line onto further lines is admitted in its unmatched part;
-  whole-blob screening excluded the whole body in that case. A secret the
-  detectors do not match at all is admitted under either rule (the existing
-  residual `screen.ts` records: "the detectors match literal forms only, so an
-  encoded or split secret passes them").
-- A body with a match is no longer withheld whole, so a line that is merely
-  near a secret, beyond the guard, reaches a page or an agent session.
+  past the guard line onto further lines is admitted in its unmatched part.
+- In a body with no match at all, nothing changes: a secret the detectors do
+  not match is admitted under both versions (the residual `screen.ts`
+  records: "the detectors match literal forms only, so an encoded or split
+  secret passes them").
 
 ## What it does not do
 

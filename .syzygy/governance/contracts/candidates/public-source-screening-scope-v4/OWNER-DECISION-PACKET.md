@@ -2,7 +2,8 @@
 
 > **Candidate — binds nothing.** It carries no digest. Nothing here is a
 > decision, and no act is performed by reading it. It is offered only after a
-> confirming review; until then it is not offered.
+> confirming review; until then it is not offered. Round 1 returned REVISE and
+> was repaired once (`ROUND-1-DISPOSITIONS.md`); no round has confirmed it.
 
 ## What this is, in plain words
 
@@ -14,10 +15,13 @@ that cited them [Observed, from the bead `syzygy-olmr`]. Altogether 140 of 233
 cited spans were withheld.
 
 Version 4 withholds only the lines the detector matched, plus one line on each
-side, instead of the whole file. A quotation that touches a withheld line is
-still withheld whole, and its claim stays Unknown. Everything else in the file
-can be quoted. A private-key match still withholds the whole file, because
-that detector only sees the key's header line.
+side, instead of the whole file, when the match is a password-or-token
+assignment or a URL with a password in it. A quotation that touches a withheld
+line is still withheld whole, and its claim stays Unknown. Everything else in
+the file can be quoted. Three cases still withhold the whole file: a
+private-key match (the detector only sees the key's header line), a known
+token format such as an AWS key id (its secret key sits on another line that
+no detector catches), and any file holding a `-----BEGIN ` block.
 
 This is the kind of redaction RFC5-17 already defines (`redacted-span`) and the
 Polaris specification already describes; the policy has simply never turned it
@@ -53,12 +57,16 @@ frozen only after a confirming review, takes that row as the act's argument.
 
 ## What it costs
 
+- **The main cost.** A file where a detector matched probably holds
+  credentials, and today everything in it is withheld. Under version 4 a
+  second secret in that file that no detector recognises reaches the review
+  packet, an agent session and the draft page, unless it sits on a withheld
+  line [Inferred]. The review found two such cases (an AWS secret key, an EC
+  private key) and both now keep the whole file withheld; the general risk
+  remains.
 - [Inferred] A secret that a detector catches on one line but that continues
-  two or more lines further would have its tail admitted; today the whole file
-  is withheld in that case. Secrets the detectors never match are admitted
-  either way, as today.
-- Lines near a secret, beyond the guard line, can now reach the review packet,
-  an agent session and the draft page.
+  two or more lines further would have its tail admitted.
+- In a file with no match at all nothing changes.
 
 ## What stays withheld, and why it is not in this version
 
@@ -70,8 +78,10 @@ frozen only after a confirming review, takes that row as the act's argument.
 - **TLS.md**: one project's topic name; a rule for any root `.md` would also
   admit files like AGENTS.md, which govern development.
 - **redis.conf**: configuration, not prose; it fits no documentation class.
-- **modules/MODULES.md**: a document below the root, outside `docs/`; version
-  2 withholds those because they are often a vendored library's.
+- **modules/MODULES.md**: a document below the root, outside `docs/`; no rule
+  reads those, and adding one is a separate change (nested READMEs are
+  withheld in version 2 because they are often a vendored library's, which
+  applies here too).
 - **00-RELEASENOTES and LICENSE.txt** (10 spans): withheld for active content,
   which this version does not change.
 - **Treating withheld rows as non-blocking** (option C, not offered): readiness
@@ -82,9 +92,10 @@ frozen only after a confirming review, takes that row as the act's argument.
 ## Order, as fact
 
 The subject is the policy as version 3 left it, which is the policy on disk
-now. Like every policy act, signing breaks the public-target read gate until
-the install re-points it at the new bytes and teaches the screens the
-redaction; the install is a separate change (`IMPACT-LEDGER.md`).
+now. Like every policy act, signing breaks both read gates, the public-target
+gate and the Butlers gate, until the install re-points them at the new bytes
+and teaches the screens the redaction; the install is a separate change
+(`IMPACT-LEDGER.md`).
 
 ## What it does not do
 

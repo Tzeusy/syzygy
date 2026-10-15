@@ -18,7 +18,7 @@ as the version-3 act left it.
 
 **References:** RFC5-14, RFC5-16 and RFC5-17 in
 `.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md`;
-REQ-polaris-generation-024 in
+REQ-polaris-generation-025 in
 `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md`
 and REQ-polaris-generation-035 in
 `openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md`;
@@ -45,7 +45,7 @@ version-3 act record
    guard line honestly described as a mitigation, and is the residual stated
    in both the delta and the packet?
 3. **Is the authority claim right?** The delta says RFC5-17 and
-   REQ-polaris-generation-024 already permit `redacted-span`, so a policy act
+   REQ-polaris-generation-025 already permit `redacted-span`, so a policy act
    suffices and no contract amendment or specification delta is needed.
    Contradict this if any clause or requirement requires whole-artifact
    exclusion for this scope. Does REQ-polaris-generation-035's

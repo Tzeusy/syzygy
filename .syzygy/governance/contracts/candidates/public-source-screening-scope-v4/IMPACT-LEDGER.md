@@ -20,8 +20,12 @@ read; the version-3 ledger's population was taken as the starting list.
   list of act forms read as a chain. A version-4 act record carrying the scope
   stem makes the reader refuse until the install adds a fourth form and
   extends the chain (version 4 needing version 3, later, over other bytes).
-- **The read-gate pin** in `apps/three-surface-poc/src/governance-inputs.ts`
-  names the version-3 version literal, and its tests do too
+- **The Butlers (base) read gate.** `apps/three-surface-poc/src/governance-inputs.ts`
+  lines 76-104 (`pwbSyzygyButlersExpectations`) pin the version-3
+  `policyVersion`, act identity, recording tag and scope anchors, so any
+  version-4 act closes the Butlers body-read gate until it is re-pinned, as
+  the version-3 ledger said of its own act (round 1, finding 5). The tests pin
+  it too
   (`governance-inputs.test.ts`); the recorder fixtures in
   `packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts` and
   `package-reader.test.ts`, and the literals in
@@ -38,13 +42,30 @@ read; the version-3 ledger's population was taken as the starting list.
   beside `_activate_public_source_scope_v3_copy_registry`. This package adds
   none of that; it is drafted, not offered.
 
+- **Policy-path consumers not yet assessed.** From the 30-file policy-path
+  sweep: `scripts/install_redis_sitting.py` (derives its policy step from the
+  recorded act), `scripts/simulate_redis_sitting.py`,
+  `scripts/check_spec_reconciliation.py`, and the app's
+  `checkoutPolicyActPort` in
+  `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts`
+  (it reads `POLICY_ACT_FORMS[0]` only). Whether each breaks is Unknown; the
+  install assesses each.
+- **Provider egress population.** In provider mode cited span text reaches the
+  provider through `packages/polaris-generation-core/src/pipeline.ts` under
+  the egress consent; version 4 widens that population to spans of retained
+  bodies. No egress rule changes, but the install's egress tests cover it.
+
 ## What the install must build (redaction)
 
 - **Match offsets.** `detectSecrets` in
   `packages/three-surface-poc-core/src/content-classification.ts` returns the
   first matching detector id only. The rule needs every match's start and end
-  over the complete body, then the line placement, guard, re-screen and
-  span test the builder's reference oracle (`withheld_lines`) states.
+  from every start offset (overlapping matches included) over the complete
+  body, then the line placement, guard, re-screen and
+  span test the builder's reference oracle (`withheld_lines`) states. The
+  oracle runs the patterns in Python `re`; the screens run them as JavaScript
+  `RegExp`, whose `\s` class differs (round 1, note 9), so the install runs
+  the builder's body fixtures through the TypeScript screens as well.
 - **The two screens.** `packages/polaris-dossier/src/screen.ts` and
   `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts`
   must agree on every body of `screen.test.ts`'s population, including the
@@ -60,8 +81,9 @@ read; the version-3 ledger's population was taken as the starting list.
   keeps them unchanged. `render.ts` line 204 decides the version-3 render
   condition and reads target bodies; it must not be fed a body with withheld
   lines intact.
-- **Rendering.** A page that shows a retained body shows a marker with the
-  withheld-line count in place of each withheld run.
+- **Rendering.** A page that shows a retained body shows one marker in place
+  of each run of consecutive withheld lines, each naming the redaction and the
+  body's total withheld-line count, as `secretRedaction.withheldLines` says.
 
 ## What the install must build (variant `span-guides` only)
 
@@ -72,5 +94,6 @@ read; the version-3 ledger's population was taken as the starting list.
 
 ## What it does not touch
 
-The base (Butlers) scope and its consumers, the consent and egress readers,
-and every specification.
+The base (Butlers) scope's rules, the consent and egress readers, and every
+specification. The Butlers read gate's pin is touched, as above: the rules
+it reads are not.
