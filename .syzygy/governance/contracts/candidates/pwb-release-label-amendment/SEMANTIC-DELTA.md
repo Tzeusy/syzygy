@@ -76,6 +76,13 @@ account below describes this version. The base moved: the accessible-name
 package's derived `GOVERNING-DEPENDENCIES.md.patch` and manifest were
 regenerated with `--write` over their applied bytes, and no PWB sibling is
 pending beside it (§"Pending siblings").
+*(Marked 2026-10-15, round 6: "unconfirmed pending round 6" is no longer
+true. Round 6 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-6-RAW.md` line 4): one revise
+finding (a citation embedded in a sentence passes every decide-line, and
+the named limit below is contradicted by "therefore never a stamp" and the
+new scenario) and three notes, all open in `ROUND-6-DISPOSITIONS.md`. These
+bytes are not cleared and are not offered for sign-off.)*
 
 The cycle-4 change to the requirement, in short:
 

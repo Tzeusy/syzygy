@@ -83,6 +83,15 @@ these bytes, so it is **not offered for sign-off** until round 6 returns
 your sign: this package has no carry-over answer. A `REVISE` comes back to
 you. Questions 1–6 are unchanged in substance; Question 5's options and
 Question 6's recommended option are reworded to match the bytes.
+*(Marked 2026-10-15, round 6: "unconfirmed pending round 6" is no longer
+true. Round 6 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-6-RAW.md` line 4): one revise
+finding (a citation embedded in a sentence still passes every decide-line,
+so "therefore never a stamp" and Question 6's recommended row still
+overclaim) and three notes, all open in `ROUND-6-DISPOSITIONS.md`. Under
+the stopping rule these bytes are not repaired again and not cleared, no
+round 7 is dispatched, and this version is not offered for sign-off. It
+comes to you with those findings open.)*
 
 ## What you would be signing
 
