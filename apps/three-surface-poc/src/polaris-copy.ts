@@ -27,6 +27,7 @@ export const POLARIS_COPY = [
   { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Less to remember. More room to live.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
   { id: 'label.claim-states', role: 'action-label', kind: 'label', text: 'What the claim states mean' },
+  { id: 'states.heading', role: 'epistemic-disclosure', kind: 'heading', text: 'What the claim states mean' },
   { id: 'gloss.tuple', role: 'epistemic-disclosure', kind: 'sentence', text: 'Each claim carries one line: label · tier · freshness · challenge. The first one reads:' },
   { id: 'proof.sources', role: 'project-fact', kind: 'label', text: 'sources' },
   { id: 'proof.items', role: 'project-fact', kind: 'label', text: 'declared items' },
@@ -65,6 +66,21 @@ export const POLARIS_COPY = [
   { id: 'depth.catalog', role: 'scope-instruction', kind: 'label', text: 'Catalog' },
   { id: 'depth.detail', role: 'scope-instruction', kind: 'label', text: 'Detail' },
   { id: 'depth.source', role: 'scope-instruction', kind: 'label', text: 'Exact source' },
+
+  // The opening index (PWB-REQ-010 as amended by `pwb-opening-index-amendment`
+  // v1.0, P-98): one row name per PWB-REQ-021 answer identity, spelled
+  // exactly as the requirement's table spells it. Offsets and the stopping
+  // line are counted in the page after load, so they are templated, not rows.
+  { id: 'index.why', role: 'action-label', kind: 'label', text: 'purpose' },
+  { id: 'index.promises', role: 'action-label', kind: 'label', text: 'promises' },
+  { id: 'index.refusals-and-rule', role: 'action-label', kind: 'label', text: 'non-goals' },
+  { id: 'index.capabilities-and-fit', role: 'action-label', kind: 'label', text: 'capabilities' },
+  { id: 'index.exact-requirement', role: 'action-label', kind: 'label', text: 'exact requirements' },
+  { id: 'index.unknown-or-contradiction', role: 'action-label', kind: 'label', text: 'gaps' },
+  { id: 'index.claim-strength', role: 'action-label', kind: 'label', text: 'claim strength' },
+  { id: 'index.architecture-and-groups', role: 'action-label', kind: 'label', text: 'architecture' },
+  { id: 'index.v1-success', role: 'action-label', kind: 'label', text: 'V1 success' },
+  { id: 'index.not-rendered', role: 'epistemic-disclosure', kind: 'sentence', text: 'not rendered at this evaluation' },
 
   { id: 'group.overview', role: 'project-fact', kind: 'heading', text: 'What Butlers is' },
   { id: 'group.boundaries', role: 'project-fact', kind: 'heading', text: 'Scope and principles' },

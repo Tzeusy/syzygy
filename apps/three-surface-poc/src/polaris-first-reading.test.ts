@@ -288,11 +288,19 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
       expect(row, source.path).toBeGreaterThan(sources);
     }
     // No fragment target sits inside a disclosure: a reader who follows a
-    // link always lands where sequential focus continues.
-    const targets = new Set([...html.matchAll(/href="#([^"]+)"/g)].map((match) => match[1] as string));
+    // link always lands where sequential focus continues. One signed
+    // exception: the opening index's exact-requirement row routes to the
+    // first exact-source link in document order wherever it stands
+    // (PWB-REQ-010 as amended, P-98), here inside an item population.
+    const index = /<nav\b[^>]*\sdata-polaris-opening-index[^>]*>[\s\S]*?<\/nav>/.exec(html)?.[0] ?? '';
+    const exactRow = /<li data-opening-row="exact-requirement"><a href="#([^"]+)"/.exec(index)?.[1];
+    expect(exactRow).toBeDefined();
+    const targets = new Set([...html.replace(index, '').matchAll(/href="#([^"]+)"/g)].map((match) => match[1] as string));
+    const indexTargets = new Set([...index.matchAll(/href="#([^"]+)"/g)].map((match) => match[1] as string));
     for (const details of detailsOf(html)) {
       for (const id of details.inner.matchAll(/ id="([^"]+)"/g)) {
         expect(targets.has(id[1] as string), `${id[1]} is a fragment target inside a disclosure`).toBe(false);
+        if (id[1] !== exactRow) expect(indexTargets.has(id[1] as string), `${id[1]} is an opening-index target inside a disclosure`).toBe(false);
       }
     }
     expect(html).not.toMatch(/display:\s*none|visibility:\s*hidden|aria-hidden="true"/);
