@@ -304,6 +304,11 @@ as green) and SEC-2 (no consent is widened).
   `syzygy-zwja` (the one-command-run change, which takes this text in).
 - A Codex run over any target also needs an agent-provider statement for
   Codex with its provider for that target; none exists.
+- On folding into `openspec/`, the warrant block's
+  `DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15` must belong to an id family
+  `apps/three-surface-poc/src/polaris-authority-sweep.test.ts` knows
+  (`WARRANT_FAMILIES`); check that test at fold-in time [Unknown whether the
+  current families admit it].
 
 ## Migration / supersession plan
 
