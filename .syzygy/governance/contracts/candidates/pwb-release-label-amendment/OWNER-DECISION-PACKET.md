@@ -92,6 +92,20 @@ overclaim) and three notes, all open in `ROUND-6-DISPOSITIONS.md`. Under
 the stopping rule these bytes are not repaired again and not cleared, no
 round 7 is dispatched, and this version is not offered for sign-off. It
 comes to you with those findings open.)*
+*(Marked 2026-10-15, cycle 5: "not repaired again" and "no round 7 is
+dispatched" are superseded. You answered "Weaker wording + review (Rec.)":
+"Drop 'never a stamp', state both gaps as limits, then one review; it comes
+back to you to sign.")*
+
+**Round-6 findings repaired once on 2026-10-15, unconfirmed pending round
+7.** This version withdraws "therefore never a stamp", states the citation
+placement gap and the locator-token gap as limits in the requirement,
+renames and narrows the fifth scenario, rewords Question 6's recommended
+row, and repairs the three round-6 notes; mapping in
+`ROUND-6-DISPOSITIONS.md` §"Repairs, 2026-10-15 (cycle 5)". It is not
+offered for sign-off until round 7 returns `CONFIRM`, or `CONFIRM WITH
+EXCEPTIONS` with notes only; then Question 1 is yours, since this package
+has no carry-over answer. A `REVISE` comes back to you.
 
 ## What you would be signing
 
@@ -183,7 +197,7 @@ last four otherwise.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended once the review clears) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-001 gains the release label and four scenarios. |
+| **Sign v1.0** (recommended once the review clears) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-001 gains the release label and five scenarios *(was "four" until 2026-10-15; the fifth was added in cycle 4, round-6 Note 2)*. |
 | Decline | PWB-REQ-001 stays as signed, and Polaris keeps showing a short object id. |
 | Revise | Name what to change, and a new version gets a new review round. |
 
@@ -256,7 +270,14 @@ way, and the label then leads nowhere a reader looks.
 
 | Option | Meaning |
 |---|---|
-| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)". The checker confirms that the record it cites carries that revision, and that the cite's whole text is that record's served locator or path: one token with no space in it, or a real path in the observed tree. A sentence cannot be cast as a cite, so every sentence, heading or identity line that names the revision shows the label instead, or drops the id. The label then leads wherever the revision is named. One limit stays: a served locator is Polaris's own output, so the text bounds it to one token but does not fix which tokens. |
+| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)". The checker confirms that the record it cites carries that revision, and that the cite's whole text is that record's served locator or path: one token with no space in it, or a real path in the observed tree. A bare id in a sentence, heading or identity line, outside any citation, fails; such a line shows the label instead, or drops the id. Two limits are stated in the requirement and are not decided: a citation placed inside a sentence still passes, so a sentence can name the revision through its citation; and a served locator is Polaris's own output, so the text bounds it to one token but does not fix which tokens. |
+
+*(Reworded 2026-10-15, cycle 5, for round-6 Finding 1 under your answer
+"Weaker wording + review": the recommended row said "A sentence cannot be
+cast as a cite, so every sentence, heading or identity line that names the
+revision shows the label instead, or drops the id. The label then leads
+wherever the revision is named." Round 6 showed a citation inside a sentence
+passes, so that promise is withdrawn and both gaps are stated as limits.)*
 | Bare ids in sentences may stay | An id in a sentence is allowed with no label. The label still appears once per page and first, but the claim that a stamp "cannot hide a naming" is withdrawn, and a reader may meet many bare ids. This needs a new version of this package. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

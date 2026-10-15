@@ -349,3 +349,58 @@ those bytes. Clearing is not signing: this package has no carry-over
 answer, so it then goes to the owner for Question 1. Any other verdict
 sends the package to the owner with its findings open. No round 7 is
 dispatched without a new owner instruction.
+
+## Round 7 (added 2026-10-15, cycle 5)
+
+Round 6 returned `REVISE`: one revise finding (a citation placed inside a
+sentence still passes every decide-line, so "therefore never a stamp", the
+fifth scenario and Question 6's recommended row promised more than the
+checks decide) and three notes. The owner answered "Weaker wording + review
+(Rec.)": "Drop 'never a stamp', state both gaps as limits, then one review;
+it comes back to you to sign." This version does that, and repairs the three
+notes. Round 7 reviews these bytes against the same seven criteria, on their
+own merits.
+
+In particular, judge:
+
+- whether the withdrawal is complete, so that no requirement text, scenario,
+  design line or packet option still claims that a sentence, heading or
+  identity line never names the revision through a citation;
+- whether the two stated limits are honest and stated in the requirement
+  itself;
+- whether what remains decided is still a sweep with a denominator and a
+  falsifier the oracle catches (CC-SPEC).
+
+A disclosed, owner-chosen limit is not by itself a revise finding. Raise a
+revise finding only where the text still claims more than its oracle
+decides, or where a stated limit is false.
+
+**Read the prior round.** You SHOULD read
+`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-6-RAW.md` and
+`ROUND-6-DISPOSITIONS.md`, whose §"Repairs, 2026-10-15 (cycle 5)" maps each
+finding to its repair. Judge each repair against the raw, never against the
+mapping's own account of it. You may read the implementation and decision
+files §"Round 6" lists. Do not read `ROUND-1-DISPOSITIONS.md` to
+`ROUND-5-DISPOSITIONS.md` or any other raw. Never read any Butlers repository
+or other observed target's content.
+
+**Raw-head digest predicate.** This is the same as round 6. Over the first
+four non-blank lines of your raw:
+
+1. the title;
+2. `Reviewed commit: ` followed by the 40-hex commit you read;
+3. `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of the bytes
+   of the manifest **file** `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the
+   reviewed commit, computed by script. It is never a row inside the
+   manifest;
+4. `Verdict: ` followed by exactly one of `CONFIRM`,
+   `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+Number findings as `**Finding N — title** (blocking|revise|note)`, and end
+with one line counting them by severity.
+
+**Stopping rule, set before this round.** A notes-only round clears the bytes
+it read, and its notes are dispositioned beside the package. The package
+then goes to the owner for Question 1; clearing signs nothing. Any other
+verdict is classified and stops, and no round 8 is dispatched without a new
+owner instruction.

@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index aa4c032..f717519 100644
+index aa4c032..90da068 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -366,24 +366,285 @@ readers SHALL receive those identities, the capture instant and the same source
+@@ -366,24 +366,295 @@ readers SHALL receive those identities, the capture instant and the same source
  population. Every emitted project-shape fact SHALL carry its source identity,
  scope, capture instant and observer identity/version.
  
@@ -15,11 +15,13 @@ index aa4c032..f717519 100644
 +    every mount form. The machine answer, PWB-REQ-020's derived machine views
 +    and generation draft view, and the response to a human re-observation
 +    request are not Polaris pages.
-+  - Polaris names the observed revision only in a label unit. A label unit
-+    holds the label, the statement its form requires, the full object id
-+    beneath them, the expansion of any tied names and any moved-tag
-+    disclosure. It is exposed as one element of the page, marked as a label
-+    unit, so that a checker finds it without judgment. Every Polaris page
++  - Polaris names the observed revision only in a label unit, a naming
++    being one that the text sweep below finds, and the excepted elements
++    below the only exceptions. A label unit holds the label, the statement
++    its form requires, the full object id beneath them, the expansion of any
++    tied names and any moved-tag disclosure. It is exposed as one element
++    of the page, marked as a label unit, so that a checker finds it without
++    judgment. Every Polaris page
 +    SHALL present at least one label unit.
 +  - The label leads. Within each label unit the label precedes the full
 +    object id in document order. On each Polaris page, the first occurrence
@@ -27,9 +29,12 @@ index aa4c032..f717519 100644
 +    operability status line lies in a label unit.
 +  - Outside a label unit, owner-visible Polaris text SHALL NOT show the
 +    observed revision's full object id, its first twelve hexadecimal digits,
-+    or the project's name followed by a captured tag's name. Four kinds of
-+    element are excepted. Each is marked as its kind so that a checker finds
-+    it, and what the checker reads decides each kind, never the mark alone:
++    or the project's name followed by a captured tag's name. These three
++    are the namings the text sweep below finds, and "names the observed
++    revision" means them: a shorter prefix of the object id is not decided
++    by this requirement. Four kinds of element are excepted. Each is marked
++    as its kind so that a checker finds it, and what the checker reads
++    decides each kind, never the mark alone:
 +    - a provenance stamp, the revision element of one citation. A citation
 +      is an element holding a cite and its stamp, and no letter or digit
 +      outside the cite's text and the stamp's. The cite names, by its
@@ -45,9 +50,14 @@ index aa4c032..f717519 100644
 +        own Git listing of the observed revision holds. It holds no
 +        occurrence that the text sweep below finds.
 +      - So a stamp's citation holds only a served name with no space in it,
-+        or a real path, beside the revision. A revision id in a sentence, a
-+        heading or any other running text is therefore never a stamp. A
-+        stamp carries no label;
++        or a real path, beside the revision. A stamp carries no label.
++      - Two limits stay. Where a citation sits is not decided by this
++        requirement: a citation placed inside a sentence, a heading or other
++        running text passes these tests, though its words then name the
++        revision outside a label unit. Which tokens an anchor's served
++        locator holds is not decided either: PWB-REQ-014's anchor shape
++        requires a locator and fixes no values, so a one-token locator that
++        reads as a phrase passes;
 +    - an identity, whose whole text equals the evaluation identity that the
 +      machine answer serves for that page's evaluation, or the source
 +      identity of one source record that the machine answer serves at that
@@ -288,7 +298,7 @@ index aa4c032..f717519 100644
  
  #### Scenario: Source population is complete at one revision
  
-@@ -391,11 +652,57 @@ scope, capture instant and observer identity/version.
+@@ -391,11 +662,59 @@ scope, capture instant and observer identity/version.
  - **THEN** every admitted project-shape source resolves at R
  - **AND** the human and machine views expose the same complete source set
  
@@ -328,15 +338,17 @@ index aa4c032..f717519 100644
 +  tag as moved, naming A, B and both evaluations
 +- **AND** every claim still binds to the current revision's full object id
 +
-+#### Scenario: A sentence naming the revision is not a provenance stamp
++#### Scenario: A citation's contents are decided, not its placement
 +
 +- **WHEN** a Polaris page has a sentence about the observed revision R
 +  outside every label unit
-+- **THEN** the sentence shows neither R's full object id nor its first twelve
-+  hexadecimal digits
-+- **AND** where the page cites a served anchor or source record carrying R,
-+  the citation holds only the record's served locator or path, with no
-+  whitespace unless it is a path in R's tree, and R's id as its stamp
++- **THEN** outside a citation the sentence shows neither R's full object id
++  nor its first twelve hexadecimal digits
++- **AND** any citation of a served anchor or source record carrying R holds
++  only the record's served locator or path, with no whitespace unless it is
++  a path in R's tree, and R's id as its stamp
++- **AND** whether that citation sits inside the sentence is not decided by
++  this requirement
 +
  ```yaml
  warrants:
