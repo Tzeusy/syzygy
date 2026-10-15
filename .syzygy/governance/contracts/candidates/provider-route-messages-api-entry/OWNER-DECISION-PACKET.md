@@ -5,6 +5,12 @@
 > performs none. No target repository body has been read and no provider has
 > been called.
 
+> **Superseded offering, marked 2026-10-15.** This entry is not offered: the
+> owner declined to un-park Syzygy-made provider calls and directed the local
+> agent CLI subprocess route instead
+> (`decisions/OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`).
+> The text below is kept unedited.
+
 ## What this is
 
 One registry entry for the provider route that calls the Anthropic Messages

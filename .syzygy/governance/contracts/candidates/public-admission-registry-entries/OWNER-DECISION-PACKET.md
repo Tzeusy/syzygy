@@ -5,6 +5,13 @@
 > performs none. No target repository body has been read and no provider has
 > been called.
 
+> **Superseded offering, marked 2026-10-15 (provider route only).** The
+> Agent SDK provider execution route entry (manifest row 1) is not offered:
+> the owner declined to un-park Syzygy-made provider calls and directed the
+> local agent CLI subprocess route instead
+> (`decisions/OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`).
+> The text below is kept unedited.
+
 ## What this is
 
 The public-repository admission package needs two registry entries before a
