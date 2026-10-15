@@ -51,3 +51,45 @@ the owner's sign-off change, or a successor package if the owner revises.
 **Residuals for the sign-off change.** The five residuals `SEMANTIC-DELTA.md`
 lists are unchanged; notes 11 and 13 add two disclosures the signer should
 see, both named in register row P-108.
+
+## Recorded for the sign-off, 2026-10-15 (records lane)
+
+Reviewed record: docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-2-RAW.md
+
+[Observed 2026-10-15] The owner selected "Sign P-108 v1.0" on 2026-10-15.
+The sign-off is recorded in
+`../../../decisions/THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md`.
+That record's recorder reads this section's `Reviewed record:` line and the
+note numbers below. Each note keeps the classification in the table above.
+The sign-off adds the following to each:
+
+### 10 — census "seven headings" repeats round 1's population (note)
+
+Carried to any successor, as classified above.
+
+### 11 — unmarked "not recorded under `decisions/`" sentences (note)
+
+The sign-off record's consequences section and
+`../../../decisions/DECISION-HISTORY.md` carry the correction; the cleared
+package is not edited.
+
+### 12 — "Observed total": count and recount procedure (note)
+
+Carried to implementation planning and any successor, as classified above.
+
+### 13 — a zero marker population passes the rendering limbs (note)
+
+The owner's option named a follow-up. It is filed as bead `syzygy-nw3o`, a
+later POC amendment that makes a zero marker population read Unknown.
+
+### 14 — POC-REQ-014 "any other state" reaches reason or tier entries (note)
+
+Carried to any successor, as classified above.
+
+### 15 — tier-Semantics Unknown row paraphrase (note)
+
+Carried to any successor, as classified above.
+
+### 16 — finding-9 repair cites POC-REQ-020 (note)
+
+Carried to any successor, as classified above.
