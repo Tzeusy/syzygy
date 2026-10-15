@@ -101,6 +101,10 @@ caveat as above; the relay does not date each answer separately.]
   RFC2-18/19 contract clarification draft fixing which reading binds
   (the narrow, the wide, or the broadest built from RFC4
   `named-adapters.md` lines 420–421 and 492); then redraft D7 against it.
+  Filed as `syzygy-a4ry` (the commissioned clarification draft, related to
+  the earlier `syzygy-nosn`) and `syzygy-xhh2` (the D7 redraft, blocked by
+  `syzygy-a4ry`), both related to `syzygy-u05.14`. The inference-profile
+  draft D8's Q-C1 commissioned is `syzygy-3p62`, filed by the D8 change.
 - **P-108: "One cycle"** — one repair of the round-1 findings, notes
   included, then one fresh review.
 - **P-98**, answered on the cleared version:

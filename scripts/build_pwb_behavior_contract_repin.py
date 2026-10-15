@@ -100,6 +100,9 @@ LATER_SPEC_SIGNOFFS = (
     (DECISIONS / "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
      pathlib.Path(".syzygy/governance/contracts/candidates/"
                   "pwb-class-granular-extraction-amendment/proposed/spec.md.patch")),
+    (DECISIONS / "PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "pwb-accessible-name-amendment/proposed/spec.md.patch")),
 )
 
 #: Acts performed after the re-pin acts that superseded a subject again, per

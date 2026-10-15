@@ -423,7 +423,7 @@
     },
     "PWB": {
       "requirements": 17,
-      "scenarios": 56,
+      "scenarios": 58,
       "members": {
         "PWB-REQ-001": {
           "name": "Project-shape observation is revision-bound and explicitly scoped",
@@ -540,7 +540,9 @@
         "PWB-REQ-016": {
           "name": "Project comprehension works without vision or a pointing device",
           "scenarios": [
-            "Keyboard-only owner reaches exact intent"
+            "Keyboard-only owner reaches exact intent",
+            "Repeated source links are told apart by name",
+            "Name and heading checks cover every Polaris page"
           ]
         },
         "PWB-REQ-020": {

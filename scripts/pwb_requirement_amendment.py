@@ -104,13 +104,14 @@ PERFORMED_SIBLINGS = {
     "pwb-anchor-resolution-amendment": "PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
     # Signed v1.0 2026-10-14 (P-86); moved from pending by the sign-off change.
     "pwb-class-granular-extraction-amendment": "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-15 (P-99); moved from pending by the sign-off change.
+    "pwb-accessible-name-amendment": "PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: Unsigned packages over the same subject. Each touches a different
 #: requirement, so their spec patches must compose in either order; the
 #: generated declaration is regenerated after whichever is signed second.
 PENDING_SIBLINGS = frozenset({
-    "pwb-accessible-name-amendment",
     "pwb-opening-index-amendment",
     "pwb-release-label-amendment",
 })

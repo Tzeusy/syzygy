@@ -617,6 +617,12 @@ VERSIONED_LATER = {
                      "pwb-class-granular-extraction-amendment/"
                      "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt"),
     ),
+    "pwb-accessible-name-amendment": (
+        DECISIONS / "PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-accessible-name-amendment/"
+                     "PWB-ACCESSIBLE-NAME-AMENDMENT-MANIFEST.txt"),
+    ),
     # A Three-Surface POC package with no manifest: its sign-off record
     # carries the applied rows in manifest-row form and stands in for one.
     "three-surface-poc-governing-intent-amendment": (

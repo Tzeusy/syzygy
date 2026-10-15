@@ -116,6 +116,8 @@ PERFORMED_SIBLINGS = {
     "pwb-anchor-resolution-amendment": "PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
     # Signed v1.0 2026-10-14 (P-86); moved from pending by the sign-off change.
     "pwb-class-granular-extraction-amendment": "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-15 (P-99); moved from pending by the sign-off change.
+    "pwb-accessible-name-amendment": "PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: Unsigned packages over the same subject. The class-granular extraction
@@ -132,7 +134,6 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: one other requirement and the generated declaration only; their spec
 #: patches compose with this one.
 PENDING_SIBLINGS = frozenset({
-    "pwb-accessible-name-amendment",
     "pwb-opening-index-amendment",
 })
 
