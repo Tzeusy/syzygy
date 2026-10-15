@@ -1,0 +1,39 @@
+{
+  "task": "syzygy-u05.22",
+  "requirement": "PWB-REQ-016",
+  "signedText": "pwb-accessible-name-amendment-v1.0",
+  "capturedAt": "2026-10-15T08:51:24.072Z",
+  "syzygyHead": "cb0d0a1d5878fa159aef3ebc7ad31bc0c9e53a0c",
+  "browser": {
+    "executable": "/usr/bin/google-chrome",
+    "version": "Chrome/120.0.6099.224"
+  },
+  "evaluation": {
+    "inputsDigest": "9a63e7171b8efbcdb25c7f54fe7e53dc94dcad468b9af4ce598e42a648eccd16",
+    "snapshot": "repository:butlers-configured-poc:36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e|working-tree:sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855|observer:cb0d0a1d5878fa159aef3ebc7ad31bc0c9e53a0c|inputs:sha256:9a63e7171b8efbcdb25c7f54fe7e53dc94dcad468b9af4ce598e42a648eccd16",
+    "asOf": "2026-10-15T08:50:13.582Z",
+    "projectRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "shape": "not-admitted"
+  },
+  "pageListSource": "machine answer /api/poc: entry page plus one /polaris/source response per projectShape.sources entry",
+  "pages": [
+    {
+      "position": 0,
+      "page": "entry",
+      "interactive": 85,
+      "headings": 35,
+      "levelOneHeadings": 1,
+      "sharedLabelGroups": 9,
+      "exactSourceTargetsInSharedLabelGroups": 0,
+      "violationsByKind": {}
+    }
+  ],
+  "totals": {
+    "pagesListed": 1,
+    "pagesSwept": 1,
+    "interactive": 85,
+    "headings": 35,
+    "violations": 0,
+    "violationsByKind": {}
+  }
+}
