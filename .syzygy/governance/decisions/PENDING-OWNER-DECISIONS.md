@@ -1232,11 +1232,11 @@
 > v1.0" carried: **P-98** is signed v1.0
 > ([`PWB-OPENING-INDEX-AMENDMENT-SIGNOFF-v1.0.md`](PWB-OPENING-INDEX-AMENDMENT-SIGNOFF-v1.0.md)),
 > resolved and moved to `DECISION-HISTORY.md`. The notes above are as of
-> their dates and are not edited. Now **26** rows under the open heading
-> below and **5** acceptance-act rows, **31** in all, every id
+> their dates and are not edited. Now **28** rows under the open heading
+> below and **5** acceptance-act rows, **33** in all, every id
 > distinct [Observed: counted 2026-10-15 by `^| P-[0-9]+[^ |]*` rows per
-> `##` section, on this branch after rebasing onto `main` over P-111; 27
-> and 32 before this change].
+> `##` section, on this branch after rebasing onto `main` over P-110; 29
+> and 34 before this change].
 
 ## The acceptance acts (four performed; the rest open)
 
