@@ -8,13 +8,18 @@ performs no owner act and writes no act record.
 
 Version 3 (`contracts/candidates/public-source-screening-scope-v3/`, variant
 all, approved 2026-10-08) keeps the version-1 sentence that "a match excludes
-the whole artifact with hash-not-body provenance". Version 4 retains a body a
-single-line detector matches as RFC5-17's `redacted-span` instead: the lines a
-match touches, and one guard line on each side, are withheld; a cited span
-that includes a withheld line is withheld whole; every detector runs again over
-what is retained, and any match there excludes the body whole. A
-`private-key-material` match still excludes the body whole, because that
-detector matches only a key's header line and the key itself follows it.
+the whole artifact with hash-not-body provenance". Version 4 retains a
+project-documentation body (only that class; a code-content body and every
+other body stay excluded whole on any match) as RFC5-17's `redacted-span` when
+every detector match in it is from `credential-assignment` or
+`credential-bearing-url`: matches are counted from every start offset,
+overlapping ones included, and a match may span lines; the lines a match
+touches, and one guard line on each side, are withheld; a cited span that
+includes a withheld line is withheld whole; every detector runs again over what
+is retained, and any match there excludes the body whole. The body stays
+excluded whole on a `private-key-material` or `known-token-formats` match, on
+any line that begins (after spaces or tabs) with four or more '-' and then
+BEGIN, or on a base64 form of such a header (`wholeArtifactFragments`).
 
 Two variants, one manifest row each:
 
@@ -72,9 +77,13 @@ VARIANTS = ("span", "span-guides")
 #: Detectors whose match does not hold the secret it signals: a key's material follows its header line,
 #: and an AWS access-key id (AKIA...) is paired with a secret key no detector matches (round 1, finding 1).
 WHOLE_ARTIFACT_DETECTORS = ["private-key-material", "known-token-formats"]
-#: A body holding any of these anywhere is never retained as redacted-span: a PEM block whose header the
-#: private-key literals do not list (an EC key, for example) is key material no detector matches (finding 3).
-WHOLE_ARTIFACT_FRAGMENTS = ["-----BEGIN "]
+#: A line matching this is never in a retained body: a PEM (five-dash) or RFC 4716 (four-dash) block whose header
+#: the private-key literals do not list is key material no detector matches (round 1 finding 3, round 2 finding 3).
+WHOLE_ARTIFACT_LINE_PATTERN = r"^[ \t]*-{4,}[ \t]*BEGIN"
+#: Base64 of "-----BEGI" and "---- BEGI" at offset 0, as in a Kubernetes Secret value (round 2 finding 1).
+WHOLE_ARTIFACT_FRAGMENTS = ["LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
+#: The only class redaction applies to (round 2 finding 1, arm (b)); code and everything else stay whole-file.
+REDACTED_CLASSES = ["project-documentation"]
 GUARD_LINES = 1
 
 #: Root prose names RFC5-14's own list covers (guides, tutorials, how-to and overview documents,
@@ -103,25 +112,31 @@ INHERITED_NEW = ("detectors, matchAction and redactionClasses (except that secre
 
 REDACTION = {
     "appliesTo": (
-        "a body of an admitted snapshot whose path this scope admits (code-content or project-documentation), "
-        "after the denied-path, strict-UTF-8, NUL and resource-limit rules pass. Text an agent session writes (a "
+        "a body of an admitted snapshot whose path this scope classifies in one of redactedClasses, after the "
+        "denied-path, strict-UTF-8, NUL and resource-limit rules pass. A body of any other class, code-content "
+        "included, is excluded whole on any detector match exactly as before. Text an agent session writes (a "
         "draft, an inventory, a verdict, a finding) is not such a body and is screened as before"),
+    "redactedClasses": REDACTED_CLASSES,
     "redactionClass": "redacted-span",
     "wholeArtifactDetectors": WHOLE_ARTIFACT_DETECTORS,
+    "wholeArtifactLinePattern": WHOLE_ARTIFACT_LINE_PATTERN,
     "wholeArtifactFragments": WHOLE_ARTIFACT_FRAGMENTS,
     "guardLines": GUARD_LINES,
     "rule": (
         "every detector runs over the complete transient body exactly as before, including inert code contexts. "
         "Here a detector's matches are every match it makes starting at any offset of the text, overlapping "
         "matches included, not only those a left-to-right non-overlapping scan reports. When at least one "
-        "detector matches, none of the matches is from a detector in wholeArtifactDetectors, and the body holds "
-        "none of wholeArtifactFragments (compared exactly, case-sensitively), the body is retained as "
+        "detector matches, none of the matches is from a detector in wholeArtifactDetectors, no line of the "
+        "body matches wholeArtifactLinePattern (a regular expression applied to each line without its "
+        "terminator: optional spaces or tabs, four or more '-', optional spaces or tabs, then BEGIN), and the "
+        "body holds none of wholeArtifactFragments (compared exactly, case-sensitively), the body is retained as "
         "redacted-span (RFC5-17) instead of excluded whole. Lines are split at LF, CRLF "
         "or CR, as the generator counts lines; a match touches every line that holds any of its characters. A "
         "line a match touches, and guardLines lines before and after it, is a withheld line. Every detector then "
         "runs again over the retained text, which is the body with each withheld line replaced by an empty line "
         "of the same terminator; a match there excludes the whole artifact as excluded-artifact. A body with a "
-        "match from a detector in wholeArtifactDetectors, a body holding one of wholeArtifactFragments, and a body "
+        "match from a detector in wholeArtifactDetectors, a body with a line matching wholeArtifactLinePattern or "
+        "holding one of wholeArtifactFragments, and a body "
         "with a match the consumer cannot place on lines, is excluded whole as before"),
     "withheldLines": (
         "a withheld line is never stored, logged, rendered, sent, quoted, used to verify a quotation, or given to "
@@ -146,8 +161,9 @@ REDACTION = {
         "content classes, the consent and egress rules and rawBodyHandling are unchanged; a withheld line changes "
         "no class"),
     "consequence": (
-        "[Inferred] a body whose only detector matches are credential-assignment or credential-bearing-url forms "
-        "(a token in a badge URL, a placeholder password in an example) keeps every line outside the matched "
+        "[Inferred] a project-documentation body whose only detector matches are credential-assignment or "
+        "credential-bearing-url forms (a token in a badge URL, a placeholder password in an example) keeps every "
+        "line outside the matched "
         "lines and their guards; the trial of 2026-10-14 withheld all 41 cited spans of one README for one match "
         "on its first line. The cost: a body with a match is evidence that the file carries credentials, and "
         "whole-blob screening withheld everything in it; under this rule a secret in such a body that no "
@@ -281,7 +297,7 @@ _NO_RESCREEN = False  # selftest mutant switch
 _NON_OVERLAPPING = False  # selftest mutant switch: a plain left-to-right scan
 
 
-def withheld_lines(body: str, policy_text: str) -> set[int] | None:
+def withheld_lines(body: str, policy_text: str, path: str = "README.md") -> set[int] | None:
     """Reference reading of secretRedaction: the withheld 1-based line numbers, or None when the body is excluded
     whole. An empty set means no detector matched (the body is admitted unredacted)."""
     doc = json.loads(policy_text)
@@ -334,6 +350,15 @@ def withheld_lines(body: str, policy_text: str) -> set[int] | None:
     if red is None or any(i in red["wholeArtifactDetectors"] for i, _, _ in found) or any(
             f in body for f in red.get("wholeArtifactFragments", [])):
         return None
+    scope = doc[SCOPE_KEY]
+    src = next(r for r in scope["contentClassification"]["rules"] if r["class"] == "code-content")["sourceExtensions"]
+    cls = ("project-documentation" if is_documentation(path, policy_text)
+           else "code-content" if any(path.rsplit("/", 1)[-1].endswith(e) for e in src) else None)
+    if cls is None or cls not in red.get("redactedClasses", []):
+        return None
+    pat = red.get("wholeArtifactLinePattern")
+    if pat is None or any(re.match(pat, re.sub(r"(?:\r\n|\r|\n)$", "", ln)) for ln in lines):
+        return None
     g = red["guardLines"]
     held: set[int] = set()
     for _i, a, b in found:
@@ -378,6 +403,16 @@ BODY_FIXTURES = [
      '  region = "us-east-1"\n  secret_key = "wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY12"\n}\n', None),
     ("hidden overlapping match", "intro\nsecret: pass" + "word\n\n\n: Hunter2Hunter2Real\nend\n", {1, 2, 3, 4, 5, 6}),
     ("EC key beside a badge", f"[b](https://x/y?{_TOKEN})\n\n-----BEGIN EC " + "PRIVATE KEY-----\nMHcC\n-----END EC PRIVATE KEY-----\n", None),
+    ("RFC 4716 key beside a badge", f"[b](https://x/y?{_TOKEN})\n\n---- BEGIN SSH2 ENCRYPTED " + "PRIVATE KEY ----\nAAAAB3\n---- END SSH2 ENCRYPTED PRIVATE KEY ----\n", None),
+    ("indented PEM header beside a badge", f"[b](https://x/y?{_TOKEN})\n\n    -----BEGIN OPENSSH " + "PRIVATE KEY-----\nb3Bl\n", None),
+    ("base64 PEM in a Secret example", f"[b](https://x/y?{_TOKEN})\n\n  tls.key: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0t\n", None),
+]
+
+#: (name, path, body): bodies outside project-documentation are excluded whole on any match, as before.
+WHOLE_FIXTURES = [
+    ("code body with a token", "src/config.py", f"a = 1\n{_TOKEN}\nb = 2\nc = 3\n"),
+    ("unclassified root file with a token", "redis.conf", f"x\n{_TOKEN}\ny\nz\n"),
+    ("nested README with a token", "src/README.md", f"x\n{_TOKEN}\ny\nz\n"),
 ]
 
 
@@ -408,8 +443,12 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
     for det in WHOLE_ARTIFACT_DETECTORS:
         if det not in red.get("wholeArtifactDetectors", []):
             bad.append(f"{det} no longer excludes the whole artifact")
-    if "-----BEGIN " not in red.get("wholeArtifactFragments", []):
-        bad.append("a PEM header no longer excludes the whole artifact")
+    if red.get("wholeArtifactLinePattern") != WHOLE_ARTIFACT_LINE_PATTERN:
+        bad.append("a dashed BEGIN header line no longer excludes the whole artifact")
+    if red.get("wholeArtifactFragments") != WHOLE_ARTIFACT_FRAGMENTS:
+        bad.append("a base64 header fragment no longer excludes the whole artifact")
+    if red.get("redactedClasses") != ["project-documentation"]:
+        bad.append("redaction reaches a class other than project-documentation")
     if "overlapping matches included" not in red.get("rule", ""):
         bad.append("the match set is no longer every match from every offset")
     det_ids = {d["id"] for d in new["detectors"]}
@@ -461,6 +500,9 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
     for name, body, want in BODY_FIXTURES:
         if withheld_lines(body, proposed_text) != want:
             bad.append(f"body fixture {name!r}: expected withheld {want}")
+    for name, path, body in WHOLE_FIXTURES:
+        if withheld_lines(body, proposed_text, path) is not None:
+            bad.append(f"whole-file fixture {name!r}: expected excluded whole")
     return bad
 
 
@@ -585,7 +627,13 @@ def selftest() -> int:
         sem("known-token-formats moved to redaction caught", "span",
             lambda d: red(d)["wholeArtifactDetectors"].remove("known-token-formats"), "known-token-formats")
         sem("a dropped PEM fragment caught", "span",
-            lambda d: red(d).__setitem__("wholeArtifactFragments", []), "PEM header")
+            lambda d: red(d).__setitem__("wholeArtifactFragments", []), "base64 header fragment")
+        sem("a dropped dashed-header pattern caught", "span-guides",
+            lambda d: red(d).__setitem__("wholeArtifactLinePattern", r"^-----BEGIN "), "dashed BEGIN header")
+        sem("redaction widened to code-content caught", "span",
+            lambda d: red(d)["redactedClasses"].append("code-content"), "class other than project-documentation")
+        sem("a whole-file fixture flip caught (code body redacted)", "span",
+            lambda d: red(d)["redactedClasses"].insert(0, "code-content"), "whole-file fixture 'code body with a token'")
         sem("a non-overlapping match set caught", "span-guides",
             lambda d: red(d).__setitem__("rule", REDACTION["rule"].replace(", overlapping matches included", "")),
             "every match from every offset")
@@ -656,6 +704,7 @@ def selftest() -> int:
         prop = json.loads(propose(base, "span"))
         prop[SCOPE_KEY]["secretRedaction"]["wholeArtifactDetectors"] = []
         prop[SCOPE_KEY]["secretRedaction"]["wholeArtifactFragments"] = []
+        prop[SCOPE_KEY]["secretRedaction"]["wholeArtifactLinePattern"] = "(?!)"
         got = withheld_lines(BODY_FIXTURES[4][1], v2.dump(prop))
         results.append(("the oracle redacts a key header only when the rule allows it (mutant observed)", got == {1, 2, 3}))
 

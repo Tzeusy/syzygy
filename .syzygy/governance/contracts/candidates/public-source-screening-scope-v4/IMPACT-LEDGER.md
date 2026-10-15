@@ -50,6 +50,20 @@ read; the version-3 ledger's population was taken as the starting list.
   `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts`
   (it reads `POLICY_ACT_FORMS[0]` only). Whether each breaks is Unknown; the
   install assesses each.
+- **Policy-path files that read the path for their own purposes.** The rest
+  of the 30-file sweep: `apps/three-surface-poc/src/walkthrough-inputs.ts`
+  (the path only, in `OTHER_ACT_BOUND_ARTIFACTS`),
+  `apps/three-surface-poc/src/test-walkthrough-judgment-fixture.ts`,
+  `scripts/build_public_source_screening_scope.py`,
+  `scripts/build_pwb_behavior_contract_repin.py`,
+  `scripts/build_pwb_behavior_contract_repin_tree_framing.py`,
+  `scripts/build_pwb_effect_acts_packet.py`,
+  `scripts/build_pwb_truth_policy_amendment.py`,
+  `scripts/record_public_source_screening_scope_v2_act.py` and
+  `packages/polaris-generation-consent/README.md`. [Inferred] most are
+  earlier packages' builders and recorders that read the path for their own
+  superseded `--check`; whether any breaks is Unknown, and the install
+  assesses each with the four above.
 - **Provider egress population.** In provider mode cited span text reaches the
   provider through `packages/polaris-generation-core/src/pipeline.ts` under
   the egress consent; version 4 widens that population to spans of retained
@@ -61,7 +75,12 @@ read; the version-3 ledger's population was taken as the starting list.
   `packages/three-surface-poc-core/src/content-classification.ts` returns the
   first matching detector id only. The rule needs every match's start and end
   from every start offset (overlapping matches included) over the complete
-  body, then the line placement, guard, re-screen and
+  body. That gives up the screens' early stop at the first
+  hit and needs a per-offset (sticky) loop; [Inferred] `credential-bearing-url`'s
+  `[^/@\s]+:[^/@\s]+@` can backtrack quadratically over a long run without
+  `/`, `@` or whitespace at every `http` offset, so the install bounds the scan
+  within the resource limits and treats a breach as a whole-file exclusion. Then the line placement, guard,
+  re-screen and
   span test the builder's reference oracle (`withheld_lines`) states. The
   oracle runs the patterns in Python `re`; the screens run them as JavaScript
   `RegExp`, whose `\s` class differs (round 1, note 9), so the install runs
@@ -70,6 +89,10 @@ read; the version-3 ledger's population was taken as the starting list.
   `apps/three-surface-poc/src/polaris-generation/public-source-screening.ts`
   must agree on every body of `screen.test.ts`'s population, including the
   builder's body fixtures (`TODO(syzygy-qkea.17)` keeps them copies).
+- **Class gating.** Redaction applies only to a body the scope classifies
+  project-documentation (`redactedClasses`); the screens consult
+  `contentClass` before choosing redaction, and every other body keeps
+  whole-file exclusion.
 - **The target-body call sites.** `review.ts` (the fidelity packet's
   `readBlobs` loop), `check.ts` (quotation checks), and the any-repo corpus
   reader `apps/three-surface-poc/src/polaris-generation/repo-corpus.ts` read

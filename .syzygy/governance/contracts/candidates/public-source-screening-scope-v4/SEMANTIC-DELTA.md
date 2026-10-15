@@ -9,11 +9,20 @@
 > returned REVISE (one blocking, four revise, four notes); every finding is
 > repaired in this package and the builder, as `ROUND-1-DISPOSITIONS.md` maps.
 > Under the owner's stopping rule no further round has run over these bytes.
+>
+> **Round 2 repaired, 2026-10-15 (final cycle).** Round 2
+> (`docs/reviews/R-OLMR-SCREENING-SCOPE-V4-2-RAW.md`) returned REVISE. On the
+> lead's direction both arms are taken: redaction now applies **only to
+> project-documentation bodies** (code-content and every other class stay
+> whole-file on any match), and the cost below names the common credential
+> shapes that still reach the packet from a documentation file. The PEM check
+> is widened to any dashed BEGIN header line. `ROUND-2-REPAIR.md` maps each
+> finding; round 3 is the last round before the owner.
 
 ## Class
 
 Normative, and a loosening of secret screening for the public-source scope
-only. The base (Butlers) scope, every detector, the active-content rule, the
+only, and within it for project-documentation bodies only. The base (Butlers) scope, every detector, the active-content rule, the
 content classes, the consent and egress rules and `rawBodyHandling` are
 unchanged. Variant `span-guides` also widens the `project-documentation`
 root-document rule by a closed list of names.
@@ -27,14 +36,15 @@ blocked. The bead's three causes, and what this version does with each:
 
 | Cause (bead) | Spans | This version |
 |---|---|---|
-| Whole-blob secret screening: one `credential-assignment` match on README line 1 (a badge URL carrying `token=`) withholds the whole README | 41 | **Changed** by both variants: for a `credential-assignment` or `credential-bearing-url` match the matched lines and one guard line on each side are withheld, the rest of the body is kept |
+| Whole-blob secret screening: one `credential-assignment` match on README line 1 (a badge URL carrying `token=`) withholds the whole README | 41 | **Changed** by both variants: README.md is project-documentation (root stem `readme`), so for a `credential-assignment` or `credential-bearing-url` match the matched lines and one guard line on each side are withheld, the rest of the body is kept |
 | `SECURITY.md`, `MANIFESTO`, `TLS.md`, `redis.conf`, modules/MODULES.md (a Redis path) have no class (`unknown-extraction-class`) | 89 | **Not changed** for these five names; see "Declined" below. Variant `span-guides` adds generic root guide names, none of which is one of the five |
 | Active content in `00-RELEASENOTES` and `LICENSE.txt` | 10 | **Not changed**: the active-content scan stays whole-body |
 
 [Inferred] Under either variant the README's cited spans that include neither
 line 1 nor line 2 become admissible; the bead gives no per-span line numbers,
-so how many of the 41 that is stays Unknown. None of the 89 or the 10 is
-recovered.
+so how many of the 41 that is stays Unknown. Narrowing redaction to
+project-documentation (round 2) does not change this case, because the README
+is in that class. None of the 89 or the 10 is recovered.
 
 ## Authority this rests on
 
@@ -95,14 +105,18 @@ The exact bytes are in the two patches under `proposed/`; the text below is
 their reading, wrapped for this page.
 
 ```text
-appliesTo: a body of an admitted snapshot whose path this scope admits
-(code-content or project-documentation), after the denied-path, strict-UTF-8,
-NUL and resource-limit rules pass. Text an agent session writes (a draft, an
-inventory, a verdict, a finding) is not such a body and is screened as before
+appliesTo: a body of an admitted snapshot whose path this scope classifies in
+one of redactedClasses, after the denied-path, strict-UTF-8, NUL and
+resource-limit rules pass. A body of any other class, code-content included,
+is excluded whole on any detector match exactly as before. Text an agent
+session writes (a draft, an inventory, a verdict, a finding) is not such a
+body and is screened as before
 
+redactedClasses: ["project-documentation"]
 redactionClass: redacted-span
-wholeArtifactDetectors: [private-key-material, known-token-formats]
-wholeArtifactFragments: ["-----BEGIN "]
+wholeArtifactDetectors: ["private-key-material", "known-token-formats"]
+wholeArtifactLinePattern: ^[ \t]*-{4,}[ \t]*BEGIN
+wholeArtifactFragments: ["LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
 guardLines: 1
 
 rule: every detector runs over the complete transient body exactly as before,
@@ -110,18 +124,20 @@ including inert code contexts. Here a detector's matches are every match it
 makes starting at any offset of the text, overlapping matches included, not
 only those a left-to-right non-overlapping scan reports. When at least one
 detector matches, none of the matches is from a detector in
-wholeArtifactDetectors, and the body holds none of wholeArtifactFragments
-(compared exactly, case-sensitively), the body is retained as redacted-span
-(RFC5-17) instead of excluded whole. Lines are split at LF,
-CRLF or CR, as the generator counts lines; a match touches every line that
-holds any of its characters. A line a match touches, and guardLines lines
-before and after it, is a withheld line. Every detector then runs again over
-the retained text, which is the body with each withheld line replaced by an
-empty line of the same terminator; a match there excludes the whole artifact
-as excluded-artifact. A body with a match from a detector in
-wholeArtifactDetectors, a body holding one of wholeArtifactFragments, and a
-body with a match the consumer cannot place on lines, is excluded whole as
-before
+wholeArtifactDetectors, no line of the body matches wholeArtifactLinePattern
+(a regular expression applied to each line without its terminator: optional
+spaces or tabs, four or more '-', optional spaces or tabs, then BEGIN), and
+the body holds none of wholeArtifactFragments (compared exactly,
+case-sensitively), the body is retained as redacted-span (RFC5-17) instead of
+excluded whole. Lines are split at LF, CRLF or CR, as the generator counts
+lines; a match touches every line that holds any of its characters. A line a
+match touches, and guardLines lines before and after it, is a withheld line.
+Every detector then runs again over the retained text, which is the body with
+each withheld line replaced by an empty line of the same terminator; a match
+there excludes the whole artifact as excluded-artifact. A body with a match
+from a detector in wholeArtifactDetectors, a body with a line matching
+wholeArtifactLinePattern or holding one of wholeArtifactFragments, and a body
+with a match the consumer cannot place on lines, is excluded whole as before
 
 withheldLines: a withheld line is never stored, logged, rendered, sent,
 quoted, used to verify a quotation, or given to an agent session, and no
@@ -141,8 +157,8 @@ content of the body's class and is carried with the body's redaction count
 disclosed beside it; its own text is screened by every detector before it is
 carried, and a match withholds it
 
-provenance: the retained body's exclusion record is hash-not-body: the
-content digest of the complete body, its repository-relative path, policyId,
+provenance: the retained body's exclusion record is hash-not-body: the content
+digest of the complete body, its repository-relative path, policyId,
 policyVersion, the redaction class redacted-span, the id of each detector that
 matched, and the numbers of the withheld lines
 
@@ -167,10 +183,20 @@ under "What it gives up".
   `credential-assignment` (the value, eight characters or more, is inside the
   match) and `credential-bearing-url` (the user and password are inside the
   match) are redacted by line.
-- **Any PEM header keeps the body whole.** A body holding `-----BEGIN ` is
-  never redacted: a key whose header the private-key literals do not list (an
-  EC key, for example) is key material no detector matches (round 1, finding
-  3). Such a body is excluded whole, as today, whenever any detector matches.
+- **Only project-documentation is redacted.** Source and configuration
+  files are where credentials are usually written, so a code-content body (and
+  any other class) stays excluded whole on any match, as in version 3 (round
+  2, finding 1, arm (b); builder whole-file fixtures "code body with a token",
+  "unclassified root file with a token", "nested README with a token").
+- **Any dashed BEGIN header line keeps the body whole.** A body with a line
+  that, after spaces or tabs, starts with four or more `-`, optional spaces or
+  tabs, and `BEGIN` is never redacted. That covers PEM (`-----BEGIN EC PRIVATE
+  KEY-----`) and RFC 4716 (`---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----`)
+  blocks whose headers the private-key literals do not list (round 1, finding
+  3; round 2, finding 3). The base64 forms of `-----BEGI` and `---- BEGI` at
+  offset 0, as a Kubernetes Secret value starts, keep it whole too
+  (`wholeArtifactFragments`). A base64 key encoded from any other offset is
+  not caught.
 - **Every match from every offset.** A left-to-right, non-overlapping scan can
   consume a keyword that would have started a longer match: `secret: password`
   then blank lines then `: value` reports only the first line, and the value
@@ -249,13 +275,16 @@ a Bazel build file. No name carries a `docExcludedTokens` word, none repeats a
 
 ## What it gives up
 
-- **The main cost: co-location.** A body with a detector match is evidence
-  that the file carries credentials, and version 3 withheld everything in it.
-  Under version 4, in a body whose matches are all `credential-assignment` or
-  `credential-bearing-url`, a secret that no detector matches is admitted
-  unless it falls on a matched line or a guard line [Inferred; round 1,
-  finding 3]. The two whole-artifact detectors and the PEM fragment close the
-  two cases the review constructed; they do not close the class.
+- **The main cost: co-location, in documentation files.** A body with a
+  detector match is evidence that the file carries credentials, and version 3
+  withheld everything in it. Under version 4, in a project-documentation body
+  (a README, a guide, a changelog) whose matches are all
+  `credential-assignment` or `credential-bearing-url`, a secret no detector
+  matches reaches the fidelity packet, an agent session and the draft page
+  unless it falls on a matched or guard line [Observed by the round-2
+  reviewer's probes through the builder's oracle, which did not then consult
+  the file's class, so the shapes carry over to a documentation file]. Round 2 found these common shapes do so: an AWS secret access key beside a temporary `ASIA…` key id (only `AKIA…` ids are matched by `known-token-formats`), a JavaScript `secretAccessKey: "…"`, a Django `SECRET_KEY = "…"`, a quoted JSON `"password": "…"` (no detector matches it), a `STRIPE_SECRET_KEY` inside a heredoc, and a base64-encoded key in a Kubernetes Secret example whose encoding does not begin at the header's first dash.
+  Source and configuration files are not affected: they stay whole-file.
 - [Inferred] A secret that a detector matches on one line and that continues
   past the guard line onto further lines is admitted in its unmatched part.
 - In a body with no match at all, nothing changes: a secret the detectors do

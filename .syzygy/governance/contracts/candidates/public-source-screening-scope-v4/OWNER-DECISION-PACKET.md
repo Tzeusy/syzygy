@@ -2,8 +2,9 @@
 
 > **Candidate — binds nothing.** It carries no digest. Nothing here is a
 > decision, and no act is performed by reading it. It is offered only after a
-> confirming review; until then it is not offered. Round 1 returned REVISE and
-> was repaired once (`ROUND-1-DISPOSITIONS.md`); no round has confirmed it.
+> confirming review; until then it is not offered. Rounds 1 and 2 returned
+> REVISE and were repaired (`ROUND-1-DISPOSITIONS.md`, `ROUND-2-REPAIR.md`);
+> round 3 is the last round before the owner.
 
 ## What this is, in plain words
 
@@ -15,13 +16,16 @@ that cited them [Observed, from the bead `syzygy-olmr`]. Altogether 140 of 233
 cited spans were withheld.
 
 Version 4 withholds only the lines the detector matched, plus one line on each
-side, instead of the whole file, when the match is a password-or-token
-assignment or a URL with a password in it. A quotation that touches a withheld
+side, instead of the whole file, when the file is project documentation (a
+README, a guide, a changelog) and the match is a password-or-token assignment
+or a URL with a password in it. Source code, configuration and every other
+file keep today's rule: one match withholds the whole file. A quotation that touches a withheld
 line is still withheld whole, and its claim stays Unknown. Everything else in
 the file can be quoted. Three cases still withhold the whole file: a
 private-key match (the detector only sees the key's header line), a known
-token format such as an AWS key id (its secret key sits on another line that
-no detector catches), and any file holding a `-----BEGIN ` block.
+token format such as an AWS `AKIA…` key id (its secret key sits on another
+line that no detector catches), and any line that starts with four or more
+dashes and then BEGIN (a PEM or SSH2 key block), or the base64 start of one.
 
 This is the kind of redaction RFC5-17 already defines (`redacted-span`) and the
 Polaris specification already describes; the policy has simply never turned it
@@ -45,7 +49,8 @@ frozen only after a confirming review, takes that row as the act's argument.
 ## Why this recommendation
 
 - **The redaction** fixes the largest single cause in the trial without
-  touching what the detectors look for. [Inferred] It recovers the README
+  touching what the detectors look for, and only in documentation, where the
+  trial's README is. [Inferred] It recovers the README
   quotations that do not include line 1 or 2; the bead does not give their line
   numbers, so how many of the 41 is Unknown.
 - **The guide names** do nothing for the Redis trial: none of the five
@@ -57,13 +62,18 @@ frozen only after a confirming review, takes that row as the act's argument.
 
 ## What it costs
 
-- **The main cost.** A file where a detector matched probably holds
-  credentials, and today everything in it is withheld. Under version 4 a
-  second secret in that file that no detector recognises reaches the review
+- **The main cost.** A documentation file where a detector matched probably
+  holds credentials, and today everything in it is withheld. Under version 4
+  a second secret in that file that no detector recognises reaches the review
   packet, an agent session and the draft page, unless it sits on a withheld
-  line [Inferred]. The review found two such cases (an AWS secret key, an EC
-  private key) and both now keep the whole file withheld; the general risk
-  remains.
+  line. These common shapes do, when they appear in a README or guide: an AWS
+  secret access key next to a temporary `ASIA…` key id (only `AKIA…` ids keep
+  the file whole), a JavaScript `secretAccessKey: "…"`, a Django
+  `SECRET_KEY = "…"`, a JSON `"password": "…"`, a `STRIPE_SECRET_KEY` inside a
+  heredoc, and a base64-encoded key in a Kubernetes Secret example (unless
+  its encoding begins at the key header, which keeps the file whole) [the round-2
+  review showed each through the builder's oracle]. Source and
+  configuration files are not affected: they stay whole-file.
 - [Inferred] A secret that a detector catches on one line but that continues
   two or more lines further would have its tail admitted.
 - In a file with no match at all nothing changes.
