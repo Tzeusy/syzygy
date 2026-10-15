@@ -65,6 +65,46 @@ After round 5 the owner answered "One more cycle": one more repair and a
 round 6, made by a separate change. These bytes are not cleared and are not
 offered for sign-off.)*
 
+**Repaired a fourth time:** 2026-10-15 (cycle 4), under the owner's answer
+"One more cycle" to round 5, recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+Every round-5 finding and note is repaired once; the repairs are mapped in
+`ROUND-5-DISPOSITIONS.md` §"Repairs, 2026-10-15 (cycle 4)". **Round-5
+findings repaired once on 2026-10-15, unconfirmed pending round 6.** The
+account below describes this version. The base moved: the accessible-name
+(P-99) and opening-index (P-98) amendments were signed v1.0, so this
+package's derived `GOVERNING-DEPENDENCIES.md.patch` and manifest were
+regenerated with `--write` over their applied bytes, and no PWB sibling is
+pending beside it (§"Pending siblings").
+
+The cycle-4 change to the requirement, in short:
+
+- **A cite's text is decided by equality (round-5 Finding 1).** The cite's
+  whole visible text, whitespace-normalized, must equal the served locator
+  of the anchor it names or the path of the source record it names. That
+  text holds no whitespace, or it is a path in the checker's own Git
+  listing of the observed revision, and it holds no occurrence the text
+  sweep finds. A decide-line, a falsifier limb, an Observable addition and
+  the scenario "A sentence naming the revision is not a provenance stamp"
+  carry it. The reviewer's page, a sentence cast as a citation whose cite
+  is "Declared project shape of butlers at revision", now fails: its cite
+  text holds whitespace, is no path, and equals no served locator.
+- **Named limit.** A served locator is the system under test's own output
+  (PWB-REQ-014's anchor shape requires a locator and does not fix its
+  values). The text bounds it to one whitespace-free token or a real path,
+  but does not fix the token set, so a one-token locator chosen to read as
+  a phrase is not decided here. [Inferred] Closing it needs a closed locator
+  vocabulary in PWB-REQ-014, which this package does not amend.
+- **The identity exception is closed (round-5 Note 1).** It covers exactly
+  two records: the evaluation identity, and the source identity of one
+  source record the machine answer serves at that evaluation. "These two
+  are the whole population."
+- **Guards (round-5 Note 2).** The builder's `REQUIRED_ONCE` now holds the
+  new wordings, the identity exception's "not a revision's id alone"
+  clauses in the requirement, decide-line and falsifier, the Observable
+  addition and the page exclusions as one whole sentence, each with a
+  selftest mutant.
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
@@ -504,6 +544,16 @@ what a silent duplicate number would break (round-4 Note 8). Both sibling
 builders' `--check` fail at `7460aec8` before reaching their order check,
 on their own derived `GOVERNING-DEPENDENCIES.md.patch`, which P-86's
 sign-off made stale; they are regenerated on their own branches.)*
+*(Marked 2026-10-15, cycle 4: the population above is no longer current.
+The accessible-name amendment (P-99) and the opening-index amendment (P-98)
+were both signed v1.0 on 2026-10-15 and are performed siblings, so no
+unsigned package patches the PWB spec beside this one. This builder's
+`--check` order search now runs over this package's patches alone, and its
+`--selftest` adds a synthetic pending sibling so the order checks are still
+exercised. Round-5 Note 7's three observations are therefore all
+historical: the two sibling builders it measured are performed, and the
+three `GOVERNING-DEPENDENCIES.md.patch` files it found not to compose are
+derived and regenerated at each sign-off, so they never need to compose.)*
 
 ## Choices the round-2 repair made
 
@@ -645,7 +695,10 @@ Each is [Observed] at `0a10977b` unless it names another commit.
 
 - It authorizes no implementation and no read. In particular, it does not
   admit tag refs or commit ancestry to the observer.
-- It changes no requirement but PWB-REQ-001, no contract-coverage row, no
+- It changes no requirement but PWB-REQ-001, no base matrix row's bytes
+  (one row, `RFC4-11.c4`, is superseded through the repair delta), no
   doctrine, contract, policy, registry entry or performed act.
+  *(Reworded 2026-10-15, cycle 4, for round-5 Note 5: it read "no
+  contract-coverage row", beside the superseded row.)*
 - It changes nothing on Trajectory or Orrery, and nothing in the shared
   operability status line.

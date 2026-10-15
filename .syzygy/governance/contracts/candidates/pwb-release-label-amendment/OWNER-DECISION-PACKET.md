@@ -73,6 +73,17 @@ After round 5 the owner answered "One more cycle": one more repair and a
 round 6, made by a separate change. These bytes are not cleared and are not
 offered for sign-off.)*
 
+**Round-5 findings repaired once on 2026-10-15, unconfirmed pending round
+6.** This is the version your "One more cycle" answer asked for: every
+round-5 finding and note repaired once, mapped in `ROUND-5-DISPOSITIONS.md`
+§"Repairs, 2026-10-15 (cycle 4)". It is regenerated over the P-99 and P-98
+sign-offs, so no PWB sibling package is pending beside it. No round has read
+these bytes, so it is **not offered for sign-off** until round 6 returns
+`CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only. Even then it needs
+your sign: this package has no carry-over answer. A `REVISE` comes back to
+you. Questions 1–6 are unchanged in substance; Question 5's options and
+Question 6's recommended option are reworded to match the bytes.
+
 ## What you would be signing
 
 One amendment to PWB-REQ-001 in the signed PWB specification. Read
@@ -218,8 +229,13 @@ reader meets its short id before the label.)*
 
 | Option | Meaning |
 |---|---|
-| **Leave it to the POC specification** (this version) | The status line keeps its short id on every surface. If you want the label there too, it travels with Trajectory and Orrery under Question 3. |
-| Label it on Polaris now | The status line on Polaris carries a label unit. The shared component then behaves differently on Polaris, which changes a POC-governed file, so this needs a POC amendment beside this one (Question 3) and a new version of this package. |
+| **Leave it ungoverned on Polaris** (this version) | The status line keeps its short id on every surface, and no requirement of either specification governs it. If you want the label there too, it travels with Trajectory and Orrery under Question 3. |
+| Label it on Polaris now | The status line on Polaris carries a label unit. The shared page-shell component then behaves differently on Polaris, which changes a component Trajectory and Orrery share, so this needs a POC amendment beside this one (Question 3) and a new version of this package. |
+
+*(Reworded 2026-10-15, cycle 4, for round-5 Note 3: the first option read
+"Leave it to the POC specification", and the second called the component
+"a POC-governed file". Neither is true: no requirement of either
+specification governs the line.)*
 
 ## Question 6 — may a short id stand alone in a sentence? (added 2026-10-14, cycle 3)
 
@@ -231,7 +247,7 @@ way, and the label then leads nowhere a reader looks.
 
 | Option | Meaning |
 |---|---|
-| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)", and the checker confirms the record it cites carries that revision. Every sentence, heading or identity line that names the revision shows the label instead, or drops the id. The label then leads wherever the revision is named. |
+| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)". The checker confirms that the record it cites carries that revision, and that the cite's whole text is that record's served locator or path: one token with no space in it, or a real path in the observed tree. A sentence cannot be cast as a cite, so every sentence, heading or identity line that names the revision shows the label instead, or drops the id. The label then leads wherever the revision is named. One limit stays: a served locator is Polaris's own output, so the text bounds it to one token but does not fix which tokens. |
 | Bare ids in sentences may stay | An id in a sentence is allowed with no label. The label still appears once per page and first, but the claim that a stamp "cannot hide a naming" is withdrawn, and a reader may meet many bare ids. This needs a new version of this package. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

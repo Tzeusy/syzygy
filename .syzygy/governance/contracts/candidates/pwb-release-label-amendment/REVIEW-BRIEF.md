@@ -288,3 +288,64 @@ patches. Report what you observe at the reviewed commit.
 read; its notes are dispositioned beside the package, never by editing
 those bytes. Any other verdict sends the package to the owner with its
 findings open. No round 6 is dispatched without a new owner instruction.
+
+## Round 6 (added 2026-10-15, cycle 4)
+
+Round 5 returned `REVISE`: one revise finding (the cite's visible text was
+free, so a sentence naming the revision could be cast as a citation) and
+seven notes. The owner answered "One more cycle": repair every round-5
+finding, notes included, once, then one fresh review under the same
+stopping rule. The accessible-name (P-99) and opening-index (P-98)
+amendments were signed v1.0 on 2026-10-15, so this package was regenerated
+over their applied bytes and no PWB sibling is pending beside it. Round 6
+reviews these bytes against the same seven criteria, on their own merits.
+
+**Read the prior round.** You SHOULD read
+`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-5-RAW.md` and
+`ROUND-5-DISPOSITIONS.md`, whose §"Repairs, 2026-10-15 (cycle 4)" maps
+each finding to its repair. Verify, finding by finding, that each repair
+closes what the raw found; in particular, build the round-5 raw's
+falsifier page against the new text and say whether it now fails. Judge
+the repair against the raw, never against the mapping's own account of it.
+The delta names one residual as a limit (a served locator's token set is
+not fixed); judge whether that disclosure is honest and sufficient.
+
+You may also read these, to check the delta's and the ledger's
+`[Observed]` claims:
+
+- the implementation files the round-5 raw cites:
+  `apps/three-surface-poc/src/polaris.ts`, `polaris-source.ts`,
+  `page-shell.ts`, `verbatim-route.ts`, `capability-detail.ts`,
+  `production-reobserve.ts`, `reobserve-action.ts` and `main.ts`;
+- PWB-REQ-011, PWB-REQ-014 and PWB-REQ-020 in the signed spec;
+- `PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md` and
+  `PWB-OPENING-INDEX-AMENDMENT-SIGNOFF-v1.0.md` in
+  `.syzygy/governance/decisions/`, for the new base.
+
+Do not read `ROUND-1-DISPOSITIONS.md` to `ROUND-4-DISPOSITIONS.md` or any
+other raw. Never read any Butlers repository or other observed target's
+content: everything you need is in this repository.
+
+**Raw-head digest predicate.** Over the first four non-blank lines of your
+raw:
+
+- line 1 is the title;
+- line 2 is `Reviewed commit: ` followed by the 40-hex commit you read;
+- line 3 is `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of
+  the bytes of the manifest **file**
+  `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the reviewed commit,
+  computed by script (`git show <commit>:<path> | sha256sum`). It is never a
+  row inside the manifest, and never the proposed spec's digest;
+- line 4 is `Verdict: ` followed by exactly one of `CONFIRM`,
+  `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+Number findings as `**Finding N — title** (blocking|revise|note)`, and end
+with one line counting them by severity.
+
+**Stopping rule, set before this round.** A notes-only round (`CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with every finding a note) clears the bytes it
+read; its notes are dispositioned beside the package, never by editing
+those bytes. Clearing is not signing: this package has no carry-over
+answer, so it then goes to the owner for Question 1. Any other verdict
+sends the package to the owner with its findings open. No round 7 is
+dispatched without a new owner instruction.

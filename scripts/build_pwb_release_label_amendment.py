@@ -222,6 +222,22 @@ REQUIRED_ONCE = (
     # Round 4, Note 6: the closed page population.
     "The Polaris pages are the human HTML responses to `GET /polaris` and to every request of PWB-REQ-011's exact-source route, served or refused, in every mount form.",
     "are not Polaris pages",
+    # Round 5, Finding 1: the cite's visible text is decided by equality with
+    # a value the checker reads from the record it names, so a sentence cast
+    # as a citation fails.
+    "The cite's whole visible text, whitespace-normalized, equals one value the checker reads from the record it names",
+    "the locator of that anchor, as the machine narrative serves it, or the path of that source record, as the machine answer serves it",
+    "That text holds no whitespace, or it is a path that the checker's own Git listing of the observed revision holds.",
+    "every such cite's whole text equal to its record's served locator or path",
+    "a cite whose text is not its record's served locator or path",
+    "the identity each citation's cite names, and that record's served locator or path",
+    # Round 5, Note 1: the identity exception's record population is closed.
+    "or the source identity of one source record that the machine answer serves at that evaluation, and is not a revision's id alone.",
+    "These two are the whole population: an identity of any other record is not excepted.",
+    "or to the source identity of one source record served at that evaluation, and not a revision's id alone",
+    "an element marked as an identity whose text is neither the evaluation identity nor one served source record's source identity, or is a revision's id alone",
+    # Round 5, Note 2: the page exclusions as one whole sentence.
+    "The machine answer, PWB-REQ-020's derived machine views and generation draft view, and the response to a human re-observation request are not Polaris pages.",
     # Round 3, Finding 2: the not-read tests read checker-owned construction
     # records.
     "These construction records are fixture facts the checker owns, not the observer's captured inputs.",
@@ -255,6 +271,7 @@ NEW_SCENARIOS = (
     "#### Scenario: A revision no tag reaches is labelled honestly",
     "#### Scenario: Unread tags are never shown as untagged",
     "#### Scenario: A moved tag is disclosed, not trusted",
+    "#### Scenario: A sentence naming the revision is not a provenance stamp",
 )
 #: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
 WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
@@ -851,7 +868,7 @@ def selftest() -> int:
             phrase_finding("The cite names, by its identity, one anchor the machine narrative serves or one source record the machine answer serves at the same evaluation"),
         ),
         "stamp allowed in running text": (
-            SPEC, _replace(proposed[SPEC], " A revision id in a sentence, a heading or\n      any other running text is therefore never a stamp.", ""),
+            SPEC, _replace(proposed[SPEC], " A revision id in a sentence, a\n        heading or any other running text is therefore never a stamp.", ""),
             phrase_finding("A revision id in a sentence, a heading or any other running text is therefore never a stamp."),
         ),
         "stamp citation decide-line dropped": (
@@ -902,6 +919,58 @@ def selftest() -> int:
         "page population dropped": (
             SPEC, _replace(proposed[SPEC], "  - The Polaris pages are the human HTML responses to `GET /polaris` and to\n    every request of PWB-REQ-011's exact-source route, served or refused, in\n    every mount form.", "  - The Polaris pages are the human HTML responses Polaris serves."),
             phrase_finding("The Polaris pages are the human HTML responses to `GET /polaris` and to every request of PWB-REQ-011's exact-source route, served or refused, in every mount form."),
+        ),
+        # Round 5, Finding 1: the reviewer's sentence-cast-as-citation page
+        # passes once the cite's text is free again.
+        "cite text left free": (
+            SPEC, _replace(proposed[SPEC], "      - The cite's whole visible text, whitespace-normalized, equals one\n        value the checker reads from the record it names:", "      - The cite's visible text is any words the implementation chooses, beside"),
+            phrase_finding("The cite's whole visible text, whitespace-normalized, equals one value the checker reads from the record it names"),
+        ),
+        "cite value widened": (
+            SPEC, _replace(proposed[SPEC], "the locator of\n        that anchor, as the machine narrative serves it, or the path of\n        that source record, as the machine answer serves it.", "any label of\n        that record."),
+            phrase_finding("the locator of that anchor, as the machine narrative serves it, or the path of that source record, as the machine answer serves it"),
+        ),
+        "cite whitespace bound dropped": (
+            SPEC, _replace(proposed[SPEC], "      - That text holds no whitespace, or it is a path that the checker's\n        own Git listing of the observed revision holds.", "      - That text may hold whitespace."),
+            phrase_finding("That text holds no whitespace, or it is a path that the checker's own Git listing of the observed revision holds."),
+        ),
+        "cite decide-line dropped": (
+            SPEC, _replace(proposed[SPEC], "    - every such cite's whole text equal to its record's served locator or\n      path,", "    - every such cite's text"),
+            phrase_finding("every such cite's whole text equal to its record's served locator or path"),
+        ),
+        "cite falsifier dropped": (
+            SPEC, _replace(proposed[SPEC], "  - a cite whose text is not its record's served locator or path,", "  - a cite"),
+            phrase_finding("a cite whose text is not its record's served locator or path"),
+        ),
+        "cite value unobservable": (
+            SPEC, _replace(proposed[SPEC], "the identity each citation's cite names, and that\n  record's served locator or path.", "and the identity each citation's cite names."),
+            phrase_finding("the identity each citation's cite names, and that record's served locator or path"),
+        ),
+        "citation scenario dropped": (
+            SPEC, _replace(proposed[SPEC], "#### Scenario: A sentence naming the revision is not a provenance stamp", "#### Scenario: A sentence naming the revision"),
+            "PWB-REQ-001 lacks exactly one",
+        ),
+        # Round 5, Note 1: the reviewer's identity-population mutants.
+        "identity population reopened": (
+            SPEC, _replace(proposed[SPEC], "or the source\n      identity of one source record that the machine answer serves at that\n      evaluation, and is not a revision's id alone.", "or the whole value\n      of an `identity` field of any record the machine answer serves."),
+            phrase_finding("or the source identity of one source record that the machine answer serves at that evaluation, and is not a revision's id alone."),
+        ),
+        "identity population not closed": (
+            SPEC, _replace(proposed[SPEC], " These two are the whole\n      population: an identity of any other record is not excepted.", ""),
+            phrase_finding("These two are the whole population: an identity of any other record is not excepted."),
+        ),
+        "identity decide-line revision clause dropped": (
+            SPEC, _replace(proposed[SPEC], "      evaluation, and not a revision's id alone;", "      evaluation;"),
+            phrase_finding("or to the source identity of one source record served at that evaluation, and not a revision's id alone"),
+        ),
+        "identity falsifier revision clause dropped": (
+            SPEC, _replace(proposed[SPEC], ", or is a\n    revision's id alone;", ";"),
+            phrase_finding("an element marked as an identity whose text is neither the evaluation identity nor one served source record's source identity, or is a revision's id alone"),
+        ),
+        # Round 5, Note 2: the reviewer's page-exclusion mutant.
+        "page exclusion widened": (
+            SPEC, _replace(proposed[SPEC], "The machine answer, PWB-REQ-020's derived machine views\n    and generation draft view, and the response to a human re-observation\n    request are not Polaris pages.", "The machine answer, PWB-REQ-020's derived machine views,\n    the exact-source route and the response to a human re-observation\n    request are not Polaris pages."),
+            phrase_finding("The machine answer, PWB-REQ-020's derived machine views and generation draft view, and the response to a human re-observation request are not Polaris pages."),
         ),
         # Round 4, Note 7: a deleted signed line, with twins later, is lost.
         "signed blank line deleted": (
@@ -1060,11 +1129,30 @@ def lost_lines_selftest(trials: int = 4000) -> int:
     return 0
 
 
+#: A synthetic pending sibling the order selftests add to the real pending
+#: set. Since the P-98 sign-off (2026-10-15) no PWB sibling is pending, and
+#: an order check over this package alone would be exercised by nothing.
+SELFTEST_PENDING = "pwb-selftest-pending-sibling"
+
+
+def _with_selftest_pending(run):
+    original = globals()["PENDING_SIBLINGS"]
+    globals()["PENDING_SIBLINGS"] = frozenset(original | {SELFTEST_PENDING})
+    try:
+        return run()
+    finally:
+        globals()["PENDING_SIBLINGS"] = original
+
+
 def companion_order_selftest(temp: pathlib.Path) -> int:
+    return _with_selftest_pending(lambda: _companion_order_selftest(temp))
+
+
+def _companion_order_selftest(temp: pathlib.Path) -> int:
     """A pending sibling's patch of a companion subject joins the all-orders
     search: one that edits this package's context fails in one order."""
     fake = temp / "candidates"
-    sibling = fake / sorted(PENDING_SIBLINGS)[0] / "proposed"
+    sibling = fake / SELFTEST_PENDING / "proposed"
     sibling.mkdir(parents=True)
     before = (ROOT / DESIGN).read_bytes()
     after = _replace(before, "## Risks / Trade-offs\n", "## Risks and trade-offs\n")
@@ -1079,11 +1167,11 @@ def companion_order_selftest(temp: pathlib.Path) -> int:
     return 0
 
 
-#: This package's spec patch first, then every pending sibling's, sorted.
+#: This package's spec patch first, then every pending sibling's, sorted;
+#: the synthetic one stands in for the siblings signed since round 5.
 ORDER_POPULATION = [
     "pwb-release-label-amendment",
-    "pwb-accessible-name-amendment",
-    "pwb-opening-index-amendment",
+    *sorted(PENDING_SIBLINGS | {SELFTEST_PENDING}),
 ]
 
 #: The shared engine's shift fixtures. Every pair gives one result in both
@@ -1100,6 +1188,10 @@ ORDER_FIXTURES = (
 
 
 def order_selftest(temp: pathlib.Path) -> int:
+    return _with_selftest_pending(lambda: _order_selftest(temp))
+
+
+def _order_selftest(temp: pathlib.Path) -> int:
     """The order check covers this patch and every pending sibling's, fails
     divergent and failing orders, and ``check`` reports what it finds."""
     failed = 0
