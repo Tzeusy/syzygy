@@ -385,3 +385,106 @@ engine, or about both packages, goes in both raws.
 Then a `## Findings` section, numbering findings as
 `**Finding N — title** (blocking|revise|note)`, each labelled
 `[Observed]`, `[Inferred]` or `[Unknown]`.
+
+## Round 5
+
+*(Added 2026-10-15. Everything above is the brief rounds 1 to 4 read, left
+as they read it. Where this section and the text above differ, this
+section governs round 5. It concerns package A, the opening index (P-98),
+only; C, accessible names (P-99), is signed.)*
+
+**Why a round 5.** Round 4 returned `CONFIRM WITH EXCEPTIONS`, notes only
+(`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-4-RAW.md`, line 4), which
+cleared the bytes it read. The owner then answered Q1–Q12, Q1 being "Sign
+v1.0", and "Carry if review clears"
+(`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`).
+The P-99 sign-off
+(`../../../decisions/PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md`) then
+moved PWB `spec.md` and `GOVERNING-DEPENDENCIES.md`, so this package was
+regenerated with `--write` over it and nothing else was repaired. The
+regeneration is recorded in `ROUND-4-DISPOSITIONS.md` §"Regenerated over
+the P-99 sign-off, 2026-10-15". This round confirms the regeneration only.
+The regenerating session dispatches one review and judges nothing itself.
+
+**Stopping rule, set before the round.** One round. A verdict with no
+revise-level or blocking finding (`CONFIRM`, or `CONFIRM WITH EXCEPTIONS`
+with every finding a note) clears the exact bytes it read, under the
+owner's 2026-09-26 ruling; its notes go in a sibling
+`ROUND-5-DISPOSITIONS.md` and the package is not edited. A verdict still
+`REVISE` goes to the owner with its findings; nothing is repaired and no
+round 6 is dispatched without a new owner direction. A verdict is never
+re-labelled. A clearance is not a sign-off: the owner's carry-over rule
+decides that, on its own two conditions.
+
+**Subject.** The regeneration, and the whole package for sanity only. In
+scope:
+
+- the diff from round 4's reviewed commit
+  (`83b29c96775d9c2215292fa41e1599080f0b802c`) to the reviewed commit over
+  `PWB-OPENING-INDEX-AMENDMENT-MANIFEST.txt` and
+  `proposed/GOVERNING-DEPENDENCIES.md.patch`;
+- whether `proposed/spec.md.patch` is byte-identical to round 4's;
+- whether every changed manifest row hashes the bytes the patches produce
+  over the signed tree at the reviewed commit, and every unchanged row
+  still does;
+- whether the proposed `spec.md` now equals what the round-4 composition
+  produced: the accessible-name and opening-index spec patches applied
+  together over `spec.md` at `83b29c96`, in either order;
+- whether anything else in the package directory, in
+  `scripts/build_pwb_opening_index_amendment.py` or in the shared engine
+  `scripts/pwb_requirement_amendment.py` changed since round 4, other than
+  this section, the dated section in `ROUND-4-DISPOSITIONS.md` and the
+  engine's move of `pwb-accessible-name-amendment` from pending to
+  performed siblings;
+- whether the signed PWB-REQ-016 (as P-99 amended it) and the proposed
+  PWB-REQ-010 contradict each other, now that the first is signed.
+
+The prose and requirement text that round 4 cleared are not re-judged. A
+finding about them belongs in a note, and is not a reason to `REVISE`
+unless the regeneration or the P-99 sign-off made it false. A package
+sentence that only went stale (for example, one calling P-99 pending) is a
+note.
+
+**Governing references.** Those above, plus:
+
+- the round-4 raw and `ROUND-4-DISPOSITIONS.md` (the round-1 to round-3
+  raws and dispositions only if a round-4 note needs them);
+- `../../../decisions/PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md`, the
+  sign-off over which this package was regenerated;
+- `../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`,
+  for the carry-over rule;
+- `../../../decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`.
+
+**Read no Butlers or other target-repository content.** Nothing in this
+round needs it; judge only Syzygy's own tracked bytes.
+
+**Mechanics.** Run in a fresh clone at the reviewed commit (verification
+rule 7):
+
+- `python3 scripts/build_pwb_opening_index_amendment.py --check` and `--selftest`
+- `python3 scripts/build_pwb_release_label_amendment.py --check` (expected
+  to fail until P-85 is regenerated over P-99; if it fails, say why)
+- `python3 scripts/check_governance.py`
+- `python3 scripts/check_spec_reconciliation.py --check`
+
+**Output.** One raw, written verbatim to
+docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-5-RAW.md, a file this round
+creates, unless the dispatcher names another path ending in `-RAW.md`.
+
+**Head contract.** Over the first four non-blank lines of the raw:
+
+- line 1 is `# ` followed by a title;
+- line 2 is `Reviewed commit: ` followed by the full 40-hex commit you read;
+- line 3 is `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of
+  the bytes of the manifest file
+  `.syzygy/governance/contracts/candidates/pwb-opening-index-amendment/PWB-OPENING-INDEX-AMENDMENT-MANIFEST.txt`
+  at the reviewed commit, computed by script
+  (`git show <commit>:<that path> | sha256sum`). It is never a row inside
+  the manifest, never the proposed spec's digest and never a figure copied
+  from this brief or the dispositions;
+- line 4 is `Verdict: ` followed by exactly one of `CONFIRM`,
+  `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+Then a `## Findings` section, numbering findings as
+`**Finding N — title** (blocking|revise|note)` at the start of a line, each
+labelled `[Observed]`, `[Inferred]` or `[Unknown]`.
