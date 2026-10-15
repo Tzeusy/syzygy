@@ -62,7 +62,14 @@ export async function recheckSessionStatement(
   const named = cited ?? 'the statement it was handed over under (its prompt record cites none)';
   if (gate.state !== 'ok') return no(`the per-project statement ${named} that ${noun} was handed over under no longer governs its agent tool ${tool} with the provider ${provider}, so its work does not count: ${gate.why}`);
   if (cited !== null && gate.record !== cited) return no(`the per-project statement ${cited} that ${noun} was handed over under is no longer the one that governs its agent tool ${tool} with the provider ${provider} (${gate.record} does), so its work does not count`);
-  const runClasses = statementContentClasses(records, declared.agentTool, provider, now) ?? [];
+  // syzygy-iw7n: with no single in-force statement for the run's declared pair there are no classes to compare against, and an empty
+  // list would pass the subset check vacuously; refuse instead. Callers that do not re-open the run first (the supervisor's
+  // `inventoryOfRecord`) rely on this.
+  const runClasses = statementContentClasses(records, declared.agentTool, provider, now);
+  if (runClasses === null) {
+    const own = providerStatementGate(records, declared.agentTool, provider, now);
+    return no(`the run's own per-project statement ${subject.providerStatement} no longer governs its declared agent tool ${declared.agentTool} with the provider ${provider}, so the classes ${noun}'s work may carry cannot be checked and its work does not count${own.state === 'ok' ? '' : `: ${own.why}`}`);
+  }
   const consented = statementContentClasses(records, tool, provider, now) ?? [];
   const beyond = runClasses.filter((contentClass) => !consented.includes(contentClass));
   if (beyond.length > 0) return no(`the per-project statement ${gate.record} that governs ${noun}'s agent tool ${tool} with the provider ${provider} no longer lists ${beyond.join(', ')}, which the run's statement lets its packets carry, so its work does not count`);

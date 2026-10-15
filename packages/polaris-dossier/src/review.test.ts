@@ -77,8 +77,9 @@ const tempDir = (prefix: string): string => {
 
 // R-PR403-SCREEN-DOCS-1 finding 1: the class-gate tests run in a world with the project-documentation screen and, for a governed
 // subject, one in-force per-project statement listing `classes`; every other test runs with `world` null, as before.
-// syzygy-up98: `others` are further statements of the subject, for the session-prompt --tool tests.
-let world: { readonly screen: ScreenLoad; readonly classes: readonly string[] | null; readonly others?: readonly ProviderStatementRecord[] } | null = null;
+// syzygy-up98: `others` are further statements of the subject, for the session-prompt --tool tests; syzygy-iw7n: `ownWithdrawn`
+// withdraws the run's own statement.
+let world: { readonly screen: ScreenLoad; readonly classes: readonly string[] | null; readonly others?: readonly ProviderStatementRecord[]; readonly ownWithdrawn?: boolean } | null = null;
 afterEach(() => { world = null; });
 const STATEMENT_ID = 'STATEMENT-KESTREL-ANTHROPIC';
 const subject = (clone: string): RunSubject => ({
@@ -103,7 +104,7 @@ const sources = (): GateSources => ({
   // The step guard decides the subject again from this and the pinned tree, which lists no openspec/ or .syzygy/ path.
   projectInput: { drawerFor: async () => ({ stated: true, drawer: world?.classes ? 'present' : 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },
   providerStatements: world?.classes ? {
-    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: world!.classes!, withdrawn: false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }, ...(world!.others ?? [])],
+    statementsFor: async () => [{ recordId: STATEMENT_ID, version: '1', digest: 'a'.repeat(64), agentTool: 'claude-code', provider: 'anthropic', contentClasses: world!.classes!, withdrawn: world!.ownWithdrawn ?? false, act: { identity: 'STATEMENT-ACT-FIXTURE', inForceAt: NOW - 3_600_000 } }, ...(world!.others ?? [])],
   } : NO_PROVIDER_STATEMENTS,
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
@@ -746,6 +747,30 @@ describe('session-prompt --tool and the session pair\'s statement', () => {
     expect(await inventoryOfRecord(run, counting())).toMatchObject({ counts: true, providerStatement: { record: 'STATEMENT-KESTREL-CODEX@4', cited: null } });
     fs.writeFileSync(file, JSON.stringify({ ...record, context: { ...legacy, providerStatement: null } }));
     expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: 'the prompt record of inventory session 1 cites no per-project statement, but the run relies on one' });
+  });
+
+  // syzygy-v5lo: a citation for another pair than the record's own agent tool with the run's provider is refused (mutant M6: drop the
+  // pair comparison, and the cited statement, still in force, would count).
+  it.each<[string, Partial<typeof CITATION>, string]>([
+    ['another agent tool', { agentTool: 'claude-code' }, `the prompt record of inventory session 1 cites the statement ${CODEX} for another pair than its agent tool codex with the run's provider anthropic`],
+    ['another provider', { provider: 'openai' }, `the prompt record of inventory session 1 cites the statement ${CODEX} for another pair than its agent tool codex with the run's provider anthropic`],
+  ])('does not count work whose prompt record cites its statement for %s', async (_name, change, why) => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await prepared('codex');
+    const file = path.join(run, 'inventory', 'session-1.json');
+    const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+    fs.writeFileSync(file, JSON.stringify({ ...record, context: { ...record.context, providerStatement: { ...CITATION, ...change } } }));
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why });
+  });
+
+  // syzygy-iw7n: inventoryOfRecord, as the supervisor loop calls it, re-opens no run; once the run's own statement is withdrawn there
+  // are no run classes to compare, and the session's work must not count by an empty subset check (mutant: `?? []` on the run classes).
+  it('does not count work once the run\'s own statement is withdrawn, though the session pair\'s cited statement still governs', async () => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await prepared('codex');
+    expect(await inventoryOfRecord(run, counting())).toMatchObject({ counts: true });
+    world = { screen: SCREEN, classes: RUN_CLASSES, others: [codex(RUN_CLASSES)], ownWithdrawn: true };
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: `the run's own per-project statement ${STATEMENT_ID}@1 no longer governs its declared agent tool claude-code with the provider anthropic, so the classes inventory session 1's work may carry cannot be checked and its work does not count: no per-project statement naming the agent tool claude-code with the provider anthropic is in force: ${STATEMENT_ID}@1 is withdrawn` });
   });
 });
 
