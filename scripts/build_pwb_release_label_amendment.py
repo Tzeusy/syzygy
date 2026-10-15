@@ -118,6 +118,8 @@ PERFORMED_SIBLINGS = {
     "pwb-class-granular-extraction-amendment": "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
     # Signed v1.0 2026-10-15 (P-99); moved from pending by the sign-off change.
     "pwb-accessible-name-amendment": "PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-15 (P-98); moved from pending by the sign-off change.
+    "pwb-opening-index-amendment": "PWB-OPENING-INDEX-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: Unsigned packages over the same subject. The class-granular extraction
@@ -132,10 +134,9 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: The opening-index (PWB-REQ-010) and
 #: accessible-name (PWB-REQ-016) amendments (``syzygy-u05.12``) each touch
 #: one other requirement and the generated declaration only; their spec
-#: patches compose with this one.
-PENDING_SIBLINGS = frozenset({
-    "pwb-opening-index-amendment",
-})
+#: patches compose with this one. Both are now signed (P-99 and P-98,
+#: 2026-10-15) and performed above, so no PWB sibling is pending.
+PENDING_SIBLINGS: frozenset[str] = frozenset()
 
 REQ_001 = "PWB-REQ-001"
 #: Load-bearing fragments of the proposed PWB-REQ-001 text. Each must occur

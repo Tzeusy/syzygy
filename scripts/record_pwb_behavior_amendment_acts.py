@@ -623,6 +623,12 @@ VERSIONED_LATER = {
                      "pwb-accessible-name-amendment/"
                      "PWB-ACCESSIBLE-NAME-AMENDMENT-MANIFEST.txt"),
     ),
+    "pwb-opening-index-amendment": (
+        DECISIONS / "PWB-OPENING-INDEX-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-opening-index-amendment/"
+                     "PWB-OPENING-INDEX-AMENDMENT-MANIFEST.txt"),
+    ),
     # A Three-Surface POC package with no manifest: its sign-off record
     # carries the applied rows in manifest-row form and stands in for one.
     "three-surface-poc-governing-intent-amendment": (
