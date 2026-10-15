@@ -5,7 +5,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { authorRule, awaitRule, startBroker, type Broker, type BrokerResponse } from './broker.js';
-import { runDossierCli, STATE_ROOT_ENV, type CliPorts } from './cli.js';
+import { cliGateSources, runDossierCli, STATE_ROOT_ENV, type CliPorts } from './cli.js';
 import { inventoryOfRecord, launchRecordName } from './inventory.js';
 import { writeLaunchRecord, writeLaunchedMarker } from './launched.js';
 import { reviewLaunchRecordName, REVIEW_CHECKS } from './review.js';
@@ -481,7 +481,7 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
     if (Date.now() >= deadline) { phase = 'deadline passed'; break; }
     const draft = latestRecord(path.join(run, RUN_LAYOUT.checks), REVISION_FILE);
     const passedDraft = draft !== null && draft.doc['outcome'] === 'passed' ? draft.n : null;
-    const inventory = inventoryOfRecord(run);
+    const inventory = await inventoryOfRecord(run, { sources: cliGateSources(ports), now: (ports.now ?? Date.now)() });
     const fidelity = latestRecord(path.join(run, REVIEW_CHECKS), /^fidelity-verdict-(\d+)\.json$/);
     const design = latestRecord(path.join(run, REVIEW_CHECKS), /^design-verdict-(\d+)\.json$/);
     const site = draft !== null && draft.doc['outcome'] === 'passed' ? (state.siteFor[String(draft.n)] ?? null) : null;

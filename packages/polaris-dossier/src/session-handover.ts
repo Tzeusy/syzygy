@@ -13,6 +13,7 @@ import {
   reviewSessionDirectory, writePacket, type ReviewDeps, type ReviewKind,
 } from './review.js';
 import { AGENT_TOOLS, type AgentTool } from './run-config.js';
+import type { SessionStatementCitation } from './session-statement.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 import {
   DELIVERY_DISCLOSURES, PLAIN_PATH, WAITING_MODE, WAIT_MODE_DIRECTION, WAIT_MODE_UNSIGNED, WAIT_TIMEOUT_ADVICE, deliverToWaiting, stdinHandOver, waitModeSignedIn, waitingReviewSession,
@@ -27,6 +28,8 @@ import {
  * in the run's `inventory/`, so the authoring session never writes the other session's instructions. The operator starts that session,
  * in a new terminal or, for Claude Code only, by typing the printed command behind the `!` shell-escape prefix; Syzygy starts nothing. When the operator returns, the authoring session records the launch form the operator
  * declares with `launch-form`: `terminal` or `bang`, and nothing else. Every record is operator- or session-declared and Inferred.
+ * The prompt record's context cites the per-project statement that admitted the session's pair (null when the run relies on none), and
+ * the session's inventory or verdict counts only while that statement still governs the pair (`session-statement.ts`).
  *
  * A review session (`session-prompt review --kind fidelity`) works the same way from the fidelity packet (`review.ts`): Syzygy builds
  * the packet now and copies it, with its digest, into the session's directory under the sessions root, so the review session never
@@ -108,6 +111,9 @@ export interface SessionContext {
   readonly basis: string;
   readonly overridden: readonly ('agentTool' | 'agentToolVersion' | 'model')[];
   readonly runDeclared: { readonly agentTool: AgentTool; readonly agentToolVersion: string; readonly model: string; readonly declaredBy: 'operator'; readonly label: 'Inferred' };
+  /** The per-project statement that admitted the session's pair when it was handed over; null when the run relies on none. Every count
+   * of the session's work checks it again (`session-statement.ts`). */
+  readonly providerStatement: SessionStatementCitation | null;
   readonly label: 'Inferred';
 }
 
@@ -232,15 +238,15 @@ export async function sessionPrompt(runDir: string, request: SessionPromptReques
 }
 
 /** The session's agent tool, version and model: the run's declared values, each overridable for the session, and the session pair's
- * provider statement checked (`sessionStatementRefusal`). */
+ * provider statement checked (`sessionStatement`) and cited in the context, so every count of the session's work can check it again. */
 async function sessionContextOf(
   opened: Extract<OpenedRun, { ok: true }>, request: { readonly tool?: string; readonly toolVersion?: string; readonly model?: string }, sources: GateSources, now: number,
 ): Promise<SessionContext | { readonly stage: 'context' | 'statement'; readonly reason: string }> {
   const { declared } = opened;
   const tool = request.tool ?? declared.agentTool;
   if (!(AGENT_TOOLS as readonly string[]).includes(tool)) return { stage: 'context', reason: `--tool must be one of ${AGENT_TOOLS.join(', ')}` };
-  const unstated = await sessionStatementRefusal(opened, tool, sources, now);
-  if (unstated !== null) return { stage: 'statement', reason: unstated };
+  const admitted = await sessionStatement(opened, tool, sources, now);
+  if ('refusal' in admitted) return { stage: 'statement', reason: admitted.refusal };
   const toolVersion = request.toolVersion ?? declared.agentToolVersion, model = request.model ?? declared.model;
   if (!CONTEXT_TEXT.test(toolVersion) || !CONTEXT_TEXT.test(model)) return { stage: 'context', reason: 'the tool version and the model are each 1 to 200 characters with no control character' };
   const overridden = ([['agentTool', request.tool], ['agentToolVersion', request.toolVersion], ['model', request.model]] as const)
@@ -252,6 +258,7 @@ async function sessionContextOf(
       : 'the run configuration, as the operator declared it',
     overridden,
     runDeclared: { agentTool: declared.agentTool, agentToolVersion: declared.agentToolVersion, model: declared.model, declaredBy: 'operator', label: 'Inferred' },
+    providerStatement: admitted.statement,
     label: 'Inferred',
   };
 }
@@ -272,20 +279,23 @@ const REVIEW_PROMPT_DISCLOSURES = [
  * session's pair, its tool with the run's declared provider, must have exactly one in-force statement, and that statement must list
  * every class the run's statement lists: the packet stays gated on the run's classes, so its digest is the one review-check rebuilds,
  * and none of them exceeds the session pair's consent. A non-governed run relies on no statement for its declared pair, and the session
- * pair needs none either. Returns the refusal reason, or null. */
-async function sessionStatementRefusal(opened: Extract<OpenedRun, { ok: true }>, tool: string, sources: GateSources, now: number): Promise<string | null> {
-  if (opened.contentClasses === null) return null;
+ * pair needs none either. Returns the refusal reason, or the admitting statement for the prompt record to cite (null for a run that
+ * relies on none). */
+async function sessionStatement(
+  opened: Extract<OpenedRun, { ok: true }>, tool: string, sources: GateSources, now: number,
+): Promise<{ readonly refusal: string } | { readonly statement: SessionStatementCitation | null }> {
+  if (opened.contentClasses === null) return { statement: null };
   const provider = opened.declared.agentProvider;
   const records = await sources.providerStatements.statementsFor(opened.subject.repository.repositoryId);
   const statement = providerStatementGate(records, tool, provider, now);
   if (statement.state !== 'ok') {
     const standing = statement.state === 'absent' ? 'has no per-project statement in force' : 'has no single per-project statement that governs it';
-    return `the session's agent tool ${tool} with the run's provider ${provider} ${standing}, so no session is handed over: ${statement.why}`;
+    return { refusal: `the session's agent tool ${tool} with the run's provider ${provider} ${standing}, so no session is handed over: ${statement.why}` };
   }
   const consented = statementContentClasses(records, tool, provider, now) ?? [];
   const beyond = opened.contentClasses.filter(contentClass => !consented.includes(contentClass));
-  if (beyond.length > 0) return `the per-project statement ${statement.record} for the session's agent tool ${tool} with the provider ${provider} does not list ${beyond.join(', ')}, which the run's statement lets its packets carry, so no session is handed over`;
-  return null;
+  if (beyond.length > 0) return { refusal: `the per-project statement ${statement.record} for the session's agent tool ${tool} with the provider ${provider} does not list ${beyond.join(', ')}, which the run's statement lets its packets carry, so no session is handed over` };
+  return { statement: { record: statement.record, agentTool: tool, provider, label: 'Inferred' } };
 }
 
 /** The review half of `session-prompt`: build the packet of the kind now, write it under `reviews/`, copy it into the next session's
@@ -474,8 +484,8 @@ async function deliverReview(
   const recorded = waiting.record['context'];
   const tool = recorded !== null && typeof recorded === 'object' && !Array.isArray(recorded) ? (recorded as Record<string, unknown>)['agentTool'] : undefined;
   if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return refuse('context', `the prompt record of waiting ${kind} session ${waiting.session} names no agent tool`);
-  const unstated = await sessionStatementRefusal(opened, tool, deps.sources, now);
-  if (unstated !== null) return refuse('statement', unstated.replace('so no session is handed over', 'so no packet is delivered'));
+  const admitted = await sessionStatement(opened, tool, deps.sources, now);
+  if ('refusal' in admitted) return refuse('statement', admitted.refusal.replace('so no session is handed over', 'so no packet is delivered'));
   let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;
   if (kind === 'design') {
     const design = buildStoredDesignPacket(opened);

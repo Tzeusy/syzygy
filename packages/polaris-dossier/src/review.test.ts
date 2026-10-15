@@ -11,7 +11,7 @@ import { runDossierCli } from './cli.js';
 import { verdictSchemaDocument } from './draft-schema.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState, type ProviderStatementRecord } from './gate-sources.js';
-import { checkInventory, openRun } from './inventory.js';
+import { checkInventory, inventoryOfRecord, openRun } from './inventory.js';
 import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
@@ -152,8 +152,9 @@ const inventory = (): Doc => ({
   coverage: { inspected: ['src/kestrel.c', 'docs/notes.txt', '.env'], excluded: [], deferred: [], stoppingReason: 'Read every file.' },
 });
 
-/** A briefed run with a passed draft revision and an inventory of record (passed, launch form recorded). */
-async function prepared(): Promise<string> {
+/** A briefed run with a passed draft revision and an inventory of record (passed, launch form recorded), its session handed over with
+ * the run's declared tool or `inventoryTool`. */
+async function prepared(inventoryTool?: 'codex'): Promise<string> {
   const clone = path.join(tempDir('dossier-review-clone-'), 'kestrel');
   execFileSync('git', ['clone', '-q', '--no-hardlinks', origin, clone], { env: GIT_ENV });
   const run = path.join(tempDir('dossier-review-state-'), RUN_ID);
@@ -167,7 +168,7 @@ async function prepared(): Promise<string> {
   const brief = await issueBrief(run, { sources: sources(), now: () => NOW });
   if (!brief.ok) throw new Error(`fixture brief refused: ${brief.refusal.reason}`);
   await submitDraft(run, draft());
-  const handed = await sessionPrompt(run, { role: 'inventory' }, { sources: sources(), now: () => LATER });
+  const handed = await sessionPrompt(run, { role: 'inventory', ...(inventoryTool ? { tool: inventoryTool } : {}) }, { sources: sources(), now: () => LATER });
   if (!handed.ok) throw new Error(handed.refusal.reason);
   fs.writeFileSync(path.join(handed.report.directory, 'inventory.json'), JSON.stringify(inventory(), null, 2));
   const checked = await checkInventory(run, {}, checkDeps());
@@ -691,6 +692,60 @@ describe('session-prompt --tool and the session pair\'s statement', () => {
     const { result } = await handOver([], { role: 'review', kind: 'fidelity' });
     if (!result.ok) throw new Error(result.refusal.reason);
     expect(result.report.context.agentTool).toBe('claude-code');
+  });
+
+  // syzygy-q2o8 (R-PR406-SESSION-TOOL-STATEMENT-1 E2; REQ-polaris-generation-033, scenario "Per-project statement withdrawn mid-run"):
+  // the prompt record cites the statement that admitted the session's pair, and the session's inventory or verdict counts only while
+  // that statement still governs the pair. The codex statement is a fixture-only second tool for the run's provider.
+  const CODEX = 'STATEMENT-KESTREL-CODEX@3';
+  const CITATION = { record: CODEX, agentTool: 'codex', provider: 'anthropic', label: 'Inferred' };
+  const WITHDRAWN = (noun: string) => `the per-project statement ${CODEX} that ${noun} was handed over under no longer governs its agent tool codex with the provider anthropic, so its work does not count: no per-project statement naming the agent tool codex with the provider anthropic is in force: ${CODEX} is withdrawn`;
+  const counting = () => ({ sources: sources(), now: LATER });
+  const codexWorld = (statement: ProviderStatementRecord): void => { world = { screen: SCREEN, classes: RUN_CLASSES, others: [statement] }; };
+  /** A governed run whose fidelity verdict is checked and launched, from a review session handed over with --tool codex. */
+  const codexReview = async (): Promise<string> => {
+    const run = await prepared();
+    const handed = await sessionPrompt(run, REVIEW, { sources: sources(), now: () => LATER, loadScreen: screenOf });
+    if (!handed.ok) throw new Error(handed.refusal.reason);
+    writeVerdict(handed.report.directory, verdict(handed.report.packetSha256!));
+    expect(await reviewCheck(run, {}, deps())).toMatchObject({ ok: true, report: { outcome: 'validated' } });
+    await launchForm(run, { role: 'review', form: 'terminal' }, { sources: sources(), now: () => LATER });
+    return run;
+  };
+
+  it('cites the codex statement in the inventory prompt record, and stops counting the inventory once that statement is withdrawn', async () => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await prepared('codex');
+    expect(JSON.parse(fs.readFileSync(path.join(run, 'inventory', 'session-1.json'), 'utf8')).context.providerStatement).toEqual(CITATION);
+    expect(await inventoryOfRecord(run, counting())).toMatchObject({ counts: true, providerStatement: { record: CODEX, cited: CODEX, label: 'Inferred' } });
+    codexWorld(codex(RUN_CLASSES, { withdrawn: true }));
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: WITHDRAWN('inventory session 1') });
+  });
+
+  it('cites the codex statement in the review prompt record, and stops counting the verdict once that statement is withdrawn', async () => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await codexReview();
+    expect(JSON.parse(fs.readFileSync(path.join(run, 'reviews', 'fidelity-session-1.json'), 'utf8')).context.providerStatement).toEqual(CITATION);
+    expect(await reviewOfRecord(await opened(run), deps())).toMatchObject({ counts: true, providerStatement: { record: CODEX, cited: CODEX } });
+    codexWorld(codex(RUN_CLASSES, { withdrawn: true }));
+    expect(await reviewOfRecord(await opened(run), deps())).toEqual({ counts: false, why: WITHDRAWN('fidelity session 1') });
+  });
+
+  it('does not count work whose cited statement a successor replaced or whose classes narrowed; a record from before citations counts on the re-check, its citation Unknown', async () => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await prepared('codex');
+    codexWorld(codex(RUN_CLASSES, { version: '4' }));
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: `the per-project statement ${CODEX} that inventory session 1 was handed over under is no longer the one that governs its agent tool codex with the provider anthropic (STATEMENT-KESTREL-CODEX@4 does), so its work does not count` });
+    codexWorld(codex(['code-content']));
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: `the per-project statement ${CODEX} that governs inventory session 1's agent tool codex with the provider anthropic no longer lists project-documentation, which the run's statement lets its packets carry, so its work does not count` });
+    const file = path.join(run, 'inventory', 'session-1.json');
+    const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const { providerStatement: _cited, ...legacy } = record.context;
+    fs.writeFileSync(file, JSON.stringify({ ...record, context: legacy }));
+    codexWorld(codex(RUN_CLASSES, { version: '4' }));
+    expect(await inventoryOfRecord(run, counting())).toMatchObject({ counts: true, providerStatement: { record: 'STATEMENT-KESTREL-CODEX@4', cited: null } });
+    fs.writeFileSync(file, JSON.stringify({ ...record, context: { ...legacy, providerStatement: null } }));
+    expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: 'the prompt record of inventory session 1 cites no per-project statement, but the run relies on one' });
   });
 });
 

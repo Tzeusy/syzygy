@@ -179,11 +179,14 @@ export interface CliPorts {
 /** The Syzygy checkout this package belongs to: packages/polaris-dossier/{src,dist} → the repository root. */
 const RECORDS_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
+/** The gate sources the commands read: the injected ones, or the records in this Syzygy checkout. */
+export const cliGateSources = (ports: CliPorts): GateSources => ports.sources ?? createPackageGateSources({ root: RECORDS_ROOT, now: ports.now ?? Date.now });
+
 export async function runDossierCli(argv: readonly string[], io: CliIo, ports: CliPorts = {}): Promise<number> {
   const json = argv.includes('--json');
   const args = argv.filter((arg) => arg !== '--json');
   const now = ports.now ?? Date.now;
-  const sources = (): GateSources => ports.sources ?? createPackageGateSources({ root: RECORDS_ROOT, now });
+  const sources = (): GateSources => cliGateSources(ports);
   const openReader = ports.openReader ? { openReader: ports.openReader } : {};
   const usageError = (detail: string): number => {
     io.stderr(`syzygy dossier: ${detail}\n\n${DOSSIER_USAGE}`);

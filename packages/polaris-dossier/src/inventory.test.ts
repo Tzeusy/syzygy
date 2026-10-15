@@ -108,6 +108,7 @@ async function runWithDrafts(authoring: readonly (string | null)[] = ['author-1'
 
 const cloneOf = (run: string): string => JSON.parse(fs.readFileSync(path.join(run, 'run.json'), 'utf8')).subject.clone.path as string;
 const hand = { sources: sources(), now: () => LATER };
+const counting = { sources: sources(), now: LATER };
 async function handedOver(run: string): Promise<string> {
   const result = await sessionPrompt(run, { role: 'inventory' }, hand);
   if (!result.ok) throw new Error(`fixture session-prompt refused: ${result.refusal.reason}`);
@@ -152,7 +153,7 @@ describe('session-prompt inventory', () => {
     expect(record).toMatchObject({ format: 'polaris-dossier-session-prompt/1', role: 'inventory', runId: RUN_ID, session: 1, directory: `${RUN_ID}.sessions/session-1`, label: 'Inferred' });
     expect(record.context).toEqual({
       agentTool: 'claude-code', agentToolVersion: '2.1.0', model: 'claude-opus-5-5', declaredBy: 'operator', basis: 'the run configuration, as the operator declared it', overridden: [],
-      runDeclared: { agentTool: 'claude-code', agentToolVersion: '2.1.0', model: 'claude-opus-5-5', declaredBy: 'operator', label: 'Inferred' }, label: 'Inferred',
+      runDeclared: { agentTool: 'claude-code', agentToolVersion: '2.1.0', model: 'claude-opus-5-5', declaredBy: 'operator', label: 'Inferred' }, providerStatement: null, label: 'Inferred',
     });
     const brief = fs.readFileSync(path.join(dir, 'inventory-brief.md'), 'utf8');
     for (const text of [brief, result.report.prompt, JSON.stringify(record), JSON.stringify(result.report)]) {
@@ -260,7 +261,7 @@ describe('session-prompt inventory', () => {
       agentTool: 'codex', agentToolVersion: '0.40.0', model: 'gpt-5.5', declaredBy: 'operator',
       basis: 'agentTool, agentToolVersion, model declared by the operator for this session with session-prompt, conveyed by the authoring session; the rest the run configuration\'s',
       overridden: ['agentTool', 'agentToolVersion', 'model'],
-      runDeclared: { agentTool: 'claude-code', agentToolVersion: '2.1.0', model: 'claude-opus-5-5', declaredBy: 'operator', label: 'Inferred' }, label: 'Inferred',
+      runDeclared: { agentTool: 'claude-code', agentToolVersion: '2.1.0', model: 'claude-opus-5-5', declaredBy: 'operator', label: 'Inferred' }, providerStatement: null, label: 'Inferred',
     });
     const third = await sessionPrompt(run, { role: 'inventory', model: 'claude-sonnet-5-5' }, hand);
     if (!third.ok) throw new Error(third.refusal.reason);
@@ -400,15 +401,15 @@ describe('the inventory of record', () => {
     const dir = await handedOver(run);
     writeInventory(dir, validInventory());
     passed(await checkInventory(run, {}, deps()));
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: `no launch form is recorded for inventory session 1: run \`syzygy dossier launch-form ${run} inventory terminal|bang\` with the operator's answer` });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: `no launch form is recorded for inventory session 1: run \`syzygy dossier launch-form ${run} inventory terminal|bang\` with the operator's answer` });
     await launchForm(run, { role: 'inventory', form: 'terminal' }, hand);
-    expect(inventoryOfRecord(run)).toMatchObject({
-      counts: true, revision: 0, session: 1, label: 'Inferred',
+    expect(await inventoryOfRecord(run, counting)).toMatchObject({
+      counts: true, revision: 0, session: 1, label: 'Inferred', providerStatement: null,
       sessionId: { value: 'inventory-1', declaredBy: 'the inventory session', label: 'Inferred' },
       launchForm: { value: 'terminal', declaredBy: 'operator', label: 'Inferred' },
     });
     fs.appendFileSync(path.join(run, 'inventory', 'rev-0.json'), ' ');
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'the frozen inventory inventory/rev-0.json is not the bytes its check recorded' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the frozen inventory inventory/rev-0.json is not the bytes its check recorded' });
   });
 
   it('does not count an inventory with findings, or a launch record altered to another form', async () => {
@@ -417,18 +418,18 @@ describe('the inventory of record', () => {
     writeInventory(dir, { ...validInventory(), pinnedRevision: 'f'.repeat(40) });
     passed(await checkInventory(run, {}, deps()));
     await launchForm(run, { role: 'inventory', form: 'bang' }, hand);
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'inventory revision 0 has open findings' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'inventory revision 0 has open findings' });
     writeInventory(dir, validInventory());
     passed(await checkInventory(run, {}, deps()));
-    expect(inventoryOfRecord(run)).toMatchObject({ counts: true, revision: 1, launchForm: { value: 'bang' } });
+    expect(await inventoryOfRecord(run, counting)).toMatchObject({ counts: true, revision: 1, launchForm: { value: 'bang' } });
     const launch = path.join(run, 'inventory', 'session-1.launch.json');
     const recorded = JSON.parse(fs.readFileSync(launch, 'utf8'));
     fs.writeFileSync(launch, JSON.stringify({ ...recorded, form: { ...recorded.form, value: 'headless' } }));
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
     fs.writeFileSync(launch, JSON.stringify({ ...recorded, promptSha256: 'a'.repeat(64) }));
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
     fs.writeFileSync(launch, JSON.stringify({ ...recorded, form: { ...recorded.form, label: 'Observed' } }));
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
   });
 
   it('does not count an inventory whose session identifier a later draft revision declares', async () => {
@@ -438,7 +439,7 @@ describe('the inventory of record', () => {
     passed(await checkInventory(run, {}, deps()));
     await launchForm(run, { role: 'inventory', form: 'terminal' }, hand);
     fs.writeFileSync(path.join(run, 'drafts', 'rev-1.json'), JSON.stringify({ sessionId: 'inventory-1' }));
-    expect(inventoryOfRecord(run)).toEqual({ counts: false, why: 'inventory revision 0 declares the authoring session\'s identifier' });
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'inventory revision 0 declares the authoring session\'s identifier' });
   });
 });
 
@@ -460,7 +461,7 @@ describe('labels: nothing self-declared is shown or recorded as Observed', () =>
     const checked = passed(await checkInventory(run, {}, deps()));
     const launch = await launchForm(run, { role: 'inventory', form: 'bang' }, hand);
     if (!launch.ok) throw new Error(launch.refusal.reason);
-    const ofRecord = inventoryOfRecord(run);
+    const ofRecord = await inventoryOfRecord(run, counting);
     const stored = (rel: string): unknown => JSON.parse(fs.readFileSync(path.join(run, rel), 'utf8'));
     const documents: [string, unknown][] = [
       ['session-prompt report', prompt.report], ['session-prompt record', stored('inventory/session-1.json')],
