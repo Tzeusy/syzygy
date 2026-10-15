@@ -635,6 +635,12 @@ VERSIONED_LATER = {
         DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
         DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
     ),
+    "three-surface-poc-vocabulary-epistemic-amendment": (
+        DECISIONS / "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "three-surface-poc-vocabulary-epistemic-amendment/"
+                     "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt"),
+    ),
 }
 
 
