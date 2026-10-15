@@ -1,0 +1,53 @@
+{
+  "record": "Rule-6 mutants for the PR 435 review follow-ups syzygy-iw7n, syzygy-v5lo and syzygy-basu. M-iw7n restores the vacuous class-subset pass (the run's own statement withdrawn, its classes coerced to []); M6-v5lo drops the prompt-record citation's agentTool/provider pair comparison (the M6 that survived the PR 435 review); M-basu drops the delivery-time recheck of the waiting session's cited statement. Each mutant is applied as one exact single-occurrence replacement of `old` by `new` in `file`, the named test file run with the vitest `-t` filter, and the source restored. The run was made at `subjectCommit` on branch agent/syzygy-iw7n, the parent of the commit that adds this record; a rebase-merge may leave it reachable from no ref, so the old/new fragments and the file digests are the re-runnable form.",
+  "subjectCommit": "a67e364a2d2b72711846bc3dcd38df8e2f9ee5b8",
+  "subjectFiles": {
+    "packages/polaris-dossier/src/session-statement.ts": "30abae4594d74ad291927af85430e359b78155a483aef31bdf8af2aedc2a5399",
+    "packages/polaris-dossier/src/session-handover.ts": "9f473578e4c6e220c8b018d3c40a4612c64dd86963fbfd09ce08a4ee247f357f",
+    "packages/polaris-dossier/src/review.test.ts": "40d710b670ed304a95a93d2b8dbee4e52518c192d39dec466108537ab3ffd730",
+    "packages/polaris-dossier/src/waiting-sessions.test.ts": "08651fe8d1ab9f74c588b6f7bd90a267ac1fe51875f1b0ca8e59e73f46feee04"
+  },
+  "command": "npx vitest run --project @syzygy/polaris-dossier --testTimeout=120000 <test> -t <filter>",
+  "mutants": [
+    {
+      "id": "M-iw7n",
+      "file": "packages/polaris-dossier/src/session-statement.ts",
+      "old": "  const runClasses = statementContentClasses(records, declared.agentTool, provider, now);\n  if (runClasses === null) {",
+      "new": "  const runClasses = statementContentClasses(records, declared.agentTool, provider, now) ?? [];\n  if (false) {",
+      "test": "packages/polaris-dossier/src/review.test.ts",
+      "filter": "run's own statement is withdrawn",
+      "exit": 1,
+      "tests": [
+        "Tests  1 failed | 57 skipped (58)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M6-v5lo",
+      "file": "packages/polaris-dossier/src/session-statement.ts",
+      "old": "    if (citation['agentTool'] !== tool || citation['provider'] !== provider) {",
+      "new": "    if (false) {",
+      "test": "packages/polaris-dossier/src/review.test.ts",
+      "filter": "cites its statement for",
+      "exit": 1,
+      "tests": [
+        "Tests  2 failed | 56 skipped (58)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M-basu",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (!cited.ok) return refuse('statement',",
+      "new": "  if (false && !cited.ok) return refuse('statement',",
+      "test": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+      "filter": "successor replaced the statement",
+      "exit": 1,
+      "tests": [
+        "Tests  1 failed | 114 skipped (115)"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "summary": "3 of 3 killed"
+}

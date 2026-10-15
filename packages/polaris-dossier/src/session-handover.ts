@@ -13,7 +13,7 @@ import {
   reviewSessionDirectory, writePacket, type ReviewDeps, type ReviewKind,
 } from './review.js';
 import { AGENT_TOOLS, type AgentTool } from './run-config.js';
-import type { SessionStatementCitation } from './session-statement.js';
+import { recheckSessionStatement, type SessionStatementCitation } from './session-statement.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 import {
   DELIVERY_DISCLOSURES, PLAIN_PATH, WAITING_MODE, WAIT_MODE_DIRECTION, WAIT_MODE_UNSIGNED, WAIT_TIMEOUT_ADVICE, deliverToWaiting, stdinHandOver, waitModeSignedIn, waitingReviewSession,
@@ -486,6 +486,10 @@ async function deliverReview(
   if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return refuse('context', `the prompt record of waiting ${kind} session ${waiting.session} names no agent tool`);
   const admitted = await sessionStatement(opened, tool, deps.sources, now);
   if ('refusal' in admitted) return refuse('statement', admitted.refusal.replace('so no session is handed over', 'so no packet is delivered'));
+  // syzygy-basu: the statement admitting the pair now must also be the one the waiting session was started under, or its verdict would
+  // be refused when counted; refuse the delivery instead of spending the session's round.
+  const cited = await recheckSessionStatement(run, `waiting ${kind} session ${waiting.session}`, waiting.record, deps.sources, now);
+  if (!cited.ok) return refuse('statement', cited.why.replace('so its work does not count', 'so no packet is delivered'));
   let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;
   if (kind === 'design') {
     const design = buildStoredDesignPacket(opened);

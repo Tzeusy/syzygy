@@ -654,6 +654,25 @@ describe('delivery to a waiting review session', () => {
     expect(result.doc['reason']).toContain('so no packet is delivered');
   });
 
+  // syzygy-basu: a successor statement admits the pair at delivery, but the waiting session was started under its predecessor, so its
+  // verdict would be refused when counted; the delivery is refused first (mutant: drop the recheck against the prompt record's citation).
+  it('refuses a delivery when a successor replaced the statement the waiting session was started under (mutant: drop the citation recheck)', async () => {
+    const h = await harness({ governed: true });
+    const started = await h.cli(['session-prompt', h.run, 'all', '--tool', 'codex']);
+    expect(started.exit).toBe(0);
+    fs.mkdirSync(path.join(h.run, 'drafts'), { recursive: true });
+    write(path.join(h.run, 'drafts', 'next.json'), draft(h.commit));
+    await h.cli(['check', h.run]);
+    h.world.stdin = JSON.stringify(inventory(h.commit));
+    expect((await h.cli(['await', `${path.join(h.sessions, 'session-1')}/`, '--submit', 'inventory.json', '--stdin'])).exit).toBe(0);
+    await h.cli(['launch-form', h.run, 'inventory', 'terminal']);
+    h.world.statements = [statement('claude-code'), { ...statement('codex'), version: '2' }];
+    const result = await h.cli(['session-prompt', h.run, 'review', '--kind', 'fidelity']);
+    expect(result.doc).toMatchObject({ outcome: 'refused', stage: 'statement' });
+    expect(result.doc['reason']).toBe('the per-project statement STATEMENT-CODEX@1 that waiting fidelity session 1 was handed over under is no longer the one that governs its agent tool codex with the provider anthropic (STATEMENT-CODEX@2 does), so no packet is delivered');
+    expect(fs.existsSync(path.join(h.sessions, 'fidelity-1', 'round-1'))).toBe(false);
+  });
+
   it('with --fresh hands the packet to a new session instead (mutant: ignore --fresh)', async () => {
     const h = await harness();
     await readyForReview(h);
