@@ -1,0 +1,70 @@
+{
+  "baseline_commit": "2d6a36328f638d3ce52605e88328c1ac7b4c9895",
+  "protected_predecessors": [
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "sha256": "457a3d3d1a1f9d94d1f76751c8f6eb1022eeb938ecd20b4e631e965ba4298c82"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+      "sha256": "0c8a18596847e8cca8bff26f4a7afca142053f62334bf18ccf7c3727bba28aed"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md",
+      "sha256": "3b54045625a1d30732a75b3610c0c4ba2a68659a60556043618f480900cb8d19"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md",
+      "sha256": "2078de1fea3c30785b7a21bf9c29d9118b1fdeef46d6205e8aaa084a4a635e15"
+    },
+    {
+      "path": ".syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md",
+      "sha256": "3534db031087eb1de0f5eaae8fcfbc50e8f546e44b8440e0a5e4936e394ede8c"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-08-24-cap1-runtime-hardening-followups.md",
+      "sha256": "84d5add7e6dd367086ba46e50e93f0f8ad74076eec54525a85b413af117c09e7"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-23-cap1-runtime-hardening-followups-design.md",
+      "sha256": "96956803bae08e7790700dd76858841482fab2bdb21b99d9956ea3f133c8ef82"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/.openspec.yaml",
+      "sha256": "727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md",
+      "sha256": "2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md",
+      "sha256": "15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md",
+      "sha256": "a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/design.md",
+      "sha256": "12bb357f30c3f8a3107b507ddedaf2e715c974ca877db8f031699e6268a384ee"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/proposal.md",
+      "sha256": "4cda00e0df635a853360e22f7c9d3dde68424782a115d1eadf2b7ddeab5c869a"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "sha256": "65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/tasks.md",
+      "sha256": "c037aa188970c1314d8e0adfcdc1b6f890c20e05fa3feb841483d8bc5aabaf33"
+    }
+  ],
+  "spec_requirements_modified": [
+    "CAP1-REQ-011",
+    "CAP1-REQ-046"
+  ],
+  "new_requirement_ids": []
+}
