@@ -7,14 +7,15 @@
     ],
     "signedTag": "three-surface-poc-governing-intent-amendment-v1.0",
     "authorization": ".syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md",
-    "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+    "commit": "eec027b78c25ca712cf03b524ef34a459d6e436f",
     "files": {
-      "packages/three-surface-poc-core/src/work-items.ts": "sha256:549f0a5974fbd5cda3d0156b54626510ac156f806c6a6d9c02ace8e5daf7aaf6",
+      "packages/three-surface-poc-core/src/work-items.ts": "sha256:002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
       "packages/three-surface-poc-core/src/model.ts": "sha256:241ff2b02bc751501bc3b876e10c19e47c35daea525737474298165df4a780fc",
-      "packages/three-surface-poc-core/src/project-shape-model.ts": "sha256:0431459e6fd8a013f678d8f5a6ba17bbe85d6588288173160989fd23d32fbeda",
-      "apps/three-surface-poc/src/trajectory.ts": "sha256:f1e531632631f8a1ac167fc63d5d40c4c0bdb446576875de35d26c8336fcb053",
-      "apps/three-surface-poc/src/governing-intent-sweep.test.ts": "sha256:0ffc3bed0b8f1e44f76f8b140d7d57288324d29840520e5c667edbebd8f916ec",
-      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts": "sha256:cdee81d3ad1c63008343b478a7cb7b548f19195ab77002bd9a1b039cd893e6c9"
+      "packages/three-surface-poc-core/src/project-shape-model.ts": "sha256:be9a7ea24b634be130378b89a735d1830ceb7625b95cc687e5dea9bd8b5daf75",
+      "apps/three-surface-poc/src/trajectory.ts": "sha256:99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts": "sha256:6c0849933660820e0be1bcc7e164719519a5eee6593ea2c324dfa1f4218ee946",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts": "sha256:eceb35a5c1a583b7aa7cb5e9c49db24cc35d8ef83e81771a56ea8902d9f85a51",
+      "apps/three-surface-poc/src/cdp-browser.ts": "sha256:8063ea2435cc493e9c436c825330d49f92d8240da638c6b80a3a4e4905d622fc"
     }
   },
   "readings": {
@@ -22,6 +23,7 @@
     "routeLiteral": "Coordinator ruling (a). UNKNOWN_REASON_ROUTES['source-uncaptured-or-unreachable'] now equals RFC2-24's literal, 'Repair the observer/source; new snapshot' (.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md:139), replacing the paraphrase 'Repair the observer or source; new snapshot'. This aligns an implementation paraphrase with accepted contract text and changes no signed behavior. Sweep before the change: grep -F plus a Python second method over 2,751 tracked files (4 undecodable skipped); hits only in code, tests, docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md:592 and two retained raws; zero under openspec/ or .syzygy/.",
     "narrowing": "The narrowing is a CSS-only checkbox (no script, no new read): checked, it hides every card whose data-governed-by is not Unknown. Every card carries the Unknown, so the narrowed board equals the un-narrowed one; the browser test injects one unmarked card to show the toggle narrows at all.",
     "noNewInput": "No work-item column or other input is read: the bd sql statement is unchanged.",
+    "reviewFinding1": "R-IMPL-P100-GOVERNING-INTENT-1 finding 1 (revise) asked for the count on an Unknown board beside observed work items. buildPocModel never produces that pair: with no seeds the work-item read is itself Unknown ('No seed-backed work-item prefix was supplied'), and projectTrajectory is Unknown only when the read is. governing-intent-sweep.test.ts builds both Unknown-board states (no seeds; unreachable Dolt) and shows neither channel serves an item set, a governedBy or a count.",
     "m03": "M03 (omitted governedBy) is killed by a thrown model build (countGoverningIntentUnknown reads the missing field), failing 30 tests; the oracle's own 'no governedBy' limb is shown separately by the falsifier case in governing-intent-sweep.test.ts."
   },
   "syntheticSize": {
@@ -69,7 +71,8 @@
       }
     },
     "after": {
-      "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+      "commit": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+      "note": "measured at 0d1cb92e and again at eec027b7; the two outputs are equal",
       "defaultFixture": {
         "machineBytes": 31872,
         "trajectoryBytes": 28604,
@@ -119,6 +122,28 @@
       "maxHumanResponseBytes": 2097152
     },
     "after": {
+      "commit": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+      "surfaceVersion": "polaris@e44d68a61e5d",
+      "results": {
+        "direct /api/poc": {
+          "httpCode": 200,
+          "bytes": 6480955
+        },
+        "direct /trajectory": {
+          "httpCode": 200,
+          "bytes": 1210417
+        },
+        "tailnet /api/poc": {
+          "httpCode": 200,
+          "bytes": 6480955
+        },
+        "tailnet /trajectory": {
+          "httpCode": 200,
+          "bytes": 1210507
+        }
+      }
+    },
+    "afterBeforeRepair": {
       "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
       "surfaceVersion": "polaris@9935695552fd",
       "results": {
@@ -163,9 +188,9 @@
       }
     },
     "deltaBytes": {
-      "/api/poc": 2535681,
-      "/trajectory direct": 447143,
-      "/trajectory tailnet": 447143
+      "/api/poc": 2535687,
+      "/trajectory direct": 447146,
+      "/trajectory tailnet": 447146
     },
     "fractionOfCeiling": {
       "/api/poc": 0.7726,
@@ -182,7 +207,8 @@
       "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
       "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
       "packages/three-surface-poc-core/src/project-shape-model.test.ts",
-      "packages/three-surface-poc-core/src/trajectory-projection.test.ts"
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "apps/three-surface-poc/src/cdp-browser.test.ts"
     ],
     "population": 20,
     "killed": 19,
@@ -194,9 +220,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "  .narrow-label {",
         "new": "  .narrow-label {",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "survived",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 0,
         "killedBy": []
       },
@@ -206,9 +232,9 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "      governedBy: governingIntentUnknown(),\n",
         "new": "      governedBy: { ...governingIntentUnknown(), intent: raw.title.replace(/^Implement /, '') } as never,\n",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 4,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
@@ -223,10 +249,10 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "  return {\n    label: 'Unknown',\n    closedReason",
         "new": "  return {\n    label: 'Observed' as 'Unknown',\n    closedReason",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 14,
+        "testsRun": 136,
+        "testsFailed": 15,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -241,7 +267,8 @@
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item",
-          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -250,10 +277,10 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "      governedBy: governingIntentUnknown(),\n",
         "new": "",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 30,
+        "testsRun": 136,
+        "testsFailed": 32,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
           "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit",
@@ -273,7 +300,9 @@
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the Dolt revision",
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the capture instant outside a database time",
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb an observation without its own capture instant",
+          "cdp-browser.test.ts > disposable browser shutdown waits for private Chrome group members before removal and retains the profile on drain timeout",
           "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards",
           "trajectory.test.ts > Trajectory places every rendered item in the column its declared status mapping assigns (POC-REQ-040)",
           "trajectory.test.ts > Trajectory states the selection rule and reconciles rendered + excluded against the total (POC-REQ-042)",
           "trajectory.test.ts > Trajectory never renders closure/activity as verification satisfaction (POC-REQ-043)",
@@ -293,15 +322,16 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "    governedByUnknownCount: countGoverningIntentUnknown(items),",
         "new": "    governedByUnknownCount: countGoverningIntentUnknown(items) - 1,",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 4,
+        "testsRun": 136,
+        "testsFailed": 5,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
-          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -310,9 +340,9 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "(item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason",
         "new": "(item) => item.governedBy.closedReason",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 1,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it"
@@ -324,10 +354,10 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "    closedReason: 'source-uncaptured-or-unreachable',\n    resolutionRoutes:",
         "new": "    closedReason: 'missing-evidence',\n    resolutionRoutes:",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 8,
+        "testsRun": 136,
+        "testsFailed": 9,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -336,7 +366,8 @@
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection",
-          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -345,9 +376,9 @@
         "file": "packages/three-surface-poc-core/src/work-items.ts",
         "old": "    resolutionRoutes: [resolutionRoute('source-uncaptured-or-unreachable')],",
         "new": "    resolutionRoutes: [resolutionRoute('missing-evidence')],",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 3,
         "killedBy": [
           "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
@@ -361,9 +392,9 @@
         "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
         "old": "  'source-uncaptured-or-unreachable': 'Repair the observer/source; new snapshot',",
         "new": "  'source-uncaptured-or-unreachable': 'Repair the observer or source; new snapshot',",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 7,
         "killedBy": [
           "project-shape-model.test.ts > faults never shrink the population (PWB-REQ-003) combined faults keep one primary reason and deduplicated secondaries on the whole-shape claim",
@@ -381,15 +412,16 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "${count}</span> of",
         "new": "${count + 1}</span> of",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 4,
+        "testsRun": 136,
+        "testsFailed": 5,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
-          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -398,14 +430,15 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "  const inside = rendered.filter(",
         "new": "  const inside = 1 + rendered.filter(",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 3,
+        "testsRun": 136,
+        "testsFailed": 4,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection",
-          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -414,13 +447,14 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "${count - inside}</span>",
         "new": "${count}</span>",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 2,
+        "testsRun": 136,
+        "testsFailed": 3,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
-          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -429,9 +463,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
         "new": "        ${unknownRoute(unknown)}",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 3,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -445,9 +479,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
         "new": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>.",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 9,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -467,9 +501,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "        Supplying an item's warrant resolves its governing intent.\n",
         "new": "",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 3,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -483,9 +517,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "<span class=\"epistemic ${epistemicClassName(unknown.label)}\" data-parity-field=\"work-item-governed-by\"",
         "new": "<span class=\"epistemic epistemic-observed\" data-parity-field=\"work-item-governed-by\"",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 4,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -498,11 +532,11 @@
         "id": "M16",
         "limb": "a rendered item without the mark",
         "file": "apps/three-surface-poc/src/trajectory.ts",
-        "old": "    ${itemGoverningIntent(model, item.id)}\n",
+        "old": "    ${itemGoverningIntent(item.id, governedBy)}\n",
         "new": "",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 10,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
@@ -523,12 +557,13 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": ".narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }",
         "new": ".narrow-toggle:checked ~ .board .wi-card { display: none; }",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 1,
+        "testsRun": 136,
+        "testsFailed": 2,
         "killedBy": [
-          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       },
       {
@@ -537,9 +572,9 @@
         "file": "apps/three-surface-poc/src/trajectory.ts",
         "old": "  .narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }\n",
         "new": "",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
+        "testsRun": 136,
         "testsFailed": 1,
         "killedBy": [
           "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
@@ -549,17 +584,18 @@
         "id": "M19",
         "limb": "a card marked for another state (narrowed board drops it)",
         "file": "apps/three-surface-poc/src/trajectory.ts",
-        "old": "data-governed-by=\"${escapeHtml(governedBy)}\"",
+        "old": "data-governed-by=\"${escapeHtml(governedBy.label)}\"",
         "new": "data-governed-by=\"Observed\"",
-        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "ranAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
         "outcome": "killed",
-        "testsRun": 121,
-        "testsFailed": 4,
+        "testsRun": 136,
+        "testsFailed": 5,
         "killedBy": [
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the narrowed board lists exactly the 52 rendered cards",
           "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item",
-          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
         ]
       }
     ]
