@@ -32,46 +32,51 @@ const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => va
 
 export type SessionStatementRecheck = { readonly ok: true; readonly statement: SessionStatementOfRecord | null } | { readonly ok: false; readonly why: string };
 
-/** Re-check the statement the session `noun` (for example "inventory session 2") was handed over under, from its prompt record, at `now`. */
+/** Re-check the statement the session `noun` (for example "inventory session 2") was handed over under, from its prompt record, at `now`.
+ * `consequence` is what a refusal says follows, for a caller that is not counting work (delivery: "no packet is delivered"); every
+ * refusal kind names it, so the caller never rewrites the text. Left out, the counting texts are returned as they always were. */
 export async function recheckSessionStatement(
-  run: string, noun: string, prompt: Readonly<Record<string, unknown>>, sources: GateSources, now: number,
+  run: string, noun: string, prompt: Readonly<Record<string, unknown>>, sources: GateSources, now: number, consequence?: string,
 ): Promise<SessionStatementRecheck> {
+  const result = consequence ?? 'its work does not count';
   const no = (why: string): SessionStatementRecheck => ({ ok: false, why });
+  // A refusal whose counting text names no consequence gains one only when the caller asked for its own.
+  const noThen = (why: string): SessionStatementRecheck => no(consequence === undefined ? why : `${why}, so ${consequence}`);
   let text: string;
-  try { text = fs.readFileSync(path.join(run, RUN_LAYOUT.config), 'utf8'); } catch { return no(`the run record cannot be read, so the statement ${noun} was handed over under cannot be checked again`); }
+  try { text = fs.readFileSync(path.join(run, RUN_LAYOUT.config), 'utf8'); } catch { return noThen(`the run record cannot be read, so the statement ${noun} was handed over under cannot be checked again`); }
   const read = readRunRecord(text);
-  if (!read.ok) return no(`the run record cannot be read (${read.detail}), so the statement ${noun} was handed over under cannot be checked again`);
+  if (!read.ok) return noThen(`the run record cannot be read (${read.detail}), so the statement ${noun} was handed over under cannot be checked again`);
   const { subject, declared } = read.record;
   if (subject.providerStatement === null) return { ok: true, statement: null };
 
   const context = isObj(prompt['context']) ? prompt['context'] : {};
   const tool = context['agentTool'];
-  if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return no(`the prompt record of ${noun} names no agent tool, so the statement it was handed over under cannot be checked again`);
+  if (typeof tool !== 'string' || !(AGENT_TOOLS as readonly string[]).includes(tool)) return noThen(`the prompt record of ${noun} names no agent tool, so the statement it was handed over under cannot be checked again`);
   const provider = declared.agentProvider;
   let cited: string | null = null;
   if ('providerStatement' in context) {
     const citation = context['providerStatement'];
-    if (!isObj(citation) || typeof citation['record'] !== 'string') return no(`the prompt record of ${noun} cites no per-project statement, but the run relies on one`);
+    if (!isObj(citation) || typeof citation['record'] !== 'string') return noThen(`the prompt record of ${noun} cites no per-project statement, but the run relies on one`);
     if (citation['agentTool'] !== tool || citation['provider'] !== provider) {
-      return no(`the prompt record of ${noun} cites the statement ${citation['record']} for another pair than its agent tool ${tool} with the run's provider ${provider}`);
+      return noThen(`the prompt record of ${noun} cites the statement ${citation['record']} for another pair than its agent tool ${tool} with the run's provider ${provider}`);
     }
     cited = citation['record'];
   }
   const records = await sources.providerStatements.statementsFor(subject.repository.repositoryId);
   const gate = providerStatementGate(records, tool, provider, now);
   const named = cited ?? 'the statement it was handed over under (its prompt record cites none)';
-  if (gate.state !== 'ok') return no(`the per-project statement ${named} that ${noun} was handed over under no longer governs its agent tool ${tool} with the provider ${provider}, so its work does not count: ${gate.why}`);
-  if (cited !== null && gate.record !== cited) return no(`the per-project statement ${cited} that ${noun} was handed over under is no longer the one that governs its agent tool ${tool} with the provider ${provider} (${gate.record} does), so its work does not count`);
+  if (gate.state !== 'ok') return no(`the per-project statement ${named} that ${noun} was handed over under no longer governs its agent tool ${tool} with the provider ${provider}, so ${result}: ${gate.why}`);
+  if (cited !== null && gate.record !== cited) return no(`the per-project statement ${cited} that ${noun} was handed over under is no longer the one that governs its agent tool ${tool} with the provider ${provider} (${gate.record} does), so ${result}`);
   // syzygy-iw7n: with no single in-force statement for the run's declared pair there are no classes to compare against, and an empty
   // list would pass the subset check vacuously; refuse instead. Callers that do not re-open the run first (the supervisor's
   // `inventoryOfRecord`) rely on this.
   const runClasses = statementContentClasses(records, declared.agentTool, provider, now);
   if (runClasses === null) {
     const own = providerStatementGate(records, declared.agentTool, provider, now);
-    return no(`the run's own per-project statement ${subject.providerStatement} no longer governs its declared agent tool ${declared.agentTool} with the provider ${provider}, so the classes ${noun}'s work may carry cannot be checked and its work does not count${own.state === 'ok' ? '' : `: ${own.why}`}`);
+    return no(`the run's own per-project statement ${subject.providerStatement} no longer governs its declared agent tool ${declared.agentTool} with the provider ${provider}, so the classes ${noun}'s work may carry cannot be checked and ${result}${own.state === 'ok' ? '' : `: ${own.why}`}`);
   }
   const consented = statementContentClasses(records, tool, provider, now) ?? [];
   const beyond = runClasses.filter((contentClass) => !consented.includes(contentClass));
-  if (beyond.length > 0) return no(`the per-project statement ${gate.record} that governs ${noun}'s agent tool ${tool} with the provider ${provider} no longer lists ${beyond.join(', ')}, which the run's statement lets its packets carry, so its work does not count`);
+  if (beyond.length > 0) return no(`the per-project statement ${gate.record} that governs ${noun}'s agent tool ${tool} with the provider ${provider} no longer lists ${beyond.join(', ')}, which the run's statement lets its packets carry, so ${result}`);
   return { ok: true, statement: { record: gate.record, cited, label: 'Inferred' } };
 }

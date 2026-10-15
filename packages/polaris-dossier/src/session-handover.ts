@@ -488,8 +488,8 @@ async function deliverReview(
   if ('refusal' in admitted) return refuse('statement', admitted.refusal.replace('so no session is handed over', 'so no packet is delivered'));
   // syzygy-basu: the statement admitting the pair now must also be the one the waiting session was started under, or its verdict would
   // be refused when counted; refuse the delivery instead of spending the session's round.
-  const cited = await recheckSessionStatement(run, `waiting ${kind} session ${waiting.session}`, waiting.record, deps.sources, now);
-  if (!cited.ok) return refuse('statement', cited.why.replace('so its work does not count', 'so no packet is delivered'));
+  const cited = await recheckSessionStatement(run, `waiting ${kind} session ${waiting.session}`, waiting.record, deps.sources, now, 'no packet is delivered');
+  if (!cited.ok) return refuse('statement', cited.why);
   let built: { readonly bytes: string; readonly sha256: string }, packet: Readonly<Record<string, unknown>>;
   if (kind === 'design') {
     const design = buildStoredDesignPacket(opened);

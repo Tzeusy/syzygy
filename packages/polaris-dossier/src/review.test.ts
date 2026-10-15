@@ -17,6 +17,8 @@ import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { buildDossierScreen, type ScreenLoad } from './screen.js';
 import { launchForm, sessionPrompt } from './session-handover.js';
+import { recheckSessionStatement } from './session-statement.js';
+import { RUN_LAYOUT } from './state-directory.js';
 
 // syzygy-qkea.9 (S8): review packets and review-check (REQ-polaris-generation-035, 006). The clone is a real Git repository built
 // here with the git CLI; the code under test runs no process. The expected packet is assembled here from the fixture files, the
@@ -771,6 +773,40 @@ describe('session-prompt --tool and the session pair\'s statement', () => {
     expect(await inventoryOfRecord(run, counting())).toMatchObject({ counts: true });
     world = { screen: SCREEN, classes: RUN_CLASSES, others: [codex(RUN_CLASSES)], ownWithdrawn: true };
     expect(await inventoryOfRecord(run, counting())).toEqual({ counts: false, why: `the run's own per-project statement ${STATEMENT_ID}@1 no longer governs its declared agent tool claude-code with the provider anthropic, so the classes inventory session 1's work may carry cannot be checked and its work does not count: no per-project statement naming the agent tool claude-code with the provider anthropic is in force: ${STATEMENT_ID}@1 is withdrawn` });
+  });
+
+  // syzygy-e9da: delivery asks for its own consequence, so every refusal kind ends "no packet is delivered" and none says "its work
+  // does not count" (mutant: a caller rewriting one phrase with .replace leaves the kinds that never carried it untouched).
+  it('names the caller\'s consequence in every refusal kind, and leaves the counting texts as they were without one', async () => {
+    codexWorld(codex(RUN_CLASSES));
+    const run = await prepared('codex');
+    const file = path.join(run, 'inventory', 'session-1.json');
+    const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const recheck = async (context: unknown, consequence?: string) => {
+      fs.writeFileSync(file, JSON.stringify({ ...record, context }));
+      const prompt = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const result = await recheckSessionStatement(run, 'inventory session 1', prompt, sources(), LATER, consequence);
+      if (result.ok) throw new Error('expected a refusal');
+      return result.why;
+    };
+    const DELIVERED = 'no packet is delivered';
+    const kinds: [string, () => Promise<string>][] = [
+      ['no agent tool', () => recheck({ ...record.context, agentTool: 'no-such-tool' }, DELIVERED)],
+      ['cites none', () => recheck({ ...record.context, providerStatement: null }, DELIVERED)],
+      ['another pair', () => recheck({ ...record.context, providerStatement: { ...CITATION, agentTool: 'claude-code' } }, DELIVERED)],
+      ['withdrawn', async () => { codexWorld(codex(RUN_CLASSES, { withdrawn: true })); return recheck(record.context, DELIVERED); }],
+      ['successor', async () => { codexWorld(codex(RUN_CLASSES, { version: '4' })); return recheck(record.context, DELIVERED); }],
+      ['narrowed classes', async () => { codexWorld(codex(['code-content'])); return recheck(record.context, DELIVERED); }],
+      ['own statement withdrawn', async () => { world = { screen: SCREEN, classes: RUN_CLASSES, others: [codex(RUN_CLASSES)], ownWithdrawn: true }; return recheck(record.context, DELIVERED); }],
+      ['run record unreadable', async () => { codexWorld(codex(RUN_CLASSES)); const config = path.join(run, RUN_LAYOUT.config); const kept = fs.readFileSync(config); fs.writeFileSync(config, 'not json'); try { return await recheck(record.context, DELIVERED); } finally { fs.writeFileSync(config, kept); } }],
+    ];
+    for (const [name, refused] of kinds) {
+      const why = await refused();
+      expect(why, name).toMatch(/, so no packet is delivered(:|$)|and no packet is delivered(:|$)/);
+      expect(why, name).not.toContain('its work does not count');
+    }
+    codexWorld(codex(RUN_CLASSES));
+    expect(await recheck({ ...record.context, providerStatement: null })).toBe('the prompt record of inventory session 1 cites no per-project statement, but the run relies on one');
   });
 });
 
