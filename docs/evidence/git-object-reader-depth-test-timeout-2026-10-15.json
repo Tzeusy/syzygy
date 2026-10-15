@@ -3,6 +3,12 @@
   "measuredOn": "packages/polaris-dossier/src/git-object-reader.test.ts, describe 'paths are at most git's core.maxTreeDepth (4,096) segments deep'",
   "commit": "6c09278fe09166d0ebe93e8d900a88f1ad40c25d",
   "commitNote": "base commit; the only change is the two timeout literals 30_000 -> 240_000 (uncommitted at measurement time)",
+  "subject": {
+    "commit": "62a96f4d",
+    "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+    "sha256": "43ea7f9d526ddcdd59ccc0c2e8f4b9e9d724052cb363259990101b004f00a378",
+    "note": "post-merge subject (PR 440): the measured file with the two 240_000 timeout literals committed; sha256 computed by script over `git show 62a96f4d:<path>`"
+  },
   "host": { "cores": 12, "loadGenerator": "70 busy shell loops, 600 s" },
   "idle": { "load1": 5.93, "ms": { "4096-segment test": 1886, "4097-segment test": 1203 } },
   "loadedBefore30sTimeout": [
