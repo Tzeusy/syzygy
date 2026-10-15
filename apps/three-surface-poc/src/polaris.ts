@@ -74,6 +74,7 @@ import {
   type PolarisViewState,
 } from './polaris-narrative.js';
 import { catalogReconciliation, renderCatalogReconciliation, RECONCILIATION_PLACEHOLDER, substituteCatalogReconciliation } from './polaris-reconciliation.js';
+import { OPENING_INDEX_PLACEHOLDER, OPENING_INDEX_STYLE, substituteOpeningIndex } from './polaris-opening-index.js';
 import { sourceRouteHref, sourceSlug } from './polaris-source.js';
 import { crossSurfaceLink } from './surface-links.js';
 import { actionRouteLink, unknownRoute, unknownSubject } from './unknown-marker.js';
@@ -405,7 +406,10 @@ function claimStatesBlock(model: PocModel): string {
       const marker = entry.unreachable === undefined || used(entry) ? '' : ` ${entry.unreachable}`;
       return `<li class="${entry.className}"${copyAttr(entry.description)}>${escapeHtml(copyText(entry.description) + marker)}</li>`;
     }).join('')}</ul>`;
-  return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
+  // The legend's heading stands outside the disclosure, so the opening
+  // index's claim-strength row (PWB-REQ-010, P-98) routes to a heading a
+  // keyboard reader can continue from.
+  return `<div class="claim-states-legend">${heading(3, 'polaris-claim-states-heading', 'states.heading')}<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
     <summary${copyAttr('label.claim-states')}>${copy('label.claim-states')} — definitions</summary>
     <p class="lede" id="polaris-claim-states-lede"${copyAttr('states.lede')}>${copy('states.lede')}</p>
     ${sentence('states.observed')}
@@ -416,7 +420,7 @@ function claimStatesBlock(model: PocModel): string {
     ${group('states.challenge', CHALLENGE_ENCODING)}
     ${proposalLegend(model)}
     ${sentence('states.strengthen')}
-  </details>`;
+  </details></div>`;
 }
 
 /** The proposal disclosure's glossary row, generated from its declaration
@@ -1500,7 +1504,7 @@ const SECTION_NAV_SCRIPT = `<script>
 })();
 </script>`;
 
-const POLARIS_STYLE = `
+const POLARIS_STYLE = `${OPENING_INDEX_STYLE}
   html { scroll-behavior: auto; }
   .band { max-width: 74ch; margin: 0 auto 2rem; padding: 0.5rem 0 0; border-left: 3px solid var(--line); padding-left: 1rem; }
   .band[data-band="argument"] { border-left-style: dotted; }
@@ -1841,6 +1845,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     .join('');
 
   const body = `
+    ${OPENING_INDEX_PLACEHOLDER}
     ${groupHeader('overview')}
     ${tupleGloss(firstTupleClaim(shape))}
     ${projectGroupBody(shape, 'overview')}
@@ -1889,8 +1894,11 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
   });
   // The marker count is a fact about the final HTML, so the reconciliation
   // line is substituted last (M14 slice 4).
-  return substituteCatalogReconciliation(page, (markers) => renderCatalogReconciliation(catalogReconciliation(shape, markers, (claim) => {
+  const reconciled = substituteCatalogReconciliation(page, (markers) => renderCatalogReconciliation(catalogReconciliation(shape, markers, (claim) => {
     const reason = 'reasons' in claim.epistemic ? claim.epistemic.reasons.primary : 'deferred';
     return { reason, route: routeOf(claim, reason) };
   })));
+  // Whether each opening-index target renders is also a fact about the final
+  // HTML (PWB-REQ-010, P-98), so the index is substituted after it.
+  return substituteOpeningIndex(reconciled, mountPrefix);
 }

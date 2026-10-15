@@ -61,9 +61,15 @@ afterAll(shared.remove);
 
 interface Unit { readonly tag: string; readonly attrs: string; readonly inner: string }
 
-/** Every element carrying a copy role or a claim role, with its inner HTML. */
+/** The opening index (PWB-REQ-010 as amended, P-98) precedes the narrative
+ * tree and is not one of its units: its strings carry a copy role and no
+ * claim role. Exactly one per page. */
+const OPENING_INDEX = /<nav\b[^>]*\sdata-polaris-opening-index[^>]*>[\s\S]*?<\/nav>/g;
+
+/** Every element carrying a copy role or a claim role, with its inner HTML,
+ * outside the opening index. */
 function narrativeUnits(html: string): Unit[] {
-  const body = html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '');
+  const body = html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '').replace(OPENING_INDEX, '');
   const tokens = [...body.matchAll(/<\/([A-Za-z][\w-]*)\s*>|<([A-Za-z][\w-]*)([^>]*)>/g)];
   const VOID = new Set(['br', 'hr', 'img', 'input', 'meta', 'link']);
   const units: Unit[] = [];
@@ -140,6 +146,9 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
     let anchored = 0;
     for (const variant of VARIANTS) {
       const html = renderPolarisPage(shared.get(variant));
+      const index = html.match(OPENING_INDEX) ?? [];
+      expect(index, `${variant}: one opening index`).toHaveLength(1);
+      expect(index[0], `${variant}: the opening index carries no claim role`).not.toMatch(/data-claim-role=|data-presentation-artifact|data-non-citable|data-narrative-block/);
       const units = narrativeUnits(html);
       expect(units.length).toBeGreaterThan(40);
       for (const unit of units) {

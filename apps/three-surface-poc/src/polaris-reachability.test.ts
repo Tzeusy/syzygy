@@ -218,7 +218,9 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       const html = renderPolarisPage(modelFor(variant));
       const headings = [...html.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/g)]
         .map(match => ({ level: Number(match[1]), text: (match[2] as string).replace(/<[^>]+>/g, '').trim() }));
-      if (variant === 'observed') expect(headings).toHaveLength(65);
+      // 65, plus the claim-state legend's heading (the opening index's
+      // claim-strength target; PWB-REQ-010 as amended, P-98).
+      if (variant === 'observed') expect(headings).toHaveLength(66);
       expect(headings.length, variant).toBeGreaterThan(20);
       for (let index = 1; index < headings.length; index += 1) {
         expect(headings[index]!.level, `${variant}: ${headings[index - 1]!.text} → ${headings[index]!.text}`)
