@@ -551,10 +551,6 @@ export interface DigestBoundActForm {
   /** For an artifact that binds other files' bytes in turn (an in-force record): the files its one `| File | SHA-256 |` table must
    * list, exactly and in order. The act then counts only while each listed file still hashes to its row. */
   readonly bound?: readonly string[];
-  /** Lines the sweep reads past: in the decisions file `file`, one line whose bytes (without its newline) hash to `sha256`, such as a
-   * register row that cites the act by name before it exists. Every other line of that file, a second copy of the same line included,
-   * is swept as any other; an edited line no longer matches and is swept too. */
-  readonly citedRows?: readonly CitedRow[];
   /** Decisions files the sweep reads past while each is exactly what its template renders: a successor or predecessor act over another
    * version of the same record, which must name this act's record or artifact (a supersession). Any other bytes in that file, an
    * edited copy included, are swept as any other file. */
@@ -563,11 +559,8 @@ export interface DigestBoundActForm {
    * record, byte for byte. The template fixes every literal line, the scope included. */
   readonly template?: RecorderTemplate;
 }
-export interface CitedRow { readonly file: string; readonly sha256: string }
 export interface ExemptRecord { readonly file: string; readonly template: RecorderTemplate }
 
-/** The P-104 row of `PENDING-OWNER-DECISIONS.md` as it stands before the local-agent sitting: it names the registry sign-off's tag. */
-const P104_ROW_SHA256 = '05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb';
 export type DigestBoundAct = { readonly act: ParsedAct; readonly artifactDigest: string; readonly artifactText: string };
 
 /** The public Git-hosting source-acquisition registry entry act (scripts/record_public_admission_registry_entries_acts.py, key
@@ -596,17 +589,10 @@ function namesDigestBoundAct(form: { readonly stems: readonly string[]; readonly
   });
 }
 
-/** `text` with, for each pinned digest, the first line whose bytes hash to it blanked; every other line kept. */
-function withoutCitedRows(text: string, pins: readonly string[]): string {
-  if (pins.length === 0) return text;
-  const lines = text.split('\n'), left = [...pins];
-  return lines.map(line => { const i = left.indexOf(sha256(line)); if (i < 0) return line; left.splice(i, 1); return ''; }).join('\n');
-}
-
 /** The one record a form names, after the withdrawal sweep over every other decisions file: its text, null when absent, or why the
  * sweep refuses and the file that named the act. */
 type FoundRecord = { readonly text: string | null } | { readonly why: string; readonly namedBy: string };
-async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly fieldStems?: readonly string[]; readonly citedRows?: readonly CitedRow[]; readonly exemptRecords?: readonly ExemptRecord[] }, artifact: string): Promise<FoundRecord> {
+async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly file: string; readonly stems: readonly string[]; readonly fieldStems?: readonly string[]; readonly exemptRecords?: readonly ExemptRecord[] }, artifact: string): Promise<FoundRecord> {
   const files = await walk(fs, path.join(root, DECISIONS_DIR)), swept = sweepText(fs, root);
   let found: string | null = null;
   for (const rel of files) {
@@ -614,8 +600,7 @@ async function findActRecord(fs: PackageReaderFs, root: string, form: { readonly
     try { text = await fs.readFile(path.join(root, DECISIONS_DIR, rel)); } catch { return refuse(); }
     if (rel === form.file) { found = text; continue; }
     if ((form.exemptRecords ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;
-    const read = withoutCitedRows(text, (form.citedRows ?? []).filter(row => row.file === rel).map(row => row.sha256));
-    if (namesDigestBoundAct(form, artifact, rel, await swept(rel, read))) {
+    if (namesDigestBoundAct(form, artifact, rel, await swept(rel, text))) {
       return { why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define`, namedBy: `${DECISIONS_DIR}/${rel}` };
     }
   }
@@ -696,8 +681,6 @@ export interface VersionedSignoffForm {
   readonly installed: string;
   /** As `DigestBoundActForm.stems`; the installed entry's path is swept too. */
   readonly stems: readonly string[];
-  /** As `DigestBoundActForm.citedRows`. */
-  readonly citedRows?: readonly CitedRow[];
   /** The record as the recorder renders it (`render_record` with `installed_lines`) for this package, version and installed entry,
    * slots `date`, `quote`, `review`, `commit`, `verdict`, `disposition`, `instant` and `sha`. */
   readonly template: RecorderTemplate;
@@ -785,9 +768,8 @@ stands.
  * later version must change this form in the same commit (R-POLARIS-DOSSIER-GATE-SOURCES-2 note 6).
  *
  * The sweep reads the package key (and so the tag, the act's identity, the record's file name and the installed entry's basename), the
- * record's title and the installed entry's path. The one place these are cited before the sign-off exists, the P-104 row of the pending-decisions
- * register, is read past only while that line's bytes hash to the pinned digest, and only one such line; the commit that edits or
- * moves the row re-pins it here, and until then the gate refuses. */
+ * record's title and the installed entry's path. No decisions file is read past: a line that cites the sign-off before the record exists
+ * refuses the gate. */
 export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = (() => {
   const entry = {
     title: 'Public Git source acquisition, local-agent version', packageKey: 'public-git-source-acquisition-local-agent', version: '1.0',
@@ -801,7 +783,6 @@ export const LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM: VersionedSignoffForm = (() => 
     installed: entry.installed,
     // The bare package key carries the tag, both sign-off spellings, the record's file name and the installed entry's basename.
     stems: Object.freeze([entry.packageKey, `${entry.title.toLowerCase()} — version-tagged sign-off`]),
-    citedRows: Object.freeze([Object.freeze({ file: 'PENDING-OWNER-DECISIONS.md', sha256: P104_ROW_SHA256 })]),
     template: registrySignoffTemplate(entry),
   });
 })();
