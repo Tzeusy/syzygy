@@ -60,7 +60,14 @@ validates, in this order, and writes nothing until every step passes:
    only when each comma-separated clause is one of `QUALIFIER_CLAUSES`
    ("for the owner", "for the owner's view", "reported for the owner", "not
    resolved", "editorial"), and any other wording refuses as ambiguous; and `--disposition <record>` names the raw on a
-   `Reviewed record:` line and numbers exactly the raw's findings;
+   `Reviewed record:` line and numbers exactly the raw's findings. For either
+   verdict the `## Findings` section is read and fails closed: a line that
+   opens a finding in any other form (a heading, a bullet, an `F<n>` label),
+   or a blocking or revise severity written as a tag (first in parentheses or
+   brackets, or after `Severity:`) that the classifier did not consume,
+   refuses; a bare `CONFIRM` over a blocking or revise finding refuses as
+   self-contradictory. The package key or alias binds only as a whole token
+   on a line outside any fenced block, never as part of a longer name;
 5. the candidate package directory, and any further directory the package
    declares (a specification change under `openspec/changes/`), at the
    working tree equals the package at the commit the review read (sibling
@@ -113,6 +120,20 @@ VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 SEVERITY_RE = re.compile(
     r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?![A-Za-z])([^)\n]*)\)",
     re.MULTILINE)
+#: A line that opens a finding in any markup: optional heading, bullet, ordered
+#: or quote prefixes and emphasis, then `Finding <n>` or a short `F<n>` label,
+#: then a title separator (a dash, colon, full stop or opening bracket) or the
+#: line end, so a wrapped prose line that merely begins "F20 row was" or
+#: "Finding 2)." is not an opener. What ``SEVERITY_RE`` consumed is blanked
+#: before this is tried.
+FINDING_OPENER_RE = re.compile(
+    r"^[ \t]{0,3}(?:(?:#{1,6}|[-*+]|\d+[.)])[ \t]+|>[ \t]*)*[*_`\[]*[ \t]*"
+    r"(?:Finding[ \t]+#?\d+|F\d+)[*_`\]]*[ \t]*(?:[—–\-:.(\[]|$)", re.IGNORECASE)
+#: A blocking or revise severity written as a tag: first in parentheses or
+#: brackets, or after a `Severity:` label. A bare word in prose is not a tag.
+SEVERITY_TAG_RE = re.compile(
+    r"(?:[(\[][ \t]*|severity[ \t]*[:=][ \t]*)[*_`]*[ \t]*(?:blocking|revise)(?![A-Za-z])",
+    re.IGNORECASE)
 #: The only clauses a `note` qualifier may carry; anything else, a stronger
 #: severity in any spelling included, makes the finding ambiguous.
 QUALIFIER_CLAUSES = ("for the owner", "for the owner's view", "reported for the owner",
@@ -753,6 +774,24 @@ def qualifier_allowed(qualifier: str) -> bool:
     return all(c in QUALIFIER_CLAUSES for c in clauses)
 
 
+def unconsumed_finding_marks(section: str) -> list[str]:
+    """Lines of a fence-stripped findings section that open a finding, or tag
+    a blocking or revise severity, in a form ``SEVERITY_RE`` did not consume.
+
+    The classifier reads one form, `**Finding N — title** (severity)` at a
+    line start; a finding written any other way (an ATX heading, a list
+    bullet, a short `F<n>` label) was silently uncounted, so a blocking
+    finding in such a form read as no finding at all (R-364-2 F5). Each
+    classified span is blanked first, so what remains is exactly what the
+    classifier left. Cross-references inside prose ("round-2 Finding 1") are
+    not openers and stay readable; a severity is refused only as a tag, in
+    parentheses or brackets or after `Severity:`, never as a bare word, since
+    retained raws say "No finding is blocking or revise" in their prose."""
+    left = SEVERITY_RE.sub(lambda m: " " * len(m.group(0)), section)
+    return [line.strip() for line in left.splitlines()
+            if FINDING_OPENER_RE.match(line) or SEVERITY_TAG_RE.search(line)]
+
+
 def review_findings(review: str) -> dict[int, str]:
     section = beh._raw_findings_section(review, FINDINGS_HEADING)
     numbers = beh._finding_number_set(
@@ -767,6 +806,11 @@ def review_findings(review: str) -> dict[int, str]:
     if unclassified:
         raise ValueError(f"review findings {unclassified} carry no "
                          "(blocking|revise|note) severity")
+    unread = unconsumed_finding_marks(section)
+    if unread:
+        raise ValueError(f"review findings section carries a finding or a blocking/revise "
+                         f"severity in a form the classifier does not read: {unread[:3]}; "
+                         "only `**Finding N — title** (severity)` at a line start counts")
     return {n: severities[n] for n in numbers}
 
 
@@ -806,13 +850,33 @@ def validate_review(root: pathlib.Path, review_rel: str, disposition_rel: str | 
             raise ValueError(f"review carries non-note findings {bad}; "
                              "only a notes-only round clears the bytes")
         validate_disposition(root, review_rel, disposition_rel, findings)
+    else:
+        # A bare CONFIRM's findings are read too (R-364-2 F5): a raw whose
+        # verdict line says CONFIRM over a blocking or revise finding is
+        # contradictory, and contradiction refuses rather than trusting the head.
+        bad = {n: s for n, s in review_findings(review).items() if s != "note"}
+        if bad:
+            raise ValueError(f"CONFIRM review carries non-note findings {bad}; "
+                             "the verdict contradicts its own findings")
     return commit, verdict
+
+
+def names_token(review: str, name: str) -> bool:
+    """True when ``name`` stands as a whole token on a line outside any fenced
+    code block (R-364-2 F4: a substring test let `<key>-v2`, or the key quoted
+    only inside a fence, satisfy the naming guard). A token is bounded by
+    anything but a letter, digit, `_` or `-`; a `.` ends it only when no word
+    character follows, so `<key>.` closes a sentence but `<key>.v2` is another
+    name."""
+    token = re.compile(r"(?<![\w.-])" + re.escape(name) + r"(?![\w-]|\.\w)")
+    return bool(token.search(beh._strip_fenced_code(review)))
 
 
 def review_binds(root: pathlib.Path, pkg: Package, review_rel: str) -> None:
     """The raw names this package and, when one is declared, its subject digest."""
     review = (root / review_rel).read_text(encoding="utf-8")
-    if pkg.key not in review and not (pkg.review_alias and pkg.review_alias in review):
+    if not names_token(review, pkg.key) and not (
+            pkg.review_alias and names_token(review, pkg.review_alias)):
         raise ValueError(f"review raw does not name the package `{pkg.key}`"
                          + (f" or `{pkg.review_alias}`" if pkg.review_alias else ""))
     commit, _verdict, head_digest, form = parse_head_form(review, pkg.head_label)
@@ -1801,6 +1865,36 @@ def selftest() -> int:
             review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS", "No findings.\n"),
             disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
             expect="no countable finding")
+    # R-364-2 F5: a finding in a form the classifier does not read, or a
+    # blocking/revise tag it did not consume, refuses; so does a bare CONFIRM
+    # over its own blocking finding. Each base below records once the
+    # offending line is gone (the notes-only fixture above).
+    one_note = "**Finding 1 — first** (note) evidence\n\n"
+    for form in ("### Finding 2 - x (blocking)", "- **Finding 2 - x** (blocking)",
+                 "**F2 - x** (blocking)", "### F2 — x", "1) Finding 2: x",
+                 "Finding 2 reads as a note. [revise]", "Severity: blocking"):
+        refused(f"an unread finding form {form!r}",
+                review=lambda c, f=form: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                                     one_note + f + "\n"),
+                disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+                expect="form the classifier does not read")
+    refused("a bare CONFIRM over its own blocking finding",
+            review=lambda c: stub_review(c, "CONFIRM", "**Finding 1 — first** (blocking) evidence\n"),
+            expect="contradicts its own findings")
+    refused("a bare CONFIRM over a blocking finding in an unread form",
+            review=lambda c: stub_review(c, "CONFIRM", "### F1 — first (revise)\n"),
+            expect="form the classifier does not read")
+    refused("a bare CONFIRM with no findings section",
+            review=lambda c: stub_review(c).replace("## Findings", "## Notes"),
+            expect="missing its configured raw findings heading")
+    with tempfile.TemporaryDirectory() as t:
+        prose = ("No finding is blocking or revise; it is not revise-level. Round-2 Finding 1\n"
+                 "Finding 2) is cited, and F20 row was read. Not blocking.\n")
+        tmp, commit = make_fixture(pathlib.Path(t), lambda c: stub_review(
+            c, "CONFIRM WITH EXCEPTIONS", NOTES + "\n" + prose), stub_disposition())
+        code, _ = run_record(tmp, disposition_rel=STUB_DISPOSITION)
+        results.append(("prose naming severities and cross-referencing findings is not a "
+                        "finding form", code == 0))
     cwe = lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS", NOTES)  # noqa: E731
     refused("CONFIRM WITH EXCEPTIONS without --disposition", review=cwe, expect="needs --disposition")
     refused("CONFIRM WITH EXCEPTIONS with a missing disposition file", review=cwe,
@@ -1853,6 +1947,24 @@ def selftest() -> int:
     refused("a raw naming neither the package nor its declared alias",
             review=lambda c: stub_review(c).replace("stub-package", "build_other.py"),
             package=aliased, expect="or `build_stub.py`")
+    # R-364-2 F4: the key and the alias bind only as whole tokens outside a fence.
+    for name, swap in (("only a longer name `<key>-v2`", "stub-package-v2"),
+                       ("only a dotted extension `<key>.v2`", "stub-package.v2"),
+                       ("only a prefixed name", "old-stub-package"),
+                       ("the key only inside a fence", None)):
+        refused(f"a raw naming {name}",
+                review=lambda c, s=swap: (
+                    stub_review(c).replace("stub-package", s) if s else
+                    stub_review(c).replace("stub-package", "R") + "\n```\nstub-package\n```\n"),
+                expect="does not name the package")
+    refused("a raw naming the alias only as a longer name",
+            review=lambda c: stub_review(c).replace("stub-package", "build_stub.py_old"),
+            package=aliased, expect="or `build_stub.py`")
+    with tempfile.TemporaryDirectory() as t:
+        tmp, commit = make_fixture(pathlib.Path(t), lambda c: stub_review(c).replace(
+            "stub-package", "candidates/stub-package/, the package."))
+        code, _ = run_record(tmp)
+        results.append(("a raw naming the key as a path segment records", code == 0))
     refused("the reviewed subject missing",
             mutate=lambda tmp, commit: (tmp / STUB_ALSO / "spec.md").unlink(),
             expect="reviewed subject " + (STUB_ALSO / "spec.md").as_posix() + " is missing")
