@@ -398,6 +398,11 @@ CAMPAIGNS = (
         "Screening scope version 4",
         r"R-OLMR-SCREENING-SCOPE-V4-.*\.md",
     ),
+    campaign(
+        "signed-amendment-implementation-chain",
+        "Signed-amendment implementation chain",
+        r"R-IMPL-(?:P97|P100|P86|P96|TREE-FRAMING)-.*\.md",
+    ),
 )
 
 
