@@ -599,5 +599,68 @@
         ]
       }
     ]
+  },
+  "liveSizeAdmitted": {
+    "measuredOn": "a private POC daemon (--port 0, scratch --state-dir) served from each commit's clean committed tree against the registered locator, Butlers revision 36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e, after the coordinator restored the recording tag pwb-approve-policy-public-source-scope-v3-signed-2026-10-08 (annotated, on d3a9b753); the PWB-REQ-005 gate evaluated over the governance tree returns admits=true, authorizationMode owner-trusted-bootstrap",
+    "method": "curl -s -o /dev/null -w '%{http_code} %{size_download}', direct and with Host: tzeusy.parrot-hen.ts.net; no response body was printed, saved or inspected",
+    "evaluationIdentity": "pwb-eval-5db7b3cd512bd68a19962f63 (both runs)",
+    "after": {
+      "commit": "0ba7200067769a5307e609cef309c63296e003e6",
+      "surfaceVersion": "polaris@957542378841",
+      "results": {
+        "direct /api/poc": {
+          "httpCode": 200,
+          "bytes": 7927433
+        },
+        "direct /trajectory": {
+          "httpCode": 200,
+          "bytes": 1251061
+        },
+        "tailnet /api/poc": {
+          "httpCode": 200,
+          "bytes": 7927433
+        },
+        "tailnet /trajectory": {
+          "httpCode": 200,
+          "bytes": 1251151
+        }
+      }
+    },
+    "before": {
+      "commit": "c034a78f4500dc611b783f6efab598f86e2185c5",
+      "note": "origin/main the P-100 branch is rebased on",
+      "surfaceVersion": "polaris@639c9aac1797",
+      "results": {
+        "direct /api/poc": {
+          "httpCode": 200,
+          "bytes": 5373395
+        },
+        "direct /trajectory": {
+          "httpCode": 200,
+          "bytes": 789346
+        },
+        "tailnet /api/poc": {
+          "httpCode": 200,
+          "bytes": 5373395
+        },
+        "tailnet /trajectory": {
+          "httpCode": 200,
+          "bytes": 789436
+        }
+      }
+    },
+    "deltaBytes": {
+      "/api/poc": 2554038,
+      "/trajectory tailnet": 461715
+    },
+    "fractionOfCeiling": {
+      "/api/poc": 0.945,
+      "/trajectory tailnet": 0.5966
+    },
+    "headroomBytes": {
+      "/api/poc": 461175,
+      "/trajectory tailnet": 846001
+    },
+    "mergeCriterion": "coordinator: merge if admitted /api/poc stays under 95% of 8 MB and no 503 — met (0.945, all 200); headroom is tracked as a follow-up bead"
   }
 }
