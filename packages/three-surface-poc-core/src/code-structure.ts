@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
+import type { PocProvenance } from './model.js';
+
 export const CODE_LANGUAGE_CLASSIFICATIONS = [
   'typescript',
   'javascript',
@@ -54,12 +56,17 @@ export interface CodeStructureFileEntry {
   readonly sizeBytes: number;
   readonly digest: string;
   readonly language: CodeLanguageClassification;
-  readonly revision: string;
 }
 
+/**
+ * POC-REQ-001 "One statement of provenance": the observation names its
+ * revision once, in the shared `PocProvenance` shape the entities and
+ * relationships carry, and no entry restates it. `capturedAt` is the second
+ * half of the observation's identity, not a second statement of provenance.
+ */
 export interface CodeStructureObserved {
   readonly kind: 'observed';
-  readonly revision: string;
+  readonly provenance: PocProvenance;
   readonly capturedAt: string;
   readonly files: readonly CodeStructureFileEntry[];
 }
@@ -75,6 +82,8 @@ export interface ObserveCodeStructureInput {
   readonly repoRoot: string;
   readonly revision: string;
   readonly capturedAt: string;
+  /** The provenance record's `source`; the model passes its git provenance source. */
+  readonly provenanceSource?: string;
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
 }
 
@@ -127,7 +136,6 @@ export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStru
       sizeBytes: Number(sizeText),
       digest: `git-blob-sha1:${match[3]}`,
       language: classifyLanguage(path),
-      revision: input.revision,
     });
   }
 
@@ -135,7 +143,11 @@ export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStru
 
   return {
     kind: 'observed',
-    revision: input.revision,
+    provenance: {
+      kind: 'git-revision',
+      source: input.provenanceSource ?? 'Observed repository',
+      revision: input.revision,
+    },
     capturedAt: input.capturedAt,
     files,
   };

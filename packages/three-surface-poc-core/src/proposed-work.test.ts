@@ -14,7 +14,7 @@ const CHANGE = 'repair-whatsapp-identity-reconciliation';
 const DELTA = `openspec/changes/${CHANGE}/specs/switchboard-identity/spec.md`;
 
 function tree(paths: readonly string[]): CodeStructureResult {
-  return { kind: 'observed', revision: 'a'.repeat(40), capturedAt: '2026-09-04T00:00:00Z', files: paths.map((path) => ({ path, sizeBytes: 1, digest: 'sha256:0', language: 'other', revision: 'a'.repeat(40) })) };
+  return { kind: 'observed', provenance: { kind: 'git-revision', source: 'Observed repository', revision: 'a'.repeat(40) }, capturedAt: '2026-09-04T00:00:00Z', files: paths.map((path) => ({ path, sizeBytes: 1, digest: 'sha256:0', language: 'other' })) };
 }
 
 describe('proposed work (PWB-REQ-013)', () => {

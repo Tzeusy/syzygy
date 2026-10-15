@@ -37,9 +37,14 @@ describe('work-items observer', () => {
 
     expect(result.kind).toBe('observed');
     if (result.kind !== 'observed') throw new Error('unreachable');
-    expect(result.doltRevision).toBe('adpe9hi1llmdh05mr8aja5kagtu36eli');
+    expect(result.provenance).toEqual({
+      kind: 'dolt-revision',
+      source: 'Beads Dolt database (bu)',
+      revision: 'adpe9hi1llmdh05mr8aja5kagtu36eli',
+    });
     expect(result.items).toHaveLength(1);
-    expect(result.items[0]?.doltRevision).toBe('adpe9hi1llmdh05mr8aja5kagtu36eli');
+    // The item takes the revision from the one record; it does not restate it.
+    expect(Object.values(result.items[0] ?? {})).not.toContain('adpe9hi1llmdh05mr8aja5kagtu36eli');
     expect(calls[0]).toContain("dolt_hashof('HEAD')");
   });
 
@@ -142,7 +147,7 @@ describe('work-items observer', () => {
     expect(result.kind).toBe('observed');
     if (result.kind !== 'observed') throw new Error('unreachable');
     expect(result.items).toEqual([]);
-    expect(result.doltRevision).toBe('rev-empty');
+    expect(result.provenance.revision).toBe('rev-empty');
   });
 
   it('rejects a malformed configured prefix rather than shelling an unsafe query', () => {

@@ -7,13 +7,13 @@ function itemsFixture(): WorkItemsObserved {
   return {
     kind: 'observed',
     beadPrefix: 'bu',
-    doltRevision: 'rev-1',
+    provenance: { kind: 'dolt-revision', source: 'Beads Dolt database (bu)', revision: 'rev-1' },
     capturedAt: '2026-08-30T00:00:00Z',
     items: [
-      { id: 'bu-1', title: 'open one', status: 'open', issueType: 'task', priority: 1, createdAt: '2026-08-01T00:00:00Z', updatedAt: '2026-08-02T00:00:00Z', closedAt: null, doltRevision: 'rev-1' },
-      { id: 'bu-2', title: 'in progress one', status: 'in_progress', issueType: 'task', priority: 1, createdAt: '2026-08-03T00:00:00Z', updatedAt: '2026-08-04T00:00:00Z', closedAt: null, doltRevision: 'rev-1' },
-      { id: 'bu-3', title: 'closed recent', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-08-05T00:00:00Z', updatedAt: '2026-08-06T00:00:00Z', closedAt: '2026-08-06T00:00:00Z', doltRevision: 'rev-1' },
-      { id: 'bu-4', title: 'closed older', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-07-01T00:00:00Z', updatedAt: '2026-07-02T00:00:00Z', closedAt: '2026-07-02T00:00:00Z', doltRevision: 'rev-1' },
+      { id: 'bu-1', title: 'open one', status: 'open', issueType: 'task', priority: 1, createdAt: '2026-08-01T00:00:00Z', updatedAt: '2026-08-02T00:00:00Z', closedAt: null },
+      { id: 'bu-2', title: 'in progress one', status: 'in_progress', issueType: 'task', priority: 1, createdAt: '2026-08-03T00:00:00Z', updatedAt: '2026-08-04T00:00:00Z', closedAt: null },
+      { id: 'bu-3', title: 'closed recent', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-08-05T00:00:00Z', updatedAt: '2026-08-06T00:00:00Z', closedAt: '2026-08-06T00:00:00Z' },
+      { id: 'bu-4', title: 'closed older', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-07-01T00:00:00Z', updatedAt: '2026-07-02T00:00:00Z', closedAt: '2026-07-02T00:00:00Z' },
     ],
   };
 }

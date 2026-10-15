@@ -105,7 +105,7 @@ export function projectTrajectory(
 
   return {
     kind: 'observed',
-    doltRevision: workItems.doltRevision,
+    doltRevision: workItems.provenance.revision,
     selectionRule: `all non-closed items, plus the ${options.recentClosedWindow} most recently closed items`,
     rendered,
     renderedCount: rendered.length,
