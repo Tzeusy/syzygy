@@ -1,0 +1,567 @@
+{
+  "record": "P-100 governing-intent implementation evidence (syzygy-u05.20)",
+  "date": "2026-10-15",
+  "subject": {
+    "requirements": [
+      "POC-REQ-014"
+    ],
+    "signedTag": "three-surface-poc-governing-intent-amendment-v1.0",
+    "authorization": ".syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md",
+    "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+    "files": {
+      "packages/three-surface-poc-core/src/work-items.ts": "sha256:549f0a5974fbd5cda3d0156b54626510ac156f806c6a6d9c02ace8e5daf7aaf6",
+      "packages/three-surface-poc-core/src/model.ts": "sha256:241ff2b02bc751501bc3b876e10c19e47c35daea525737474298165df4a780fc",
+      "packages/three-surface-poc-core/src/project-shape-model.ts": "sha256:0431459e6fd8a013f678d8f5a6ba17bbe85d6588288173160989fd23d32fbeda",
+      "apps/three-surface-poc/src/trajectory.ts": "sha256:f1e531632631f8a1ac167fc63d5d40c4c0bdb446576875de35d26c8336fcb053",
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts": "sha256:0ffc3bed0b8f1e44f76f8b140d7d57288324d29840520e5c667edbebd8f916ec",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts": "sha256:cdee81d3ad1c63008343b478a7cb7b548f19195ab77002bd9a1b039cd893e6c9"
+    }
+  },
+  "readings": {
+    "governedByShape": "Coordinator ruling (B), 2026-10-15. POC-REQ-014 reads: 'Every served work item SHALL carry a governing-intent field (`governedBy`) whose value is `Unknown` with the primary reason `source-uncaptured-or-unreachable` and that reason's RFC2-24 resolution route.' It names no basis sentence, so the served value is {label, closedReason, resolutionRoutes (full route form)}; each rendered card's unknownSubjects twin keeps the basis sentence, as every rendered Unknown does.",
+    "routeLiteral": "Coordinator ruling (a). UNKNOWN_REASON_ROUTES['source-uncaptured-or-unreachable'] now equals RFC2-24's literal, 'Repair the observer/source; new snapshot' (.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md:139), replacing the paraphrase 'Repair the observer or source; new snapshot'. This aligns an implementation paraphrase with accepted contract text and changes no signed behavior. Sweep before the change: grep -F plus a Python second method over 2,751 tracked files (4 undecodable skipped); hits only in code, tests, docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md:592 and two retained raws; zero under openspec/ or .syzygy/.",
+    "narrowing": "The narrowing is a CSS-only checkbox (no script, no new read): checked, it hides every card whose data-governed-by is not Unknown. Every card carries the Unknown, so the narrowed board equals the un-narrowed one; the browser test injects one unmarked card to show the toggle narrows at all.",
+    "noNewInput": "No work-item column or other input is read: the bd sql statement is unchanged.",
+    "m03": "M03 (omitted governedBy) is killed by a thrown model build (countGoverningIntentUnknown reads the missing field), failing 30 tests; the oracle's own 'no governedBy' limb is shown separately by the falsifier case in governing-intent-sweep.test.ts."
+  },
+  "syntheticSize": {
+    "measuredOn": "the shared synthetic fixture model (test-model-fixture.ts buildFixtureModel defaults: 5 work items, all rendered) and the unknown-route sweep's 'unreachable' model; no Butlers read",
+    "measuredWith": "node measure-p100.mjs <checkout> after npm ci and npm run build:poc at each commit",
+    "before": {
+      "commit": "f04742cda148af0ac1fec1dcba5aa945a37ce1e0",
+      "defaultFixture": {
+        "machineBytes": 27712,
+        "trajectoryBytes": 24021,
+        "polarisBytes": 100648,
+        "routeLiterals": {
+          "Repair the observer/source; new snapshot": {
+            "machine": 0,
+            "trajectory": 0,
+            "polaris": 0
+          },
+          "Repair the observer or source; new snapshot": {
+            "machine": 0,
+            "trajectory": 0,
+            "polaris": 0
+          }
+        }
+      },
+      "unreachableFixture": {
+        "machineBytes": 22649,
+        "trajectoryBytes": 17988,
+        "polarisBytes": 100857,
+        "routeLiterals": {
+          "Repair the observer/source; new snapshot": {
+            "machine": 0,
+            "trajectory": 0,
+            "polaris": 0
+          },
+          "Repair the observer or source; new snapshot": {
+            "machine": 3,
+            "trajectory": 1,
+            "polaris": 3
+          }
+        }
+      },
+      "perItemMarginal": {
+        "machineBytes": 720.04,
+        "trajectoryBytes": 983.06
+      }
+    },
+    "after": {
+      "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+      "defaultFixture": {
+        "machineBytes": 31872,
+        "trajectoryBytes": 28604,
+        "polarisBytes": 100648,
+        "routeLiterals": {
+          "Repair the observer/source; new snapshot": {
+            "machine": 11,
+            "trajectory": 6,
+            "polaris": 0
+          },
+          "Repair the observer or source; new snapshot": {
+            "machine": 0,
+            "trajectory": 0,
+            "polaris": 0
+          }
+        }
+      },
+      "unreachableFixture": {
+        "machineBytes": 22640,
+        "trajectoryBytes": 18322,
+        "polarisBytes": 100848,
+        "routeLiterals": {
+          "Repair the observer/source; new snapshot": {
+            "machine": 3,
+            "trajectory": 1,
+            "polaris": 3
+          },
+          "Repair the observer or source; new snapshot": {
+            "machine": 0,
+            "trajectory": 0,
+            "polaris": 0
+          }
+        }
+      },
+      "perItemMarginal": {
+        "machineBytes": 1447.06,
+        "trajectoryBytes": 1613.12
+      }
+    },
+    "polarisRouteDelta": "On the unreachable model /polaris renders the #10 route 3 times; each copy is 2 bytes shorter, so /polaris shrinks by 6 bytes from the route (a diff of the two pages with the temporary repository path normalized shows only those three lines and the evaluation inputs digest). The default fixture renders it 0 times on /polaris."
+  },
+  "liveSize": {
+    "measuredOn": "a private POC daemon (--port 0, scratch --state-dir) served from each commit's clean committed tree against the registered locator, Butlers revision 36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "method": "curl -s -o /dev/null -w '%{http_code} %{size_download}', direct and with Host: tzeusy.parrot-hen.ts.net; no response body was printed, saved or inspected",
+    "ceilings": {
+      "maxMachineResponseBytes": 8388608,
+      "maxHumanResponseBytes": 2097152
+    },
+    "after": {
+      "commit": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+      "surfaceVersion": "polaris@9935695552fd",
+      "results": {
+        "direct /api/poc": {
+          "httpCode": 200,
+          "bytes": 6480949
+        },
+        "direct /trajectory": {
+          "httpCode": 200,
+          "bytes": 1210414
+        },
+        "tailnet /api/poc": {
+          "httpCode": 200,
+          "bytes": 6480949
+        },
+        "tailnet /trajectory": {
+          "httpCode": 200,
+          "bytes": 1210504
+        }
+      }
+    },
+    "before": {
+      "commit": "f04742cda148af0ac1fec1dcba5aa945a37ce1e0",
+      "surfaceVersion": "polaris@89447431ecaf",
+      "results": {
+        "direct /api/poc": {
+          "httpCode": 200,
+          "bytes": 3945268
+        },
+        "direct /trajectory": {
+          "httpCode": 200,
+          "bytes": 763271
+        },
+        "tailnet /api/poc": {
+          "httpCode": 200,
+          "bytes": 3945268
+        },
+        "tailnet /trajectory": {
+          "httpCode": 200,
+          "bytes": 763361
+        }
+      }
+    },
+    "deltaBytes": {
+      "/api/poc": 2535681,
+      "/trajectory direct": 447143,
+      "/trajectory tailnet": 447143
+    },
+    "fractionOfCeiling": {
+      "/api/poc": 0.7726,
+      "/trajectory tailnet": 0.5772
+    },
+    "caveat": "Both daemons announced walkthrough evaluation identity pwb-unobserved-not-admitted: the PWB-REQ-005 gate, evaluated over the Syzygy governance tree alone, returns admits=false with 'policy: invalid act: policy:recording-tag-mismatched' because the expected recording tag pwb-approve-policy-public-source-scope-v3-signed-2026-10-08 (apps/three-surface-poc/src/governance-inputs.ts:103) exists neither locally nor on origin. Neither run read the project shape, so both figures exclude the project-shape block; the admitted /api/poc is larger by an amount this record does not know [Unknown]."
+  },
+  "rule6Mutants": {
+    "tests": [
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "apps/three-surface-poc/src/trajectory.test.ts",
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts"
+    ],
+    "population": 20,
+    "killed": 19,
+    "baselineSurvived": true,
+    "mutants": [
+      {
+        "id": "M00",
+        "limb": "baseline: no mutation (must survive)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  .narrow-label {",
+        "new": "  .narrow-label {",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "survived",
+        "testsRun": 121,
+        "testsFailed": 0,
+        "killedBy": []
+      },
+      {
+        "id": "M01",
+        "limb": "an item guessed from its title",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      governedBy: governingIntentUnknown(),\n",
+        "new": "      governedBy: { ...governingIntentUnknown(), intent: raw.title.replace(/^Implement /, '') } as never,\n",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 4,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown a title naming POC-REQ-010 yields the same Unknown, and nothing served names it outside a title"
+        ]
+      },
+      {
+        "id": "M02",
+        "limb": "a green intent",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "  return {\n    label: 'Unknown',\n    closedReason",
+        "new": "  return {\n    label: 'Observed' as 'Unknown',\n    closedReason",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 14,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the narrowed board lists exactly the 52 rendered cards",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+        ]
+      },
+      {
+        "id": "M03",
+        "limb": "an omitted intent",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      governedBy: governingIntentUnknown(),\n",
+        "new": "",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 30,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from HEAD",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb the record in another shape (a list, or a field outside the shared shape)",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the revision",
+          "block-provenance-sweep.test.ts > POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once names the Dolt head in one shared-shape record, and no other field holds the revision or the capture instant",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once leaves an item's database-recorded times out of the capture-instant comparison",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from the Dolt head",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb no provenance record",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb the record in another shape",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb another observation field holding the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the Dolt revision",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the capture instant outside a database time",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb an observation without its own capture instant",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
+          "trajectory.test.ts > Trajectory places every rendered item in the column its declared status mapping assigns (POC-REQ-040)",
+          "trajectory.test.ts > Trajectory states the selection rule and reconciles rendered + excluded against the total (POC-REQ-042)",
+          "trajectory.test.ts > Trajectory never renders closure/activity as verification satisfaction (POC-REQ-043)",
+          "trajectory.test.ts > Trajectory renders the observed worker-change lifecycle state on the matching card, never as verified (AC3/AC4)",
+          "trajectory.test.ts > Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+          "trajectory.test.ts > Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+          "trajectory.test.ts > Trajectory calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)",
+          "trajectory.test.ts > Trajectory states honestly when the materialized item falls outside the board selection (N-1)",
+          "trajectory.test.ts > Trajectory mutation check: a falsified reconciliation would be caught",
+          "trajectory.test.ts > Trajectory footer: composite evaluation identity and substrate revision (N4) prints the same composite evaluation identity Polaris renders, plus what this surface's revision is a revision of",
+          "trajectory.test.ts > Trajectory footer: composite evaluation identity and substrate revision (N4) renders an explicit Skew line when the work-item capture instant answers at a different evaluation (mutation check)"
+        ]
+      },
+      {
+        "id": "M04",
+        "limb": "a miscount (machine)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    governedByUnknownCount: countGoverningIntentUnknown(items),",
+        "new": "    governedByUnknownCount: countGoverningIntentUnknown(items) - 1,",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 4,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+        ]
+      },
+      {
+        "id": "M05",
+        "limb": "a miscount (count predicate ignores the label)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "(item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason",
+        "new": "(item) => item.governedBy.closedReason",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 1,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it"
+        ]
+      },
+      {
+        "id": "M06",
+        "limb": "a missing reason (another reason)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    closedReason: 'source-uncaptured-or-unreachable',\n    resolutionRoutes:",
+        "new": "    closedReason: 'missing-evidence',\n    resolutionRoutes:",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 8,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+        ]
+      },
+      {
+        "id": "M07",
+        "limb": "a missing route (another reason's route)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    resolutionRoutes: [resolutionRoute('source-uncaptured-or-unreachable')],",
+        "new": "    resolutionRoutes: [resolutionRoute('missing-evidence')],",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 3,
+        "killedBy": [
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+        ]
+      },
+      {
+        "id": "M08",
+        "limb": "a route that is not RFC2-24's literal",
+        "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+        "old": "  'source-uncaptured-or-unreachable': 'Repair the observer/source; new snapshot',",
+        "new": "  'source-uncaptured-or-unreachable': 'Repair the observer or source; new snapshot',",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 7,
+        "killedBy": [
+          "project-shape-model.test.ts > faults never shrink the population (PWB-REQ-003) combined faults keep one primary reason and deduplicated secondaries on the whole-shape claim",
+          "block-provenance-sweep.test.ts > POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the route",
+          "polaris-reconciliation.test.ts > M14 slice 4: the catalog reconciliation line renders an unobserved shape as Unknown with its reason and route, and never a number"
+        ]
+      },
+      {
+        "id": "M09",
+        "limb": "a miscount (Trajectory)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "${count}</span> of",
+        "new": "${count + 1}</span> of",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 4,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+        ]
+      },
+      {
+        "id": "M10",
+        "limb": "an inside figure that is not the rendered selection",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  const inside = rendered.filter(",
+        "new": "  const inside = 1 + rendered.filter(",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 3,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+        ]
+      },
+      {
+        "id": "M11",
+        "limb": "inside plus outside that misses the count",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "${count - inside}</span>",
+        "new": "${count}</span>",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 2,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+        ]
+      },
+      {
+        "id": "M12",
+        "limb": "a count region missing the reason",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
+        "new": "        ${unknownRoute(unknown)}",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 3,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the reason"
+        ]
+      },
+      {
+        "id": "M13",
+        "limb": "a count region missing the route",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
+        "new": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>.",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 9,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) plain: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) observed-shape: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) worker-change: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) fails when a disclosure loses its reason, gains a thirteenth, drops its route, or an Orrery row re-emits a bare provenance-none span",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) plain: per tuple by id, and over both id sets",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) observed-shape: per tuple by id, and over both id sets",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) worker-change: per tuple by id, and over both id sets"
+        ]
+      },
+      {
+        "id": "M14",
+        "limb": "a count region missing the resolution statement",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Supplying an item's warrant resolves its governing intent.\n",
+        "new": "",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 3,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the resolution statement"
+        ]
+      },
+      {
+        "id": "M15",
+        "limb": "a rendered item with an encoding for another state",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "<span class=\"epistemic ${epistemicClassName(unknown.label)}\" data-parity-field=\"work-item-governed-by\"",
+        "new": "<span class=\"epistemic epistemic-observed\" data-parity-field=\"work-item-governed-by\"",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 4,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark"
+        ]
+      },
+      {
+        "id": "M16",
+        "limb": "a rendered item without the mark",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "    ${itemGoverningIntent(model, item.id)}\n",
+        "new": "",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 10,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) plain: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) observed-shape: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) worker-change: per-surface denominators, zero exceptions on each",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) plain: per tuple by id, and over both id sets",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) observed-shape: per tuple by id, and over both id sets",
+          "unknown-route-sweep.test.ts > every rendered route has its machine twin under the same id (M4 slice 2, PWB-REQ-020) worker-change: per tuple by id, and over both id sets"
+        ]
+      },
+      {
+        "id": "M17",
+        "limb": "a narrowed board that drops items",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": ".narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }",
+        "new": ".narrow-toggle:checked ~ .board .wi-card { display: none; }",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 1,
+        "killedBy": [
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+        ]
+      },
+      {
+        "id": "M18",
+        "limb": "a narrowing that does not narrow",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  .narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }\n",
+        "new": "",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 1,
+        "killedBy": [
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+        ]
+      },
+      {
+        "id": "M19",
+        "limb": "a card marked for another state (narrowed board drops it)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "data-governed-by=\"${escapeHtml(governedBy)}\"",
+        "new": "data-governed-by=\"Observed\"",
+        "ranAt": "0d1cb92eb856dec2ca512fd4b20050a435f507de",
+        "outcome": "killed",
+        "testsRun": 121,
+        "testsFailed": 4,
+        "killedBy": [
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown the narrowed board lists exactly the 52 rendered cards",
+          "governing-intent-sweep.test.ts > POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item",
+          "trajectory-narrowing.browser.test.ts > Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+        ]
+      }
+    ]
+  }
+}
