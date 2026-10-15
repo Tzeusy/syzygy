@@ -173,7 +173,7 @@ function oracleScript(table: typeof SIGNED_ROWS, recognizer: typeof RECOGNIZER, 
     if (numbers.length !== 1 || Number(numbers[0]) !== offset) fail('row-offset', identity + ': shows ' + rest + ', counted ' + offset);
     measured.push({ identity, rendered: true, offset, target });
   });
-  if (index.querySelector('[data-parity-field], [data-claim-role], [data-epistemic-label], .claim-tuple')) fail('index-carries-claim-markup', '');
+  for (const element of [index, ...lines]) if (element.matches('[data-parity-field], [data-claim-role], [data-epistemic-label], .claim-tuple') || element.querySelector('[data-parity-field], [data-claim-role], [data-epistemic-label], .claim-tuple')) fail('index-carries-claim-markup', norm(element.textContent).slice(0, 40));
   // Never a verdict (RFC7-31): no word of the index or the line says or
   // implies that a prompt is, or can be, answered.
   const verdict = /\\b(answer|answers|answered|answerable|complete|completed|done|enough|finished|stop|ready|understood|understand|covered|sufficient)\\b/i;
@@ -196,6 +196,9 @@ function oracleScript(table: typeof SIGNED_ROWS, recognizer: typeof RECOGNIZER, 
   let lineNumbers = [];
   if (line) {
     lineNumbers = (norm(line.textContent).match(/[0-9]+/g) || []).map(Number);
+    // Numbers and their unit, nothing else: the largest offset and the
+    // total joined by one slash, or the total alone.
+    if (!/^[0-9]+( \\/ [0-9]+)? words$/.test(norm(line.textContent))) fail('line-text', norm(line.textContent));
     const expected = setter === null ? [total] : [setter.offset, total];
     if (JSON.stringify(lineNumbers) !== JSON.stringify(expected)) fail('line-numbers', norm(line.textContent) + ' expected ' + expected.join(' '));
     let previous = line.previousSibling;
@@ -366,6 +369,38 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       expect(report.rows.filter((row) => 'offset' in row).map((row) => row.identity)).toEqual(['unknown-or-contradiction', 'claim-strength']);
     }, 60_000);
   }
+
+  it('following the exact-requirement row by keyboard lands focus on its target inside the opened disclosure, and Tab continues from it', async () => {
+    const tab = await browser.newPage();
+    try {
+      await tab.setViewport(WIDE.width, WIDE.height);
+      await tab.navigate(write('keyboard-exact', variant('observed')));
+      const before = await tab.evaluate<{ readonly inClosed: boolean; readonly focused: string }>(`(() => {
+        const row = Array.from(document.querySelectorAll('nav[aria-label="Opening index"] li')).find((li) => li.textContent.trim().startsWith('exact requirements'));
+        const link = row.querySelector('a');
+        const target = document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1)));
+        link.focus();
+        return { inClosed: !!target.closest('details:not([open])'), focused: document.activeElement.textContent.trim() };
+      })()`);
+      // The target begins inside a disclosure closed on load (the signed
+      // stepping-out case), so this exercises the stranding the guardrail names.
+      expect(before).toEqual({ inClosed: true, focused: 'exact requirements' });
+      await tab.press('Enter');
+      await tab.evaluate(`new Promise((resolve) => setTimeout(() => resolve(true), 50))`);
+      const landed = await tab.evaluate<{ readonly onTarget: boolean; readonly open: boolean; readonly expectedNext: number }>(`(() => {
+        const target = document.getElementById(location.hash.slice(1));
+        const focusable = Array.from(document.querySelectorAll('a[href], summary, button, input, select, textarea')).filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
+        const next = focusable.find((element) => target.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING && !target.contains(element));
+        window.__expectedNext = next;
+        return { onTarget: document.activeElement === target, open: target.closest('details:not([open])') === null, expectedNext: focusable.indexOf(next) };
+      })()`);
+      expect(landed.onTarget).toBe(true);
+      expect(landed.open).toBe(true);
+      expect(landed.expectedNext).toBeGreaterThan(-1);
+      await tab.press('Tab');
+      expect(await tab.evaluate<boolean>(`document.activeElement === window.__expectedNext`)).toBe(true);
+    } finally { await tab.close(); }
+  }, 60_000);
 
   // A captured page, for the dated live measurement: the served bytes are
   // written by the operator (`SYZYGY_P98_PAGE`), never fetched here.
