@@ -84,6 +84,12 @@ patches are as round 5 read them.
 
 **Round-5 findings repaired once on 2026-10-15, unconfirmed pending round
 6.** None of these repairs is accepted until round 6 reads it.
+*(Marked 2026-10-15, round 6: "unconfirmed pending round 6" is no longer
+true. Round 6 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-6-RAW.md` line 4): F1 partly
+repaired (an embedded citation still passes), N2 partly repaired, the rest
+repaired or dispositioned; one revise finding and three notes are open in
+`ROUND-6-DISPOSITIONS.md`.)*
 
 Line numbers below are in `proposed/spec.md.patch` (`spec`) and
 `scripts/build_pwb_release_label_amendment.py` (`builder`) at this commit.
