@@ -370,36 +370,46 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
     }, 60_000);
   }
 
-  it('following the exact-requirement row by keyboard lands focus on its target inside the opened disclosure, and Tab continues from it', async () => {
+  /** Follows the exact-requirement row by keyboard (focus, Enter, Tab) and
+   * reports where focus went. `nextInside` says whether the focusable after
+   * the target lies in the target's own disclosure. */
+  async function followExactRow(html: string, name: string): Promise<{ readonly inClosed: boolean; readonly onTarget: boolean; readonly open: boolean; readonly nextInside: boolean; readonly tabContinued: boolean }> {
     const tab = await browser.newPage();
     try {
       await tab.setViewport(WIDE.width, WIDE.height);
-      await tab.navigate(write('keyboard-exact', variant('observed')));
-      const before = await tab.evaluate<{ readonly inClosed: boolean; readonly focused: string }>(`(() => {
+      await tab.navigate(write(name, html));
+      const inClosed = await tab.evaluate<boolean>(`(() => {
         const row = Array.from(document.querySelectorAll('nav[aria-label="Opening index"] li')).find((li) => li.textContent.trim().startsWith('exact requirements'));
         const link = row.querySelector('a');
         const target = document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1)));
         link.focus();
-        return { inClosed: !!target.closest('details:not([open])'), focused: document.activeElement.textContent.trim() };
+        return document.activeElement === link && !!target.closest('details:not([open])');
       })()`);
-      // The target begins inside a disclosure closed on load (the signed
-      // stepping-out case), so this exercises the stranding the guardrail names.
-      expect(before).toEqual({ inClosed: true, focused: 'exact requirements' });
       await tab.press('Enter');
       await tab.evaluate(`new Promise((resolve) => setTimeout(() => resolve(true), 50))`);
-      const landed = await tab.evaluate<{ readonly onTarget: boolean; readonly open: boolean; readonly expectedNext: number }>(`(() => {
+      const landed = await tab.evaluate<{ readonly onTarget: boolean; readonly open: boolean; readonly nextInside: boolean }>(`(() => {
         const target = document.getElementById(location.hash.slice(1));
         const focusable = Array.from(document.querySelectorAll('a[href], summary, button, input, select, textarea')).filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
-        const next = focusable.find((element) => target.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING && !target.contains(element));
+        const next = focusable.find((element) => (target.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) && !target.contains(element));
         window.__expectedNext = next;
-        return { onTarget: document.activeElement === target, open: target.closest('details:not([open])') === null, expectedNext: focusable.indexOf(next) };
+        return { onTarget: document.activeElement === target, open: target.closest('details:not([open])') === null, nextInside: !!next && target.closest('details').contains(next) };
       })()`);
-      expect(landed.onTarget).toBe(true);
-      expect(landed.open).toBe(true);
-      expect(landed.expectedNext).toBeGreaterThan(-1);
       await tab.press('Tab');
-      expect(await tab.evaluate<boolean>(`document.activeElement === window.__expectedNext`)).toBe(true);
+      const tabContinued = await tab.evaluate<boolean>(`document.activeElement === window.__expectedNext`);
+      return { inClosed, ...landed, tabContinued };
     } finally { await tab.close(); }
+  }
+
+  // Review finding 1 (R-PWB-OPENING-INDEX-IMPL-1): the target begins inside
+  // a disclosure closed on load. Chrome opens the disclosure on fragment
+  // navigation and focuses the link, and Tab continues from it.
+  it('following the exact-requirement row by keyboard lands on its target and Tab continues from it (fixture render)', async () => {
+    expect(await followExactRow(variant('observed'), 'keyboard-exact')).toEqual({ inClosed: true, onTarget: true, open: true, nextInside: false, tabContinued: true });
+  }, 60_000);
+
+  it('the same holds where a later control shares the target\'s disclosure (synthetic body)', async () => {
+    const body = `<h2>Lead</h2><details><summary>Show items</summary><p><a href="#lead">before</a> <a href="/polaris/source?identity=a">exact</a> <a href="#after">after inside</a></p></details><p><a href="#lead">outside</a></p>`;
+    expect(await followExactRow(syntheticPage(body), 'keyboard-synthetic')).toEqual({ inClosed: true, onTarget: true, open: true, nextInside: true, tabContinued: true });
   }, 60_000);
 
   // A captured page, for the dated live measurement: the served bytes are

@@ -293,9 +293,9 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
     // (P-98) fixes its target as the first exact-source link in document
     // order, wherever it stands, here inside an item population. That
     // tension with this invariant is disclosed to the owner, not settled
-    // here; the index's script opens the disclosure and moves focus to the
-    // target, and polaris-opening-index.browser.test.ts checks that Tab then
-    // continues from it.
+    // here. The target is a focusable link, which Chrome reveals and focuses
+    // on fragment navigation; polaris-opening-index.browser.test.ts follows
+    // the row by keyboard and checks that Tab then continues from it.
     const index = /<nav\b[^>]*\sdata-polaris-opening-index[^>]*>[\s\S]*?<\/nav>/.exec(html)?.[0] ?? '';
     const exactRow = /<li data-opening-row="exact-requirement"><a href="#([^"]+)"/.exec(index)?.[1];
     expect(exactRow).toBeDefined();
