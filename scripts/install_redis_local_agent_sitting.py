@@ -43,8 +43,9 @@ Before anything is written it requires (exit 2, nothing written otherwise):
 - selection text a battery line can carry: no ": ", " #" or "'";
 - `date` no later than today's UTC date, and every act instant at or before
   the clock: both are UTC, and an act is not in force until its instant;
-- the P-104 row exactly this sitting's resolved row, and no answered act already recorded: a second run is
-  refused here, and `--check` is the way to look at an installed tree.
+- the P-104 row exactly this sitting's resolved row, and no answered act
+  already recorded: a second run is refused here, and `--check` is the way
+  to look at an installed tree.
 
 Then, in order, each step's recorder runs `--record` and then `--check` with
 the same arguments; the act's argument is its manifest row, read from the
@@ -629,7 +630,7 @@ def p104_resolved_row(answers: dict) -> str:
             "`contracts/candidates/REDIS-LOCAL-AGENT-SITTING-BRIEF.md` |")
 
 
-def step_p104(root: pathlib.Path, write: bool, answers: dict) -> bool:
+def step_p104(root: pathlib.Path, answers: dict) -> bool:
     path = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
     lines = path.read_text(encoding="utf-8").split("\n")
     at = [i for i, ln in enumerate(lines) if ln.startswith(P104)]
@@ -653,7 +654,7 @@ def install(root: pathlib.Path, write: bool, steps: list[Step], answers: dict) -
         pending.append("battery")
     if step_node_ci(root, write, steps):
         pending.append("node-ci")
-    if step_p104(root, write, answers):
+    if step_p104(root, answers):
         pending.append("p-104")
     return pending
 
@@ -932,16 +933,16 @@ def selftest() -> int:
                    any("never moved" in w for w in register_check(root))))
         base.J = base.Journal()
         try:
-            step_p104(root, True, good)
-            ok.append(("a P-104 row in neither form is refused, never overwritten", False))
+            step_p104(root, good)
+            ok.append(("a P-104 row that is not the resolved form is refused, never overwritten", False))
         except Refusal:
-            ok.append(("a P-104 row in neither form is refused, never overwritten", True))
+            ok.append(("a P-104 row that is not the resolved form is refused, never overwritten", True))
         reg = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
         for name, row in (("the pre-sitting open shape", "| P-104 | The local-agent Redis sitting: seven decisions |"),
                           ("text appended to the resolved row", p104_resolved_row(good) + " [stale 2026-10-08]")):
             reg.write_text(f"before\n{row}\nafter\n")
             try:
-                step_p104(root, True, good)
+                step_p104(root, good)
                 ok.append((f"a P-104 row with {name} is refused, never overwritten", False))
             except Refusal:
                 ok.append((f"a P-104 row with {name} is refused, never overwritten",
@@ -949,7 +950,7 @@ def selftest() -> int:
             ok.append((f"a P-104 row with {name} is refused before anything is written",
                        any("P-104 row is not" in w for w in preconditions(root, good))))
         reg.write_text(f"before\n{p104_resolved_row(good)}\nafter\n")
-        ok.append(("resolving an already resolved P-104 changes nothing", step_p104(root, False, good) is False))
+        ok.append(("resolving an already resolved P-104 changes nothing", step_p104(root, good) is False))
         ok.append(("this sitting's resolved row passes the up-front check", p104_check(root, good) == []))
         row = p104_resolved_row(good)
         ok.append(("the resolved row names each act by item letter, row 4 taken",
