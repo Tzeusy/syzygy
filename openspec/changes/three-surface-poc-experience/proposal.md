@@ -102,6 +102,28 @@ those three clauses sit in, moves from Part B2 to Part B1: the POC now renders
 the chain's first link, so the clause applies, but no requirement walks the
 chain.
 
+## Amendment — one relation vocabulary, one epistemic record shape
+
+The owner's ruling of 2026-09-21 (P-75) directed an amendment against this
+specification alone. This amendment carries two of its parts.
+
+- **POC-REQ-055** requires every relationship to carry a name from
+  RFC1-25's closed table, in a role pair the table assigns it, or a flag
+  saying it is outside that table.
+- **POC-REQ-060** is amended in place to carry one epistemic record shape on
+  every entity and relationship, and the Inferred label.
+
+Inferred enters as a typed landing zone with no production constructor
+(ruling P-75 Q4). This amendment does not make the arm constructible in
+production; that needs its own owner act. Until then no Inferred record,
+including an inferred edge, is produced, so the non-goal above against
+inferred mappings, edges or intent stands unchanged. In
+`CONTRACT-COVERAGE.md` the one signed row the ruling names is preserved
+unedited beside the amendment rows that supersede it, and RFC2-25 moves from
+Part B2 to Part A because a requirement now covers one of its consequences.
+A subject identity shared across the surfaces, and a per-claim view of the
+desired, execution and observed states, are not specified here.
+
 ## Acceptance inputs
 
 - `CONTRACT-COVERAGE.md` carries the clause-consequence review input and its

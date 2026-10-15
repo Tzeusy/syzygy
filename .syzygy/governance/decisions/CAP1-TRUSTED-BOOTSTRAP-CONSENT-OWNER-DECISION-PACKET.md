@@ -4,6 +4,15 @@
 > or labelled accepted. This packet puts one binding ask to the owner, in
 > three questions; only the owner's answer binds anything (VIS-4). Register
 > row: P-109. Bead: `syzygy-u2a.1`.
+>
+> *(Marked 2026-10-15: "Nothing here is signed, adopted, authorized" is no
+> longer true. The owner adopted v1.0 (Q1) by version tag under Scope A
+> extended to this package alone (Q2), recorded in
+> `CAP1-TRUSTED-BOOTSTRAP-CONSENT-SIGNOFF-v1.0.md` and
+> `OWNER-DIRECTION-SCOPE-A-CAP1-TRUSTED-BOOTSTRAP-CONSENT-2026-10-15.md`, and
+> authorized the bounded consent slice (Q3) in
+> `OWNER-DIRECTION-CAP1-CONSENT-IMPLEMENTATION-2026-10-15.md`. The text
+> below is kept as drafted.)*
 
 **Status:** drafted 2026-09-14 under the owner's choice of that day
 (CAP1-CONSENT option A: prepare the bounded trusted-bootstrap amendment and

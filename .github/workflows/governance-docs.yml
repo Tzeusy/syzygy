@@ -102,6 +102,12 @@ jobs:
       - name: build_capability_1_spec_dependencies --selftest
         run: python3 scripts/build_capability_1_spec_dependencies.py --selftest
 
+      - name: build_cap1_trusted_bootstrap_consent_adoption --check
+        run: python3 scripts/build_cap1_trusted_bootstrap_consent_adoption.py --check
+
+      - name: build_cap1_trusted_bootstrap_consent_adoption --selftest
+        run: python3 scripts/build_cap1_trusted_bootstrap_consent_adoption.py --selftest
+
       # Generated evidence and dependency projections that guard performed
       # transaction history and the current Polaris/PWB specifications.
       - name: build_general_trusted_bootstrap_impact_ledger --check
@@ -154,6 +160,12 @@ jobs:
 
       - name: record_versioned_signoff --check three-surface-poc-governing-intent-amendment
         run: python3 scripts/record_versioned_signoff.py --check three-surface-poc-governing-intent-amendment --version 1.0
+
+      - name: record_versioned_signoff --check three-surface-poc-vocabulary-epistemic-amendment
+        run: python3 scripts/record_versioned_signoff.py --check three-surface-poc-vocabulary-epistemic-amendment --version 1.0
+
+      - name: record_versioned_signoff --check cap1-trusted-bootstrap-consent
+        run: python3 scripts/record_versioned_signoff.py --check cap1-trusted-bootstrap-consent --version 1.0
 
       - name: record_versioned_signoff --check polaris-dossier-local-agent-mode
         run: python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0

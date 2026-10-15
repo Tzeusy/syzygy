@@ -265,8 +265,8 @@
       }
     },
     "POC": {
-      "requirements": 25,
-      "scenarios": 26,
+      "requirements": 26,
+      "scenarios": 28,
       "members": {
         "POC-REQ-001": {
           "name": "Code-structure observation is bound to an exact revision",
@@ -407,10 +407,17 @@
             "Spatial and exact agree"
           ]
         },
-        "POC-REQ-060": {
-          "name": "One design language, one epistemic encoding",
+        "POC-REQ-055": {
+          "name": "Every relationship is named in or flagged outside the closed vocabulary",
           "scenarios": [
-            "Unknown looks the same everywhere"
+            "A kind outside the closed table is disclosed"
+          ]
+        },
+        "POC-REQ-060": {
+          "name": "One design language, one epistemic encoding and record shape",
+          "scenarios": [
+            "Unknown looks the same everywhere",
+            "An agent assertion stays Inferred"
           ]
         },
         "POC-REQ-061": {

@@ -541,14 +541,18 @@ def selftest() -> int:
 
 
 def subprocess_show(root: pathlib.Path, blob_sha256: str) -> bytes:
-    """The reviewed README bytes, from the review-4 subject's commit."""
+    """The reviewed README bytes: the newest version in this branch's history
+    of `README.md` whose SHA-256 is the review-4 subject's row (the review
+    commit itself is on a rebase-merged branch, unreachable from main)."""
     import subprocess
-    done = subprocess.run(["git", "-C", str(root), "show",
-                           f"591950c76805f34886e7052adb9753c58b5ef737:{README.as_posix()}"],
-                          capture_output=True)
-    if done.returncode != 0 or sha256(done.stdout) != blob_sha256:
-        raise SystemExit("cannot recover the reviewed README.md for the selftest")
-    return done.stdout
+    log = subprocess.run(["git", "-C", str(root), "log", "--format=%H", "--", README.as_posix()],
+                         capture_output=True, text=True)
+    for commit in log.stdout.split():
+        done = subprocess.run(["git", "-C", str(root), "show", f"{commit}:{README.as_posix()}"],
+                              capture_output=True)
+        if done.returncode == 0 and sha256(done.stdout) == blob_sha256:
+            return done.stdout
+    raise SystemExit("cannot recover the reviewed README.md from history for the selftest")
 
 
 def main(argv: list[str]) -> int:
