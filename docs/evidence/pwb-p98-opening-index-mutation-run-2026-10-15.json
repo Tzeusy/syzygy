@@ -3,11 +3,11 @@
   "requirement": "PWB-REQ-010",
   "signedText": "pwb-opening-index-amendment-v1.0",
   "rule": "AGENTS.md verification rule 6: one mutant per falsifier limb; each rewrites one fragment, runs the oracle file alone and restores the file",
-  "commit": "0883ecfa80ca0a31c140d1571c9790f73a5e8da0",
+  "commit": "89b969798862d497be7982e0a228eafab2c139e8",
   "command": "npx vitest run apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
   "baselineExit": 0,
-  "mutants": 28,
-  "killed": 28,
+  "mutants": 30,
+  "killed": 30,
   "results": [
     {
       "id": "row-missing",
@@ -223,6 +223,22 @@
       "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
       "old": "<span data-opening-offset${SCOPE}></span>",
       "new": "<span data-opening-offset${SCOPE} data-claim-role=\"epistemic-claim\"></span>",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-separator",
+      "falsifierLimb": "the stopping line joins its numbers with other text than one slash",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "line.textContent = setter.offset + ' / ' + total + ' words';",
+      "new": "line.textContent = setter.offset + ' \u2013 ' + total + ' words';",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-as-claim",
+      "falsifierLimb": "the stopping line is presented as a claim",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  line.setAttribute('data-copy-role', 'scope-instruction');\n",
+      "new": "  line.setAttribute('data-copy-role', 'scope-instruction');\n  line.setAttribute('data-claim-role', 'epistemic-claim');\n",
       "outcome": "killed"
     },
     {

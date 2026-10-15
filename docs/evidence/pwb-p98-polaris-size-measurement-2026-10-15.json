@@ -28,7 +28,9 @@
     "loadScript": 2674,
     "style": 423,
     "legendHeadingAndWrapper": 224,
-    "note": "Fixed per page: the nine rows, the counting script and its style do not grow with the shape. The outline gains one link to the legend heading. The stopping line and the offsets are written by the script after load and are not served bytes."
+    "outlineLinkToLegendHeading": 209,
+    "unitemized": 11,
+    "note": "Fixed per page: the nine rows, the counting script and its style do not grow with the shape. Measured delta against the P-99 record is 5,320 bytes on both forms; the items sum to 5,309 and the 11 unitemized bytes are taken by difference (the whitespace around the inserted placeholder and style) [Inferred]. Both records are at Butlers 36f0e0eb. On an observed shape the first exact-source link also gains an id attribute (37 bytes). The stopping line and the offsets are written by the script after load and are not served bytes."
   },
   "observedShapeOnButlers": "[Unknown] Not measurable at this Butlers revision (not-admitted). The last observed capture (docs/evidence/smooth-example-live-run-2026-10-03.json) served /polaris at 1,473,252 tailnet bytes, 623,900 under the ceiling; a fixed addition of about 5.1 KB stays inside that headroom [Inferred]."
 }
