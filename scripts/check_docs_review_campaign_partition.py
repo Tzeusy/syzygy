@@ -408,6 +408,11 @@ CAMPAIGNS = (
         "PWB accessible-name implementation",
         r"R-PWB-ACCESSIBLE-NAME-IMPL-.*\.md",
     ),
+    campaign(
+        "pwb-opening-index-implementation",
+        "PWB opening-index implementation",
+        r"R-PWB-OPENING-INDEX-IMPL-.*\.md",
+    ),
 )
 
 
