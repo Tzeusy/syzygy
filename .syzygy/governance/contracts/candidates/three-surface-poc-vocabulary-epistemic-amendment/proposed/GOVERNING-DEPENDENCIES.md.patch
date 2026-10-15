@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md b/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
-index a90bead..30c2ec1 100644
+index a90bead..7fa566b 100644
 --- a/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 +++ b/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 @@ -8,7 +8,7 @@
@@ -7,7 +7,7 @@ index a90bead..30c2ec1 100644
  > nothing here quotes or paraphrases any clause.
  >
 -> Source: `spec.md` sha256 `6b302779843366674eecc63f5a0b4fac6a03213c6b7eda2502c2624ebb075b56` — 25 requirement(s), 88 distinct authorities.
-+> Source: `spec.md` sha256 `f3b2fe66370a06488d877bc631b5176f90ae9e1eb84338d6ba9984e572a815fc` — 26 requirement(s), 90 distinct authorities.
++> Source: `spec.md` sha256 `3a2e5a2be8fc69f0fb70f32b0fce1b2b6ca9589db16224090a0351112385b691` — 26 requirement(s), 90 distinct authorities.
  
  ## doctrine (9)
  
