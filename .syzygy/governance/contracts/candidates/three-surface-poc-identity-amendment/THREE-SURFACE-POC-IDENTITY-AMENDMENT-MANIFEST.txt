@@ -5,8 +5,8 @@
 # Rows hash the PROPOSED bytes: current bytes with proposed/*.patch
 # applied. They match the tree only after --apply, the sign-off step.
 9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976  openspec/changes/three-surface-poc-experience/.openspec.yaml
-af72aec05e04a20f2a6a8edac7b94e1f0af8469c79fb84276b5a2602e57bf252  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
-a945a4b96cd52c9385aa118a9c07e34e7ac1dba21c302512aa4defe0c3d6369d  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
+9a9e44afe0ffdb9ecdc087f15702625739f5aa570536dc7e3a59da9eb6d00b69  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+c35b8cd4033f80e29cbc4cb82e2e126f08bcd8edf358c9f0199117294c89c9cc  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295  openspec/changes/three-surface-poc-experience/design.md
 a37a10589bb7954739181dd78aa827700df2b0009593a0337d02f9c0f95bb82f  openspec/changes/three-surface-poc-experience/proposal.md
-b867d6e2ee047130d420aa060733375a40efaa6551cbaf764626ef0346556305  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+f50fe9e57e8d9c6c373f8ffe3fbfd481c240d23d6989dfa92148c0dbb2707200  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md

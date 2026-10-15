@@ -62,38 +62,48 @@ must cover.
 ## Proposed meaning
 
 Three additions to PWB-REQ-016, plus verification limbs and two scenarios.
+*(Repaired 2026-10-14, cycle 2: this section describes the bytes as
+repaired for the round-2 findings; `ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)" maps each change.)*
 
 1. **Distinct accessible names.** Two interactive elements on a Polaris
    page (links, buttons, `summary` disclosures and form controls) whose
    targets or controlled regions differ have different accessible names,
    as the browser computes them. A link's target is its resolved `href`, a
    `summary`'s is its `details`, and a button's or form control's is the
-   element its `aria-controls` names, or the control itself. A visible
-   label repeated once per item or source is told apart in the accessible
-   name by the item or source it belongs to; the name begins with the
-   visible label, and the added words use the identity PWB-REQ-014 renders
-   for that item or source. Two elements with the same target may share a
-   name.
+   element its `aria-controls` names, or the control itself. The
+   population is every such element in the document after load, including
+   those inside a closed `details`, excluding hidden ones. Where elements
+   with different targets share one visible label (their text, whitespace
+   collapsed), each name begins with that label; where such an element
+   leads to an exact-source page, the words after the label include that
+   source's repository-relative path as the machine answer carries it. No
+   other element is bound by those two rules. Two elements with the same
+   target may share a name.
 2. **Heading order.** One level-1 heading per page, and in document order
    no heading more than one level deeper than the heading before it. The
-   population is every heading after load, including those in a closed
-   `details`, excluding hidden ones. Headings inside a verbatim Butlers body
-   rendered under PWB-REQ-011 are counted and reported but are outside both
-   rules, since Polaris renders them as written.
+   population is every `h1`–`h6` and `role="heading"` element after load,
+   including those in a closed `details`, excluding hidden ones. No
+   heading is exempt.
 3. **Whole-surface population.** Both checks run over every Polaris page
-   served at one whole-project evaluation, including the entry page and
-   each exact-source route response, and report the page count and, per
-   page, the element and heading populations. A smaller fixture never
-   stands in.
+   served at one whole-project evaluation: the entry page and one
+   exact-source route response for each source the machine answer lists,
+   served or refused. The list comes from the machine answer, not from the
+   renderer's links. Each check reports the page count and, per page, the
+   element and heading populations. A smaller fixture never stands in.
 
 The verification limbs add a separate Case running both checks over those
-pages; Observable limbs for the two properties and the denominators; an
-Oracle that groups interactive elements by computed name and compares each
-group's targets, reads heading levels in order, and requires the page count
-to equal the pages served and each per-page denominator the population the
-browser enumerates; and Falsifier limbs for a shared name across different
-targets, a skipped level or second level-1 heading outside a verbatim body,
-and a check over fewer pages or a smaller population.
+pages; Observable limbs for the properties and the denominators; an Oracle
+that groups interactive elements by computed name and compares each
+group's targets, groups them again by visible label and checks each shared
+label's name prefix and, for exact-source targets, the path, reads heading
+levels in order, and requires the page count to equal the pages listed from
+the machine answer and each per-page denominator the defined population;
+an independence line taking the page list and expected paths from the
+machine answer; and Falsifier limbs for a shared name across different
+targets, a shared-label name without its label prefix or expected path, a
+skipped level or second level-1 heading, and a check over fewer pages or a
+smaller population.
 
 New scenarios: "Repeated source links are told apart by name" and "Name and
 heading checks cover every Polaris page".
@@ -111,12 +121,49 @@ heading checks cover every Polaris page".
   the others the obligation binds. A page count and per-page denominators
   equal to what the evaluation serves are the only ones that make "no
   shared names" mean anything (verification rule 4).
-- **Why verbatim headings are exempt.** PWB-REQ-011 renders a Butlers body
-  as written; a skipped level there is Butlers' and cannot be repaired by
-  Polaris without breaking verbatim rendering. It is still counted, so it
-  stays visible.
+- **Why no heading is exempt.** *(Repaired 2026-10-14, round-2 finding 4.
+  This bullet first said "Why verbatim headings are exempt": "PWB-REQ-011
+  renders a Butlers body as written; a skipped level there is Butlers' and
+  cannot be repaired by Polaris without breaking verbatim rendering". That
+  reason did not hold.)* [Observed at `814fbcc1`] The exact-source route
+  renders each verbatim body as escaped text in a `<pre>`
+  (`apps/three-surface-poc/src/polaris-source.ts` line 123), so it puts no
+  heading element on the page. Butlers-declared Markdown on the entry page
+  goes through `apps/three-surface-poc/src/polaris-markdown.ts`, which sets
+  each heading's level itself (line 179):
+  `Math.min(6, anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading)`,
+  where `heading[1]` is the heading's run of `#` marks. Polaris already chooses those
+  levels, so it can close a gap without changing a word. [Inferred] That
+  re-basing keeps Butlers' relative jumps, so a Butlers document that
+  skips a level would render a skip today. The exemption covered nothing,
+  and an exemption for those headings would have excused a gap Polaris can
+  repair. Whether any exemption should return is put to the owner (packet,
+  question 8).
 - **Why the name begins with the visible label.** Speech-input users
   activate a control by saying what they see.
+- **Why the label rules bind only shared labels, and the path only
+  exact-source targets.** A label that no differently targeted element
+  shares needs no telling apart. A path is the one name an oracle can take
+  from outside the renderer for an exact-source target: PWB-REQ-011's
+  machine recovery ties each route to its source, and the machine answer
+  carries the source. For other shared labels, such as a disclosure
+  toggle repeated per figure, the spec defines no target-to-item mapping
+  an oracle could use, so only the label prefix and the distinct-name rule
+  bind them. [Inferred] The model's source record carries a `path` field
+  (`packages/three-surface-poc-core/src/project-shape-coverage.ts` line
+  189 at `814fbcc1`). [Unknown] Whether the served machine answer exposes
+  that path for every listed source was not checked here. If it does not,
+  this rule also needs PWB-REQ-020 to carry it (packet, question 7).
+- **Why the population includes links in a closed disclosure.** A reader
+  who opens the disclosure meets them, so they can share a name with a
+  link outside it. The heading population already counted them. Today's
+  checker reads the accessibility tree
+  (`apps/three-surface-poc/src/polaris-accessibility.ts` line 525), which
+  leaves them out, so the two would report different denominators unless
+  the requirement names one.
+- **Why the page list comes from the machine answer.** A list taken from
+  the renderer's own links would share the implementation's view of which
+  pages exist (CC-SPEC-4's independence limb).
 - **Why only Polaris.** PWB-REQ-016 governs Polaris. The other surfaces
   belong to POC-REQ-061 in the Three-Surface POC specification, which is a
   separate signed change.
@@ -164,6 +211,13 @@ See `IMPACT-LEDGER.md`. Signing authorizes no build.
   hashes post-apply bytes against the current tree, so whichever is signed
   second is regenerated with `--write` first and its new manifest is
   reviewed again.
+  *(Marked 2026-10-14: the anchor-resolution amendment (P-96) is no longer
+  pending. It was signed v1.0 that day
+  (`.syzygy/governance/decisions/PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md`),
+  so its patch is now part of the signed `spec.md`, and four spec patches
+  stay pending: this one, P-98, P-86 and P-85. This package was
+  regenerated over the moved `spec.md` in the cycle-2 repair, as the
+  sentence above foresaw.)*
 - Signing moves PWB `spec.md`, so it interacts with the P-95
   behaviour-contract re-pin: pins re-written to the tree-framing sign-off
   go stale again, and P-95's acts, if not yet performed, are regenerated
@@ -181,3 +235,10 @@ round, the findings were repaired once and no round 2 was dispatched; see
 ran on the owner's direction of 2026-10-14 and returned `REVISE`
 (`docs/reviews/R-PWB-ACCESSIBLE-NAME-AMENDMENT-2-RAW.md` line 4); see
 `ROUND-2-DISPOSITIONS.md`. The bytes remain unconfirmed.)*
+
+**Round-2 findings repaired once on 2026-10-14, unconfirmed pending round
+3.** On the owner's further direction that day, every round-2 finding,
+notes included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)"). One fresh round 3 is briefed in
+`../pwb-opening-index-amendment/REVIEW-BRIEF.md` §"Round 3" and has not
+run. The repair added packet questions 7 and 8.

@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md b/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
-index 758018f..d413db9 100644
+index 758018f..5347fd5 100644
 --- a/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
 +++ b/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
-@@ -44,15 +44,15 @@
+@@ -44,15 +44,15 @@ Every clause was judged exactly once and lands in exactly one part:
  | Family | Accepted clauses | Part A (mapped) | Part B1 (applicable, uncovered) | Part B2 (believed not applicable) |
  |---|---|---|---|---|
  | RFC1 | 39 | 12 | 4 | 23 |
@@ -21,7 +21,7 @@ index 758018f..d413db9 100644
  
  The Part A clause set is exactly the `contracts[]` union in the
  generated `GOVERNING-DEPENDENCIES.md` (verified below).
-@@ -85,8 +85,15 @@
+@@ -85,8 +85,15 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
  | RFC1-23 | Act-assignment: work/execution acts stay Execution-plane, never promoted to Observed-plane verification without a retained gate artifact | covered — Consistent with the scope Context disclosing the work-item/test-evidence/runtime relationship as Unknown | POC-REQ-043 |
  | RFC1-24 | Positive status flows only through a challengeable Claim with resolvable provenance; no evidence-to-status backdoor | covered | POC-REQ-031, POC-REQ-043 |
  | RFC1-25 | Only relations the model actually holds are rendered; no fabricated adjacency/grouping | covered | POC-REQ-050, POC-REQ-052 |
@@ -37,14 +37,14 @@ index 758018f..d413db9 100644
  | RFC1-31 | Work items: scheduler-owned lifecycle, mirrored with labeled staleness when adapter degrades, never invisibly | covered — Direct match | POC-REQ-013 |
  | RFC1-31 | Observed classes: appear in snapshot / absence is a fact / failed observation renders Unknown with named reason | covered | POC-REQ-003 |
  | RFC2-1 | Observed inputs (repo, Dolt DB) identified by revision/hash, not by description | covered — Only the revision-identification limb of the 11-item list is touched; challenge/evidence/act-record items (4,6,9,11) are unbuilt | POC-REQ-001, POC-REQ-004, POC-REQ-010 |
-@@ -99,6 +106,17 @@
+@@ -99,6 +106,17 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
  | RFC2-23 | Partial/failed observation never presented as complete | covered — "never partial-as-complete" is near-verbatim to the Partial-snapshot rendering obligation | POC-REQ-003 |
  | RFC2-24 | Unknown claim carries reason #10 `source-uncaptured-or-unreachable` | covered — Inferred reuse of the Cap1 closed reason vocabulary via the shared runtime spine; exact reason string not directly quoted in the digest | POC-REQ-003, POC-REQ-013 |
  | RFC2-24 | Reason #5 `mapping-coverage-absent` — absence/Unknown regions justified by a coverage record, never a silent gap | covered — Empty-plot-rule pattern; borderline since digest doesn't name the reason explicitly | POC-REQ-051 |
 +| RFC2-24 | Every Unknown epistemic record on an entity, relationship or claim carries exactly one primary reason from the closed twelve, with its resolution route | covered — Amendment row | POC-REQ-060 |
 +| RFC2-25 | A rendering tier, where one applies, is one of the closed six and sits inside its parent label | covered — Amendment row | POC-REQ-060 |
 +| RFC2-24 | Secondary annotations, where present, are drawn from the same closed twelve and travel marked as secondary | **Unknown** — Amendment row; POC-REQ-060's record shape names the primary reason only | — |
-+| RFC2-25 | An `asserted-by-worker` claim sits inside its parent label, Inferred, and is "never green": it renders with the declared Inferred encoding, which the legend distinguishes from Observed | covered — Amendment row; exercised by a fixture while no agent asserts anything | POC-REQ-060 |
++| RFC2-25 | An `asserted-by-worker` claim sits inside its parent label, Inferred, and is "never green": it renders with the declared Inferred encoding, which the legend distinguishes from Observed | covered — Amendment row; exercised by a fixture while no agent asserts anything; `[Inferred]` the covered reading of "never green" is "rendered unlike Observed": RFC2-25's `gate-backed` row lists "green" among positive status claims, and on the reading "never rendered as a positive status" this limb is the Unknown positive-status row below | POC-REQ-060 |
 +| RFC2-25 | An `asserted-by-worker` claim is "never a status input" in the two computations the POC performs: it counts toward no Observed total and clears no Unknown | covered — Amendment row; exercised by a fixture while no agent asserts anything; any other status input is the Unknown row below | POC-REQ-060 |
 +| RFC2-25 | An `asserted-by-worker` claim is "never a status input" to a positive status (Aligned, Converged, reconciled, green) | **Unknown** — Amendment row; the POC computes no such status for the oracle to observe | — |
 +| RFC2-25 | An `asserted-by-worker` claim is "Visible": it is rendered where its subject is rendered | **Unknown** — Amendment row; POC-REQ-060 fixes the encoding wherever an Inferred record appears, and no requirement requires one to appear | — |
@@ -55,15 +55,15 @@ index 758018f..d413db9 100644
  | RFC4-2 | Output determinism class declared/exhibited (derivation-deterministic) | covered — "structure facts deterministic per revision" is item 5's determinism-class vocabulary | POC-REQ-004 |
  | RFC4-2 | Failure states named + mapped to rendering | covered — item 6's failure-state mapping duty | POC-REQ-003, POC-REQ-013 |
  | RFC4-2 | Authority boundary: write surface empty unless authorized | **Unknown** — scope bars writes to the observed project, but no enumerated requirement's oracle checks an empty write surface | — |
-@@ -120,8 +138,22 @@
+@@ -120,8 +138,22 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
  | RFC4-27 | Unmapped/absence claim requires an executed coverage record with reconciling counts, never silent absence | covered — "unmapped code a visible Unknown region with reconciling counts" is this clause's coverage-record duty applied to Orrery | POC-REQ-051 |
  | RFC5-16 | (a) Observation-capture ingest screening for Butlers repo structure | covered — POC-REQ-002's "never indexed contents" sentinel sweep structurally avoids most of the screening concern for code bodies, but doesn't test the secret-detection-policy mechanism itself | POC-REQ-002 (partial) |
  | RFC5-16 | (b) Beads/Dolt work-item ingest screening | **Unknown** — POC-REQ-010/013 test provenance and Unknown-on-failure, not secret screening of ingested work-item text | — |
-+| RFC6-1 | One identity per subject on every surface and in the machine answer, and, for a subject a source authority owns, equal to the identity that authority gives it | covered — Amendment row; the machine answer's records are in POC-REQ-054's identity population, and which subjects are owned is decided by its stated procedure | POC-REQ-054 |
++| RFC6-1 | One identity per subject on every surface and in the machine answer, and, for a subject a source authority owns, equal to the identity that authority gives it | covered — Amendment row; the machine answer's records are in POC-REQ-054's identity population, its oracle attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries, and which subjects are owned is decided by its stated procedure | POC-REQ-054 |
 +| RFC6-1 | No surface-local handle (file path, node index, work-item row, layout coordinate, scene object id) is ever the identity that crosses a surface boundary, a URL or an endpoint | **Unknown** — Amendment row; no requirement classifies an identity value as a surface-local handle, and POC-REQ-054 checks equality with the owning authority's identity only | — |
 +| RFC6-1 | A selection reference is RFC 0001's (entity kind, durable entity identity) tuple, and the kernel mints nothing new for selection | **Unknown** — Amendment row; the POC's entity kinds are not RFC1-5's kinds and no requirement observes the tuple | — |
 +| RFC6-1 | Selection references carry evaluation-identity and scenario-context qualifiers | **Unknown** — Amendment row; the POC serves one evaluation and no scenario context, and no requirement observes qualifiers | — |
-+| RFC6-3 | One subject identity names the same subject on all three surfaces and in the machine answer | covered — Amendment row; POC-REQ-054's oracle attributes each element and record to its subject by the source record it renders, and counts subjects named by more than one identity value and identity values naming more than one subject | POC-REQ-054 |
++| RFC6-3 | One subject identity names the same subject on all three surfaces and in the machine answer | covered — Amendment row; POC-REQ-054's oracle attributes each element and record to its subject by the source record it renders or answers for, never by the identity it carries, and counts elements and records attributed to no subject, subjects named by more than one identity value and identity values naming more than one subject | POC-REQ-054 |
 +| RFC6-3 | The same reference resolves at the same evaluation, the same scenario context and the same drawer fact set on all three surfaces | **Unknown** — Amendment row; the POC has no drawer, no scenario context and no evaluation qualifier for the oracle to compare | — |
 +| RFC6-3 | A surface answering at a different evaluation renders the skew, naming both evaluation identities | **Unknown** — Amendment row; no requirement observes cross-evaluation skew | — |
 +| RFC6-12 | Every link between surfaces that exists opens its subject on the target surface by the subject's identity | covered — Amendment row; a subject rendered on two surfaces with no link between them is outside this row | POC-REQ-054 |
@@ -78,7 +78,7 @@ index 758018f..d413db9 100644
  | RFC6-15 | Every answer names the revision/evaluation it was computed at; same input ⇒ same answer | covered — "Filters" limb not present (no query filter surface in POC-REQ list) — folded to revision-stamping + determinism only | POC-REQ-001, POC-REQ-004, POC-REQ-010 |
  | RFC6-16 | An answer declares its scope and never presents a filtered/partial result as full coverage | covered — Bead-prefix scoping (011) and Trajectory's selection-rule/reconciling-counts disclosure (042) are declared-scope instances | POC-REQ-011, POC-REQ-042 |
  | RFC6-17 | An aggregate discloses its membership count/composition rather than a bare total | covered — Fold: only basic count-disclosure limb; full RFC6-22-tuple composition (tier/sibling/challenge/chain-state counts) not built | POC-REQ-042, POC-REQ-051 |
-@@ -180,8 +212,40 @@
+@@ -180,8 +212,40 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
  | RFC9-48 | A tabular/non-3D equivalent serves as the screen-reader-accessible surface | covered — Every Orrery entity links to its exact-table route; parity keeps that route truthful | POC-REQ-053, POC-REQ-020 |
  
  Part A totals `[Observed, computed by the sweep in "Verifying this
@@ -121,7 +121,7 @@ index 758018f..d413db9 100644
  
  ## Part B1 — applicable clauses no requirement covers
  
-@@ -283,7 +347,6 @@
+@@ -283,7 +347,6 @@ are listed so the owner can review or contest each one directly.
  | RFC2-19(a) | Chain-state-local exemption for the reconciliation-pending Unknown; no such chain state exists to exempt |
  | RFC2-21 | Composite "no gap at E" semantics requiring Aligned/challenge/reconciled tracking; none of that machinery exists in POC |
  | RFC2-22 | Fixed-point idempotence across repeated evaluations of an unchanged no-gap snapshot; POC is one-shot, not a repeated-evaluation loop |
@@ -129,7 +129,7 @@ index 758018f..d413db9 100644
  | RFC2-26 | The RFC-vs-OpenSpec implementation-scheduling authority boundary and coverage-matrix obligation — a meta/process rule, not a product entity/state/interface in the CC-SPEC-1 scope statement |
  | RFC3-1 | project.yaml file identity and YAML-dialect conformance — POC never parses project.yaml |
  | RFC3-2 | Manifest-field write-authority classes — POC's model isn't built from governed manifest fields |
-@@ -355,9 +418,7 @@
+@@ -355,9 +418,7 @@ are listed so the owner can review or contest each one directly.
  | RFC5-22 | Destructive-operation gates for effects outlasting a sandboxed run; POC performs no writes and no execution |
  | RFC5-23 | Execution-profile versioning/approval lifecycle; no execution profile exists |
  | RFC5-27 | The RFC5-to-OpenSpec scheduling/binding-phase meta-rule; a process discipline for spec authoring itself, not a runtime entity/behavior/interface the POC capability renders, stores, transitions, queries, or crosses |
@@ -139,7 +139,7 @@ index 758018f..d413db9 100644
  | RFC6-4 | Evaluation-qualifier defaulting for an unqualified selection; POC has no selection-with-evaluation-qualifier concept |
  | RFC6-5 | Nine-value typed selection-resolution outcome set for navigable references; POC's failure-Unknowns are simple event-responses, not this vocabulary |
  | RFC6-6 | Non-conflation of navigation outcomes with Unknown reasons; depends on RFC6-5's outcome set, absent here |
-@@ -366,7 +427,6 @@
+@@ -366,7 +427,6 @@ are listed so the owner can review or contest each one directly.
  | RFC6-9 | Rename-stability of URLs across capability renames over time; POC observes one fixed revision per run, no multi-revision comparison possible |
  | RFC6-10 | Evaluation-pinned vs unpinned URL temporalities; POC has no multi-evaluation URL system |
  | RFC6-11 | Retired/merged-identity rendering and redirect prohibition; POC has no retirement/succession lifecycle |
@@ -147,7 +147,7 @@ index 758018f..d413db9 100644
  | RFC6-21 | Minimal-by-default disclosure depth vs. endpoint full-set serving; POC's no-script fallback is a different (robustness) mechanism, no disclosure-depth toggle in scope |
  | RFC6-24 | Explicit Base/Proposed/Historical scenario context; POC renders exactly one fixed observed revision, no proposal overlay or historical access |
  | RFC6-25 | Context traveling with selection across surfaces/URLs/queries; depends on RFC6-24's construct, absent here |
-@@ -466,15 +526,15 @@
+@@ -466,15 +526,15 @@ are listed so the owner can review or contest each one directly.
  | RFC9-51 | Illumination/highlight as non-truth-bearing interaction state; no highlighting feature established in POC scope |
  | RFC9-52 | The RFC-prose-to-OpenSpec authority boundary and coverage-matrix obligation; this non-binding sweep doesn't cite RFC9 as binding authority for the POC spec |
  

@@ -3,6 +3,10 @@
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
 > accepted. This packet puts seven questions to the owner, and only the
 > owner's answer binds anything (VIS-4).
+> *(Marked 2026-10-14: nine questions now. The cycle-2 repair added
+> Questions 8 and 9.)*
+> *(Marked 2026-10-14, cycle 3: twelve questions now. The cycle-3 repair
+> added Questions 10, 11 and 12.)*
 
 **Status: round 1 `REVISE`, repaired once, unconfirmed; owner decides.**
 Drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12, slice A),
@@ -21,6 +25,33 @@ findings and seven notes
 (`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-2-RAW.md` line 4). The bytes are
 still not cleared; the findings are open and classified in
 `ROUND-2-DISPOSITIONS.md` beside this file.)*
+*(Marked 2026-10-14, later the same day: "the findings are open" is no
+longer true. On your further direction that day, relayed by the lead
+session, one more cycle ran.)* **Status now: round-2 findings repaired once
+on 2026-10-14, unconfirmed pending round 3.** Every round-2 finding, notes
+included, was repaired once (`ROUND-2-DISPOSITIONS.md` §"Repairs,
+2026-10-14 (cycle 2)"). One fresh round 3 is briefed in `REVIEW-BRIEF.md`
+§"Round 3": a notes-only verdict clears the bytes it reads, and a `REVISE`
+comes back to you with its findings. Two repairs needed your content
+choice and are put to you as Questions 8 and 9.
+*(Marked 2026-10-14, round 3: "unconfirmed pending round 3" and "One fresh
+round 3 is briefed" are no longer true. Round 3 ran and returned `REVISE`
+(`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-3-RAW.md` line 4): one revise
+finding and nine notes, all open in `ROUND-3-DISPOSITIONS.md`. Under the
+stopping rule the package is not repaired again and the bytes are not
+cleared; it comes to you with those findings open.)*
+*(Marked 2026-10-14, cycle 3: "not repaired again" and "with those
+findings open" are no longer true. On your direction that day, "One more
+cycle each", relayed by the lead session, one more cycle ran.)*
+**Status now: round-3 findings repaired once on 2026-10-14, unconfirmed
+pending round 4.** Every round-3 finding, notes included, was repaired
+once (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)"), and the
+package was regenerated over the class-granular sign-off (P-86) that moved
+the specification the same day. One fresh round 4 is briefed in
+`REVIEW-BRIEF.md` §"Round 4" under the same stopping rule: a notes-only
+verdict clears the bytes it reads, and a `REVISE` comes back to you with
+its findings. Three repairs needed your content choice and are put to you
+as Questions 10, 11 and 12; each recommends the version drafted.
 
 ## What you would be signing
 
@@ -33,9 +64,22 @@ whole project. Read `SEMANTIC-DELTA.md` for the full account. In short:
   specification names. If a target is missing, its row says so and links
   nowhere.
 - **How far in each one starts.** Each row shows the word at which its
-  target begins, and one line after the last target gives the largest of
-  those numbers and the page's total. Words are counted one stated way, so
-  anyone can recount them.
+  target begins. One line gives the largest of those numbers and the
+  page's total. It stands just after the start (the heading) of the
+  target that begins last, so it comes before that target's material, not
+  after it. Its text is the two numbers only. Words are counted one stated
+  way, so anyone can recount them.
+  *(Repaired 2026-10-14: this bullet first said "one line after the last
+  target", which could be read as after the last row's target or after the
+  whole of a target; round-2 finding 5.)*
+  *(Repaired 2026-10-14, cycle 3: the bytes now say what this bullet
+  promised, that the line's visible text is its numbers and their unit
+  only and that "stopping line" is never shown; round-3 finding 3. One
+  refinement: if that start sits inside a collapsed disclosure, a
+  paragraph, a list or a table, the line goes just after the outermost of
+  them, so it is never hidden and never mid-sentence; round-3 findings 1
+  and 6, Question 11. If no target is on the page, the line follows the
+  index and gives only the total.)*
 - **Never a verdict.** The index does not say a question is answered, is
   not a claim, and stays out of the walkthrough record. Whether the page
   makes Butlers understandable stays your judgment (RFC7-31).
@@ -62,6 +106,17 @@ requirement, capability row, contract-coverage row or warrant moves.
 | Decline | PWB-REQ-010 stays as signed: no index, and nothing tells a reader where the project material ends. |
 | Revise | Name what to change; a new version gets a new review round. |
 | **Order one confirmation round** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
+
+*(Marked 2026-10-14: the confirmation-round option is spent. Round 2 ran
+and returned `REVISE`; on your direction the findings were repaired once
+and round 3 is briefed. Until round 3 returns, this version is not offered
+for signing, so Question 1 waits on round 3.)*
+*(Marked 2026-10-14, round 3: round 3 has returned `REVISE`, so this
+version is still not offered for signing. Question 1 now waits on your
+direction on the round-3 findings.)*
+*(Marked 2026-10-14, cycle 3: you directed one more cycle; the round-3
+findings are repaired once and round 4 is briefed. Until round 4 returns,
+this version is not offered for signing, so Question 1 waits on round 4.)*
 
 ## Question 2 — what the rows are keyed to
 
@@ -135,6 +190,79 @@ home page.
 | **File a separate POC-REQ-061 bead** (recommended) | The coordinator files it; it starts with its own premise check against the POC specification. |
 | Drop it | Only Polaris gets the checks in slice C. |
 
+## Question 8 — how the rows are named (added 2026-10-14, cycle 2)
+
+The round-1 repair said each row's accessible name "names its question".
+The round-2 review found that no clause says what a question's words are,
+so nothing could check it (raw finding 2). This version drops that sentence:
+each row shows its declared row name from the table ("purpose", "gaps",
+and so on), and the check compares the shown name with the table.
+
+| Option | Meaning |
+|---|---|
+| **Row names from the table; no separate accessible-name rule** (recommended; this version) | Checkable now. If you also sign the accessible-name amendment (P-99), the rows are links like any other and its distinct-name rule covers them. If you sign only this one, nothing stops another link on the page sharing a row's words. |
+| Declare an accessible name per row | For example "purpose, in the opening index". This needs a new name column in the table and its own check, failure case and scenario. Not drafted. |
+
+## Question 9 — the stopping line's name and place (added 2026-10-14, cycle 2)
+
+The line stands just after the start of the target that begins last, so a
+reader meets it before that target's material. The round-2 review noted
+that a line called a "stopping line", placed there, could read as leave to
+stop before the last question's material (raw finding 5). Its text is only
+two numbers, and the name is the specification's, never shown on the page.
+
+| Option | Meaning |
+|---|---|
+| **Keep the name and place** (recommended; this version) | The start of the last target is the only place a machine can fix without judging where an answer's material ends (RFC7-31). The line says nothing about stopping. |
+| Rename it, for example "reach line" | Same place and text. Only the specification's word changes, so the name stops suggesting a place to stop. A revision. |
+| Move it to the end of the first reading level | Needs the requirement to say where that level ends. Not drafted. |
+
+*(Marked 2026-10-14, cycle 3: the round-3 review found that "Its text is
+only two numbers, and the name is … never shown on the page" was this
+packet's reading, not a clause, so the recommended option's reason rested
+on a property the bytes did not pin (raw finding 3). The bytes now carry
+both: "The stopping line's visible text is its numbers and their unit,
+and nothing else", and "Stopping line" "is never shown on the page". The
+options above are unchanged.)*
+
+## Question 10 — which viewport the numbers describe (added 2026-10-14, cycle 3)
+
+A collapsed or hidden passage can depend on the window size, so the word
+counts can too. The round-3 version let the checker pick the window size,
+which left open which numbers the page itself must show (raw finding 5).
+
+| Option | Meaning |
+|---|---|
+| **The window the page opens in** (recommended; this version) | The page shows the counts for the size it was opened at, and a check says which size it used. In practice the page counts its own words after it loads. Nothing is fixed in advance. The round-2 review observed that today's `@media` rules hide no text; that is not re-measured here. |
+| One fixed size, named in the requirement | For example 1280 by 800. The numbers are the same for everyone, but on another window they may not match what the reader sees. A revision. |
+
+## Question 11 — where the line goes when the last target starts mid-text (added 2026-10-14, cycle 3)
+
+The line goes just after the start of the last-beginning target. Two
+starts are awkward. The claim-strength legend is a collapsed disclosure
+([Observed] `apps/three-surface-poc/src/polaris.ts:408`, no `open`
+attribute), so a line just inside it would be hidden on arrival (raw
+finding 1). The `exact-requirement` target starts at a link, so a line
+just after it would stand mid-sentence, or inside a list or table, where it
+is not valid markup (raw finding 6).
+
+| Option | Meaning |
+|---|---|
+| **Step outward** (recommended; this version) | The line goes just after the outermost collapsed disclosure, paragraph, heading, list or table that holds the target's start; otherwise right after the start. It is always visible on arrival and always between blocks. It can stand a little further down than the start. |
+| Collapsed disclosures only | The line steps out of a collapsed disclosure only, and otherwise stands right after the start, even mid-sentence. A revision. |
+
+## Question 12 — how the check finds each target's heading (added 2026-10-14, cycle 3)
+
+The check finds most targets by their visible heading text. No clause
+says what that text is, so whoever writes the check takes the words from
+the page; it must now publish them before it runs, but they are still the
+page's words (raw finding 4). The delta says this independence is partial.
+
+| Option | Meaning |
+|---|---|
+| **Disclose it, as now** (recommended; this version) | The check's heading words are fixed and published before each run; the delta states that they share the page's vocabulary. Headings stay free to word. |
+| Tie each heading to its row name | Each target's heading must contain its row name ("purpose", "gaps", …), so the check needs no words of its own. This constrains how headings are worded and needs a clause, a failure case and a scenario. A revision. |
+
 ## Order against the other pending packages
 
 The accessible-name (P-99), anchor-resolution (P-96, PWB-REQ-014),
@@ -145,6 +273,14 @@ re-derived 2026-10-03 (an earlier count of 24 orders over four patches
 omitted P-96) — and P-85 and P-86 also share a design decision and a
 capability row number. Each manifest is built over the current tree, so
 whichever is signed second is regenerated and reviewed again first.
+*(Marked 2026-10-14: the anchor-resolution package (P-96) is no longer
+pending. You signed it v1.0 that day, so four spec patches remain
+pending. This package was regenerated over the moved specification in the
+cycle-2 repair.)*
+*(Marked 2026-10-14, cycle 3: the class-granular package (P-86) is no
+longer pending either. You signed it v1.0 that day, so three spec patches
+remain pending: this one, P-99 and P-85. This package was regenerated
+over the moved specification in the cycle-3 repair.)*
 
 **Interaction with the P-95 re-pin.** Signing this package moves PWB
 `spec.md` again. The behaviour-contract pins that P-95's re-pin acts would

@@ -1,6 +1,6 @@
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -1793,17 +1793,64 @@
+@@ -1857,17 +1857,85 @@
  narrative change, and its record SHALL identify that mode.
 
 +- **Distinct accessible names.** On a Polaris page, two interactive elements
@@ -10,27 +10,39 @@
 +  - A link's target is its resolved `href`; a `summary`'s controlled region
 +    is its `details` element; a button's or form control's is the element
 +    its `aria-controls` names, or the control itself when it names none.
-+  - A visible label repeated once per item or source SHALL be told apart in
-+    the accessible name by the item or source it belongs to. The accessible
-+    name SHALL begin with the visible label, and the words added to it name
-+    the item or source by the identity PWB-REQ-014 renders for it.
++  - The interactive population is every link with an `href`, button,
++    `summary` and form control in the document after load, including those
++    inside a closed `details`, and excluding those hidden by the `hidden`
++    attribute, `aria-hidden="true"` or a computed `display: none`.
++  - An element's visible label is its text content with each whitespace run
++    collapsed to one space and the ends trimmed. Where elements of that
++    population whose targets differ share one visible label on a page, each
++    of their accessible names SHALL begin with that visible label. Where
++    such an element's target is an exact-source route response, the words
++    after the label SHALL include the repository-relative path the machine
++    answer carries for the source that route serves (PWB-REQ-011's machine
++    recovery). These two rules bind no other element.
 +  - Two elements with the same target may share a name.
 +- **Heading order.** A Polaris page SHALL have exactly one level-1 heading,
 +  and in document order no heading SHALL be more than one level deeper than
 +  the heading before it.
-+  - The heading population is every heading element in the document after
-+    load, including those inside a closed `details`, and excluding those
-+    hidden by the `hidden` attribute, `aria-hidden="true"` or a computed
-+    `display: none`.
-+  - Headings inside a verbatim Butlers body rendered under PWB-REQ-011 are
-+    counted and reported but are outside the level-1 and order rules:
-+    Polaris renders them as written.
++  - The heading population is every `h1` to `h6` element, at its own level,
++    and every element with `role="heading"`, at its `aria-level`, in the
++    document after load, including those inside a closed `details`, and
++    excluding those hidden by the `hidden` attribute, `aria-hidden="true"`
++    or a computed `display: none`.
++  - No heading in that population is exempt, including one Polaris renders
++    from Butlers-declared text.
 +- **Whole-surface population.** The checks in this requirement SHALL run
 +  over every Polaris page served at one whole-project evaluation, including
 +  the entry page and each exact-source route response PWB-REQ-011 serves.
 +  Each check SHALL report the number of pages and, per page, the complete
 +  interactive and heading population as its denominators. A fixture smaller
 +  than that population SHALL NOT stand in for it.
++  - The pages are the entry page and one exact-source route response for
++    each source the machine answer at that evaluation lists, whether that
++    response serves the source's body or refuses it. The list comes from the
++    machine answer, never from the links the renderer emits.
 +  - [Unknown] How large these populations are on Butlers' Polaris today,
 +    and how many names they share: no current figure is quoted here. They
 +    are measured on a fresh private-daemon capture at a named commit when
@@ -48,45 +60,56 @@
 -  no pointer-only action exists, and the walkthrough record names its mode.
 +  no pointer-only action exists, and the walkthrough record names its mode; no
 +  two interactive elements with different targets share an accessible name,
-+  no heading skips a level, there is one level-1 heading, and each sweep
-+  reports its denominator.
++  each element sharing a visible label with a differently targeted one has a
++  name that begins with that label and, for an exact-source target, includes
++  that source's path, no heading skips a level, there is one level-1 heading,
++  and each sweep reports its denominator.
  - **Oracle**: compare the complete interactive/path population to keyboard and
    accessibility-tree traces, then apply PWB-REQ-021's prompt oracle.
 +  Separately, group the interactive elements by computed accessible name and
-+  compare each group's targets, and read heading levels in document order;
-+  each check's page count must equal the pages Polaris serves at that
-+  evaluation, and each per-page denominator the population the browser
-+  enumerates on that page.
++  compare each group's targets; group them again by visible label and, in
++  each group whose targets differ, compare the start of each computed name
++  with the label and, for each exact-source target, look for the source's
++  path in the words after it; and read heading levels in document order;
++  each check's page count must equal the number of pages listed from the
++  machine answer at that evaluation, and each per-page denominator the
++  population this requirement defines on that page.
  - **Oracle independence**: DOM/accessibility-tree enumeration and input events
    come from a browser driver outside the renderer.
++  The page list and each expected source path come from the machine answer,
++  never from the rendered page.
  - **Falsifier**: a color/layout-only distinction, unreachable target, pointer-
 -  only action, keyboard trap, missing mode flag or failed cold-open path.
 +  only action, keyboard trap, missing mode flag or failed cold-open path; two
-+  interactive elements with different targets sharing an accessible name; a
-+  skipped heading level or a second level-1 heading outside a verbatim body;
-+  or a check run over fewer pages, or a smaller population, than the
-+  evaluation serves.
++  interactive elements with different targets sharing an accessible name; an
++  element sharing a visible label with a differently targeted one whose name
++  does not begin with that label or, for an exact-source target, omits that
++  source's path; a skipped heading level or a second level-1 heading; or a
++  check run over fewer pages, or a smaller population, than the evaluation
++  serves.
 
  #### Scenario: Keyboard-only owner reaches exact intent
-@@ -1812,4 +1859,21 @@
+@@ -1876,4 +1944,23 @@
  - **THEN** every prompt and exact-source path remains operable and understandable
  - **AND** the retained run record identifies keyboard-only mode
 +
 +#### Scenario: Repeated source links are told apart by name
 +
-+- **WHEN** a Polaris page renders the same visible label once for each of
-+  several sources
-+- **THEN** each of those links' accessible names names the source it routes
-+  to
++- **WHEN** a Polaris page renders the same visible label on several links,
++  each routing to a different source's exact-source route response
++- **THEN** each of those links' accessible names begins with that visible
++  label and then includes the repository-relative path the machine answer
++  carries for the source it routes to
 +- **AND** no two of them with different targets share an accessible name
 +
 +#### Scenario: Name and heading checks cover every Polaris page
 +
 +- **WHEN** the distinct-name and heading-order checks run
 +- **THEN** they run over every interactive element and heading of every
-+  Polaris page served at a whole-project evaluation and report the page
-+  count and those populations
-+- **AND** a skipped heading level, a second level-1 heading or a shared name
-+  across different targets fails the check
++  Polaris page served at a whole-project evaluation, the pages listed from
++  the machine answer, and report the page count and those populations
++- **AND** a skipped heading level, a second level-1 heading, a shared name
++  across different targets or a shared-label name that does not begin with
++  its visible label fails the check
 
  ```yaml

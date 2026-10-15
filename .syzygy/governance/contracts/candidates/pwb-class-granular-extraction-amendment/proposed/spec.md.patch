@@ -1,6 +1,6 @@
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -72,4 +72,33 @@
+@@ -72,4 +72,43 @@
    with their `MANIFESTO.md` when present.
    - Narrative links do not recurse.
 +  - Every source carries the name of the rule that admitted it, from this
@@ -12,6 +12,16 @@
 +    its `MANIFESTO.md`, as `roster-tree`. A source that a loaded profile's tree
 +    population admits carries that population's `pathPattern` as its rule
 +    name.
++  - A source that more than one rule admits carries one rule name, decided
++    in this order: the root index is `root-index`, whatever else admits it;
++    a pillar's index file is `pillar-index`, even when another pillar's
++    index names it; a baseline spec, a roster `butler.toml`, or a source a
++    loaded profile's tree population admits, is admitted by that tree
++    population alone and carries its name, even when a pillar's index names
++    it; and any other file a pillar's index names, a roster `MANIFESTO.md`
++    included, is `pillar-named-file`. A source that two tree populations of
++    one loaded profile admit carries the name of the first the profile
++    declares.
 +  - Each rule declares whether it needs the root index read. The flag belongs
 +    to the rule; a loaded profile sets it for each tree population it
 +    declares. The first and second rules need the root index; the third and
@@ -34,7 +44,7 @@
 +    it was derived without a read root index.
  - A **declared item** has one class from this closed set, read by that class's
    extraction rule (for a loaded profile, the class's grammar rows):
-@@ -107,4 +136,19 @@
+@@ -107,4 +146,19 @@
      that is missing fails the source as missing-heading, and one that occurs
      more than once fails it as duplicate-key.
 +  - Wherever the shared rules above, or a shape or key form below, fail the
@@ -54,7 +64,7 @@
 +      items beneath them are not read.
    - When a list or table row declares more than one heading, the shape reads
      the section under each in the order declared, as it reads one section, and
-@@ -204,5 +248,7 @@
+@@ -204,5 +258,7 @@
      prefix; exactly one container shape; and exactly one item key form.
    - A tree population is declared by a path pattern, `pathPattern`, whose one
 -    `<key>` segment is a single directory name.
@@ -63,7 +73,7 @@
 +    index.
    - A profile cannot add a class, a shape or a key form.
  - Until a profile is declared for Butlers, the observer reads Butlers by the
-@@ -236,7 +282,28 @@
+@@ -236,7 +292,28 @@
    - Unicode is NFC-normalized; no case folding, stemming or punctuation
      rewriting occurs.
 -  - A missing heading, malformed row/list/TOML, unexpected duplicate key or
@@ -95,7 +105,7 @@
 +    assigned has an Unknown item denominator in it.
  - Butlers' profile declares exactly the following extraction grammar, which is
    literal:
-@@ -259,5 +326,6 @@
+@@ -259,5 +336,6 @@
      and Lore README; the first-column RFC link text is the key.
    - `baseline-spec` is each Git-tree path matching
 -    openspec/specs/<one-directory>/spec.md; the one directory is the key.
@@ -103,7 +113,7 @@
 +    tree population does not need the root index.
    - `topology-component` is each first-column bold label in tables under an H2
      in lay-and-land/components.md whose text begins with a decimal plus
-@@ -269,5 +337,6 @@
+@@ -269,5 +347,6 @@
    - `roster-identity` is each Git-tree path
      roster/<one-directory>/butler.toml; the directory is the key and the TOML
 -    `[butler].name` must be non-empty.
@@ -111,7 +121,7 @@
 +    root index.
  - The source-path denominator remains known through body-read failures.
    - An unavailable body's within-source item denominator is Unknown, never
-@@ -338,4 +407,10 @@
+@@ -338,4 +417,10 @@
  Unknown or contradicted. A source whose item population cannot be read SHALL
  retain its source identity while its item denominator renders Unknown.
 +Each class of a source SHALL be accounted for on its own: a class that fails
@@ -122,14 +132,16 @@
 +count derived without a read root index SHALL say so wherever it is shown.
 
  **Verification.**
-@@ -346,7 +421,12 @@
+@@ -346,7 +431,14 @@
    loaded profile with a row that names a shape outside the vocabulary, a
    Butlers profile the loader refuses, and a project other than Butlers with no
 -  loaded profile.
 +  loaded profile; also a source assigned three classes in which one class
 +  fails and two read, a section enclosing the V1 catalog headings that holds
-+  a tenth level-3 heading, and an observation whose root index was not read
-+  while baseline specs and roster directories exist in the tree.
++  a tenth level-3 heading, an observation whose root index was not read
++  while baseline specs and roster directories exist in the tree, and a
++  pillar index that names a baseline spec, a roster `butler.toml` and that
++  roster directory's `MANIFESTO.md`.
  - **Observable**: per-category identities and reconciling counts are visible in
 -  the machine answer and reachable from Polaris.
 +  the machine answer and reachable from Polaris, together with each partially
@@ -137,7 +149,7 @@
 +  anchor and route, and each root-index qualification.
  - **Oracle**: two independent extractors apply the literal grammar that
    governs the project to the revision-bound source population and must produce
-@@ -358,9 +438,27 @@
+@@ -358,9 +450,30 @@
    equals D, with each identity appearing once; malformed/unreadable sources,
    and every class a loaded profile leaves unreadable, carry an Unknown item
 -  denominator.
@@ -149,7 +161,8 @@
 +  section finds every unenumerated heading, the count per source and class
 +  equals the count the answer gives, and each one is surfaced; every source
 +  names the rule that an independent derivation of the source-path
-+  population admits it under; and with the root index unread, every source a
++  population admits it under, by the stated order for a source more than
++  one rule admits; and with the root index unread, every source a
 +  rule that does not need it admitted carries the qualification, while no
 +  source of a rule that needs it mints an item.
  - **Oracle independence**: the expected denominator is extracted from the
@@ -163,12 +176,14 @@
 +  whose item denominator is Unknown presents its own item denominator as
 +  known, an unenumerated heading is skipped or mints an item or is
 +  miscounted, a source names no rule or a rule other than the one that
-+  admitted it, a count derived without a read root index is shown without
-+  that qualification, a rule that needs the root index mints an item when it
-+  was not read, a known source disappears, an admitted item appears twice or
++  admitted it, a source that more than one rule admits names a rule other
++  than the one the stated order gives it, a count derived without a read
++  root index is shown without that qualification, a rule that needs the
++  root index mints an item when it was not read, a known source disappears,
++  an admitted item appears twice or
    lacks a state, a known count does not reconcile, an unavailable body's
    item denominator is presented as known, an item is read through a shape or
-@@ -420,4 +518,39 @@
+@@ -420,4 +533,49 @@
  - **AND** no item is minted for it and the grammar written in these reader
    definitions reads none of its classes
 +
@@ -198,13 +213,23 @@
 +
 +- **WHEN** the root index was not read and the tree holds baseline specs and
 +  roster directories
-+- **THEN** the baseline-spec and roster sources are admitted and every class
-+  and category count that includes them states that it was derived without a
-+  read root index
++- **THEN** the baseline-spec and roster sources are admitted, and every class
++  and category count, and the source-path population total, that includes
++  them states that it was derived without a read root index
 +- **AND** no source of a rule that needs the root index mints an item, nor
 +  does any source of a loaded profile's tree population that does not
 +  declare `rootIndexRequired`
 +- **AND** every admitted source names the rule that admitted it, the root
 +  index itself as `root-index`
++
++#### Scenario: A source two rules admit carries one rule name
++
++- **WHEN** a pillar's index names a baseline spec, a roster `butler.toml`
++  and that roster directory's `MANIFESTO.md`
++- **THEN** the baseline spec is named `baseline-spec-tree` and the
++  `butler.toml` `roster-tree`, each with its tree population's class
++- **AND** the `MANIFESTO.md` is named `pillar-named-file`
++- **AND** the root index is named `root-index` and each pillar's index file
++  `pillar-index`, whichever index also names them
 
  ```yaml

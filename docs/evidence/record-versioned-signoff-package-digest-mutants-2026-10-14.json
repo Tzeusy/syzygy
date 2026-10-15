@@ -1,0 +1,229 @@
+{
+  "subject": "scripts/record_versioned_signoff.py",
+  "subjectSha256": "44cfebb750e1dd463472cd0d2cf07d07aa5ebb4c411752d9779738fb56173410",
+  "commit": "4467361e66d1ad2881143ea9e8016b6b5960c25d",
+  "method": "each mutant rewrites every copy of `old` with `new`, runs --selftest, restores",
+  "unmutatedSelftest": "143 fixtures, 0 failing",
+  "mutants": [
+    {
+      "id": "head-both-forms",
+      "name": "both digest lines accepted",
+      "old": "    if manifests and packages:\n",
+      "new": "    if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a head carrying both a manifest and a package digest line"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "head-one-package-digest",
+      "name": "two package digest lines accepted",
+      "old": "    if len(packages) > 1:\n",
+      "new": "    if len(packages) > 2:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a head carrying two package digest lines"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "form-package-only",
+      "name": "manifest head binds a manifest-less package",
+      "old": "        if form != \"package\":\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a manifest-less package offered a manifest head"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "form-manifest-only",
+      "name": "package head binds a manifest package",
+      "old": "    if form == \"package\":\n",
+      "new": "    if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a manifest package offered a package digest head"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "digest-compared",
+      "name": "package digest not compared",
+      "old": "        if head_digest != reviewed_package_digest(root, pkg, commit):\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a package digest that is not the reviewed set's",
+        "refused: a reviewed sibling record edited after the review",
+        "refused: a reviewed sibling record removed after the review",
+        "refused: a digest over the whole directory, sibling record added since included",
+        "refused: a reviewed path sha256sum would escape is ambiguous"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "reviewed-set",
+      "name": "digest over the working directory, not the reviewed set",
+      "old": "    paths = sorted((p for p in listed.stdout.split(\"\\0\") if p), key=lambda p: p.encode(\"utf-8\"))\n",
+      "new": "    paths = sorted((q.relative_to(root).as_posix() for q in (root / pkg.candidate).rglob(\"*\") if q.is_file()), key=lambda p: p.encode(\"utf-8\"))\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "a `Package digest:` head binds a manifest-less package over the reviewed file set (a sibling record added since left out), records its applied rows, and checks",
+        "a notes-only `Package digest:` head records with a disposition added after the review",
+        "refused: a reviewed sibling record removed after the review",
+        "refused: a digest over the whole directory, sibling record added since included"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "c-order",
+      "name": "digest rows not in LC_ALL=C order",
+      "old": "key=lambda p: p.encode(\"utf-8\"))\n    if not paths:",
+      "new": "key=lambda p: p.encode(\"utf-8\"), reverse=True)\n    if not paths:",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "a `Package digest:` head binds a manifest-less package over the reviewed file set (a sibling record added since left out), records its applied rows, and checks",
+        "a notes-only `Package digest:` head records with a disposition added after the review"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "escape-refused",
+      "name": "escaped path accepted",
+      "old": "        if \"\\\\\" in rel or \"\\n\" in rel or \"\\r\" in rel:\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a reviewed path sha256sum would escape is ambiguous"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "missing-file",
+      "name": "missing reviewed file not refused by name",
+      "old": "        if file.is_symlink() or not file.is_file():\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a reviewed sibling record removed after the review"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "head-keyword-digest",
+      "name": "two-package head ignores a digest line",
+      "old": "r\"verdict|sha-?256|digest\"",
+      "new": "r\"verdict|sha-?256\"",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "refused: a package digest line inside a two-package head"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "rows-rendered",
+      "name": "record carries no applied rows",
+      "old": "    body = \"\".join(f\"{sha}  {path}\\n\" for sha, path in rows)\n",
+      "new": "    body = \"\"\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "a `Package digest:` head binds a manifest-less package over the reviewed file set (a sibling record added since left out), records its applied rows, and checks",
+        "a notes-only `Package digest:` head records with a disposition added after the review"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "rows-population",
+      "name": "recorded row population not checked",
+      "old": "    if [path for _sha, path in rows] != [rel.as_posix() for rel in pkg.applied_subjects]:\n",
+      "new": "    if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "--check fails when the record's applied rows name other subjects"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "applied-reads-rows",
+      "name": "applied ignores the record rows",
+      "old": "    if (root / record).is_file():\n        return _rows_hash_tree(root, record)\n",
+      "new": "    if False:\n        return _rows_hash_tree(root, record)\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "bare patches: check passes, apply writes, applied reads reversal before the record and its rows after"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "generator-compared",
+      "name": "generator regeneration not compared",
+      "old": "        if out.encode(\"utf-8\") != (base / governing).read_bytes():\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "bare patches refused: a declaration the generator does not reproduce"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "targets-checked",
+      "name": "patch target not checked",
+      "old": "        if len(targets) != 1 or targets[0] not in names:\n",
+      "new": "        if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "bare patches refused: a patch targeting no subject"
+      ],
+      "crash_tail": []
+    },
+    {
+      "id": "apply-gated",
+      "name": "apply not gated on the checks",
+      "old": "    problems = findings(root)\n    if problems:\n",
+      "new": "    problems = findings(root)\n    if False:\n",
+      "copies": 1,
+      "exit": 1,
+      "outcome": "killed",
+      "failing_fixtures": [
+        "bare patches refused: a declaration the generator does not reproduce",
+        "bare patches refused: a patch targeting no subject"
+      ],
+      "crash_tail": []
+    }
+  ],
+  "killed": 16,
+  "total": 16
+}

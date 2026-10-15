@@ -38,11 +38,20 @@ in run form (`PWB-REQ-011/016`, line 129).
   a distinct-name check (group by computed name, compare targets) and a
   heading-order check, each reporting its denominator, beside its existing
   unnamed-node check.
-- **Fixture.** Its browser test and entry point run over a page rendered
-  from a whole-project evaluation instead of a smaller fixture.
-- **Rendering.** `polaris.ts`, wherever a repeated visible label (a source
-  link, a disclosure toggle) needs an accessible name that names its item
-  or source, and wherever a heading level skips.
+- **Fixture.** Its browser test and entry point run over every Polaris page
+  served at one whole-project evaluation, the pages listed from the
+  machine answer, instead of a smaller fixture. *(Repaired 2026-10-14: this
+  line first said "over a page rendered from a whole-project evaluation",
+  the pre-repair one-page scope; round-2 finding 5.)*
+- **Rendering.** `polaris.ts`, wherever a shared visible label (a source
+  link, a disclosure toggle) needs an accessible name that begins with the
+  label and, for an exact-source link, includes the source's path, and
+  wherever a heading level skips. [Inferred] `polaris-markdown.ts` (line 179
+  at `814fbcc1`) keeps Butlers' relative heading jumps when it re-bases
+  levels, so it would need to close gaps too.
+- **Machine answer.** [Unknown] Whether it already carries each listed
+  source's path; if not, the shared-label rule needs it to (packet,
+  question 7).
 
 ## Packages this collides with
 
@@ -50,9 +59,13 @@ in run form (`PWB-REQ-011/016`, line 129).
   drafted in the same change. It changes PWB-REQ-010 only. Its index rows
   are links, so they fall under this package's distinct-name check; that
   package now says each row's accessible name names its question.
+  *(Marked 2026-10-14: no longer true. P-98's cycle-2 repair dropped that
+  sentence; each row now shows its declared row name, and this package's
+  rules bind the rows as they bind any link.)*
 - **Anchor-resolution amendment** (P-96,
   `pwb-anchor-resolution-amendment/`, pursuit move N9), pending. It changes
-  PWB-REQ-014 only.
+  PWB-REQ-014 only. *(Marked 2026-10-14: signed v1.0 that day; no longer
+  pending.)*
 - **Class-granular extraction amendment** (P-86) and **release-label
   amendment** (P-85), pending. They change the reader definitions,
   PWB-REQ-001 and PWB-REQ-002.
@@ -67,6 +80,11 @@ P-85 and P-86 do overlap outside the spec (both add design decision
 digest line of the generated dependency file and hash post-apply bytes
 against the current tree, so whichever is signed second is regenerated with
 `--write`, and its manifest reviewed again, before it is offered.
+*(Marked 2026-10-14: P-96 is no longer pending. It was signed v1.0 that
+day, so its patch is part of the signed `spec.md`, and the builder now
+composes this package with the three still pending: P-98, P-86 and P-85.
+This package was regenerated with `--write` over the moved `spec.md` in
+the cycle-2 repair.)*
 
 ## Registry entry and policy
 

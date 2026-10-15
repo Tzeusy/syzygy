@@ -103,7 +103,10 @@ above this heading governs round 3 except where this section says so.)*
 **Warrant.** The owner's direction of 2026-10-14, given in the lead session
 and relayed to the repair lane: repair every round-2 finding, notes
 included, then one fresh review under the same stopping rule [Observed: as
-relayed; not yet recorded under `decisions/`].
+relayed; not yet recorded under `decisions/`]. *(Marked 2026-10-14, cycle
+3: "not yet recorded" is no longer true; the direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md`.
+Round 3 ran and returned `REVISE`; round 4 is briefed below.)*
 
 **Stopping rule, set before the round.** One round.
 
@@ -168,6 +171,100 @@ unchanged from round 1: at the repo root of a clean clone or worktree
 whose `git rev-parse HEAD` is the reviewed commit,
 `sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7 | LC_ALL=C sort) | sha256sum`,
 over the six files above. It is the digest of the package's own tracked
+bytes, not of any single file, and it includes this brief. Number every
+finding, label each `[Observed]`, `[Inferred]` or `[Unknown]`, and mark
+each as revise-level or a note; close with the count of each.
+
+## Round 4
+
+*(Added 2026-10-14, before the round, by the cycle-3 repair lane. Nothing
+above this heading governs round 4 except where this section says so.)*
+
+**Warrant.** The owner's cycle-3 direction of 2026-10-14 for P-101, given
+in the lead session: "One more cycle" — "Make Q5 consistent: state that
+choosing a reading of accepted text is a contract act matter (Unknown
+otherwise), and align §4/§6 and the ledger. Then one fresh review."
+[Observed: as relayed by the lead session to this repair lane; not yet
+recorded under `decisions/`.]
+
+**Stopping rule, set before the round.** One round.
+
+- A verdict with **no revise-level finding** (`CONFIRM`, or
+  `CONFIRM WITH EXCEPTIONS` whose findings are all notes) clears the exact
+  bytes it read, under the owner's 2026-09-26 ruling
+  (`../../../decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md` §1).
+  Its notes go in a sibling `ROUND-4-DISPOSITIONS.md`, and the package's
+  other files are not edited.
+- A verdict of **`REVISE`** (any revise-level finding) goes back to the
+  owner with its findings open: no further repair and no round 5 without a
+  new owner direction.
+- A clearance is not adoption; the owner's questions Q1–Q6 stay the
+  owner's (VIS-4). A verdict is never re-labelled.
+
+**Subject.** Every tracked file of
+`.syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7/`
+at the reviewed commit: `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`,
+`REVIEW-BRIEF.md`, `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md`,
+`ROUND-3-DISPOSITIONS.md`, `SEMANTIC-DELTA.md`.
+
+**Governing references.** Those listed above for rounds 1 and 3, plus:
+the round-3 raw, `docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md`;
+`contracts/rfcs/RFC-0004/named-adapters.md` lines 414–436 and 486–496;
+`scripts/record_polaris_understanding_adoption.py` (its `VISION`,
+`FROZEN_PATHS` and `HISTORY_PATHS` constants and its `reviewed_template`
+check); `decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md`;
+and candidate D8's packet §7 Q-A1
+(`../doctrine-amendment-inferred-first-class-d8/OWNER-DECISION-PACKET.md`).
+The reviewer **SHOULD** read the earlier raws
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D7-1-RAW.md`,
+`docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md` and
+`docs/reviews/R-DOCTRINE-AMENDMENT-D7-3-RAW.md`) and
+`ROUND-3-DISPOSITIONS.md`, and check each round-3 finding against the
+current bytes, not against the dispositions' account of them.
+
+**What to test, at least.**
+
+- Is each of the six round-3 findings repaired as `ROUND-3-DISPOSITIONS.md`
+  §"Repairs, 2026-10-14 (cycle 3)" says, and did any repair introduce a
+  new inaccuracy?
+- Finding 1: does the packet now state one position — choosing a reading
+  of accepted RFC2 text is a contract-act matter, [Unknown] until a
+  contract act fixes it — and apply it to every reading alike? Do §0, §2,
+  §4, §4.1, §6, §7, §8, the ledger and the delta say the same thing about
+  what arm A permits for each class of repository? Is restructured Q5 a
+  well-formed owner question with honest consequences on each arm, and is
+  the claim that the round-2 arms collapse argued?
+- Note 2: is RFC4's reading of RFC2-19 weighed fairly in §4.1, and is the
+  broadest reading's effect stated without overstatement?
+- Note 3: is the page-open obligation labelled as the packet's reading,
+  and is it independent of Q3 everywhere it appears?
+- The recorder gate: re-run the probe the ledger §4 records (apply section
+  1.1 alone, then section 1.2 alone, in a scratch clone at the reviewed
+  commit) and check the ledger, the delta, §9 and Q6 against its output.
+- Are the dated status marks at the stale sentences, with the old text
+  kept, and is any stale sentence left unmarked?
+- Re-check that section 1's proposed doctrine bytes are unchanged from the
+  bytes rounds 2 and 3 read, and that the anchors' sha256 values still
+  hold.
+
+**Output.** Write the raw review to
+docs/reviews/R-DOCTRINE-AMENDMENT-D7-4-RAW.md (a file this round
+creates; left out of code span so the path check does not ask it to exist
+first). **Head contract:** its first four non-blank lines must be
+exactly these, with nothing appended to the title line:
+
+```text
+# Review - D7 doctrine amendment packet (held derived computation, P-101), round 4
+Reviewed commit: <the full 40-hex commit you reviewed>
+Package digest: <sha256 by the method below>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+```
+
+`Package digest` is the brief's scripted method **at the reviewed commit**,
+unchanged from round 1: at the repo root of a clean clone or worktree
+whose `git rev-parse HEAD` is the reviewed commit,
+`sha256sum $(git ls-files .syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7 | LC_ALL=C sort) | sha256sum`,
+over the seven files above. It is the digest of the package's own tracked
 bytes, not of any single file, and it includes this brief. Number every
 finding, label each `[Observed]`, `[Inferred]` or `[Unknown]`, and mark
 each as revise-level or a note; close with the count of each.

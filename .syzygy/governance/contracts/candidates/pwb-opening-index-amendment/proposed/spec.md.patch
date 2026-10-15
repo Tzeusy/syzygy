@@ -1,6 +1,6 @@
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -1089,16 +1089,90 @@
+@@ -1247,16 +1247,123 @@
  single capability's detail.
 
 +- **Opening index.** The first reading level SHALL begin with an index of
@@ -20,11 +20,12 @@
 +  | `architecture-and-groups` | architecture | the architecture statements |
 +  | `v1-success` | V1 success | the V1 scope and success-criteria statements |
 +
-+  - Each row is named by its project concept and routes to the first
-+    element of its target: the target's heading when it has one, otherwise
-+    its first element in document order. A row's accessible name names its
-+    question, so it shares no name with a link to a different place
-+    (PWB-REQ-016).
++  - Each row's visible text begins with its declared row name, exactly as
++    the table spells it, character for character and in the same case, and
++    the row's offset, or its statement that its target is not rendered,
++    follows the name. Each row routes to the first element of its target:
++    the target's heading when it has one, otherwise its first element in
++    document order.
 +  - Row names are `action-label` strings; each offset and the stopping line
 +    is a `scope-instruction` string; the text of a row whose target is not
 +    rendered is an `epistemic-disclosure`. All of them obey PWB-REQ-012,
@@ -34,21 +35,39 @@
 +  - A row whose target is not rendered at that evaluation SHALL say so and
 +    route nowhere; it SHALL NOT route to a substitute.
 +
-+- **Reach offsets.** Each row SHALL show the word offset at which its target
-+  begins: the number of counted words before the target's first counted
-+  word. Exactly one stopping line SHALL stand immediately after the first
-+  element of the target whose offset is largest, and give that largest
-+  offset and the page's word total, and nothing else about the index.
++- **Reach offsets.** Each row whose target is rendered SHALL show the word
++  offset at which its target begins: the number of counted words that
++  precede the target's first element in document order. A row whose target
++  is not rendered shows no offset. Exactly one stopping line SHALL stand at
++  the place the next item fixes. Where any indexed target is rendered, the
++  line gives the largest offset and the page's word total, and nothing else
++  about the index.
++  - The target that sets the line is the rendered target whose offset is
++    largest; where two share the largest offset, it is the one whose first
++    element comes later in document order. The line stands immediately
++    after the outermost element that contains the first element of the
++    target that sets the line, that first element itself included, and is
++    either a `details` element closed on first load or a `p`, heading
++    (`h1` to `h6`), `ul`, `ol`, `dl` or `table` element; where no such
++    element contains it, the line stands immediately after that first
++    element. Where no indexed target is rendered, the line stands
++    immediately after the index and gives only the word total.
++  - The stopping line's visible text is its numbers and their unit, and
++    nothing else. "Stopping line" is this specification's name for it and
++    is never shown on the page.
 +  - Words are counted by one declared method, over the document as the
 +    browser holds it after load, with every `details` element in its
-+    first-load state. A word is a maximal run of non-whitespace characters
++    first-load state, at the viewport width and height the page has when it
++    loads. The offsets and total a page shows SHALL be those of that
++    viewport; an oracle declares the viewport it ran at and publishes it
++    with its result. A word is a maximal run of non-whitespace characters
 +    in a text node, counted in document order from the start of the body.
 +  - Excluded from the count: text inside `script`, `style`, `template` and
 +    `noscript` elements; inside any element with the `hidden` attribute,
-+    `aria-hidden="true"`, or a computed `display: none` or
-+    `visibility: hidden`; inside a `details` element closed on first load,
-+    except its `summary`, which counts; and the index rows and stopping
-+    line themselves.
++    `aria-hidden="true"` or a computed `display: none`; any text node whose
++    parent element's computed `visibility` is not `visible`; inside a
++    `details` element closed on first load, except its `summary`, which
++    counts; and the index rows and stopping line themselves.
 +  - The total counts the same population over the whole body.
 +  - The index, its offsets and the stopping line are presentation
 +    measurements. They carry no epistemic tuple, enter no PWB-REQ-020 parity
@@ -64,39 +83,53 @@
  - **Case**: load Polaris with a model containing project statements and one or
 -  more capability deep dives.
 +  more capability deep dives; separately, render the first reading level at
-+  an evaluation where every indexed target renders and at one where the
-+  opening Unknown aggregate is absent.
++  an evaluation where every indexed target renders, at one where the opening
++  Unknown aggregate is absent, at one where two targets share the largest
++  offset, at one where the target that sets the stopping line begins inside
++  a `details` element closed on first load, and at one where no indexed
++  target renders.
  - **Observable**: the first reading level answers the project questions and
 -  routes to the catalogs; capability detail is subordinate.
-+  routes to the catalogs; capability detail is subordinate; the nine index
-+  rows appear in the declared order with their targets and offsets, followed
-+  by one stopping line.
++  routes to the catalogs; capability detail is subordinate; the first reading
++  level begins with the index, whose nine rows appear in the declared order
++  with their names, targets and offsets, and one stopping line stands where
++  this requirement places it.
  - **Oracle**: inspect the heading order and entity references against an
 -  independently enumerated project-level fact set.
 +  independently enumerated project-level fact set. Separately, an independent
 +  word counter applies the declared method to the document after load and
-+  recomputes every row offset and the total, and each row's target is
-+  compared with this requirement's table, never with the renderer's own
++  recomputes every row offset and the total, and each row's name and target
++  are compared with this requirement's table, never with the renderer's own
 +  mapping; exactly one stopping line must stand where this requirement places
-+  it and carry the largest recomputed offset.
++  it and carry the largest recomputed offset, or, where no indexed target
++  renders, only the recomputed total.
  - **Oracle independence**: expected facts and order come from RFC7-13 and the
 -  machine model, not the rendered page.
-+  machine model, not the rendered page; expected index targets come from this
-+  requirement's table, located by a recognizer whose selectors are published
-+  with the oracle, and expected offsets from a word counter that shares no
-+  code with the renderer.
++  machine model, not the rendered page; expected index names and targets come
++  from this requirement's table, the targets located by a recognizer whose
++  selectors, and every heading string they match, are published with the
++  oracle before it runs and key only on visible heading text, on claim
++  identities the machine answer serves and on the PWB-REQ-011 exact-source
++  route form, never on an attribute, class or identifier the renderer emits
++  to mark an index target; and expected offsets come from a word counter
++  that shares no code with the renderer.
  - **Falsifier**: the entry opens on one capability, omits a project-level
 -  category, or requires reading a capability deep dive to learn what Butlers is.
 +  category, or requires reading a capability deep dive to learn what Butlers is;
-+  an index row is missing, duplicated, out of order or routed to a target
-+  other than the declared one; an unrendered target's row routes anywhere; an
-+  offset or total differs from the independent count; the stopping line is
-+  missing, repeated or misplaced, or its offset is not the largest; the
-+  stopping line states or implies that a prompt is answered; or an offset is
-+  presented as a claim, a parity fact or a walkthrough fact.
++  the index is present but does not begin the first reading level; an index
++  row is missing, duplicated or out of order, its text does not begin with
++  its declared row name exactly, or it is routed to a target other than the
++  declared one; an unrendered target's row does not say that its target is
++  not rendered, routes anywhere or shows an offset; an offset or total
++  differs from the independent count; the stopping line is missing, repeated
++  or misplaced, or its offset is not the largest; where no indexed target
++  renders, the stopping line gives anything but the word total; the stopping
++  line shows any text beyond its numbers and their unit; the stopping line
++  states or implies that a prompt is answered; or an offset is presented as
++  a claim, a parity fact or a walkthrough fact.
 
  #### Scenario: WhatsApp is a drill-down, not the project account
-@@ -1123,4 +1197,21 @@
+@@ -1281,4 +1388,54 @@
    stays separately disclosed at its own claim and reachable from the aggregate,
    and the machine answer carries the same aggregate under PWB-REQ-020
 +
@@ -105,16 +138,49 @@
 +- **WHEN** Polaris renders its first reading level at an evaluation where
 +  every indexed target renders
 +- **THEN** it begins with nine rows, one per PWB-REQ-021 answer identity, in
-+  the declared order, each routing to its declared target and showing that
-+  target's word offset by the declared method
-+- **AND** one stopping line follows the last indexed target, giving the
-+  largest row offset and the page's word total, and claims nothing about
++  the declared order, each beginning with its declared row name, routing to
++  its declared target and showing that target's word offset by the declared
++  method
++- **AND** exactly one stopping line stands at the place this requirement
++  fixes for the target that sets the line: immediately after that target's
++  first element, or after the outermost closed `details`, `p`, heading,
++  `ul`, `ol`, `dl` or `table` element containing it; the line gives the
++  largest offset and the page's word total, and claims nothing about
 +  whether any prompt is answered
 +
 +#### Scenario: An unrendered index target is stated, not substituted
 +
-+- **WHEN** the opening Unknown aggregate is absent at an evaluation
-+- **THEN** the `gaps` row says its target is not rendered and routes nowhere
-+- **AND** the other eight rows keep their declared targets and offsets
++- **WHEN** the opening Unknown aggregate is absent at an evaluation where
++  every other indexed target renders
++- **THEN** the `gaps` row says its target is not rendered, shows no offset
++  and routes nowhere
++- **AND** each of the other eight rows still routes to its declared target
++  and shows that target's word offset by the declared method
++
++#### Scenario: A tie on the largest offset is broken by document order
++
++- **WHEN** two rendered targets share the largest offset at an evaluation
++- **THEN** the target that sets the stopping line is the one whose first
++  element comes later in document order
++- **AND** exactly one stopping line stands at the place this requirement
++  fixes for that target, giving the shared offset and the page's word total
++
++#### Scenario: A last-beginning target inside a closed disclosure moves the line after it
++
++- **WHEN** the first element of the target that sets the stopping line lies
++  inside a `details` element closed on first load
++- **THEN** exactly one stopping line stands immediately after the outermost
++  element containing that first element that is a closed `details`, `p`,
++  heading, `ul`, `ol`, `dl` or `table` element, so that no closed `details`
++  element contains the line
++- **AND** the line gives the largest offset and the page's word total
++
++#### Scenario: With no indexed target rendered, the stopping line gives only the total
++
++- **WHEN** no indexed target is rendered at an evaluation
++- **THEN** every row says its target is not rendered, shows no offset and
++  routes nowhere
++- **AND** exactly one stopping line stands immediately after the index and
++  gives only the page's word total
 
  ```yaml

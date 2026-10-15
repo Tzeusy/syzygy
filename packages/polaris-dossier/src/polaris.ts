@@ -342,7 +342,7 @@ function prepareAgentHome(stateRoot: string, runId: string, role: ViewRole, cwd:
   fs.mkdirSync(config, { recursive: true, mode: 0o700 });
   const credentials = path.join(os.homedir(), '.claude', '.credentials.json');
   if (fs.existsSync(credentials) && !fs.existsSync(path.join(config, '.credentials.json'))) fs.copyFileSync(credentials, path.join(config, '.credentials.json'));
-  fs.chmodSync(path.join(config, '.credentials.json'), 0o600);
+  if (fs.existsSync(path.join(config, '.credentials.json'))) fs.chmodSync(path.join(config, '.credentials.json'), 0o600);
   const seed = { hasCompletedOnboarding: true, lastOnboardingVersion: '2.1.299', theme: 'dark', projects: { [cwd]: { hasTrustDialogAccepted: true, hasCompletedProjectOnboarding: true } } };
   const seedFile = path.join(config, '.claude.json');
   if (!fs.existsSync(seedFile)) fs.writeFileSync(seedFile, JSON.stringify(seed, null, 2), { mode: 0o600 });
@@ -356,13 +356,28 @@ function prepareShim(stateRoot: string, runId: string): string {
   return dir;
 }
 
+let socketBase: string | undefined;
+
+/** Directories bound read-only into every view so the agent tool and node can run: each executable's own directory. A directory that
+ * holds the state root or the operator's home would expose every session's directory, so it is refused (fail closed). */
+export function toolPathsFor(executables: readonly string[], stateRoot: string): string[] {
+  const home = os.homedir();
+  return [...new Set(executables.map((file) => path.dirname(file)))].map((dir) => {
+    const inside = (child: string): boolean => { const rel = path.relative(dir, child); return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel)); };
+    if (inside(stateRoot) || inside(home)) throw new Error(`the tool directory ${dir} would expose ${inside(stateRoot) ? 'the state root' : 'the home directory'} to every session; install the tool elsewhere`);
+    return dir;
+  });
+}
+
 function launchSession(options: Options, ports: CliPorts, state: SupervisorState, plan: SessionPlan, brokers: Map<ViewRole, Broker>, screen: Screen): string | null {
   const executable = claudeExecutable();
   const agentHome = prepareAgentHome(options.stateRoot, state.runId, plan.role, plan.directory);
   const shimDir = prepareShim(options.stateRoot, state.runId);
   // A Unix socket path is limited to about 108 bytes, so the socket lives in a short per-session runtime directory, bound into that
   // session's view alone.
-  const socketDir = path.join(process.env['XDG_RUNTIME_DIR'] || '/tmp', `polaris-${state.runId.slice(4, 16)}`, plan.role);
+  // Without XDG_RUNTIME_DIR, an unpredictable private directory under the temporary directory, not a guessable shared path.
+  const runtime = process.env['XDG_RUNTIME_DIR'] || (socketBase ??= fs.mkdtempSync(path.join(os.tmpdir(), 'polaris-')));
+  const socketDir = path.join(runtime, `polaris-${state.runId.slice(4, 16)}`, plan.role);
   fs.mkdirSync(socketDir, { recursive: true, mode: 0o700 });
   const socket = path.join(socketDir, 'b.sock');
   const rule = plan.role === 'author' ? authorRule(state.run) : awaitRule(plan.directory);
@@ -374,7 +389,7 @@ function launchSession(options: Options, ports: CliPorts, state: SupervisorState
   }, (line) => screen.event(`${plan.role} broker ${line}`)));
   const spec = viewFor({
     role: plan.role, clone: state.clone, runDir: state.run, sessionDir: plan.directory, agentHome, checkout: CHECKOUT,
-    toolPaths: [path.dirname(executable), path.dirname(path.dirname(process.execPath))], shimDir, brokerSocket: socket, socketDir,
+    toolPaths: toolPathsFor([executable, process.execPath], options.stateRoot), shimDir, brokerSocket: socket, socketDir,
   });
   const claudeArgs: string[] = plan.role === 'author'
     ? [plan.prompt, '--model', state.model, ...(state.authorSkipPermissions ? ['--dangerously-skip-permissions'] : ['--permission-mode', 'auto', '--allowedTools', `Bash(syzygy dossier check ${state.run}:*)`, `Bash(syzygy dossier status ${state.run}:*)`])]
@@ -458,6 +473,9 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
   const run = state.run;
   let phase = 'drafting';
   const maxRepairCycles = readMaxRepairCycles(run);
+  // A refused delivery is retried on later polls, a few times, then left for the operator (the event stays in the log).
+  const refusals = new Map<string, number>();
+  const giveUp = (key: string): boolean => { const n = (refusals.get(key) ?? 0) + 1; refusals.set(key, n); return n >= 5; };
   for (;;) {
     const deadline = state.briefIssuedAt + state.deadlineSeconds * 1000;
     if (Date.now() >= deadline) { phase = 'deadline passed'; break; }
@@ -488,7 +506,7 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
     if (passedDraft !== null && inventory.counts && !state.fidelityDeliveredFor.includes(passedDraft)) {
       const r = await step(['--json', 'session-prompt', run, 'review', '--kind', 'fidelity'], ports);
       screen.event(r.exit === 0 ? `delivered the fidelity packet for draft revision ${passedDraft}` : `fidelity delivery refused: ${r.doc ? String(r.doc['reason']) : r.stderr.trim()}`);
-      state.fidelityDeliveredFor.push(passedDraft); saveState(options.stateRoot, state);
+      if (r.exit === 0 || giveUp(`fidelity-${passedDraft}`)) { state.fidelityDeliveredFor.push(passedDraft); saveState(options.stateRoot, state); }
     }
     if (fidelityState === 'blocking' && repairsSpent) { phase = `blocked: fidelity verdict ${fidelity!.n} is not ready (${blockingWhy(run, 'fidelity', fidelity!.n)}) and all ${maxRepairCycles} repair cycles are spent`; break; }
     if (designState === 'blocking' && repairsSpent) { phase = `blocked: design verdict ${design!.n} is not ready (${blockingWhy(run, 'design', design!.n)}) and all ${maxRepairCycles} repair cycles are spent`; break; }
@@ -507,7 +525,7 @@ async function loop(options: Options, ports: CliPorts, state: SupervisorState, s
     if (fidelityState === 'ready' && siteNow !== undefined && siteNow >= 0 && !state.designDeliveredFor.includes(siteNow)) {
       const r = await step(['--json', 'session-prompt', run, 'review', '--kind', 'design'], ports);
       screen.event(r.exit === 0 ? `delivered the design packet for site ${siteNow}` : `design delivery refused: ${r.doc ? String(r.doc['reason']) : r.stderr.trim()}`);
-      state.designDeliveredFor.push(siteNow); saveState(options.stateRoot, state);
+      if (r.exit === 0 || giveUp(`design-${siteNow}`)) { state.designDeliveredFor.push(siteNow); saveState(options.stateRoot, state); }
     }
     if (designState === 'blocking' && !state.notified.includes(`design-${design!.n}`)) {
       tellAuthor(state, `Syzygy: the rendered-design review of site ${site} is not ready (${blockingWhy(run, 'design', design!.n)}). Read ${run}/${RUN_LAYOUT.reviews}/design-verdict-${design!.n}.json, repair the draft in ${RUN_LAYOUT.drafts}/next.json, and run syzygy dossier check ${run} again.`);

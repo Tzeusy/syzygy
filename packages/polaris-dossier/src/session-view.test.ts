@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { authorRule, awaitRule } from './broker.js';
 import { isLaunchedRun, launchFormRefusal, writeLaunchedMarker } from './launched.js';
-import { blockingWhy } from './polaris.js';
+import { blockingWhy, toolPathsFor } from './polaris.js';
 import { bwrapArgs, viewFor, viewSha256, type ViewRole } from './session-view.js';
 
 // Candidate REQ-polaris-generation-041/042 (prototype under POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): each launched session reaches
@@ -84,6 +84,10 @@ describe('broker rules', () => {
     expect(rule(['dossier', 'check', '/s/run-x'])).toBeNull();
     expect(rule(['dossier', '--json', 'status', '/s/run-x'])).toBeNull();
     expect(rule(['dossier', 'check', '/s/run-y'])).not.toBeNull();
+    // The broker runs check outside the view: an option naming a path would read any file the operator can.
+    expect(rule(['dossier', 'check', '/s/run-x', '--draft', '/etc/passwd'])).not.toBeNull();
+    expect(rule(['dossier', 'check', '/s/run-x', '--draft=/home/u/.ssh/id_ed25519'])).not.toBeNull();
+    expect(rule(['dossier', 'status', '/s/run-x', '/s/run-y'])).not.toBeNull();
     for (const command of ['session-prompt', 'review-check', 'inventory-check', 'render', 'close', 'launch-form', 'allow-execution', 'await']) {
       expect(rule(['dossier', command, '/s/run-x'])).not.toBeNull();
     }
@@ -122,5 +126,14 @@ describe('supervisor messages', () => {
       expect(why).not.toMatch(/blocking finding/);
       expect(why).toMatch(/^2 block or entry row\(s\) not confirmed/);
     } finally { fs.rmSync(run, { recursive: true, force: true }); }
+  });
+});
+
+describe('tool binds', () => {
+  it('binds each executable\'s own directory, and refuses one that holds the state root or the home directory', () => {
+    const home = os.homedir();
+    expect(toolPathsFor(['/usr/bin/node', '/opt/claude/versions/2/claude'], path.join(home, '.local/state/syzygy-dossier'))).toEqual(['/usr/bin', '/opt/claude/versions/2']);
+    expect(() => toolPathsFor([path.join(home, 'node')], path.join(home, '.local/state/syzygy-dossier'))).toThrow(/home directory|state root/);
+    expect(() => toolPathsFor(['/srv/x/node'], '/srv/x/state')).toThrow(/state root/);
   });
 });

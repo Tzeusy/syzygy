@@ -7,6 +7,8 @@
 > repaired here: every finding is open" is no longer true. Every finding
 > was repaired once in cycle 2; see §"Repairs, 2026-10-14 (cycle 2)"
 > below. The repairs are unconfirmed pending round 3.)*
+> *(Marked 2026-10-14, round 3: round 3 returned `REVISE`; see
+> `ROUND-3-DISPOSITIONS.md`.)*
 
 **Round:** 2, fresh context. **Raw:**
 `docs/reviews/R-DOCTRINE-AMENDMENT-D7-2-RAW.md`, retained verbatim.
@@ -50,7 +52,11 @@ more cycle — repair every finding, notes included, then one fresh review
 under the same stopping rule — in the lead session, relayed to this repair
 lane [Observed: as relayed; not yet recorded under `decisions/`]. The
 package was repaired once (below), and a round 3 is to follow. The bytes
-are still not confirmed.)*
+are still not confirmed.)* *(Marked 2026-10-14, round 3: "not yet
+recorded under `decisions/`" and "a round 3 is to follow" are no longer
+true. The direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md`,
+and round 3 returned `REVISE`; see `ROUND-3-DISPOSITIONS.md`.)*
 
 | # | Level | Finding (short) | Raw line | Disposition |
 |---|---|---|---|---|

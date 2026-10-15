@@ -28,13 +28,16 @@ export const awaitRule = (sessionDir: string): BrokerRule => (argv) => {
   return null;
 };
 
-/** The rule of the authoring session: `check` and `status` on its own run, and `help`. */
+/** The rule of the authoring session: `check` and `status` on its own run, and `help`, with no argument but `--json`. Any other argument
+ * is refused: the broker runs the command outside the view, so an option naming a path (`check --draft <file>`) would let the session
+ * read any file the operator can, through the frozen revision check writes into the run directory. */
 export const authorRule = (runDir: string): BrokerRule => (argv) => {
-  const [family, command, target] = argv.filter((arg) => arg !== '--json');
+  const [family, command, target, ...extra] = argv.filter((arg) => arg !== '--json');
   if (family !== 'dossier') return 'only `syzygy dossier` commands are available here';
-  if (command === 'help') return null;
+  if (command === 'help') return target === undefined ? null : 'help takes no arguments here';
   if (command !== 'check' && command !== 'status') return 'the authoring session of a launched run may run only `syzygy dossier check` and `status` on its run; Syzygy runs every other step';
   if (target === undefined || path.resolve(target) !== path.resolve(runDir)) return `this session may run ${command} only on its run, ${runDir}`;
+  if (extra.length > 0) return `${command} takes no option here but --json; the draft is always drafts/next.json`;
   return null;
 };
 

@@ -265,8 +265,8 @@
       }
     },
     "POC": {
-      "requirements": 24,
-      "scenarios": 24,
+      "requirements": 25,
+      "scenarios": 26,
       "members": {
         "POC-REQ-001": {
           "name": "Code-structure observation is bound to an exact revision",
@@ -314,6 +314,13 @@
           "name": "An unreadable work-item source renders Unknown",
           "scenarios": [
             "Database unreachable"
+          ]
+        },
+        "POC-REQ-014": {
+          "name": "Every work item's governing intent renders as a counted Unknown",
+          "scenarios": [
+            "Every item's governing intent is Unknown",
+            "A title names a requirement"
           ]
         },
         "POC-REQ-020": {
@@ -416,7 +423,7 @@
     },
     "PWB": {
       "requirements": 17,
-      "scenarios": 51,
+      "scenarios": 56,
       "members": {
         "PWB-REQ-001": {
           "name": "Project-shape observation is revision-bound and explicitly scoped",
@@ -432,7 +439,11 @@
             "Loaded profile gives one class no row",
             "Loaded profile names a shape outside the vocabulary",
             "Refused or unread Butlers profile does not fall back",
-            "Project with no profile has Unknown item denominators"
+            "Project with no profile has Unknown item denominators",
+            "A failing class keeps its siblings",
+            "An unenumerated heading is surfaced, not skipped",
+            "Counts derived without a read root index say so",
+            "A source two rules admit carries one rule name"
           ]
         },
         "PWB-REQ-003": {
@@ -516,7 +527,8 @@
             "A supported relationship is drawn inertly",
             "A partly supported relationship names what it leaves out",
             "A relationship with no supported edge is disclosed, not drawn",
-            "A failed or unsafe diagram emits nothing active"
+            "A failed or unsafe diagram emits nothing active",
+            "Anchor resolution is counted, never made authority"
           ]
         },
         "PWB-REQ-015": {

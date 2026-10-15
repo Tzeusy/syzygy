@@ -199,7 +199,31 @@ CHILDREN = (
      "label": "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR",
      "record": f"{DECISIONS}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md",
      "manifest": f"{CANDIDATES}/three-surface-poc-readability-successor/"
-                 "THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt"},
+                 "THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt",
+     # Later version-tagged sign-offs over this child's subjects, in act
+     # order, under the 2026-10-14 Scope A extension to POC amendments.
+     "successors": (
+         {"kind": "versioned",
+          "package": "three-surface-poc-block-provenance-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/"
+                    "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/three-surface-poc-block-provenance-amendment/"
+                      "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/three-surface-poc-block-provenance-amendment/"
+                      "proposed"},
+         # No manifest: the sign-off record carries the applied rows in
+         # manifest-row form and stands in as the manifest.
+         {"kind": "versioned",
+          "package": "three-surface-poc-governing-intent-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/"
+                    "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{DECISIONS}/"
+                      "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+          "proposed": f"{CANDIDATES}/three-surface-poc-governing-intent-amendment/"
+                      "proposed"},
+     )},
     {"key": "polaris-base", "bead": "syzygy-73e.5.3", "kind": "digest",
      "change": BASE_CHANGE,
      "label": "SIGN OFF POLARIS GENERATOR BASE READABILITY SUCCESSOR",
@@ -235,6 +259,18 @@ CHILDREN = (
           "manifest": f"{CANDIDATES}/pwb-tree-framing-amendment/"
                       "PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt",
           "proposed": f"{CANDIDATES}/pwb-tree-framing-amendment/proposed"},
+         {"kind": "versioned", "package": "pwb-anchor-resolution-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/pwb-anchor-resolution-amendment/"
+                      "PWB-ANCHOR-RESOLUTION-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/pwb-anchor-resolution-amendment/proposed"},
+         {"kind": "versioned", "package": "pwb-class-granular-extraction-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/"
+                      "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/proposed"},
      )},
 )
 
@@ -334,16 +370,16 @@ EXPECTED = {
         "051 052 053 060 061 062 063 064".split(),
         (1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1))),
-    "POC": dict.fromkeys(
+    "POC": {**dict.fromkeys(
         "001 002 003 004 010 011 012 013 020 021 022 030 031 032 040 041 042 "
-        "043 050 051 052 053 060 061".split(), 1),
+        "043 050 051 052 053 060 061".split(), 1), "014": 2},
     "PWB": dict(zip(
         "001 002 003 004 005 006 007 010 011 012 013 014 015 016 020 021 "
         "022".split(),
-        (1, 6, 1, 3, 5, 3, 5, 2, 5, 1, 1, 8, 1, 1, 1, 2, 5))),
+        (1, 10, 1, 3, 5, 3, 5, 2, 5, 1, 1, 9, 1, 1, 1, 2, 5))),
     "POLARIS": None,  # totals only below; per-requirement counts in census.json
 }
-EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (24, 24), "PWB": (17, 51),
+EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (25, 26), "PWB": (17, 56),
                    "POLARIS": (31, 182)}
 
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.M)
@@ -492,7 +528,19 @@ def reverse_apply(root, patch_rel, target_rel, body):
         return dest.read_bytes() if done.returncode == 0 else None
 
 
-def compose_versioned(root, later, ltag, rows, r2):
+def bytes_at(root, path, after):
+    """`path` as a successor left it: the tree with the patch to it of each
+    successor signed after that one (`after`, in act order) reversed, newest
+    first. None when the file is missing or a reversal fails."""
+    body = read_bytes(root, path)
+    for later in reversed(after):
+        found = package_patches(root, later["proposed"]).get(path, [])
+        if body is not None and len(found) == 1:
+            body = reverse_apply(root, found[0], path, body)
+    return body
+
+
+def compose_versioned(root, later, ltag, rows, r2, after=()):
     """Follow one version-tagged successor over the rows reached so far.
 
     A versioned record carries no predecessor column, so the package's own
@@ -515,7 +563,7 @@ def compose_versioned(root, later, ltag, rows, r2):
             r2.append(f"{ltag}: broken chain — {len(found)} patches target "
                       f"`{path}`")
         elif found:
-            current = read_bytes(root, path)
+            current = bytes_at(root, path, after)
             prior = (reverse_apply(root, found[0], path, current)
                      if current is not None and sha(current) == succ else None)
             if prior is None or sha(prior) != rows[path]:
@@ -554,8 +602,11 @@ def check_outcomes(root, report):
         # Later successors compose in act order over the rows reached so far.
         reached = ACT_INSTANT.findall(record)
         position = aggregate_position(child, aggregate, record)
-        dates = DATE_LINE.findall(record)
-        for later in child.get("successors", ()):
+        # A digest act carries an act instant and no `Date:` line; its date
+        # is the instant's, so a versioned successor can follow it.
+        dates = DATE_LINE.findall(record) or [i[:10] for i in reached]
+        successors = child.get("successors", ())
+        for index, later in enumerate(successors):
             name = Path(later["record"]).name
             ltag = f"{tag} successor {name}"
             ltext = read_text(root, later["record"])
@@ -582,7 +633,9 @@ def check_outcomes(root, report):
                     r2.append(f"{ltag}: date {ldates} is not on or after the "
                               f"act before it {dates}")
                 position, dates = lpos, ldates
-                compose_versioned(root, later, ltag, rows, r2)
+                compose_versioned(root, later, ltag, rows, r2, after=[
+                    s for s in successors[index + 1:]
+                    if s.get("kind", "digest") == "versioned"])
                 continue
             table = check_digest_act(later, ltag, aggregate, ltext, lmanifest,
                                      r1, r2)

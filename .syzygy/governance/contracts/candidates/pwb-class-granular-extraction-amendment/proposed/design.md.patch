@@ -1,6 +1,6 @@
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -87,4 +87,10 @@
+@@ -87,4 +87,14 @@
    4. top-level roster directories that contain `butler.toml`, plus their
       `MANIFESTO.md` when present.
 +- **Root independence.** Rules 1 and 2 need the root index read; rules 3
@@ -8,10 +8,14 @@
 +- **Rule names.** Each source names the rule that admitted it: rule 1 admits
 +  the root index itself as `root-index` and each pillar's index file as
 +  `pillar-index`; rule 2's files are `pillar-named-file`, rule 3's
-+  `baseline-spec-tree` and rule 4's `roster-tree`.
++  `baseline-spec-tree` and rule 4's `roster-tree`. A source two rules admit
++  takes one name: the root index stays `root-index` and a pillar's index
++  file `pillar-index`; a baseline spec or roster `butler.toml` takes its
++  tree rule's name whoever names it; any other file a pillar's index
++  names, a roster `MANIFESTO.md` included, is `pillar-named-file`.
  - **No recursion.** Narrative links do not recurse. Active changes are
    inventoried separately for capability drill-down and never enter the
-@@ -530,4 +536,52 @@
+@@ -530,4 +540,52 @@
  ```
 
 +### 12. Read each class of a source on its own

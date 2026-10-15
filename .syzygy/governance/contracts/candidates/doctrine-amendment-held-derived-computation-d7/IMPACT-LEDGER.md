@@ -12,7 +12,17 @@
 > breakdown not summing to its figure; both were repaired once on
 > 2026-10-14 (`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)").
 > **Round-2 findings repaired once on 2026-10-14, unconfirmed pending
-> round 3.**
+> round 3.** *(Marked 2026-10-14, round 3: round 3 returned `REVISE`, one
+> revise-level finding and five notes, all open in
+> `ROUND-3-DISPOSITIONS.md`. The bytes stay unconfirmed.)*
+> *(Marked 2026-10-14, cycle 3: "all open" is no longer true. On the
+> owner's cycle-3 direction every round-3 finding was repaired once
+> (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)"): the two
+> RFC2 rows, the RFC4 row and the closing paragraph of §3 now treat the
+> choice of reading as a contract-act matter, and §4's recorder row is
+> corrected from a 2026-10-14 application probe at `7460aec8`.)*
+> **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+> round 4.**
 
 ## 1. The trigger sweep
 
@@ -110,12 +120,12 @@ file, the same one.
 
 | File | Line(s) | What it says | Disposition |
 |---|---|---|---|
-| `doctrine/vision.md` | 45; 86–87 (wrapped, §1a); 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the section intro "…and not autonomous."; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent; 86–87 consistent: it summarizes the bullet below, and D7 places its class inside VIS-4's stated bounds, so "not autonomous" stays true of Syzygy — on a Q1 "inside" ruling, which section 1's text requires anyway. On the narrow RFC2 reading the packet relies on (packet §4.1), D7 licenses unprompted re-observation of any repository with no materialized merged work, more than round 1's text described, so this intro carries correspondingly more weight on that ruling (packet §7, added 2026-10-14, round-2 finding 7) |
+| `doctrine/vision.md` | 45; 86–87 (wrapped, §1a); 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the section intro "…and not autonomous."; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent; 86–87 consistent: it summarizes the bullet below, and D7 places its class inside VIS-4's stated bounds, so "not autonomous" stays true of Syzygy — on a Q1 "inside" ruling, which section 1's text requires anyway. If a contract act ever fixes the narrow RFC2 reading (packet §4.1), D7 licenses unprompted re-observation of any repository with no materialized merged work, more than round 1's text described, so this intro carries correspondingly more weight on that ruling (packet §7, added 2026-10-14, round-2 finding 7; "the packet relies on" replaced 2026-10-14, cycle 3, round-3 finding 1) |
 | `doctrine/architecture.md` | 332 | the loop is human-triggered | D7's anchor |
 | `doctrine/v1.md` | 89 | "Human-triggered propagation at full breadth" | consistent: D7 forbids unprompted dispatch |
 | `contracts/rfcs/RFC-0002/reconciliation-chain.md` | 26 (sources list); 245, 247 | RFC2-19, "never autonomously on merge events" | **stays stricter, and binds every D7 trigger whose evaluation is a reconciliation evaluation**, not only the hook; its reach is the next row's (packet §4, §4.1, §6 item 1) |
-| `contracts/rfcs/RFC-0002/reconciliation-chain.md` (no predicate match; found by round 1) | 155–157 | reconciliation-pending attaches "at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" | **binds every unprompted evaluation that captures the merge fact**; D7's text "relaxes no contract that requires a deliberately triggered pass", so arm A leaves the clause true. Its reach depends on the reading (packet §4.1): **narrow (relied on)** — the merge of a materialized work item, RFC2-18's scope (lines 141–142), so unprompted re-observation of a repository with no materialized merged work is not reached and arm A makes it lawful at the doctrine level; **wide** — any merge a repository snapshot carries (line 146, RFC2-1 item 1), so the headline example stays unlawful until RFC2 is amended. Q5 asks which binds (repaired 2026-10-14, round-2 finding 1) |
-| `contracts/rfcs/RFC-0004/named-adapters.md` | 26, 420, 433, 435, 492, 526 | RFC4-16, "never an autonomous trigger"; observation passes are human-triggered | consistent: no clock trigger |
+| `contracts/rfcs/RFC-0002/reconciliation-chain.md` (no predicate match; found by round 1) | 155–157 | reconciliation-pending attaches "at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" | **binds every unprompted evaluation that captures the merge fact**; D7's text "relaxes no contract that requires a deliberately triggered pass", so arm A leaves the clause true. Its reach depends on the reading (packet §4.1): **narrow** — the merge of a materialized work item, RFC2-18's scope (lines 141–142), so unprompted re-observation of a repository with no materialized merged work is not reached; **wide** — any merge a repository snapshot carries (lines 145–146, RFC2-1 item 1), so unprompted re-observation of any repository with merges, the headline example included, stays unlawful. **Which reading binds is a contract-act matter, [Unknown] until a contract act fixes it**; neither D7 nor a plain owner answer to Q5 fixes it, for either reading. Until then arm A makes unprompted re-observation lawful at the doctrine level only for a repository with no merge in its history, and for a repository with merges but no materialized merged work lawfulness is [Unknown]. Fixing the reading, or making lawful what stays unlawful, needs a contract act (an RFC2 amendment, or another contract act whose form the packet does not draft). Q5 asks how the reading is to be fixed (repaired 2026-10-14, round-2 finding 1; repaired again 2026-10-14, cycle 3, round-3 finding 1: this cell previously labelled the narrow reading "relied on", said the headline example stays unlawful "until RFC2 is amended" on the wide reading, and dropped the other contract-act forms) |
+| `contracts/rfcs/RFC-0004/named-adapters.md` | 26, 420, 433, 435, 492, 526 | RFC4-16, "never an autonomous trigger"; observation passes are human-triggered | consistent: no clock trigger. **On the reading question** (added 2026-10-14, cycle 3, round-3 note 2): lines 420–421 and 492 cite RFC2-19 as governing "ordinary human-triggered observation passes", which a reader can build into a third, broadest reading of RFC2-19, on which no unprompted re-observation is lawful at all. The packet weighs it against (RFC4 says "human-triggered", not "deliberately"; RFC2-19's subject is "reconciliation evaluations") and shows it beside the other two (packet §4.1). No sentence here is made false by arm A; which reading binds is a contract-act matter, like the other two |
 | `contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md` | 26 | cites the human-triggered loop as a source | consistent |
 | `contracts/rfcs/RFC-0005/admission-and-boundary.md` | 323, 590 | RFC5-11 and its q6: revocation forces an evaluation | D7's precedent (packet §3) |
 | `decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md` | 56 (2 hits) | P-69, "No timer or background poller on any arm" | consistent; restated generally |
@@ -123,7 +133,7 @@ file, the same one.
 | `decisions/DOCTRINE-AMENDMENT-D5-READABILITY.md` | 40 | names the bullet as a D3 anchor | historical record of an adopted act; consistent |
 | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md` | 18, 31 | "work dispatch is human-triggered" | consistent |
 | `decisions/THREE-SURFACE-POC-REDESIGN-DIRECTION.md` | 46 | the loop is human-triggered | consistent |
-| `openspec/changes/polaris-manifesto-generation/` (3 files) | proposal 24; spec 1661; WORK-STATE-CONTRACT 85 | generation is human-triggered; "not an autonomous polling mandate" | consistent: D7 opens no egress and adds no polling; a rehearsal is not licensed by D7 alone (packet §6.2) |
+| `openspec/changes/polaris-manifesto-generation/` (3 files) | proposal 24; spec 1661; WORK-STATE-CONTRACT 85 | generation is human-triggered; "not an autonomous polling mandate" | consistent: D7 opens no egress and adds no polling; a rehearsal is not licensed by D7 alone (packet §6 item 3; "§6.2" corrected 2026-10-14, cycle 3, round-3 note 4) |
 | `openspec/changes/polaris-project-wide-butlers-model/` coverage matrix and part (2 files) | 158; 144 | RFC2-19 believed not applicable to PWB | consistent; act-bound bytes, not edited on any arm |
 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md`, `…-DRAFT.md` | 27 hits | D3 and its superseded draft | composition in packet §1.3 |
 | `contracts/candidates/rfcs/` mirrors (4 files) | as the accepted copies | candidate mirrors of the rows above | same dispositions |
@@ -148,11 +158,15 @@ file, the same one.
 No authority-lane sentence is made false by arm A [Inferred: from reading
 every line listed]. The RFC2 rows are the reason that holds: D7 is drafted
 to yield to them rather than to amend them. What that costs depends on the
-reading of the merge-fact confinement: on the wide reading, D7's headline
-example; on the narrow reading the packet relies on, only evaluations that
-capture the merge of a materialized work item (packet §4.1). A sentence elsewhere that confines computation to a deliberate
-pass without using a §1 literal would be missed by this sweep; round 1
-found one (RFC2 line 157), and the predicate is not claimed complete.
+reading of the merge-fact confinement, which is a contract-act matter and
+[Unknown] until a contract act fixes it: on the wide reading, D7's
+headline example; on the narrow reading, only evaluations that capture
+the merge of a materialized work item (packet §4.1). *(Repaired
+2026-10-14, cycle 3, round-3 finding 1, which found "the narrow reading
+the packet relies on" here; rewrapped for round-3 note 5.)* A sentence
+elsewhere that confines computation to a deliberate pass without using a
+§1 literal would be missed by this sweep; round 1 found one (RFC2 line
+157), and the predicate is not claimed complete.
 
 ## 4. Derived artifacts that read doctrine bytes
 
@@ -198,9 +212,23 @@ match. It was found by the other route — the generated
 | `DIRECTIVE-REGISTER.md` (generated by `scripts/build_directive_register.py`) | file and line of every VIS identifier | line numbers after `vision.md` line 107 shift; regenerate with `--write`; `--check` is in the canonical battery |
 | `contracts/candidates/05-CONTRACT-INDEX.yaml` (generated by `build_contract_index.py`) | a `words` count for each doctrine file | regenerate; `--check` is in the battery. Several PWB builders read this index; whether a doctrine word count reaches any of their manifests is **[Unknown]** here — the battery run after application decides it |
 | `scripts/check_polaris_response_ceiling_reading.py` | quotes "No evidence means Unknown, not success" from `vision.md` | unaffected: the quoted bytes do not move |
-| `scripts/record_polaris_understanding_adoption.py` | `vision.md` in its frozen-path set, read at the C1 commit | unaffected: it reads history, not today's bytes |
-| `docs/evidence/polaris-understanding-reconciliation-2026-09-28/` (3 files) | the `vision.md` digest as reviewed on 2026-09-28 | unaffected: a record of the bytes reviewed then |
+| `scripts/record_polaris_understanding_adoption.py` | `vision.md` in its frozen-path set (`VISION`, line 240; `FROZEN_PATHS`, lines 243–244), outside its history set (`HISTORY_PATHS`, line 250), so it requires today's `vision.md` to hash to the digest its C1 review confirmed (line 592) | **a gate, not a regeneration.** Applying section 1.1 fails `--check` with "review retired by changed input: .syzygy/governance/doctrine/vision.md" and `--selftest` with "candidate input drift" on the same path; section 1.2 alone leaves `--check` passing [Observed: probe, below]. Resolving it needs a fresh reconciliation review over the amended `vision.md` or a reviewed recorder change moving `vision.md` into its history set: packet Q6, shared with candidate D8's Q-A1. *(Repaired 2026-10-14, cycle 3: this cell previously said "unaffected: it reads history, not today's bytes", which the D8 lane's probe and this one contradict)* |
+| `docs/evidence/polaris-understanding-reconciliation-2026-09-28/` (3 files) | the `vision.md` digest as reviewed on 2026-09-28 | the records are not falsified: they record the bytes reviewed then. But they are the review the recorder above binds, so applying section 1.1 retires that review for the recorder's purposes (previous row) |
 | `apps/three-surface-poc/src/polaris-generation/self-corpus.ts` (and its test) | doctrine Markdown as part of the self-governance corpus, read "at the pinned commit" only | unaffected: a run pinned to a later commit gets a new corpus identity digest, which is a fact of that run, not a break |
+
+**Recorder probe, 2026-10-14** [Observed, this session]: a scratch
+worktree detached at `origin/main` `7460aec8`, where `vision.md` and
+`architecture.md` still hash to the sha256 values in `SEMANTIC-DELTA.md`.
+Baseline: the recorder's `--check` prints `PASS`. With only section 1.1's
+block inserted after `vision.md` line 107 (the block extracted by script
+from this package's packet, exactly two `markdown` fences, each anchor
+asserted before insertion): `--check` exits 1, "FAIL exact digest
+reconciliation unresolved: review retired by changed input:
+.syzygy/governance/doctrine/vision.md", and `--selftest` exits 1,
+"candidate input drift" on the same path. With `vision.md` restored and
+only section 1.2's paragraph applied to `architecture.md`: `--check`
+prints `PASS`. No other battery command was run, so the rest of this
+table stays the drafting-time reading, not a probe.
 
 Neither doctrine digest occurs in any performed act's manifest [Observed:
 the only digest citers are the three evidence files above].
@@ -212,8 +240,9 @@ report. None is edited here.
 
 1. **`syzygy-u05.2` (N2) describes the post-commit hook as a lawful trigger
    today** ("every trigger is a human act or a human-installed post-commit
-   hook in the owner's own Butlers checkout"). By packet §6.1 the hook is
-   not lawful on any current path, D7 or no D7. The human-triggered route
+   hook in the owner's own Butlers checkout"). By packet §6 item 2 the hook
+   is not lawful on any current path, D7 or no D7 ("§6.1" corrected
+   2026-10-14, cycle 3, round-3 note 4). The human-triggered route
    in the same bead is unaffected.
 2. **The 2026-10-03 roadmap does not carry the live fleet observability
    mandate.** `docs/plans/2026-10-03-smooth-example-roadmap.md` has 0

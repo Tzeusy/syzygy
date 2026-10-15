@@ -1,0 +1,251 @@
+{
+  "subject": "scripts/record_versioned_signoff.py",
+  "subjectSha256": "8005b0bd9a23e6a335fd9958e35dc8f94908367ef14369e4bdc0282132143a04",
+  "ranAtCommit": "c8d3f0c3c0275b4fdbf7ce4acd7f224557d28be2",
+  "method": "each mutant replaces every occurrence of `old` with `new` in memory, execs the source as a module with the real __file__, and runs selftest(); killed means a nonzero selftest exit (a failing fixture or a crash)",
+  "baseline": {
+    "selftestExit": 0,
+    "failingFixtures": [],
+    "error": null
+  },
+  "mutants": [
+    {
+      "id": "unlabelled-beside-labelled",
+      "old": "    if any(MANIFEST_LINE_RE.fullmatch(line) or VERDICT_LINE_RE.fullmatch(line) for line in head):",
+      "new": "    if False:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: an unlabelled manifest line beside the labelled ones",
+        "refused: two-package head: an unlabelled verdict line beside the labelled ones"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "near-miss-keyword",
+      "old": "        elif not line.startswith(\"#\") and HEAD_KEYWORD_RE.search(line):",
+      "new": "        elif False:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: a near-miss verdict line",
+        "refused: two-package head: a near-miss digest line"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "label-needs-both",
+      "old": "    if set(manifests) != set(verdicts):",
+      "new": "    if False:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [],
+      "error": "KeyError: 'POC'",
+      "killed": true
+    },
+    {
+      "id": "exactly-two-labels",
+      "old": "    if len(manifests) != 2:",
+      "new": "    if False:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: one label only"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "repeated-label",
+      "old": "    if repeated:\n        raise ValueError(f\"two-package review head repeats",
+      "new": "    if False:\n        raise ValueError(f\"two-package review head repeats",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: a repeated label (untitled head)"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "package-without-label",
+      "old": "    if label is None:\n        raise ValueError(\"a two-package review head binds",
+      "new": "    if False:\n        raise ValueError(\"a two-package review head binds",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: a package with no head label"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "label-not-carried-falls-back",
+      "old": "    if label not in manifests:\n        raise ValueError(f\"two-package review head carries no",
+      "new": "    if label not in manifests:\n        label = sorted(manifests)[0]\n    if False:\n        raise ValueError(f\"two-package review head carries no",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: a label the head does not carry"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "verdict-of-other-label",
+      "old": "    return commits[0], _verdict_allowed(verdicts[label][0]), manifests[label][0]",
+      "new": "    return commits[0], _verdict_allowed(verdicts[sorted(verdicts)[0]][0]), manifests[label][0]",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a two-package head binds a labelled package by its own lines, and checks",
+        "refused: two-package head: this label's verdict REVISE"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "digest-of-other-label",
+      "old": "    return commits[0], _verdict_allowed(verdicts[label][0]), manifests[label][0]",
+      "new": "    return commits[0], _verdict_allowed(verdicts[label][0]), manifests[sorted(manifests)[0]][0]",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a two-package head binds a labelled package by its own lines, and checks",
+        "refused: two-package head: the other label's digest is not this subject's"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "window-wider-than-six",
+      "old": "TWO_PACKAGE_HEAD_LINES = 6",
+      "new": "TWO_PACKAGE_HEAD_LINES = 8",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: a verdict line pushed past the six-line head"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "one-commit-line",
+      "old": "    commits = [m.group(1) for line in head if (m := COMMIT_LINE_RE.fullmatch(line))]\n    if len(commits) != 1:\n        raise ValueError(\"review head does not carry exactly one `Reviewed commit:` line\")\n    if any(",
+      "new": "    commits = [m.group(1) for line in head if (m := COMMIT_LINE_RE.fullmatch(line))]\n    if not commits:\n        raise ValueError(\"review head does not carry exactly one `Reviewed commit:` line\")\n    if any(",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: two-package head: two reviewed-commit lines"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "binding-ignores-label",
+      "old": "    _commit, _verdict, head_digest = parse_head(review, pkg.head_label)",
+      "new": "    _commit, _verdict, head_digest = parse_head(review)",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a two-package head binds a labelled package by its own lines, and checks",
+        "refused: two-package head: the other label's digest is not this subject's"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "validation-ignores-label",
+      "old": "    commit, verdict = validate_review(root, review_rel, disposition_rel, pkg.head_label)",
+      "new": "    commit, verdict = validate_review(root, review_rel, disposition_rel)",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a two-package head binds a labelled package by its own lines, and checks",
+        "the other label reads its own verdict (CONFIRM WITH EXCEPTIONS) and needs the disposition",
+        "refused: two-package head: a label the head does not carry",
+        "refused: two-package head: this label's verdict REVISE",
+        "refused: two-package head: the other label's digest is not this subject's"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "extension-not-required",
+      "old": "    if pkg.extension is not None and not (root / pkg.extension).is_file():",
+      "new": "    if False:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: an extension direction that is missing",
+        "an extension direction is named in both records; --check refuses once it is gone"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "extension-not-rendered",
+      "old": "    if pkg.extension is None:\n        return \"\"\n    return (f\"Scope A extension:",
+      "new": "    if True:\n        return \"\"\n    return (f\"Scope A extension:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "an extension direction is named in both records; --check refuses once it is gone"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "alias-not-honoured",
+      "old": "    if pkg.key not in review and not (pkg.review_alias and pkg.review_alias in review):",
+      "new": "    if pkg.key not in review:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a raw naming the package only by its declared alias records"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "alias-satisfies-any-raw",
+      "old": "    if pkg.key not in review and not (pkg.review_alias and pkg.review_alias in review):",
+      "new": "    if pkg.key not in review and not pkg.review_alias:",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "refused: a raw naming neither the package nor its declared alias"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "note-not-rendered",
+      "old": "    if not pkg.record_note:\n        return \"\"",
+      "new": "    if True:\n        return \"\"",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a record note is rendered, and an edit to it fails --check"
+      ],
+      "error": null,
+      "killed": true
+    },
+    {
+      "id": "extension-not-in-aggregate",
+      "old": "        direction += f\", extended by `{pkg.extension.as_posix()}`\"",
+      "new": "        pass",
+      "occurrencesReplaced": 1,
+      "selftestExit": 1,
+      "failingFixtures": [
+        "an extension direction is named in both records; --check refuses once it is gone"
+      ],
+      "error": null,
+      "killed": true
+    }
+  ],
+  "killed": 19,
+  "total": 19
+}

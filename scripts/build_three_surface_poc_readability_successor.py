@@ -94,18 +94,77 @@ def current_bytes(
     return values
 
 
-def predecessor_bytes() -> dict[pathlib.Path, bytes]:
-    """The signed predecessor, rebuilt by reverse-applying the exact patches.
+#: Later version-tagged sign-offs that patch these subjects again, in act
+#: order: (sign-off record, that package's manifest, its `proposed/` patches).
+LATER_SIGNOFFS = (
+    (pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-block-provenance-amendment/"
+                  "THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-MANIFEST.txt"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-block-provenance-amendment/proposed")),
+    # No manifest: its sign-off record carries the applied rows in
+    # manifest-row form and serves as the manifest.
+    (pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-governing-intent-amendment/proposed")),
+)
 
-    After sign-off the working tree carries the successor rows; the
-    candidate checks and fixtures still run over the predecessor.
+
+def _reverse(base: pathlib.Path, patch: pathlib.Path) -> None:
+    done = subprocess.run(
+        ["git", "apply", "-R", "--whitespace=nowarn", str(patch)],
+        cwd=base, capture_output=True, text=True)
+    if done.returncode != 0:
+        raise ValueError(f"{patch.name} does not reverse: {done.stderr.strip()}")
+
+
+def installed_bytes_at(root: pathlib.Path = ROOT) -> dict[pathlib.Path, bytes]:
+    """The subjects as this successor installed them.
+
+    The tree with each later sign-off's patches reversed, newest first, but
+    only a later sign-off whose record exists and whose every manifest row
+    over these subjects the tree (as reached so far) hashes to: an applied
+    later sign-off is history, and anything else is left for the row
+    comparison to report as drift.
     """
     with tempfile.TemporaryDirectory() as directory:
         base = pathlib.Path(directory)
         for rel in SUBJECTS:
             target = base / rel
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes((ROOT / rel).read_bytes())
+            target.write_bytes((root / rel).read_bytes())
+        for record, manifest, proposed in reversed(LATER_SIGNOFFS):
+            if not (root / record).is_file() or not (root / manifest).is_file():
+                continue
+            rows = {path: sha for sha, path in
+                    ROW_RE.findall((root / manifest).read_text(encoding="utf-8"))}
+            ours = {rel.as_posix() for rel in SUBJECTS}
+            if not rows or not set(rows) <= ours or any(
+                    sha256((base / path).read_bytes()) != sha for path, sha in rows.items()):
+                continue
+            for patch in sorted((root / proposed).glob("*.patch"), key=lambda p: p.name):
+                _reverse(base, patch)
+        return {rel: (base / rel).read_bytes() for rel in SUBJECTS}
+
+
+def predecessor_bytes() -> dict[pathlib.Path, bytes]:
+    """The signed predecessor, rebuilt by reverse-applying the exact patches.
+
+    After sign-off the working tree carries the successor rows (and any later
+    sign-off's patches, reversed first by ``installed_bytes_at``); the
+    candidate checks and fixtures still run over the predecessor.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        base = pathlib.Path(directory)
+        for rel, data in installed_bytes_at().items():
+            target = base / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
         for patch in patch_files():
             done = subprocess.run(
                 ["git", "apply", "-R", "--whitespace=nowarn", str(patch)],
@@ -330,7 +389,11 @@ def installed() -> bool:
         return False
     rows = {path: digest for digest, path in
             ROW_RE.findall((ROOT / MANIFEST).read_text(encoding="utf-8"))}
-    return rows == subject_digests(ROOT) and bool(rows)
+    try:
+        reached = {rel.as_posix(): sha256(data) for rel, data in installed_bytes_at().items()}
+    except ValueError:
+        return False
+    return rows == reached and bool(rows)
 
 
 def subject_digests(base: pathlib.Path) -> dict[str, str]:

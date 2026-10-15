@@ -112,19 +112,21 @@ PERFORMED_SIBLINGS = {
     "pwb-opening-band-scenario": "PWB-OPENING-BAND-SCENARIO-ACT.md",
     "pwb-readability-successor": "PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
     "pwb-tree-framing-amendment": "PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-14 (P-96); moved from pending by the sign-off change.
+    "pwb-anchor-resolution-amendment": "PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
-#: Unsigned packages over the same subject. Each touches other requirements,
-#: but both add design decision 12 and capability row 34, so whichever is
-#: signed second is regenerated over the first's applied bytes and re-reviewed.
-#: The anchor-resolution amendment (N9, ``syzygy-u05.9``) touches only
-#: PWB-REQ-014 and the generated dependency declaration. The opening-index
+#: Unsigned packages over the same subject. Each touches other requirements.
+#: The release-label amendment (P-85) and this one both add design decision 12
+#: and capability row 34, so whichever is signed second is regenerated over
+#: the first's applied bytes and re-reviewed. The anchor-resolution amendment
+#: (N9, ``syzygy-u05.9``) was signed v1.0 on 2026-10-14 and is listed above as
+#: performed; this package was regenerated over its applied bytes. The opening-index
 #: (PWB-REQ-010) and accessible-name (PWB-REQ-016) amendments
 #: (``syzygy-u05.12``) each touch one other requirement and the generated
 #: declaration only; their spec patches compose with this one.
 PENDING_SIBLINGS = frozenset({
     "pwb-accessible-name-amendment",
-    "pwb-anchor-resolution-amendment",
     "pwb-opening-index-amendment",
     "pwb-release-label-amendment",
 })
@@ -140,6 +142,12 @@ READER_REQUIRED_ONCE = (
     "the third admits each baseline spec as `baseline-spec-tree`;",
     "the fourth admits each roster `butler.toml`, and its `MANIFESTO.md`, as `roster-tree`.",
     "A source that a loaded profile's tree population admits carries that population's `pathPattern` as its rule name.",
+    "A source that more than one rule admits carries one rule name, decided in this order:",
+    "the root index is `root-index`, whatever else admits it;",
+    "a pillar's index file is `pillar-index`, even when another pillar's index names it;",
+    "is admitted by that tree population alone and carries its name, even when a pillar's index names it;",
+    "and any other file a pillar's index names, a roster `MANIFESTO.md` included, is `pillar-named-file`.",
+    "A source that two tree populations of one loaded profile admit carries the name of the first the profile declares.",
     "Each rule declares whether it needs the root index read.",
     "The flag belongs to the rule; a loaded profile sets it for each tree population it declares.",
     "The first and second rules need the root index; the third and fourth, whose path patterns these definitions write, do not.",
@@ -193,6 +201,12 @@ REQ_REQUIRED_ONCE = (
     "each source with a class whose D is Unknown has its own D Unknown",
     "an independent scan of each enclosing section finds every unenumerated heading, the count per source and class equals the count the answer gives",
     "every source names the rule that an independent derivation of the source-path population admits it under",
+    "by the stated order for a source more than one rule admits",
+    "a source that more than one rule admits names a rule other than the one the stated order gives it",
+    "a pillar index that names a baseline spec, a roster `butler.toml` and that roster directory's `MANIFESTO.md`",
+    "and every class and category count, and the source-path population total, that includes them states that it was derived without a read root index",
+    "the `MANIFESTO.md` is named `pillar-named-file`",
+    "`pillar-index`, whichever index also names them",
     "a failed class emits a partial population",
     "a failed class withholds the items of a sibling class that reads",
     "a class or category item denominator that counts a failed class or an unenumerated heading is presented as known",
@@ -228,6 +242,7 @@ NEW_SCENARIOS = (
     "#### Scenario: A failing class keeps its siblings",
     "#### Scenario: An unenumerated heading is surfaced, not skipped",
     "#### Scenario: Counts derived without a read root index say so",
+    "#### Scenario: A source two rules admit carries one rule name",
 )
 WARRANTS_002 = (
     "```yaml\nwarrants:\n  primary: VIS-2\n  doctrine: [VIS-1, VIS-2, VIS-7]\n"
@@ -262,6 +277,8 @@ DESIGN_PHRASES = (
     "*partially extracted*",
     "No `catalog-count` declaration is minted for it; that family stays closed at nine.",
     "Butlers' baseline-spec and roster rules declare that they do not need it, so its manifest admits the same sources as before.",
+    "A source two rules admit takes one name:",
+    "any other file a pillar's index names, a roster `MANIFESTO.md` included, is `pillar-named-file`.",
 )
 
 DIFF_TARGET_RE = re.compile(r"^\+\+\+ b/(.+)$", re.MULTILINE)
@@ -635,6 +652,16 @@ def _replace(data: bytes, old: str, new: str) -> bytes:
     return data.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
 
 
+def _once(where: str, phrase: str) -> str:
+    """The exact finding ``once_findings`` gives when ``phrase`` is lost."""
+    return f"{where} carries 0 copies of required phrase: {phrase[:60]!r}"
+
+
+def _lacks(phrase: str) -> str:
+    """The exact finding a lost scenario heading gives."""
+    return f"PWB-REQ-002 lacks exactly one: {phrase[:60]!r}"
+
+
 def selftest() -> int:
     proposed = proposed_bytes()
     current = read_subjects()
@@ -698,11 +725,11 @@ def selftest() -> int:
         ),
         "falsifier limb dropped": (
             SPEC, _replace(spec, "a failed class withholds the items of a sibling class\n  that reads, ", ""),
-            "PWB-REQ-002 carries 0 copies of required phrase",
+            _once("PWB-REQ-002", "a failed class withholds the items of a sibling class that reads"),
         ),
         "per-class oracle dropped": (
             SPEC, _replace(spec, "The comparison is made per source and class:", "The comparison is made per source:"),
-            "PWB-REQ-002 carries 0 copies of required phrase",
+            _once("PWB-REQ-002", "The comparison is made per source and class"),
         ),
         "category clause dropped": (
             SPEC, _replace(spec, "across its sources, and its category's, is", "across its sources is"),
@@ -737,7 +764,7 @@ def selftest() -> int:
             "PWB-REQ-002 carries 0 copies of required phrase: 'a class or category item denominator that counts",
         ),
         "qualification falsifier dropped": (
-            SPEC, _replace(spec, "a count derived without a read root index is shown without\n  that qualification, ", ""),
+            SPEC, _replace(spec, "a count derived without a read\n  root index is shown without that qualification, ", ""),
             "PWB-REQ-002 carries 0 copies of required phrase: 'a count derived without a read root index is shown",
         ),
         "observable additions dropped": (
@@ -758,11 +785,55 @@ def selftest() -> int:
         ),
         "signed scenario dropped": (
             SPEC, _replace(spec, "#### Scenario: Loaded profile gives one class no row", "#### Scenario: Loaded profile gives a class no row"),
-            "PWB-REQ-002 lacks exactly one",
+            _lacks("#### Scenario: Loaded profile gives one class no row"),
         ),
         "new scenario dropped": (
             SPEC, _replace(spec, "#### Scenario: A failing class keeps its siblings", "#### Scenario: A failing class"),
-            "PWB-REQ-002 lacks exactly one",
+            _lacks("#### Scenario: A failing class keeps its siblings"),
+        ),
+        "third and fourth rule qualified by a grammar failure": (
+            SPEC, _replace(spec, "neither qualifies a count of the third or fourth rule", "either may qualify a count of the third or fourth rule"),
+            _once("the reader definitions", "neither qualifies a count of the third or fourth rule"),
+        ),
+        "second rule's root need dropped": (
+            SPEC, _replace(spec, "The first and second rules need the root index;", "The first rule needs the root index;"),
+            _once("the reader definitions", "The first and second rules need the root index; the third and fourth, whose path patterns these definitions write, do not."),
+        ),
+        "rule precedence dropped": (
+            SPEC, _replace(spec, "carries one rule name, decided\n    in this order:", "carries any rule name it is\n    given:"),
+            _once("the reader definitions", "A source that more than one rule admits carries one rule name, decided in this order:"),
+        ),
+        "tree precedence dropped": (
+            SPEC, _replace(spec, "is admitted by that tree\n    population alone and carries its name", "is admitted by\n    whichever rule names it first"),
+            _once("the reader definitions", "is admitted by that tree population alone and carries its name, even when a pillar's index names it;"),
+        ),
+        "manifesto precedence flipped": (
+            SPEC, _replace(spec, "a roster `MANIFESTO.md`\n    included, is `pillar-named-file`.", "a roster `MANIFESTO.md`\n    excepted, is `pillar-named-file`."),
+            _once("the reader definitions", "and any other file a pillar's index names, a roster `MANIFESTO.md` included, is `pillar-named-file`."),
+        ),
+        "profile population tie-break dropped": (
+            SPEC, _replace(spec, "carries the name of the first the profile\n    declares.", "carries either name."),
+            _once("the reader definitions", "A source that two tree populations of one loaded profile admit carries the name of the first the profile declares."),
+        ),
+        "precedence oracle dropped": (
+            SPEC, _replace(spec, ", by the stated order for a source more than\n  one rule admits;", ";"),
+            _once("PWB-REQ-002", "by the stated order for a source more than one rule admits"),
+        ),
+        "precedence falsifier dropped": (
+            SPEC, _replace(spec, "a source that more than one rule admits names a rule other\n  than the one the stated order gives it, ", ""),
+            _once("PWB-REQ-002", "a source that more than one rule admits names a rule other than the one the stated order gives it"),
+        ),
+        "precedence scenario dropped": (
+            SPEC, _replace(spec, "#### Scenario: A source two rules admit carries one rule name", "#### Scenario: A source two rules admit"),
+            _lacks("#### Scenario: A source two rules admit carries one rule name"),
+        ),
+        "manifesto scenario limb dropped": (
+            SPEC, _replace(spec, "- **AND** the `MANIFESTO.md` is named `pillar-named-file`\n", ""),
+            _once("PWB-REQ-002", "the `MANIFESTO.md` is named `pillar-named-file`"),
+        ),
+        "scenario population total dropped": (
+            SPEC, _replace(spec, "count, and the source-path population total, that includes\n  them", "count that includes\n  them"),
+            _once("PWB-REQ-002", "and every class and category count, and the source-path population total, that includes them states that it was derived without a read root index"),
         ),
         "warrant dropped": (
             SPEC, _replace(spec, "  contracts: [RFC1-14, RFC2-23, RFC6-16, RFC6-17, RFC7-15]\n  policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]\n", "  contracts: [RFC1-14, RFC6-16, RFC6-17, RFC7-15]\n  policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]\n"),
@@ -790,7 +861,11 @@ def selftest() -> int:
         ),
         "design catalog-count sentence dropped": (
             DESIGN, _replace(proposed[DESIGN], "No `catalog-count` declaration is minted for it;", "A `catalog-count` declaration is minted for it;"),
-            "design lacks",
+            "design lacks: " + repr("No `catalog-count` declaration is minted for it; that family stays closed at nine."[:60]),
+        ),
+        "design precedence dropped": (
+            DESIGN, _replace(proposed[DESIGN], "A source two rules admit\n  takes one name:", "Sources\n  take names:"),
+            "design lacks: " + repr("A source two rules admit takes one name:"[:60]),
         ),
         "signed design line edited": (
             DESIGN, _replace(proposed[DESIGN], "## Risks / Trade-offs", "## Risks"),
@@ -877,7 +952,6 @@ def manifest_and_coverage_selftest(proposed: dict[pathlib.Path, bytes]) -> int:
 ORDER_POPULATION = [
     "pwb-class-granular-extraction-amendment",
     "pwb-accessible-name-amendment",
-    "pwb-anchor-resolution-amendment",
     "pwb-opening-index-amendment",
     "pwb-release-label-amendment",
 ]

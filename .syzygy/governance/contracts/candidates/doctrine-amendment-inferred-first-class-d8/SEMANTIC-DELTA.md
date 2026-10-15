@@ -6,7 +6,18 @@
 > act. The owner's questions and arms live in `OWNER-DECISION-PACKET.md`
 > (this directory); where the two differ, the packet's section 1 text is
 > the proposed text. Round 1 returned `REVISE`; the repairs are recorded in
-> `ROUND-1-DISPOSITIONS.md` and are unconfirmed.
+> `ROUND-1-DISPOSITIONS.md` and are unconfirmed. Round 2 (2026-10-14)
+> returned `REVISE`; its twelve findings were **repaired once on 2026-10-14,
+> unconfirmed pending round 3** (`ROUND-2-DISPOSITIONS.md`, "Repairs,
+> 2026-10-14 (cycle 2)"). *(Marked 2026-10-14, round 3: "pending round 3"
+> is no longer true. Round 3 returned `REVISE`, one revise-level finding
+> and four notes, all open in `ROUND-3-DISPOSITIONS.md`. The bytes stay
+> unconfirmed.)* *(Marked 2026-10-14, cycle 3: "all open" is no longer
+> true. On the owner's cycle-3 direction — drop the dismissal from (d2),
+> then one more cycle — every round-3 finding was repaired once
+> (`ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)").)*
+> **Round-3 findings repaired once on 2026-10-14, unconfirmed pending
+> round 4.** Clauses (a), (d2) and (e) changed bytes in that repair.
 
 **Artifact(s):** `.syzygy/governance/doctrine/trust-and-evidence.md`
 (sha256 `6bf79befec771447b9f70206ee85a406eaffb16b98c8ae1c05f465cd7e486b58`),
@@ -14,25 +25,28 @@
 `93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d`) and
 `.syzygy/governance/doctrine/architecture.md` (sha256
 `d1987f7f630b82eee359e14e89e6422ab74374a2578c218f73d47c80eefcb565`), all
-read on 2026-10-03 at `origin/main` `6bb6ef26`.
+read on 2026-10-03 at `origin/main` `6bb6ef26`, and unchanged at
+`09c7a61d`, where the 2026-10-14 repairs re-read them [Observed].
 
 **Stable IDs affected:** none renumbered, retired or reworded. Insertion
 (d2) sits inside VIS-6's body as a sub-bullet; VIS-6's two closed
 exceptions and its violation sentence keep every byte. The other insertions
 sit in unnumbered sections of `trust-and-evidence.md` and
-`architecture.md`. The inserted text cites VIS-4, VIS-6 and VIS-7.
+`architecture.md`. The inserted text cites VIS-4 and VIS-6. *(Marked
+2026-10-14, cycle 3: "and VIS-7" is no longer true; repaired (e) dropped
+its "(vision.md VIS-7)" citation, round-3 note 2.)*
 
 **Change class, per clause** [Inferred: the classification is this
 drafter's claim]:
 
 | Clause | Class | Why |
 |---|---|---|
-| (a) synthesis | Normative, narrowing | Synthesis is lawful today (lines 95–96, RFC7-2(c)); the clause adds obligations (name inputs, regenerate on change, never fill an Unknown). A design compliant before may not be after; none that was non-compliant becomes compliant |
+| (a) synthesis | Normative, narrowing | Synthesis is lawful today (lines 95–96, RFC7-2(c)); the clause adds obligations (name inputs; no fresher than its stalest input, so stale when any input is stale; withdrawn until regenerated only when an input is broken or superseded; never fill an Unknown; repaired 2026-10-14, round-2 note 11). On Polaris accepted RFC7-20 already confines generated prose to `editorial-draft`, and the clause defers to it (round-2 finding 2). A design compliant before may not be after; none that was non-compliant becomes compliant |
 | (b) attributed answer | Normative | Names a record class doctrine does not name and fixes its rendering and its non-authority |
 | (c) correspondence | Normative, narrowing over a wider domain | RFC1-16 and RFC4-26 define class (ii) for capability↔code only; the clause names the relation for any cross-surface subject and requires it be counted apart from declared edges. Its authority limit is already doctrine for every subject (`trust-and-evidence.md` lines 118–119) |
 | (d) observed-only project | Normative, widened | VIS-6's commit-out names only a project's own plane; after (d) a second destination exists, the observing project's `.syzygy/**`. A design that kept such content nowhere, or that writes into the observed project under P-71-Q5's two acts, is still compliant; a design that commits it to the observing project becomes describable, though still unwritten without its own act |
-| (e) self-observation | Normative, narrowing | Removes authority from a record class that does not yet exist |
-| (f) figures | Clarifying | VIS-4, RFC2-25's `editorial-draft` state ("stays non-citable even after that act completes") and RFC7-3/RFC7-4 already say it |
+| (e) self-observation | Normative, narrowing | Removes authority from a record class that does not yet exist; adds no trust-floor property (repaired 2026-10-14, round-2 finding 1 and note 10) |
+| (f) figures | Clarifying | VIS-4, RFC2-25's `editorial-draft` state ("stays non-citable even after that act completes") and RFC7-3/RFC7-4 already say it; applying the state to a figure or passage selection extends RFC2-25's "Narrative prose" (packet §1 (f); round-2 note 5) |
 
 **Author:** agent drafting session (lane-b worker) for `syzygy-u05.15`.
 
@@ -53,8 +67,16 @@ Lines 134–137:
 >   - A speculated future component must never look like an existing one.
 
 Lines 36–49 name two non-evidence warrants, "A recorded human decision" and
-"A work warrant"; neither is an answer about intent. Lines 157–180 state
-the trust floor; nothing in doctrine names Syzygy observing itself.
+"A work warrant"; neither is an answer about intent. Lines 57–67 list the
+status-claim triggers (line 60: "declares alignment, convergence, or
+genome-completeness") and say "No evidence means **Unknown**, not success";
+lines 157–180 state the trust floor; nothing in doctrine names Syzygy
+observing itself.
+
+On Polaris, accepted RFC7-20 (`RFC-0007/narrative-contract.md` line 416)
+already says "Generated prose appears **only** in the explicit
+**editorial-draft** state", non-citable (added 2026-10-14, round-2
+finding 2).
 
 `vision.md` lines 232–234 (VIS-6):
 
@@ -81,10 +103,14 @@ and self-observation is unaddressed.
 The exact inserted bytes are `OWNER-DECISION-PACKET.md` §1 (a)–(f). In
 meaning:
 
-- (a) A surface-composed synthesis is an Inferred claim with named inputs,
-  no new facts, never itself an anchored claim, no fresher than its stalest
-  input, withdrawn on a broken or superseded input, and never an
-  Unknown-filler.
+- (a) A surface-composed synthesis is an inference with its provenance and
+  named inputs, no new facts, never itself an anchored claim, no fresher
+  than its stalest input, withdrawn on a broken or superseded input, and
+  never an Unknown-filler. It renders as an Inferred claim, except on a
+  surface that admits generated prose only as a draft, where it is that
+  draft (on Polaris, RFC7-20's `editorial-draft`) and no claim while it
+  stays one; RFC7-21's adoption act may later make it curated narrative
+  (repaired 2026-10-14, cycle 3, round-3 note 3: "and never a claim").
 - (b) An owner's answer about intent is a third non-evidence, non-warrant
   class: attributed, dated, withdrawable, committed out, rendered as
   Observed about the record only, beside an Unknown never in its place, and
@@ -92,16 +118,27 @@ meaning:
   this class.
 - (c) An inferred cross-surface link is Inferred, counted apart from
   declared edges, challenge authority only.
-- (d) An observed-only project is named (a project with a designated
-  governance root and an empty write surface); content Syzygy authors about
-  it may be committed to the observing project's `.syzygy/**`, as Syzygy's
-  attributed record, never as the project's declaration or text.
+- (d) An observed-only project is named (a governed project with a
+  designated governance root that no act in force lets Syzygy write);
+  content Syzygy authors about it — a promoted annotation or an attributed
+  answer — may be committed to the observing project's `.syzygy/**`, as
+  Syzygy's attributed record, never as the project's declaration or text,
+  and never suppressing its gap. A dismissal of such a project's gap is not
+  among that content: it takes effect only in the project's own governed
+  plane and waits for an act naming that write (repaired 2026-10-14, cycle
+  3, round-3 finding 1, on the owner's ruling to drop the dismissal from
+  (d2)), so VIS-6's violation sentence stays intact.
 - (e) Observation records whose subject is Syzygy's own governance root
-  are never the evidence for a claim about Syzygy's own alignment,
-  convergence, genome-completeness or release verdict; pipeline-property
-  evidence over that subject still counts.
-- (f) A machine-drafted presentation draft is an `editorial-draft`: never a
-  claim source, before or after a human authors it into presentation.
+  are never the evidence for a claim that declares Syzygy's own alignment,
+  convergence or genome-completeness, and such a claim resting only on
+  them renders Unknown; evidence for any of the four trust-floor properties
+  over that subject still counts; the other status-claim triggers about
+  Syzygy are not denied; the rule sits beside the status-claim triggers,
+  cites no rule, and adds no floor property (heading, citation and
+  Unknown sentence repaired 2026-10-14, cycle 3, round-3 note 2).
+- (f) A machine-drafted presentation draft is an `editorial-draft` before a
+  human authors it into presentation, and presentation, non-citable by
+  RFC7-4, after: never a claim source either way.
 
 ## What explicitly does NOT change
 
@@ -110,10 +147,14 @@ meaning:
   freshness values: no clause adds a value (packet §2).
 - VIS-6's two closed exceptions and its violation sentence: (b) and (d)
   keep content *inside* VIS-6 by committing it out, never by adding an
-  exception.
+  exception. Since the cycle-3 repair (d2) takes no dismissal, so no
+  dismissal takes effect outside the governed plane of the project whose
+  gap it dismisses.
 - VIS-5's write roots: nothing is written into an observed project, and no
   write about one is authorized (packet §1 (d), §3).
-- The trust floor's four bullets and its closing sentence.
+- The trust floor's four bullets and its closing sentence; since the
+  2026-10-14 repair, no insertion sits inside the floor's section.
+- RFC7-20 and RFC7-21: (a) defers to them on Polaris.
 - Every accepted contract, PWB-REQ-012, the POC specification and
   REQ-polaris-generation-031 (packet §6).
 - P-71 Q3's ruling (a pure drafter that writes no file), P-71-Q5's act
@@ -176,5 +217,16 @@ feature-request funnel; derived indexes regenerate per packet §9.
 owner's direction of 2026-10-14 and returned `REVISE`
 (`docs/reviews/R-DOCTRINE-AMENDMENT-D8-2-RAW.md` line 4); see
 `ROUND-2-DISPOSITIONS.md`.)*
+*(Marked 2026-10-14, later the same day: the owner directed one more cycle;
+the round-2 findings are repaired once, unconfirmed pending round 3, under
+`REVIEW-BRIEF.md` §"Round 3".)*
+*(Marked 2026-10-14, round 3: round 3 returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D8-3-RAW.md` line 4); see
+`ROUND-3-DISPOSITIONS.md`.)*
+*(Marked 2026-10-14, cycle 3: on the owner's cycle-3 direction the
+round-3 findings are repaired once, unconfirmed pending round 4, under
+`REVIEW-BRIEF.md` §"Round 4".)*
 **Reviewer:** a fresh agent that did not draft this package.
 **Verdict:** recorded verbatim in the raw and in `ROUND-1-DISPOSITIONS.md`.
+*(Marked 2026-10-14: round 2's verdict is in its own raw and in
+`ROUND-2-DISPOSITIONS.md`, not in `ROUND-1-DISPOSITIONS.md`.)*

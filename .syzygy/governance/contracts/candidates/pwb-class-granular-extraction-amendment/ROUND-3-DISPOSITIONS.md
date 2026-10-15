@@ -31,11 +31,18 @@
   - **The package is not edited.** The brief's round-3 rule says so for
     any verdict but a notes-only one, so the stale status sentences inside
     the package are corrected here, not at the sentence (below).
-    `REVIEW-BRIEF.md` is not edited.
-  - **No round 4 is dispatched.**
+    `REVIEW-BRIEF.md` is not edited. *(Marked 2026-10-14: superseded the
+    same day. The owner directed one more cycle; the package, its builder
+    and `REVIEW-BRIEF.md` were edited to repair all five findings, and the
+    stale sentences listed below are now also marked at the sentence. See
+    §"Repairs, 2026-10-14 (cycle 2)".)*
+  - **No round 4 is dispatched.** *(Marked 2026-10-14: a round 4 is now
+    prepared in `REVIEW-BRIEF.md` §"Round 4"; this record dispatches
+    nothing.)*
   - **The bytes are not cleared.** This version is not offered for sign-off.
     It goes to the owner as register row P-86, with the five findings below
-    open.
+    open. *(Marked 2026-10-14: the five findings are repaired once,
+    unconfirmed pending round 4; nothing is cleared or offered.)*
   - This record recommends nothing on Questions 1–7.
 
 Reviewed record: docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-3-RAW.md
@@ -66,7 +73,8 @@ is updated outside the package.
 
 ### 1 — rule provenance is undecidable for a source that two population rules admit (revise)
 
-**Open.** Raw line 97. The reader definitions bind one rule name per rule,
+**Open.** *(Marked 2026-10-14: repaired once, unconfirmed; repair R1
+below.)* Raw line 97. The reader definitions bind one rule name per rule,
 but neither the signed source-path sentence nor any added line says which
 name a source carries when two rules admit it. The code settles it by a
 precedence the text does not state (`project-shape-manifest.ts` lines
@@ -79,21 +87,63 @@ it to the owner.
 
 ### 2 — five selftest mutants assert only a generic prefix (note)
 
-**Open.** Raw line 134. The reviewer's re-run shows each fails on its own
+**Open.** *(Marked 2026-10-14: repaired once, unconfirmed; repair R2
+below.)* Raw line 134. The reviewer's re-run shows each fails on its own
 phrase; the selftest's assertion is weaker than its summary line, and two
 round-3 phrases have no mutant.
 
 ### 3 — the registry and policy pin residual names a performed bead (note)
 
-**Open.** Raw line 153. `syzygy-jloi` is closed (performed 2026-10-02);
+**Open.** *(Marked 2026-10-14: repaired once, unconfirmed; repair R3
+below.)* Raw line 153. `syzygy-jloi` is closed (performed 2026-10-02);
 the current staleness is attributed to `syzygy-2g0d` (P-95).
 
 ### 4 — the collision census names one pending sibling; the builder lists four (note)
 
-**Open.** Raw line 159. The all-orders check passes over all five patches,
+**Open.** *(Marked 2026-10-14: repaired once, unconfirmed; repair R4
+below.)* Raw line 159. The all-orders check passes over all five patches,
 so this is not a semantic collision; the current-tense table row is false
 at the reviewed commit.
 
 ### 5 — scenario 3 does not exercise the source-path population total's qualification (note)
 
-**Open.** Raw line 176.
+**Open.** *(Marked 2026-10-14: repaired once, unconfirmed; repair R5
+below.)* Raw line 176.
+
+## Repairs, 2026-10-14 (cycle 2)
+
+**Status: round-3 findings repaired once on 2026-10-14, unconfirmed pending
+round 4.** On 2026-10-14 the owner directed one more repair-and-review cycle
+for this package; that direction supersedes this record's "the package is
+not edited" and "no round 4 is dispatched" (marked above) and the same
+words in `REVIEW-BRIEF.md` §"Round 3" (marked there). Every finding, notes
+included, was repaired once over `main` at `814fbcc1`, on branch
+`candidate/p86-round3-repairs`. Nothing was reviewed, signed or recorded.
+
+The anchor-resolution sign-off (P-96, `7f43802f`) had moved the signed PWB
+`spec.md` and `GOVERNING-DEPENDENCIES.md`, so the builder's `--check` failed
+on arrival (the dependency patch no longer applied). The derived patch and
+the manifest were regenerated with `--write`; the authored patches were
+re-rendered over the current signed bytes with only the edits below.
+Line numbers are in the files as repaired.
+
+| Finding | Repair |
+|---|---|
+| R1 — rule provenance undecidable for a source two rules admit (revise) | `proposed/spec.md.patch` line 15: a new reader-definition bullet states the order (root index always `root-index`; a pillar's index file always `pillar-index`; a baseline spec, roster `butler.toml` or loaded-profile tree source admitted by its tree population alone; any other pillar-named file, a roster `MANIFESTO.md` included, `pillar-named-file`; two tree populations of one profile: the first declared). Oracle limb line 164 ("by the stated order …"), falsifier limb line 179, Case line 144, and a fourth new scenario line 225, "A source two rules admit carries one rule name". `proposed/design.md.patch` line 11 carries the order in the discovery-rule note. `SEMANTIC-DELTA.md` §3 cites the code order ([Observed] `project-shape-manifest.ts` 393, 403–405, 470–478) and names the one case the code differs (a pillar index an earlier pillar's index names) as [Inferred]. That case and the loaded-profile clauses are an owner content choice: **packet question 8** (new). Builder: six reader and six PWB-REQ-002 required phrases, one scenario heading and two design phrases added; mutants "rule precedence dropped" (line 802) through "scenario population total dropped" and "design precedence dropped" (line 866). |
+| R2 — five mutants assert a generic prefix; two round-3 phrases unguarded (note) | Builder `_once` and `_lacks` (lines 655, 660) build each mutant's exact finding; the five mutants now expect it ("falsifier limb dropped" line 726, "per-class oracle dropped", "signed scenario dropped", "new scenario dropped", "design catalog-count sentence dropped" line 862). New mutants "third and fourth rule qualified by a grammar failure" (line 794) and "second rule's root need dropped" (line 798) guard the two phrases. [Observed] `--selftest` reports 51 structure mutants (39 before), all failing on their own predicates. `ORDER_POPULATION` (line 952) drops the now-signed anchor-resolution amendment, without which `--selftest` failed. |
+| R3 — residual names performed `syzygy-jloi` (note) | Marked at the sentence, with the superseded text kept: `SEMANTIC-DELTA.md` residual 4 and `IMPACT-LEDGER.md` §"Registry entry and policy" now say R6 attributes both stale pins to `syzygy-2g0d` (P-95), [Observed at `814fbcc1`]. |
+| R4 — collision census names one pending sibling; builder lists four (note) | Marked at the sentence: `IMPACT-LEDGER.md` sibling-packages row and §"Packages and fields this collides with", and `SEMANTIC-DELTA.md` §"Downstream impact", now list the three pending siblings (P-85, P-98, P-99) with "compose, all orders checked", and record that anchor-resolution (P-96) was signed v1.0 on 2026-10-14. Builder `PENDING_SIBLINGS` comment (line 128 area) updated to match. |
+| R5 — scenario 3 misses the source-path population total (note) | `proposed/spec.md.patch` line 217: scenario 3's THEN now reads "every class and category count, and the source-path population total, that includes them states …"; required phrase and mutant "scenario population total dropped" added. |
+
+Stale status sentences, also repaired at the sentence (dated marks, old text
+kept): the packet's Status and question 1, `SEMANTIC-DELTA.md` Date, residual
+2 (census now 17 requirements and 56 proposed scenarios, PWB-REQ-002 at 10,
+from the builder's `--check`) and Review, and `REVIEW-BRIEF.md`'s round-2
+and round-3 stopping-rule sentences. `REVIEW-BRIEF.md` gains §"Round 4",
+with the head contract, the stopping rule and an explicit instruction that
+the reviewer should read the round-3 raw and this record to verify the
+repairs.
+
+**Owner question added:** packet question 8 (the order for a source two
+rules admit: the drafted order with the code changed at build for nested
+pillar roots, or the code's registration order written into the text).

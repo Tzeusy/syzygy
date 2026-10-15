@@ -15,11 +15,14 @@ candidate commit, review, manifest or merge performs no owner act.
 
     --check      verify patches, structure, regeneration, coverage, siblings,
                  one result across every order of this and the pending
-                 siblings' spec patches, and the manifest
+                 siblings' spec patches and of any companion subject a
+                 pending sibling also patches, and the manifest
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
                  required phrases, not each one), plus patch drift, an
-                 unclassified sibling, the pending patch population, and
-                 divergent and failing application orders
+                 unclassified sibling, the pending patch population,
+                 divergent and failing application orders, a colliding
+                 companion patch, and the lost-line guard against an
+                 independent subsequence count
     --write      regenerate the two derived patches (GOVERNING-DEPENDENCIES and
                  CONTRACT-COVERAGE) and the manifest over the proposed bytes
     --diff       print the proposed patches
@@ -38,7 +41,6 @@ contract-coverage generator's own ``--check`` recomputes.
 from __future__ import annotations
 
 import argparse
-import collections
 import difflib
 import hashlib
 import pathlib
@@ -110,22 +112,27 @@ PERFORMED_SIBLINGS = {
     "pwb-opening-band-scenario": "PWB-OPENING-BAND-SCENARIO-ACT.md",
     "pwb-readability-successor": "PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
     "pwb-tree-framing-amendment": "PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-14 (P-96); moved from pending by the sign-off change.
+    "pwb-anchor-resolution-amendment": "PWB-ANCHOR-RESOLUTION-AMENDMENT-SIGNOFF-v1.0.md",
+    # Signed v1.0 2026-10-14 (P-86); moved from pending by the sign-off change.
+    "pwb-class-granular-extraction-amendment": "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: Unsigned packages over the same subject. The class-granular extraction
 #: amendment (M15, ``syzygy-dov.15.1``) touches PWB-REQ-002 and the reader
-#: definitions, not PWB-REQ-001, but it also adds design decision 12 and
-#: capability row 34, so whichever is signed second is regenerated over the
-#: first's applied bytes and re-reviewed. The anchor-resolution amendment
-#: (N9, ``syzygy-u05.9``) touches only PWB-REQ-014 and the generated
-#: dependency declaration. The opening-index (PWB-REQ-010) and
+#: definitions, not PWB-REQ-001, but it also added design decision 12 and
+#: capability row 34; it was signed first (2026-10-14), so this package was
+#: regenerated over its applied bytes as decision 13 and row 35, and
+#: ``companion_order_findings`` now composes the companion subjects too. The
+#: anchor-resolution amendment
+#: (N9, ``syzygy-u05.9``) was signed v1.0 on 2026-10-14 and is performed
+#: above; this package's patches were regenerated over its applied bytes.
+#: The opening-index (PWB-REQ-010) and
 #: accessible-name (PWB-REQ-016) amendments (``syzygy-u05.12``) each touch
 #: one other requirement and the generated declaration only; their spec
 #: patches compose with this one.
 PENDING_SIBLINGS = frozenset({
     "pwb-accessible-name-amendment",
-    "pwb-anchor-resolution-amendment",
-    "pwb-class-granular-extraction-amendment",
     "pwb-opening-index-amendment",
 })
 
@@ -165,10 +172,67 @@ REQUIRED_ONCE = (
     # Round 2, Finding 2: a fixture whose captured history holds a reaching tag.
     "a shallow clone whose captured history holds a reaching tag",
     "a count of later commits computed from incomplete ancestry",
-    # Round 2, Finding 3: naming sites are owner-visible text, in label units.
-    "Attribute values, link targets and identities are not owner-visible text.",
-    "exposed as one element of the page so that a checker finds it without judgment",
-    "zero sites outside a label unit",
+    # Round 2, Finding 3, re-repaired for round 3, Finding 1: a naming site is
+    # a marked label unit; other visible ids are a separate prohibition with
+    # marked exceptions (three in round 3, four since round 4).
+    "Attribute values and link targets are not owner-visible text",
+    "marked as a label unit, so that a checker finds it without judgment",
+    "zero swept occurrences outside a label unit and the excepted elements",
+    "Polaris names the observed revision only in a label unit.",
+    "Every Polaris page SHALL present at least one label unit.",
+    "Outside a label unit, owner-visible Polaris text SHALL NOT show",
+    "Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf",
+    "at least one label unit on every Polaris page",
+    # Round 4, Finding 1: a provenance stamp is decided structurally, from
+    # its citation and the record its cite names, never from its mark; and
+    # "the label leads" has its own observable.
+    "what the checker reads decides each kind, never the mark alone",
+    "a provenance stamp, the revision element of one citation.",
+    "no letter or digit outside the cite's text and the stamp's",
+    "The cite names, by its identity, one anchor the machine narrative serves or one source record the machine answer serves at the same evaluation",
+    "the stamp's whole text is the revision that record carries, in full or as its first twelve hexadecimal digits",
+    "A revision id in a sentence, a heading or any other running text is therefore never a stamp.",
+    "Within each label unit the label precedes the full object id in document order.",
+    "the first occurrence in document order that the text sweep below finds outside the operability status line lies in a label unit",
+    "decides the kind from those alone",
+    "the first swept occurrence outside the operability status line inside a label unit, and in each label unit the label before the full object id",
+    "every provenance stamp inside a citation whose cite names one anchor or source record served at that evaluation",
+    "No excepted element's kind is taken from its mark: the mark only finds it.",
+    "a naming of the observed revision marked as a provenance stamp",
+    # Round 4, Note 2: an identity shown whole is the fourth excepted kind,
+    # decided by equality with a served identity.
+    "Four kinds of element are excepted.",
+    "an identity, whose whole text equals the evaluation identity that the machine answer serves",
+    "every excepted identity's whole text equal to the evaluation identity",
+    # Round 4, Note 3: the status line's warrant is stated, not attributed.
+    "the operability status line that the shared page shell renders on every surface, Polaris included",
+    "No requirement of this specification or of the Three-Surface POC specification names that line",
+    # Round 4, Note 4: the closed term list, block scope and an aligned limb.
+    "`unmoved`, `not moved`, `unchanged`, `stable` or `still points`, matched case-insensitively",
+    "A block is the nearest enclosing paragraph, list item, table cell, heading, caption or summary element, read as its whole text.",
+    "The term list is closed: a paraphrase outside it is not decided by this requirement.",
+    "a tag name and a term in different inline elements of one block are read together",
+    "a stability term in a label unit, the label record or a block holding a captured tag name",
+    # Round 4, Note 5: test 3's three conditions each have a fixture.
+    "with the tag-set read admitted and the ancestry read not admitted",
+    "with one commit of the revision's history made unreadable",
+    "with a graft boundary imposed on its object database",
+    # Round 4, Note 6: the closed page population.
+    "The Polaris pages are the human HTML responses to `GET /polaris` and to every request of PWB-REQ-011's exact-source route, served or refused, in every mount form.",
+    "are not Polaris pages",
+    # Round 3, Finding 2: the not-read tests read checker-owned construction
+    # records.
+    "These construction records are fixture facts the checker owns, not the observer's captured inputs.",
+    "Tests 1 and 3 apply to its construction records",
+    "Tests 2, 4 and 5 apply to its own recorded listing",
+    "as the construction records identify it",
+    # Round 3, Finding 4: no stability statement, swept and decided.
+    "zero stability terms found by the fifth sweep",
+    # Round 3, Finding 5: the expansion lies in the unit; the record is
+    # decided by equality alone.
+    "the expansion of any tied names",
+    "expandable on the surface, inside the label unit.",
+    "the label record is decided by this equality alone",
     # Round 2, Finding 4: "release tag" is defined by the captured tag set.
     "These are the release tags the label counts.",
     'beside the statement "no release tag reaches this revision"',
@@ -205,8 +269,11 @@ REPAIR_TOTALS_LINES = (
     "Declared totals: **92 rows; 77 superseded base rows; 60 covered; 27 Unknown",
     "uncovered; 5 believed not applicable.**",
 )
+#: Row 35 and decision 13: the class-granular amendment (P-86), signed v1.0
+#: on 2026-10-14 under its Question 5 answer "First ready lands first", took
+#: row 34 and decision 12, so this package was regenerated over its bytes.
 CAPABILITY_ROW = (
-    "| 34 | Lead every human naming of the observed revision with its release "
+    "| 35 | Lead every human naming of the observed revision with its release "
     "label, keep the full object id beneath it as the identity claims bind to, "
     "disclose moved tags, and never state unread tags or incomplete history as untagged | "
     "covered — PWB-REQ-001 |"
@@ -219,8 +286,9 @@ TOTALS_RE = re.compile(
 )
 POPULATION_RE = re.compile(r"^Population: (\d+) positive", re.MULTILINE)
 PROPOSAL_PHRASE = "- **The revision reads as a release.**"
+DECISION_RE = re.compile(r"^### (\d+)\. ", re.MULTILINE)
 DESIGN_PHRASES = (
-    "### 12. Name the revision by its release label",
+    "### 13. Name the revision by its release label",
     "until a registry amendment does, every label takes the not-read form.",
 )
 
@@ -341,7 +409,7 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
     signed = old[REQ_001]
     lost = lost_lines(signed, block, lambda line: bool(WARRANT_LIST_RE.match(line)))
     if lost:
-        findings.append(f"signed PWB-REQ-001 line edited or removed: {lost[0]!r}")
+        findings.append(f"signed PWB-REQ-001 line edited, moved or removed: {lost[0]!r}")
     for key, items in WARRANT_LIST_RE.findall(signed):
         kept = re.search(rf"^  {key}: \[([^\]\n]*)\]$", block, re.MULTILINE)
         now = {item.strip() for item in kept.group(1).split(",")} if kept else set()
@@ -352,7 +420,7 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
     for phrase in REQUIRED_ONCE:
         count = text.count(flat(phrase))
         if count != 1:
-            findings.append(f"PWB-REQ-001 carries {count} copies of required phrase: {phrase[:60]!r}")
+            findings.append(f"PWB-REQ-001 carries {count} copies of required phrase: {phrase!r}")
     for phrase in KEPT_IN_001 + NEW_SCENARIOS:
         if block.count(phrase) != 1:
             findings.append(f"PWB-REQ-001 lacks exactly one: {phrase.splitlines()[0][:60]!r}")
@@ -365,14 +433,33 @@ def spec_findings(proposed: bytes, current: bytes) -> list[str]:
 
 
 def lost_lines(old: str, new: str, skip=lambda line: False) -> list[str]:
-    remaining = collections.Counter(new.split("\n"))
+    """Signed lines that do not survive, in their signed order, in ``new``.
+
+    The amendment only inserts lines (and replaces the ``skip`` lines), so the
+    signed lines must be a subsequence of the new ones. A greedy match finds a
+    subsequence whenever one exists; a line edited, removed or moved past a
+    later signed line is reported (round 3, Finding 6: a multiset comparison
+    let a signed line move).
+
+    Duplicate lines (round 4, Note 7). Matching a signed line to the earliest
+    later copy is exact for the subsequence property, twins included: if any
+    matching exists, the earliest one leaves the most room for the lines
+    after it. An edit that deletes a signed line and still leaves the signed
+    lines a subsequence produces bytes identical to an insertions-only edit
+    of the signed text, so no byte comparison can tell the two apart, and
+    nothing the amendment may not do is hidden by it. ``--selftest`` checks
+    this function against an independent longest-common-subsequence count
+    over seeded random texts made mostly of repeated lines.
+    """
+    lines = new.split("\n")
     lost = []
+    position = 0
     for line in old.split("\n"):
         if skip(line):
             continue
-        if remaining[line]:
-            remaining[line] -= 1
-        else:
+        try:
+            position = lines.index(line, position) + 1
+        except ValueError:
             lost.append(line)
     return lost
 
@@ -382,9 +469,12 @@ def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     findings = []
     lost = lost_lines(old, new, lambda line: bool(CAPABILITY_COUNT_LINES.match(line)))
     if lost:
-        findings.append(f"signed capability line edited or removed: {lost[0]!r}")
+        findings.append(f"signed capability line edited, moved or removed: {lost[0]!r}")
     if new.count(CAPABILITY_ROW) != 1:
-        findings.append("capability row 34 for the release label is missing")
+        findings.append("capability row 35 for the release label is missing")
+    numbers = [int(number) for number, _ in CAPABILITY_ROW_RE.findall(new)]
+    if numbers != list(range(1, len(numbers) + 1)):
+        findings.append("capability rows are not numbered 1..n in order")
     rows = CAPABILITY_ROW_RE.findall(new)
     covered = sum(1 for _, d in rows if d.strip().startswith("covered"))
     scoped = sum(1 for _, d in rows if d.strip().startswith("lawfully out of scope"))
@@ -406,7 +496,7 @@ def repair_findings(proposed: bytes, current: bytes) -> list[str]:
     findings = []
     lost = lost_lines(old, new, lambda line: line in REPAIR_TOTALS_LINES)
     if lost:
-        findings.append(f"signed repair-delta line edited or removed: {lost[0]!r}")
+        findings.append(f"signed repair-delta line edited, moved or removed: {lost[0]!r}")
     for row in REPAIR_ROWS:
         if new.count(row) != 1:
             findings.append(f"repair row missing: {row.split(' | ')[0][2:]}")
@@ -418,13 +508,19 @@ def companion_findings(proposed: dict[pathlib.Path, bytes], current: dict[pathli
     for rel in (PROPOSAL, DESIGN):
         lost = lost_lines(current[rel].decode("utf-8"), proposed[rel].decode("utf-8"))
         if lost:
-            findings.append(f"signed {rel.name} line edited or removed: {lost[0]!r}")
+            findings.append(f"signed {rel.name} line edited, moved or removed: {lost[0]!r}")
     if PROPOSAL_PHRASE not in proposed[PROPOSAL].decode("utf-8"):
         findings.append("proposal does not carry the release-label bullet")
-    design = flat(proposed[DESIGN].decode("utf-8"))
+    design_text = proposed[DESIGN].decode("utf-8")
+    design = flat(design_text)
     for phrase in DESIGN_PHRASES:
         if flat(phrase) not in design:
             findings.append(f"design lacks: {phrase[:60]!r}")
+    # Round 4, Note 8: a patch applied after a sibling's took the same number
+    # relocates silently, so the decisions must stay numbered 1..n in order.
+    decisions = [int(number) for number in DECISION_RE.findall(design_text)]
+    if decisions != list(range(1, len(decisions) + 1)):
+        findings.append(f"design decisions are not numbered 1..n in order: {decisions}")
     return findings
 
 
@@ -552,6 +648,42 @@ def pending_order_findings(
     return orders.all_orders_findings(spec_bytes, patches, rel)
 
 
+#: Authored companion subjects this package patches beside the spec. The
+#: derived subjects are regenerated at each sign-off, so only these compose.
+COMPANIONS = (CAPABILITY, REPAIR_DELTA, DESIGN, PROPOSAL)
+
+
+def companion_order_patches(
+    rel: pathlib.Path, candidates: pathlib.Path | None = None,
+) -> list[tuple[str, pathlib.Path]]:
+    """This package's patch of ``rel``, then each pending sibling's, by name."""
+    candidates = candidates or ROOT / CANDIDATES
+    mine = [p for p in patch_files() if patch_target(p) == rel]
+    patches = [(CANDIDATE.name, mine[0])] if mine else []
+    for name in sorted(PENDING_SIBLINGS):
+        for theirs in sorted((candidates / name / "proposed").glob("*.patch")):
+            try:
+                if patch_target(theirs) == rel:
+                    patches.append((name, theirs))
+            except ValueError:
+                continue
+    return patches
+
+
+def companion_order_findings(candidates: pathlib.Path | None = None) -> list[str]:
+    """Round 4, Note 8: the order check covered the spec only, so a sibling's
+    design or capability patch could collide unseen. Every companion subject
+    that a pending sibling also patches gets the same all-orders search."""
+    findings = []
+    for rel in COMPANIONS:
+        patches = companion_order_patches(rel, candidates)
+        if len(patches) < 2:
+            continue
+        for finding in orders.all_orders_findings((ROOT / rel).read_bytes(), patches, rel):
+            findings.append(f"{rel.name}: {finding}")
+    return findings
+
+
 def render_manifest(proposed: dict[pathlib.Path, bytes]) -> str:
     header = (
         f"# {TITLE}\n"
@@ -586,6 +718,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     findings.extend(coverage_findings(proposed))
     findings.extend(sibling_findings())
     findings.extend(pending_order_findings())
+    findings.extend(companion_order_findings())
     if not (ROOT / MANIFEST).is_file():
         findings.append(f"missing manifest: {MANIFEST}")
     elif (ROOT / MANIFEST).read_text(encoding="utf-8") != render_manifest(proposed):
@@ -599,6 +732,12 @@ def _replace(data: bytes, old: str, new: str) -> bytes:
     if old.encode("utf-8") not in data:
         raise AssertionError(f"selftest fixture matched nothing: {old[:60]!r}")
     return data.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
+
+
+def phrase_finding(phrase: str) -> str:
+    """The exact finding a mutant deleting one required phrase must raise
+    (round 3, Finding 6: a shared prefix let any missing phrase satisfy it)."""
+    return f"PWB-REQ-001 carries 0 copies of required phrase: {phrase!r}"
 
 
 def selftest() -> int:
@@ -619,55 +758,55 @@ def selftest() -> int:
         ),
         "object id no longer beneath": (
             SPEC, _replace(proposed[SPEC], "and SHALL show the revision's full\n  Git object id beneath the label", "and MAY show the revision's full\n  Git object id near the label"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding("SHALL show the revision's full Git object id beneath the label, on the same surface and without expanding anything"),
         ),
         "unread shown as untagged": (
             SPEC, _replace(proposed[SPEC], "It never states\n  that the revision is untagged.", "It may state\n  that the revision is untagged."),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('It never states that the revision is untagged.'),
         ),
         "tag message read": (
             SPEC, _replace(proposed[SPEC], "no tag message or signature is read into\n    the model or rendered", "the tag message is rendered"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('no tag message or signature is read into the model or rendered'),
         ),
         "incomplete-ancestry statement false": (
             SPEC, _replace(proposed[SPEC], 'Its statement is\n     "the history needed to judge release tags was not read".', 'Its statement is\n     "release tags were not read".'),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('Its statement is "the history needed to judge release tags was not read".'),
         ),
         "statement decide-line dropped": (
             SPEC, _replace(proposed[SPEC], "    - exact equality of form, statement, tag name,", "    - exact equality of form, tag name,"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('exact equality of form, statement, tag name, distance, tied names'),
         ),
         "visible reaching-tag shallow fixture dropped": (
             SPEC, _replace(proposed[SPEC], "    - a shallow clone whose captured history holds a reaching tag;\n", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('a shallow clone whose captured history holds a reaching tag'),
         ),
         "naming sites back to every element": (
-            SPEC, _replace(proposed[SPEC], "    - zero sites outside a label unit;", "    - zero sites without a label;"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            SPEC, _replace(proposed[SPEC], "    - zero swept occurrences outside a label unit and the excepted elements;", "    - zero swept occurrences;"),
+            phrase_finding('zero swept occurrences outside a label unit and the excepted elements'),
         ),
         "release tag left undefined": (
             SPEC, _replace(proposed[SPEC], " These are the release tags the label counts.", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('These are the release tags the label counts.'),
         ),
         "tied moved tag undisclosed": (
             SPEC, _replace(proposed[SPEC], "SHALL be\n    disclosed as moved wherever its name is carried", "SHALL be\n    disclosed as moved wherever a label names that tag"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('SHALL be disclosed as moved wherever its name is carried'),
         ),
         "failed peel undecided": (
             SPEC, _replace(proposed[SPEC], " When any ref under `refs/tags/` cannot be read or peeled,\n    reading the tag set failed.", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('When any ref under `refs/tags/` cannot be read or peeled, reading the tag set failed.'),
         ),
         "signed oracle clause deleted": (
             SPEC, _replace(proposed[SPEC], "  distinct from source-claimed time. Exact set, stamp and input-identity\n  equality decides.\n", "  equality decides.\n"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed falsifier clause edited": (
             SPEC, _replace(proposed[SPEC], "  deterministic input identity is missing, or exposed sources use different\n", "  deterministic input identity is missing, or exposed sources differ in\n"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed observable clause edited": (
             SPEC, _replace(proposed[SPEC], "  per-emission identity.\n  For the release label", "  identity.\n  For the release label"),
-            "signed PWB-REQ-001 line edited or removed",
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "signed doctrine warrant dropped": (
             SPEC, _replace(proposed[SPEC], "  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]", "  doctrine: [VIS-1, VIS-2, VIS-7]"),
@@ -687,7 +826,110 @@ def selftest() -> int:
         ),
         "ancestry limb dropped": (
             SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.", "  3."),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+            phrase_finding('**Not read**, when the captured ancestry is incomplete.'),
+        ),
+        # Round 3, Finding 1: the naming site is a marked label unit, and the
+        # visible-id prohibition has three bounded, marked exceptions.
+        "label unit floor dropped": (
+            SPEC, _replace(proposed[SPEC], "Every Polaris page\n    SHALL present at least one label unit.", "Every Polaris page\n    MAY present a label unit."),
+            phrase_finding("Every Polaris page SHALL present at least one label unit."),
+        ),
+        "provenance stamp unbounded": (
+            SPEC, _replace(proposed[SPEC], "    - a provenance stamp, the revision element of one citation.", "    - a provenance stamp, any element the implementation marks as one."),
+            phrase_finding("a provenance stamp, the revision element of one citation."),
+        ),
+        # Round 4, Finding 1: the stamp is structural and record-verified, and
+        # "the label leads" is decided.
+        "stamp kind taken from its mark": (
+            SPEC, _replace(proposed[SPEC], "it, and what the checker reads decides each kind, never the mark alone:", "it, and the mark decides each kind:"),
+            phrase_finding("what the checker reads decides each kind, never the mark alone"),
+        ),
+        "stamp purpose clause deleted": (
+            SPEC, _replace(proposed[SPEC], " The cite names, by its\n      identity, one anchor the machine narrative serves or one source record\n      the machine answer serves at the same evaluation, and the stamp's whole\n      text is the revision that record carries, in full or as its first\n      twelve hexadecimal digits.", ""),
+            phrase_finding("The cite names, by its identity, one anchor the machine narrative serves or one source record the machine answer serves at the same evaluation"),
+        ),
+        "stamp allowed in running text": (
+            SPEC, _replace(proposed[SPEC], " A revision id in a sentence, a heading or\n      any other running text is therefore never a stamp.", ""),
+            phrase_finding("A revision id in a sentence, a heading or any other running text is therefore never a stamp."),
+        ),
+        "stamp citation decide-line dropped": (
+            SPEC, _replace(proposed[SPEC], "    - every provenance stamp inside a citation whose cite names one anchor or\n      source record served at that evaluation,", "    - every provenance stamp"),
+            phrase_finding("every provenance stamp inside a citation whose cite names one anchor or source record served at that evaluation"),
+        ),
+        "lead rule dropped": (
+            SPEC, _replace(proposed[SPEC], " On each Polaris page, the first occurrence\n    in document order that the text sweep below finds outside the\n    operability status line lies in a label unit.", ""),
+            phrase_finding("the first occurrence in document order that the text sweep below finds outside the operability status line lies in a label unit"),
+        ),
+        "label-before-id dropped": (
+            SPEC, _replace(proposed[SPEC], " Within each label unit the label precedes the full\n    object id in document order.", ""),
+            phrase_finding("Within each label unit the label precedes the full object id in document order."),
+        ),
+        "naming-as-stamp falsifier dropped": (
+            SPEC, _replace(proposed[SPEC], "  - a naming of the observed revision marked as a provenance stamp:", "  - a stamp:"),
+            phrase_finding("a naming of the observed revision marked as a provenance stamp"),
+        ),
+        # Round 4, Note 2: the identity exception is decided by equality.
+        "identity exception unbounded": (
+            SPEC, _replace(proposed[SPEC], "    - an identity, whose whole text equals the evaluation identity that the\n      machine answer serves", "    - an identity, whose text includes the evaluation identity that the\n      machine answer serves"),
+            phrase_finding("an identity, whose whole text equals the evaluation identity that the machine answer serves"),
+        ),
+        # Round 4, Note 3: the reviewer's widened status-line mutant.
+        "status-line exception widened": (
+            SPEC, _replace(proposed[SPEC], "    - the operability status line that the shared page shell renders on\n      every surface, Polaris included.", "    - any element the implementation marks as a provenance stamp."),
+            phrase_finding("the operability status line that the shared page shell renders on every surface, Polaris included"),
+        ),
+        "status-line warrant reattributed": (
+            SPEC, _replace(proposed[SPEC], "No requirement of this specification\n      or of the Three-Surface POC specification names that line;", "The POC specification governs that line;"),
+            phrase_finding("No requirement of this specification or of the Three-Surface POC specification names that line"),
+        ),
+        # Round 4, Note 4: the reviewer's narrowed-term mutant, and the block.
+        "stability terms narrowed": (
+            SPEC, _replace(proposed[SPEC], "`unmoved`, `not moved`, `unchanged`, `stable` or `still points`,", "`unmoved`,"),
+            phrase_finding("`unmoved`, `not moved`, `unchanged`, `stable` or `still points`, matched case-insensitively"),
+        ),
+        "stability sweep back to text nodes": (
+            SPEC, _replace(proposed[SPEC], " A block is the nearest enclosing paragraph,\n    list item, table cell, heading, caption or summary element, read as its\n    whole text.", " A block is a text node."),
+            phrase_finding("A block is the nearest enclosing paragraph, list item, table cell, heading, caption or summary element, read as its whole text."),
+        ),
+        # Round 4, Note 5: test 3's unadmitted-ancestry fixture.
+        "unadmitted-ancestry fixture dropped": (
+            SPEC, _replace(proposed[SPEC], "with the tag-set read admitted and the ancestry\n      read not admitted, ", ""),
+            phrase_finding("with the tag-set read admitted and the ancestry read not admitted"),
+        ),
+        # Round 4, Note 6: the page population.
+        "page population dropped": (
+            SPEC, _replace(proposed[SPEC], "  - The Polaris pages are the human HTML responses to `GET /polaris` and to\n    every request of PWB-REQ-011's exact-source route, served or refused, in\n    every mount form.", "  - The Polaris pages are the human HTML responses Polaris serves."),
+            phrase_finding("The Polaris pages are the human HTML responses to `GET /polaris` and to every request of PWB-REQ-011's exact-source route, served or refused, in every mount form."),
+        ),
+        # Round 4, Note 7: a deleted signed line, with twins later, is lost.
+        "signed blank line deleted": (
+            SPEC, _replace(proposed[SPEC], "**Verification.**\n\n- **Case**: observe a repository at a known revision", "**Verification.**\n- **Case**: observe a repository at a known revision"),
+            "signed PWB-REQ-001 line edited, moved or removed",
+        ),
+        "verbatim exception dropped": (
+            SPEC, _replace(proposed[SPEC], "Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf,", "Butlers-declared text,"),
+            phrase_finding("Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf"),
+        ),
+        # Round 3, Finding 2: tests 1 and 3 read the construction records.
+        "not-read tests off the construction records": (
+            SPEC, _replace(proposed[SPEC], "Tests 1 and 3 apply to its\n    construction records", "Tests 1 and 3 apply to its\n    recorded listing"),
+            phrase_finding("Tests 1 and 3 apply to its construction records"),
+        ),
+        # Round 3, Finding 4: a stability statement is swept and decided.
+        "stability decide-line dropped": (
+            SPEC, _replace(proposed[SPEC], "    - zero stability terms found by the fifth sweep;\n", ""),
+            phrase_finding("zero stability terms found by the fifth sweep"),
+        ),
+        # Round 3, Finding 5: the label record is decided by equality alone.
+        "label record under the page predicates": (
+            SPEC, _replace(proposed[SPEC], "; the label-unit predicates apply to page sites\n      only, and the label record is decided by this equality alone", ""),
+            phrase_finding("the label record is decided by this equality alone"),
+        ),
+        # Round 3, Finding 6: a signed line moved within PWB-REQ-001 fails
+        # the order-aware lost-line guard.
+        "signed line moved": (
+            SPEC, _replace(proposed[SPEC], "  distinct from source-claimed time. Exact set, stamp and input-identity\n  equality decides.\n", "  equality decides.\n  distinct from source-claimed time. Exact set, stamp and input-identity\n"),
+            "signed PWB-REQ-001 line edited, moved or removed",
         ),
         "repair row dropped": (
             REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], REPAIR_ROWS[0] + "\n", ""),
@@ -695,23 +937,32 @@ def selftest() -> int:
         ),
         "signed repair row edited": (
             REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], "| RFC2-1.r2 | RFC2-1.c12 |", "| RFC2-1.r2 | RFC2-1.c13 |"),
-            "signed repair-delta line edited or removed",
+            "signed repair-delta line edited, moved or removed",
         ),
         "capability row dropped": (
             CAPABILITY, _replace(proposed[CAPABILITY], CAPABILITY_ROW + "\n", ""),
-            "capability row 34 for the release label is missing",
+            "capability row 35 for the release label is missing",
         ),
         "capability totals drift": (
-            CAPABILITY, _replace(proposed[CAPABILITY], "Totals: 28 covered", "Totals: 29 covered"),
+            CAPABILITY, _replace(proposed[CAPABILITY], "Totals: 29 covered", "Totals: 30 covered"),
             "capability totals are not the computed figures",
+        ),
+        # Round 4, Note 8: a row or decision number taken twice.
+        "capability row number reused": (
+            CAPABILITY, _replace(proposed[CAPABILITY], "| 35 | Lead every human naming", "| 34 | Lead every human naming"),
+            "capability rows are not numbered 1..n in order",
+        ),
+        "design decision number reused": (
+            DESIGN, _replace(proposed[DESIGN], "### 13. Name the revision by its release label", "### 12. Name the revision by its release label"),
+            "design decisions are not numbered 1..n in order",
         ),
         "signed capability row edited": (
             CAPABILITY, _replace(proposed[CAPABILITY], "| 1 | Bind every source to one exact Butlers revision |", "| 1 | Bind every source to one Butlers revision |"),
-            "signed capability line edited or removed",
+            "signed capability line edited, moved or removed",
         ),
         "signed proposal line edited": (
             PROPOSAL, _replace(proposed[PROPOSAL], "- **Every declared item is counted.**", "- **Items are counted.**"),
-            "signed proposal.md line edited or removed",
+            "signed proposal.md line edited, moved or removed",
         ),
         "proposal bullet dropped": (
             PROPOSAL, _replace(proposed[PROPOSAL], PROPOSAL_PHRASE, "- **The revision.**"),
@@ -723,7 +974,7 @@ def selftest() -> int:
         ),
         "signed design line edited": (
             DESIGN, _replace(proposed[DESIGN], "## Risks / Trade-offs", "## Risks"),
-            "signed design.md line edited or removed",
+            "signed design.md line edited, moved or removed",
         ),
         "dependency drift": (
             GOVERNING, _replace(proposed[GOVERNING], "PWB-REQ-001", "PWB-REQ-000"),
@@ -761,13 +1012,68 @@ def selftest() -> int:
             print(f"SELFTEST FAILED: unclassified sibling gave {found}")
             failed += 1
         failed += order_selftest(pathlib.Path(temp) / "orders")
+        failed += companion_order_selftest(pathlib.Path(temp) / "companions")
+    failed += lost_lines_selftest()
     if failed:
         return 1
     print(
         f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
-        "sibling, the pending patch population, and divergent and failing "
-        "application orders all fail closed on their own predicates"
+        "sibling, the pending patch population, divergent and failing "
+        "application orders, a colliding companion patch, and the lost-line "
+        "guard against an independent subsequence count all fail closed on "
+        "their own predicates"
     )
+    return 0
+
+
+def _lcs(old: list[str], new: list[str]) -> int:
+    """Longest common subsequence length, by dynamic programming."""
+    row = [0] * (len(new) + 1)
+    for line in old:
+        previous = 0
+        for j, other in enumerate(new, 1):
+            current = row[j]
+            row[j] = previous + 1 if line == other else max(row[j], row[j - 1])
+            previous = current
+    return row[-1]
+
+
+def lost_lines_selftest(trials: int = 4000) -> int:
+    """Round 4, Note 7: ``lost_lines`` reports nothing exactly when the old
+    lines are a subsequence of the new, over seeded random texts drawn from
+    three lines, one of them blank, so nearly every line has twins."""
+    import random
+
+    generator = random.Random(20261014)
+    alphabet = ["", "- a", "- b"]
+    for _ in range(trials):
+        old_text = "\n".join(generator.choice(alphabet) for _ in range(generator.randint(1, 7)))
+        new_text = "\n".join(generator.choice(alphabet) for _ in range(generator.randint(1, 9)))
+        old, new = old_text.split("\n"), new_text.split("\n")
+        greedy_clean = not lost_lines(old_text, new_text)
+        subsequence = _lcs(old, new) == len(old)
+        if greedy_clean != subsequence:
+            print(f"SELFTEST FAILED: lost_lines disagrees with the subsequence count on {old!r} -> {new!r}")
+            return 1
+    return 0
+
+
+def companion_order_selftest(temp: pathlib.Path) -> int:
+    """A pending sibling's patch of a companion subject joins the all-orders
+    search: one that edits this package's context fails in one order."""
+    fake = temp / "candidates"
+    sibling = fake / sorted(PENDING_SIBLINGS)[0] / "proposed"
+    sibling.mkdir(parents=True)
+    before = (ROOT / DESIGN).read_bytes()
+    after = _replace(before, "## Risks / Trade-offs\n", "## Risks and trade-offs\n")
+    (sibling / "design.md.patch").write_text(unified_patch(DESIGN, before, after), encoding="utf-8")
+    found = companion_order_findings(fake)
+    if not any(f.startswith("design.md: pending spec patches do not apply in every order") for f in found):
+        print(f"SELFTEST FAILED: a colliding companion patch gave {found}")
+        return 1
+    if companion_order_findings(temp / "empty"):
+        print("SELFTEST FAILED: the companion order check reports with no pending companion patch")
+        return 1
     return 0
 
 
@@ -775,8 +1081,6 @@ def selftest() -> int:
 ORDER_POPULATION = [
     "pwb-release-label-amendment",
     "pwb-accessible-name-amendment",
-    "pwb-anchor-resolution-amendment",
-    "pwb-class-granular-extraction-amendment",
     "pwb-opening-index-amendment",
 ]
 

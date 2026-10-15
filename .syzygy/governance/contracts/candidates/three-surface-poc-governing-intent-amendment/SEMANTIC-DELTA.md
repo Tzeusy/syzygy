@@ -9,13 +9,21 @@
 > (VIS-4). This candidate edits no signed byte and authorizes no
 > implementation.
 
+**State:** round-2 findings repaired once on 2026-10-14, unconfirmed pending
+round 3. The mapping from each round-2 finding to its repair is in
+`ROUND-2-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 2)".
+
 **Artifact(s):** four of the six signed artifacts of
 `openspec/changes/three-surface-poc-experience/`, bound since 2026-09-29 by
 `.syzygy/governance/decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md`:
 `specs/three-surface-poc-experience/spec.md`, `CONTRACT-COVERAGE.md`,
-`GOVERNING-DEPENDENCIES.md` and `proposal.md`. Proposed bytes exist only as
-the four unified diffs under `proposed/`. `.openspec.yaml` and `design.md`
-stay byte-identical.
+`GOVERNING-DEPENDENCIES.md` and `proposal.md`. Two of them, `spec.md` and
+`GOVERNING-DEPENDENCIES.md`, changed again on 2026-10-14 when the owner
+signed the block-provenance amendment v1.0 (P-97,
+`.syzygy/governance/decisions/THREE-SURFACE-POC-BLOCK-PROVENANCE-AMENDMENT-SIGNOFF-v1.0.md`).
+Proposed bytes exist only as the four unified diffs under `proposed/`,
+regenerated on 2026-10-14 over those signed bytes at `origin/main`
+`814fbcc1`. `.openspec.yaml` and `design.md` stay byte-identical.
 
 **Stable IDs affected:**
 
@@ -88,14 +96,19 @@ whose value, under this specification, is always **Unknown** with the reason
 
 - Both channels serve how many items carry that Unknown, over the served item
   set ("N of N").
-- Trajectory marks each item, shows the count, says beside it that an item is
-  resolved by supplying its warrant, and lets a reader narrow the board to
-  those items.
+- Trajectory shows that count beside how many of the items its rendered
+  selection holds and how many fall outside it. Signed POC-REQ-042 lets
+  Trajectory render a bounded selection (its scenario: 192 of 6,964 items),
+  so the item-level arms reach only the items Trajectory renders; the rest
+  are counted, not shown.
+- Beside the count, Trajectory states the reason, its route and that an item
+  is resolved by supplying its warrant. It marks every item it renders, and
+  lets a reader narrow the board to the marked items.
+- Every item Trajectory renders shows its governing intent with the encoding
+  POC-REQ-060's declared table gives Unknown, never an encoding for a
+  warranted, green or complete state.
 - Nothing served takes a governing intent from a title. A fixture item whose
   title names a requirement must still read Unknown.
-- Each item renders with its Unknown marker, never as warranted, green or
-  complete, and the marker never replaces or hides an orphaned-work
-  Contradiction where one is rendered.
 
 It admits no column or other input, and it **defines no edge**. Its *Scope*
 says the projection stays as POC-REQ-010 to POC-REQ-013 bound it, and that an
@@ -104,14 +117,42 @@ amendment. This is deliberate: an edge arm with no admitted source would be
 an arm no oracle can reach (CC-SPEC-4). Whatever P-100 decides, the edge comes
 in its own amendment, with the input it rests on.
 
-**Form.** The requirement is one invariant over the served item set. Its
-"never" sentences are stated as properties every served item holds, so they
-are checked by the same sweep, not as separate prohibitions.
+The same reasoning removes the orphaned-work sentence round 1 added. The POC
+detects no orphaned work, so "no Unknown marker SHALL replace or hide an
+orphaned-work Contradiction" was a SHALL no checker could produce a case for.
+The *Scope* now says the requirement makes no claim about orphaned work, and
+that RFC8-23's rule (the Contradiction governs) is left to the amendment that
+specifies orphaned-work detection. The matrix keeps that limb as Unknown.
 
-**Denominator.** The oracle's denominator is the served item set, as in
-POC-REQ-011. An item dropped before serving is invisible to this oracle;
-POC-REQ-042 reconciles the served count against the database total, and the
-matrix lists the "never an ingest rejection" limb of RFC8-23 as Unknown.
+**Form.** The requirement is one invariant over the served item set and
+Trajectory's rendered selection. Its "never" sentences are stated as
+properties every item holds, so they are checked by the same sweeps, not as
+separate prohibitions.
+
+**Denominators.** The oracle has two, each the checker's own enumeration.
+The machine-answer arms run over the served item set, as in POC-REQ-011. The
+Trajectory arms run over the items Trajectory renders, before and after
+narrowing; Trajectory's inside figure must equal that enumeration, and inside
+plus outside must equal the served count. An item dropped before serving is
+invisible to this oracle; POC-REQ-042 reconciles the rendered and excluded
+counts against the database total, and the matrix lists the "never an
+ingest rejection" limb of RFC8-23 as Unknown.
+
+**How each Trajectory arm is decided.** Round 2 found that the oracle named
+the marker, the resolution sentence and the non-green rendering only in the
+observable and falsifier. Each now has a stated procedure:
+
+- **The marker and the non-green rendering** are one check: every rendered
+  item's governing-intent encoding equals the encoding POC-REQ-060's
+  checked-in table gives Unknown, and none carries an encoding the table
+  gives another state. This is how POC-REQ-043 decides its verification
+  encoding: against a declared expected value, not by eye.
+- **The resolution statement**: the region holding the count, read as text
+  alone (RFC8-31), contains the reason name and its RFC2-24 route literally,
+  and the word "warrant" in a statement that supplying it resolves an item.
+  The exact wording is the implementation's; the literal parts are not.
+- **Narrowing**: the narrowed board lists exactly the items the un-narrowed
+  board renders, because every one carries the Unknown.
 
 ## Why each choice
 
@@ -124,12 +165,15 @@ amendment row in `CONTRACT-COVERAGE.md`.
   a first-class, filterable, counted rendered state — never green, never
   silently pooled into warranted work, and never an ingest rejection
   (RFC4-10)." Its route for such an item is "*surface it*: counted, never
-  green, resolvable by supplying a warrant". Covered: counted, filterable,
-  never green, and the route. Unknown: "never silently pooled" (no warranted
-  population exists to pool into), "never an ingest rejection" (see
-  *Denominator*), the substrate-side warrant-field annotation (the POC reads
-  no warrant field), and the orphaned-work limb (the POC detects no orphaned
-  work).
+  green, resolvable by supplying a warrant". Covered: counted over the served
+  set, filterable within Trajectory's rendered selection, never green (the
+  encoding check), and the route stated beside the count (the literal
+  check). Unknown: filtering items outside the rendered selection (POC-REQ-042
+  lets Trajectory count them without rendering them), "never silently
+  pooled" (no warranted population exists to pool into), "never an ingest
+  rejection" (see *Denominators*), the substrate-side warrant-field
+  annotation (the POC reads no warrant field), and the orphaned-work limb
+  (the POC detects no orphaned work).
 - **RFC8-22** is the prohibition. It reads: "Where a link cannot be
   established at the answering evaluation, the chain renders the break at that
   link — Unknown with its RFC2-24 reason — and everything downstream renders
@@ -140,19 +184,40 @@ amendment row in `CONTRACT-COVERAGE.md`.
   degradation, since the POC renders no link downstream of the work item.
 - **RFC8-24** reads: "The RFC2-24 reasons Trajectory most renders **on its
   claims**, each with its route visible", and lists
-  `source-uncaptured-or-unreachable` among them. Covered: Trajectory renders
-  that reason with its route on every item's governing-intent claim. Unknown:
-  the other four reasons it lists, and a retention loss rendered "citing the
-  retention event".
+  `source-uncaptured-or-unreachable` among them. It goes on: "Unknown
+  aggregation follows RFC2-24's rendering rule: aggregate, disclose reason
+  counts, expand. **These are claim reasons only:** the normalized state's
+  four absence values are state-local, take no reason from this list, and
+  are counted separately — an aggregate of Unknowns never absorbs them
+  (RFC8-12; RFC6-6)." Covered: Trajectory renders that reason with its route
+  on the governing-intent claim; and the aggregation rule as far as the
+  oracle observes it — one count, whose single reason makes it that reason's
+  count, expanding to its members within the rendered selection (the
+  narrowed board). Unknown: the other four reasons it lists; a retention loss
+  rendered "citing the retention event"; expansion to members outside the
+  rendered selection, and the full RFC6-17 disclosure that RFC2-24's
+  rendering rule says any aggregate owes; and the claim-reasons-only limb,
+  since Trajectory renders no RFC8-12 normalized state with absence values
+  for an aggregate to absorb.
 - **RFC4-15** is mapped for its authority limb, "never intent". Covered: the
   title, the only free text the POC reads, is never read as governing intent.
 - **RFC2-24** is mapped because every Unknown carries one reason from its
-  closed list.
+  closed list. Its signed reason-#10 row now names POC-REQ-014 beside
+  POC-REQ-003 and POC-REQ-013, because 014's oracle reads that exact reason
+  and route.
 
-**RFC8-21 stays in Part B2.** Its signed rationale, "POC deliberately leaves
-this relationship Unknown, building no chain", is still true after this
-amendment: the POC renders the first link Unknown and builds no chain. The
-signed row is not edited.
+**RFC8-21 moves from Part B2 to Part B1.** Round 1's text kept it in Part
+B2, on the ground that its signed rationale, "POC deliberately leaves this
+relationship Unknown, building no chain", stayed true. Round 2 (note 7)
+answered that "leaves it Unknown" is a statement about coverage, not about
+applicability. Part B2 is for clauses governing machinery the POC "neither
+renders, stores, transitions, queries, nor crosses"; once POC-REQ-014
+renders the chain's first link, work item to warrant, as Unknown, the POC
+renders part of the chain RFC8-21 governs, and RFC8-22, a clause about that
+same chain's broken joins, is already in Part A. So RFC8-21 is applicable and
+uncovered: Part B1, one Unknown row, "no requirement walks the chain or
+renders any other link". Its signed B2 row is removed by the patch, as the
+other three are.
 
 **The reason: `source-uncaptured-or-unreachable` (RFC2-24 #10).** Its
 condition reads: "A deterministic input capable of affecting the claim was not
@@ -180,16 +245,38 @@ captured. The other reasons were weighed and rejected:
   the content, or it was unclassifiable (fails closed, SEC-5)". No content was
   excluded by a policy; the columns were never read.
 
-**Two routes, disclosed.** RFC2-24 gives reason #10 the route "Repair the
-observer/source; new snapshot". RFC8-23 gives an item with no traceable
-warrant the route "resolvable by supplying a warrant", noting such an item
-"may be legitimate untraceable work — a pre-Syzygy backlog item, an import".
-Both are true here, so the requirement serves the RFC2-24 route with the
-reason, and Trajectory also states RFC8-23's resolution beside the count. The
-second is not a second reason. RFC2-24 says a condition not among its twelve
-"is disclosed as a **fact of the render** — named, expandable, routed to its
-resolving action — never dressed as a reason". [Inferred: that this sentence
-fits a second route as well as a second condition.]
+**Where #10 fits weakly, stated.** Round 2 (note 7) judged #10 the best fit
+of the reasons weighed, and named two weaknesses. Both are stated here
+rather than argued away.
+
+- **Its route will not resolve this Unknown by itself.** RFC2-24 gives #10
+  the route "Repair the observer/source; new snapshot". Here no observer is
+  broken: the input that could carry a warrant is not admitted. Only an owner
+  act and a further amendment (P-100 Q1) can admit one, and only then would a
+  new snapshot help. The requirement still serves this route with the
+  reason. RFC2-24 says "RFC6-14 requires every machine answer to carry its
+  Unknown reason **verbatim from this vocabulary**", and its rendering rule
+  says "every reason routes to its resolving action"; the route served is
+  the one RFC2-24's table gives the reason. [Inferred: that "repair the
+  source" reads, in this case, as "admit a source", and that serving a
+  different route would misstate the reason.]
+- **RFC8-24's gloss names neither the POC's case.** Its parenthetical for
+  #10 reads "adapter export unavailable; facts lost past the retention
+  horizon before capture". The POC's case is a third one: a column never
+  admitted. The gloss gives examples, not a closed list, so the reason still
+  applies [Inferred], but the fit is by RFC2-24's condition text, not by
+  RFC8-24's examples.
+
+**RFC8-23's resolution, stated beside the count.** RFC8-23 gives an item
+with no traceable warrant the route "*surface it*: counted, never green,
+resolvable by supplying a warrant", noting such an item "may be legitimate
+untraceable work — a pre-Syzygy backlog item, an import". Trajectory states
+that resolution beside the count because RFC8-23 itself requires it of this
+state. It is neither a second reason nor a second RFC2-24 route. Round 1's
+text rested this on RFC2-24's sentence that a condition "genuinely not among
+the twelve is disclosed as a **fact of the render**"; round 2 found that a
+stretch, since the condition here is among the twelve. The text no longer
+relies on that sentence.
 
 **Why no edge can exist today.** No admitted input carries a warrant: none of
 the nine read expressions names one, and the materialization record the POC
@@ -238,12 +325,34 @@ The answer waits on P-100.
 - It does not settle the orphaned-work limb of RFC8-23: the POC detects no
   orphaned work, so that limb has its own Unknown amendment row.
 
-## Overlap with the identity amendment (P-84)
+## Overlap with sibling packages (P-97, P-84)
 
-`three-surface-poc-identity-amendment/` also patches `spec.md`,
-`CONTRACT-COVERAGE.md`, `GOVERNING-DEPENDENCIES.md` and `proposal.md`, and
-both packages were cut against the same signed bytes. Their hunks touch
-neighbouring lines: the reader-note group list, the family table and totals,
-and the insertion point before `## Acceptance inputs`. Whichever package is
-signed second must be regenerated against the first one's applied bytes
-before its sign-off. Neither package changes the other's requirements.
+Two other packages patch the same specification. Round 2 (finding 4) found
+that this section named only P-84.
+
+- **The block-provenance amendment (P-97), signed v1.0 on 2026-10-14.**
+  `three-surface-poc-block-provenance-amendment/` patched `spec.md`
+  (POC-REQ-001 and POC-REQ-010) and the `Source:` line of
+  `GOVERNING-DEPENDENCIES.md`. [Observed 2026-10-14, at `814fbcc1`, where it
+  is signed:] this package's round-2 `spec.md.patch` still applied (hunk 2 at
+  offset 54) and its `GOVERNING-DEPENDENCIES.md.patch` failed at that
+  `Source:` line, as round 2 found. All four patches were therefore
+  regenerated over the signed bytes at `814fbcc1`: the spec, matrix and
+  proposal edits in a scratch worktree, and `GOVERNING-DEPENDENCIES.md` only
+  by `scripts/build_three_surface_poc_spec_dependencies.py` over the proposed
+  `spec.md`. Each now passes `git apply --check` there. The two packages
+  share no requirement or clause row. P-97 bars a work-item fact from
+  carrying the observation's Dolt revision or capture instant; `governedBy`
+  holds neither. [Inferred]
+- **The identity amendment (P-84), unsigned.**
+  `three-surface-poc-identity-amendment/` also patches `spec.md`,
+  `CONTRACT-COVERAGE.md`, `GOVERNING-DEPENDENCIES.md` and `proposal.md`.
+  Their hunks touch neighbouring lines: the reader-note group list, the
+  family table and totals, and the insertion point before
+  `## Acceptance inputs`. The P-97 builder declares the two a mutually
+  exclusive pair (a coordinator's process ruling of 2026-10-04, not an owner
+  act): no order applies both as drafted, so whichever is signed second must
+  be regenerated against the first one's applied bytes before its sign-off.
+  P-84 is being repaired in a separate lane the same day; this package does
+  not edit it, and composition with its repaired bytes is not re-tested
+  here. Neither package changes the other's requirements.

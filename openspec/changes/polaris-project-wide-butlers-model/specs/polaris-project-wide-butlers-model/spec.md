@@ -71,6 +71,45 @@ Reader definitions:
   Git-tree entries; and top-level roster directories containing `butler.toml`,
   with their `MANIFESTO.md` when present.
   - Narrative links do not recurse.
+  - Every source carries the name of the rule that admitted it, from this
+    closed set: the first rule admits the root index itself as `root-index`,
+    and the index file of each pillar root it names as `pillar-index`; the
+    second rule admits each file a pillar's index names as
+    `pillar-named-file`; the third admits each baseline spec as
+    `baseline-spec-tree`; and the fourth admits each roster `butler.toml`, and
+    its `MANIFESTO.md`, as `roster-tree`. A source that a loaded profile's tree
+    population admits carries that population's `pathPattern` as its rule
+    name.
+  - A source that more than one rule admits carries one rule name, decided
+    in this order: the root index is `root-index`, whatever else admits it;
+    a pillar's index file is `pillar-index`, even when another pillar's
+    index names it; a baseline spec, a roster `butler.toml`, or a source a
+    loaded profile's tree population admits, is admitted by that tree
+    population alone and carries its name, even when a pillar's index names
+    it; and any other file a pillar's index names, a roster `MANIFESTO.md`
+    included, is `pillar-named-file`. A source that two tree populations of
+    one loaded profile admit carries the name of the first the profile
+    declares.
+  - Each rule declares whether it needs the root index read. The flag belongs
+    to the rule; a loaded profile sets it for each tree population it
+    declares. The first and second rules need the root index; the third and
+    fourth, whose path patterns these definitions write, do not.
+  - The root index is read when its body is read: present at the revision,
+    admitted and read within its resource limits. A root index whose body is
+    read but whose grammar fails is still read: a pillar root it does not name
+    unambiguously leaves that pillar's index and named files unadmitted, a
+    PWB-REQ-004 root grammar that fails is that requirement's failure, and
+    neither qualifies a count of the third or fourth rule.
+  - When the root index was not read, a rule that needs it mints no item.
+    Where that rule is a tree population, each source its path pattern
+    matches stays counted in the source-path population with an Unknown item
+    denominator, giving the reason that the root index was not read. The
+    first rule then admits only the root index itself, and the second admits
+    no source.
+  - When the root index was not read, a rule that does not need it still
+    admits its sources, and every class and category item denominator, and
+    every source-path population total, that counts one of them states that
+    it was derived without a read root index.
 - A **declared item** has one class from this closed set, read by that class's
   extraction rule (for a loaded profile, the class's grammar rows):
   `project-account-section` uses the six keys purpose, promises, refusals,
@@ -106,6 +145,21 @@ Reader definitions:
     one without a level at any level, always by exact text; a declared heading
     that is missing fails the source as missing-heading, and one that occurs
     more than once fails it as duplicate-key.
+  - Wherever the shared rules above, or a shape or key form below, fail the
+    source, the failure fails the class whose row it reads, in that source, as
+    the exactness rules below state.
+  - A list or table row that declares two or more headings at one level
+    encloses that level: within the section of each heading one level higher
+    that holds one of them (or the whole file, when the level is 1 or no
+    such heading holds them), a heading at that level that no row of the
+    source's grammar declares is an unenumerated heading.
+    - An unenumerated heading mints no item and fails nothing: the row's
+      declared headings keep their items.
+    - It is surfaced, never skipped: the machine answer and Polaris give its
+      text, its level and its exact source anchor, and route to that source.
+    - The class's item denominator in that source renders Unknown with the
+      reason unenumerated-heading and the count of such headings, because the
+      items beneath them are not read.
   - When a list or table row declares more than one heading, the shape reads
     the section under each in the order declared, as it reads one section, and
     the items of all of them are that row's items.
@@ -203,7 +257,9 @@ Reader definitions:
     form reads, such as a table column, a TOML table and field or a key
     prefix; exactly one container shape; and exactly one item key form.
   - A tree population is declared by a path pattern, `pathPattern`, whose one
-    `<key>` segment is a single directory name.
+    `<key>` segment is a single directory name, and by `rootIndexRequired`,
+    true or false; a tree population that does not declare it needs the root
+    index.
   - A profile cannot add a class, a shape or a key form.
 - Until a profile is declared for Butlers, the observer reads Butlers by the
   grammar written below, as a built-in default; no other project has a
@@ -235,9 +291,30 @@ Reader definitions:
   depth, table column counts, one-based ordinals and literal keys are exact.
   - Unicode is NFC-normalized; no case folding, stemming or punctuation
     rewriting occurs.
-  - A missing heading, malformed row/list/TOML, unexpected duplicate key or
-    ambiguous leading label makes the enclosing source's item denominator
-    Unknown; it never produces a partial item set.
+  - Each class a source is assigned is read on its own. A missing heading,
+    malformed row/list/TOML, unexpected duplicate key or ambiguous leading
+    label in any of a class's rows fails that class in that source: the
+    class's item denominator in that source is Unknown, with the failure as
+    its reason, and the class yields none of its items from that source. A
+    class that fails never produces a partial item set; an unenumerated
+    heading is not a failure, and the items it leaves in place are complete
+    for the headings the row declares.
+  - A source in which a class fails keeps every other class it is assigned:
+    each class that reads without failure keeps its items and its own item
+    denominator. A source in which some classes fail and others read is
+    partially extracted, and states for each class either its items and
+    denominator or its failure and reason.
+  - A source's own item denominator is Unknown whenever any class it is
+    assigned has an Unknown item denominator in it, for any reason: a failed
+    class, or a class with an unenumerated heading. A source whose every
+    class reads but one carries an unenumerated heading is extracted, not
+    partially extracted, and its own item denominator is still Unknown.
+  - A class's item denominator across its sources, and its category's, is
+    Unknown whenever the class is Unknown in any of those sources; the items
+    of the sources where it read stay modeled and counted.
+  - A source whose body is unavailable, unclassifiable or excluded, or whose
+    read breaches a resource limit, has no class that reads: every class it is
+    assigned has an Unknown item denominator in it.
 - Butlers' profile declares exactly the following extraction grammar, which is
   literal:
   - `project-account-section` mints exactly six aggregate keys: purpose from
@@ -258,7 +335,8 @@ Reader definitions:
   - `design-contract` is each body row under the Index table in the Legends
     and Lore README; the first-column RFC link text is the key.
   - `baseline-spec` is each Git-tree path matching
-    openspec/specs/<one-directory>/spec.md; the one directory is the key.
+    openspec/specs/<one-directory>/spec.md; the one directory is the key; its
+    tree population does not need the root index.
   - `topology-component` is each first-column bold label in tables under an H2
     in lay-and-land/components.md whose text begins with a decimal plus
     optional lowercase suffix. The H2 establishes the literal ordinal context
@@ -268,7 +346,8 @@ Reader definitions:
     Order” table; the File-column link target basename is the key.
   - `roster-identity` is each Git-tree path
     roster/<one-directory>/butler.toml; the directory is the key and the TOML
-    `[butler].name` must be non-empty.
+    `[butler].name` must be non-empty; its tree population does not need the
+    root index.
 - The source-path denominator remains known through body-read failures.
   - An unavailable body's within-source item denominator is Unknown, never
     copied from a fixture or prior ambient state.
@@ -337,6 +416,12 @@ and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and ros
 identity. Each admitted item SHALL be in exactly one coverage state: modeled,
 Unknown or contradicted. A source whose item population cannot be read SHALL
 retain its source identity while its item denominator renders Unknown.
+Each class of a source SHALL be accounted for on its own: a class that fails
+in a source SHALL leave its own item denominator there Unknown without
+withholding the items of any other class the source reads; a source with a
+class whose item denominator is Unknown SHALL leave its own item denominator
+Unknown; an unenumerated heading SHALL be surfaced, never skipped; and a
+count derived without a read root index SHALL say so wherever it is shown.
 
 **Verification.**
 
@@ -345,9 +430,16 @@ retain its source identity while its item denominator renders Unknown.
   an unreadable source case, a loaded profile that gives one class no row, a
   loaded profile with a row that names a shape outside the vocabulary, a
   Butlers profile the loader refuses, and a project other than Butlers with no
-  loaded profile.
+  loaded profile; also a source assigned three classes in which one class
+  fails and two read, a section enclosing the V1 catalog headings that holds
+  a tenth level-3 heading, an observation whose root index was not read
+  while baseline specs and roster directories exist in the tree, and a
+  pillar index that names a baseline spec, a roster `butler.toml` and that
+  roster directory's `MANIFESTO.md`.
 - **Observable**: per-category identities and reconciling counts are visible in
-  the machine answer and reachable from Polaris.
+  the machine answer and reachable from Polaris, together with each partially
+  extracted source's per-class outcome, each unenumerated heading with its
+  anchor and route, and each root-index qualification.
 - **Oracle**: two independent extractors apply the literal grammar that
   governs the project to the revision-bound source population and must produce
   the same identities and D; for Butlers read through a loaded profile that
@@ -357,11 +449,32 @@ retain its source identity while its item denominator renders Unknown.
   written grammar is not applied to it; modeled + Unknown + contradicted
   equals D, with each identity appearing once; malformed/unreadable sources,
   and every class a loaded profile leaves unreadable, carry an Unknown item
-  denominator.
+  denominator. The comparison is made per source and class: both extractors
+  must name the same failed classes with the same reasons, and the same
+  identities and D for every class that reads, so a failed class's D is
+  Unknown while each sibling's D is known, and each source with a class whose
+  D is Unknown has its own D Unknown; an independent scan of each enclosing
+  section finds every unenumerated heading, the count per source and class
+  equals the count the answer gives, and each one is surfaced; every source
+  names the rule that an independent derivation of the source-path
+  population admits it under, by the stated order for a source more than
+  one rule admits; and with the root index unread, every source a
+  rule that does not need it admitted carries the qualification, while no
+  source of a rule that needs it mints an item.
 - **Oracle independence**: the expected denominator is extracted from the
   source files, not from the POC's coverage object.
-- **Falsifier**: the independent extractors disagree, a malformed source emits
-  a partial population, a known source disappears, an admitted item appears twice or
+- **Falsifier**: the independent extractors disagree, a failed class emits a
+  partial population, a failed class withholds the items of a sibling class
+  that reads, a class or category item denominator that counts a failed class
+  or an unenumerated heading is presented as known, a source with a class
+  whose item denominator is Unknown presents its own item denominator as
+  known, an unenumerated heading is skipped or mints an item or is
+  miscounted, a source names no rule or a rule other than the one that
+  admitted it, a source that more than one rule admits names a rule other
+  than the one the stated order gives it, a count derived without a read
+  root index is shown without that qualification, a rule that needs the
+  root index mints an item when it was not read, a known source disappears,
+  an admitted item appears twice or
   lacks a state, a known count does not reconcile, an unavailable body's
   item denominator is presented as known, an item is read through a shape or
   key form its governing grammar does not declare, a loaded profile's
@@ -419,6 +532,51 @@ retain its source identity while its item denominator renders Unknown.
   denominator render Unknown, never zero
 - **AND** no item is minted for it and the grammar written in these reader
   definitions reads none of its classes
+
+#### Scenario: A failing class keeps its siblings
+
+- **WHEN** a source is assigned three classes and one of them fails its
+  grammar while the other two read
+- **THEN** the failed class's item denominator in that source, its class's
+  and its category's item denominators render Unknown with the failure's
+  reason
+- **AND** the two classes that read keep their items modeled and their own
+  item denominators known
+- **AND** the source's own item denominator renders Unknown, and the source
+  is shown as partially extracted with each class's outcome
+
+#### Scenario: An unenumerated heading is surfaced, not skipped
+
+- **WHEN** a section that holds the V1 catalog headings also holds a level-3
+  heading outside the nine
+- **THEN** that heading is surfaced with its text and exact source anchor,
+  routes to its source and mints no item
+- **AND** the items under the nine headings stay modeled while the
+  catalog-entry and Heart and Soul item denominators, and the V1 index's own
+  item denominator, render Unknown with the reason unenumerated-heading
+
+#### Scenario: Counts derived without a read root index say so
+
+- **WHEN** the root index was not read and the tree holds baseline specs and
+  roster directories
+- **THEN** the baseline-spec and roster sources are admitted, and every class
+  and category count, and the source-path population total, that includes
+  them states that it was derived without a read root index
+- **AND** no source of a rule that needs the root index mints an item, nor
+  does any source of a loaded profile's tree population that does not
+  declare `rootIndexRequired`
+- **AND** every admitted source names the rule that admitted it, the root
+  index itself as `root-index`
+
+#### Scenario: A source two rules admit carries one rule name
+
+- **WHEN** a pillar's index names a baseline spec, a roster `butler.toml`
+  and that roster directory's `MANIFESTO.md`
+- **THEN** the baseline spec is named `baseline-spec-tree` and the
+  `butler.toml` `roster-tree`, each with its tree population's class
+- **AND** the `MANIFESTO.md` is named `pillar-named-file`
+- **AND** the root index is named `root-index` and each pillar's index file
+  `pillar-index`, whichever index also names them
 
 ```yaml
 warrants:
@@ -1361,6 +1519,41 @@ Group: Presentation. Form: **invariant**.
   decision, evidence and work with durable target identity; labels, file paths
   and coordinates SHALL never serve as anchor identity.
 
+- **Anchor shape.** Every anchor the machine narrative serves SHALL take one
+  shape: its own identity, which begins with the identity of the one block it
+  belongs to followed by `#`; its target class and target identity; its
+  revision; the claims of that block it supports; the target's captured
+  label, tier and reason; and its locator.
+
+- **Anchor resolution count.** The machine narrative SHALL carry an
+  `anchorsResolved` pair on each anchored claim block, and one for the whole
+  narrative: the number of anchors that resolve, over the number of anchors.
+  - An anchor resolves when the machine answer at the same evaluation serves
+    exactly one record with an `identity` field of its own whose whole value
+    equals the anchor's target identity. A field that refers to another
+    record's identity, such as a stamp's or a support's source identity, is a
+    reference and not a record's own identity, and an identity composed from
+    other fields counts for nothing. An anchor whose target the machine answer
+    does not serve, or serves without an identity of its own, does not
+    resolve.
+  - This resolution runs from an anchor to a record of the machine answer. It
+    is not the relation RFC7-3 forbids, under which something resolves to
+    Polaris as its authority.
+  - Both numbers are counted, never estimated, and the narrative's pair is
+    the sum of its blocks' pairs. A count below its total SHALL be served as
+    counted, never rounded up, omitted or rendered as a pass. When the machine
+    answer at that evaluation serves no record with an identity of its own,
+    every pair is Unknown with its reason, never a count.
+  - The pair counts resolution and never confers authority. A block whose
+    every anchor resolves stays `presentation-artifact` and `non-citable`;
+    no field derived from the pair SHALL make a narrative unit citable or
+    stand in for an epistemic label. The pair is itself presentation: no
+    evidence, snapshot input or status claim SHALL take it as input.
+  - An opening carries no anchor set, so it carries no pair and the
+    narrative's pair counts nothing for it.
+  - The pair is a machine-narrative field, not a project-shape claim, and
+    Polaris need not render it.
+
 - **Tree form.** Syzygy-authored framing SHALL read as an abstraction tree
   under CC-REV-8.
   - A group is one of four classes: a project-level category of
@@ -1457,10 +1650,15 @@ Group: Presentation. Form: **invariant**.
   mutation. Enumerate every group with its class, opening, label, scope and
   children, and every listed relationship with its drawn and undrawn
   elements; mutate a child's state, a drawn element's support, a listed
-  element's presence and each excluded SVG construct in turn.
+  element's presence and each excluded SVG construct in turn. Resolve every
+  anchor of the machine narrative against the machine answer at the same
+  evaluation, then withhold one resolved target's identity from the machine
+  answer and resolve again, and withhold every identity and resolve once
+  more.
 - **Observable**: claim roles and non-authority attributes are machine-readable;
   every claim has exact/minimal anchors and no downstream authority reference
-  targets Polaris.
+  targets Polaris. Every anchor's shape and each anchored block's and the
+  narrative's `anchorsResolved` pair are machine-readable.
 - **Oracle**: independent claim-to-source mapping establishes covering,
   minimality, closed target class, durable identity, exact narrative-vs-kernel
   machine type and captured target state; removing any used anchor fails one
@@ -1473,20 +1671,34 @@ Group: Presentation. Form: **invariant**.
   tuple; every listed element not drawn is named with its reason; every
   emitted SVG passes the allow-list, and each excluded construct, injected
   alone, keeps that diagram out of both sinks. PWB-REQ-006's sink scan admits
-  an emitted SVG only when the independent allow-list scan passes it.
+  an emitted SVG only when the independent allow-list scan passes it. Every
+  anchor carries every field of the one shape, and its identity begins with
+  the identity of the block that serves it followed by `#`. An independent
+  resolver that reads only the machine narrative's anchors and the machine
+  answer's bytes at the same evaluation, and imports no rendering code,
+  reproduces each block's `anchorsResolved` pair and the narrative's pair
+  exactly; withholding one resolved target's identity lowers the resolved
+  count of exactly the blocks anchored to it, by the number of their anchors
+  that name it, and every such block stays non-citable; withholding every
+  identity turns every pair Unknown.
 - **Oracle independence**: expected source spans and reference targets come
   from captured artifacts, not the rendered claim blocks. Expected groups,
   child sets, opening labels and drawn and undrawn elements come from the
   machine model and the named review record; an independent claim-to-child
   mapping judges each opening's statements; SVG verdicts come from an
-  independent allow-list scan, not the renderer.
+  independent allow-list scan, not the renderer. Expected resolution counts
+  come from that independent resolver, never from the narrative builder.
 - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
   ambiguous anchor, missing non-citable attribute, or downstream citation to
   Polaris; an opening that states what no child states, is labeled stronger
   than its weakest child, counts, or stands in for Butlers text; a drawn
   element with no claim; a listed element neither drawn nor disclosed; a
-  diagram without its text equivalent; or an emitted SVG outside the
-  allow-list.
+  diagram without its text equivalent; an emitted SVG outside the
+  allow-list; an anchor missing a field of the one shape or naming no block
+  or another block; an anchored block without an `anchorsResolved` pair, or a
+  pair that differs from the independent count, is rounded up, or is a count
+  where it should be Unknown; or a narrative unit made citable, or a status
+  claim fed, by its pair.
 
 #### Scenario: A project claim is supported without making Polaris authority
 
@@ -1549,6 +1761,16 @@ Group: Presentation. Form: **invariant**.
 - **WHEN** a diagram fails to render or its SVG falls outside the allow-list
 - **THEN** no SVG for that diagram reaches either sink
 - **AND** its text equivalent remains and the failure is disclosed in place
+
+#### Scenario: Anchor resolution is counted, never made authority
+
+- **WHEN** the machine narrative serves an anchored block with three anchors,
+  two whose target identities the machine answer serves once and one whose
+  target it serves without an identity of its own
+- **THEN** the block's `anchorsResolved` pair is 2 of 3, and the narrative's
+  pair counts those three anchors
+- **AND** the block stays `non-citable` presentation, exactly as it would at
+  3 of 3
 
 ```yaml
 warrants:
