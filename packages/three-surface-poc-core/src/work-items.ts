@@ -1,7 +1,9 @@
 import { execFileSync } from 'node:child_process';
 
+import type { UnknownReason } from '@syzygy/cap1-core';
+
 import type { PocProvenance, PocUnknown } from './model.js';
-import { resolutionRoute } from './project-shape-model.js';
+import { resolutionRoute, type ResolutionRoutes } from './project-shape-model.js';
 
 export const WORK_ITEM_STATUSES = [
   'open',
@@ -27,7 +29,19 @@ export interface WorkItemFact {
   /** POC-REQ-014: the item's governing intent. Always the one Unknown below:
    * the observation reads no link from an item to the intent that warrants
    * it, and nothing is taken from the title. */
-  readonly governedBy: PocUnknown;
+  readonly governedBy: GoverningIntentUnknown;
+}
+
+/** POC-REQ-014's value: "`Unknown` with the primary reason
+ * `source-uncaptured-or-unreachable` and that reason's RFC2-24 resolution
+ * route". The signed text names no basis sentence, so the served item
+ * carries none: it repeats on every one of the served items, and on the
+ * proving case that is thousands of copies against the machine ceiling.
+ * The basis sentence stays on the rendered card's twin (`model.ts`). */
+export interface GoverningIntentUnknown {
+  readonly label: 'Unknown';
+  readonly closedReason: UnknownReason;
+  readonly resolutionRoutes: ResolutionRoutes;
 }
 
 /** The basis sentence of every work item's governing-intent Unknown. */
@@ -36,10 +50,9 @@ export const GOVERNING_INTENT_UNKNOWN_BASIS =
 
 /** POC-REQ-014: `Unknown`, primary reason `source-uncaptured-or-unreachable`,
  * and that reason's RFC2-24 route. The same value for every item. */
-export function governingIntentUnknown(): PocUnknown {
+export function governingIntentUnknown(): GoverningIntentUnknown {
   return {
     label: 'Unknown',
-    reason: GOVERNING_INTENT_UNKNOWN_BASIS,
     closedReason: 'source-uncaptured-or-unreachable',
     resolutionRoutes: [resolutionRoute('source-uncaptured-or-unreachable')],
   };
@@ -47,6 +60,12 @@ export function governingIntentUnknown(): PocUnknown {
 
 /** How many items carry the governing-intent Unknown, counted over the
  * served item set (POC-REQ-014), never assumed equal to its length. */
+/** The disclosure twin of an item's governing intent: the served value
+ * with its basis sentence, as every rendered Unknown carries one. */
+export function governingIntentDisclosure(governedBy: GoverningIntentUnknown): PocUnknown {
+  return { label: governedBy.label, reason: GOVERNING_INTENT_UNKNOWN_BASIS, closedReason: governedBy.closedReason, resolutionRoutes: governedBy.resolutionRoutes };
+}
+
 export function countGoverningIntentUnknown(items: readonly WorkItemFact[]): number {
   return items.filter(
     (item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason === 'source-uncaptured-or-unreachable',

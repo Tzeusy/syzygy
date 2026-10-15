@@ -220,7 +220,6 @@ describe('POC-REQ-010: the work-item observation states its provenance once', ()
       // POC-REQ-014 (P-100): the governing-intent Unknown, not a provenance field.
       governedBy: {
         label: 'Unknown',
-        reason: 'No governing intent was captured for this work item: the observation reads no link from an item to the intent that warrants it, and none is taken from its title.',
         closedReason: 'source-uncaptured-or-unreachable',
         resolutionRoutes: [{ reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer/source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' }],
       },

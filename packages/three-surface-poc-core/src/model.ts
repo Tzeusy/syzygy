@@ -3,7 +3,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { observeCodeStructure, type CodeStructureResult } from './code-structure.js';
-import { GOVERNING_INTENT_UNKNOWN_BASIS, observeWorkItems, type WorkItemsResult } from './work-items.js';
+import { GOVERNING_INTENT_UNKNOWN_BASIS, governingIntentDisclosure, observeWorkItems, type WorkItemsResult } from './work-items.js';
 import { observeWorkerChange, type WorkerChangeResult } from './worker-change-observation.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
@@ -572,11 +572,12 @@ function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknown
     for (const item of input.trajectory.rendered) add(workItemVerificationId(item.id), WORK_ITEM_VERIFICATION_BASIS, 'missing-evidence');
     if (input.workItems.kind === 'observed') {
       // POC-REQ-014: the machine twin of each rendered card's mark is that
-      // item's own `governedBy`, and the count region's is the same Unknown.
+      // item's own `governedBy` with its basis sentence, and the count
+      // region's is the same Unknown.
       const served = new Map(input.workItems.items.map((item) => [item.id, item.governedBy]));
       for (const item of input.trajectory.rendered) {
         const governedBy = served.get(item.id);
-        if (governedBy !== undefined) subjects.push({ id: workItemGoverningIntentId(item.id), epistemic: governedBy });
+        if (governedBy !== undefined) subjects.push({ id: workItemGoverningIntentId(item.id), epistemic: governingIntentDisclosure(governedBy) });
       }
       add(WORK_ITEM_GOVERNING_INTENT_REGION_ID, GOVERNING_INTENT_UNKNOWN_BASIS, 'source-uncaptured-or-unreachable');
     }
