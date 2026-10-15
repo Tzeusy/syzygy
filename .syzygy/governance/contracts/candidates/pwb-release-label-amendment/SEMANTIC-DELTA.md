@@ -138,6 +138,14 @@ In short:
   three namings are what "names the observed revision" means, and that a
   shorter prefix is not decided; design decision 13 says the same.
 
+*(Marked 2026-10-15, round 7: "unconfirmed pending round 7" is no longer
+true. Round 7 returned `REVISE`
+(`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-7-RAW.md` line 4): two revise
+findings (the withdrawal is incomplete in the packet summary and in cycle-3
+choice 1 below; an excepted identity placed in a sentence passes, uncovered
+by the stated limits) and three notes, all open in
+`ROUND-7-DISPOSITIONS.md`. These bytes are not cleared.)*
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
