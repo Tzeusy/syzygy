@@ -1,0 +1,560 @@
+{
+  "task": "syzygy-u05.23",
+  "requirement": "PWB-REQ-010",
+  "signedText": "pwb-opening-index-amendment-v1.0",
+  "subject": {
+    "syzygyCommit": "4ba447e5969b8157fc5027201e967f1190fc251c",
+    "oracle": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+    "renderer": "apps/three-surface-poc/src/polaris-opening-index.ts"
+  },
+  "method": "npx vitest run apps/three-surface-poc/src/polaris-opening-index.browser.test.ts with SYZYGY_P98_PAGE naming the captured direct /polaris bytes below; headless Chrome via cdp-browser.ts; each page loaded from a file URL at the viewport named in its report, measured after the load handlers ran. Fixture pages are renderPolarisPage over the task-4.4 variants (no Butlers repository read); synthetic pages are the renderer's index over hand-written bodies.",
+  "viewportsDeclared": [
+    {
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "casesSigned": {
+    "everyTargetRenders": "observed-degraded-unlawful (both viewports)",
+    "openingUnknownAggregateAbsent": "observed (both viewports)",
+    "tieOnLargestOffset": "tie (synthetic body, hand-counted)",
+    "setterInsideClosedDetails": "observed and observed-degraded-unlawful: the first exact-source link sits in a closed item population and sets the line",
+    "noTargetRendered": "none (synthetic body, hand-counted)"
+  },
+  "reports": [
+    {
+      "page": "observed-degraded-unlawful",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 3500,
+        "rows": [
+          {
+            "identity": "why",
+            "offset": 425
+          },
+          {
+            "identity": "promises",
+            "offset": 457
+          },
+          {
+            "identity": "refusals-and-rule",
+            "offset": 608
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "offset": 1087
+          },
+          {
+            "identity": "exact-requirement",
+            "offset": 1199
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 904
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 537
+          },
+          {
+            "identity": "architecture-and-groups",
+            "offset": 842
+          },
+          {
+            "identity": "v1-success",
+            "offset": 714
+          }
+        ],
+        "setter": "exact-requirement",
+        "setterInsideClosedDetails": true,
+        "line": "1199 / 3500 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "observed",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 3107,
+        "rows": [
+          {
+            "identity": "why",
+            "offset": 418
+          },
+          {
+            "identity": "promises",
+            "offset": 451
+          },
+          {
+            "identity": "refusals-and-rule",
+            "offset": 589
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "offset": 978
+          },
+          {
+            "identity": "exact-requirement",
+            "offset": 1090
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "rendered": false
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 518
+          },
+          {
+            "identity": "architecture-and-groups",
+            "offset": 785
+          },
+          {
+            "identity": "v1-success",
+            "offset": 672
+          }
+        ],
+        "setter": "exact-requirement",
+        "setterInsideClosedDetails": true,
+        "line": "1090 / 3107 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "not-admitted",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 1840,
+        "rows": [
+          {
+            "identity": "why",
+            "rendered": false
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "rendered": false
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 867
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 705
+          },
+          {
+            "identity": "architecture-and-groups",
+            "rendered": false
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": "unknown-or-contradiction",
+        "setterInsideClosedDetails": false,
+        "line": "867 / 1840 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "observed-degraded-unlawful",
+      "report": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "total": 3288,
+        "rows": [
+          {
+            "identity": "why",
+            "offset": 213
+          },
+          {
+            "identity": "promises",
+            "offset": 245
+          },
+          {
+            "identity": "refusals-and-rule",
+            "offset": 396
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "offset": 875
+          },
+          {
+            "identity": "exact-requirement",
+            "offset": 987
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 692
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 325
+          },
+          {
+            "identity": "architecture-and-groups",
+            "offset": 630
+          },
+          {
+            "identity": "v1-success",
+            "offset": 502
+          }
+        ],
+        "setter": "exact-requirement",
+        "setterInsideClosedDetails": true,
+        "line": "987 / 3288 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "observed",
+      "report": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "total": 2902,
+        "rows": [
+          {
+            "identity": "why",
+            "offset": 213
+          },
+          {
+            "identity": "promises",
+            "offset": 246
+          },
+          {
+            "identity": "refusals-and-rule",
+            "offset": 384
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "offset": 773
+          },
+          {
+            "identity": "exact-requirement",
+            "offset": 885
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "rendered": false
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 313
+          },
+          {
+            "identity": "architecture-and-groups",
+            "offset": 580
+          },
+          {
+            "identity": "v1-success",
+            "offset": 467
+          }
+        ],
+        "setter": "exact-requirement",
+        "setterInsideClosedDetails": true,
+        "line": "885 / 2902 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "not-admitted",
+      "report": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "total": 1692,
+        "rows": [
+          {
+            "identity": "why",
+            "rendered": false
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "rendered": false
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 719
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 557
+          },
+          {
+            "identity": "architecture-and-groups",
+            "rendered": false
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": "unknown-or-contradiction",
+        "setterInsideClosedDetails": false,
+        "line": "719 / 1692 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "captured",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 2249,
+        "rows": [
+          {
+            "identity": "why",
+            "rendered": false
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "rendered": false
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 1174
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 856
+          },
+          {
+            "identity": "architecture-and-groups",
+            "rendered": false
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": "unknown-or-contradiction",
+        "setterInsideClosedDetails": false,
+        "line": "1174 / 2249 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "captured",
+      "report": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "total": 2101,
+        "rows": [
+          {
+            "identity": "why",
+            "rendered": false
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "rendered": false
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "offset": 1026
+          },
+          {
+            "identity": "claim-strength",
+            "offset": 708
+          },
+          {
+            "identity": "architecture-and-groups",
+            "rendered": false
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": "unknown-or-contradiction",
+        "setterInsideClosedDetails": false,
+        "line": "1026 / 2101 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "tie",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 11,
+        "rows": [
+          {
+            "identity": "why",
+            "offset": 0
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "offset": 4
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "rendered": false
+          },
+          {
+            "identity": "claim-strength",
+            "rendered": false
+          },
+          {
+            "identity": "architecture-and-groups",
+            "offset": 4
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": "architecture-and-groups",
+        "setterInsideClosedDetails": false,
+        "line": "4 / 11 words",
+        "violations": []
+      }
+    },
+    {
+      "page": "none",
+      "report": {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "total": 6,
+        "rows": [
+          {
+            "identity": "why",
+            "rendered": false
+          },
+          {
+            "identity": "promises",
+            "rendered": false
+          },
+          {
+            "identity": "refusals-and-rule",
+            "rendered": false
+          },
+          {
+            "identity": "capabilities-and-fit",
+            "rendered": false
+          },
+          {
+            "identity": "exact-requirement",
+            "rendered": false
+          },
+          {
+            "identity": "unknown-or-contradiction",
+            "rendered": false
+          },
+          {
+            "identity": "claim-strength",
+            "rendered": false
+          },
+          {
+            "identity": "architecture-and-groups",
+            "rendered": false
+          },
+          {
+            "identity": "v1-success",
+            "rendered": false
+          }
+        ],
+        "setter": null,
+        "setterInsideClosedDetails": false,
+        "line": "6 words",
+        "violations": []
+      }
+    }
+  ],
+  "violations": 0,
+  "pages": 10,
+  "testsPassed": "Tests  12 passed (12)",
+  "liveCapture": {
+    "projectRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "servedFromSyzygyCommit": "0883ecfa80ca0a31c140d1571c9790f73a5e8da0",
+    "shape": "not-admitted",
+    "directSha256": "05d2ad475518b254c0bf09a239668c29b51ab733b3b47a5a41a90c92c945aafb",
+    "note": "[Observed] At this Butlers revision the live evaluation is not-admitted (the P1 policy authority reads invalid act, policy:recording-tag-mismatched, as recorded in docs/evidence/pwb-p99-polaris-size-measurement-2026-10-15.json), so only the gaps and claim-strength rows route. Which offsets an observed Butlers shape would show remains [Unknown]."
+  }
+}

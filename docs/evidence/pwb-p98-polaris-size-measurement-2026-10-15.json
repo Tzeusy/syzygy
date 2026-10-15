@@ -1,0 +1,34 @@
+{
+  "task": "syzygy-u05.23",
+  "requirement": "PWB-REQ-010",
+  "signedText": "pwb-opening-index-amendment-v1.0",
+  "subject": {
+    "syzygyCommit": "0883ecfa80ca0a31c140d1571c9790f73a5e8da0"
+  },
+  "method": "Private daemon (node apps/three-surface-poc/dist/main.js --repo <butlers> --port 0 --state-dir <scratch>) served from the committed, clean worktree after npm run build:poc at the subject commit; /polaris fetched with curl, direct and with Host: tzeusy.parrot-hen.ts.net. Index bytes measured on the direct capture.",
+  "liveEvaluation": {
+    "projectRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "shape": "not-admitted",
+    "walkthroughEvaluation": "pwb-unobserved-not-admitted"
+  },
+  "polaris": {
+    "directBytes": 119009,
+    "directSha256": "05d2ad475518b254c0bf09a239668c29b51ab733b3b47a5a41a90c92c945aafb",
+    "tailnetBytes": 119249,
+    "tailnetSha256": "bd135ee4c440bcf2c95dd0043faaf18e3c7c08a35edd169358cb1f35acd85a3c",
+    "maxHumanResponseBytes": 2097152
+  },
+  "previousMeasurement": {
+    "record": "docs/evidence/pwb-p99-polaris-size-measurement-2026-10-15.json",
+    "directBytes": 113689,
+    "tailnetBytes": 113929
+  },
+  "addedBytes": {
+    "indexNav": 1779,
+    "loadScript": 2674,
+    "style": 423,
+    "legendHeadingAndWrapper": 224,
+    "note": "Fixed per page: the nine rows, the counting script and its style do not grow with the shape. The outline gains one link to the legend heading. The stopping line and the offsets are written by the script after load and are not served bytes."
+  },
+  "observedShapeOnButlers": "[Unknown] Not measurable at this Butlers revision (not-admitted). The last observed capture (docs/evidence/smooth-example-live-run-2026-10-03.json) served /polaris at 1,473,252 tailnet bytes, 623,900 under the ceiling; a fixed addition of about 5.1 KB stays inside that headroom [Inferred]."
+}
