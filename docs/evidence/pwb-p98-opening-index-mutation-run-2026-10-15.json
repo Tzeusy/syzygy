@@ -1,0 +1,237 @@
+{
+  "task": "syzygy-u05.23",
+  "requirement": "PWB-REQ-010",
+  "signedText": "pwb-opening-index-amendment-v1.0",
+  "rule": "AGENTS.md verification rule 6: one mutant per falsifier limb; each rewrites one fragment, runs the oracle file alone and restores the file",
+  "commit": "0883ecfa80ca0a31c140d1571c9790f73a5e8da0",
+  "command": "npx vitest run apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+  "baselineExit": 0,
+  "mutants": 28,
+  "killed": 28,
+  "results": [
+    {
+      "id": "row-missing",
+      "falsifierLimb": "a row is missing",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  { identity: 'v1-success', name: 'index.v1-success', target: id('polaris-account-v1-scope') },\n",
+      "new": "",
+      "outcome": "killed"
+    },
+    {
+      "id": "row-duplicated",
+      "falsifierLimb": "a row is duplicated",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },\n",
+      "new": "  { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },\n  { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },\n",
+      "outcome": "killed"
+    },
+    {
+      "id": "row-order",
+      "falsifierLimb": "rows out of order",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },\n  { identity: 'promises', name: 'index.promises', target: id('polaris-account-promises') },\n",
+      "new": "  { identity: 'promises', name: 'index.promises', target: id('polaris-account-promises') },\n  { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },\n",
+      "outcome": "killed"
+    },
+    {
+      "id": "row-name-case",
+      "falsifierLimb": "row text does not begin with its declared name exactly (case)",
+      "file": "apps/three-surface-poc/src/polaris-copy.ts",
+      "old": "id: 'index.v1-success', role: 'action-label', kind: 'label', text: 'V1 success' }",
+      "new": "id: 'index.v1-success', role: 'action-label', kind: 'label', text: 'v1 success' }",
+      "outcome": "killed"
+    },
+    {
+      "id": "row-name-word",
+      "falsifierLimb": "row text does not begin with its declared name exactly (word)",
+      "file": "apps/three-surface-poc/src/polaris-copy.ts",
+      "old": "text: 'non-goals' }",
+      "new": "text: 'limits' }",
+      "outcome": "killed"
+    },
+    {
+      "id": "row-misrouted",
+      "falsifierLimb": "a row routes to an undeclared target",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "target: id('polaris-class-catalog-entry')",
+      "new": "target: id('polaris-class-baseline-spec')",
+      "outcome": "killed"
+    },
+    {
+      "id": "exact-not-first",
+      "falsifierLimb": "the exact-requirement row routes to a later exact-source link",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  for (const match of html.matchAll(/<a\\s[^>]*>/g)) {\n    const href = /\\shref=\"([^\"]*)\"/.exec(match[0])?.[1];\n    if (href !== undefined && href.startsWith(route)) return",
+      "new": "  let seen = 0;\n  for (const match of html.matchAll(/<a\\s[^>]*>/g)) {\n    const href = /\\shref=\"([^\"]*)\"/.exec(match[0])?.[1];\n    if (href !== undefined && href.startsWith(route) && (seen += 1) === 2) return",
+      "outcome": "killed"
+    },
+    {
+      "id": "unrendered-substitute",
+      "falsifierLimb": "an unrendered target's row routes to a substitute",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "target: id('polaris-opening-unknowns')",
+      "new": "target: id('polaris-shape-gaps')",
+      "outcome": "killed"
+    },
+    {
+      "id": "unrendered-silent",
+      "falsifierLimb": "an unrendered row does not say its target is not rendered",
+      "file": "apps/three-surface-poc/src/polaris-copy.ts",
+      "old": "text: 'not rendered at this evaluation' }",
+      "new": "text: 'absent at this evaluation' }",
+      "outcome": "killed"
+    },
+    {
+      "id": "unrendered-offset",
+      "falsifierLimb": "an unrendered row shows an offset",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "<span${DISCLOSURE}>\u2014 ${escapeAttr(copyText('index.not-rendered'))}</span></li>`",
+      "new": "<span${DISCLOSURE}>\u2014 ${escapeAttr(copyText('index.not-rendered'))} after 0 words</span></li>`",
+      "outcome": "killed"
+    },
+    {
+      "id": "offset-off-by-one",
+      "falsifierLimb": "an offset differs from the independent count",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "slot.textContent = 'after ' + offset + ' words';",
+      "new": "slot.textContent = 'after ' + (offset + 1) + ' words';",
+      "outcome": "killed"
+    },
+    {
+      "id": "summary-not-counted",
+      "falsifierLimb": "the counter leaves out a closed details' summary",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "if (closed.has(parent) && node !== ownSummary(parent)) return false;",
+      "new": "if (closed.has(parent)) return false;",
+      "outcome": "killed"
+    },
+    {
+      "id": "closed-content-counted",
+      "falsifierLimb": "the counter counts closed details content",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "const closed = new Set(Array.from(document.querySelectorAll('details')).filter((details) => !details.open));",
+      "new": "const closed = new Set();",
+      "outcome": "killed"
+    },
+    {
+      "id": "visibility-ignored",
+      "falsifierLimb": "the counter ignores computed visibility",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "if (!text.parentElement || getComputedStyle(text.parentElement).visibility !== 'visible') return false;",
+      "new": "if (!text.parentElement) return false;",
+      "outcome": "killed"
+    },
+    {
+      "id": "hidden-counted",
+      "falsifierLimb": "the counter counts text under the hidden attribute",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "parent.hasAttribute('hidden') || ",
+      "new": "",
+      "outcome": "killed"
+    },
+    {
+      "id": "total-wrong",
+      "falsifierLimb": "the total differs from the independent count",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "line.textContent = setter.offset + ' / ' + total + ' words';",
+      "new": "line.textContent = setter.offset + ' / ' + (total - 1) + ' words';",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-missing",
+      "falsifierLimb": "the stopping line is missing",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  place.after(line);\n",
+      "new": "\n",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-repeated",
+      "falsifierLimb": "the stopping line is repeated",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "  place.after(line);\n",
+      "new": "  place.after(line);\n  index.after(line.cloneNode(true));\n",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-not-stepped-out",
+      "falsifierLimb": "the stopping line stands inside the setting target's closed disclosure",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "    if (closed.has(node) || /^(P|H[1-6]|UL|OL|DL|TABLE)$/.test(node.tagName)) place = node;",
+      "new": "    if (/^(P|H[1-6]|UL|OL|DL|TABLE)$/.test(node.tagName)) place = node;",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-innermost",
+      "falsifierLimb": "the stopping line steps out only to the innermost container",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "    if (closed.has(node) || /^(P|H[1-6]|UL|OL|DL|TABLE)$/.test(node.tagName)) place = node;",
+      "new": "    if ((closed.has(node) || /^(P|H[1-6]|UL|OL|DL|TABLE)$/.test(node.tagName)) && place === setter.target) place = node;",
+      "outcome": "killed"
+    },
+    {
+      "id": "tie-earlier",
+      "falsifierLimb": "a tie is broken toward the earlier target",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "setter.target.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING",
+      "new": "setter.target.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_PRECEDING",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-not-largest",
+      "falsifierLimb": "the stopping line's offset is not the largest",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "offset > setter.offset ||",
+      "new": "offset < setter.offset ||",
+      "outcome": "killed"
+    },
+    {
+      "id": "none-gives-offset",
+      "falsifierLimb": "with no target rendered the line gives more than the total",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "    line.textContent = total + ' words';",
+      "new": "    line.textContent = '0 / ' + total + ' words';",
+      "outcome": "killed"
+    },
+    {
+      "id": "none-misplaced",
+      "falsifierLimb": "with no target rendered the line does not follow the index",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "    index.after(line);\n    return;",
+      "new": "    document.body.append(line);\n    return;",
+      "outcome": "killed"
+    },
+    {
+      "id": "line-extra-text",
+      "falsifierLimb": "the stopping line shows text beyond its numbers and unit",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "line.textContent = setter.offset + ' / ' + total + ' words';",
+      "new": "line.textContent = 'Stopping line: ' + setter.offset + ' / ' + total + ' words';",
+      "outcome": "killed"
+    },
+    {
+      "id": "verdict-in-index",
+      "falsifierLimb": "the index states that a prompt is answered",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "slot.textContent = 'after ' + offset + ' words';",
+      "new": "slot.textContent = 'after ' + offset + ' words, answered';",
+      "outcome": "killed"
+    },
+    {
+      "id": "offset-as-claim",
+      "falsifierLimb": "an offset is presented as a claim",
+      "file": "apps/three-surface-poc/src/polaris-opening-index.ts",
+      "old": "<span data-opening-offset${SCOPE}></span>",
+      "new": "<span data-opening-offset${SCOPE} data-claim-role=\"epistemic-claim\"></span>",
+      "outcome": "killed"
+    },
+    {
+      "id": "index-not-first",
+      "falsifierLimb": "the index does not begin the first reading level",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "    ${OPENING_INDEX_PLACEHOLDER}\n    ${groupHeader('overview')}\n",
+      "new": "    ${groupHeader('overview')}\n    ${OPENING_INDEX_PLACEHOLDER}\n",
+      "outcome": "killed"
+    }
+  ]
+}
