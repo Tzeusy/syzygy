@@ -28,6 +28,21 @@ the rebase, the consent boundary against RFC3-16(a/b/c) as written today and
 the CC-SPEC-11 partition. Version 1.0 is offered only after a round clears it
 (Question 1).
 
+**Review 4, 2026-10-15: `CONFIRM WITH EXCEPTIONS`, notes only.** Source:
+`docs/reviews/R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-4-RAW.md` line 4, over the
+repaired bytes, which are identical to main at `6ff75567`. Under the stopping
+rule it clears those bytes, so **v1.0 is now offered**. The lead chose the
+recommended confirmation-round arm of Question 1 as a process step; that
+choice signs nothing. The package is unedited, and its two notes are in
+`docs/reviews/R-CAP1-TRUSTED-BOOTSTRAP-CONSENT-4-DISPOSITION.md`:
+- Note 1 widens the coverage-supersession paragraph below. Adoption must
+  supersede more than the one RFC3-16(a) row and the Part A totals: it must
+  also cover the family table, the 38-mapped sentences, the Part B RFC3 line,
+  the file's self-check and the generated `GOVERNING-DEPENDENCIES.md`.
+- Note 2: CAP1-REQ-046's refusal disclosure does not, on its own, require the
+  refused artifact's identity. Closing that would need a v1.1 and a new
+  round. You may sign v1.0 as reviewed or ask for that revision.
+
 ## The one binding ask
 
 Adopt the candidate `openspec/changes/cap1-trusted-bootstrap-consent/` at an
