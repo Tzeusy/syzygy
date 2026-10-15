@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
-import { checkDraft, type CheckDeps, type CheckResult } from './check.js';
+import { checkDraft, reviewVisibility, type CheckDeps, type CheckResult } from './check.js';
 import { runDossierCli } from './cli.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
@@ -308,6 +308,14 @@ describe('check: a quotation from an excluded file', () => {
       { path: 'src/config.c', read: true, outcome: 'secret-detector-match' },
       { path: '.env', read: false, outcome: 'denied-path' },
     ]);
+    // The author is told which cited files the review cannot see (bead syzygy-olmr); it is advice, not a finding.
+    expect(reviewVisibility(result.citedBlobs)?.withheld.map((w) => w.path)).toEqual(['README.md', 'src/types.ts', 'src/config.c', '.env']);
+  });
+
+  it('reports no review visibility note when every cited file is admitted, and never names a secret path', () => {
+    expect(reviewVisibility([{ path: 'src/a.c', objectId: 'x', read: true, outcome: 'admitted' }])).toBeNull();
+    const note = reviewVisibility([{ path: null, objectId: null, read: false, outcome: 'secret-detector-match' }]);
+    expect(note?.withheld).toEqual([{ path: '(a path a secret detector matches)', outcome: 'secret-detector-match' }]);
   });
 
   it('names a path a secret detector matches by neither path nor object identifier, in the record or a finding', async () => {
