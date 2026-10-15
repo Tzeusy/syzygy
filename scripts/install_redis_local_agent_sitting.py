@@ -43,8 +43,7 @@ Before anything is written it requires (exit 2, nothing written otherwise):
 - selection text a battery line can carry: no ": ", " #" or "'";
 - `date` no later than today's UTC date, and every act instant at or before
   the clock: both are UTC, and an act is not in force until its instant;
-- the open P-104 row byte for byte as the gate pins it (or this sitting's
-  resolved row), and no answered act already recorded: a second run is
+- the P-104 row exactly this sitting's resolved row, and no answered act already recorded: a second run is
   refused here, and `--check` is the way to look at an installed tree.
 
 Then, in order, each step's recorder runs `--record` and then `--check` with
@@ -83,7 +82,6 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime
-import hashlib
 import io
 import json
 import pathlib
@@ -293,10 +291,8 @@ def preconditions(root: pathlib.Path, answers: dict) -> list[str]:
 def p104_check(root: pathlib.Path, answers: dict) -> list[str]:
     pending = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
     rows = [ln for ln in pending.read_text(encoding="utf-8").split("\n") if ln.startswith(P104)] if pending.is_file() else []
-    if len(rows) == 1 and rows[0] != p104_resolved_row(answers) and \
-            hashlib.sha256(rows[0].encode("utf-8")).hexdigest() != P104_OPEN_SHA256:
-        return ["the P-104 row is neither the open row the gate pins (by its exact bytes) nor this sitting's "
-                "resolved form: resolve it by hand"]
+    if len(rows) == 1 and rows[0] != p104_resolved_row(answers):
+        return ["the P-104 row is not this sitting's resolved form: resolve it by hand"]
     return []
 
 
@@ -609,29 +605,6 @@ def step_battery(root: pathlib.Path, write: bool, steps: list[Step]) -> bool:
     return True
 
 
-#: sha256 of P-104's open row, the whole line without its newline, as the register
-#: carries it until the sitting resolves it: the digest the gate pins
-#: (`package-reader.ts`, `P104_ROW_SHA256`). Matching the whole row means text an
-#: editor appends to it is refused, never silently overwritten
-#: (R-REDIS-SITTING-INSTALLER-PINS-1 note 3).
-P104_OPEN_SHA256 = "05385b96593954c430ab707b213a99374055e9c19bdf13f89fcea4a85bbd34bb"
-#: The open row itself, the selftest's fixture: its digest is asserted equal to the pin.
-P104_OPEN_ROW = (
-    '| P-104 | The local-agent Redis sitting (`syzygy-qkea.14`): seven decisions (rows 1 to 5, row 3 with'
-    ' options 3a and 3b), each a separate act and none implying another. (1) the Redis observation consen'
-    't, already prepared and reviewed; (2) the public Git source-acquisition entry 2.0.0-candidate.1, sig'
-    'ned by version tag `public-git-source-acquisition-local-agent-v1.0` under an extension of the 2026-1'
-    '0-02 Scope A direction; (3) "Redis has no kernel evidence drawer" (recommended), or one or both agen'
-    't-provider statements (Anthropic, OpenAI); (4) D9 bound to exact bytes for operator-agent runs; (5) '
-    'the RFC7-20 reading bound to exact bytes. Each act takes its record\'s label and its sitting-manifes'
-    't row, printed by script and never typed | owner acts: five phrase acts (rows 3, 3a, 3b, 4, 5), one '
-    'versioned sign-off (row 2) and the observation consent\'s own act (row 1) | a local-agent Redis doss'
-    'ier run needs 1, 2, one of 3 / 3a / 3b, and 5; 4 only if the agent is to build or run Redis; offered'
-    ' only once the round-3 review clears the bytes | `contracts/candidates/dossier-local-agent-acts/OWNE'
-    'R-SITTING-PACKET.md`; round dispositions beside it |'
-)
-
-
 def and_list(items: list[str]) -> str:
     return items[0] if len(items) == 1 else f"{', '.join(items[:-1])} and {items[-1]}"
 
@@ -665,13 +638,7 @@ def step_p104(root: pathlib.Path, write: bool, answers: dict) -> bool:
     new = p104_resolved_row(answers)
     if lines[at[0]] == new:
         return False
-    if hashlib.sha256(lines[at[0]].encode("utf-8")).hexdigest() != P104_OPEN_SHA256:
-        raise Refusal("the P-104 row is neither the open row the gate pins (by its exact bytes) nor this "
-                      "sitting's resolved form: resolve it by hand")
-    if write:
-        lines[at[0]] = new
-        base.J.write(path, "\n".join(lines))
-    return True
+    raise Refusal("the P-104 row is not this sitting's resolved form: resolve it by hand")
 
 
 def install(root: pathlib.Path, write: bool, steps: list[Step], answers: dict) -> list[str]:
@@ -970,28 +937,19 @@ def selftest() -> int:
         except Refusal:
             ok.append(("a P-104 row in neither form is refused, never overwritten", True))
         reg = root / DECISIONS / "PENDING-OWNER-DECISIONS.md"
-        ok.append(("the fixture is the open P-104 row the gate pins",
-                   hashlib.sha256(P104_OPEN_ROW.encode("utf-8")).hexdigest() == P104_OPEN_SHA256))
-        for name, row in (("text appended", P104_OPEN_ROW + " [stale 2026-10-08]"),
-                          ("one cell edited", P104_OPEN_ROW.replace("seven decisions", "six decisions"))):
+        for name, row in (("the pre-sitting open shape", "| P-104 | The local-agent Redis sitting: seven decisions |"),
+                          ("text appended to the resolved row", p104_resolved_row(good) + " [stale 2026-10-08]")):
             reg.write_text(f"before\n{row}\nafter\n")
             try:
                 step_p104(root, True, good)
-                ok.append((f"an open P-104 row with {name} is refused, never overwritten", False))
+                ok.append((f"a P-104 row with {name} is refused, never overwritten", False))
             except Refusal:
-                ok.append((f"an open P-104 row with {name} is refused, never overwritten",
+                ok.append((f"a P-104 row with {name} is refused, never overwritten",
                            reg.read_text() == f"before\n{row}\nafter\n"))
-            ok.append((f"an open P-104 row with {name} is refused before anything is written",
-                       any("P-104 row is neither" in w for w in preconditions(root, good))))
-        reg.write_text(f"before\n{P104_OPEN_ROW}\nafter\n")
-        ok.append(("the pinned open P-104 row passes the up-front check",
-                   not any("P-104 row is neither" in w for w in preconditions(root, good))))
-        changed = step_p104(root, True, good)
-        text = reg.read_text()
-        ok.append(("the open P-104 row is resolved in place, the rows around it untouched",
-                   changed and text.startswith("before\n| P-104 | [Observed] **Resolved 2026-10-07:**")
-                   and text.endswith("\nafter\n") and text.count(P104) == 1))
-        ok.append(("resolving P-104 twice changes nothing", step_p104(root, False, good) is False))
+            ok.append((f"a P-104 row with {name} is refused before anything is written",
+                       any("P-104 row is not" in w for w in preconditions(root, good))))
+        reg.write_text(f"before\n{p104_resolved_row(good)}\nafter\n")
+        ok.append(("resolving an already resolved P-104 changes nothing", step_p104(root, False, good) is False))
         ok.append(("this sitting's resolved row passes the up-front check", p104_check(root, good) == []))
         row = p104_resolved_row(good)
         ok.append(("the resolved row names each act by item letter, row 4 taken",

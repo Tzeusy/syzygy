@@ -1,7 +1,7 @@
 import {
   LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, createPackageAdmissionRecordsPort, readDigestBoundActState, readPolicyActChain, readVersionedSignoffState,
   DECISIONS_DIR, SLOT, recorderTemplate,
-  type ActState, type CitedRow, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type ExemptRecord, type PackageReaderFs, type RecorderTemplate,
+  type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type ExemptRecord, type PackageReaderFs, type RecorderTemplate,
   type VersionedSignoffForm,
 } from '@syzygy/polaris-generation-consent';
 import { readdir } from 'node:fs/promises';
@@ -173,16 +173,15 @@ result.
     frozen: SLOT.commit, manifest: SLOT.sha256, verdict: SLOT.verdict, reviewed: SLOT.commit,
   });
 }
-/** What a form adds to its own stems: `stems` (prose), `fieldStems` (field lines only), `bound` files, and the `citedRows` and
- * `exemptRecords` its sweep reads past (`DigestBoundActForm`). */
+/** What a form adds to its own stems: `stems` (prose), `fieldStems` (field lines only), `bound` files, and the `exemptRecords` its
+ * sweep reads past (`DigestBoundActForm`). */
 interface FormExtras {
   readonly bound?: readonly string[]; readonly stems?: readonly string[]; readonly fieldStems?: readonly string[];
-  readonly citedRows?: readonly CitedRow[]; readonly exemptRecords?: readonly ExemptRecord[];
+  readonly exemptRecords?: readonly ExemptRecord[];
 }
 const extras = (more: FormExtras) => ({
   ...(more.fieldStems === undefined ? {} : { fieldStems: Object.freeze([...more.fieldStems]) }),
   ...(more.bound === undefined ? {} : { bound: Object.freeze([...more.bound]) }),
-  ...(more.citedRows === undefined ? {} : { citedRows: Object.freeze([...more.citedRows]) }),
   ...(more.exemptRecords === undefined ? {} : { exemptRecords: Object.freeze([...more.exemptRecords]) }),
 });
 /** The form of one sitting act. Its sweep reads the record's file stem, the act identity, the artifact's path, basename and heading,
