@@ -112,6 +112,13 @@ LATER_SIGNOFFS = (
                   "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"),
      pathlib.Path(".syzygy/governance/contracts/candidates/"
                   "three-surface-poc-governing-intent-amendment/proposed")),
+    (pathlib.Path(".syzygy/governance/decisions/"
+                  "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-vocabulary-epistemic-amendment/"
+                  "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt"),
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "three-surface-poc-vocabulary-epistemic-amendment/proposed")),
 )
 
 
