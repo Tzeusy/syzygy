@@ -673,6 +673,27 @@ describe('delivery to a waiting review session', () => {
     expect(fs.existsSync(path.join(h.sessions, 'fidelity-1', 'round-1'))).toBe(false);
   });
 
+  // syzygy-e9da: a refusal text that never carried "its work does not count" still ends at delivery with the delivery consequence
+  // (mutant: rewrite the counting phrase in the caller with .replace, which leaves this text saying nothing about delivery).
+  it('says no packet is delivered when the waiting session\'s record cites no statement (mutant: string-replace the counting phrase)', async () => {
+    const h = await harness({ governed: true });
+    expect((await h.cli(['session-prompt', h.run, 'all', '--tool', 'codex'])).exit).toBe(0);
+    fs.mkdirSync(path.join(h.run, 'drafts'), { recursive: true });
+    write(path.join(h.run, 'drafts', 'next.json'), draft(h.commit));
+    await h.cli(['check', h.run]);
+    h.world.stdin = JSON.stringify(inventory(h.commit));
+    expect((await h.cli(['await', `${path.join(h.sessions, 'session-1')}/`, '--submit', 'inventory.json', '--stdin'])).exit).toBe(0);
+    await h.cli(['launch-form', h.run, 'inventory', 'terminal']);
+    h.world.statements = [statement('claude-code'), statement('codex')];
+    const recordFile = path.join(h.run, 'reviews', 'fidelity-session-1.json');
+    await h.cli(['launch-form', h.run, 'review', 'terminal', '--kind', 'fidelity']);
+    const record = readJson(recordFile);
+    write(recordFile, { ...record, context: { ...record['context'], providerStatement: null } });
+    const result = await h.cli(['session-prompt', h.run, 'review', '--kind', 'fidelity']);
+    expect(result.doc).toMatchObject({ outcome: 'refused', stage: 'statement' });
+    expect(result.doc['reason']).toBe('the prompt record of waiting fidelity session 1 cites no per-project statement, but the run relies on one, so no packet is delivered');
+  });
+
   it('with --fresh hands the packet to a new session instead (mutant: ignore --fresh)', async () => {
     const h = await harness();
     await readyForReview(h);
