@@ -26,6 +26,12 @@ under Syzygy observation.
 - Onboarding is recorded, per-repository consent (security.md SEC-4).
   **Every observed repository consents, governance root or not.**
 
+An **observed-only project** is a governed project whose governance root
+Syzygy may read under the owner's consent but may not write: no act in force
+names a write into it. It is still governed, and its plane is still its own;
+Syzygy writes nothing there until an act names the write (vision.md VIS-6 says
+where content Syzygy authors about it lives meanwhile).
+
 Syzygy governs an orthogonal, **in-tree** plane at the governance root.
 
 - **Its direct project-content write authority is confined to exactly two

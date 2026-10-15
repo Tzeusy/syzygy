@@ -24,6 +24,19 @@ aspirational: every rule is written so that a violation is recognizable.
   Syzygy observation. Other repositories are declared observed-source
   repositories, read-only to Syzygy unless separately onboarded, and every
   observed repository needs consent (architecture.md; security.md SEC-4).
+- **Observed-only project** — a governed project whose governance root Syzygy
+  may read under the owner's consent but may not write: no act in force names
+  a write into it, and Syzygy writes nothing there until one does
+  (architecture.md).
+- **Attributed owner answer** — the owner's answer to a question about
+  intent, attributed, dated and individually withdrawable. It is neither
+  evidence nor a warrant: it renders Observed only as a fact about the record,
+  never as adopted intent without an applicable act, and never in place of an
+  Unknown (trust-and-evidence.md).
+- **Self-observation** — Syzygy's observation pipeline evaluating Syzygy's own
+  governance root as its subject. Its records never evidence a claim of
+  Syzygy's own alignment, convergence or genome-completeness
+  (trust-and-evidence.md).
 - **`.syzygy/` and `openspec/`** — the only two in-tree namespaces Syzygy
   writes directly in a governed project (vision.md VIS-5). architecture.md
   defines the `.syzygy/` layout: `governance/`, `intent/`, `work/`, `map/`,

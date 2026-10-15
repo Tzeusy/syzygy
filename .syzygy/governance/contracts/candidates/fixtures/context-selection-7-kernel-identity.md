@@ -60,7 +60,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:architecture.md craft:engineering-bar.md
 ```
 
-Measured: **18,360 words ≈ 24,786 estimated tokens.**
+Measured: **18,422 words ≈ 24,870 estimated tokens.**
 
 ## ⚠️ Above the justification trigger — disclosed, not trimmed
 
@@ -162,7 +162,7 @@ are in `CONTEXT-BUDGET-REPORT.md` §3.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`f5d5f881f4a2d26f…` (recompute: `cat <mandatory files> | sha256sum`).
+`8b07c6e3f16742d0…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a

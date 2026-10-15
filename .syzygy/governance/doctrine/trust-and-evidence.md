@@ -48,6 +48,16 @@ its source, capture time, scope, and provenance.**
   - Status describes; a warrant authorizes. A claim that both declares status
     and spawns work must pass both gates.
 
+**An attributed owner answer is neither evidence nor a warrant.** When the
+owner answers a question about intent — a purpose, a beneficiary, a priority
+between two goals — the answer is attributed, dated and individually
+withdrawable, and is committed out to the governed plane like any decision
+(vision.md VIS-6). It renders as the owner's record: Observed as a fact about
+the record, never as evidence that the project does what the answer says, and
+never as adopted intent unless an applicable act adopts it (vision.md VIS-4).
+It sits beside an Unknown, never in its place. Withdrawing it invalidates
+exactly what was built on it.
+
 ## Status claims vs narrative claims
 
 Anything that does a status claim's work needs evidence, whatever it looks
@@ -65,6 +75,16 @@ claims carry exactly one of three labels.
 No evidence means **Unknown**, not success. A claim that meets any trigger is
 a status claim **whatever its prose form**: a narrative sentence doing a green
 badge's work is judged as a badge.
+
+**Self-observation never certifies Syzygy's own alignment.** When Syzygy's
+observation pipeline evaluates Syzygy's own governance root as its subject,
+the observation records may surface gaps and contradictions and render with
+that subject disclosed, but they are never the evidence for a claim that
+declares Syzygy's own alignment, convergence or genome-completeness: such a
+claim, resting only on such records, has no evidence and renders Unknown.
+Evidence that any of the trust floor's four properties holds may come from
+any subject, this one included, and the rule adds no property to the trust
+floor.
 
 **A gap leaves a surface in exactly two ways, and they are not
 interchangeable.**
