@@ -6,6 +6,9 @@
 > REVISE goes to the owner, with no round 4) **nothing is repaired**: the
 > package bytes stay as round 3 read them, carry no confirmation, and P-110
 > is not offered for signature. The owner decides what happens next.
+> *(Marked 2026-10-15: the owner chose one more round
+> (`ROUND-3-OWNER-DIRECTION.md`); the repairs are in `ROUND-3-REPAIR.md`.
+> This classification is kept as written.)*
 
 | Finding | Severity | Classification (not repaired) |
 |---|---|---|

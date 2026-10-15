@@ -19,7 +19,8 @@ includes a withheld line is withheld whole; every detector runs again over what
 is retained, and any match there excludes the body whole. The body stays
 excluded whole on a `private-key-material` or `known-token-formats` match, on
 any line that begins (after spaces or tabs) with four or more '-' and then
-BEGIN, or on a base64 form of such a header (`wholeArtifactFragments`).
+BEGIN, or on `-----BEGIN `, `---- BEGIN ` or a base64 form of such a header anywhere in the body
+(`wholeArtifactFragments`; the union of the two checks is the fail-closed one).
 
 Two variants, one manifest row each:
 
@@ -80,8 +81,11 @@ WHOLE_ARTIFACT_DETECTORS = ["private-key-material", "known-token-formats"]
 #: A line matching this is never in a retained body: a PEM (five-dash) or RFC 4716 (four-dash) block whose header
 #: the private-key literals do not list is key material no detector matches (round 1 finding 3, round 2 finding 3).
 WHOLE_ARTIFACT_LINE_PATTERN = r"^[ \t]*-{4,}[ \t]*BEGIN"
-#: Base64 of "-----BEGI" and "---- BEGI" at offset 0, as in a Kubernetes Secret value (round 2 finding 1).
-WHOLE_ARTIFACT_FRAGMENTS = ["LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
+#: Anywhere in the body, compared exactly: a PEM ("-----BEGIN ") or RFC 4716 ("---- BEGIN ") header, mid-line
+#: included (round 3 finding 1: a header inside a template literal, a JSON string or a list bullet), and the
+#: base64 of "-----BEGI" and "---- BEGI" at offset 0, as in a Kubernetes Secret value (round 2 finding 1).
+#: The union with WHOLE_ARTIFACT_LINE_PATTERN is the fail-closed check.
+WHOLE_ARTIFACT_FRAGMENTS = ["-----BEGIN ", "---- BEGIN ", "LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
 #: The only class redaction applies to (round 2 finding 1, arm (b)); code and everything else stay whole-file.
 REDACTED_CLASSES = ["project-documentation"]
 GUARD_LINES = 1
@@ -406,6 +410,9 @@ BODY_FIXTURES = [
     ("RFC 4716 key beside a badge", f"[b](https://x/y?{_TOKEN})\n\n---- BEGIN SSH2 ENCRYPTED " + "PRIVATE KEY ----\nAAAAB3\n---- END SSH2 ENCRYPTED PRIVATE KEY ----\n", None),
     ("indented PEM header beside a badge", f"[b](https://x/y?{_TOKEN})\n\n    -----BEGIN OPENSSH " + "PRIVATE KEY-----\nb3Bl\n", None),
     ("base64 PEM in a Secret example", f"[b](https://x/y?{_TOKEN})\n\n  tls.key: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0t\n", None),
+    ("mid-line header in a template literal", f"[b](https://x/y?{_TOKEN})\n\nconst k = `-----BEGIN EC " + "PRIVATE KEY-----\nMHcCAQEE\n-----END EC PRIVATE KEY-----`;\n", None),
+    ("mid-line header in one-line JSON", f"[b](https://x/y?{_TOKEN})\n\n" + '{"key": "-----BEGIN EC ' + 'PRIVATE KEY-----\\nMHcCAQEE\\n-----END EC PRIVATE KEY-----"}\n', None),
+    ("mid-line header in a list bullet", f"[b](https://x/y?{_TOKEN})\n\n- key: ---- BEGIN SSH2 ENCRYPTED " + "PRIVATE KEY ----\n  AAAAB3NzaC1\n", None),
 ]
 
 #: (name, path, body): bodies outside project-documentation are excluded whole on any match, as before.
@@ -447,6 +454,8 @@ def semantic_findings(base_text: str, proposed_text: str, variant: str) -> list[
         bad.append("a dashed BEGIN header line no longer excludes the whole artifact")
     if red.get("wholeArtifactFragments") != WHOLE_ARTIFACT_FRAGMENTS:
         bad.append("a base64 header fragment no longer excludes the whole artifact")
+    if not {"-----BEGIN ", "---- BEGIN "} <= set(red.get("wholeArtifactFragments", [])):
+        bad.append("a key header anywhere in the body no longer excludes the whole artifact")
     if red.get("redactedClasses") != ["project-documentation"]:
         bad.append("redaction reaches a class other than project-documentation")
     if "overlapping matches included" not in red.get("rule", ""):
@@ -637,6 +646,13 @@ def selftest() -> int:
         sem("a non-overlapping match set caught", "span-guides",
             lambda d: red(d).__setitem__("rule", REDACTION["rule"].replace(", overlapping matches included", "")),
             "every match from every offset")
+        sem("a dropped anywhere header fragment caught", "span",
+            lambda d: red(d)["wholeArtifactFragments"].remove("-----BEGIN "), "key header anywhere")
+        sem("a dropped anywhere RFC 4716 fragment caught", "span-guides",
+            lambda d: red(d)["wholeArtifactFragments"].remove("---- BEGIN "), "key header anywhere")
+        sem("a mid-line fixture flip caught (anywhere check gone)", "span",
+            lambda d: red(d).__setitem__("wholeArtifactFragments", ["LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]),
+            "body fixture 'mid-line header in a template literal'")
         sem("a zero guard caught", "span-guides", lambda d: red(d).__setitem__("guardLines", 0), "guardLines")
         sem("a dropped re-screen caught", "span",
             lambda d: red(d).__setitem__("rule", REDACTION["rule"].replace(

@@ -2,9 +2,9 @@
 
 > **Candidate — binds nothing.** It carries no digest. Nothing here is a
 > decision, and no act is performed by reading it. It is offered only after a
-> confirming review; until then it is not offered. Rounds 1 and 2 returned
-> REVISE and were repaired (`ROUND-1-DISPOSITIONS.md`, `ROUND-2-REPAIR.md`);
-> round 3 is the last round before the owner.
+> confirming review; until then it is not offered. Rounds 1 to 3 returned
+> REVISE and were repaired (`ROUND-1-DISPOSITIONS.md`, `ROUND-2-REPAIR.md`,
+> `ROUND-3-REPAIR.md`); round 4 is the one review you ordered on 2026-10-15.
 
 ## What this is, in plain words
 
@@ -18,14 +18,18 @@ cited spans were withheld.
 Version 4 withholds only the lines the detector matched, plus one line on each
 side, instead of the whole file, when the file is project documentation (a
 README, a guide, a changelog) and the match is a password-or-token assignment
-or a URL with a password in it. Source code, configuration and every other
-file keep today's rule: one match withholds the whole file. A quotation that touches a withheld
+or an `http` or `https` URL with a password in it. Source code and every file
+that is not project documentation keep today's rule: one match withholds the
+whole file. A configuration-like file that the path rules count as
+documentation (a `.txt` file under `docs/`, or a root file such as `CHANGES`
+with no suffix) is treated as documentation. A quotation that touches a withheld
 line is still withheld whole, and its claim stays Unknown. Everything else in
 the file can be quoted. Three cases still withhold the whole file: a
 private-key match (the detector only sees the key's header line), a known
 token format such as an AWS `AKIA…` key id (its secret key sits on another
-line that no detector catches), and any line that starts with four or more
-dashes and then BEGIN (a PEM or SSH2 key block), or the base64 start of one.
+line that no detector catches), and a key block: `-----BEGIN ` or
+`---- BEGIN ` anywhere in the file, even mid-line, any line starting with four
+or more dashes and then BEGIN, or the base64 start of a header.
 
 This is the kind of redaction RFC5-17 already defines (`redacted-span`) and the
 Polaris specification already describes; the policy has simply never turned it
@@ -72,8 +76,11 @@ frozen only after a confirming review, takes that row as the act's argument.
   `SECRET_KEY = "…"`, a JSON `"password": "…"`, a `STRIPE_SECRET_KEY` inside a
   heredoc, and a base64-encoded key in a Kubernetes Secret example (unless
   its encoding begins at the key header, which keeps the file whole) [the round-2
-  review showed each through the builder's oracle]. Source and
-  configuration files are not affected: they stay whole-file.
+  review showed each through the builder's oracle]. So does a password
+  in a `postgres://`, `mysql://`, `redis://` or other non-`http` connection
+  string, because the URL detector only reads `http` and `https`. Source
+  files are not affected: they stay whole-file. A configuration-like file the
+  path rules count as documentation is affected like any documentation.
 - [Inferred] A secret that a detector catches on one line but that continues
   two or more lines further would have its tail admitted.
 - In a file with no match at all nothing changes.

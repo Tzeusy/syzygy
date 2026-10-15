@@ -17,7 +17,17 @@
 > whole-file on any match), and the cost below names the common credential
 > shapes that still reach the packet from a documentation file. The PEM check
 > is widened to any dashed BEGIN header line. `ROUND-2-REPAIR.md` maps each
-> finding; round 3 is the last round before the owner.
+> finding; round 3 is the last round before the owner. *(Marked 2026-10-15:
+> round 3 found that this repair narrowed the check, not widened it, because
+> the line pattern fires only at line start; see the next paragraph.)*
+>
+> **Round 3 repaired, 2026-10-15, on the owner's direction.** Round 3
+> (`docs/reviews/R-OLMR-SCREENING-SCOPE-V4-3-RAW.md`) returned REVISE; the
+> owner chose "One more round" (`ROUND-3-OWNER-DIRECTION.md`). The
+> anywhere-in-body `-----BEGIN ` check is restored beside the line pattern,
+> with `---- BEGIN ` for RFC 4716, and the two overclaims are corrected.
+> `ROUND-3-REPAIR.md` maps each finding; round 4 is the one review the owner
+> ordered.
 
 ## Class
 
@@ -116,7 +126,7 @@ redactedClasses: ["project-documentation"]
 redactionClass: redacted-span
 wholeArtifactDetectors: ["private-key-material", "known-token-formats"]
 wholeArtifactLinePattern: ^[ \t]*-{4,}[ \t]*BEGIN
-wholeArtifactFragments: ["LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
+wholeArtifactFragments: ["-----BEGIN ", "---- BEGIN ", "LS0tLS1CRUdJT", "LS0tLSBCRUdJT"]
 guardLines: 1
 
 rule: every detector runs over the complete transient body exactly as before,
@@ -183,20 +193,29 @@ under "What it gives up".
   `credential-assignment` (the value, eight characters or more, is inside the
   match) and `credential-bearing-url` (the user and password are inside the
   match) are redacted by line.
-- **Only project-documentation is redacted.** Source and configuration
-  files are where credentials are usually written, so a code-content body (and
-  any other class) stays excluded whole on any match, as in version 3 (round
+- **Only project-documentation is redacted.** Source files are where
+  credentials are usually written, so a code-content body (and any class
+  other than project-documentation) stays excluded whole on any match, as in
+  version 3. A configuration-shaped file can still be project documentation:
+  a `.txt` file under `docs/`, `doc/` or `licenses/` (for example
+  a docs settings .txt file), or a root file with a documentation stem and no
+  suffix, is classed by its path and is redacted by line like any other
+  documentation (round 3, finding 2) (round
   2, finding 1, arm (b); builder whole-file fixtures "code body with a token",
   "unclassified root file with a token", "nested README with a token").
-- **Any dashed BEGIN header line keeps the body whole.** A body with a line
-  that, after spaces or tabs, starts with four or more `-`, optional spaces or
-  tabs, and `BEGIN` is never redacted. That covers PEM (`-----BEGIN EC PRIVATE
-  KEY-----`) and RFC 4716 (`---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----`)
-  blocks whose headers the private-key literals do not list (round 1, finding
-  3; round 2, finding 3). The base64 forms of `-----BEGI` and `---- BEGI` at
-  offset 0, as a Kubernetes Secret value starts, keep it whole too
-  (`wholeArtifactFragments`). A base64 key encoded from any other offset is
-  not caught.
+- **A key header keeps the body whole, wherever it sits.** Two checks, and
+  either one excludes the body whole. `wholeArtifactFragments` holds
+  `-----BEGIN ` (PEM) and `---- BEGIN ` (RFC 4716), compared exactly anywhere
+  in the body, so a header in the middle of a line counts: inside a template
+  literal, a one-line JSON string or a list bullet (round 3, finding 1;
+  builder fixtures "mid-line header in a template literal", "… in one-line
+  JSON", "… in a list bullet", each with a mutant). `wholeArtifactLinePattern`
+  adds any line that, after spaces or tabs, starts with four or more `-`,
+  optional spaces or tabs, and `BEGIN` (other dash counts and spacings). The
+  fragments also hold the base64 forms of `-----BEGI` and `---- BEGI` at
+  offset 0, as a Kubernetes Secret value starts. Not caught: a header with
+  other spacing in the middle of a line (for example three spaces after four
+  dashes), and a base64 key encoded from any other offset.
 - **Every match from every offset.** A left-to-right, non-overlapping scan can
   consume a keyword that would have started a longer match: `secret: password`
   then blank lines then `: value` reports only the first line, and the value
@@ -284,7 +303,14 @@ a Bazel build file. No name carries a `docExcludedTokens` word, none repeats a
   unless it falls on a matched or guard line [Observed by the round-2
   reviewer's probes through the builder's oracle, which did not then consult
   the file's class, so the shapes carry over to a documentation file]. Round 2 found these common shapes do so: an AWS secret access key beside a temporary `ASIA…` key id (only `AKIA…` ids are matched by `known-token-formats`), a JavaScript `secretAccessKey: "…"`, a Django `SECRET_KEY = "…"`, a quoted JSON `"password": "…"` (no detector matches it), a `STRIPE_SECRET_KEY` inside a heredoc, and a base64-encoded key in a Kubernetes Secret example whose encoding does not begin at the header's first dash.
-  Source and configuration files are not affected: they stay whole-file.
+  The URL detector, `credential-bearing-url`, matches `http://` and
+  `https://` only, so a password in a `postgres://`, `mysql://`, `redis://`,
+  `mongodb://` or `amqp://` connection string in a documentation file reaches
+  the packet too, as does an `https` password containing `/` (round 3,
+  finding 3). Source files are not affected: they stay whole-file. A
+  configuration-shaped file that the path rules class as documentation (a
+  `.txt` file under `docs/`, `doc/` or `licenses/`, or a suffix-less root
+  file with a documentation stem) is affected like any other documentation.
 - [Inferred] A secret that a detector matches on one line and that continues
   past the guard line onto further lines is admitted in its unmatched part.
 - In a body with no match at all, nothing changes: a secret the detectors do
