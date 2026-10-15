@@ -1,0 +1,25 @@
+{
+  "bead": "syzygy-scr7",
+  "measuredOn": "packages/polaris-dossier/src/git-object-reader.test.ts, describe 'paths are at most git's core.maxTreeDepth (4,096) segments deep'",
+  "commit": "6c09278fe09166d0ebe93e8d900a88f1ad40c25d",
+  "commitNote": "base commit; the only change is the two timeout literals 30_000 -> 240_000 (uncommitted at measurement time)",
+  "host": { "cores": 12, "loadGenerator": "70 busy shell loops, 600 s" },
+  "idle": { "load1": 5.93, "ms": { "4096-segment test": 1886, "4097-segment test": 1203 } },
+  "loadedBefore30sTimeout": [
+    { "load1": 74.65, "4096": "timeout at 30042", "4097": "timeout at 30027" },
+    { "load1": 82.34, "4096": "timeout at 30245", "4097": 26211 },
+    { "load1": 83.09, "4096": "timeout at 30089", "4097": "timeout at 30002" }
+  ],
+  "loadedAfter240sTimeout": [
+    { "load1": 88.91, "4096": 66513, "4097": 31699, "passed": true },
+    { "load1": 88.33, "4096": 52813, "4097": 20238, "passed": true },
+    { "load1": 84.80, "4096": 42427, "4097": 32744, "passed": true }
+  ],
+  "margin": "worst measured 66,513 ms at load1 ~89; 240,000 ms is 3.6x that and 127x the idle 1,886 ms",
+  "rule6Mutant": {
+    "old": "chain('depth-4096', 4095)",
+    "new": "chain('depth-4096', 4094)",
+    "outcome": "caught: expected path to have length 4096 but got 4095",
+    "assertionChanged": false
+  }
+}
