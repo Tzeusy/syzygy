@@ -19,10 +19,10 @@ import { rmSync } from 'node:fs';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { countGoverningIntentUnknown, governingIntentUnknown, type PocModel, type WorkItemFact } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, countGoverningIntentUnknown, governingIntentUnknown, type PocModel, type WorkItemFact } from '@syzygy/three-surface-poc-core';
 
 import { EPISTEMIC_ENCODING } from './design-tokens.js';
-import { buildFixtureModel, fixtureWorkItemRow } from './test-model-fixture.js';
+import { buildFixtureModel, fixtureRepoWithGit, fixtureWorkItemRow } from './test-model-fixture.js';
 import { renderTrajectoryPage } from './trajectory.js';
 
 const REASON = 'source-uncaptured-or-unreachable';
@@ -231,6 +231,28 @@ describe('POC-REQ-014: every work item\'s governing intent renders as a counted 
     expect(countGoverningIntentUnknown([observed, facts[1]!, facts[2]!])).toBe(2);
     const otherReason: WorkItemFact = { ...facts[0]!, governedBy: { ...governingIntentUnknown(), closedReason: 'missing-evidence' } };
     expect(countGoverningIntentUnknown([otherReason, facts[1]!])).toBe(1);
+  });
+
+  // R-IMPL-P100-GOVERNING-INTENT-1 finding 1 asked about an Unknown board
+  // beside observed work items. The model never produces that pair: without
+  // seeds the work-item read is itself Unknown, and the board is Unknown only
+  // when the read is. With no served item set, neither channel serves a count.
+  it('an Unknown board never sits beside a served item set, so neither channel counts one', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    const evaluation = { snapshot: 'butlers@states', asOf: '2026-08-30T12:00:00Z' };
+    const states: Readonly<Record<string, PocModel>> = {
+      'no seeds': buildPocModel({ repoRoot, repositoryRevision: revision, observerRevision: revision, evaluation }),
+      'unreachable Dolt': buildPocModel({ seeds: BUTLERS_POC_SEEDS, repoRoot, repositoryRevision: revision, observerRevision: revision, evaluation, runWorkItemQuery: () => { throw new Error('connection refused'); } }),
+    };
+    for (const [name, state] of Object.entries(states)) {
+      const served = JSON.parse(JSON.stringify(state)) as Obj;
+      expect.soft([name, (served.workItems as Obj).kind, (served.trajectory as Obj).kind]).toEqual([name, 'unknown', 'unknown']);
+      expect.soft(leaves(served).filter(([path]) => /governedBy/.test(path))).toEqual([]);
+      const page = renderTrajectoryPage(state);
+      expect.soft(page).not.toContain('data-parity-field="work-item-governed-by-count"');
+      expect.soft(page).toContain('data-unknown-disclosure="region:work-items"');
+    }
+    expect(model.workItems.kind === 'observed' && model.trajectory.kind === 'observed').toBe(true);
   });
 
   describe('falsifier: the oracle names each limb', () => {

@@ -5,6 +5,7 @@ import {
   workItemVerificationId,
   workerChangeVerificationId,
   type PocModel,
+  type PocUnknown,
   type WorkerChangeObserved,
 } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
@@ -132,9 +133,8 @@ function itemVerification(model: PocModel, itemId: string): string {
 /** POC-REQ-014: the card's governing-intent mark, read from the model under
  * the card's own id. The class is the POC-REQ-060 table's for the label the
  * model carries, so no state but Unknown can take the Unknown encoding. */
-function itemGoverningIntent(model: PocModel, itemId: string): string {
+function itemGoverningIntent(itemId: string, unknown: PocUnknown): string {
   const id = workItemGoverningIntentId(itemId);
-  const unknown = unknownSubject(model, id);
   return `<span class="epistemic ${epistemicClassName(unknown.label)}" data-parity-field="work-item-governed-by"${unknownMarker(id, unknown)} title="${escapeHtml(unknown.reason)}">Governing intent: ${escapeHtml(unknown.label)}. ${unknownRoute(unknown)}</span>`;
 }
 
@@ -145,9 +145,10 @@ function itemGoverningIntent(model: PocModel, itemId: string): string {
 function governingIntentRegion(model: PocModel, rendered: readonly TrajectoryLaneItem[]): string {
   if (model.workItems.kind !== 'observed') return '';
   const count = model.workItems.governedByUnknownCount;
+  const subjects = new Map(model.unknownSubjects.map((subject) => [subject.id, subject.epistemic]));
   const inside = rendered.filter((item) => {
-    const governedBy = unknownSubject(model, workItemGoverningIntentId(item.id));
-    return governedBy.label === 'Unknown' && governedBy.closedReason === 'source-uncaptured-or-unreachable';
+    const governedBy = subjects.get(workItemGoverningIntentId(item.id));
+    return governedBy?.label === 'Unknown' && governedBy.closedReason === 'source-uncaptured-or-unreachable';
   }).length;
   const unknown = unknownSubject(model, WORK_ITEM_GOVERNING_INTENT_REGION_ID);
   return `<p class="governing-intent-count notice" data-parity-field="work-item-governed-by-count"${unknownMarker(WORK_ITEM_GOVERNING_INTENT_REGION_ID, unknown)}>
@@ -169,13 +170,13 @@ function itemCard(
   governingIntentId: string | null,
   demonstrated: boolean,
 ): string {
-  const governedBy = unknownSubject(model, workItemGoverningIntentId(item.id)).label;
-  return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-governed-by="${escapeHtml(governedBy)}" data-work-item-id="${escapeHtml(item.id)}">
+  const governedBy = unknownSubject(model, workItemGoverningIntentId(item.id));
+  return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-governed-by="${escapeHtml(governedBy.label)}" data-work-item-id="${escapeHtml(item.id)}">
     ${demonstrated ? '<span class="demo-badge">Demonstrated item</span>' : ''}
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
-    ${itemGoverningIntent(model, item.id)}
+    ${itemGoverningIntent(item.id, governedBy)}
     ${itemVerification(model, item.id)}
     ${workerChangeBadge(model, workerChange, testArtifactVerification, governingIntentId)}
     ${laneBar(item, range)}

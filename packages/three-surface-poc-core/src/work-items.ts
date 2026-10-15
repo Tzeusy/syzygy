@@ -58,14 +58,14 @@ export function governingIntentUnknown(): GoverningIntentUnknown {
   };
 }
 
-/** How many items carry the governing-intent Unknown, counted over the
- * served item set (POC-REQ-014), never assumed equal to its length. */
 /** The disclosure twin of an item's governing intent: the served value
  * with its basis sentence, as every rendered Unknown carries one. */
 export function governingIntentDisclosure(governedBy: GoverningIntentUnknown): PocUnknown {
   return { label: governedBy.label, reason: GOVERNING_INTENT_UNKNOWN_BASIS, closedReason: governedBy.closedReason, resolutionRoutes: governedBy.resolutionRoutes };
 }
 
+/** How many items carry the governing-intent Unknown, counted over the
+ * served item set (POC-REQ-014), never assumed equal to its length. */
 export function countGoverningIntentUnknown(items: readonly WorkItemFact[]): number {
   return items.filter(
     (item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason === 'source-uncaptured-or-unreachable',
