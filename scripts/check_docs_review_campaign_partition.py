@@ -249,6 +249,11 @@ CAMPAIGNS = (
         r"R-M9-POC-IDENTITY-AMENDMENT-.*\.md",
     ),
     campaign(
+        "m9-poc-vocabulary-epistemic-amendment",
+        "M9 POC vocabulary and epistemic-record amendment gate",
+        r"R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-.*\.md",
+    ),
+    campaign(
         "pwb-release-label",
         "PWB release-label gate",
         r"R-PWB-RELEASE-LABEL-.*\.md",
