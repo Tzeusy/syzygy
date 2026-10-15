@@ -350,6 +350,8 @@ def real_packages() -> dict[str, Package]:
     poc_dependencies = lambda: _module("build_three_surface_poc_spec_dependencies")  # noqa: E731
     class_dir = CANDIDATES / "pwb-class-granular-extraction-amendment"
     accessible_dir = CANDIDATES / "pwb-accessible-name-amendment"
+    opening = lambda: _module("build_pwb_opening_index_amendment")  # noqa: E731
+    opening_dir = CANDIDATES / "pwb-opening-index-amendment"
     intent_dir = CANDIDATES / "three-surface-poc-governing-intent-amendment"
     intent_record = DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"
 
@@ -513,6 +515,37 @@ def real_packages() -> dict[str, Package]:
                 "pending PWB packages: the opening-index amendment (P-98) and the\n"
                 "release-label amendment (P-85) are regenerated over this sign-off's\n"
                 "applied bytes and reviewed again before they are offered.\n")),
+        ),
+        "pwb-opening-index-amendment": Package(
+            "pwb-opening-index-amendment",
+            "PWB opening-index amendment",
+            "behavior amendment",
+            opening_dir,
+            "PWB-OPENING-INDEX-AMENDMENT",
+            lambda root: opening().engine.check(opening().AMENDMENT)[0],
+            lambda root: opening().engine.apply(opening().AMENDMENT, True),
+            lambda root: _rows_hash_tree(root, opening().AMENDMENT.manifest_path),
+            subject=opening_dir / "PWB-OPENING-INDEX-AMENDMENT-MANIFEST.txt",
+            # Signed on the round-5 regeneration-confirmation raw under the
+            # owner's cycle-3 "Carry if review clears" answer: Q1 carries to
+            # the manifest regenerated over P-99.
+            record_note=(
+                "Q1 \"Sign v1.0\" was answered on 2026-10-15 for the version round 4\n"
+                "cleared. The owner's cycle-3 answer \"Carry if review clears\"\n"
+                "(`decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`) carries\n"
+                "it to the version regenerated over the P-99 sign-off, on two\n"
+                "conditions, each verified before recording: the round-5 review named\n"
+                "above is notes-only, and `proposed/spec.md.patch` is byte-identical to\n"
+                "the version round 4 read.\n"
+                "\n" + repin_note + (
+                "\n"
+                "It also moves `spec.md` and `GOVERNING-DEPENDENCIES.md` under the\n"
+                "pending release-label amendment (P-85), which is regenerated over this\n"
+                "sign-off's applied bytes and reviewed again before it is offered.\n"
+                "Implementation is covered on landing by\n"
+                "`decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md`\n"
+                "(bead `syzygy-u05.23`, gate `syzygy-00ls`); this record authorizes\n"
+                "nothing itself.\n")),
         ),
         # No manifest and no builder: the round-3 raw binds a directory digest
         # (`Package digest:`), and the record carries the applied rows.

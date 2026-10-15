@@ -423,7 +423,7 @@
     },
     "PWB": {
       "requirements": 17,
-      "scenarios": 58,
+      "scenarios": 63,
       "members": {
         "PWB-REQ-001": {
           "name": "Project-shape observation is revision-bound and explicitly scoped",
@@ -492,7 +492,12 @@
           "name": "Polaris opens with the whole project",
           "scenarios": [
             "WhatsApp is a drill-down, not the project account",
-            "One opening Unknown aggregate, reconciled with members"
+            "One opening Unknown aggregate, reconciled with members",
+            "The opening index shows where each project question's material begins",
+            "An unrendered index target is stated, not substituted",
+            "A tie on the largest offset is broken by document order",
+            "A last-beginning target inside a closed disclosure moves the line after it",
+            "With no indexed target rendered, the stopping line gives only the total"
           ]
         },
         "PWB-REQ-011": {
