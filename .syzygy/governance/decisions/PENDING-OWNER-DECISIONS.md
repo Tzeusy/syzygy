@@ -1199,11 +1199,12 @@
 > ([`OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`](OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md)),
 > the provider routes stay parked and are not pursued, and **P-111** is
 > added: the candidate local agent CLI subprocess runner, pending review and
-> sign-off. The notes above are as of their dates and are not edited. Now
-> **26** rows under the open heading below and **5** acceptance-act rows,
-> **31** in all, every id distinct [Observed: counted 2026-10-15 by
-> `^| P-[0-9]+[^ |]*` rows per `##` section, on this branch; 25 and 30
-> before this change].
+> sign-off. The notes above are as of their dates and are not edited; the
+> count below also includes P-109, which landed on `main` without a note.
+> Now **27** rows under the open heading below and **5** acceptance-act
+> rows, **32** in all, every id distinct [Observed: counted 2026-10-15 by
+> `^| P-[0-9]+[^ |]*` rows per `##` section, on this branch after rebasing
+> onto `main`; 26 and 31 before this change].
 
 ## The acceptance acts (four performed; the rest open)
 
