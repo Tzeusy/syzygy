@@ -1,5 +1,14 @@
 # Doctrine amendment packet — D7 (proposed): held derived computation delegates no decision
 
+**PARKED 2026-10-15 (owner answer "Park until RFC2 decided", recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`).**
+This packet is not reviewed again and not offered. An RFC2-18/19 contract
+clarification draft is commissioned to fix which reading of the merge-fact
+confinement binds (narrow, wide, or the broadest built from RFC4
+`named-adapters.md` lines 420–421 and 492); D7 is then redrafted against it.
+Round 4's findings stay open in `ROUND-4-DISPOSITIONS.md`. Register row
+P-101 tracks it. The text below is as it stood at round 4 and is not edited.
+
 **Status: DRAFT — not applied, not adopted; binds nothing.** Doctrine
 amendment is an owner act (VIS-4). An agent session drafted this packet on
 2026-10-03 for `syzygy-u05.14` (vision pursuit 2026-09-22, move N14,
@@ -49,6 +58,17 @@ round-3 finding, notes included, was repaired once; the mapping is
 `ROUND-3-DISPOSITIONS.md` §"Repairs, 2026-10-14 (cycle 3)".)* **Round-3
 findings repaired once on 2026-10-14, unconfirmed pending round 4.** Q5 was
 restructured and one owner question was added (Q6, section 8).
+*(Marked 2026-10-15, round 4: "unconfirmed pending round 4" is no longer
+true. Round 4 returned `REVISE`
+(`docs/reviews/R-DOCTRINE-AMENDMENT-D7-4-RAW.md` line 4): one revise-level
+finding (the one-position rule is applied to the narrow and wide readings
+but not to the broadest) and four notes, all open in
+`ROUND-4-DISPOSITIONS.md`. "Not yet recorded under `decisions/`" is no
+longer true either: the cycle-3 direction is recorded in
+`../../../decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`.
+After round 4 the owner answered "Park until RFC2 decided": the packet is
+parked, an RFC2-18/19 contract clarification fixing which reading binds is
+commissioned, and D7 is redrafted against it. The bytes stay unconfirmed.)*
 
 **Identifier.** `D7` is the next unused number in
 `../../../decisions/DOCTRINE-AMENDMENT-LOG.md` as of 2026-10-03 [Observed:
