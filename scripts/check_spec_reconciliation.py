@@ -271,6 +271,12 @@ CHILDREN = (
           "manifest": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/"
                       "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt",
           "proposed": f"{CANDIDATES}/pwb-class-granular-extraction-amendment/proposed"},
+         {"kind": "versioned", "package": "pwb-accessible-name-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/pwb-accessible-name-amendment/"
+                      "PWB-ACCESSIBLE-NAME-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/pwb-accessible-name-amendment/proposed"},
      )},
 )
 
@@ -376,10 +382,10 @@ EXPECTED = {
     "PWB": dict(zip(
         "001 002 003 004 005 006 007 010 011 012 013 014 015 016 020 021 "
         "022".split(),
-        (1, 10, 1, 3, 5, 3, 5, 2, 5, 1, 1, 9, 1, 1, 1, 2, 5))),
+        (1, 10, 1, 3, 5, 3, 5, 2, 5, 1, 1, 9, 1, 3, 1, 2, 5))),
     "POLARIS": None,  # totals only below; per-requirement counts in census.json
 }
-EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (25, 26), "PWB": (17, 56),
+EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (25, 26), "PWB": (17, 58),
                    "POLARIS": (31, 182)}
 
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.M)

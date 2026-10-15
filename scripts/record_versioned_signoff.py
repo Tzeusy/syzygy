@@ -496,7 +496,23 @@ def real_packages() -> dict[str, Package]:
             lambda root: accessible().engine.apply(accessible().AMENDMENT, True),
             lambda root: _rows_hash_tree(root, accessible().AMENDMENT.manifest_path),
             subject=accessible_dir / "PWB-ACCESSIBLE-NAME-AMENDMENT-MANIFEST.txt",
-            record_note=repin_note,
+            # Signed on the round-4 regeneration-confirmation raw under the
+            # owner's cycle-3 "Carry if review clears" answer: Q1 of cycle 2
+            # carries to the manifest regenerated over P-86.
+            record_note=(
+                "Q1 \"Sign v1.0\" was answered on 2026-10-14 for the version round 3\n"
+                "cleared. The owner's cycle-3 answer \"Carry if review clears\"\n"
+                "(`decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-3-2026-10-14.md`) carries\n"
+                "it to the version regenerated over the P-86 sign-off, on two\n"
+                "conditions, each verified before recording: the round-4 review named\n"
+                "above is notes-only, and `proposed/spec.md.patch` is byte-identical to\n"
+                "the version round 3 read.\n"
+                "\n" + repin_note + (
+                "\n"
+                "It also moves `spec.md` and `GOVERNING-DEPENDENCIES.md` under the two\n"
+                "pending PWB packages: the opening-index amendment (P-98) and the\n"
+                "release-label amendment (P-85) are regenerated over this sign-off's\n"
+                "applied bytes and reviewed again before they are offered.\n")),
         ),
         # No manifest and no builder: the round-3 raw binds a directory digest
         # (`Package digest:`), and the record carries the applied rows.

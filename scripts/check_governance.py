@@ -1706,6 +1706,13 @@ PWB_CLASS_GRANULAR_DIR = f"{CANDIDATES}/pwb-class-granular-extraction-amendment"
 PWB_CLASS_GRANULAR_SUBJECT = (
     f"{PWB_CLASS_GRANULAR_DIR}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt")
 PWB_CLASS_GRANULAR_ACT = f"{DECISIONS}/PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-ACT.md"
+#: The PWB accessible-name amendment to PWB-REQ-016 (pursuit move N12, slice
+#: C, P-99), signed by version tag 2026-10-15 after class-granular.
+PWB_ACCESSIBLE_NAME_LABEL = "SIGN OFF PWB ACCESSIBLE-NAME AMENDMENT"
+PWB_ACCESSIBLE_NAME_DIR = f"{CANDIDATES}/pwb-accessible-name-amendment"
+PWB_ACCESSIBLE_NAME_SUBJECT = (
+    f"{PWB_ACCESSIBLE_NAME_DIR}/PWB-ACCESSIBLE-NAME-AMENDMENT-MANIFEST.txt")
+PWB_ACCESSIBLE_NAME_ACT = f"{DECISIONS}/PWB-ACCESSIBLE-NAME-AMENDMENT-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1944,6 +1951,7 @@ PWB_READABILITY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_TREE_FRAMING_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_ANCHOR_RESOLUTION_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_CLASS_GRANULAR_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_ACCESSIBLE_NAME_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1985,6 +1993,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_CLASS_GRANULAR_LABEL, PWB_CLASS_GRANULAR_SUBJECT,
      PWB_CLASS_GRANULAR_ACT, PWB_CLASS_GRANULAR_SUBJECTS,
      f"{PWB_CLASS_GRANULAR_DIR}/OWNER-DECISION-PACKET.md"),
+    ("accessible-name", "PWB-ACCESSIBLE-NAME-AMENDMENT",
+     PWB_ACCESSIBLE_NAME_LABEL, PWB_ACCESSIBLE_NAME_SUBJECT,
+     PWB_ACCESSIBLE_NAME_ACT, PWB_ACCESSIBLE_NAME_SUBJECTS,
+     f"{PWB_ACCESSIBLE_NAME_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier

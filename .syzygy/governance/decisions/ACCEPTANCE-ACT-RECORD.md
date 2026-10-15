@@ -1571,3 +1571,21 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:three-surface-poc-governing-intent-amendment:v1.0 -->
+
+<!-- versioned-signoff:pwb-accessible-name-amendment:v1.0 -->
+## Versioned sign-off — pwb-accessible-name-amendment — v1.0 — recorded 2026-10-15
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | behavior amendment |
+| Review outcome | `docs/reviews/R-PWB-ACCESSIBLE-NAME-AMENDMENT-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/pwb-accessible-name-amendment/ROUND-4-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/PWB-ACCESSIBLE-NAME-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `pwb-accessible-name-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:pwb-accessible-name-amendment:v1.0 -->
