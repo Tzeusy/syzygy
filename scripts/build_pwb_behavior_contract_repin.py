@@ -126,6 +126,10 @@ LATER_SUBJECT_ACTS: dict[str, tuple[tuple[pathlib.Path, pathlib.Path], ...]] = {
          pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v3/"
                       "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json."
                       "{variant}.patch")),
+        (DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",
+         pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v4/"
+                      "proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json."
+                      "{variant}.patch")),
     ),
 }
 # Version 3's variants are `all` and `non-web`, so a variant name may carry a hyphen.
