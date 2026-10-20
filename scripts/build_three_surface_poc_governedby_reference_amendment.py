@@ -9,13 +9,16 @@ from __future__ import annotations
 
 import argparse
 import copy
+import datetime
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
+import tarfile
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -46,6 +49,7 @@ FAULT = "invalid-governing-intent-reference"
 CLASSES = ("doctrine", "contracts", "policies", "decisions", "topology", "parent_requirements")
 # Each guard has its own semantic deletion mutant below, not a prose-length check.
 GUARDS = {
+    "drafting-direction-warrant": "decisions: [OWNER-DIRECTION-MACHINE-CEILING-2026-10-15]",
     "literal-value": json.dumps(CLOSED_VALUE, separators=(",", ":")),
     "literal-reference": '{"ref":"observation"}',
     "bounded-local-hop": "Resolution SHALL take one local hop",
@@ -179,42 +183,167 @@ def verify_manifest(actual: str, expected: str) -> list[str]:
     return [] if actual == expected else ["manifest differs from proposed subject bytes"]
 
 
-def wire_oracle(body: dict) -> tuple[bool, list[str], int | None]:
-    """Independent fixture oracle; no imports from the product or a producer."""
-    work = body["workItems"]
+def complete_value_carriers(value: object, path: tuple = ()) -> list[list]:
+    """Census every exact complete value in the fixture body, even under unrelated keys."""
+    found = [list(path)] if value == CLOSED_VALUE else []
+    if isinstance(value, dict):
+        for key in sorted(value):
+            found.extend(complete_value_carriers(value[key], (*path, key)))
+    elif isinstance(value, list):
+        for i, child in enumerate(value):
+            found.extend(complete_value_carriers(child, (*path, i)))
+    return found
+
+
+def wire_oracle(body: dict, rendered_ids: list) -> dict:
+    """Preparation oracle only. Expected identities/populations are literal fixture data."""
+    def refuse(predicate: str) -> dict:
+        return {"valid": False, "fault": FAULT, "predicate": predicate}
+
+    def identified_instant(value: object) -> bool:
+        if not isinstance(value, str) or not value:
+            return False
+        try:
+            return datetime.datetime.fromisoformat(value.replace("Z", "+00:00")).tzinfo is not None
+        except ValueError:
+            return False
+
+    if not isinstance(body, dict):
+        return refuse("body-shape")
+    evaluation = body.get("evaluation")
+    if (not isinstance(evaluation, dict) or not isinstance(evaluation.get("snapshot"), str)
+            or not evaluation["snapshot"] or not identified_instant(evaluation.get("asOf"))):
+        return refuse("bound-evaluation")
+    work = body.get("workItems")
+    if not isinstance(work, dict):
+        return refuse("work-item-result")
+    if not isinstance(rendered_ids, list) or any(not isinstance(i, str) for i in rendered_ids):
+        return refuse("rendered-population-shape")
+    if len(rendered_ids) != len(set(rendered_ids)):
+        return refuse("rendered-population-unique")
     if work.get("kind") == "unknown":
-        valid = bool(work.get("reason")) and not any(k in work for k in ("items", "governedBy", "governedByUnknownCount"))
-        return valid, [], None
+        if (not work.get("reason") or rendered_ids
+                or any(k in work for k in ("items", "governedBy", "governedByUnknownCount"))):
+            return refuse("unknown-observation-population")
+        if complete_value_carriers(body):
+            return refuse("complete-value-carrier-census")
+        return {"valid": True, "fault": None, "evaluation": copy.deepcopy(evaluation),
+                "observation": None, "effectiveIds": [], "claimIdentities": [],
+                "unknownCount": None, "renderedIds": [], "insideUnknownCount": None,
+                "outsideIds": [], "outsideUnknownCount": None}
+    provenance = work.get("provenance")
+    if (not isinstance(provenance, dict) or not isinstance(provenance.get("revision"), str)
+            or not provenance["revision"] or not identified_instant(work.get("capturedAt"))):
+        return refuse("bound-observation")
     if work.get("kind") != "observed" or work.get("governedBy") != CLOSED_VALUE:
-        return False, [], None
+        return refuse("closed-shared-value")
     items = work.get("items")
     if not isinstance(items, list) or any(not isinstance(i, dict) or i.get("governedBy") != {"ref": "observation"} for i in items):
-        return False, [], None
+        return refuse("literal-item-reference")
     ids = [i.get("id") for i in items]
     if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(set(ids)):
-        return False, [], None
+        return refuse("distinct-item-identities")
     if type(work.get("governedByUnknownCount")) is not int or work["governedByUnknownCount"] != len(items):
-        return False, [], None
-    # No state from any previous call/body; per-item expansion retains each ID.
-    return True, ids, len(items)
+        return refuse("count-preservation")
+    if any(i not in ids for i in rendered_ids):
+        return refuse("rendered-population-membership")
+    if complete_value_carriers(body) != [["workItems", "governedBy"]]:
+        return refuse("complete-value-carrier-census")
+    observation = {"provenance": copy.deepcopy(provenance), "capturedAt": work["capturedAt"]}
+    identities = [{"evaluation": copy.deepcopy(evaluation), "observation": copy.deepcopy(observation),
+                   "itemId": item_id, "field": "governedBy"} for item_id in ids]
+    outside = [i for i in ids if i not in rendered_ids]
+    return {"valid": True, "fault": None, "evaluation": copy.deepcopy(evaluation),
+            "observation": observation, "effectiveIds": ids, "claimIdentities": identities,
+            "unknownCount": len(items), "renderedIds": rendered_ids.copy(),
+            "insideUnknownCount": len(rendered_ids), "outsideIds": outside,
+            "outsideUnknownCount": len(outside)}
 
 
 def fixture_findings(cases: list[dict]) -> list[str]:
-    errors = []
+    findings = []
     for case in cases:
-        valid, ids, count = wire_oracle(case["body"])
-        actual = {"valid": valid, "effectiveIds": ids, "unknownCount": count,
-                  "fault": None if valid else FAULT}
-        if actual != case["expected"]:
-            errors.append(f"literal fixture differs: {case['name']}")
-        if valid and not set(case["renderedIds"]).issubset(ids):
-            errors.append(f"rendered fixture population differs: {case['name']}")
-    return errors
+        actual = wire_oracle(case["body"], case["renderedIds"])
+        for field in sorted(set(actual) | set(case["expected"])):
+            if actual.get(field) != case["expected"].get(field) or (field in actual) != (field in case["expected"]):
+                findings.append(f"literal {field} differs: {case['name']}")
+        if complete_value_carriers(case["body"]) != case["expectedCarrierPaths"]:
+            findings.append(f"complete-value carrier census differs: {case['name']}")
+        for population, expected in case.get("expectedRecordPopulations", {}).items():
+            if case["body"].get(population) != expected:
+                findings.append(f"literal retained {population} differs: {case['name']}")
+    return findings
+
+
+def consumption_assessment(path: str, ordinal: int, heading: str, block: str,
+                           assessments: dict) -> dict:
+    """A complete declaration is not an unaffectedness decision; a bound semantic assessment is required."""
+    key = (path, ordinal)
+    entry = assessments.get(key)
+    declarations = re.findall(r"^  (doctrine|contracts|policies|decisions|topology|parent_requirements): (\[[^\n]*\])$", block, re.M)
+    declared = {k: v for k, v in declarations}
+    complete = set(declared) == set(CLASSES) and len(declarations) == len(CLASSES)
+    record = {"path": path, "ordinal": ordinal, "heading": heading,
+              "block_sha256": sha256(block.encode()), "warrant_classes_complete": complete,
+              "direct_changed_id_warrant": any(re.search(r"\bPOC-REQ-014\b", v) for v in declared.values())}
+    if (not complete or entry is None or entry.get("block_sha256") != record["block_sha256"]
+            or entry.get("heading") != heading):
+        return {**record, "classification": "undecidable", "consumption": "not settled",
+                "reason": "No current block-bound semantic consumption assessment, or incomplete/ambiguous declarations; complete empty arrays cannot establish untiedness.",
+                "method": "Full block retained and declaration scan recorded; no semantic disposition inferred from lexical absence.",
+                "evidence_quotes": [], "settling_evidence": "Read this exact complete requirement block, its owning capability scope and oracle; record whether it consumes the changed wire value/identity or a preserved separate input, with source evidence and a current block digest."}
+    if entry["classification"] not in ("affected", "explicitly-unaffected", "undecidable"):
+        raise ValueError(f"invalid consumption disposition: {key}")
+    if (not entry.get("reason") or not entry.get("method") or not entry.get("consumption")
+            or not entry.get("evidence_quotes") or any(q not in block for q in entry["evidence_quotes"])):
+        raise ValueError(f"unsubstantiated consumption disposition: {key}")
+    if entry["classification"] == "undecidable" and not entry.get("settling_evidence"):
+        raise ValueError(f"undecidable consumption lacks settling evidence: {key}")
+    return {**record, **entry}
+
+
+def round1_counterexample_findings(data: dict, assessments: dict) -> list[str]:
+    failures = []
+    for case in data["wireCounterexamples"]:
+        findings = fixture_findings([case])
+        actual = wire_oracle(case["body"], case["renderedIds"])
+        required = case["requiredFailure"]
+        if not findings:
+            failures.append(f"round-1 counterexample survived: {case['name']}")
+        elif required.startswith("literal "):
+            if not any(required in f for f in findings):
+                failures.append(f"counterexample failed wrong expectation: {case['name']}: {findings}")
+        elif actual.get("predicate") != required:
+            failures.append(f"counterexample failed wrong predicate: {case['name']}: {actual}")
+    synthetic = data["syntheticConsumer"]
+    result = consumption_assessment("fixture/spec.md", 1, synthetic["heading"], synthetic["block"], assessments)
+    if result["classification"] != "undecidable" or not result["settling_evidence"]:
+        failures.append("full-declaration prose consumer falsely classified unaffected")
+    # A formerly assessed block must lose its disposition when its consumption changes.
+    original = next(iter(assessments.values()))
+    changed_block = synthetic["block"]
+    stale = {(original["path"], original["ordinal"]): original}
+    result = consumption_assessment(original["path"], original["ordinal"], original["heading"], changed_block, stale)
+    if result["classification"] != "undecidable":
+        failures.append("changed block retained stale semantic disposition")
+    return failures
+
+
+def load_consumption_assessments() -> dict:
+    data = json.loads((CANDIDATE / "REQUIREMENT-CONSUMPTION.json").read_text())
+    entries = {(entry["path"], entry["ordinal"]): entry for entry in data["entries"]}
+    if len(entries) != len(data["entries"]):
+        raise ValueError("duplicate requirement consumption occurrence")
+    return entries
 
 
 def sweep() -> dict:
     files = sorted(p for p in git("ls-tree", "-r", "-z", "--name-only", BASE).decode().split("\0") if p)
     listed = sorted(p for p in git("ls-files", "-z").decode().split("\0") if p)
+    with tarfile.open(fileobj=io.BytesIO(git("archive", "--format=tar", BASE))) as archive:
+        archived = sorted(m.name for m in archive.getmembers() if m.isfile() or m.issym() or m.islnk())
+    if files != archived:
+        raise ValueError("independent ls-tree/archive tracked denominators disagree")
     # New untracked candidate files do not change the baseline denominator.
     if not set(files).issubset(listed):
         raise ValueError("baseline tracked population missing from worktree index")
@@ -245,28 +374,28 @@ def sweep() -> dict:
                         if p.relative_to(ROOT).as_posix() in files and SPEC_PATH.fullmatch(p.relative_to(ROOT).as_posix()))
     if specs != disk_specs:
         raise ValueError("two independent specification enumeration methods disagree")
+    assessments = load_consumption_assessments()
     requirements = []
+    second_counts = {}
     for path in specs:
         text = texts[path]
         matches = list(re.finditer(r"^### Requirement: (.+)$", text, re.M))
+        second_counts[path] = sum(line.startswith("### Requirement: ") for line in text.splitlines())
+        if len(matches) != second_counts[path]:
+            raise ValueError(f"two requirement enumeration methods disagree: {path}")
         for i, m in enumerate(matches):
             block = text[m.start():matches[i+1].start() if i+1 < len(matches) else len(text)]
-            declarations = re.findall(r"^  (doctrine|contracts|policies|decisions|topology|parent_requirements): (\[[^\n]*\])$", block, re.M)
-            declared = {k: v for k, v in declarations}
-            complete = set(declared) == set(CLASSES) and len(declarations) == len(CLASSES)
-            direct = any(re.search(r"\bPOC-REQ-014\b", v) for v in declared.values())
-            affected = path == SPEC and m.group(1).startswith("POC-REQ-014 — ")
-            if not complete or (direct and not affected):
-                state, reason = "undecidable", "missing/ambiguous warrant class or a reverse dependency requires semantic assessment"
-            elif affected:
-                state, reason = "affected", "changed requirement identity; exact proposed replacement"
-            else:
-                state = "explicitly-unaffected"
-                reason = ("same POC: complete block preserved; only effective representation of 014 changes, not this obligation" if path == SPEC else
-                          "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause")
-            requirements.append({"path": path, "ordinal": i+1, "heading": m.group(1),
-                                 "warrant_classes_complete": complete, "direct_changed_id_warrant": direct,
-                                 "classification": state, "reason_and_method": reason})
+            record = consumption_assessment(path, i+1, m.group(1), block, assessments)
+            # Signals expose full-text consumption candidates; absence never classifies.
+            record["full_text_signals"] = sorted(set(re.findall(
+                r"POC-REQ-014|governedBy|machine answer|machine response|wire|work.item|epistemic|provenance",
+                block, re.I)))
+            requirements.append(record)
+    population = {(r["path"], r["ordinal"]) for r in requirements}
+    if population != set(assessments):
+        raise ValueError("semantic disposition population differs from actual eight-file corpus")
+    if any(r["block_sha256"] != assessments[(r["path"], r["ordinal"])]["block_sha256"] for r in requirements):
+        raise ValueError("consumption assessment bound to stale requirement bytes")
     integration = {".github/workflows/governance-docs.yml", "PROJECT-STATUS.md", "docs/README.md",
                    ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md"}
     integration |= {p for p in hits if p.startswith("scripts/")}
@@ -282,15 +411,17 @@ def sweep() -> dict:
     return {"subject": "P-115 POC-REQ-014 candidate reverse-impact sweep", "baseline_commit": BASE,
             "changed_identities": {k: (["POC-REQ-014"] if k == "parent_requirements" else []) for k in CLASSES},
             "citer_predicate": CITER_PATTERN,
-            "methods": ["git ls-tree -rz baseline blobs + Python regex; git ls-files -z baseline inclusion",
-                        "git grep -I -l -E at baseline; pathlib spec enumeration; per-block six-class warrant scan"],
+            "methods": ["git ls-tree -rz + independent git archive tracked population; baseline object batch and Python full-text regex",
+                        "git grep -I -l -E at baseline; pathlib spec enumeration + line-prefix requirement counts; authored block-bound consumption dispositions with exact source excerpts and six-class declaration facts"],
             "counts": {"tracked_baseline_paths": len(files), "binary_paths": len(binary), "text_paths": len(texts),
                        "matching_citer_paths": len(hits), "spec_files": len(specs), "requirement_occurrences": len(requirements),
                        "warrant_complete_requirements": sum(x["warrant_classes_complete"] for x in requirements),
                        "affected_requirements": sum(x["classification"] == "affected" for x in requirements),
                        "unaffected_requirements": sum(x["classification"] == "explicitly-unaffected" for x in requirements),
                        "undecidable_requirements": sum(x["classification"] == "undecidable" for x in requirements)},
-            "spec_files": specs, "requirements": requirements, "citer_paths": classified,
+            "spec_files": specs, "independent_requirement_counts": second_counts,
+            "consumption_assessment_sha256": sha256((CANDIDATE / "REQUIREMENT-CONSUMPTION.json").read_bytes()),
+            "requirements": requirements, "citer_paths": classified,
             "not_lexically_enumerable_unknowns": ["actual external API consumers", "post-restoration code integration and measured savings"],
             "actor": "OpenAI Codex, syzygy-318o candidate writer", "independent_confirmation": "pending"}
 
@@ -300,6 +431,8 @@ def check(write: bool = False) -> list[str]:
     errors = structure_findings(proposed, current)
     cases = json.loads((CANDIDATE / "fixtures/wire-cases.json").read_text())["cases"]
     errors.extend(fixture_findings(cases))
+    regressions = json.loads((CANDIDATE / "fixtures/round-1-counterexamples.json").read_text())
+    errors.extend(round1_counterexample_findings(regressions, load_consumption_assessments()))
     generated = {MANIFEST_OUT: manifest(proposed), Path(PACKAGE + "IMPACT-SWEEP.json"): json.dumps(sweep(), indent=2) + "\n"}
     if errors:
         return errors
@@ -355,12 +488,19 @@ def selftest() -> list[str]:
         errors.append("foreign patch-path mutant survived")
     cases = json.loads((CANDIDATE / "fixtures/wire-cases.json").read_text())["cases"]
     errors.extend(fixture_findings(cases))
-    if len(cases) != 35 or sum(c["expected"]["valid"] for c in cases) != 4:
+    if len(cases) != 46 or sum(c["expected"]["valid"] for c in cases) != 7:
         errors.append("independent fixture population differs")
     poisoned = copy.deepcopy(cases)
     poisoned[0]["expected"]["unknownCount"] = 0
     if not fixture_findings(poisoned):
         errors.append("optimistic fixture expectation mutant survived")
+    regressions = json.loads((CANDIDATE / "fixtures/round-1-counterexamples.json").read_text())
+    errors.extend(round1_counterexample_findings(regressions, load_consumption_assessments()))
+    for case in regressions["wireCounterexamples"]:
+        actual = wire_oracle(case["body"], case["renderedIds"])
+        result = actual.get("predicate") or case["requiredFailure"]
+        print(f"  rejected retained counterexample {case['name']}: {result}")
+    print("  classifier: full-declaration prose consumer and stale changed block remain undecidable")
     rendered = manifest(proposed)
     if len(re.findall(r"^[0-9a-f]{64}  ", rendered, re.M)) != len(SUBJECTS):
         errors.append("manifest subject denominator differs")
@@ -375,7 +515,7 @@ def selftest() -> list[str]:
     poisoned_hash = rendered.replace(sha256(proposed[SPEC]), "0" * 64)
     if verify_manifest(poisoned_hash, rendered) != ["manifest differs from proposed subject bytes"]:
         errors.append("manifest row-hash mutant survived")
-    print(f"Preparation selftest: {len(mutants)} semantic/structure mutants, foreign patch path, literal-expectation poison, subject-byte drift and two manifest mutants; {len(cases)} independent wire cases (4 valid, 31 refused).")
+    print(f"Preparation selftest: {len(mutants)} semantic/structure mutants, foreign patch path, literal-expectation poison, subject-byte drift and two manifest mutants; {len(cases)} independent wire cases (7 valid, 39 refused); {len(regressions['wireCounterexamples'])} retained wire counterexamples plus two classifier regressions.")
     return errors
 
 

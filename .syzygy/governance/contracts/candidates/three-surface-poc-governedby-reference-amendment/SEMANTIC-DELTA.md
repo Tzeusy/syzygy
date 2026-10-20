@@ -2,7 +2,8 @@
 
 > **Candidate — binds nothing.** Version 1.0; drafted 2026-10-21. No owner
 > signature, act, installation or implementation authorization is recorded by
-> this package. A fresh independent review is pending.
+> this package. Round one over b81f2cf4 returned REVISE; these repairs await
+> a fresh round-two review. No confirmation is carried forward.
 
 **Artifacts:** the six subjects under
 `openspec/changes/three-surface-poc-experience/`, as named in the sibling
@@ -362,7 +363,7 @@ warrants:
   doctrine: [VIS-1, VIS-2, VIS-6, VIS-7]
   contracts: [RFC2-24, RFC4-15, RFC6-14, RFC6-15, RFC6-18, RFC6-22, RFC6-23, RFC8-22, RFC8-23, RFC8-24]
   policies: []
-  decisions: []
+  decisions: [OWNER-DIRECTION-MACHINE-CEILING-2026-10-15]
   topology: []
   parent_requirements: []
 ```
@@ -418,8 +419,12 @@ or epistemic vocabularies.
 
 ## Downstream impact
 
-IMPACT-LEDGER.md and generated IMPACT-SWEEP.json enumerate the subject,
-reverse-spec and tracked-citer sweeps, classifications and unknowns. Runtime
+IMPACT-LEDGER.md, the block-bound REQUIREMENT-CONSUMPTION.json and generated
+IMPACT-SWEEP.json enumerate the subject, reverse-spec and tracked-citer
+sweeps, semantic classifications and unknowns. Four specific consumption
+relationships remain undecidable with settling evidence, not automatically
+unaffected. ROUND-1-DISPOSITIONS.md maps the actual REVISE findings to their
+repairs; only the new exact head can receive a fresh confirmation. Runtime
 consumers and cache/parity seams are named in DESIGN.md. This package edits
 preparation tooling and proposed patch files only; it does not implement the
 wire contract. Earlier signed artifacts remain evidence and retain their
@@ -447,6 +452,6 @@ return to inline duplication.
 
 **Required class:** fresh-context spec/semantic-delta, consequence coverage,
 impact and digest-binding confirmation under CC-REV-1/2/6, CC-SPEC-4/8/9/11
-and CC-IMPACT-5. **Reviewer:** pending; this author issues no verdict.
-**Raw record:** pending, to be preserved verbatim under a `-RAW.md` name.
+and CC-IMPACT-5. **Reviewer:** round one returned REVISE on the predecessor; fresh repair review pending. This author issues no verdict.
+**Raw record:** round-one raw retained unchanged by the coordinator; repair-review raw pending, to be preserved verbatim under a `-RAW.md` name.
 **Owner sign-off:** pending. **Implementation authorization:** absent.

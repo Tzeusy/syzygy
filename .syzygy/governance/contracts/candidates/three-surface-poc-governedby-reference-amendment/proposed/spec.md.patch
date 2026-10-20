@@ -166,8 +166,12 @@
 +  count and the rendered/inside/outside populations reconcile as above, and
 +  the narrowed board contains exactly its original rendered Unknown items
 +
-@@ -536,2 +673,2 @@
+@@ -536,4 +673,4 @@
 -  doctrine: [VIS-1, VIS-2, VIS-6]
 -  contracts: [RFC2-24, RFC4-15, RFC8-22, RFC8-23, RFC8-24]
+-  policies: []
+-  decisions: []
 +  doctrine: [VIS-1, VIS-2, VIS-6, VIS-7]
 +  contracts: [RFC2-24, RFC4-15, RFC6-14, RFC6-15, RFC6-18, RFC6-22, RFC6-23, RFC8-22, RFC8-23, RFC8-24]
++  policies: []
++  decisions: [OWNER-DIRECTION-MACHINE-CEILING-2026-10-15]

@@ -256,8 +256,18 @@ and concrete falsifier. The complete before/after is in SEMANTIC-DELTA.md.
 | Compatibility / rollout | A physical API change; update known consumers/cache/parity together only after explicit code authority; no unverified dual mode |
 | Accessibility / interruption | Valid human controls, markings and scriptless reading unchanged; no new asynchronous interaction; consumers never turn invalid wire into empty content |
 
-The literal fixture file covers 35 valid/invalid examples; preparation checks
-validate the examples independently of product code. These are review aids,
+The literal fixture file covers 46 valid/invalid examples; preparation checks
+validate the examples independently of product code. Literal expected
+identities bind the complete supplied evaluation and provenance/capture pair,
+not bare item IDs; independent rendered and outside lists retain multiplicity.
+A body-wide exact-complete-value carrier census catches a copy even under an
+unrelated key. The positive full-record fixture retains distinct existing
+PocEntity, PocRelationship and PocUnknownSubject field shapes, including
+prose basis, IDs and provenance: those larger records are not the exact
+three-field value carrier and are not pooled. Their complete literal expected
+populations reject dropped/changed records without adding a product field.
+The retained round-one counterexamples now fail their named predicates.
+These are review aids,
 not evidence the unimplemented behavior works. Later implementation tests
 must import neither the wire encoder nor its resolver into the expected
 oracle; mutate each new production predicate and require its own meaningful
@@ -281,6 +291,13 @@ and the canonical PROJECT-STATUS battery in a clean clone at the frozen
 candidate commit, reporting exact failures and denominators. No new product
 tests or test-suite growth in this candidate. Fresh independent non-author
 review is mandatory before any owner offer.
+
+Four requirement-consumption relationships remain explicitly undecidable in
+REQUIREMENT-CONSUMPTION.json: POC-REQ-020/022 and both occurrences of
+REQ-polaris-generation-019. Their settling evidence must be supplied or the
+necessary companions prepared before an owner offer. The assessment is not
+an authority exception or an owner question; independent review must judge
+whether the precise expansion/compatibility reading is established.
 
 Ordinary choices settled here: package name, local field spelling, marker,
 bounded validation fault, fixtures and reuse of the dependency generator.

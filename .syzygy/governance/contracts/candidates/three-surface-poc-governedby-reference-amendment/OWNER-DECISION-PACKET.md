@@ -1,7 +1,8 @@
 # Prepared owner decision — P-115 governedBy once per observation
 
 > **DRAFT — not ready for an owner answer.** Candidate v1.0; independent
-> review and coordinator registration/preview gates are pending. This file
+> review, four consumption-assessment settling gates and coordinator
+> registration/preview gates are pending. This file
 > prepares a future bounded offer and records no decision.
 
 [Observed] The owner already directed drafting this amendment after the

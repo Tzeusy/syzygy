@@ -35,3 +35,11 @@ record/freshness/secondary consequences. The builder computes populations
 and rejects a dropped predecessor row. The independent reviewer must decide
 whether those mappings and the stated obligation population are adequate;
 this author's classification is not confirmation (CC-SPEC-8/9/11).
+
+[Observed] Round-one Important findings are mapped in ROUND-1-DISPOSITIONS.md.
+The strengthened preparation oracle uses 46 literal wire cases, including a
+positive case retaining distinct full entity/relationship/per-item records,
+and rejects 15 retained wire counterexamples plus two classifier regressions.
+[Unknown] Four block-level consumption relationships still need the exact
+settling evidence in REQUIREMENT-CONSUMPTION.json before an owner offer.
+These author checks neither confirm the coverage matrix nor implement it.

@@ -5,7 +5,7 @@
 # Rows hash PROPOSED bytes; adopted files are not changed by this builder.
 9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976  openspec/changes/three-surface-poc-experience/.openspec.yaml
 0fd62d8004107715af992aa259394bd9cfaaa09cfaa19b7776f8864b08d5deed  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
-8a946ae726ab1aa426d000b148daa05808b1589cb0356f5fa541a06138779976  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
+b6a09da09414b24ee225d5d92701dfbad4e59ca12a0b6ef7b3ad3d8c8ffe1df3  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 160c813f747887200e6656fba99395e37a76892d4370da8bdd82d1d40e47e6ac  openspec/changes/three-surface-poc-experience/design.md
 7eeb404916b6568009db5cef33d4370840970146706ab8ab45d93797ae30776c  openspec/changes/three-surface-poc-experience/proposal.md
-16866574cbed6ab375328c9814fc835de1115c53bc8ab4754002addc3de65500  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md

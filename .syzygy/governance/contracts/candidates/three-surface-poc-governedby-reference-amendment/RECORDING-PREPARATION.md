@@ -24,6 +24,11 @@ sign this future package. Proposed identity:
 
 ## Coordinator gates before offer — not an owner's engineering question
 
+Before registration/offer, settle the four block-level consumption Unknowns
+in REQUIREMENT-CONSUMPTION.json using its named comparator/compatibility
+evidence, or prepare any necessary same-change companions. This is ordinary
+source/design reconciliation; it grants no new owner or code authority.
+
 1. Register the package in scripts/record_versioned_signoff.py using the
    existing manifest-backed POC Package pattern (not P-100's historical
    record-only exception): candidate path and sibling manifest; version 1.0;

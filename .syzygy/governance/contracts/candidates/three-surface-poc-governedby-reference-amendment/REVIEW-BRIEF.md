@@ -16,7 +16,7 @@ Put reviewer identity/date and the exact manifest path immediately below. If exc
 which are notes and which block sign-off; copy verdict words exactly.
 
 Read SEMANTIC-DELTA.md, DESIGN.md, CAPABILITY-COVERAGE.md, IMPACT-LEDGER.md,
-IMPACT-SWEEP.json, the exact five patches, six-subject manifest, literal
+IMPACT-SWEEP.json, REQUIREMENT-CONSUMPTION.json, the exact five patches, six-subject manifest, literal
 fixtures and scoped preparation builder. Read the actual adopted POC
 requirements 010/011/013/014/020/042/060 and governing clauses by identifier:
 VIS-1/2/4/6/7; SEC boundaries; RFC2-24; RFC4-15; RFC6-14/15/18/22/23;
@@ -50,3 +50,18 @@ provider/daemon/product test suite, install patches into adopted subjects,
 invoke a recorder mutation, sign/tag/adopt, edit raw output or ask the owner
 new routine wire choices. Independent review authority is no execution
 permission. Return concrete findings and exact subject/freshness limits.
+
+## Round two — repairs after actual REVISE
+
+[Observed] Round one reviewed b81f2cf480e57ce7741b32e9d9a55e713d77ab66 and
+returned REVISE. Read the unchanged R-P115-GOVERNEDBY-REFERENCE-1-RAW.md
+provided by the coordinator and the sibling ROUND-1-DISPOSITIONS.md.
+Recheck the exact Decision ID warrant, generated union and semantic twin;
+independently try every retained counterexample and the positive full-record
+fixture. Do not infer complete coverage from passing preparation fixtures.
+Inspect all 130 occurrence-specific consumption judgments and four declared
+Unknowns; verify source excerpts/digests, specific reasons/methods and the
+settling evidence. Challenge the interpretation rather than smoothing those
+Unknowns into unaffected. A later exact freeze replaces the prior subject;
+round one's REVISE remains evidence, never a confirmation of these bytes.
+No author verdict or owner action is supplied by this disposition pass.
