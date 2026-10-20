@@ -404,6 +404,11 @@ CAMPAIGNS = (
         r"R-DOV24-.*\.md",
     ),
     campaign(
+        "p110-screening-v4-install",
+        "Screening v4 span installation",
+        r"R-P110-.*-RAW\.md",
+    ),
+    campaign(
         "olmr-screening-scope-v4",
         "Screening scope version 4",
         r"R-OLMR-SCREENING-SCOPE-V4-.*\.md",

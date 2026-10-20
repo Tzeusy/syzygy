@@ -8,7 +8,7 @@ export {
 } from './canonical-json.js';
 
 export { parseBoundedJson, BoundedJsonError } from './parse-json.js';
-export { generationSourceIdentity, generationAnchorId, gitBlobObjectId, validateGenerationSources, quotableGenerationSources, generationSourcesForBody, segmentBody, GENERATION_EXCLUSION_REASONS, isGenerationExclusionReason, newGenerationRunKey, keyedDigest, excludedSourceId, type GenerationExclusionReason, GenerationSourceError, type BodyPiece, type BodySourceInput, type GenerationSource, type GenerationSourceFailure } from './generation-source.js';
+export { generationSourceIdentity, generationAnchorId, gitBlobObjectId, validateGenerationSources, validateGenerationSourceTransport, verifiedRedactedBody, quotableGenerationSources, generationSourcesForBody, generationSourcesForRedactedBody, generationSpanRange, generationSourceTextAt, segmentBody, GENERATION_EXCLUSION_REASONS, isGenerationExclusionReason, newGenerationRunKey, keyedDigest, excludedSourceId, type GenerationExclusionReason, GenerationSourceError, type BodyPiece, type BodySourceInput, type RedactedBodySourceInput, type VerifiedRedactedBody, type RedactedBodyScreen, type SourceRedaction, type GenerationSpan, type GenerationSource, type GenerationSourceFailure } from './generation-source.js';
 export {
   admitSourcePopulation,
   admittedSources,
@@ -52,3 +52,4 @@ export { leadInQuotationSpans, leadInQuotations, lineCount, locateQuote, normali
 export type { EvidenceAnchor, LocalBlock, LocalDisclosureItem, LocalDraftLayer, LocalPage, LocalPageGroup, LocalPageItem, LocalRenderInput, LocalSegment } from './local-render.js';
 export { REVIEW_STATUS_REGION, REVIEW_STATUS_REGION_OPEN, withoutReviewStatusRegion } from './local-render.js';
 export { codeContentExempt, documentationPathRules, PAGE_SINK_CONTRACT, pageSinkCspFinding, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, type CodeContentExemption, type CodeContentExemptionRead, type DocumentationPathRuleId, type ProjectDocumentationRead, type ProjectDocumentationRule, type PublicSourceContentClass } from './public-source-classification.js';
+export { bodyLines, compileEveryOffsetMatcher, MAX_MATCHES, readSecretRedaction, redactBody, redactionMarker, retainedWithMarkers, spanTouchesWithheld, type DetectorMatch, type EveryOffsetMatcher, type RedactionDetector, type RedactionOutcome, type SecretRedaction, type SecretRedactionRead, type WholeExclusionCause } from './secret-redaction.js';

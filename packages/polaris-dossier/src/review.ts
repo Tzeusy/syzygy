@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, reviewVerdict, type TrackedText } from '@syzygy/polaris-generation-core';
+import { bodyLines, leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, reviewVerdict, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core';
 import { isLaunchedRun, launchFormRefusal } from './launched.js';
 import { CHECK_RECORD_FORMAT, collectBlocks, collectCitations, declaredSessionId, nextRevision } from './check.js';
 import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOTATION_FORM, checkDraftShape, localVerdictSchema, verdictSchemaDocument } from './draft-schema.js';
@@ -73,11 +73,16 @@ export function latestReviewSession(run: string, kind: ReviewKind): number {
 
 /** One cited span as Syzygy read it at the pinned revision. An excluded span carries no byte; one whose path a secret detector matches
  * is named by neither path nor object identifier. A span screening admitted under a content class the run's consent does not list is
- * withheld, carrying no byte and naming that class (`class-gate.ts`). */
+ * withheld, carrying no byte and naming that class (`class-gate.ts`). In a body screening retained as `redacted-span` (policy version
+ * 4), a span that includes a withheld line is withheld whole (`redacted-span`, no byte), and an admitted span carries the body's
+ * redaction count beside its text. */
 export type PacketSpan =
-  | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: 'admitted'; readonly text: string; readonly citedBy: readonly SpanCitation[] }
+  | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: 'admitted'; readonly text: string; readonly redaction?: SpanRedaction; readonly citedBy: readonly SpanCitation[] }
   | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: typeof CLASS_NOT_CONSENTED; readonly missingClass: string; readonly citedBy: readonly SpanCitation[] }
+  | { readonly id: string; readonly path: string; readonly startLine: number; readonly endLine: number; readonly objectId: string; readonly outcome: 'redacted-span'; readonly redaction: SpanRedaction; readonly citedBy: readonly SpanCitation[] }
   | { readonly id: string; readonly path: string | null; readonly startLine: number; readonly endLine: number; readonly objectId: string | null; readonly outcome: ScreenExclusion | 'absent' | 'beyond-blob'; readonly citedBy: readonly SpanCitation[] };
+/** The redaction of the body a span is in: its class and the body's total count of withheld lines (RFC5-17's disclosed count). */
+export interface SpanRedaction { readonly redactionClass: 'redacted-span'; readonly withheldLines: number }
 export interface SpanCitation { readonly subject: 'draft' | 'inventory'; readonly citationId: string }
 
 /** The criteria the fidelity packet carries: Syzygy's own text, never the brief's authoring exchange. */
@@ -99,7 +104,8 @@ export type PacketBuild =
     readonly ok: true; readonly bytes: string; readonly sha256: string; readonly spans: readonly PacketSpan[];
     readonly draft: { readonly revision: number; readonly sha256: string; readonly doc: Readonly<Record<string, unknown>>; readonly sessionId: string | null };
     readonly inventory: { readonly revision: number; readonly sha256: string; readonly doc: Readonly<Record<string, unknown>>; readonly sessionId: string; readonly session: number };
-    /** The raw text of every admitted blob a span reads, by path, for verifying the verdict's quotations. */
+    /** The raw text of every admitted blob a span reads, by path, for verifying the verdict's quotations; for a body retained as
+     * `redacted-span`, its retained text, every withheld line emptied. */
     readonly blobs: ReadonlyMap<string, string>;
   }
   | { readonly ok: false; readonly stage: 'draft' | 'inventory' | 'screen' | 'object-read'; readonly reason: string; readonly objectRead?: ReturnType<GitObjectReadRefusal['toJSON']> };
@@ -172,6 +178,8 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   const screen = screenLoad.screen;
   const reader = (deps.openReader ?? openPinnedObjectReader)({ gitDir: path.join(subject.clone.path, '.git'), revision: pinned });
   const blobs = new Map<string, string>();
+  const retainedLines = new Map<string, readonly string[]>();
+  const withheldOf = new Map<string, readonly number[]>();
   const outcomes = new Map<string, ScreenExclusion | 'absent'>();
   const tree = new Map<string, TreeEntry>();
   try {
@@ -187,8 +195,15 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     for (const blob of toRead.length === 0 ? [] : await reader.readBlobs(toRead)) {
       let raw: string;
       try { raw = decoder.decode(blob.bytes); } catch { outcomes.set(blob.path, 'not-utf8-text'); continue; }
-      const excluded = screen.screenBody(raw, blob.path);
-      if (excluded === undefined) blobs.set(blob.path, raw); else outcomes.set(blob.path, excluded);
+      // A body retained as redacted-span keeps only its retained text here: a withheld line is never carried or used to verify a quotation.
+      const screened = screen.screenTargetBody(raw, blob.path);
+      if (screened.kind === 'excluded') outcomes.set(blob.path, screened.outcome);
+      else if (screened.kind === 'redacted') {
+        blobs.set(blob.path, retainedWithMarkers(screened.retainedLines, screened.withheld));
+        retainedLines.set(blob.path, screened.retainedLines);
+        withheldOf.set(blob.path, screened.withheld);
+      }
+      else blobs.set(blob.path, raw);
     }
   } catch (cause) {
     if (cause instanceof GitObjectReadRefusal) return { ok: false, stage: 'object-read', reason: `an object at the pinned revision could not be read: ${cause.message}`, objectRead: cause.toJSON() };
@@ -199,14 +214,24 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   const spans: PacketSpan[] = ordered.map((span, i): PacketSpan => {
     const id = `span-${i + 1}`;
     const raw = blobs.get(span.path);
-    const lines = raw === undefined ? [] : linesOf(raw);
+    const lines = raw === undefined ? [] : retainedLines.get(span.path) ?? bodyLines(raw);
     // Screening admitted the body; whether it may reach the review session is the class gate's (`class-gate.ts`).
     const missingClass = raw === undefined ? undefined : unconsentedClass(screen.contentClass(span.path), opened.contentClasses);
     if (missingClass !== undefined) {
       return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: CLASS_NOT_CONSENTED, missingClass, citedBy: span.citedBy };
     }
     if (raw !== undefined && span.startLine >= 1 && span.startLine <= span.endLine && span.endLine <= lines.length) {
-      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: 'admitted', text: lines.slice(span.startLine - 1, span.endLine).join(''), citedBy: span.citedBy };
+      const withheld = withheldOf.get(span.path), objectId = tree.get(span.path)!.id;
+      const spanText = lines.slice(span.startLine - 1, span.endLine).join('');
+      // Key order is the packet's byte order: the fields are written out, never spread from a shared base.
+      if (withheld === undefined) return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId, outcome: 'admitted', text: spanText, citedBy: span.citedBy };
+      const redaction: SpanRedaction = { redactionClass: 'redacted-span', withheldLines: withheld.length };
+      // The citedSpanRule: a span that includes a withheld line is withheld whole; an admitted span's own text is screened by every
+      // detector before it is carried, and a match withholds it.
+      if (spanTouchesWithheld(withheld, span.startLine, span.endLine) || screen.screenBody(spanText) === 'secret-detector-match') {
+        return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId, outcome: 'redacted-span', redaction, citedBy: span.citedBy };
+      }
+      return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId, outcome: 'admitted', text: spanText, redaction, citedBy: span.citedBy };
     }
     const outcome = raw !== undefined ? 'beyond-blob' : outcomes.get(span.path)!;
     const secretPath = screen.screenPath(span.path) === 'secret-detector-match';
@@ -237,21 +262,6 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     inventory: { revision: counted.revision, sha256: counted.sha256, doc: inventoryDoc, sessionId: counted.sessionId.value, session: counted.session },
     blobs,
   };
-}
-
-/** A text's lines, each with its terminator; a final terminator ends the last line and opens none (the core's `lineCount`). */
-function linesOf(raw: string): string[] {
-  const out: string[] = [];
-  let start = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const c = raw[i];
-    if (c !== '\n' && c !== '\r') continue;
-    if (c === '\r' && raw[i + 1] === '\n') i++;
-    out.push(raw.slice(start, i + 1));
-    start = i + 1;
-  }
-  if (start < raw.length) out.push(raw.slice(start));
-  return out;
 }
 
 /** Write the packet under `reviews/` as `<kind>-packet-<digest>/{packet.json, packet.sha256}`; an existing copy is kept only when it is
@@ -564,9 +574,11 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
         if (id === undefined) return;
         const span = typeof id === 'string' ? spans.get(id) : undefined;
         if (span === undefined || span.outcome !== 'admitted') { add('quotation-span', `${at}.quotations[${q}]`, 'the quotation names no admitted span of the packet'); return; }
-        const raw = built.blobs.get(span.path)!;
-        if (!tracked.has(span.path)) tracked.set(span.path, normaliseTracked(raw));
-        const located = locateQuote(raw, tracked.get(span.path)!, quote.inner, span.startLine, span.endLine);
+        // The admitted packet span is a contiguous original range and contains no withheld line. Re-splitting the marked whole body
+        // would use presentation line numbers; the span's own bytes preserve its original line identity.
+        const raw = span.text;
+        if (!tracked.has(span.id)) tracked.set(span.id, normaliseTracked(raw));
+        const located = locateQuote(raw, tracked.get(span.id)!, quote.inner, 1, bodyLines(raw).length);
         if (!located.found) add('quotation-unverified', `${at}.${field}`, `quotation ${q + 1} does not verify against ${span.id} (${located.kind})`);
       });
     });

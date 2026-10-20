@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
+  excludedSourceId, generationSourcesForBody, generationSourcesForRedactedBody, generationSpanRange, generationSourceTextAt, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
   type EpistemicMarking, type EvidenceAnchor, type GenerationExclusionReason, type GenerationSource, type LocalBlock,
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type ProviderBlock, type ProviderDraft, type ProviderParagraph,
@@ -288,6 +288,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     const missing = unconsentedClass(screen.contentClass(repositoryPath), consented);
     if (missing !== undefined) withheldClass.set(repositoryPath, missing);
   }
+  const redacted = new Map([...derived.admitted].flatMap(([repositoryPath, blob]) => (blob.withheld === undefined ? [] : [[repositoryPath, blob.withheld.length] as const])));
   const admitted = new Map([...derived.admitted].filter(([repositoryPath]) => !withheldClass.has(repositoryPath)));
 
   // Sources: every cited blob read now and admitted (whole, or in pieces when too long to quote whole), and every cited blob screening
@@ -296,7 +297,9 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const pieces = new Map<string, GenerationSource[]>();
   const sourceIdOf = (repositoryPath: string): string => `src-${sha256(repositoryPath).slice(0, 24)}`;
   for (const [repositoryPath, blob] of [...admitted].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
-    const own = generationSourcesForBody({ sourceId: sourceIdOf(repositoryPath), repositoryId: subject.repository.repositoryId, revision: pinned, path: repositoryPath, objectId: blob.objectId, evaluationId: runId, body: blob.raw });
+    const identity = { sourceId: sourceIdOf(repositoryPath), repositoryId: subject.repository.repositoryId, revision: pinned, path: repositoryPath, objectId: blob.objectId, evaluationId: runId };
+    const own = blob.withheld === undefined ? generationSourcesForBody({ ...identity, body: blob.raw })
+      : generationSourcesForRedactedBody({ ...identity, projection: blob.projection!, policySha256: screen.policySha256 });
     pieces.set(repositoryPath, [...own]);
     sources.push(...own);
   }
@@ -328,21 +331,23 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const pieceAt = (repositoryPath: string, byte: number): GenerationSource | undefined => {
     const own = pieces.get(repositoryPath);
     if (own === undefined) return undefined;
-    return own.find((piece) => piece.segment === undefined || (byte >= piece.segment.start && byte < piece.segment.end)) ?? own.at(-1);
+    return own.find(piece => piece.redaction === undefined
+      ? piece.segment === undefined || (byte >= piece.segment.start && byte < piece.segment.end)
+      : piece.spans.some(span => { const [start, end] = generationSpanRange(piece, span); return byte >= start && byte < end; }));
   };
   const citedSources = (value: Readonly<Record<string, unknown>>): string[] => [...new Set(list(value['citations']).flatMap((citation) => {
     if (!isObj(citation)) return [];
     const cited = text(citation['path']);
     const blob = cited === undefined ? undefined : admitted.get(cited);
-    const piece = blob === undefined ? undefined : pieceAt(cited!, byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
+    const piece = blob === undefined ? undefined : pieceAt(cited!, blob.lineByteOffsets?.[(typeof citation['startLine'] === 'number' ? citation['startLine'] : 1) - 1] ?? byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
     return piece === undefined ? [] : [piece.sourceId];
   }))];
   const anchorOf = (source: GenerationSource, start: number, end: number): EvidenceAnchor => ({
     targetClass: 'evidence-artifact-identifier-with-integrity-digest', identifier: source.objectId!, algorithm, fragment: { start, end }, targetState: pinned, pathLabel: source.path,
   });
-  const sourceAnchors = new Map(sources.filter((source) => !source.exclusion.excluded).map((source) => {
-    const base = source.segment?.start ?? 0;
-    return [source.sourceId, anchorOf(source, base + source.spans[0]!.start, base + source.spans[0]!.end)] as const;
+  const sourceAnchors = new Map(sources.filter((source) => !source.exclusion.excluded && source.spans.length > 0).map((source) => {
+    const [start, end] = generationSpanRange(source, source.spans[0]!);
+    return [source.sourceId, anchorOf(source, start, end)] as const;
   }));
 
   // Claim blocks: segments from the agent's text with every quotation replaced by Syzygy's located bytes, and the marking.
@@ -370,7 +375,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
         const blob = admitted.get(found.path)!;
         const [start, end] = found.byteRange;
         const piece = pieceAt(found.path, start)!;
-        segments.push({ kind: 'quotation', sourceId: piece.sourceId, start, end, text: Buffer.from(blob.raw, 'utf8').subarray(start, end).toString('utf8'), anchor: anchorOf(piece, start, end) });
+        segments.push({ kind: 'quotation', sourceId: piece.sourceId, start, end, text: generationSourceTextAt(piece, start, end)!, anchor: anchorOf(piece, start, end) });
       } else {
         if (!excluded.has(key)) throw new Error(`render: quotation ${index + 1} of block ${id} was neither verified nor excluded at this render`);
         segments.push({ kind: 'withheld', reason: 'excluded-content' });
@@ -456,6 +461,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     title: cited.path === null ? SECRET_PATH : cited.path,
     text: cited.outcome !== 'admitted' ? `${cited.read ? 'read at this render and re-hashed' : 'named by the pinned tree and not read'}; excluded by screening (${cited.outcome})`
       : cited.path !== null && withheldClass.has(cited.path) ? `read at this render, re-hashed, and admitted by screening as ${withheldClass.get(cited.path)!}; ${unconsentedText(withheldClass.get(cited.path)!, consented)} (${CLASS_NOT_CONSENTED})`
+        : cited.path !== null && redacted.has(cited.path) ? `read at this render, re-hashed, and retained by screening as redacted-span with ${redacted.get(cited.path)!} withheld line(s); each withheld run is marked on its source page; surviving spans retain their original coordinates`
         : 'read at this render, re-hashed, and admitted by screening',
     details: [`object ${cited.objectId === null ? '(not shown)' : `${algorithm}:${cited.objectId}`}`, `revision ${pinned}`],
     sourceIds: cited.outcome === 'admitted' && cited.path !== null ? (pieces.get(cited.path) ?? []).slice(0, 1).map((source) => source.sourceId) : [],

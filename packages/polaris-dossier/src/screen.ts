@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { codeContentExempt, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, type PublicSourceContentClass } from '@syzygy/polaris-generation-core';
+import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified
@@ -25,6 +25,12 @@ import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, t
  * Unicode look-alike of a withheld word (`docs/\uff44esign.md`), a word joined by a tab (`docs/a\tb.md`) or one that runs on into other
  * characters (`docs/rfc0001.md`) is admitted as project-documentation. The detectors and the active-content scan still run on those bodies.
  *
+ * Under version 4 (`secretRedaction`, `@syzygy/polaris-generation-core`'s `redactBody`), `screenTargetBody` retains a
+ * project-documentation body whose only detector matches are line-redactable as RFC5-17's `redacted-span`: the matched lines and their
+ * guard lines are withheld (emptied, terminators kept, so line numbers do not move), and every other body that a detector matches is
+ * excluded whole as before. `screenBody` stays whole-text: it screens agent-written text, and a consumer not taught the redacted form
+ * keeps whole-file exclusion. A withheld line is never handed out: `screenTargetBody` returns only the retained text.
+ *
  * TODO(syzygy-qkea.17): these rules are a copy of the app's; move them into one shared package that both import. Until then
  * `screen.test.ts` builds both screens from the same policy and fails if they disagree on any path or body of its population. */
 
@@ -46,7 +52,20 @@ export interface DossierScreen {
    * names skips the active-content scan; without one (agent text, or a page that cannot meet the render condition) every body is
    * scanned. */
   readonly screenBody: (body: string, repositoryPath?: string) => ScreenExclusion | undefined;
+  /** Whether the policy declares the version-4 secret redaction. */
+  readonly secretRedaction: boolean;
+  /** A target body read at `repositoryPath`, screened under the policy's secret redaction (version 4) where it applies: every detector over
+   * the complete body from every offset, the active-content scan over the complete body exactly as `screenBody` runs it. */
+  readonly screenTargetBody: (body: string, repositoryPath: string) => TargetBodyScreen;
 }
+
+/** A target body as `screenTargetBody` screens it: admitted whole, retained as `redacted-span` (only `retained`, never the withheld
+ * lines, is carried; `withheld` are their 1-based numbers, ascending), or excluded whole for `outcome`. */
+export type TargetBodyScreen =
+  | { readonly kind: 'admitted' }
+  | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly lineByteOffsets: readonly number[];
+      readonly originalBytes: number; readonly contentSha256: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+  | { readonly kind: 'excluded'; readonly outcome: ScreenExclusion };
 
 export type ScreenLoad = { readonly ok: true; readonly screen: DossierScreen } | { readonly ok: false; readonly why: string };
 
@@ -79,15 +98,28 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   const exemptionRead = readCodeContentExemption(scope, extensions);
   if (!exemptionRead.ok) return refuse(exemptionRead.why);
   const exemption = exemptionRead.exemption;
+  const detectorIds = Array.isArray(doc['detectors']) ? doc['detectors'].flatMap((d: unknown) => (isObject(d) && typeof d['id'] === 'string' ? [d['id']] : [])) : [];
+  const redactionRead = readSecretRedaction(scope, detectorIds);
+  if (!redactionRead.ok) return refuse(redactionRead.why);
+  const redaction = redactionRead.redaction;
   const denied: DeniedPathRules = { basenames: admission['deniedPathBasenames'], prefixes: admission['deniedPathPrefixes'], suffixes: admission['deniedPathSuffixes'] };
   let detectors: ReturnType<typeof compileDetectors>;
   try { detectors = compileDetectors({ detectors: doc['detectors'] as readonly SecretDetector[] }); } catch (error) { return refuse(`its detectors do not compile (${error instanceof Error ? error.message : 'invalid'})`); }
+  const everyOffset = compileEveryOffsetMatcher(doc['detectors'] as readonly RedactionDetector[]);
   const screenPath = (repositoryPath: string): ScreenExclusion | undefined => deniedPathReason(repositoryPath, denied) !== undefined ? 'denied-path'
     : detectSecrets(detectors, repositoryPath) !== undefined ? 'secret-detector-match'
       : publicSourceContentClass(repositoryPath, extensions, documentation) !== undefined ? undefined : 'unknown-extraction-class';
   const contentClass = (repositoryPath: string): PublicSourceContentClass | undefined =>
     (screenPath(repositoryPath) === undefined ? publicSourceContentClass(repositoryPath, extensions, documentation) : undefined);
   const exempt = (repositoryPath: string | undefined): boolean => repositoryPath !== undefined && codeContentExempt(repositoryPath, contentClass(repositoryPath), exemption);
+  const active = (body: string, repositoryPath: string): boolean => !exempt(repositoryPath) && scanActiveContent(body).length > 0;
+  // The detectors first (from every offset, over the complete body), then the active-content scan over the complete body, as before.
+  const screenTargetBody = (body: string, repositoryPath: string): TargetBodyScreen => {
+    const redacted = redactBody(body, contentClass(repositoryPath), everyOffset, redaction);
+    if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };
+    if (active(body, repositoryPath)) return { kind: 'excluded', outcome: 'active-content' };
+    return redacted.kind === 'clean' ? { kind: 'admitted' } : redacted;
+  };
   return {
     ok: true,
     screen: {
@@ -98,6 +130,8 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
       contentClass,
       screenBody: (body, repositoryPath) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match'
         : !exempt(repositoryPath) && scanActiveContent(body).length > 0 ? 'active-content' : undefined,
+      secretRedaction: redaction !== null,
+      screenTargetBody,
     },
   };
 }

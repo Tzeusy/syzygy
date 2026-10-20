@@ -18,10 +18,14 @@ const SOURCE = (scope: Scope): string[] => ((scope['contentClassification'] as {
 const exemptionOf = (scope: Scope): Record<string, unknown> => (scope['activeContent'] as Scope)['codeContentExemption'] as Record<string, unknown>;
 const withExemption = (scope: Scope, exemption: unknown): Scope => ({ ...scope, activeContent: { ...(scope['activeContent'] as Scope), codeContentExemption: exemption } });
 
+// Since the version-4 act (2026-10-20) the version-3 base is recovered through version 4's base, the version-3 row `all`.
 // Run without blocking the worker: a synchronous python3 child is not a short local tool (sync-child-process-guard.test.ts).
 beforeAll(async () => {
-  const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
-base, _mode = b.base_bytes()
+  const py = `import json, sys; sys.path.insert(0, 'scripts')
+import build_public_source_screening_scope_v2 as b2, build_public_source_screening_scope_v3 as b, build_public_source_screening_scope_v4 as b4
+v3_all, _mode = b4.base_bytes()
+base = b2.reverse_patch((b.ROOT / b.patch_path('all')).read_text(), v3_all)
+assert b.propose(base, 'all') == v3_all
 sys.stdout.write(json.dumps({'base': json.loads(base)[b.SCOPE_KEY], **{v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for v in b.VARIANTS}}))`;
   const run = await promisify(execFile)('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   const out = JSON.parse(run.stdout) as Record<string, Scope>;

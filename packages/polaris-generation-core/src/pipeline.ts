@@ -1,4 +1,4 @@
-import { quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
+import { quotableGenerationSources, validateGenerationSources, validateGenerationSourceTransport, type GenerationSource } from './generation-source.js';
 import { CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { createHash } from 'node:crypto';
@@ -99,7 +99,9 @@ export type AttemptOutcome =
 export interface PipelinePorts {
   readonly now: () => number;
   /** Checks snapshot bytes against owning sources, screening and effective policy. */
-  readonly verifySources: (request: PipelineRequest) => Promise<boolean>;
+  /** Ordinary sources may return true. Redacted projections require the freshly re-read, re-screened source population: self-declared
+   * redaction metadata cannot bind safe text to an original Git object. The pipeline compares each projection before any dispatch. */
+  readonly verifySources: (request: PipelineRequest) => Promise<boolean | readonly GenerationSource[]>;
   /** Current effective permission identity from a trusted authority adapter,
    * never a caller approval flag or old cached positive answer. */
   readonly permissionIdentity: (input: Omit<AttemptInput, 'permissionDigest' | 'bindingDigest'>) => Promise<string>;
@@ -179,6 +181,13 @@ class PipelineStop extends Error {
 
 const dataLimits = (bytes: number): CanonicalJsonLimits => ({ maxBytes: bytes, maxNodes: 100_000, maxDepth: 64 });
 
+function compactSource(source: GenerationSource): GenerationSource {
+  if (source.redaction !== undefined || source.body === undefined || source.spans.length !== 1 || source.spans[0]?.start !== 0
+    || source.spans[0]?.end !== Buffer.byteLength(source.body)) return source;
+  const { body: _duplicate, ...bound } = source;
+  return bound;
+}
+
 /** Runs the reusable editorial pipeline. This never awards rendered readiness or
  * authorship, and has no default provider, filesystem or live lifecycle adapter.
  */
@@ -207,15 +216,10 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     let detached: PipelineRequest;
     try { detached = JSON.parse(encodeCanonicalJson(request, dataLimits(Math.max(b.maxInputBytes, 4_000_000)))) as PipelineRequest; }
     catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
-    try { validateGenerationSources(detached.sources); } catch { stop('invalid-request'); }
+    try { validateGenerationSourceTransport(detached.sources); } catch { stop('invalid-request'); }
     // A full-file span already retains the exact verified body. Do not bill a
     // second copy; partial spans keep the owning body for validation.
-    const compact = { ...detached, sources: detached.sources.map(source => {
-      if (source.body === undefined || source.spans.length !== 1 || source.spans[0]?.start !== 0
-        || source.spans[0]?.end !== Buffer.byteLength(source.body)) return source;
-      const { body: _verifiedBody, ...bound } = source;
-      return bound;
-    }) };
+    const compact = { ...detached, sources: detached.sources.map(compactSource) };
     let frozen: PipelineRequest;
     try { frozen = JSON.parse(encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))) as PipelineRequest; }
     catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
@@ -245,13 +249,43 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       finally { clearTimeout(timer); signal.removeEventListener('abort', cancel); }
     };
     check();
-    if (!await bounded(() => ports.verifySources(frozen))) stop('source-refused');
+    const verifiedSources = await bounded(() => ports.verifySources(frozen));
+    if (!verifiedSources) stop('source-refused');
+    const hasRedacted = frozen.sources.some(source => source.redaction !== undefined);
+    if (Array.isArray(verifiedSources)) {
+      try { validateGenerationSources(verifiedSources); } catch { stop('source-refused'); }
+      if (verifiedSources.length !== frozen.sources.length) stop('source-refused');
+      // Opaque excluded ids are keyed afresh by each read. Only the alias/carrier differs: all safe metadata, reasons and multiplicity
+      // must still match. Such rows have no body, original object id or anchor; their aliases preserve the frozen consent population.
+      const opaque = (source: GenerationSource): boolean => source.objectId === null && source.exclusion.excluded && source.path === `withheld/${source.sourceId}`;
+      const keyOf = (source: GenerationSource): string => {
+        const compact = compactSource(source);
+        return encodeCanonicalJson(opaque(source) ? { ...compact, sourceId: null, path: null } : compact, dataLimits(budget.maxInputBytes));
+      };
+      const fresh = new Map<string, GenerationSource[]>();
+      try {
+        for (const source of verifiedSources) {
+          const key = keyOf(source);
+          const bucket = fresh.get(key);
+          if (bucket === undefined) fresh.set(key, [source]); else bucket.push(source);
+        }
+        const sources = frozen.sources.map(requested => {
+          const verified = fresh.get(keyOf(requested))?.pop();
+          if (verified === undefined) stop('source-refused');
+          return opaque(verified) ? { ...verified, sourceId: requested.sourceId, path: requested.path } : compactSource(verified);
+        });
+        // Every row used below comes from the fresh gated read, including ordinary bodies in mixed requests.
+        frozen = { ...frozen, sources };
+      } catch { stop('source-refused'); }
+    } else if (hasRedacted) stop('source-refused');
     const admitted = quotableGenerationSources(frozen.sources);
     if (admitted.length === 0 || admitted.length > 200) stop('source-refused');
     const sourcePopulation = frozen.sources.map(source => ({ sourceId: source.sourceId, classificationBasis: source.classificationBasis,
-      excluded: source.exclusion.excluded, ...(source.exclusion.excluded ? { reason: source.exclusion.reason } : {}) }));
-    const context: Record<string, unknown> = { sources: admitted, readerQuestions: frozen.readerQuestions, requestedAssets: frozen.requestedAssets };
-    const citedSpans = (value: unknown): readonly { readonly sourceId: string; readonly anchorId: string; readonly text: string }[] => {
+      excluded: source.exclusion.excluded, ...(source.exclusion.excluded ? { reason: source.exclusion.reason } : {}),
+      ...(source.redaction === undefined ? {} : { redaction: { redactionClass: source.redaction.redactionClass, withheldLines: source.redaction.withheldLines } }) }));
+    const context: Record<string, unknown> = { sources: admitted.map(({ sourceId, text }) => ({ sourceId, text })), readerQuestions: frozen.readerQuestions, requestedAssets: frozen.requestedAssets };
+    const citedSpans = (value: unknown): readonly { readonly sourceId: string; readonly anchorId: string; readonly text: string;
+      readonly redaction?: { readonly redactionClass: 'redacted-span'; readonly withheldLines: number } }[] => {
       const referenced = new Set<string>();
       const visit = (node: unknown): void => {
         if (Array.isArray(node)) for (const item of node) visit(item);
@@ -262,7 +296,8 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         }
       };
       visit(value);
-      return frozen.sources.filter(source => referenced.has(source.sourceId)).flatMap(source => source.spans.map(span => ({ sourceId: source.sourceId, anchorId: span.anchorId, text: span.text })));
+      return frozen.sources.filter(source => referenced.has(source.sourceId)).flatMap(source => source.spans.map(span => ({ sourceId: source.sourceId, anchorId: span.anchorId, text: span.text,
+        ...(source.redaction === undefined ? {} : { redaction: { redactionClass: source.redaction.redactionClass, withheldLines: source.redaction.withheldLines } }) })));
     };
     const stage = async (name: GenerationStage, inputs: Readonly<Record<string, unknown>>): Promise<unknown> => {
       check();

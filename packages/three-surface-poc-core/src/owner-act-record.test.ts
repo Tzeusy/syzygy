@@ -1,6 +1,10 @@
 // Parser classification: present / missing / malformed per field, and the
 // parser's promise to hold no notion of validity (a wrong value is present).
 
+import { execFile } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
+
 import { describe, expect, it } from 'vitest';
 
 import { parseOwnerActRecord, supersessionTargetsOf } from './owner-act-record.js';
@@ -94,6 +98,21 @@ describe('parseOwnerActRecord', () => {
     expect(parsed.projectIdentity).toEqual({ kind: 'present', value: 'project:other' });
   });
 
+  it.each<[string, boolean]>([
+    ["explicitly given by the owner's words recorded below", true],
+    ["explicitly selected by the owner's option selection recorded below", true],
+    ['explicitly given by the recorder', false],
+    ['not explicitly selected by performing the offered state-(1) phrase', false],
+    ["given by the owner's words recorded below", false],
+    ["not explicitly given by the owner's words recorded below", false],
+    ["never explicitly given by the owner's words recorded below", false],
+    ['rejected: "explicitly given by the owner\'s words recorded below"', false],
+    ["explicitly given by the owner's words recorded below, but rejected", false],
+  ])('reads the v4 recorder\'s trailer form exactly: %s', (trailer, explicit) => {
+    const parsed = parseOwnerActRecord(RECORD.replace('explicitly selected by performing the offered state-(1) phrase', trailer));
+    expect(parsed.provenanceState).toEqual({ kind: 'present', value: { label: 'owner-adopted (bootstrap, uncorrelated)', explicitSelection: explicit } });
+  });
+
   it('distinguishes a state-(1) label without explicit selection from one with it', () => {
     const parsed = parseOwnerActRecord(
       RECORD.replace(' — state (1),\nexplicitly selected by performing the offered state-(1) phrase', ' — state (1)'),
@@ -154,5 +173,22 @@ describe('parseOwnerActRecord', () => {
   it('returns every field missing for unrelated text', () => {
     const parsed = parseOwnerActRecord('# Not an act\n\nJust prose.\n');
     for (const field of Object.values(parsed)) expect(field.kind).toBe('missing');
+  });
+});
+
+// syzygy-3sjj review follow-up: the version-4 screening-scope recorder's own template, rendered by the recorder, reads as an explicit
+// state-(1) selection, so a drift in either the template's trailer or the parser's accepted forms fails here, not at the Butlers gate.
+describe('parseOwnerActRecord over the version-4 screening-scope recorder\'s template', () => {
+  const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+  it('reads the rendered record\'s provenance as an explicit state-(1) selection, and its digest and act type', async () => {
+    const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_v4_act as r
+sys.stdout.write(r.render_act(r.ACT, 'a' * 64, 'span', '2026-10-20', 'b' * 64, 'c' * 40, 'CONFIRM', 'the words', 'f' * 40,
+  '2026-10-20T00:00:00Z', 'd' * 64, '2026-10-01', '4', 'The effect.'))`;
+    // Run without blocking the worker: a synchronous python3 child is not a short local tool.
+    const { stdout } = await promisify(execFile)('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+    const parsed = parseOwnerActRecord(stdout);
+    expect(parsed.provenanceState).toEqual({ kind: 'present', value: { label: 'owner-adopted (bootstrap, uncorrelated)', explicitSelection: true } });
+    expect(parsed.exactDigest).toEqual({ kind: 'present', value: 'a'.repeat(64) });
+    expect(parsed.actType).toEqual({ kind: 'present', value: 'approve-policy' });
   });
 });

@@ -1,0 +1,22 @@
+# Bounded correction attestation — P-110 explicit-selection parser
+Verdict: CONFIRM (bounded authority correction only)
+Reviewed commit: `efcbb78f28be88043d8dc3edffa6f153cafff724`
+Subject SHA-256: `656a7ff4b14774a925a1f9514f0d37f95fb450191a1da40ab751ed6346772c3a` (`packages/three-surface-poc-core/src/owner-act-record.ts`)
+
+[Observed] Correction predecessor: `f16ab18f448ee8a443ec67b2e7cc4c6a545583f4`. This attestation reruns exactly the 12 synthetic authority probes retained by the preliminary authority review, using exact committed snapshots at the checkpoint above. The reproducer differs from the original only in its frozen head identifier; its case definitions and expected outcomes are unchanged. The parser source/test diff was read against the predecessor. No mutable consumer implementation, observed repository body, provider or daemon was read or exercised. No repository, Beads or external-review mutation was made.
+
+[Observed] The changed predicate recognizes only the supported complete affirmative state-(1) trailer encodings. The ordinary authority evaluator and artifact-field extractor are byte-identical to the predecessor snapshots. The same real evaluator is exercised with synthetic consent, policy and registry artifacts, controlled literal expectations, and injected recording-tag resolution.
+
+[Observed] Probe outcomes: 12 of 12 match their expected admission results. The affirmative legacy and v4 forms admit with `owner-trusted-bootstrap` provenance. Recorder attribution, missing “explicitly”, no selection, v4 denial with “not”, v4 denial with “never”, a rejected quoted v4 example, a negated legacy selection, and a phrase after the record head reject with `policy:state-1-not-explicitly-selected`. Missing and malformed provenance reject under their distinct case IDs. The frozen v4 act itself still parses as the exact `owner-adopted (bootstrap, uncorrelated)` label with `explicitSelection:true`.
+
+[Observed] A separate Python audit enumerated the 12 original case IDs, compared expected and actual admission values, enumerated the two admitting cases, and checked the rejection case IDs; mismatch remainder: empty over those 12 rows. This independently checks the denominator and summary printed by the JavaScript runner. Node command exit status: 0. Runtime: Node `v24.6.0`.
+
+[Observed] The frozen v4 act is byte-for-byte unchanged from the preliminary checkpoint. Its SHA-256 remains `bd7e386c733f2c25f3cf611db277af14cdf28a7dbb576c1c5145233ac9e9ebd3`; a second check resolves the same Git blob `727efcd1f2c64c04f6d451c1b3a506e3c720a9ba` at both checkpoints. No owner act, record text or governing RFC was edited to make these probes pass.
+
+[Inferred] The preliminary denial/quotation defect is corrected for this exact 12-case population, including the pre-existing negative legacy form. Recognizing the affirmative v4 declaration remains an extraction of the recorded claim under the existing RFC3-16(c) meaning, as explained in the preliminary raw; this attestation adopts no extra contract reading and independently proves no human attendance or state-(2) provenance.
+
+[Observed] Reproducer: `reproduce-authority.mjs`, SHA-256 `ebb9c3bc838d26bcf07e6b676d573193984ab0b69fa841c32c7ac079c0583fa2`. Exact result record: `authority-counterexamples.json`, SHA-256 `6ec7d0ffb262f0430e500ed52744b3646c563cc641067dcdf9de0eae397b0ad4`. Independent audit: `correction-audit.json`, SHA-256 `20a1bc21ab713516509006ea7450ae6d25be7f4658d4d4abb95571d6b61efb6a`. Subject manifest: `subject-manifest.json`, SHA-256 `157082ed7add6aa3dc3f53c40d5fbfdae9d36b2d84c02446cfe20bb1222918a2`. Exact command stdout, stderr and exit status are retained in `R-P110-EXPLICIT-SELECTION-PROBES-EFCBB78F-1-RAW.md`. Evidence is frozen read-only; use a fresh writable copy for another run so the retained outputs remain unchanged.
+
+[Observed] The writer-reported 262-case repository test run was not independently repeated in this bounded attestation and is not claimed here. No full-suite, clone-battery, CI, complete historical-encoding census, transport, provider, render or merge verification is established by these 12 cases. The separate redaction-core work-bound finding at the predecessor is outside this correction attestation.
+
+[Inferred] CONFIRM this bounded parser correction. Overall implementation and merge assessment: NOT ISSUED. Hold for the final frozen head and evidence release.

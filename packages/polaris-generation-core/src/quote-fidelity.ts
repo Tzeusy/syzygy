@@ -210,14 +210,18 @@ function quotedSpans(text: string, leadIn: string, verifies: (inner: string) => 
 }
 
 /** Findings for one block: every quoted span must occur, normalised, in a source the block cites. */
-export function checkBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, string>, leadIn: string = QUOTE_LEAD_IN): QuoteFinding[] {
+export type QuoteSourceText = string | readonly string[];
+export function checkBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, QuoteSourceText>, leadIn: string = QUOTE_LEAD_IN): QuoteFinding[] {
   return inspectBlockQuotes(block, sourceText, leadIn).findings;
 }
 
 /** Findings plus how many quoted spans the block carries, so a caller can tell a block with no quotes from one whose quotes all verified. */
-export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, string>, leadIn: string = QUOTE_LEAD_IN): { readonly quotes: number; readonly findings: QuoteFinding[] } {
+export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, QuoteSourceText>, leadIn: string = QUOTE_LEAD_IN): { readonly quotes: number; readonly findings: QuoteFinding[] } {
   const findings: QuoteFinding[] = [];
-  const cited = [...new Set(block.sourceIds)].map(id => sourceText.get(id)).filter((text): text is string => text !== undefined).map(normaliseSource);
+  const cited = [...new Set(block.sourceIds)].flatMap(id => {
+    const text = sourceText.get(id);
+    return text === undefined ? [] : typeof text === 'string' ? [text] : [...text];
+  }).map(normaliseSource);
   const verifies = (inner: string): boolean => {
     const wanted = normaliseForQuote(inner);
     return wanted.length > 0 && cited.some(source => occursIn(source, wanted));
@@ -238,12 +242,12 @@ export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<st
 }
 
 /** The text a block's quote may be checked against, by cited source id: a quotable source's own text, or for a piece of a split file the whole file's text (a quote may cross a piece boundary). The quotable rule is `quotableGenerationSources`: one whole-body span. */
-export function sourceTextById(sources: readonly GenerationSource[]): ReadonlyMap<string, string> {
+export function sourceTextById(sources: readonly GenerationSource[]): ReadonlyMap<string, QuoteSourceText> {
   const quotable = new Map(quotableGenerationSources(sources).map(source => [source.sourceId, source.text]));
-  const out = new Map(quotable);
+  const out = new Map<string, QuoteSourceText>(quotable);
   const files = new Map<string, GenerationSource[]>();
   for (const source of sources) {
-    if (source.segment === undefined || !quotable.has(source.sourceId)) continue;
+    if (source.redaction !== undefined || source.segment === undefined || !quotable.has(source.sourceId)) continue;
     const key = JSON.stringify([source.repositoryId, source.revision, source.path, source.objectId, source.segment.count]);
     files.set(key, [...(files.get(key) ?? []), source]);
   }
@@ -253,6 +257,23 @@ export function sourceTextById(sources: readonly GenerationSource[]): ReadonlyMa
     if (ordered.some((piece, i) => piece.segment!.index !== i)) continue;
     const whole = ordered.map(piece => quotable.get(piece.sourceId)!).join('');
     for (const piece of ordered) out.set(piece.sourceId, whole);
+  }
+  const redacted = new Map<string, GenerationSource[]>();
+  for (const source of sources) {
+    if (source.redaction === undefined || source.exclusion.excluded) continue;
+    const key = JSON.stringify([source.repositoryId, source.revision, source.path, source.objectId]);
+    redacted.set(key, [...(redacted.get(key) ?? []), source]);
+  }
+  for (const pieces of redacted.values()) {
+    const spans = pieces.flatMap(piece => piece.spans).sort((a, b) => a.original!.start - b.original!.start);
+    const runs: { start: number; text: string }[] = [];
+    for (const span of spans) {
+      const last = runs.at(-1);
+      if (last !== undefined && last.start + Buffer.byteLength(last.text) === span.original!.start) last.text += span.text;
+      else runs.push({ start: span.original!.start, text: span.text });
+    }
+    // Separate candidates prevent a quotation from joining the two sides of a withheld run or quoting a presentation marker.
+    for (const piece of pieces) out.set(piece.sourceId, runs.map(run => run.text));
   }
   return out;
 }
@@ -274,7 +295,7 @@ export function draftBlocks(draft: unknown): QuoteBlock[] {
 }
 
 /** Quote findings for a whole draft against the quotable sources. */
-export function checkDraftQuotes(draft: unknown, byId: ReadonlyMap<string, string>): QuoteFinding[] {
+export function checkDraftQuotes(draft: unknown, byId: ReadonlyMap<string, QuoteSourceText>): QuoteFinding[] {
   return draftBlocks(draft).flatMap(block => checkBlockQuotes(block, byId));
 }
 

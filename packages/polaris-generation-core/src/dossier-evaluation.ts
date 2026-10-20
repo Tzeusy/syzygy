@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
-import { validateGenerationSources, type GenerationSource } from './generation-source.js';
+import { generationSourceTextAt, validateGenerationSources, type GenerationSource } from './generation-source.js';
 import { inspectBlockQuotes, sourceTextById } from './quote-fidelity.js';
 
 /**
@@ -339,6 +339,11 @@ export function resolveQuote(quote: ScannedQuote, sources: ReadonlyMap<string, G
   if (quote.start === null || quote.end === null || !/^(?:0|[1-9]\d{0,9})$/u.test(quote.start) || !/^(?:0|[1-9]\d{0,9})$/u.test(quote.end)) return 'invalid-offsets';
   const start = Number(quote.start);
   const end = Number(quote.end);
+  if (source.redaction !== undefined) {
+    if (end <= start) return 'invalid-offsets';
+    const text = generationSourceTextAt(source, start, end);
+    return text === undefined ? 'out-of-range' : text === quote.text ? 'exact' : 'text-mismatch';
+  }
   const bytes = Buffer.from(body, 'utf8');
   if (end <= start) return 'invalid-offsets';
   const base = source.segment?.start ?? 0;
@@ -511,9 +516,11 @@ const sha256 = (bytes: Uint8Array | string): string => createHash('sha256').upda
 /** Canonical digest over the admitted population: each source's identity,
  * segment, exclusion and a SHA-256 of its body, in source-id order. */
 export function admittedSourcesDigest(sources: readonly GenerationSource[]): { readonly count: number; readonly sha256: string } {
+  if (sources.some(source => source.redaction !== undefined)) validateGenerationSources(sources);
   const rows = [...sources].sort((a, b) => (a.sourceId < b.sourceId ? -1 : a.sourceId > b.sourceId ? 1 : 0)).map(source => ({
     sourceId: source.sourceId, repositoryId: source.repositoryId, revision: source.revision, path: source.path, objectId: source.objectId,
     segment: source.segment === undefined ? null : { ...source.segment }, exclusion: { ...source.exclusion },
+    ...(source.redaction === undefined ? {} : { redaction: source.redaction, spans: source.spans }),
     bodySha256: source.body === undefined ? null : sha256(source.body),
   }));
   return { count: rows.length, sha256: digestCanonicalJson(rows, { maxBytes: 64_000_000, maxNodes: 4_000_000, maxDepth: 8 }).digest };

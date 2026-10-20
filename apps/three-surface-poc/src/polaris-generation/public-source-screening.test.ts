@@ -7,12 +7,13 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, excludedSourceId, generationSourceIdentity, runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
+import { withConsent, POLICY_ACT_FORMS, type AdmissionRecord } from '@syzygy/polaris-generation-consent';
+import { DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, excludedSourceId, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
 import { compileDetectors, detectSecrets, PWB_DENIED_PATH_RULES, PWB_SECRET_POLICY } from '@syzygy/three-surface-poc-core';
 
 import { renderDossier } from './dossier-render.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
-import { checkoutPolicyActPort, loadPublicSourceScreen, readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
+import { checkoutPolicyActPort, screenedRepoCorpusVerifier, loadPublicSourceScreen, readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
 import { buildPipelineRequest, CorpusRefusal, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig } from './repo-corpus.js';
 
 // Every secret is assembled at runtime so no literal token sits in this file.
@@ -314,7 +315,8 @@ describe('the policy act gate fails closed', () => {
     // puts in force, whichever version that is; the expected digest is read from the latest version's own record here.
     const fs = await import('node:fs');
     const repo = new URL('../../../../', import.meta.url);
-    const latest = ['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md']
+    // The chain's own closed list of forms, latest first, so a later version's install needs no edit here.
+    const latest = [...POLICY_ACT_FORMS].reverse().map(form => form.file)
       .map(file => new URL(`.syzygy/governance/decisions/${file}`, repo)).find(url => fs.existsSync(url));
     const port = checkoutPolicyActPort();
     if (latest === undefined) { await expect(loadPublicSourceScreen(port)).rejects.toThrow(/^Corpus read refused: public-source-policy: no screening-scope policy act is in force/u); return; }
@@ -430,12 +432,16 @@ describe('the project-documentation class', () => {
 
 // syzygy-wsev / P-105: version 3's code-content exemption in this screen. The exemption's texts are the builder's own (variant all),
 // re-derived from the checkout, so this holds before and after the act; the fixture exempts `.c` only of its fixture extensions.
+// Since the version-4 act (2026-10-20) the version-3 base is recovered through version 4's base, the version-3 row `all`.
 describe('the code-content exemption (screening scope version 3)', () => {
   const C_BODY = 'static int cmp(int a, int b, int c, int d) {\n    return a<b && c>d;\n}\n';
   let exemption: Record<string, unknown> = {};
   beforeAll(async () => {
-    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
-base, _mode = b.base_bytes()
+    const py = `import json, sys; sys.path.insert(0, 'scripts')
+import build_public_source_screening_scope_v2 as b2, build_public_source_screening_scope_v3 as b, build_public_source_screening_scope_v4 as b4
+v3_all, _mode = b4.base_bytes()
+base = b2.reverse_patch((b.ROOT / b.patch_path('all')).read_text(), v3_all)
+assert b.propose(base, 'all') == v3_all
 sys.stdout.write(json.dumps(json.loads(b.propose(base, 'all'))[b.SCOPE_KEY]['activeContent']['codeContentExemption']))`;
     const run = await promisify(execFile)('python3', ['-c', py], { cwd: fileURLToPath(new URL('../../../../', import.meta.url)), encoding: 'utf8' });
     exemption = JSON.parse(run.stdout) as Record<string, unknown>;
@@ -474,4 +480,88 @@ sys.stdout.write(json.dumps(json.loads(b.propose(base, 'all'))[b.SCOPE_KEY]['act
     expect(await loadPublicSourceScreen(exemptPort(exemptPolicy({ exemptExtensions: ['.h'] }))).then(() => '', (error: unknown) => (error as CorpusRefusal).reason))
       .toBe('public-source-policy: policy code-content exemption exemptExtensions is not a non-empty list of distinct sourceExtensions entries');
   });
+});
+
+
+describe('the v4 redacted corpus behind the original-object verification boundary', () => {
+  const mixed = 'a\rg\ntoken=abcdefghij\nh\nvisible\nlast\n';
+  const current = new Uint8Array(readFileSync(new URL('../../../../.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json', import.meta.url)));
+  const policyAct: PublicSourcePolicyActPort = { read: async () => ({ actRecord: actRecord(sha(current)), policy: current, classActInForce: true }) };
+
+  it('returns only marked retained material with original identity, line coordinates and exact counts', async () => {
+    const only = fixtureRepo({ 'docs/mixed.md': mixed, 'src/secret.c': 'token=abcdefghij\n' });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct });
+    expect(corpus.count).toMatchObject({ listed: 2, selected: 2, sourceRows: 2, redactedFiles: 1, withheldLines: 3, secretDetectorMatches: 1 });
+    const kept = corpus.sources.find(source => source.path === 'docs/mixed.md')!;
+    expect(kept.objectId).toBe(objectIdOf('docs/mixed.md', only.root, only.commit));
+    expect(kept.body).toBe('a\r[redacted-span: 3 withheld line(s) in this file]\nvisible\nlast\n');
+    expect(kept.spans.map(span => [span.original, span.text])).toEqual([
+      [{ start: 0, startLine: 1, endLine: 1 }, 'a\r'], [{ start: 23, startLine: 5, endLine: 6 }, 'visible\nlast\n'],
+    ]);
+    expect(JSON.stringify(corpus)).not.toContain('abcdefghij');
+    expect(JSON.stringify(corpus)).not.toContain('token=');
+    expect(validateGenerationSources(corpus.sources)).toHaveLength(2);
+    const request = buildPipelineRequest(corpus, { ...cfg(only.commit), budget, readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [] }, Date.now());
+    const fresh = await screenedRepoCorpusVerifier(only.root, cfg(only.commit), { admission: allow, policyAct })(request);
+    expect(Array.isArray(fresh)).toBe(true);
+    expect(validateGenerationSources(fresh as readonly GenerationSource[]).find(source => source.path === 'docs/mixed.md')?.body).toBe(kept.body);
+  });
+
+  it('refuses wrong original bytes before screening and fails replay closed when the fresh object read changes', async () => {
+    const only = fixtureRepo({ 'docs/mixed.md': mixed });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct });
+    const ports = { admission: allow, policyAct, readBlobs: (_repo: string, objects: readonly string[]) => new Map(objects.map(oid => [oid, Buffer.from('arbitrary safe body\n')])) };
+    await expect(readScreenedRepoCorpus(only.root, cfg(only.commit), ports)).rejects.toThrow('corpus-object-mismatch');
+    expect(await screenedRepoCorpusVerifier(only.root, cfg(only.commit), ports)(buildPipelineRequest(corpus, { ...cfg(only.commit), budget, readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [] }, Date.now()))).toBe(false);
+  });
+
+  it('binds the complete mixed population through fresh verification and consent before any provider input', async () => {
+    const only = fixtureRepo({ 'docs/mixed.md': mixed, 'src/control.c': 'int ordinary = 7;\n', '.env': 'withheld-fixture\n' });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct });
+    const now = Date.now(), sent: string[] = [];
+    const request = buildPipelineRequest(corpus, { ...cfg(only.commit), budget,
+      readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [] }, now);
+    const routes = Object.fromEntries(Object.keys(request.routes).map(stage => [stage, 'fixture'])) as typeof request.routes;
+    const recordBase = { project: 'project:fixture', version: '1', digest: 'a'.repeat(64), inForceAt: now - 1, withdrawnAt: null,
+      supersedes: null, supersessionAt: null, upstream: null, revisionLabels: [] };
+    const records: AdmissionRecord[] = [
+      { ...recordBase, recordId: 'fixture-observation', class: 'observation', repositoryId: 'repository:fixture', providerId: null,
+        admittedRevisions: [only.commit], revisionLabels: ['fixture'], admittedRepositories: [], contentClasses: [] },
+      { ...recordBase, recordId: 'fixture-egress', class: 'egress', repositoryId: null, providerId: 'fixture-provider', admittedRevisions: [],
+        admittedRepositories: ['repository:fixture'], contentClasses: ['project-documentation', 'code-content'] },
+    ];
+    const base: PipelinePorts = { now: () => now, verifySources: screenedRepoCorpusVerifier(only.root, cfg(only.commit), { admission: allow, policyAct }),
+      permissionIdentity: async () => { throw Error('consent must replace this port'); },
+      admit: async input => ({ kind: 'reserved', permit: { attemptId: String(input.ordinal), maxUsageUnits: 1, maxOutputBytes: 1_000 } }),
+      permitted: async () => true, releaseUnsent: async () => undefined, responseSchema: () => ({ version: 'fixture', schema: {} }),
+      generate: async input => { sent.push(input.input); return { body: '{}', model: 'fixture', usageUnits: 1 }; },
+      validate: (_stage, data) => data, record: async () => undefined, lateReceipt: async () => undefined, fidelity: () => ({ blocking: false, findings: [] }) };
+    const run = async (sources: readonly GenerationSource[]) => runGenerationPipeline({ ...request, routes, sources }, withConsent(base, {
+      now: () => now, reader: { read: async () => records }, consentingProject: 'project:fixture', routeProviders: { fixture: 'fixture-provider' },
+      sources, contentClassOf: source => source.path.startsWith('docs/') ? 'project-documentation' : 'code-content', instructionClass: 'code-content', audit: async () => undefined,
+    }), new AbortController().signal);
+    const control = await run(JSON.parse(JSON.stringify(corpus.sources)));
+    expect(control.status === 'stopped' ? control.reason : control.status).toBe('awaiting-rendered-review');
+    expect(sent).toHaveLength(5);
+    expect(JSON.parse(sent[1]!).inputs.sources.map((source: { sourceId: string }) => source.sourceId).sort()).toEqual(corpus.sources.map(source => source.sourceId).sort());
+    expect(sent[0]).toContain('[redacted-span: 3 withheld line(s) in this file]');
+    sent.length = 0;
+    const ordinary = corpus.sources.find(source => source.path === 'src/control.c')!;
+    const forgedBody = 'pass' + 'word=forged-secret-sentinel\n';
+    const forged = generationSourcesForBody({ ...ordinary, objectId: gitBlobObjectId(forgedBody), body: forgedBody } as Parameters<typeof generationSourcesForBody>[0])[0]!;
+    const extra = generationSourcesForBody({ ...ordinary, sourceId: 'extra-source', path: 'src/unpinned.c', body: ordinary.body!, objectId: ordinary.objectId! } as Parameters<typeof generationSourcesForBody>[0])[0]!;
+    const populations = [
+      corpus.sources.map(source => source.sourceId === ordinary.sourceId ? forged : source),
+      corpus.sources.filter(source => source.sourceId !== ordinary.sourceId),
+      corpus.sources.map(source => source.objectId === null ? { ...source, exclusion: { excluded: true as const, reason: 'active-content' as const } } : source),
+      [...corpus.sources, extra],
+    ];
+    for (const sources of populations) expect(await run(sources)).toMatchObject({ status: 'stopped', reason: 'source-refused' });
+    expect(sent).toHaveLength(0);
+    const aliases = corpus.sources.map(source => source.objectId !== null ? source : { ...source, sourceId: `s-${'c'.repeat(24)}`, path: `withheld/s-${'c'.repeat(24)}` });
+    expect((await run(aliases)).status).toBe('awaiting-rendered-review');
+    expect(sent).toHaveLength(5);
+    expect(sent.join('\n')).not.toContain('forged-secret-sentinel');
+  });
+
 });
