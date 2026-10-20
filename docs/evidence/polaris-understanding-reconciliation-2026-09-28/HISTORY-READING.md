@@ -415,7 +415,7 @@ it already read the status pages and the governance checker, at C1.
       path no adopted subject depends on can contest an adopted one. That
       matches the tool and fails closed.
   - Round 17 (`HISTORY-REVIEW-17-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
-    only) binds the current recorder, closing both residuals of round 16's
+    only) bound the recorder as it stood then, closing both residuals of round 16's
     N1 (`syzygy-lmjg`). Under the 2026-09-26 stopping rule its notes are
     answered here, not in the reviewed bytes:
     - N1: an honest revert (P11) is now refused; named above as a
@@ -444,6 +444,25 @@ it already read the status pages and the governance checker, at C1.
     18 reviewed a commit before (d2) was applied, and with (d2) applied
     the unrepaired selftest failed ("candidate input drift: vision.md"),
     because its fixture took today's `vision.md` as C1's.
+  - Round 19 (`HISTORY-REVIEW-19-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
+    only) binds the current recorder. A first round-19 dispatch left no raw;
+    this is the re-dispatch, over the rebased branch head. Under the
+    2026-09-26 stopping rule its notes are answered here, not in the
+    reviewed bytes:
+    - N1: round 18's N2 disposition said the raw that bound `vision.md` is
+      named in this page and in the D8 log row, and at the reviewed commit
+      neither named it. Both do now: the raw that binds today's
+      `vision.md` is
+      `docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md`
+      (`CONFIRM WITH EXCEPTIONS`), and row D8 of `DOCTRINE-AMENDMENT-LOG.md`
+      records it with (d2)'s application.
+    - N2: a mutant comparing stripped verdict headers survives, so the exact
+      header form of the reconciliation raw is unpinned (the code refuses
+      `\r`). A fixture needs a recorder change and a new history review;
+      left for the recorder's next change.
+    - N3: rows 156 to 158 record `f3e5ffa7`, a commit the branch's rebase
+      left off-branch; the recorder bytes there equal the reviewed ones, and
+      the stored fragments re-run at the reviewed commit.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
