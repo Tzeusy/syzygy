@@ -631,6 +631,42 @@ describe('the content-class gate on the fidelity packet', () => {
   });
 });
 
+// P-110 (syzygy-3sjj): a body screening retains as redacted-span (policy version 4). The screen's own reading is held to the builder's
+// oracle in screen.test.ts; here its target-body answer for docs/notes.txt is fixed, so the packet's citedSpanRule is what is tested.
+describe('the fidelity packet over a body retained as redacted-span', () => {
+  const DOC_POLICY = new TextEncoder().encode(JSON.stringify({
+    policyId: 'fixture-public-source', policyVersion: '4', detectors: LIVE_POLICY.detectors, sourceAdmission: LIVE_POLICY.sourceAdmission,
+    publicSourceScope: { contentClassification: { rules: LIVE_POLICY.publicSourceScope.contentClassification.rules } },
+  }));
+  const NOTES_CITED = [{ subject: 'draft', citationId: 'c-p2' }, { subject: 'inventory', citationId: 'c-e-snap' }];
+  const packetWith = async (withheld: readonly number[]) => {
+    const base = buildDossierScreen(DOC_POLICY, true);
+    if (!base.ok) throw new Error(base.why);
+    const retained = NOTES.split('\n').map((line, i) => (withheld.includes(i + 1) ? '' : line)).join('\n');
+    world = {
+      screen: { ok: true, screen: { ...base.screen, screenTargetBody: (body, repositoryPath) => (repositoryPath === 'docs/notes.txt' ? { kind: 'redacted', retained, withheld, detectorIds: ['credential-assignment'] } : base.screen.screenTargetBody(body, repositoryPath)) } },
+      classes: ['code-content', 'project-documentation'],
+    };
+    const run = await prepared();
+    const result = await reviewPacket(run, { kind: 'fidelity' }, deps());
+    if (!result.ok) throw new Error(result.refusal.reason);
+    const text = fs.readFileSync(path.join(result.report.directory, 'packet.json'), 'utf8');
+    return { spans: JSON.parse(text).spans as Record<string, unknown>[], text, counts: 'spans' in result.report ? result.report.spans : undefined };
+  };
+
+  it('carries a span that includes no withheld line, with the body\'s redaction count beside it', async () => {
+    const { spans } = await packetWith([1]);
+    expect(spans[1]).toEqual({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'admitted', text: 'Snapshots are written periodically.\n', redaction: { redactionClass: 'redacted-span', withheldLines: 1 }, citedBy: NOTES_CITED });
+  });
+  it('withholds a span that includes a withheld line whole, carrying no byte of it', async () => {
+    const { spans, counts } = await packetWith([2]);
+    expect(spans[1]).toEqual({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'redacted-span', redaction: { redactionClass: 'redacted-span', withheldLines: 1 }, citedBy: NOTES_CITED });
+    // The draft and inventory are the agents' own text and quote it (class-gate.ts residual E1); no span carries it.
+    expect(JSON.stringify(spans)).not.toContain('Snapshots are written periodically');
+    expect(counts).toEqual({ admitted: 3, excluded: 2 });
+  });
+});
+
 // syzygy-up98 (R-DOSSIER-AGENT-PROVIDER-V2-1 finding 1): the packets are class-gated on the run's declared pair, so session-prompt
 // refuses a --tool whose pair with the run's provider has no in-force statement listing every class the run's statement lists.
 describe('session-prompt --tool and the session pair\'s statement', () => {

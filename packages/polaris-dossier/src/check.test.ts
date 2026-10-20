@@ -273,6 +273,46 @@ describe('check: each rule refuses its own violation', () => {
   });
 });
 
+// P-110 (syzygy-3sjj): a body screening retains as redacted-span (policy version 4). The fixture policy carries the live secretRedaction
+// with code-content as its redacted class, so src/config.c (a password on line 1) is retained with lines 1 and 2 withheld.
+describe('check: a quotation from a body retained as redacted-span', () => {
+  const REDACTING = buildDossierScreen(new TextEncoder().encode(JSON.stringify({
+    policyId: 'fixture-public-source', policyVersion: '4', detectors: LIVE_POLICY.detectors, sourceAdmission: LIVE_POLICY.sourceAdmission,
+    publicSourceScope: {
+      contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c', '.h', '.ts', '.txt'] }] },
+      secretRedaction: { ...LIVE_POLICY.publicSourceScope.secretRedaction, redactedClasses: ['code-content'] },
+    },
+  })));
+  const withQuote = async (quote: string, lineNo: number) => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => {
+      d.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: `The project states: "${quote}"`, citations: [cite('c-p2', 'src/config.c', lineNo, lineNo)], quotations: ['c-p2'], children: [] };
+    }));
+    return { run, result: report(await checkDraft(run, {}, deps({ loadScreen: async () => REDACTING }))) };
+  };
+  it('verifies a quotation from a line no match or guard touches, and records the redaction count, not the lines', async () => {
+    const { run, result } = await withQuote('int port = 6379;', 3);
+    expect(result.findings).toEqual([]);
+    expect(result.excludedContent).toEqual([]);
+    expect(result.quotations.map((q) => q.blockId)).toEqual(['intro', 'p1', 'p2']);
+    expect(result.citedBlobs.find((blob) => blob.path === 'src/config.c')).toMatchObject({ outcome: 'admitted', redaction: { redactionClass: 'redacted-span', withheldLines: 2 } });
+    expect(read(run, 'checks/rev-0.json')).not.toContain(SECRET);
+  });
+  it('renders a quotation from a withheld guard line Unknown (excluded-content), with no finding', async () => {
+    const { result } = await withQuote('The port is fixed.', 2);
+    expect(result.findings).toEqual([]);
+    expect(result.excludedContent).toEqual([{ blockId: 'p2', at: '$.sections[0].paragraphs[1]', index: 0, citationId: 'c-p2', unknownReason: 'excluded-content' }]);
+    expect(result.quotations.map((q) => q.blockId)).toEqual(['intro', 'p1']);
+  });
+  it('excludes the body whole without the redaction rule, as before', async () => {
+    const run = await briefedRun();
+    writeDraft(run, mutate((d) => {
+      d.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: 'The project states: "int port = 6379;"', citations: [cite('c-p2', 'src/config.c', 3, 3)], quotations: ['c-p2'], children: [] };
+    }));
+    expect(report(await checkDraft(run, {}, deps())).excludedContent.map((q) => q.blockId)).toEqual(['p2']);
+  });
+});
+
 describe('check: a quotation from an excluded file', () => {
   it.each<[string, string, string, number]>([
     ['a file outside the code-content extensions', 'README.md', 'Kestrel is a key-value server.', 2],

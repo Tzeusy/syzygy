@@ -459,6 +459,22 @@ describe('render', () => {
     expect(await renderRun(run, renderDeps({ renderer: undeclared }))).toMatchObject({ ok: true });
   });
 
+  // P-110 (syzygy-3sjj): a body screening retains as redacted-span (policy version 4) is not drawn on the pages: a counted row naming the
+  // redaction, and every quotation from it withheld, its block Unknown. The screen here retains src/kestrel.c with line 4 withheld.
+  it('draws no byte of a body retained as redacted-span, and names its redaction on the discovery page', async () => {
+    const run = await prepared(draft(), false);
+    if (!SCREEN.ok) throw new Error(SCREEN.why);
+    const base = SCREEN.screen;
+    const retained = KESTREL.split('\n').map((line, i) => (i === 3 ? '' : line)).join('\n');
+    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, withheld: [4], detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
+    const result = await renderRun(run, renderDeps({ loadScreen: async () => redacting }));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    const pages = [...readSite(result.report.site).values()].join('\n');
+    for (const line of KESTREL.split('\n').filter((row) => row.length > 8)) expect(pages).not.toContain(line);
+    expect(pages).toContain('retained by screening as redacted-span with 1 withheld line(s); its retained text is not shown on these pages');
+    expect(pages).toContain('a quotation it rests on is from a file screening retained as redacted-span, whose text these pages do not show, so the quotation is not shown');
+  });
+
   it('refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure', async () => {
     const run = await prepared(draft(), false);
     expect(await renderRun(run, renderDeps({ now: () => NOW + 3_600_000 }))).toMatchObject({ ok: false, refusal: { stage: 'deadline' } });
