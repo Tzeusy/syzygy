@@ -297,9 +297,89 @@ def consumption_assessment(path: str, ordinal: int, heading: str, block: str,
     if (not entry.get("reason") or not entry.get("method") or not entry.get("consumption")
             or not entry.get("evidence_quotes") or any(q not in block for q in entry["evidence_quotes"])):
         raise ValueError(f"unsubstantiated consumption disposition: {key}")
+    if (not entry.get("input_boundary") or not entry.get("output_and_oracle_boundary")
+            or not entry.get("semantic_disposition")
+            or type(entry.get("normative_block_text_change_required")) is not bool):
+        raise ValueError(f"consumption/text-validity axes missing: {key}")
+    if (entry["classification"] == "explicitly-unaffected"
+            and entry["normative_block_text_change_required"]):
+        raise ValueError(f"untied disposition claims a required text amendment: {key}")
     if entry["classification"] == "undecidable" and not entry.get("settling_evidence"):
         raise ValueError(f"undecidable consumption lacks settling evidence: {key}")
     return {**record, **entry}
+
+
+def retained_evidence_findings(overrides: dict[str, bytes] | None = None) -> list[str]:
+    """Check this package's inert retained evidence, not the source judgments."""
+    overrides = overrides or {}
+
+    def read(relative: str) -> bytes:
+        name = Path(relative)
+        if name.is_absolute() or ".." in name.parts:
+            raise ValueError("retained evidence path escapes candidate")
+        return overrides[relative] if relative in overrides else (CANDIDATE / name).read_bytes()
+
+    findings = []
+    selection = json.loads(read("evidence/EVIDENCE-SELECTION.json"))
+    for row in selection["rows"]:
+        body = read(row["candidate_relative_path"])
+        if sha256(body) != row["sha256"] or len(body) != row["bytes"]:
+            findings.append("retained-copy identity: " + row["candidate_relative_path"])
+    criteria = json.loads(read("evidence/source-return/SOURCE-CRITERIA.json"))
+    for clause in criteria["clauses"]:
+        source = git("show", clause["commit"] + ":" + clause["path"])
+        quote = "".join(source.decode().splitlines(keepends=True)[
+            clause["line_start"] - 1:clause["line_end_inclusive"]])
+        if (sha256(source) != clause["source_sha256"]
+                or quote != clause["verbatim_quote"]
+                or sha256(quote.encode()) != clause["quote_sha256"]):
+            findings.append("source-criterion quote: " + clause["identifier"])
+    replay = json.loads(read("evidence/encoded-byte/BYTE-REPLAY.json"))
+    rows = 0
+    for pair in replay["pairs"]:
+        sizes = {}
+        for side in ("inline", "reference"):
+            literal = json.loads(read(pair[side + "_path"]))
+            encoded = json.dumps(literal, ensure_ascii=False, separators=(",", ":")).encode()
+            sizes[side] = len(encoded)
+            if (len(encoded) != pair[side + "_compact_bytes"]
+                    or sha256(encoded) != pair[side + "_compact_sha256"]):
+                findings.append("literal-byte count/hash: " + pair["name"] + "/" + side)
+        for row in pair["truth_table"]:
+            rows += 1
+            if (row["inlineFits"] != (sizes["inline"] <= row["limit"])
+                    or row["referenceFits"] != (sizes["reference"] <= row["limit"])):
+                findings.append("literal-byte boundary: " + pair["name"] + "/" + str(row["limit"]))
+        interval = [min(sizes.values()), max(sizes.values()) - 1]
+        if pair["separating_interval_inclusive"] != interval:
+            findings.append("literal-byte separating interval: " + pair["name"])
+    if len(replay["pairs"]) != 3 or rows != 18:
+        findings.append("literal-byte witness population differs from three pairs/eighteen rows")
+    return findings
+
+
+def mutation_receipt(name: str, subject: str, before: bytes, after: bytes,
+                     expected: str, findings: list[str]) -> None:
+    """Emit exact old/new scratch fragments for the caller's outside-Git log."""
+    old, new = before.decode(), after.decode()
+    prefix = 0
+    while prefix < min(len(old), len(new)) and old[prefix] == new[prefix]:
+        prefix += 1
+    suffix = 0
+    while (suffix < min(len(old), len(new)) - prefix
+           and old[len(old) - suffix - 1] == new[len(new) - suffix - 1]):
+        suffix += 1
+    fragments = [{"old": old[prefix:len(old) - suffix],
+                  "new": new[prefix:len(new) - suffix]}]
+    print("MUTATION-EVIDENCE " + json.dumps({
+        "name": name, "subject": subject, "beforeSha256": sha256(before),
+        "afterSha256": sha256(after), "fragments": fragments,
+        "expectedPredicate": expected, "findings": findings,
+        "rejectedAtExpectedPredicate": any(expected in f for f in findings),
+        "ranAt": {"commit": git("rev-parse", "HEAD").decode().strip(),
+                  "scriptSha256": sha256(Path(__file__).read_bytes()),
+                  "instantUtc": datetime.datetime.now(datetime.timezone.utc).isoformat()},
+        "scope": "preparation-only scratch mutation; no product/runtime claim"}))
 
 
 def round1_counterexample_findings(data: dict, assessments: dict) -> list[str]:
@@ -440,6 +520,7 @@ def compatibility_findings() -> list[str]:
 def check(write: bool = False) -> list[str]:
     current, proposed = collect()
     errors = structure_findings(proposed, current)
+    errors.extend(retained_evidence_findings())
     errors.extend(compatibility_findings())
     cases = json.loads((CANDIDATE / "fixtures/wire-cases.json").read_text())["cases"]
     errors.extend(fixture_findings(cases))
@@ -462,6 +543,7 @@ def check(write: bool = False) -> list[str]:
 def selftest() -> list[str]:
     current, proposed = collect()
     errors = structure_findings(proposed, current)
+    errors.extend(retained_evidence_findings())
     errors.extend(compatibility_findings())
     if errors:
         return ["baseline fails before mutations", *errors]
@@ -494,10 +576,85 @@ def selftest() -> list[str]:
         mutants.append((name, changed, expected))
     for name, changed, expected in mutants:
         findings = structure_findings(changed, current)
+        subject = next(p for p in SUBJECTS if changed[p] != proposed[p])
+        mutation_receipt(name, subject, proposed[subject], changed[subject], expected, findings)
         if not any(expected in f for f in findings):
             errors.append(f"mutant {name} survived its own predicate: {findings}")
+    # These mutate only inert evidence bytes in memory. They test preservation,
+    # exact source quotations and literal byte predicates, not authored adequacy.
+    data_mutants = []
+    relative = "evidence/source-return/SOURCE-DECISION-RECONCILIATION-CURATED.md"
+    before = (CANDIDATE / relative).read_bytes()
+    data_mutants.append(("retained-source-copy", relative, before, before + b"\n", "retained-copy identity"))
+    relative = "evidence/source-return/SOURCE-CRITERIA.json"
+    before = (CANDIDATE / relative).read_bytes()
+    changed = json.loads(before)
+    changed["clauses"][0]["verbatim_quote"] += "invented clause text"
+    data_mutants.append(("source-quote", relative, before,
+                         (json.dumps(changed, ensure_ascii=False, indent=2) + "\n").encode(),
+                         "source-criterion quote"))
+    relative = "evidence/encoded-byte/BYTE-REPLAY.json"
+    before = (CANDIDATE / relative).read_bytes()
+    for name, expected in (("byte-count", "literal-byte count/hash"),
+                           ("byte-hash", "literal-byte count/hash"),
+                           ("byte-boundary", "literal-byte boundary"),
+                           ("byte-interval", "literal-byte separating interval"),
+                           ("byte-population", "literal-byte witness population")):
+        changed = json.loads(before)
+        if name == "byte-count":
+            changed["pairs"][0]["inline_compact_bytes"] += 1
+        elif name == "byte-hash":
+            changed["pairs"][0]["inline_compact_sha256"] = "0" * 64
+        elif name == "byte-boundary":
+            changed["pairs"][0]["truth_table"][0]["inlineFits"] = True
+        elif name == "byte-interval":
+            changed["pairs"][0]["separating_interval_inclusive"][0] += 1
+        else:
+            changed["pairs"].pop()
+        data_mutants.append((name, relative, before,
+                             (json.dumps(changed, ensure_ascii=False, indent=2) + "\n").encode(), expected))
+    relative = "evidence/EVIDENCE-SELECTION.json"
+    before = (CANDIDATE / relative).read_bytes()
+    changed = json.loads(before)
+    changed["rows"][0]["candidate_relative_path"] = "../foreign"
+    data_mutants.append(("retained-path-escape", relative, before,
+                         (json.dumps(changed, ensure_ascii=False, indent=2) + "\n").encode(),
+                         "retained evidence path escapes candidate"))
+    for name, relative, before, after, expected in data_mutants:
+        try:
+            findings = retained_evidence_findings({relative: after})
+        except ValueError as exc:
+            findings = [str(exc)]
+        mutation_receipt(name, relative, before, after, expected, findings)
+        if not any(expected in f for f in findings):
+            errors.append(f"retained evidence mutant survived its predicate: {name}: {findings}")
+    original = next(iter(load_consumption_assessments().values()))
+    source = git("show", BASE + ":" + original["path"]).decode()
+    headings = list(re.finditer(r"^### Requirement: (.+)$", source, re.M))
+    index = original["ordinal"] - 1
+    block = source[headings[index].start():headings[index + 1].start() if index + 1 < len(headings) else len(source)]
+    for name, field, value, expected in (
+        ("missing-validity-axis", "normative_block_text_change_required", None, "consumption/text-validity axes missing"),
+        ("untied-text-amendment", "normative_block_text_change_required", True, "untied disposition claims a required text amendment"),
+    ):
+        changed = {**original, field: value}
+        try:
+            consumption_assessment(original["path"], original["ordinal"], original["heading"], block,
+                                   {(original["path"], original["ordinal"]): changed})
+            findings = []
+        except ValueError as exc:
+            findings = [str(exc)]
+        mutation_receipt(name, "REQUIREMENT-CONSUMPTION.json#" + str(original["sequence"]),
+                         json.dumps(original, sort_keys=True).encode(), json.dumps(changed, sort_keys=True).encode(),
+                         expected, findings)
+        if not any(expected in f for f in findings):
+            errors.append(f"consumption/text-validity axis mutant survived: {name}: {findings}")
     wrong = "--- a/foreign\n+++ b/foreign\n"
-    if not patch_header_findings(wrong, SPEC):
+    foreign_findings = patch_header_findings(wrong, SPEC)
+    mutation_receipt("foreign-patch-path", "proposed/spec.md.patch",
+                     (CANDIDATE / "proposed/spec.md.patch").read_bytes(), wrong.encode(),
+                     "patch path/header population differs", foreign_findings)
+    if not foreign_findings:
         errors.append("foreign patch-path mutant survived")
     cases = json.loads((CANDIDATE / "fixtures/wire-cases.json").read_text())["cases"]
     errors.extend(fixture_findings(cases))
@@ -505,7 +662,11 @@ def selftest() -> list[str]:
         errors.append("independent fixture population differs")
     poisoned = copy.deepcopy(cases)
     poisoned[0]["expected"]["unknownCount"] = 0
-    if not fixture_findings(poisoned):
+    poison_findings = fixture_findings(poisoned)
+    mutation_receipt("literal-expectation-poison", "fixtures/wire-cases.json",
+                     json.dumps(cases, sort_keys=True).encode(), json.dumps(poisoned, sort_keys=True).encode(),
+                     "literal unknownCount differs", poison_findings)
+    if not poison_findings:
         errors.append("optimistic fixture expectation mutant survived")
     regressions = json.loads((CANDIDATE / "fixtures/round-1-counterexamples.json").read_text())
     errors.extend(round1_counterexample_findings(regressions, load_consumption_assessments()))
@@ -519,16 +680,27 @@ def selftest() -> list[str]:
         errors.append("manifest subject denominator differs")
     changed = copy.copy(proposed)
     changed[SPEC] += b"\n"
-    if not verify_manifest(rendered, manifest(changed)):
+    drifted = manifest(changed)
+    drift_findings = verify_manifest(rendered, drifted)
+    mutation_receipt("subject-byte-drift", SPEC, proposed[SPEC], changed[SPEC],
+                     "manifest differs from proposed subject bytes", drift_findings)
+    if not drift_findings:
         errors.append("subject-byte drift did not retire manifest")
     lines = rendered.splitlines(keepends=True)
     lines[-1], lines[-2] = lines[-2], lines[-1]
-    if verify_manifest("".join(lines), rendered) != ["manifest path population or order differs"]:
+    reordered = "".join(lines)
+    order_findings = verify_manifest(reordered, rendered)
+    mutation_receipt("manifest-row-order", MANIFEST_NAME, rendered.encode(), reordered.encode(),
+                     "manifest path population or order differs", order_findings)
+    if order_findings != ["manifest path population or order differs"]:
         errors.append("manifest row-order mutant survived")
     poisoned_hash = rendered.replace(sha256(proposed[SPEC]), "0" * 64)
-    if verify_manifest(poisoned_hash, rendered) != ["manifest differs from proposed subject bytes"]:
+    hash_findings = verify_manifest(poisoned_hash, rendered)
+    mutation_receipt("manifest-row-hash", MANIFEST_NAME, rendered.encode(), poisoned_hash.encode(),
+                     "manifest differs from proposed subject bytes", hash_findings)
+    if hash_findings != ["manifest differs from proposed subject bytes"]:
         errors.append("manifest row-hash mutant survived")
-    print(f"Preparation selftest: {len(mutants)} semantic/structure mutants, foreign patch path, literal-expectation poison, subject-byte drift and two manifest mutants; {len(cases)} independent wire cases (7 valid, 39 refused); {len(regressions['wireCounterexamples'])} retained wire counterexamples plus two classifier regressions.")
+    print(f"Preparation selftest: {len(mutants)} semantic/structure, {len(data_mutants)} inert-evidence and two validity-axis mutants, foreign patch path, literal-expectation poison, subject-byte drift and two manifest mutants; {len(cases)} independent wire cases (7 valid, 39 refused); {len(regressions['wireCounterexamples'])} retained wire counterexamples plus two classifier regressions. Exact old/new scratch fragments are emitted as MUTATION-EVIDENCE lines for outside-Git retention.")
     return errors
 
 
