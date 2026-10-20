@@ -2106,6 +2106,10 @@ POC_VERSIONED_SUCCESSORS = (
      f"{DECISIONS}/THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-SIGNOFF-v1.0.md",
      f"{CANDIDATES}/three-surface-poc-vocabulary-epistemic-amendment/"
      "THREE-SURFACE-POC-VOCABULARY-EPISTEMIC-AMENDMENT-MANIFEST.txt"),
+    ("three-surface-poc-governedby-reference-amendment", "1.0",
+     f"{DECISIONS}/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md",
+     f"{CANDIDATES}/three-surface-poc-governedby-reference-amendment/"
+     "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-MANIFEST.txt"),
 )
 POC_READABILITY_LABEL = "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR"
 POC_READABILITY_DIR = f"{CANDIDATES}/three-surface-poc-readability-successor"
@@ -4530,6 +4534,11 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         latest = None
         for package, version, record_rel, manifest_rel in POC_VERSIONED_SUCCESSORS:
             if poc_successor_inputs is None:
+                if package == "three-surface-poc-governedby-reference-amendment":
+                    import pathlib
+                    import prepare_three_surface_poc_governedby_reference_recording as reference
+                    if not reference.is_signed(pathlib.Path(ROOT)):
+                        continue
                 record_body = read_if_present(record_rel)
                 body = read_if_present(manifest_rel)
             else:
