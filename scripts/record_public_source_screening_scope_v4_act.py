@@ -575,6 +575,14 @@ def _accepts(act, argument, inp) -> bool:
         return False
 
 
+def _rc(fn) -> int:
+    """fn's return code, or -1 when it raises (a crash is never a refusal)."""
+    try:
+        return fn()
+    except Exception:  # noqa: BLE001 - any crash fails the predicate that reads this
+        return -1
+
+
 def _raises(fn, needle: str = "") -> bool:
     try:
         fn()
@@ -814,12 +822,15 @@ def selftest() -> int:
         results.append(("record and block render", False))
     results.append(("approved bytes without the redaction object refused before rendering",
                     _raises(lambda: expected(act, arg, "2026-10-20", words, make(), INSTANT_OK), "do not carry")))
-    results.append(("bad date refused", _raises(lambda: expected(act, arg, "20/10", words, make(), INSTANT_OK))))
+    # over the real inputs, so the date or instant is the only reason left to refuse (make()'s bytes fail effect_of)
+    results.append(("bad date refused", _raises(lambda: expected(act, real_rows["span"], "20/10", words, real_inp,
+                                                                 INSTANT_OK), "date must be")))
     results.append(("record and block carry the instant exactly once each",
                     record.count(f"Recorded at (UTC): {INSTANT_OK}") == 1 and block.count(f"`{INSTANT_OK}`") == 1))
     for name, bad in (("a date-only instant", "2026-10-20"), ("a local-offset instant", "2026-10-20T09:30:00+08:00"),
                       ("an instant on another date", "2026-10-21T00:00:00Z")):
-        results.append((f"{name} refused", _raises(lambda bad=bad: expected(act, arg, "2026-10-20", words, make(), bad))))
+        results.append((f"{name} refused", _raises(lambda bad=bad: expected(act, real_rows["span"], "2026-10-20", words,
+                                                                            real_inp, bad), "instant must be")))
 
     # end to end in a scratch copy with no git: record variant span, check, refuse a repeat and the other variant
     saved = FROZEN_FILE_DIGESTS
@@ -855,6 +866,26 @@ def selftest() -> int:
                 doubled = do_check(root, act, rowmap["span"], "2026-10-20", words)
                 (root / AGGREGATE_REL).write_text((root / AGGREGATE_REL).read_text()[:len((root / AGGREGATE_REL).read_text()) // 2])
                 restored = do_check(root, act, rowmap["span"], "2026-10-20", words)
+                # each refusal layer of do_record and do_check, alone: the others are stripped away
+                pol_now, rec_now = (root / POLICY_REL).read_bytes(), (root / act.record).read_text()
+                agg_now, agg_clean = (root / AGGREGATE_REL).read_text(), "# Acceptance record\n"
+                (root / POLICY_REL).write_text(base_text)
+                unapplied = do_check(root, act, rowmap["span"], "2026-10-20", words)
+                (root / AGGREGATE_REL).write_text(agg_clean)
+                rec_layer = _rc(lambda: do_record(root, act, rowmap["span"], "2026-10-20", words, INSTANT_OK))
+                rec_layer_kept = ((root / act.record).read_text() == rec_now
+                                  and (root / AGGREGATE_REL).read_text() == agg_clean)
+                (root / act.record).unlink()
+                (root / AGGREGATE_REL).write_text(agg_now)
+                agg_layer = _rc(lambda: do_record(root, act, rowmap["span"], "2026-10-20", words, INSTANT_OK))
+                agg_layer_kept = not (root / act.record).exists() and (root / POLICY_REL).read_text() == base_text
+                (root / AGGREGATE_REL).write_text(agg_clean)
+                (root / POLICY_REL).write_bytes(pol_now)
+                applied_layer = _rc(lambda: do_record(root, act, rowmap["span"], "2026-10-20", words, INSTANT_OK))
+                applied_layer_kept = (not (root / act.record).exists()
+                                      and (root / AGGREGATE_REL).read_text() == agg_clean)
+                (root / act.record).write_text(rec_now)
+                (root / AGGREGATE_REL).write_text(agg_now)
                 (root / act.record).write_text((root / act.record).read_text().replace(INSTANT_OK, "2026-10-20T09:31:00Z"))
                 tampered = do_check(root, act, rowmap["span"], "2026-10-20", words)
             results.append(("check before the act is recorded fails", before == 1))
@@ -871,6 +902,13 @@ def selftest() -> int:
             results.append(("check counting two copies of the block fails, one copy passes",
                             doubled == 1 and restored == 0))
             results.append(("a record whose instant was altered fails the check against the block", tampered == 1))
+            results.append(("check over a policy reverted to the version-3 bytes fails", unapplied == 1))
+            results.append(("an existing record alone refuses a second record and writes nothing",
+                            rec_layer == 1 and rec_layer_kept))
+            results.append(("an aggregate section alone refuses a record and writes nothing",
+                            agg_layer == 1 and agg_layer_kept))
+            results.append(("an applied policy alone refuses a record and writes nothing",
+                            applied_layer == 1 and applied_layer_kept))
     finally:
         FROZEN_FILE_DIGESTS = saved
     failed = [name for name, ok in results if not ok]
