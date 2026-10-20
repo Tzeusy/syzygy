@@ -1,9 +1,6 @@
 --- a/openspec/changes/three-surface-poc-experience/proposal.md
 +++ b/openspec/changes/three-surface-poc-experience/proposal.md
-@@ -133,3 +133,23 @@
- - `GOVERNING-DEPENDENCIES.md` is generated from every requirement's warrants.
- - The behavioral specification contains the falsifiable requirements and
-   scenarios. These supporting views do not replace it.
+@@ -135,0 +136,20 @@
 +
 +
 +## Amendment — observation-local governing-intent value (P-115)

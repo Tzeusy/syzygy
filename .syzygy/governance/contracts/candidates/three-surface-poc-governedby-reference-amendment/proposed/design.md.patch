@@ -1,9 +1,6 @@
 --- a/openspec/changes/three-surface-poc-experience/design.md
 +++ b/openspec/changes/three-surface-poc-experience/design.md
-@@ -59,3 +59,44 @@
- 
- Stack and library choices remain implementation decisions unless a requirement
- names their observable behavior.
+@@ -61,0 +62,41 @@
 +
 +
 +## Amendment — P-115 observation-local governedBy wire value
