@@ -55,7 +55,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { POLICY_ACT_FORMS, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
+import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PipelinePorts, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 import { excludedSourceId, newGenerationRunKey } from './run-key.js';
@@ -123,7 +123,7 @@ export interface PublicSourceScreen extends CorpusScreen {
 export type PublicSourceTargetBody =
   | { readonly kind: 'admitted' }
   | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly lineByteOffsets: readonly number[];
-      readonly originalBytes: number; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+      readonly originalBytes: number; readonly contentSha256: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
   | { readonly kind: 'excluded'; readonly outcome: 'secret-detector-match' | 'active-content' };
 
 function refuse(why: string): never { throw new CorpusRefusal(`public-source-policy: ${why}`); }
@@ -206,4 +206,15 @@ export async function readScreenedRepoCorpus(repoRoot: string, config: Pick<Read
   const runKey = ports.runKey ?? newGenerationRunKey();
   const screen = await loadPublicSourceScreen(ports.policyAct, runKey);
   return readRepoCorpus(repoRoot, config, { ...(ports.admission === undefined ? {} : { admission: ports.admission }), ...(ports.readBlobs === undefined ? {} : { readBlobs: ports.readBlobs }), screen, runKey });
+}
+
+/** The existing pipeline source-verification boundary for a public-source corpus. Re-evaluates policy and observation admission, reads
+ * original Git blobs by the pinned identifiers, verifies their hashes, and screens them again. Returned JSON projections never verify
+ * themselves: the pipeline compares redacted request records against this newly produced population before dispatch. */
+export function screenedRepoCorpusVerifier(repoRoot: string, config: Pick<ReaderConfig, 'repositoryId' | 'revision' | 'include' | 'exclude' | 'oversize'>,
+  ports: Omit<RepoCorpusPorts, 'screen'> & { readonly policyAct?: PublicSourcePolicyActPort; readonly runKey?: Buffer } = {}): PipelinePorts['verifySources'] {
+  return async request => {
+    if (request.sources.some(source => source.repositoryId !== config.repositoryId || source.revision !== config.revision)) return false;
+    try { return (await readScreenedRepoCorpus(repoRoot, config, ports)).sources; } catch { return false; }
+  };
 }

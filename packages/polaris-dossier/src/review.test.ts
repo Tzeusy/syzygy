@@ -12,7 +12,7 @@ import { verdictSchemaDocument } from './draft-schema.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState, type ProviderStatementRecord } from './gate-sources.js';
 import { checkInventory, inventoryOfRecord, openRun } from './inventory.js';
-import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
+import { buildFidelityPacket, fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { buildDossierScreen, type ScreenLoad } from './screen.js';
@@ -642,16 +642,21 @@ describe('the fidelity packet over a body retained as redacted-span', () => {
   const packetWith = async (withheld: readonly number[]) => {
     const base = buildDossierScreen(DOC_POLICY, true);
     if (!base.ok) throw new Error(base.why);
-    const retained = NOTES.split('\n').map((line, i) => (withheld.includes(i + 1) ? '' : line)).join('\n');
+    const retainedLines = ['Caf\u00e9 notes.\n', 'Snapshots are written periodically.\n'].map((line, i) => (withheld.includes(i + 1) ? '\n' : line));
+    const retained = retainedLines.join('');
     world = {
-      screen: { ok: true, screen: { ...base.screen, screenTargetBody: (body, repositoryPath) => (repositoryPath === 'docs/notes.txt' ? { kind: 'redacted', retained, withheld, detectorIds: ['credential-assignment'] } : base.screen.screenTargetBody(body, repositoryPath)) } },
+      screen: { ok: true, screen: { ...base.screen, screenTargetBody: (body, repositoryPath) => (repositoryPath === 'docs/notes.txt' ? {
+        kind: 'redacted', retained, retainedLines, lineByteOffsets: [0, 13], originalBytes: Buffer.byteLength(NOTES), contentSha256: createHash('sha256').update(NOTES).digest('hex'), withheld, detectorIds: ['credential-assignment'],
+      } : base.screen.screenTargetBody(body, repositoryPath)) } },
       classes: ['code-content', 'project-documentation'],
     };
     const run = await prepared();
+    const built = await buildFidelityPacket(await opened(run), deps());
+    if (!built.ok) throw new Error(built.reason);
     const result = await reviewPacket(run, { kind: 'fidelity' }, deps());
     if (!result.ok) throw new Error(result.refusal.reason);
     const text = fs.readFileSync(path.join(result.report.directory, 'packet.json'), 'utf8');
-    return { spans: JSON.parse(text).spans as Record<string, unknown>[], text, counts: 'spans' in result.report ? result.report.spans : undefined };
+    return { spans: JSON.parse(text).spans as Record<string, unknown>[], text, blobs: built.blobs, counts: 'spans' in result.report ? result.report.spans : undefined };
   };
 
   it('carries a span that includes no withheld line, with the body\'s redaction count beside it', async () => {
@@ -659,11 +664,13 @@ describe('the fidelity packet over a body retained as redacted-span', () => {
     expect(spans[1]).toEqual({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'admitted', text: 'Snapshots are written periodically.\n', redaction: { redactionClass: 'redacted-span', withheldLines: 1 }, citedBy: NOTES_CITED });
   });
   it('withholds a span that includes a withheld line whole, carrying no byte of it', async () => {
-    const { spans, counts } = await packetWith([2]);
+    const { spans, counts, blobs } = await packetWith([2]);
     expect(spans[1]).toEqual({ id: 'span-2', path: 'docs/notes.txt', startLine: 2, endLine: 2, objectId: objectIds['docs/notes.txt'], outcome: 'redacted-span', redaction: { redactionClass: 'redacted-span', withheldLines: 1 }, citedBy: NOTES_CITED });
     // The draft and inventory are the agents' own text and quote it (class-gate.ts residual E1); no span carries it.
     expect(JSON.stringify(spans)).not.toContain('Snapshots are written periodically');
     expect(counts).toEqual({ admitted: 3, excluded: 2 });
+    expect(blobs.get('docs/notes.txt')).toBe('Caf\u00e9 notes.\n[redacted-span: 1 withheld line(s) in this file]\n');
+    expect([...blobs.values()].join('\n')).not.toContain('Snapshots are written periodically.\n');
   });
 });
 

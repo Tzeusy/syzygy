@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  excludedSourceId, generationSourcesForBody, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
+  excludedSourceId, generationSourcesForBody, generationSourcesForRedactedBody, generationSpanRange, generationSourceTextAt, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
   type EpistemicMarking, type EvidenceAnchor, type GenerationExclusionReason, type GenerationSource, type LocalBlock,
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type ProviderBlock, type ProviderDraft, type ProviderParagraph,
@@ -288,12 +288,8 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     const missing = unconsentedClass(screen.contentClass(repositoryPath), consented);
     if (missing !== undefined) withheldClass.set(repositoryPath, missing);
   }
-  // A body screening retained as redacted-span (policy version 4) is not put on these pages: its retained text would need a marker in
-  // place of each run of withheld lines and anchors over bytes the object does not hold there, which this renderer does not draw. It is
-  // a counted row naming the redaction, and a quotation from it is withheld (over-degraded on the pages only; the fidelity packet
-  // carries its admitted spans).
   const redacted = new Map([...derived.admitted].flatMap(([repositoryPath, blob]) => (blob.withheld === undefined ? [] : [[repositoryPath, blob.withheld.length] as const])));
-  const admitted = new Map([...derived.admitted].filter(([repositoryPath]) => !withheldClass.has(repositoryPath) && !redacted.has(repositoryPath)));
+  const admitted = new Map([...derived.admitted].filter(([repositoryPath]) => !withheldClass.has(repositoryPath)));
 
   // Sources: every cited blob read now and admitted (whole, or in pieces when too long to quote whole), and every cited blob screening
   // excluded or the class gate withheld as a counted row with its reason. A blob whose path a secret detector matches is named nowhere.
@@ -301,7 +297,9 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const pieces = new Map<string, GenerationSource[]>();
   const sourceIdOf = (repositoryPath: string): string => `src-${sha256(repositoryPath).slice(0, 24)}`;
   for (const [repositoryPath, blob] of [...admitted].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
-    const own = generationSourcesForBody({ sourceId: sourceIdOf(repositoryPath), repositoryId: subject.repository.repositoryId, revision: pinned, path: repositoryPath, objectId: blob.objectId, evaluationId: runId, body: blob.raw });
+    const identity = { sourceId: sourceIdOf(repositoryPath), repositoryId: subject.repository.repositoryId, revision: pinned, path: repositoryPath, objectId: blob.objectId, evaluationId: runId };
+    const own = blob.withheld === undefined ? generationSourcesForBody({ ...identity, body: blob.raw })
+      : generationSourcesForRedactedBody({ ...identity, projection: blob.projection!, policySha256: screen.policySha256 });
     pieces.set(repositoryPath, [...own]);
     sources.push(...own);
   }
@@ -313,7 +311,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     if (cited.path === null || cited.objectId === null) continue;
     // The closed exclusion vocabulary has no class reason; a withheld body is one not carried into generation, and its class is named on
     // the discovery page's row for it.
-    const reason = cited.outcome !== 'admitted' ? EXCLUSION_REASON[cited.outcome] : withheldClass.has(cited.path) || redacted.has(cited.path) ? 'body-not-retained-for-generation' : undefined;
+    const reason = cited.outcome !== 'admitted' ? EXCLUSION_REASON[cited.outcome] : withheldClass.has(cited.path) ? 'body-not-retained-for-generation' : undefined;
     if (reason === undefined) continue;
     sources.push({
       sourceId: excludedSourceId(runKey, cited.path), repositoryId: subject.repository.repositoryId, revision: pinned, path: cited.path, objectId: cited.objectId,
@@ -333,29 +331,30 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const pieceAt = (repositoryPath: string, byte: number): GenerationSource | undefined => {
     const own = pieces.get(repositoryPath);
     if (own === undefined) return undefined;
-    return own.find((piece) => piece.segment === undefined || (byte >= piece.segment.start && byte < piece.segment.end)) ?? own.at(-1);
+    return own.find(piece => piece.redaction === undefined
+      ? piece.segment === undefined || (byte >= piece.segment.start && byte < piece.segment.end)
+      : piece.spans.some(span => { const [start, end] = generationSpanRange(piece, span); return byte >= start && byte < end; }));
   };
   const citedSources = (value: Readonly<Record<string, unknown>>): string[] => [...new Set(list(value['citations']).flatMap((citation) => {
     if (!isObj(citation)) return [];
     const cited = text(citation['path']);
     const blob = cited === undefined ? undefined : admitted.get(cited);
-    const piece = blob === undefined ? undefined : pieceAt(cited!, byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
+    const piece = blob === undefined ? undefined : pieceAt(cited!, blob.lineByteOffsets?.[(typeof citation['startLine'] === 'number' ? citation['startLine'] : 1) - 1] ?? byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
     return piece === undefined ? [] : [piece.sourceId];
   }))];
   const anchorOf = (source: GenerationSource, start: number, end: number): EvidenceAnchor => ({
     targetClass: 'evidence-artifact-identifier-with-integrity-digest', identifier: source.objectId!, algorithm, fragment: { start, end }, targetState: pinned, pathLabel: source.path,
   });
-  const sourceAnchors = new Map(sources.filter((source) => !source.exclusion.excluded).map((source) => {
-    const base = source.segment?.start ?? 0;
-    return [source.sourceId, anchorOf(source, base + source.spans[0]!.start, base + source.spans[0]!.end)] as const;
+  const sourceAnchors = new Map(sources.filter((source) => !source.exclusion.excluded && source.spans.length > 0).map((source) => {
+    const [start, end] = generationSpanRange(source, source.spans[0]!);
+    return [source.sourceId, anchorOf(source, start, end)] as const;
   }));
 
   // Claim blocks: segments from the agent's text with every quotation replaced by Syzygy's located bytes, and the marking.
   // A quotation verified against a body the class gate withholds is withheld like one from an excluded file, naming the class.
-  const verified = new Map(derived.quotations.filter((quotation) => !withheldClass.has(quotation.path) && !redacted.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, quotation]));
-  const fromRedacted = new Set(derived.quotations.filter((quotation) => !withheldClass.has(quotation.path) && redacted.has(quotation.path)).map((quotation) => `${quotation.blockId}\u0000${quotation.index}`));
+  const verified = new Map(derived.quotations.filter((quotation) => !withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, quotation]));
   const classOf = new Map(derived.quotations.filter((quotation) => withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, withheldClass.get(quotation.path)!]));
-  const excluded = new Set([...derived.excludedContent.map((quotation) => `${quotation.blockId}\u0000${quotation.index}`), ...classOf.keys(), ...fromRedacted]);
+  const excluded = new Set([...derived.excludedContent.map((quotation) => `${quotation.blockId}\u0000${quotation.index}`), ...classOf.keys()]);
   const executions = new Map(list(doc['executions']).flatMap((entry) => (isObj(entry) && text(entry['id']) !== undefined ? [[text(entry['id'])!, clean(text(entry['command']) ?? '')] as const] : [])));
   const support = review.counts ? review.verdict.blockSupport : {};
   const blocks = new Map<string, LocalBlock>();
@@ -367,7 +366,6 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     let segments: LocalSegment[] = [];
     let at = 0;
     let withheld = false;
-    let redactedQuote = false;
     const unconsented = new Set<string>();
     leadInQuotationSpans(prose).forEach((span, index) => {
       segments.push({ kind: 'prose', text: prose.slice(at, span.open) });
@@ -377,13 +375,12 @@ export function buildLocalInput(inputs: BuildInputs): Built {
         const blob = admitted.get(found.path)!;
         const [start, end] = found.byteRange;
         const piece = pieceAt(found.path, start)!;
-        segments.push({ kind: 'quotation', sourceId: piece.sourceId, start, end, text: Buffer.from(blob.raw, 'utf8').subarray(start, end).toString('utf8'), anchor: anchorOf(piece, start, end) });
+        segments.push({ kind: 'quotation', sourceId: piece.sourceId, start, end, text: generationSourceTextAt(piece, start, end)!, anchor: anchorOf(piece, start, end) });
       } else {
         if (!excluded.has(key)) throw new Error(`render: quotation ${index + 1} of block ${id} was neither verified nor excluded at this render`);
         segments.push({ kind: 'withheld', reason: 'excluded-content' });
         withheld = true;
         if (classOf.has(key)) unconsented.add(classOf.get(key)!);
-        if (fromRedacted.has(key)) redactedQuote = true;
       }
       at = span.close + 1;
     });
@@ -398,8 +395,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     else if (withheld || secret) {
       blocks.set(id, unknown('excluded-content', secret ? 'a secret detector matches its text, so it is withheld'
         : unconsented.size > 0 ? `a quotation it rests on is from a ${[...unconsented].sort().join(' or ')} file, ${unconsentedText([...unconsented].sort().join(' or '), consented).replace(/^withheld/u, 'which is withheld')}, so the quotation is not shown`
-          : redactedQuote ? 'a quotation it rests on is from a file screening retained as redacted-span, whose text these pages do not show, so the quotation is not shown'
-            : 'a quotation it rests on is from a file screening excludes, so the quotation is neither verified nor shown'));
+          : 'a quotation it rests on is from a file screening excludes, so the quotation is neither verified nor shown'));
     }
     else if (support[id] === 'supported') {
       blocks.set(id, { marking: 'inferred', unknownReason: null, basis: 'the agent\'s claim, which the counted fidelity review judged supported by the spans it cites', segments, executions: named });
@@ -465,7 +461,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     title: cited.path === null ? SECRET_PATH : cited.path,
     text: cited.outcome !== 'admitted' ? `${cited.read ? 'read at this render and re-hashed' : 'named by the pinned tree and not read'}; excluded by screening (${cited.outcome})`
       : cited.path !== null && withheldClass.has(cited.path) ? `read at this render, re-hashed, and admitted by screening as ${withheldClass.get(cited.path)!}; ${unconsentedText(withheldClass.get(cited.path)!, consented)} (${CLASS_NOT_CONSENTED})`
-        : cited.path !== null && redacted.has(cited.path) ? `read at this render, re-hashed, and retained by screening as redacted-span with ${redacted.get(cited.path)!} withheld line(s); its retained text is not shown on these pages`
+        : cited.path !== null && redacted.has(cited.path) ? `read at this render, re-hashed, and retained by screening as redacted-span with ${redacted.get(cited.path)!} withheld line(s); each withheld run is marked on its source page; surviving spans retain their original coordinates`
         : 'read at this render, re-hashed, and admitted by screening',
     details: [`object ${cited.objectId === null ? '(not shown)' : `${algorithm}:${cited.objectId}`}`, `revision ${pinned}`],
     sourceIds: cited.outcome === 'admitted' && cited.path !== null ? (pieces.get(cited.path) ?? []).slice(0, 1).map((source) => source.sourceId) : [],

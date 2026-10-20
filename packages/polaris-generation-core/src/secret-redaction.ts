@@ -28,7 +28,7 @@ import type { PublicSourceContentClass } from './public-source-classification.js
  * Resource bounds: the ordinary first-match scan decides clean bodies and classes that cannot redact before any every-offset work.
  * Whole-artifact checks also precede that work. The overlapping scan stops at `MAX_MATCHES` or when summed match lengths exceed eight
  * times the body length; a breach excludes whole. This bounds repeated successful scans of long suffixes, rather than just their count.
- * Individual regular-expression searches retain the declared detectors' costs. Not repaired here (the policy's own residuals):
+ * The pinned credential-bearing URL pattern uses exact linear recognition, including failed searches and retained-text re-screening; other declared regexes have no nested ambiguous quantifier. The length limit still bounds overlapping successful suffix matches. Not repaired here (the policy's own residuals):
  * a secret no detector matches, beyond the guard lines or continuing past
  * them, is admitted; the whole body's digest and object id stay recorded and can check a guess at a short withheld line. */
 
@@ -52,6 +52,8 @@ const KNOWN_CLASSES: readonly PublicSourceContentClass[] = ['project-documentati
 /** More matches than this excludes the body whole: the match set is held in memory and each match is placed on lines. */
 export const MAX_MATCHES = 10_000;
 const MAX_MATCH_LENGTH_MULTIPLE = 8;
+// This exact policy pattern has quadratic failed backtracking on many colons before a missing @.
+const CREDENTIAL_URL_PATTERN = String.raw`https?://[^/@\s]+:[^/@\s]+@`;
 const MAX_GUARD_LINES = 100;
 
 export interface SecretRedaction {
@@ -109,6 +111,23 @@ export interface EveryOffsetMatcher {
   readonly all: (text: string, limit: number) => { readonly matches: readonly DetectorMatch[]; readonly limited: boolean };
 }
 
+/** Exact linear recognition for the pinned URL pattern. A URL's authority runs to the first /, @ or whitespace. A match needs an @
+ * terminator and a colon with at least one authority character on each side. Prefixes and authority runs cannot overlap across /, so
+ * failed authorities are scanned once, including those with many colons and no @. This is tied to pattern + flags, never a detector id. */
+function credentialUrls(text: string, detectorId: string, take: (match: DetectorMatch) => boolean): void {
+  const prefix = /https?:\/\//gi;
+  for (let match = prefix.exec(text); match !== null; match = prefix.exec(text)) {
+    const start = prefix.lastIndex;
+    let end = start, colon = -1;
+    while (end < text.length && text[end] !== '/' && text[end] !== '@' && !/\s/u.test(text[end]!)) {
+      if (text[end] === ':' && end > start && colon === -1) colon = end;
+      end++;
+    }
+    if (text[end] === '@' && colon !== -1 && colon < end - 1
+      && !take({ detectorId, start: match.index, end: end + 1 })) return;
+  }
+}
+
 /** Compiles the policy's detectors for every match from every start offset. Throws on a detector the policy's own compiler would also
  * refuse (the screens compile the same list with `compileDetectors` first). */
 export function compileEveryOffsetMatcher(detectors: readonly RedactionDetector[]): EveryOffsetMatcher {
@@ -129,6 +148,14 @@ export function compileEveryOffsetMatcher(detectors: readonly RedactionDetector[
     }
     // Sticky, without the global flag: `exec` then matches only at `lastIndex`, which is every offset in turn.
     const flags = detector.flags.replace(/[gy]/gu, '');
+    if (detector.pattern === CREDENTIAL_URL_PATTERN && flags === 'i') return { id: detector.id,
+      first: (text: string): DetectorMatch | undefined => {
+        let first: DetectorMatch | undefined;
+        credentialUrls(text, detector.id, match => { first = match; return false; });
+        return first;
+      },
+      all: (text: string, take: (match: DetectorMatch) => boolean): void => credentialUrls(text, detector.id, take),
+    };
     const search = new RegExp(detector.pattern, flags), sticky = new RegExp(detector.pattern, `${flags}y`);
     return { id: detector.id,
       first: (text: string): DetectorMatch | undefined => {
@@ -194,7 +221,7 @@ export type RedactionOutcome =
   /** Retained as redacted-span: `withheld` are the 1-based withheld line numbers, ascending; `retained` is the body with each withheld
    * line emptied and its terminator kept; `detectorIds` are the ids of the detectors that matched, in policy order. */
   | { readonly kind: 'redacted'; readonly withheld: readonly number[]; readonly retained: string; readonly retainedLines: readonly string[];
-      readonly lineByteOffsets: readonly number[]; readonly originalBytes: number; readonly detectorIds: readonly string[] };
+      readonly lineByteOffsets: readonly number[]; readonly originalBytes: number; readonly contentSha256: string; readonly detectorIds: readonly string[] };
 
 /** The rule over one body admitted under `contentClass`. `redaction` null (versions 1 to 3) excludes every matching body whole. */
 export function redactBody(body: string, contentClass: PublicSourceContentClass | undefined, matcher: EveryOffsetMatcher, redaction: SecretRedaction | null): RedactionOutcome {
@@ -229,7 +256,7 @@ export function redactBody(body: string, contentClass: PublicSourceContentClass 
   let byte = 0;
   const lineByteOffsets = Object.freeze(lines.map(line => { const start = byte; byte += Buffer.byteLength(line, 'utf8'); return start; }));
   return { kind: 'redacted', withheld: Object.freeze([...held].sort((a, b) => a - b)), retained, retainedLines, lineByteOffsets,
-    originalBytes: byte, detectorIds: Object.freeze(ids) };
+    originalBytes: byte, contentSha256: sha256(body), detectorIds: Object.freeze(ids) };
 }
 
 /** Whether the inclusive 1-based line range `[startLine, endLine]` includes a withheld line: such a span is withheld whole. */

@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
-import { checkDraft, reviewVisibility, type CheckDeps, type CheckResult } from './check.js';
+import { checkDraft, deriveFindings, draftRules, reviewVisibility, type CheckDeps, type CheckResult } from './check.js';
 import { runDossierCli } from './cli.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
@@ -37,11 +37,12 @@ const README = '# Kestrel\nKestrel is a key-value server.\n';
 const TYPES = 'export type Names = Array<string>;\n// Names are kept in order.\n';
 const SECRET = `${'s3cr'.repeat(3)}`;
 const CONFIG = `// ${['pass', 'word'].join('')} = "${SECRET}"\n// The port is fixed.\nint port = 6379;\n`;
+const MIXED = `a\rg\n${['tok', 'en='].join('')}abcdefghij\nh\nvisible\nlast\n`;
 /** A path a secret detector matches (a token format), composed so no literal token sits in this file. */
 const SECRET_PATH = `docs/${['gh', 'p_'].join('')}${'k'.repeat(24)}.txt`;
 const FILES: Record<string, string> = {
   'src/kestrel.c': KESTREL, 'docs/notes.txt': NOTES, 'README.md': README, 'src/types.ts': TYPES, 'src/config.c': CONFIG, '.env': 'X=1\n',
-  [SECRET_PATH]: 'Plain words.\n',
+  [SECRET_PATH]: 'Plain words.\n', 'docs/mixed.txt': MIXED,
 };
 const bytesOf = (raw: string, span: string): [number, number] => {
   const at = Buffer.from(raw, 'utf8').indexOf(Buffer.from(span, 'utf8'));
@@ -283,10 +284,10 @@ describe('check: a quotation from a body retained as redacted-span', () => {
       secretRedaction: { ...LIVE_POLICY.publicSourceScope.secretRedaction, redactedClasses: ['code-content'] },
     },
   })));
-  const withQuote = async (quote: string, lineNo: number) => {
+  const withQuote = async (quote: string, lineNo: number, file = 'src/config.c') => {
     const run = await briefedRun();
     writeDraft(run, mutate((d) => {
-      d.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: `The project states: "${quote}"`, citations: [cite('c-p2', 'src/config.c', lineNo, lineNo)], quotations: ['c-p2'], children: [] };
+      d.sections[0].paragraphs[1] = { id: 'p2', label: 'inferred', basis: 'source', text: `The project states: "${quote}"`, citations: [cite('c-p2', file, lineNo, lineNo)], quotations: ['c-p2'], children: [] };
     }));
     return { run, result: report(await checkDraft(run, {}, deps({ loadScreen: async () => REDACTING }))) };
   };
@@ -297,6 +298,20 @@ describe('check: a quotation from a body retained as redacted-span', () => {
     expect(result.quotations.map((q) => q.blockId)).toEqual(['intro', 'p1', 'p2']);
     expect(result.citedBlobs.find((blob) => blob.path === 'src/config.c')).toMatchObject({ outcome: 'admitted', redaction: { redactionClass: 'redacted-span', withheldLines: 2 } });
     expect(read(run, 'checks/rev-0.json')).not.toContain(SECRET);
+    if (!REDACTING.ok) throw new Error(REDACTING.why);
+    const derived = await deriveFindings(JSON.parse(read(run, 'drafts/rev-0.json')), {
+      pinned: commit, screen: REDACTING.screen, reader: openPinnedObjectReader({ gitDir: path.join(origin, '.git'), revision: commit }),
+    }, draftRules(commit, 1));
+    expect(derived.admitted.get('src/config.c')?.raw).toBe('[redacted-span: 2 withheld line(s) in this file]\nint port = 6379;\n');
+    expect(JSON.stringify([...derived.admitted])).not.toContain(SECRET);
+    expect(JSON.stringify([...derived.admitted])).not.toContain('The port is fixed.');
+    expect(derived.quotations.find(q => q.blockId === 'p2')?.byteRange).toEqual(bytesOf(CONFIG, 'int port = 6379;'));
+  });
+  it('keeps original line and byte coordinates across a bare CR before withheld LF lines', async () => {
+    const { result } = await withQuote('last', 6, 'docs/mixed.txt');
+    expect(result.findings).toEqual([]);
+    expect(result.quotations.find(q => q.blockId === 'p2')).toMatchObject({ path: 'docs/mixed.txt', byteRange: [31, 35] });
+    expect(result.citedBlobs.find(blob => blob.path === 'docs/mixed.txt')?.redaction).toEqual({ redactionClass: 'redacted-span', withheldLines: 3 });
   });
   it('renders a quotation from a withheld guard line Unknown (excluded-content), with no finding', async () => {
     const { result } = await withQuote('The port is fixed.', 2);

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { bodyLines, compileEveryOffsetMatcher, readSecretRedaction, redactBody, retainedWithMarkers, spanTouchesWithheld, type RedactionDetector, type SecretRedaction } from './secret-redaction.js';
 
@@ -80,7 +80,7 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
     const body = `a\r\nb\r\nc ${TOKEN}\r\nd\r\ne\r\n`;
     const got = redactBody(body, 'project-documentation', matcher, redaction);
     expect(got).toEqual({ kind: 'redacted', withheld: [2, 3, 4], retained: 'a\r\n\r\n\r\n\r\ne\r\n',
-      retainedLines: ['a\r\n', '\r\n', '\r\n', '\r\n', 'e\r\n'], lineByteOffsets: [0, 3, 6, 32, 35], originalBytes: 38, detectorIds: ['credential-assignment'] });
+      retainedLines: ['a\r\n', '\r\n', '\r\n', '\r\n', 'e\r\n'], lineByteOffsets: [0, 3, 6, 32, 35], originalBytes: 38, contentSha256: 'ac3d3a121c857077ab58a87128795ec4624ecef4db4472d6a9e36579930d8f21', detectorIds: ['credential-assignment'] });
     expect(bodyLines(got.kind === 'redacted' ? got.retained : '')).toHaveLength(bodyLines(body).length);
     const mixed = redactBody(`a\rg\n${TOKEN}\nh\nvisible\nlast\n`, 'project-documentation', matcher, redaction);
     expect(mixed.kind).toBe('redacted');
@@ -98,6 +98,42 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
     expect(redactBody(body, 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'match-limit' });
     // A class that cannot redact needs only the ordinary detector check, never the every-offset pass.
     expect(redactBody(body, 'code-content', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'class-not-redacted' });
+  });
+
+  it('bounds failed URL searches in the overlap scan and retained-text first search without invoking the quadratic expression', () => {
+    const suffix = 'https://' + 'a:'.repeat(32_000) + 'end\n';
+    const body = 'token=abcdefgh\nsafe\nsafe\n' + suffix;
+    const native = vi.spyOn(RegExp.prototype, 'exec');
+    try {
+      expect(matcher.all(body, 10_000)).toEqual({ matches: [{ detectorId: 'credential-assignment', start: 0, end: 14 }], limited: false });
+      expect(matcher.first(suffix)).toBeUndefined();
+      expect(redactBody(body, 'project-documentation', matcher, redaction).kind).toBe('redacted');
+      expect(native.mock.contexts.filter(re => (re as RegExp).source === String.raw`https?://[^/@\s]+:[^/@\s]+@`)).toHaveLength(0);
+    } finally { native.mockRestore(); }
+    // Literal match coordinates independently cover prefix case, multiple colons, and rejected empty user/password or / boundaries.
+    const urls = compileEveryOffsetMatcher([{ id: 'different-id', kind: 'regular-expression', pattern: String.raw`https?://[^/@\s]+:[^/@\s]+@`, flags: 'gi' }]);
+    expect(urls.all('HTTP://a:b:c@ https://:b@ https://a:@ https://a/b:c@ https://a::@', 10)).toEqual({
+      matches: [{ detectorId: 'different-id', start: 0, end: 13 }, { detectorId: 'different-id', start: 53, end: 65 }], limited: false });
+  });
+
+  it('preserves the pinned URL regex semantics on bounded native-oracle fixtures, including nested prefixes and flags', () => {
+    const pattern = String.raw`https?://[^/@\s]+:[^/@\s]+@`;
+    const match = compileEveryOffsetMatcher([{ id: 'url', kind: 'regular-expression', pattern, flags: 'gi' }]);
+    const bodies = ['https://a:http://b:c@', 'http://a:b@http://x:y@', 'https://a:b:c@', 'HTTP://a:b@', 'http://a:b\u00a0@'];
+    for (let n = 0; n < 1_024; n++) {
+      let value = n, authority = '';
+      for (let k = 0; k < 5; k++) { authority += ['a', ':', '@', '/'][value % 4]; value = Math.floor(value / 4); }
+      bodies.push('http://' + authority + ' tail');
+    }
+    for (const body of bodies) {
+      const expected = [...body.matchAll(new RegExp(pattern, 'gi'))].map(hit => ({ detectorId: 'url', start: hit.index, end: hit.index + hit[0].length }));
+      expect(match.all(body, 100), body).toEqual({ matches: expected, limited: false });
+      expect(match.first(body), body).toEqual(expected[0]);
+      expect(match.first(body), `repeat: ${body}`).toEqual(expected[0]);
+      expect(match.all(body, 100), `after first: ${body}`).toEqual({ matches: expected, limited: false });
+    }
+    expect(compileEveryOffsetMatcher([{ id: 'credential-bearing-url', kind: 'regular-expression', pattern, flags: 'g' }]).first('HTTP://a:b@')).toBeUndefined();
+    expect(compileEveryOffsetMatcher([{ id: 'credential-bearing-url', kind: 'regular-expression', pattern: 'http://only', flags: 'gi' }]).first('http://only')).toEqual({ detectorId: 'credential-bearing-url', start: 0, end: 11 });
   });
 
   it('applies the line pattern to each line, not to the body: a six-dash header on line 3 excludes the body (round-4 note 5)', () => {

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, reviewVerdict, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core';
+import { bodyLines, leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, reviewVerdict, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core';
 import { isLaunchedRun, launchFormRefusal } from './launched.js';
 import { CHECK_RECORD_FORMAT, collectBlocks, collectCitations, declaredSessionId, nextRevision } from './check.js';
 import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOTATION_FORM, checkDraftShape, localVerdictSchema, verdictSchemaDocument } from './draft-schema.js';
@@ -178,6 +178,7 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   const screen = screenLoad.screen;
   const reader = (deps.openReader ?? openPinnedObjectReader)({ gitDir: path.join(subject.clone.path, '.git'), revision: pinned });
   const blobs = new Map<string, string>();
+  const retainedLines = new Map<string, readonly string[]>();
   const withheldOf = new Map<string, readonly number[]>();
   const outcomes = new Map<string, ScreenExclusion | 'absent'>();
   const tree = new Map<string, TreeEntry>();
@@ -197,7 +198,11 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
       // A body retained as redacted-span keeps only its retained text here: a withheld line is never carried or used to verify a quotation.
       const screened = screen.screenTargetBody(raw, blob.path);
       if (screened.kind === 'excluded') outcomes.set(blob.path, screened.outcome);
-      else if (screened.kind === 'redacted') { blobs.set(blob.path, screened.retained); withheldOf.set(blob.path, screened.withheld); }
+      else if (screened.kind === 'redacted') {
+        blobs.set(blob.path, retainedWithMarkers(screened.retainedLines, screened.withheld));
+        retainedLines.set(blob.path, screened.retainedLines);
+        withheldOf.set(blob.path, screened.withheld);
+      }
       else blobs.set(blob.path, raw);
     }
   } catch (cause) {
@@ -209,7 +214,7 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   const spans: PacketSpan[] = ordered.map((span, i): PacketSpan => {
     const id = `span-${i + 1}`;
     const raw = blobs.get(span.path);
-    const lines = raw === undefined ? [] : linesOf(raw);
+    const lines = raw === undefined ? [] : retainedLines.get(span.path) ?? bodyLines(raw);
     // Screening admitted the body; whether it may reach the review session is the class gate's (`class-gate.ts`).
     const missingClass = raw === undefined ? undefined : unconsentedClass(screen.contentClass(span.path), opened.contentClasses);
     if (missingClass !== undefined) {
@@ -257,21 +262,6 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     inventory: { revision: counted.revision, sha256: counted.sha256, doc: inventoryDoc, sessionId: counted.sessionId.value, session: counted.session },
     blobs,
   };
-}
-
-/** A text's lines, each with its terminator; a final terminator ends the last line and opens none (the core's `lineCount`). */
-function linesOf(raw: string): string[] {
-  const out: string[] = [];
-  let start = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const c = raw[i];
-    if (c !== '\n' && c !== '\r') continue;
-    if (c === '\r' && raw[i + 1] === '\n') i++;
-    out.push(raw.slice(start, i + 1));
-    start = i + 1;
-  }
-  if (start < raw.length) out.push(raw.slice(start));
-  return out;
 }
 
 /** Write the packet under `reviews/` as `<kind>-packet-<digest>/{packet.json, packet.sha256}`; an existing copy is kept only when it is
@@ -584,9 +574,11 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
         if (id === undefined) return;
         const span = typeof id === 'string' ? spans.get(id) : undefined;
         if (span === undefined || span.outcome !== 'admitted') { add('quotation-span', `${at}.quotations[${q}]`, 'the quotation names no admitted span of the packet'); return; }
-        const raw = built.blobs.get(span.path)!;
-        if (!tracked.has(span.path)) tracked.set(span.path, normaliseTracked(raw));
-        const located = locateQuote(raw, tracked.get(span.path)!, quote.inner, span.startLine, span.endLine);
+        // The admitted packet span is a contiguous original range and contains no withheld line. Re-splitting the marked whole body
+        // would use presentation line numbers; the span's own bytes preserve its original line identity.
+        const raw = span.text;
+        if (!tracked.has(span.id)) tracked.set(span.id, normaliseTracked(raw));
+        const located = locateQuote(raw, tracked.get(span.id)!, quote.inner, 1, bodyLines(raw).length);
         if (!located.found) add('quotation-unverified', `${at}.${field}`, `quotation ${q + 1} does not verify against ${span.id} (${located.kind})`);
       });
     });

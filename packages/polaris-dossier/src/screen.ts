@@ -64,7 +64,7 @@ export interface DossierScreen {
 export type TargetBodyScreen =
   | { readonly kind: 'admitted' }
   | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly lineByteOffsets: readonly number[];
-      readonly originalBytes: number; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+      readonly originalBytes: number; readonly contentSha256: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
   | { readonly kind: 'excluded'; readonly outcome: ScreenExclusion };
 
 export type ScreenLoad = { readonly ok: true; readonly screen: DossierScreen } | { readonly ok: false; readonly why: string };

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core';
+import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, spanTouchesWithheld, verifiedRedactedBody, type VerifiedRedactedBody, type TrackedText } from '@syzygy/polaris-generation-core';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { SESSION_ID_PATTERN, UNDERSTANDING_ITEMS, checkDraftShape, localDraftSchema, type DraftSchemaWithDefs } from './draft-schema.js';
 import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './execution-flags.js';
@@ -443,7 +443,8 @@ export interface Derived {
   readonly citedBlobs: CitedBlob[];
   /** Each admitted blob's text: the whole body, or for a body retained as `redacted-span` the retained text (every withheld line emptied,
    * its terminator kept) with the withheld line numbers. */
-  readonly admitted: ReadonlyMap<string, { readonly objectId: string; readonly raw: string; readonly withheld?: readonly number[] }>;
+  readonly admitted: ReadonlyMap<string, { readonly objectId: string; readonly raw: string; readonly withheld?: readonly number[];
+    readonly retainedLines?: readonly string[]; readonly lineByteOffsets?: readonly number[]; readonly originalBytes?: number; readonly contentSha256?: string; readonly projection?: VerifiedRedactedBody }>;
 }
 
 export interface DeriveInputs {
@@ -483,7 +484,8 @@ export type Citation = { readonly at: string; readonly value: Readonly<Record<st
 type BlobState =
   | { readonly state: 'absent' }
   | { readonly state: 'excluded'; readonly outcome: ScreenExclusion }
-  | { readonly state: 'admitted'; readonly entry: TreeEntry; readonly raw: string; readonly lines: number; tracked: TrackedText | null; readonly withheld?: readonly number[] };
+  | { readonly state: 'admitted'; readonly entry: TreeEntry; readonly raw: string; readonly lines: number; tracked: TrackedText | null; readonly withheld?: readonly number[];
+      readonly retainedLines?: readonly string[]; readonly lineByteOffsets?: readonly number[]; readonly originalBytes?: number; readonly contentSha256?: string; readonly projection?: VerifiedRedactedBody };
 
 /** Every check over a parsed subject. Each walker tolerates a subject of the wrong shape, so one submission reports every finding it
  * carries, not only its schema faults. It freezes and writes nothing: `checkSubject` freezes, and `render` derives again from a frozen
@@ -596,7 +598,9 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
     // A retained body (policy version 4) keeps only its retained text: a withheld line is never used to verify a quotation.
     const screened = inputs.screen.screenTargetBody(raw, blob.path);
     blobs.set(blob.path, screened.kind === 'excluded' ? { state: 'excluded', outcome: screened.outcome }
-      : screened.kind === 'redacted' ? { state: 'admitted', entry: blob, raw: screened.retained, lines: lineCount(screened.retained), tracked: null, withheld: screened.withheld }
+      : screened.kind === 'redacted' ? { state: 'admitted', entry: blob, raw: retainedWithMarkers(screened.retainedLines, screened.withheld), lines: screened.retainedLines.length,
+        tracked: null, withheld: screened.withheld, retainedLines: screened.retainedLines, lineByteOffsets: screened.lineByteOffsets,
+        originalBytes: screened.originalBytes, contentSha256: screened.contentSha256, projection: verifiedRedactedBody(raw, blob.id, blob.path, inputs.screen.screenTargetBody) }
         : { state: 'admitted', entry: blob, raw, lines: lineCount(raw), tracked: null });
   }
   const firstCited = [...new Set(citations.flatMap(({ value }) => (text(value['path']) === undefined ? [] : [text(value['path'])!])))];
@@ -642,13 +646,18 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
       excludedContent.push({ blockId, at: block.at, index, citationId, unknownReason: 'excluded-content' });
       continue;
     }
-    state.tracked ??= normaliseTracked(state.raw);
-    const located = locateQuote(state.raw, state.tracked, inner, citation.value['startLine'] as number, citation.value['endLine'] as number);
+    const startLine = citation.value['startLine'] as number, endLine = citation.value['endLine'] as number;
+    const source = state.retainedLines === undefined ? state.raw : state.retainedLines.slice(startLine - 1, endLine).join('');
+    const tracked = state.retainedLines === undefined ? (state.tracked ??= normaliseTracked(source)) : normaliseTracked(source);
+    const located = locateQuote(source, tracked, inner, state.retainedLines === undefined ? startLine : 1,
+      state.retainedLines === undefined ? endLine : endLine - startLine + 1);
     if (!located.found) {
       add({ kind: located.kind, at: `${block.at}.${block.textKey}`, blockId, citationId, detail: `quotation ${index + 1} ${QUOTE_FAILURE[located.kind]} (citation ${JSON.stringify(citationId)})` });
       continue;
     }
-    quotations.push({ blockId, at: block.at, index, citationId, path: cited, objectId: state.entry.id, algorithm: inputs.reader.algorithm, byteRange: [located.byteStart, located.byteEnd] });
+    const base = state.lineByteOffsets?.[startLine - 1] ?? 0;
+    quotations.push({ blockId, at: block.at, index, citationId, path: cited, objectId: state.entry.id, algorithm: inputs.reader.algorithm,
+      byteRange: [base + located.byteStart, base + located.byteEnd] });
   }
 
   // The self-reported account of what the session read.
@@ -665,7 +674,8 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
   }
 
   const admitted = new Map([...blobs].flatMap(([cited, state]) => (state.state === 'admitted'
-    ? [[cited, { objectId: state.entry.id, raw: state.raw, ...(state.withheld === undefined ? {} : { withheld: state.withheld }) }] as const] : [])));
+    ? [[cited, { objectId: state.entry.id, raw: state.raw, ...(state.withheld === undefined ? {} : { withheld: state.withheld,
+      retainedLines: state.retainedLines!, lineByteOffsets: state.lineByteOffsets!, originalBytes: state.originalBytes!, contentSha256: state.contentSha256!, projection: state.projection! }) }] as const] : [])));
   return { findings, quotations, excludedContent, citedBlobs, admitted };
 }
 

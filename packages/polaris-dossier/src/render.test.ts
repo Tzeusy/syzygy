@@ -459,20 +459,27 @@ describe('render', () => {
     expect(await renderRun(run, renderDeps({ renderer: undeclared }))).toMatchObject({ ok: true });
   });
 
-  // P-110 (syzygy-3sjj): a body screening retains as redacted-span (policy version 4) is not drawn on the pages: a counted row naming the
-  // redaction, and every quotation from it withheld, its block Unknown. The screen here retains src/kestrel.c with line 4 withheld.
-  it('draws no byte of a body retained as redacted-span, and names its redaction on the discovery page', async () => {
+  it('draws retained spans with original coordinates and markers while withholding only the removed line', async () => {
     const run = await prepared(draft(), false);
     if (!SCREEN.ok) throw new Error(SCREEN.why);
     const base = SCREEN.screen;
-    const retained = KESTREL.split('\n').map((line, i) => (i === 3 ? '' : line)).join('\n');
-    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, withheld: [4], detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
+    const lines = KESTREL.match(/[^\n]*\n|[^\n]+$/gu)!;
+    const retainedLines = lines.map((line, i) => i === 3 ? '\n' : line);
+    const lineByteOffsets: number[] = []; let offset = 0;
+    for (const line of lines) { lineByteOffsets.push(offset); offset += Buffer.byteLength(line); }
+    const retained = retainedLines.join('');
+    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, retainedLines, lineByteOffsets, originalBytes: offset, contentSha256: createHash('sha256').update(KESTREL).digest('hex'), withheld: [4], detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
     const result = await renderRun(run, renderDeps({ loadScreen: async () => redacting }));
     if (!result.ok) throw new Error(result.refusal.reason);
     const pages = [...readSite(result.report.site).values()].join('\n');
-    for (const line of KESTREL.split('\n').filter((row) => row.length > 8)) expect(pages).not.toContain(line);
-    expect(pages).toContain('retained by screening as redacted-span with 1 withheld line(s); its retained text is not shown on these pages');
-    expect(pages).toContain('a quotation it rests on is from a file screening retained as redacted-span, whose text these pages do not show, so the quotation is not shown');
+    expect(pages).not.toContain('int main(void) { return 0; }');
+    expect(pages).toContain('Kestrel keeps every key in memory.');
+    expect(pages).toContain('[redacted-span: 1 withheld line(s) in this file]');
+    expect(pages).toContain('surviving spans use original Git byte coordinates');
+    expect(pages).toContain('each withheld run is marked on its source page; surviving spans retain their original coordinates');
+    const sourcePage = [...readSite(result.report.site).entries()].find(([file, page]) => file.startsWith('sources/') && page.includes('Kestrel keeps every key'))![1];
+    expect(sourcePage).toContain(`data-quote-start="${Buffer.byteLength(lines.slice(0, 4).join(''))}"`);
+    expect(sourcePage.match(/class="redaction-note"/gu)).toHaveLength(1);
   });
 
   it('refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure', async () => {

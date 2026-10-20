@@ -13,7 +13,7 @@ import { compileDetectors, detectSecrets, PWB_DENIED_PATH_RULES, PWB_SECRET_POLI
 
 import { renderDossier } from './dossier-render.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
-import { checkoutPolicyActPort, loadPublicSourceScreen, readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
+import { checkoutPolicyActPort, screenedRepoCorpusVerifier, loadPublicSourceScreen, readScreenedRepoCorpus, type PublicSourcePolicyActPort } from './public-source-screening.js';
 import { buildPipelineRequest, CorpusRefusal, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig } from './repo-corpus.js';
 
 // Every secret is assembled at runtime so no literal token sits in this file.
@@ -479,5 +479,39 @@ sys.stdout.write(json.dumps(json.loads(b.propose(base, 'all'))[b.SCOPE_KEY]['act
       .toBe('public-source-policy: policy code-content exemption rule is not the text this screen implements');
     expect(await loadPublicSourceScreen(exemptPort(exemptPolicy({ exemptExtensions: ['.h'] }))).then(() => '', (error: unknown) => (error as CorpusRefusal).reason))
       .toBe('public-source-policy: policy code-content exemption exemptExtensions is not a non-empty list of distinct sourceExtensions entries');
+  });
+});
+
+
+describe('the v4 redacted corpus behind the original-object verification boundary', () => {
+  const mixed = 'a\rg\ntoken=abcdefghij\nh\nvisible\nlast\n';
+  const current = new Uint8Array(readFileSync(new URL('../../../../.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json', import.meta.url)));
+  const policyAct: PublicSourcePolicyActPort = { read: async () => ({ actRecord: actRecord(sha(current)), policy: current, classActInForce: true }) };
+
+  it('returns only marked retained material with original identity, line coordinates and exact counts', async () => {
+    const only = fixtureRepo({ 'docs/mixed.md': mixed, 'src/secret.c': 'token=abcdefghij\n' });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct });
+    expect(corpus.count).toMatchObject({ listed: 2, selected: 2, sourceRows: 2, redactedFiles: 1, withheldLines: 3, secretDetectorMatches: 1 });
+    const kept = corpus.sources.find(source => source.path === 'docs/mixed.md')!;
+    expect(kept.objectId).toBe(objectIdOf('docs/mixed.md', only.root, only.commit));
+    expect(kept.body).toBe('a\r[redacted-span: 3 withheld line(s) in this file]\nvisible\nlast\n');
+    expect(kept.spans.map(span => [span.original, span.text])).toEqual([
+      [{ start: 0, startLine: 1, endLine: 1 }, 'a\r'], [{ start: 23, startLine: 5, endLine: 6 }, 'visible\nlast\n'],
+    ]);
+    expect(JSON.stringify(corpus)).not.toContain('abcdefghij');
+    expect(JSON.stringify(corpus)).not.toContain('token=');
+    expect(validateGenerationSources(corpus.sources)).toHaveLength(2);
+    const request = buildPipelineRequest(corpus, { ...cfg(only.commit), budget, readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [] }, Date.now());
+    const fresh = await screenedRepoCorpusVerifier(only.root, cfg(only.commit), { admission: allow, policyAct })(request);
+    expect(Array.isArray(fresh)).toBe(true);
+    expect(validateGenerationSources(fresh as readonly GenerationSource[]).find(source => source.path === 'docs/mixed.md')?.body).toBe(kept.body);
+  });
+
+  it('refuses wrong original bytes before screening and fails replay closed when the fresh object read changes', async () => {
+    const only = fixtureRepo({ 'docs/mixed.md': mixed });
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct });
+    const ports = { admission: allow, policyAct, readBlobs: (_repo: string, objects: readonly string[]) => new Map(objects.map(oid => [oid, Buffer.from('arbitrary safe body\n')])) };
+    await expect(readScreenedRepoCorpus(only.root, cfg(only.commit), ports)).rejects.toThrow('corpus-object-mismatch');
+    expect(await screenedRepoCorpusVerifier(only.root, cfg(only.commit), ports)(buildPipelineRequest(corpus, { ...cfg(only.commit), budget, readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [] }, Date.now()))).toBe(false);
   });
 });
