@@ -1,8 +1,11 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
+  WORK_ITEM_GOVERNING_INTENT_REGION_ID,
+  workItemGoverningIntentId,
   workItemVerificationId,
   workerChangeVerificationId,
   type PocModel,
+  type PocUnknown,
   type WorkerChangeObserved,
 } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
@@ -16,6 +19,7 @@ import {
 import { substrateEvaluationFooter } from './evaluation-footer.js';
 import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { epistemicClassName } from './design-tokens.js';
 import { unknownMarker, unknownRoute, unknownSubject } from './unknown-marker.js';
 
 export const TRAJECTORY_HUMAN_PATH = '/trajectory' as const;
@@ -126,6 +130,37 @@ function itemVerification(model: PocModel, itemId: string): string {
   return `<span class="epistemic epistemic-unknown" data-parity-field="work-item-verification"${unknownMarker(id, unknown)} title="${escapeHtml(unknown.reason)}">Verification: Unknown. ${unknownRoute(unknown)}</span>`;
 }
 
+/** POC-REQ-014: the card's governing-intent mark, read from the model under
+ * the card's own id. The class is the POC-REQ-060 table's for the label the
+ * model carries, so no state but Unknown can take the Unknown encoding. */
+function itemGoverningIntent(itemId: string, unknown: PocUnknown): string {
+  const id = workItemGoverningIntentId(itemId);
+  return `<span class="epistemic ${epistemicClassName(unknown.label)}" data-parity-field="work-item-governed-by"${unknownMarker(id, unknown)} title="${escapeHtml(unknown.reason)}">Governing intent: ${escapeHtml(unknown.label)}. ${unknownRoute(unknown)}</span>`;
+}
+
+/** POC-REQ-014: the served count of the governing-intent Unknown beside how
+ * many the rendered selection holds and how many fall outside it, with the
+ * reason, its RFC2-24 route and what resolves an item. `inside` is counted
+ * over the cards this page renders. */
+function governingIntentRegion(model: PocModel, rendered: readonly TrajectoryLaneItem[]): string {
+  if (model.workItems.kind !== 'observed') return '';
+  const count = model.workItems.governedByUnknownCount;
+  const subjects = new Map(model.unknownSubjects.map((subject) => [subject.id, subject.epistemic]));
+  const inside = rendered.filter((item) => {
+    const governedBy = subjects.get(workItemGoverningIntentId(item.id));
+    return governedBy?.label === 'Unknown' && governedBy.closedReason === 'source-uncaptured-or-unreachable';
+  }).length;
+  const unknown = unknownSubject(model, WORK_ITEM_GOVERNING_INTENT_REGION_ID);
+  return `<p class="governing-intent-count notice" data-parity-field="work-item-governed-by-count"${unknownMarker(WORK_ITEM_GOVERNING_INTENT_REGION_ID, unknown)}>
+        Governing intent: Unknown for <span data-parity-field="governed-by-unknown-count">${count}</span> of ${model.workItems.items.length} observed work items;
+        <span data-parity-field="governed-by-unknown-inside">${inside}</span> are in this selection and <span data-parity-field="governed-by-unknown-outside">${count - inside}</span> are outside it.
+        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}
+        Supplying an item's warrant resolves its governing intent.
+      </p>
+      <input type="checkbox" class="narrow-toggle" id="narrow-governing-intent-unknown">
+      <label class="narrow-label" for="narrow-governing-intent-unknown">Show only items whose governing intent is Unknown</label>`;
+}
+
 function itemCard(
   model: PocModel,
   item: TrajectoryLaneItem,
@@ -135,11 +170,13 @@ function itemCard(
   governingIntentId: string | null,
   demonstrated: boolean,
 ): string {
-  return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
+  const governedBy = unknownSubject(model, workItemGoverningIntentId(item.id));
+  return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-governed-by="${escapeHtml(governedBy.label)}" data-work-item-id="${escapeHtml(item.id)}">
     ${demonstrated ? '<span class="demo-badge">Demonstrated item</span>' : ''}
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
+    ${itemGoverningIntent(item.id, governedBy)}
     ${itemVerification(model, item.id)}
     ${workerChangeBadge(model, workerChange, testArtifactVerification, governingIntentId)}
     ${laneBar(item, range)}
@@ -167,6 +204,10 @@ const TRAJECTORY_STYLE = `
   .wi-card-demonstrated { border-color: var(--cyan); }
   .demo-badge { color: var(--cyan); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; }
   .demo-callout { max-width: 78ch; }
+  .governing-intent-count { max-width: 78ch; }
+  .narrow-label { font-family: var(--font-mono); font-size: .78rem; margin-left: .3rem; }
+  .narrow-toggle:focus-visible + .narrow-label { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .narrow-toggle:checked ~ .board .wi-card:not([data-governed-by="Unknown"]) { display: none; }
   ${MATERIALIZE_PANEL_STYLE}
 `;
 
@@ -224,6 +265,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?:
         Rendering ${trajectory.renderedCount} of ${trajectory.totalCount} observed work items (${trajectory.selectionRule});
         <span data-parity-field="trajectory-excluded-count">${trajectory.excludedCount}</span> items are outside this selection and not shown.
       </p>
+      ${governingIntentRegion(model, trajectory.rendered)}
       ${demonstratedCallout}
       <div class="board" role="group" aria-label="Work-item board by status column">${columns}</div>`;
   }
