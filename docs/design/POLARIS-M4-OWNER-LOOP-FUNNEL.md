@@ -580,7 +580,13 @@ tested the vision against exactly this phrase].
   own table and `UNKNOWN_REASON_ROUTES` are NOT word for word equal**
   (corrected per review 1, F1 — the draft's claim here was false and is
   slice 1's most consequential defect). Extracted and compared key by key
-  this session: of the twelve, **5 are identical**
+  this session (historical comparison; [Observed — marked 2026-10-21:
+  following the P-100 restoration, a fresh comparison of all twelve routes
+  gives **6 identical / 6 different**. The source-uncaptured route now uses
+  RFC2-24's literal. The two methods and six remaining differences are
+  recorded in `docs/evidence/p100-route-literal-census-2026-10-21.json`.
+  The original comparison below is retained as historical text]): of the
+  twelve, **5 are identical**
   (`stale-beyond-currency-bound`,
   `unconsented-source-or-provider`, `excluded-content`,
   `contradicted-pending-adjudication`, `reference-unresolvable`) and **7

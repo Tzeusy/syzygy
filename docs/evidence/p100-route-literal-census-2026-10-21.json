@@ -1,0 +1,103 @@
+{
+  "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+  "implementationPath": "packages/three-surface-poc-core/src/project-shape-model.ts",
+  "contractPath": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md",
+  "denominator": 12,
+  "comparison": "Decoded TS string literal or compiled export versus Markdown route-cell text with bold delimiters removed; citations and parentheticals retained",
+  "sourceAndCompiledMethodsAgree": true,
+  "regexAndTableCellMethodsAgree": true,
+  "same": [
+    "contradicted-pending-adjudication",
+    "excluded-content",
+    "reference-unresolvable",
+    "source-uncaptured-or-unreachable",
+    "stale-beyond-currency-bound",
+    "unconsented-source-or-provider"
+  ],
+  "different": [
+    "challenge-suspended",
+    "execution-blocked",
+    "mapping-coverage-absent",
+    "missing-declaration",
+    "missing-evidence",
+    "no-currency-bound-declared"
+  ],
+  "rows": [
+    {
+      "reason": "missing-declaration",
+      "implementation": "First-pass drafting for owner sign-off",
+      "contract": "First-pass drafting for owner sign-off (v1.md)",
+      "equal": false
+    },
+    {
+      "reason": "missing-evidence",
+      "implementation": "Produce or capture evidence",
+      "contract": "Produce/capture evidence",
+      "equal": false
+    },
+    {
+      "reason": "no-currency-bound-declared",
+      "implementation": "Declare the bound in quality policy",
+      "contract": "Declare the bound in quality policy [Observed \u2014 trust-and-evidence.md]",
+      "equal": false
+    },
+    {
+      "reason": "stale-beyond-currency-bound",
+      "implementation": "Capture fresh evidence via a new snapshot",
+      "contract": "Capture fresh evidence via a new snapshot",
+      "equal": true
+    },
+    {
+      "reason": "mapping-coverage-absent",
+      "implementation": "Run or declare the mapping",
+      "contract": "Run/declare the mapping",
+      "equal": false
+    },
+    {
+      "reason": "unconsented-source-or-provider",
+      "implementation": "Record consent",
+      "contract": "Record consent",
+      "equal": true
+    },
+    {
+      "reason": "excluded-content",
+      "implementation": "Policy change by the owner, or accept the exclusion",
+      "contract": "Policy change by the owner, or accept the exclusion",
+      "equal": true
+    },
+    {
+      "reason": "contradicted-pending-adjudication",
+      "implementation": "Owner adjudication",
+      "contract": "Owner adjudication",
+      "equal": true
+    },
+    {
+      "reason": "challenge-suspended",
+      "implementation": "Challenge resolution",
+      "contract": "Challenge resolution (RFC2-13)",
+      "equal": false
+    },
+    {
+      "reason": "source-uncaptured-or-unreachable",
+      "implementation": "Repair the observer/source; new snapshot",
+      "contract": "Repair the observer/source; new snapshot",
+      "equal": true
+    },
+    {
+      "reason": "reference-unresolvable",
+      "implementation": "Repair the reference, owned by the governed project",
+      "contract": "Repair the reference, owned by the governed project",
+      "equal": true
+    },
+    {
+      "reason": "execution-blocked",
+      "implementation": "Unblock or authorize the run, then capture in a new snapshot",
+      "contract": "Unblock or authorize the run (execution profile, consent, environment), then capture in a new snapshot",
+      "equal": false
+    }
+  ],
+  "contractGitBlob": "763274ddce42cc7fc26024b5378bbbfb9bbfa9de",
+  "implementationSha256": "be9a7ea24b634be130378b89a735d1830ceb7625b95cc687e5dea9bd8b5daf75",
+  "epistemic": "Observed",
+  "purpose": "Sentence-local historical qualification of the M4 funnel route comparison; no other route is changed."
+}

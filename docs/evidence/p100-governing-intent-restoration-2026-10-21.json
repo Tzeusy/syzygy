@@ -1,0 +1,1869 @@
+{
+  "record": "P-100 exact restoration after the machine-ceiling installation; source/evidence only",
+  "epistemic": "Observed",
+  "recordedAtUtc": "2026-10-20T19:31:56.660772+00:00",
+  "subject": {
+    "commit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "tree": "56df58a817fd878962716a9d8c5cd7845d2aeba6",
+    "baseCommit": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+    "patchSha256": "75126759bf6d57844f6d0d0911a6e422df4a584f3b7b0398473ba59e081919e0",
+    "sourceFiles": {
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts": {
+        "gitBlob": "2aba6e53b5f758f151b8ab4aed4835aa15e3186c",
+        "sha256": "8122604935a7b477ec9679884769bdb5eca80b3bb5873153937b679103073465"
+      },
+      "apps/three-surface-poc/src/cdp-browser.ts": {
+        "gitBlob": "38db92dbea525a554308038fb35b5a6f8cf92bef",
+        "sha256": "c4dcbfe2d0f1d20e2e395b1426f52d0450fbbdbc84e165c88b80c96d62b75702"
+      },
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts": {
+        "gitBlob": "290ec1df684d55f0f3d38178f0ee046e099c0a27",
+        "sha256": "6c0849933660820e0be1bcc7e164719519a5eee6593ea2c324dfa1f4218ee946"
+      },
+      "apps/three-surface-poc/src/polaris-reconciliation.test.ts": {
+        "gitBlob": "004526855741d5e1c03224dcafd624b59763b806",
+        "sha256": "5fbabfc22440ef8481fbae837f514ff203b283ee2020e8b54a53ee57c0e69df9"
+      },
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts": {
+        "gitBlob": "426df8b6015c59a7a7f230aaff5de413116c37a3",
+        "sha256": "eceb35a5c1a583b7aa7cb5e9c49db24cc35d8ef83e81771a56ea8902d9f85a51"
+      },
+      "apps/three-surface-poc/src/trajectory.ts": {
+        "gitBlob": "d28e0a7d68bfb640aab9e96b60496f9e894def1e",
+        "sha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8"
+      },
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts": {
+        "gitBlob": "e2557c7d00b5db255ee9cd1dff119a7a7c39de43",
+        "sha256": "1be8f317e87dc78aaa24a5ff82879614ecb117e7f05b0b87a6124b7dbc58f4b3"
+      },
+      "packages/three-surface-poc-core/src/model.ts": {
+        "gitBlob": "de21d1f0d4d759f081816d216533cf02283afe3c",
+        "sha256": "72c58ab8f0234c763ece630ae85a52b0871100cf6f33854f42e0eb907210f489"
+      },
+      "packages/three-surface-poc-core/src/project-shape-model.test.ts": {
+        "gitBlob": "7d5cf9315416bcdce336832c8ed3fd3961242663",
+        "sha256": "33bb156f847f091ebdf7ae493373315ea4012ab7d878ee11f2c63b630f85d182"
+      },
+      "packages/three-surface-poc-core/src/project-shape-model.ts": {
+        "gitBlob": "e036349d32d4da6d82fb8edc732746f00fa31104",
+        "sha256": "be9a7ea24b634be130378b89a735d1830ceb7625b95cc687e5dea9bd8b5daf75"
+      },
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts": {
+        "gitBlob": "9fa2e80acd03b92f4204ea1acfa4d3c126d82010",
+        "sha256": "a697cbc3282c016f6f2762dc69489998ca22161cafe877a4693c48c529c2c517"
+      },
+      "packages/three-surface-poc-core/src/work-items.ts": {
+        "gitBlob": "38f80882a6c9e694e7f1e84ff231cd4fb892ba1f",
+        "sha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f"
+      }
+    }
+  },
+  "authority": {
+    "implementationDirection": ".syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md",
+    "row": "P-100 / syzygy-u05.20",
+    "signoffRecord": ".syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+    "adoptedRequirement": "POC-REQ-014",
+    "specification": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+    "scope": "Restore the prior implementation only; this record creates no authority or new read/egress/runtime permission."
+  },
+  "restorationIdentity": {
+    "originalThreeCommits": [
+      "41fd60e286389153bd8d4aa52762520af2f068c6",
+      "2acefd8abb87418edc7c0f0b4dc75cc560bb8a37",
+      "bd95d0399a4d9a5d7bf065a656b32b18828db43a"
+    ],
+    "revert": "84bfe047ea11b25a4283eb229d5d06d406695fe7",
+    "mainRevertTwin": "7dfe709ab84b3b93782468044de0b233355864ca",
+    "exactInverseAndOriginalNetStablePatchId": "1397efcd7755c23cfe8f090b12e94cca86b7c3dd",
+    "actualContextStablePatchId": "4fc69c2158a746a78b2b6ca783cc21c59fbacd6f",
+    "originalAndActualZeroContextStablePatchId": "a4e0d201bf592ce4bace6853c95f6fd0c58cde74",
+    "changedPaths": [
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "apps/three-surface-poc/src/cdp-browser.ts",
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "apps/three-surface-poc/src/trajectory.ts",
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "packages/three-surface-poc-core/src/work-items.ts"
+    ],
+    "exactOriginalRepairBlobPaths": [
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "apps/three-surface-poc/src/cdp-browser.ts",
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "apps/three-surface-poc/src/trajectory.ts",
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "packages/three-surface-poc-core/src/work-items.ts"
+    ],
+    "exactRetainedReviewBlobPaths": [
+      "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "apps/three-surface-poc/src/trajectory.ts",
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "packages/three-surface-poc-core/src/work-items.ts"
+    ],
+    "preservedCurrentBaseOverlaps": [
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts"
+    ],
+    "testIntegration": "Retain current vi import and cap/ordering cases. Restore only governingIntentUnknown import, four fixture governedBy fields, and count4. Production changed-line patch equals the original three-commit net.",
+    "retainedReviewCdpDifference": "The retained abda review subject predates the accessibleNames interface/method already present on this base and in original repair bd95; it remains unchanged. The P-100 CDP delta restores only original Space-key support.",
+    "currentSourcePreserved": "The 200 non-closed +50 closed selection algorithm, v4 policy literals and16MiB ceiling remain unchanged."
+  },
+  "retainedHistoricalRecords": {
+    "docs/reviews/R-IMPL-P100-GOVERNING-INTENT-1-RAW.md": {
+      "sha256": "70a34ed17aeb7793b55ac7b54fb69f3feb62bf0cf315c22512d06fe9d9d87b93",
+      "unchangedFromBase": true
+    },
+    "docs/reviews/R-IMPL-P100-GOVERNING-INTENT-2-RAW.md": {
+      "sha256": "750cd45b1cad375d7012645ed4338a918c6fff6ec2eefd57e31ee22f537b6cf9",
+      "unchangedFromBase": true
+    },
+    "docs/evidence/p100-governing-intent-implementation-2026-10-15.json": {
+      "sha256": "b0a8aec00fb1221853ce2c718e0e805f084eb12ade43a3a47b4c5da882178166",
+      "unchangedFromBase": true
+    }
+  },
+  "preservation": {
+    "verificationSubjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "checkedAtUtc": "2026-10-20T19:27:55.473079+00:00",
+    "clean": true,
+    "currentTrackedBlobPopulation": 2929,
+    "allCurrentFileBytesMatchCommittedBlobs": true,
+    "outsideRestorationPreexistingBlobsUnchanged": 2917,
+    "protectedBaselinePathsUnchanged": 1337,
+    "tagRefsUnchanged": 49,
+    "mutationReceiptsIndependentlyRechecked": 20,
+    "baselinePassed": 29,
+    "mutantsKilled": 19,
+    "pendingTestsAmongCompletedMutationReceipts": 0,
+    "initialM03InconclusiveRetained": true,
+    "workItemInputIdentity": {
+      "RawRow": {
+        "byteEqual": true,
+        "sha256": "5826af8ae260ec7693583a6402ac4bdb751074787a5398fe2dfc3149eb327997"
+      },
+      "query": {
+        "byteEqual": true,
+        "sha256": "993124e130a5a0c7d2b2dbc4ff0d440f07bffad93f08b63a892cb6d65b38ae69"
+      }
+    },
+    "methods": "Compare committed/index blob identities against base, then independently compute filesystem Git blob hashes. Compare tag object/peeled refs with for-each-ref and show-ref.",
+    "baselineScope": "Counts cover the frozen source subject before this new evidence file; all prior artifacts are unchanged."
+  },
+  "verification": {
+    "build": {
+      "result": "passed",
+      "command": [
+        "npm",
+        "run",
+        "build:poc"
+      ],
+      "dependencyInstallation": "npm ci ran in the owned worktree before Node tooling",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "build:poc"
+        ],
+        "cwd": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-u05.20-restore-2026-10-21",
+        "headAtStart": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+        "stagedTreeAtStart": "56df58a817fd878962716a9d8c5cd7845d2aeba6",
+        "startedAtUtc": "2026-10-20T19:22:37.002923+00:00",
+        "finishedAtUtc": "2026-10-20T19:22:48.097116+00:00",
+        "elapsedSeconds": 11.094190703937784,
+        "exit": 0,
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/build-poc.log"
+      },
+      "logSha256": "571a984caedd427afcd6c6eb6c56db1aeed013276792302f9b2c840ec53a954e",
+      "subjectEquivalence": "The build staged tree equals the source commit tree."
+    },
+    "finalFocusedPositive": {
+      "files": 9,
+      "passed": 144,
+      "failed": 0,
+      "skipped": 0,
+      "browserTestsRun": 2,
+      "metadata": {
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=2",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+          "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+          "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+          "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "apps/three-surface-poc/src/cdp-browser.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/final-focused-nine-vitest.json"
+        ],
+        "cwd": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-u05.20-restore-2026-10-21",
+        "headAtStart": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "stagedDiffSha256AtStart": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "startedAtUtc": "2026-10-20T19:27:54.019898+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:59.255378+00:00",
+        "elapsedSeconds": 5.23548316815868,
+        "exit": 0,
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/final-focused-nine.log"
+      },
+      "logSha256": "fe5ffa09b091634033429d4cb5dad0b7f4d87c17d070ae3596ce6b6fabd91472",
+      "vitestJsonSha256": "0b0376357216c292e5ef33bd37f63877fe7c835df5fd3d83a06359054207af1e"
+    },
+    "currentBaseGuards": {
+      "files": 5,
+      "namedPopulation": 90,
+      "passed": 88,
+      "failed": 0,
+      "excluded": [
+        {
+          "file": "packages/three-surface-poc-core/src/work-items.test.ts",
+          "fullName": "work-items observer exercises the real subprocess path against a repository with no Beads database",
+          "status": "skipped"
+        },
+        {
+          "file": "apps/three-surface-poc/src/response-limits.test.ts",
+          "fullName": "boundedResponse \u2014 the ceiling is measured on the final encoded body logs a single safe response-limit outcome per real-socket human and machine 503",
+          "status": "skipped"
+        }
+      ],
+      "exclusionReason": "Worker boundary excludes a real daemon/socket test and a real bd subprocess test. Root owns full final verification.",
+      "metadata": {
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=2",
+          "packages/three-surface-poc-core/src/work-items.test.ts",
+          "apps/three-surface-poc/src/response-limits.test.ts",
+          "apps/three-surface-poc/src/governance-inputs.test.ts",
+          "packages/polaris-generation-consent/src/real-tree.test.ts",
+          "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "-t",
+          "^(?!.*(?:real-socket human and machine|real subprocess path against a repository)).*$",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/current-base-guards-vitest.json"
+        ],
+        "cwd": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-u05.20-restore-2026-10-21",
+        "headAtStart": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+        "stagedDiffSha256AtStart": "75126759bf6d57844f6d0d0911a6e422df4a584f3b7b0398473ba59e081919e0",
+        "startedAtUtc": "2026-10-20T19:23:09.709966+00:00",
+        "finishedAtUtc": "2026-10-20T19:23:18.066165+00:00",
+        "elapsedSeconds": 8.356200077105314,
+        "exit": 0,
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/current-base-guards.log"
+      },
+      "logSha256": "b3a1e6bb52b91cd16b35b277a4e6d3f18f1e6b05045ef712e76c0089daf67b2e",
+      "subjectEquivalence": "The precommit staged diff SHA256 exactly equals the recorded source commit patch SHA256."
+    },
+    "currentCapInteraction": {
+      "metadata": {
+        "command": [
+          "node",
+          "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/current-cap-interaction.mjs"
+        ],
+        "cwd": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-u05.20-restore-2026-10-21",
+        "headAtStart": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+        "stagedDiffSha256AtStart": "75126759bf6d57844f6d0d0911a6e422df4a584f3b7b0398473ba59e081919e0",
+        "startedAtUtc": "2026-10-20T19:24:42.229502+00:00",
+        "finishedAtUtc": "2026-10-20T19:24:43.800928+00:00",
+        "elapsedSeconds": 1.5714311820920557,
+        "exit": 0,
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/current-cap-corrected.log"
+      },
+      "result": {
+        "synthetic": true,
+        "sourceReads": "fixture only",
+        "served": 252,
+        "governedByUnknownCount": 252,
+        "rendered": 250,
+        "nonClosedSelected": 200,
+        "closedSelected": 50,
+        "outside": 2,
+        "keyboardNarrowed": 250,
+        "unmarkedCounterexampleHidden": true,
+        "machineBytes": 397998,
+        "htmlBytes": 433941,
+        "htmlSha256": "c8037dbefbca4f18518f9bc66a72e54cdde4558b211a38478998e5bfa0e0e2de"
+      },
+      "harness": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/current-cap-interaction.mjs",
+      "harnessSha256": "432d09a248e99ed4231d9fd34aad70fbacafc16aa7d0a12ce9ecafcb26fcc4e5",
+      "logSha256": "5036878164d6543dbcaa175bc93970c6008b3e533aa0cf80196d585688b3df62",
+      "scope": "Synthetic fixture through pure route handlers and file:// Chrome; no daemon or live project repository."
+    },
+    "initialScratchProbeFailures": {
+      "cause": "JS template escaping in the outside-Git harness changed whitespace matching into literal s matching. Only the scratch harness changed; production source did not.",
+      "retainedLogs": {
+        "current-cap-interaction.log": "840f28a83384ec9e1b9a4e82f21ec7a5853596c0d9dd3c001d07560910477ed8",
+        "current-cap-diagnostic.log": "74a5daf2d04ca30298e1831e07f17073c5921349be97c4f5b56639a077497ca7"
+      }
+    }
+  },
+  "rule6Replay": {
+    "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "originalEvidence": "docs/evidence/p100-governing-intent-implementation-2026-10-15.json",
+    "originalEvidenceSha256": "b0a8aec00fb1221853ce2c718e0e805f084eb12ade43a3a47b4c5da882178166",
+    "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+    "populationIncludingBaseline": 20,
+    "baselinePassed": 29,
+    "baselineSurvived": true,
+    "mutantPopulation": 19,
+    "killed": 19,
+    "additionalInconclusiveAttempts": 1,
+    "totalExecutions": 21,
+    "counting": "Count each final mutant outcome once; test executions across cases and repeated positive runs are not distinct test populations.",
+    "method": "Apply each original old/new fragment once, execute the named behavioral oracles, preserve exact before/mutated digests and results, compare ownership before restoration, restore exact source, and require a clean tree after each case. A second pass rechecked all20 final receipts against raw Vitest JSON and committed source replacement digests.",
+    "m03Precision": "First sweep-only attempt had a beforeAll TypeError and27 pending/0failed, so is inconclusive. The exact mutant rerun against existing per-test Trajectory cases executed14 with11failed/0pending through the missing-property model-build TypeError. No unrelated CDP shutdown test was run or claimed as a kill.",
+    "results": [
+      {
+        "id": "M00",
+        "limb": "baseline: no mutation (must survive)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  .narrow-label {",
+        "new": "  .narrow-label {",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M00-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:25:56.869343+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:00.662155+00:00",
+        "elapsedSeconds": 3.792811302933842,
+        "exit": 0,
+        "outcome": "survived",
+        "testsRun": 29,
+        "testsFailed": 0,
+        "testsPassed": 29,
+        "testsPending": 0,
+        "filesRun": 2,
+        "killedBy": [],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M00.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M00-vitest.json",
+        "failureMode": "baseline passed",
+        "unexpectedOutcome": false,
+        "logSha256": "db5543bee43712c5120ce16a3b45096cf009128d87b2390f08515c8574f6a631",
+        "vitestJsonSha256": "a3f68176105d8d8372f1a13f21fdc78823cac6d55a5aca3153dd7de25233c33b",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M01",
+        "limb": "an item guessed from its title",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      governedBy: governingIntentUnknown(),\n",
+        "new": "      governedBy: { ...governingIntentUnknown(), intent: raw.title.replace(/^Implement /, '') } as never,\n",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "dff7f6826d77546fcac27efe139e7707e972e10b549d0a803b0b244ab2ff988e",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M01-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:00.676882+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:02.679692+00:00",
+        "elapsedSeconds": 2.0028093638829887,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 3,
+        "testsPassed": 24,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown a title naming POC-REQ-010 yields the same Unknown, and nothing served names it outside a title"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M01.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M01-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "376bd69c7cd14a11a42b0d7d6f7cc234dd74e9c56621dd5f3a449fbdfb9a7459",
+        "vitestJsonSha256": "effbe86c710f01d063df5b1d709f912745db028cb3890a1fb052daf0753d1dca",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M02",
+        "limb": "a green intent",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "  return {\n    label: 'Unknown',\n    closedReason",
+        "new": "  return {\n    label: 'Observed' as 'Unknown',\n    closedReason",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "0d88dbb9916175dca90cbfff54c9affe5f50441ac0eeca4993c8dd8ef1409581",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M02-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:02.695180+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:05.054124+00:00",
+        "elapsedSeconds": 2.358946420950815,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 12,
+        "testsPassed": 15,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the narrowed board lists exactly the 52 rendered cards"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M02.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M02-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "dfaef715487349fe60a369b56325dee03df869ae29cd3ab625cbc79fb2d9ae50",
+        "vitestJsonSha256": "c8ef1561ea5aadd228baf861db10dd65b685c1338ea787ca120160d239f437a4",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M03",
+        "limb": "an omitted intent",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      governedBy: governingIntentUnknown(),\n",
+        "new": "",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "147258b9d7d3f0463d068ef2fbbe6f57dce04f53426af67356d8b6854fbf9a31",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03-relevant-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:49.271903+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:51.844353+00:00",
+        "elapsedSeconds": 2.5724469439592212,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 14,
+        "testsFailed": 11,
+        "testsPassed": 3,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory places every rendered item in the column its declared status mapping assigns (POC-REQ-040)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory serves the full machine population and reconciles the bounded board selection (POC-REQ-042)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory never renders closure/activity as verification satisfaction (POC-REQ-043)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory renders the observed worker-change lifecycle state on the matching card, never as verified (AC3/AC4)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory discloses a demonstrated closed item excluded by its population limit (N-1)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory discloses a demonstrated open item excluded by its population limit (N-1)"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory footer: composite evaluation identity and substrate revision (N4) prints the same composite evaluation identity Polaris renders, plus what this surface's revision is a revision of"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory.test.ts",
+            "fullName": "Trajectory footer: composite evaluation identity and substrate revision (N4) renders an explicit Skew line when the work-item capture instant answers at a different evaluation (mutation check)"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03-relevant.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03-relevant-vitest.json",
+        "failureMode": "model-build TypeError within the executed per-test Trajectory oracle; missing served property is fail-fast, no unrelated CDP shutdown test included",
+        "unexpectedOutcome": false,
+        "logSha256": "3d7620ef1d82785c47faab21adbdd996dc547f431635697899d2a6f4ff6722de",
+        "vitestJsonSha256": "32a73ae42ff7775fd37e24f0c8300c46ecd63bc3510106e584aee6e0d4a4a45a",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M04",
+        "limb": "a miscount (machine)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    governedByUnknownCount: countGoverningIntentUnknown(items),",
+        "new": "    governedByUnknownCount: countGoverningIntentUnknown(items) - 1,",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "ea22f00c0c9ce1915efd676eee05ed34f826eb7bd7aa86f5defaa6565de00652",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M04-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:51.894615+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:54.178148+00:00",
+        "elapsedSeconds": 2.28353044600226,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 4,
+        "testsPassed": 23,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M04.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M04-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "349aea8e332ef79aff19dbc2dfc36d953dbeccb2410a8f152fc84962017f4b8c",
+        "vitestJsonSha256": "8acfc210d5008ea82ee34e965199b6aba605255d796406ea20220c70714ff66c",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M05",
+        "limb": "a miscount (count predicate ignores the label)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "(item) => item.governedBy.label === 'Unknown' && item.governedBy.closedReason",
+        "new": "(item) => item.governedBy.closedReason",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "c0cd88c64809235a5e49c212f5c777552ad142d0016611dcf9219b6ade192f2b",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M05-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:54.193827+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:56.447382+00:00",
+        "elapsedSeconds": 2.2535550429020077,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 1,
+        "testsPassed": 26,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M05.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M05-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "fb2100d0948a6b7b218c0f36b7f3642f950b1184a3629cd9cc3d5570cdfdd5c1",
+        "vitestJsonSha256": "9e7c01199129228128130fbb87b98f4067e2c8c80f4492502c125866aa5faa9f",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M06",
+        "limb": "a missing reason (another reason)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    closedReason: 'source-uncaptured-or-unreachable',\n    resolutionRoutes:",
+        "new": "    closedReason: 'missing-evidence',\n    resolutionRoutes:",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "cbb8b437bf5dcdf0aed31d7d2a0d2c1a23c273290cdf8eb46a1541a9e263ddcb",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M06-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:56.462828+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:58.795448+00:00",
+        "elapsedSeconds": 2.332620876142755,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 7,
+        "testsPassed": 20,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown counts the Unknown over the served set, never assuming every item carries it"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M06.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M06-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "ded7cebd864db766a2d968fd8dc3f80bea3beaa691e37cc02dcfe45b40852849",
+        "vitestJsonSha256": "0cbe475662d40e89af7723947d9331c5312f05ad03acb7830eb666bfad2ab924",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M07",
+        "limb": "a missing route (another reason's route)",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "    resolutionRoutes: [resolutionRoute('source-uncaptured-or-unreachable')],",
+        "new": "    resolutionRoutes: [resolutionRoute('missing-evidence')],",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "13d334bdc6117ac32e88587f3882fe792ecf7ba18c366a3bc11ae24acd3b6c5e",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M07-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:58.812804+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:01.149874+00:00",
+        "elapsedSeconds": 2.3370785918086767,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 2,
+        "testsPassed": 25,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M07.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M07-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "c8cc7f57dd0f66ed5f64722e5ee45e4bb061a7bcad6275e9d1c1b3ed9c71532b",
+        "vitestJsonSha256": "d7e98b8f5c3be8f805f1871b9485c04c9915d34130d3530d0aaea71c15c12255",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M08",
+        "limb": "a route that is not RFC2-24's literal",
+        "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+        "old": "  'source-uncaptured-or-unreachable': 'Repair the observer/source; new snapshot',",
+        "new": "  'source-uncaptured-or-unreachable': 'Repair the observer or source; new snapshot',",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "be9a7ea24b634be130378b89a735d1830ceb7625b95cc687e5dea9bd8b5daf75",
+        "mutatedSha256": "c3e58ca458a6420b9ecd455252756e0a567d21b730193fab9d1648e7297e0108",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M08-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:01.172919+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:03.716284+00:00",
+        "elapsedSeconds": 2.5433645700104535,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 4,
+        "testsPassed": 23,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown each served governedBy is the Unknown with RFC2-24's reason and route"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the route"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M08.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M08-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "8a533fda64856f42051a59e71a906c1a82955abedbc560fcba4b922f05a2dfa4",
+        "vitestJsonSha256": "01fa355c111a3a97d0702e49f7f8353fc4c681e386173d0ee45de97c067584ab",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M09",
+        "limb": "a miscount (Trajectory)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "${count}</span> of",
+        "new": "${count + 1}</span> of",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "30262d5a98d733c1e2d6db2e723bd01970c0375da852026b7a73aac6370b59e5",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M09-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:03.737000+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:06.300726+00:00",
+        "elapsedSeconds": 2.563724931096658,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 4,
+        "testsPassed": 23,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a Trajectory miscount"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb channels that disagree"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M09.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M09-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "5694305acd56e7c77fb91fed32229e170924ac3154728c1bdf498f429059480c",
+        "vitestJsonSha256": "0308ee8a7834ce858f084f650d5cc5de594e91fe209283be3fac6d894e0e3180",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M10",
+        "limb": "an inside figure that is not the rendered selection",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  const inside = rendered.filter(",
+        "new": "  const inside = 1 + rendered.filter(",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "c3e36d1ffd0dbe588fed81c6d739289f2272aca925746832f25ed0f592cd232e",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M10-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:06.319575+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:08.870066+00:00",
+        "elapsedSeconds": 2.550494391936809,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 3,
+        "testsPassed": 24,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb an inside figure that is not the rendered selection"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M10.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M10-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "1fba483c80432aeddc08f8a42cac062c9733c0dd8edfb52d498576c5dd13044e",
+        "vitestJsonSha256": "94a179f56cb835e1550f29c068cc0dd7eb672482b804729e5fe72ebe2af0dc36",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M11",
+        "limb": "inside plus outside that misses the count",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "${count - inside}</span>",
+        "new": "${count}</span>",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "44d5146ece0780424255a582e4fe487aa3101db7939a5d4d3def00e9ae0ae4c6",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M11-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:08.888685+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:11.064971+00:00",
+        "elapsedSeconds": 2.1762860529124737,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 2,
+        "testsPassed": 25,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb inside plus outside that misses the count"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M11.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M11-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "89c767b445eb0e39cd87223324b68a94b0f5198e395431b8e9877d9b56ed9436",
+        "vitestJsonSha256": "8f7288f685e714b3d77b8366c6d39084eebb45d809d43ab5457d5ead84cc1a5e",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M12",
+        "limb": "a count region missing the reason",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
+        "new": "        ${unknownRoute(unknown)}",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "fedff6312b47b898891751700746295021c2bd2b0dd8f927cdcbe9d2bd8493f8",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M12-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:11.082039+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:14.003117+00:00",
+        "elapsedSeconds": 2.921081659849733,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 3,
+        "testsPassed": 24,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the reason"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M12.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M12-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "9ded2f1772897c5def2a4dec600ed0103fdec679fa3f4b987ee01c10634dd901",
+        "vitestJsonSha256": "227024b5b7fd9c536fae706e5082193335e6fb045ab8bf688110614e31e209b0",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M13",
+        "limb": "a count region missing the route",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}",
+        "new": "        Reason: <code>${escapeHtml(unknown.closedReason)}</code>.",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "acd49ac64087de98c22bfc377446bfa973995e092fe8ef32609fbdc4bf83034d",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M13-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:14.025514+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:16.276288+00:00",
+        "elapsedSeconds": 2.250768227968365,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 2,
+        "testsPassed": 25,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M13.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M13-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "210d6d221ba1c91fa37844e7552253918363e9e868a174e36218aac47c9569c1",
+        "vitestJsonSha256": "1d9f10ba465340f94cc8045ba142b0568fee10a829cd061f89224253174a4109",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M14",
+        "limb": "a count region missing the resolution statement",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "        Supplying an item's warrant resolves its governing intent.\n",
+        "new": "",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "85cbecf1b877ce373270bb548dd7fb076f09236b08d3ebb8cef14b4adabc17f0",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M14-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:16.292698+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:18.353477+00:00",
+        "elapsedSeconds": 2.060796583071351,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 3,
+        "testsPassed": 24,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the count region reads, as text alone, the reason, the route and the warrant statement"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a region missing the resolution statement"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M14.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M14-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "f468010e25b5551021e4a131141f06774398ca5379c9a048f018d53a9d9215b7",
+        "vitestJsonSha256": "e29e7fa0f4950e0acb3f840a52e917451bb15717c426182b5527443e2e617a5b",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M15",
+        "limb": "a rendered item with an encoding for another state",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "<span class=\"epistemic ${epistemicClassName(unknown.label)}\" data-parity-field=\"work-item-governed-by\"",
+        "new": "<span class=\"epistemic epistemic-observed\" data-parity-field=\"work-item-governed-by\"",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "2bfa448d840bf7463b608e3bb9dd7d53a174d5f4ba1f5736775630fc1107ade1",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M15-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:18.370380+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:20.522012+00:00",
+        "elapsedSeconds": 2.1516335390042514,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 4,
+        "testsPassed": 23,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M15.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M15-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "1102a415ac7438a6473cd9e7bb005c6d2b31b657f48a32cca8c53eee449ebc8e",
+        "vitestJsonSha256": "be4b4db1f4559c8a7be424f3e9215bc2320af7ce624ab5b8d27f3d49bdd4cbca",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M16",
+        "limb": "a rendered item without the mark",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "    ${itemGoverningIntent(item.id, governedBy)}\n",
+        "new": "",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "7ab4c040d63407d997eaade2522a7efaa54cd252a52f01b5049e631e7810af78",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M16-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:20.539618+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:22.617908+00:00",
+        "elapsedSeconds": 2.078291559126228,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 27,
+        "testsFailed": 4,
+        "testsPassed": 23,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item without the Unknown encoding"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with an encoding for another state"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a rendered item with no mark"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M16.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M16-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "8dffa1c0f9588fa766b9a7fa45543981438b36dd77125f3c58b0aeaf4ea0e22f",
+        "vitestJsonSha256": "1fcdcbf4359e822948f160772860f5489ce454e9ac6c297f4f96553fd45cfb1c",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M17",
+        "limb": "a narrowed board that drops items",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": ".narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }",
+        "new": ".narrow-toggle:checked ~ .board .wi-card { display: none; }",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "cafb25f5b1882f9100ddcd39ce673a1535c22c2d94cdaae8f0adac0fe0e422ea",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M17-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:22.634584+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:25.738632+00:00",
+        "elapsedSeconds": 3.1040490369778126,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 2,
+        "testsFailed": 2,
+        "testsPassed": 0,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+            "fullName": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+            "fullName": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M17.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M17-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "5adf42c3a96a97000e0ae5b47962c905708fae0b20150724ad1fd6642389a469",
+        "vitestJsonSha256": "1bb5bd6086700f4a081e3b81ca1cea52ba743b798dfe6d18dc3381b0b608b3fb",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M18",
+        "limb": "a narrowing that does not narrow",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "  .narrow-toggle:checked ~ .board .wi-card:not([data-governed-by=\"Unknown\"]) { display: none; }\n",
+        "new": "",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "105d15ecf0b2ec36365353e6e64e95d7b2173ab4700811746daccb07f6c4eb9e",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M18-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:25.757526+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:29.006922+00:00",
+        "elapsedSeconds": 3.2493949870113283,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 2,
+        "testsFailed": 1,
+        "testsPassed": 1,
+        "testsPending": 0,
+        "filesRun": 1,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+            "fullName": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M18.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M18-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "98b34837f9434d3fa3ceb9f2077a0926d3f6c4a89a56b0a2207a0b8b649accd7",
+        "vitestJsonSha256": "3fb50bbed898fcd29c17bd84d4534bee20108886b6bc9129cc8636f39d9f5f12",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default"
+        ]
+      },
+      {
+        "id": "M19",
+        "limb": "a card marked for another state (narrowed board drops it)",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "data-governed-by=\"${escapeHtml(governedBy.label)}\"",
+        "new": "data-governed-by=\"Observed\"",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+        "mutatedSha256": "a7ffcceee663e57780a2686042ad096da759847c9918ac079271dfe4e1ed1f10",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M19-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:27:29.024407+00:00",
+        "finishedAtUtc": "2026-10-20T19:27:32.693142+00:00",
+        "elapsedSeconds": 3.6687359479255974,
+        "exit": 1,
+        "outcome": "killed",
+        "testsRun": 29,
+        "testsFailed": 5,
+        "testsPassed": 24,
+        "testsPending": 0,
+        "filesRun": 2,
+        "killedBy": [
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown the narrowed board lists exactly the 52 rendered cards"
+          },
+          {
+            "file": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+            "fullName": "POC-REQ-014: every work item's governing intent renders as a counted Unknown falsifier: the oracle names each limb a narrowed board that drops an item"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+            "fullName": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one"
+          },
+          {
+            "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+            "fullName": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) with items outside the selection, Space on the focused toggle keeps exactly the inside figure's cards"
+          }
+        ],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M19.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M19-vitest.json",
+        "failureMode": "behavioral assertion",
+        "unexpectedOutcome": false,
+        "logSha256": "7ec03fa3b307204754112f34c6555fd8592dc09fab27bbbc295d7f550de097b5",
+        "vitestJsonSha256": "62ff20b28934e9c7c7107ab594e9101fc91a461dc11624a5be5e1da68c809357",
+        "rerunCommand": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+          "--reporter=default"
+        ]
+      }
+    ],
+    "priorInconclusiveAttempts": [
+      {
+        "id": "M03",
+        "limb": "an omitted intent",
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "old": "      governedBy: governingIntentUnknown(),\n",
+        "new": "",
+        "originalRanAt": "eec027b78c25ca712cf03b524ef34a459d6e436f",
+        "ranAt": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+        "sourceBeforeSha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+        "mutatedSha256": "147258b9d7d3f0463d068ef2fbbe6f57dce04f53426af67356d8b6854fbf9a31",
+        "occurrencesBefore": 1,
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03-vitest.json"
+        ],
+        "startedAtUtc": "2026-10-20T19:26:05.072594+00:00",
+        "finishedAtUtc": "2026-10-20T19:26:07.257261+00:00",
+        "elapsedSeconds": 2.184663580963388,
+        "exit": 1,
+        "outcome": "inconclusive",
+        "testsRun": 27,
+        "testsFailed": 0,
+        "testsPassed": 0,
+        "testsPending": 27,
+        "filesRun": 1,
+        "killedBy": [],
+        "log": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03.log",
+        "vitestJson": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/mutation-replay/M03-vitest.json",
+        "failureMode": "model-build TypeError before oracle assertions; missing served property is fail-fast, no unrelated CDP shutdown test included",
+        "unexpectedOutcome": true,
+        "logSha256": "a0267bbf2142ae43cf0511be7c4909b5efd6d342f9d445abb9e4f9d647ca6ca0",
+        "vitestJsonSha256": "10a1de267c30c51701c993e4754ee30ec5f8ed8704c4b4782af248b8ac29af0c"
+      }
+    ]
+  },
+  "testGrowth": {
+    "restoredFiles": [
+      "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
+    ],
+    "restoredCases": 29,
+    "newTestFilesBeyondOriginalRestoration": 0,
+    "rationale": "Restore the signed independent oracle/falsifier and actual browser keyboard narrowing. Current base cap/timestamp/Unknown tests remain in place. No prose-mirroring tests added."
+  },
+  "remainingRootGates": {
+    "epistemic": "Unknown",
+    "items": [
+      "fresh independent integration review and retained raw/disposition",
+      "final documentation/status integration and source/docs/review freeze",
+      "canonical battery in one clean clone and hosted CI",
+      "actual private admitted /api/poc response below95% of16MiB",
+      "push/PR/protected merge and Bead closure"
+    ],
+    "workerBoundary": "This worker performed no provider/live Butlers/daemon operations and no push/PR/tag/Beads lifecycle write. Synthetic and historical size values are not current private admitted-size evidence.",
+    "asOf": "worker handoff; subsequent lead checks are recorded separately below"
+  },
+  "finalDocsConsequence": {
+    "path": "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md",
+    "location": "existing route-comparison paragraph near lines583\u2013596",
+    "status": "dated sentence-local historical qualification added in lead integration; original comparison preserved",
+    "currentCensus": {
+      "population": 12,
+      "matching": 6,
+      "differing": 6,
+      "evidence": "/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p100/ROUTE-COUNT-DOC-CONSEQUENCE.json",
+      "sha256": "9e4fcb1ddd9799d8165f5f368dbfb4a372f7069dd8a0b6fd2b0ac96b35d948cb"
+    },
+    "scope": "Do not change the six other route strings under this restoration."
+  },
+  "leadPreMergePrivateVerification": {
+    "epistemic": "Observed",
+    "scope": "Private operator check at committed source checkpoint; no service activation or P115 implementation",
+    "startedAt": "2026-10-20T19:31:17.605Z",
+    "capturedAt": "2026-10-20T19:31:21.443Z",
+    "observerCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "observerTree": "56df58a817fd878962716a9d8c5cd7845d2aeba6",
+    "metadataSha256": "432fd96a3025ee0c9ae4abedd8ed6db6901289d9883029a1e86b94134d8be595",
+    "measurementScriptSha256": "e4325444e39fbcef817afa2848b7d7c415cc675b3a3f4b7df06266c113274d5a",
+    "predicateScriptSha256": "af3c87b41c77e888e7ba37480b1584c60bd2848258a6e4b8fd7f6350cc49f0aa",
+    "repositoryRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "doltRevision": "ptt00v2gqammp6jrsv055v8o3nl4lo5i",
+    "authorizationMode": "owner-trusted-bootstrap",
+    "admitted": true,
+    "independentlyVerified": false,
+    "itemCount": 9328,
+    "renderedCount": 250,
+    "excludedCount": 9078,
+    "resourceLimits": {
+      "maxSources": 512,
+      "maxBytesPerSource": 1048576,
+      "maxTotalBytes": 16777216,
+      "maxIndexDepth": 4,
+      "maxParsePassesPerSource": 16,
+      "maxHumanResponseBytes": 2097152,
+      "maxMachineResponseBytes": 16777216,
+      "maxBriefingResponseBytes": 20480
+    },
+    "measurements": [
+      {
+        "path": "/polaris",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 1372347,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/trajectory",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 443665,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/orrery",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 48772,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 7801566,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc/polaris",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 562817,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/polaris",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 1378677,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/trajectory",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 443755,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/orrery",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 48862,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 7801566,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc/polaris",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 562817,
+        "contentEncoding": "identity"
+      }
+    ],
+    "apiSemantics": [
+      {
+        "host": "127.0.0.1",
+        "scope": "Complete private API population only; human semantics use separate browser/sweep tests",
+        "enumeratedItems": 9328,
+        "distinctServedIds": 9328,
+        "validItemIdentities": true,
+        "exactUnknownValues": 9328,
+        "servedUnknownCount": 9328,
+        "enumeratedRenderedItems": 250,
+        "distinctRenderedIds": 250,
+        "validRenderedIdentities": true,
+        "renderedSubjectCount": 250,
+        "distinctRenderedSubjects": 250,
+        "exactSubjectUnknownValues": 250,
+        "countRegionSubjects": 1,
+        "exactCountRegionValues": 1,
+        "projectionCountsReconcile": true,
+        "renderedSubjectsMatchSelection": true,
+        "machineBytes": 7801566,
+        "machineLimit": 16777216,
+        "fractionOfCeiling": 0.46500957012176514,
+        "headroomBytes": 8975650,
+        "passed": true,
+        "authorityAdmitted": true,
+        "projectShapeObserved": true
+      },
+      {
+        "host": "tzeusy.parrot-hen.ts.net",
+        "scope": "Complete private API population only; human semantics use separate browser/sweep tests",
+        "enumeratedItems": 9328,
+        "distinctServedIds": 9328,
+        "validItemIdentities": true,
+        "exactUnknownValues": 9328,
+        "servedUnknownCount": 9328,
+        "enumeratedRenderedItems": 250,
+        "distinctRenderedIds": 250,
+        "validRenderedIdentities": true,
+        "renderedSubjectCount": 250,
+        "distinctRenderedSubjects": 250,
+        "exactSubjectUnknownValues": 250,
+        "countRegionSubjects": 1,
+        "exactCountRegionValues": 1,
+        "projectionCountsReconcile": true,
+        "renderedSubjectsMatchSelection": true,
+        "machineBytes": 7801566,
+        "machineLimit": 16777216,
+        "fractionOfCeiling": 0.46500957012176514,
+        "headroomBytes": 8975650,
+        "passed": true,
+        "authorityAdmitted": true,
+        "projectShapeObserved": true
+      }
+    ],
+    "humanVerificationScope": "HTTP status and byte limits only; semantic and interactive human oracles run separately in the exact-head clone",
+    "daemon": {
+      "pid": 1730411,
+      "exitCode": 0,
+      "stdoutBytes": 594,
+      "stdoutSha256": "dcb0afc5380397e4c31ae75d5fcca069cb9d9acf66466e672168f0be222a920a",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stopped": true,
+      "stateDirectoryRemoved": true
+    },
+    "postMeasurementTreeClean": true,
+    "passed": true,
+    "landingAndFullFinalGates": "pending; this check applies only to its named committed source checkpoint"
+  },
+  "leadRouteComparison": {
+    "record": "docs/evidence/p100-route-literal-census-2026-10-21.json",
+    "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "denominator": 12,
+    "same": 6,
+    "different": 6,
+    "bothMethodsAgree": true
+  },
+  "leadIndependentReview": {
+    "binding": "docs/evidence/p100-restoration-review-binding-2026-10-21.json",
+    "actualAssessment": "Ready to merge? Yes, conditional on required verification gates.",
+    "blockingSourceFindings": 0,
+    "minorFindings": 1,
+    "disposition": "docs/evidence/p100-restoration-review-disposition-2026-10-21.md",
+    "sourceSubjectsByteIdentical": 12
+  }
+}
