@@ -103,12 +103,13 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
   it('bounds failed URL searches in the overlap scan and retained-text first search without invoking the quadratic expression', () => {
     const suffix = 'https://' + 'a:'.repeat(32_000) + 'end\n';
     const body = 'token=abcdefgh\nsafe\nsafe\n' + suffix;
+    const riskyPattern = new RegExp(String.raw`https?://[^/@\s]+:[^/@\s]+@`, 'i').source;
     const native = vi.spyOn(RegExp.prototype, 'exec');
     try {
       expect(matcher.all(body, 10_000)).toEqual({ matches: [{ detectorId: 'credential-assignment', start: 0, end: 14 }], limited: false });
       expect(matcher.first(suffix)).toBeUndefined();
       expect(redactBody(body, 'project-documentation', matcher, redaction).kind).toBe('redacted');
-      expect(native.mock.contexts.filter(re => (re as RegExp).source === String.raw`https?://[^/@\s]+:[^/@\s]+@`)).toHaveLength(0);
+      expect(native.mock.contexts.filter(re => (re as RegExp).source === riskyPattern)).toHaveLength(0);
     } finally { native.mockRestore(); }
     // Literal match coordinates independently cover prefix case, multiple colons, and rejected empty user/password or / boundaries.
     const urls = compileEveryOffsetMatcher([{ id: 'different-id', kind: 'regular-expression', pattern: String.raw`https?://[^/@\s]+:[^/@\s]+@`, flags: 'gi' }]);
