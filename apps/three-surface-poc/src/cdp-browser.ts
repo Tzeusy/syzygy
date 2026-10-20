@@ -25,7 +25,7 @@ export interface AxNode {
   readonly childIds: readonly string[];
 }
 
-export type KeyName = 'Tab' | 'Enter' | 'Space';
+export type KeyName = 'Tab' | 'Enter';
 
 export interface BrowserPage {
   navigate(url: string): Promise<void>;
@@ -157,10 +157,9 @@ class CdpConnection {
   }
 }
 
-const KEYS: Record<KeyName, { readonly key?: string; readonly code: string; readonly keyCode: number; readonly text?: string }> = {
+const KEYS: Record<KeyName, { readonly code: string; readonly keyCode: number; readonly text?: string }> = {
   Tab: { code: 'Tab', keyCode: 9 },
   Enter: { code: 'Enter', keyCode: 13, text: '\r' },
-  Space: { key: ' ', code: 'Space', keyCode: 32, text: ' ' },
 };
 
 interface EvaluateResult {
@@ -205,7 +204,7 @@ class CdpPage implements BrowserPage {
   async press(key: KeyName, modifiers: { readonly shift?: boolean } = {}): Promise<void> {
     const spec = KEYS[key];
     const modifierBits = modifiers.shift === true ? 8 : 0;
-    const base = { key: spec.key ?? key, code: spec.code, windowsVirtualKeyCode: spec.keyCode, nativeVirtualKeyCode: spec.keyCode, modifiers: modifierBits };
+    const base = { key, code: spec.code, windowsVirtualKeyCode: spec.keyCode, nativeVirtualKeyCode: spec.keyCode, modifiers: modifierBits };
     await this.connection.send('Input.dispatchKeyEvent', { type: spec.text === undefined ? 'rawKeyDown' : 'keyDown', ...base, ...(spec.text === undefined ? {} : { text: spec.text }) }, this.sessionId);
     await this.connection.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base }, this.sessionId);
   }

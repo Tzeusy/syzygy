@@ -701,7 +701,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     });
     expect(shape.claim.resolutionRoutes).toEqual([
       { reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion', actor: 'owner', verb: 'decide', target: 'policy' },
-      { reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer/source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' },
+      { reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer or source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' },
     ]);
     expect(JSON.stringify(shape)).not.toContain(SENTINEL);
     for (const entry of allClaims(shape)) isValidClaim(entry);

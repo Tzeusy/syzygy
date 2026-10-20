@@ -201,7 +201,7 @@ describe('POC-REQ-010: the work-item observation states its provenance once', ()
     const { answer } = servedAnswer();
     const items = rowsOf(answer, 'workItems');
     expect(items.map((item) => item.id)).toEqual(['bu-open1', 'bu-closed1']);
-    expect(Object.keys(block(answer, 'workItems')).sort()).toEqual(['beadPrefix', 'capturedAt', 'governedByUnknownCount', 'items', 'kind', 'provenance']);
+    expect(Object.keys(block(answer, 'workItems')).sort()).toEqual(['beadPrefix', 'capturedAt', 'items', 'kind', 'provenance']);
     expect(Object.keys(block(answer, 'workItems').provenance as Obj).sort()).toEqual(['kind', 'revision', 'source']);
     expect(violations(answer, WORK)).toEqual([]);
   });
@@ -217,12 +217,6 @@ describe('POC-REQ-010: the work-item observation states its provenance once', ()
       createdAt: '2026-08-01T00:00:00Z',
       updatedAt: '2026-08-02T00:00:00Z',
       closedAt: null,
-      // POC-REQ-014 (P-100): the governing-intent Unknown, not a provenance field.
-      governedBy: {
-        label: 'Unknown',
-        closedReason: 'source-uncaptured-or-unreachable',
-        resolutionRoutes: [{ reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer/source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' }],
-      },
     });
   });
 

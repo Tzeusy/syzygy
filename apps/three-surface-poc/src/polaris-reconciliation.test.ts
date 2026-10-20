@@ -335,7 +335,7 @@ describe('M14 slice 4: the catalog reconciliation line', () => {
     const expected: Readonly<Record<'unevaluated' | 'rejected' | 'observation-failed', string>> = {
       unevaluated: 'Catalog reconciliation. Unknown — unconsented-source-or-provider. Route: Record consent. No project shape was observed, so no source, item or item marker is counted.',
       rejected: 'Catalog reconciliation. Unknown — unconsented-source-or-provider. Route: Record consent. No project shape was observed, so no source, item or item marker is counted.',
-      'observation-failed': 'Catalog reconciliation. Unknown — source-uncaptured-or-unreachable. Route: Repair the observer/source; new snapshot. No project shape was observed, so no source, item or item marker is counted.',
+      'observation-failed': 'Catalog reconciliation. Unknown — source-uncaptured-or-unreachable. Route: Repair the observer or source; new snapshot. No project shape was observed, so no source, item or item marker is counted.',
     };
     for (const [variant, text] of Object.entries(expected) as [keyof typeof expected, string][]) {
       const lines = reconciliationLines(page(variant));

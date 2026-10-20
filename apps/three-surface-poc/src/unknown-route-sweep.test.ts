@@ -186,11 +186,11 @@ function model(name: string): PocModel {
 // A disclosure that disappears, or a new one that arrives unrouted, moves
 // a figure or fails the sweep.
 const DENOMINATORS: Readonly<Record<string, Readonly<Record<Surface, number>>>> = {
-  plain: { polaris: 21, trajectory: 11, orrery: 9 },
-  'observed-shape': { polaris: 13, trajectory: 11, orrery: 9 },
+  plain: { polaris: 21, trajectory: 5, orrery: 9 },
+  'observed-shape': { polaris: 13, trajectory: 5, orrery: 9 },
   unreachable: { polaris: 24, trajectory: 1, orrery: 10 },
   'no-seeds': { polaris: 8, trajectory: 2, orrery: 1 },
-  'worker-change': { polaris: 19, trajectory: 4, orrery: 7 },
+  'worker-change': { polaris: 19, trajectory: 2, orrery: 7 },
 };
 
 describe('every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060)', () => {
