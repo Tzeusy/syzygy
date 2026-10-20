@@ -1,6 +1,6 @@
 {
   "kind": "syzygy-blbu-trajectory-selection-evidence",
-  "status": "code frozen and targeted checks/mutations/size verified; clean-clone full gates and independent review pending",
+  "status": "timestamp repair prepared after initial REVISE; repaired-head source mutation, after-size, independent review and clean-clone gates pending",
   "authority": {
     "requirement": "POC-REQ-042",
     "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
@@ -85,11 +85,11 @@
   },
   "measurementMethod": "Clean committed worktree, private daemon --port 0 with disposable state directory, existing gated registered observation path only; node:http supplies the literal Tailnet Host header. Response bodies and credentials are processed only in memory and never retained or printed. No observed-project code or tests run.",
   "logsDirectory": "/tmp/syzygy-blbu-verification",
-  "testsDelta": "Tests: +5 ~3 -2 (net +3): four ordering cases and the additional open demonstrated-item exclusion; two self-check-only mutation tests replaced by executing behavior checks.",
+  "testsDelta": "Tests: +10 ~3 -2 (net +8): nine ordering/validity cases and the additional open demonstrated-item exclusion; two self-check-only mutation tests replaced by executing behavior checks.",
   "subjects": [
     {
       "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
-      "sha256": "6e403030b266f2e49cfd53514324ab2547dc0110bd4b54334e39289b314bcfb8"
+      "sha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647"
     },
     {
       "path": "packages/three-surface-poc-core/src/model.ts",
@@ -97,14 +97,13 @@
     },
     {
       "path": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
-      "sha256": "be3d30f84d24b3011d688904c9c007312029b0ecfbba73fe592682e6e70ab102"
+      "sha256": "015a1d4c8bc37b6e7b9381e03987737282fb0e640c65d828a7a9a72e9d560607"
     },
     {
       "path": "apps/three-surface-poc/src/trajectory.test.ts",
-      "sha256": "032c46a9987c845de085e36f161d0a6e104870149435a63d88e6c19f6dcd486f"
+      "sha256": "d57c80c650eca043b9f7e4f2cda0533ec2c52197bbc25a341ec4942fb8deb27b"
     }
   ],
-  "subjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
   "after": {
     "kind": "syzygy-blbu-size-measurement",
     "capturedAt": "2026-10-20T14:37:36.035Z",
@@ -559,5 +558,34 @@
     "files": 2,
     "restoredResultSha256": "8a466f6a1a905c4590cc4163411fe865580526242eaa09ad680e7eddffd4bcf9"
   },
-  "riskFloors": "Truth floor touched: bounded declared presentation scope, deterministic selection, complete observed machine population and reconciled counts. Other CC-BAR-5 floors unchanged."
+  "riskFloors": "Truth floor touched: bounded declared presentation scope, deterministic selection, complete observed machine population and reconciled counts. Other CC-BAR-5 floors unchanged.",
+  "initialSubjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
+  "initialSubjects": [
+    {
+      "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+      "sha256": "6e403030b266f2e49cfd53514324ab2547dc0110bd4b54334e39289b314bcfb8"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.ts",
+      "sha256": "c31c6937ec4592fca828fe511ac87e896ca2bd047a3d9b08ccbc185340eb0460"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "sha256": "be3d30f84d24b3011d688904c9c007312029b0ecfbba73fe592682e6e70ab102"
+    },
+    {
+      "path": "apps/three-surface-poc/src/trajectory.test.ts",
+      "sha256": "032c46a9987c845de085e36f161d0a6e104870149435a63d88e6c19f6dcd486f"
+    }
+  ],
+  "timestampRepair": {
+    "finding": "P2",
+    "disposition": "[Observed] Supported timestamps require an explicit Z or numeric offset, a valid Gregorian date and bounded clock fields; unsupported/ambiguous timestamps rank last. Fractional order is preserved to nine digits. Literal fixtures run under UTC and Asia/Singapore for both populations.",
+    "P3": "[Observed] Reconciliation now uses a frozen, unsorted observation and frozen item records, so an in-place sort or fact mutation fails the checked-in regression.",
+    "firstReviewRaw": {
+      "path": "docs/reviews/R-TRAJECTORY-BOUNDED-SELECTION-RAW.md",
+      "sha256": "6bea0d844b7d4419858b4c6f787fa5026aa70b31d8e8bf2da934d57a511f1ad3",
+      "verdict": "REVISE"
+    }
+  }
 }

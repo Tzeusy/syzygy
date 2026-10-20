@@ -52,13 +52,32 @@ function byId(a: WorkItemFact, b: WorkItemFact): number {
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
-/** Missing or invalid recorded times rank last; never infer one from another field. */
+/** Explicit offsets only: the host timezone must never select a different item. */
+function recordedInstant(value: string | null): bigint | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.(\d{1,9}))?(Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(value ?? '');
+  if (match === null) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month < 1 || month > 12 || day < 1 || day > days[month - 1]!) return null;
+  // Calendar validity is checked before Date.parse, which otherwise rolls
+  // impossible dates forward. Parse whole seconds, retaining up to nine
+  // fractional digits separately so sub-millisecond updates remain ordered.
+  const milliseconds = Date.parse(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}${match[8]}`);
+  if (!Number.isFinite(milliseconds)) return null;
+  return BigInt(milliseconds) * 1_000_000n + BigInt((match[7] ?? '').padEnd(9, '0'));
+}
+
+/** Missing or invalid recorded times rank last; never substitute another field. */
 function newestFirst(a: string | null, b: string | null): number {
-  const aTime = Date.parse(a ?? '');
-  const bTime = Date.parse(b ?? '');
-  const aRank = Number.isNaN(aTime) ? -Infinity : aTime;
-  const bRank = Number.isNaN(bTime) ? -Infinity : bTime;
-  return aRank === bRank ? 0 : aRank > bRank ? -1 : 1;
+  const aTime = recordedInstant(a);
+  const bTime = recordedInstant(b);
+  if (aTime === bTime) return 0;
+  if (aTime === null) return 1;
+  if (bTime === null) return -1;
+  return aTime > bTime ? -1 : 1;
 }
 
 function laneItem(item: WorkItemFact): TrajectoryLaneItem {
@@ -120,7 +139,7 @@ export function projectTrajectory(
   return {
     kind: 'observed',
     doltRevision: workItems.provenance.revision,
-    selectionRule: `up to ${options.nonClosedLimit} most recently updated non-closed items, plus up to ${options.recentClosedWindow} most recently closed items; missing or invalid times last, timestamp ties and card order by ascending item id`,
+    selectionRule: `up to ${options.nonClosedLimit} most recently updated non-closed items, plus up to ${options.recentClosedWindow} most recently closed items; missing, invalid or timezone-less times last, timestamp ties and card order by ascending item id`,
     rendered,
     renderedCount: rendered.length,
     excludedCount: workItems.items.length - rendered.length,

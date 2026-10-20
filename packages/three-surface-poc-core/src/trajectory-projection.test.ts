@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { projectTrajectory, STATUS_TO_COLUMN } from './trajectory-projection.js';
 import type { WorkItemsObserved } from './work-items.js';
@@ -29,7 +29,11 @@ describe('Trajectory projection', () => {
   });
 
   it('declares scope and reconciles rendered + excluded against the total (POC-REQ-042)', () => {
-    const fixture = itemsFixture();
+    const original = itemsFixture();
+    const fixture = Object.freeze({
+      ...original, provenance: Object.freeze({ ...original.provenance }),
+      items: Object.freeze([...original.items].reverse().map((item) => Object.freeze({ ...item }))),
+    });
     const projection = projectTrajectory(fixture, { nonClosedLimit: 1, recentClosedWindow: 1 });
     if (projection.kind !== 'observed') throw new Error('unreachable');
     expect(projection.renderedCount + projection.excludedCount).toBe(projection.totalCount);
@@ -37,9 +41,9 @@ describe('Trajectory projection', () => {
     expect(projection.renderedCount).toBe(2);
     expect(projection.excludedCount).toBe(2);
     expect(projection.rendered.map((item) => item.id)).toEqual(['bu-2', 'bu-3']);
-    expect(projection.selectionRule).toBe('up to 1 most recently updated non-closed items, plus up to 1 most recently closed items; missing or invalid times last, timestamp ties and card order by ascending item id');
+    expect(projection.selectionRule).toBe('up to 1 most recently updated non-closed items, plus up to 1 most recently closed items; missing, invalid or timezone-less times last, timestamp ties and card order by ascending item id');
     // The shared observation remains complete; neither sorting nor capping mutates it.
-    expect(fixture.items.map((item) => item.id)).toEqual(['bu-1', 'bu-2', 'bu-3', 'bu-4']);
+    expect(fixture.items.map((item) => item.id)).toEqual(['bu-4', 'bu-3', 'bu-2', 'bu-1']);
   });
 
   it('never renders activity/closure as verification satisfaction (POC-REQ-043)', () => {
@@ -81,6 +85,31 @@ describe('Trajectory projection', () => {
       limit: 2, expected: ['bu-a', 'bu-c'],
     },
     {
+      name: 'timezone-less updates last on every host', field: 'updatedAt', status: 'open',
+      times: ['2026-08-03T00:00:00', '2026-08-02T20:00:00Z', '2026-08-01T00:00:00Z'],
+      limit: 1, expected: ['bu-b'],
+    },
+    {
+      name: 'timezone-less closures last on every host', field: 'closedAt', status: 'closed',
+      times: ['2026-08-03T00:00:00', '2026-08-02T20:00:00Z', '2026-08-01T00:00:00Z'],
+      limit: 1, expected: ['bu-b'],
+    },
+    {
+      name: 'impossible update dates last', field: 'updatedAt', status: 'open',
+      times: ['2026-02-30T23:00:00Z', '2026-03-01T00:00:00Z', '2026-02-28T00:00:00Z'],
+      limit: 1, expected: ['bu-b'],
+    },
+    {
+      name: 'impossible closure dates last', field: 'closedAt', status: 'closed',
+      times: ['2026-02-30T23:00:00Z', '2026-03-01T00:00:00Z', '2026-02-28T00:00:00Z'],
+      limit: 1, expected: ['bu-b'],
+    },
+    {
+      name: 'valid leap days and fractional precision', field: 'updatedAt', status: 'open',
+      times: ['2024-02-29T00:00:00.000001Z', '2024-02-29T00:00:00.000002Z', '2023-02-29T00:00:00Z'],
+      limit: 1, expected: ['bu-b'],
+    },
+    {
       name: 'closed ties and missing closure times', field: 'closedAt', status: 'closed',
       times: ['2026-08-01T00:00:00Z', '2026-08-01T00:00:00Z', null],
       limit: 1, expected: ['bu-a'],
@@ -94,9 +123,16 @@ describe('Trajectory projection', () => {
     }));
     const fixture: WorkItemsObserved = { ...itemsFixture(), items };
     const options = { nonClosedLimit: limit, recentClosedWindow: limit };
-    const projection = projectTrajectory(fixture, options);
-    if (projection.kind !== 'observed') throw new Error('unreachable');
-    expect(projection.rendered.map((item) => item.id)).toEqual(expected);
-    expect(projectTrajectory({ ...fixture, items: [...items].reverse() }, options)).toEqual(projection);
+    try {
+      for (const timezone of ['UTC', 'Asia/Singapore']) {
+        vi.stubEnv('TZ', timezone);
+        const projection = projectTrajectory(fixture, options);
+        if (projection.kind !== 'observed') throw new Error('unreachable');
+        expect(projection.rendered.map((item) => item.id), timezone).toEqual(expected);
+        expect(projectTrajectory({ ...fixture, items: [...items].reverse() }, options)).toEqual(projection);
+      }
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });

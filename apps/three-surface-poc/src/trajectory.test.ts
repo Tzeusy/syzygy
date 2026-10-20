@@ -83,7 +83,7 @@ describe('Trajectory', () => {
     expect(cardIds).not.toContain('bu-current-200');
     expect(cardIds).not.toContain('bu-closed-050');
     expect(served.trajectory.rendered.filter((item) => item.column === 'Done')).toHaveLength(50);
-    expect(html).toContain('Rendering 250 of 252 observed work items (up to 200 most recently updated non-closed items, plus up to 50 most recently closed items; missing or invalid times last, timestamp ties and card order by ascending item id)');
+    expect(html).toContain('Rendering 250 of 252 observed work items (up to 200 most recently updated non-closed items, plus up to 50 most recently closed items; missing, invalid or timezone-less times last, timestamp ties and card order by ascending item id)');
     expect(html).toContain('data-parity-field="trajectory-excluded-count">2</span> items are outside this selection');
   });
 

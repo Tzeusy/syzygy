@@ -213,9 +213,12 @@ keeps its exact-table link as well.
 
 **Trajectory selection.** The board renders up to 200 most recently updated
 non-closed items plus up to 50 most recently closed items. It ranks recorded
-timestamps as instants, puts missing or invalid times last, breaks timestamp
-ties by ascending item id, and orders cards by ascending id within each
-status column. The page states that rule and its rendered, excluded and full
+timestamps as instants, puts missing, invalid or timezone-less times last,
+breaks timestamp ties by ascending item id, and orders cards by ascending id
+within each status column. Accepted times have a valid Gregorian date,
+`T`-separated hours/minutes/seconds, optional one-to-nine fractional digits,
+and an explicit `Z` or numeric `±HH:MM` offset. The page states the selection
+rule and its rendered, excluded and full
 observed counts. A demonstrated item outside either window gets an explicit
 callout rather than an extra card. The machine answer keeps every observed
 work item in `workItems.items`; `trajectory.rendered` is the bounded selection.
