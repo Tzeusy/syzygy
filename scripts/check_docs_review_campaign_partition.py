@@ -389,6 +389,11 @@ CAMPAIGNS = (
         r"R-DOSSIER-CLI-SUBPROCESS-.*\.md",
     ),
     campaign(
+        "polaris-dossier-one-command-run",
+        "One-command Polaris dossier run",
+        r"R-POLARIS-DOSSIER-ONE-COMMAND-RUN-.*\.md",
+    ),
+    campaign(
         "dov24-loaded-profile",
         "P-74 loaded-profile registry gate",
         r"R-DOV24-.*\.md",
