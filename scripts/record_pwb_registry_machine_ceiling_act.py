@@ -285,6 +285,19 @@ def expected(root: pathlib.Path, recorded: str, applied: bool) -> tuple[bytes, b
     return proposed, record, block
 
 
+def exact_record(body: bytes, argument: str) -> str:
+    """The owning recorder's complete, bounded record predicate.
+
+    Historical recovery uses this same predicate: a duplicate, malformed or
+    contradictory field cannot become a different interpretation of the act.
+    The timestamp is preserved, not generated again for a historical check.
+    """
+    recorded = unique(body.decode(), RECORDED.pattern, 'recording instant')
+    expected_body, _ = render(argument, FROZEN_SUBJECT, 'CONFIRM WITH EXCEPTIONS', recorded)
+    require(body == expected_body, 'dedicated record differs from exact regeneration')
+    return recorded
+
+
 def stage(path: pathlib.Path, body: bytes) -> pathlib.Path:
     fd, name = tempfile.mkstemp(prefix='.p114-', dir=path.parent)
     temp = pathlib.Path(name)
@@ -299,17 +312,27 @@ def stage(path: pathlib.Path, body: bytes) -> pathlib.Path:
         raise
 
 
-def transaction(root: pathlib.Path, outputs: dict[pathlib.Path, bytes], *, replace=os.replace, write_stage=stage) -> None:
-    before = {rel: (root / rel).read_bytes() if (root / rel).exists() else None for rel in outputs}
+def transaction(root: pathlib.Path, outputs: dict[pathlib.Path, bytes], *,
+                before: dict[pathlib.Path, bytes | None], replace=os.replace, write_stage=stage) -> None:
+    require(before.keys() == outputs.keys(), 'transaction input population differs')
     staged: dict[pathlib.Path, pathlib.Path] = {}
     changed: list[pathlib.Path] = []
+
+    def unchanged(rel):
+        actual = (root / rel).read_bytes() if (root / rel).exists() else None
+        require(actual == before[rel], f'transaction input changed: {rel}')
+
     try:
+        # These are the inputs captured before validation/output construction,
+        # never a later snapshot that could adopt an intervening write.
+        for rel in outputs:
+            unchanged(rel)
         for rel, body in outputs.items():
             staged[rel] = write_stage(root / rel, body)
         for rel in outputs:
-            now = (root / rel).read_bytes() if (root / rel).exists() else None
-            require(now == before[rel], f'transaction input changed: {rel}')
+            unchanged(rel)
         for rel, temp in staged.items():
+            unchanged(rel)
             replace(temp, root / rel)
             changed.append(rel)
     except BaseException:
@@ -326,15 +349,21 @@ def transaction(root: pathlib.Path, outputs: dict[pathlib.Path, bytes], *, repla
 
 
 def record(root: pathlib.Path, now: dt.datetime | None = None, **faults) -> None:
-    require(not (root / RECORD).exists(), 'dedicated act already exists')
-    aggregate = (root / AGGREGATE).read_bytes()
+    before = {rel: (root / rel).read_bytes() if (root / rel).exists() else None
+              for rel in (build.SUBJECT, RECORD, AGGREGATE)}
+    require(before[RECORD] is None, 'dedicated act already exists')
+    aggregate = before[AGGREGATE]
+    require(aggregate is not None, 'aggregate record is missing')
     require(heading().encode() not in aggregate, 'aggregate act already exists')
     now = now or dt.datetime.now(dt.timezone.utc)
     require(now.tzinfo == dt.timezone.utc, 'recording clock is not UTC')
     recorded = now.strftime('%Y-%m-%dT%H:%M:%SZ')
     proposed, body, block = expected(root, recorded, applied=False)
+    require(before[build.SUBJECT] == build.base_and_state(proposed)[0],
+            'validated subject differs from the captured input')
     transaction(root, {build.SUBJECT: proposed, RECORD: body,
-                       AGGREGATE: aggregate + (b'\n' if aggregate.endswith(b'\n') else b'\n\n') + block}, **faults)
+                       AGGREGATE: aggregate + (b'\n' if aggregate.endswith(b'\n') else b'\n\n') + block},
+                before=before, **faults)
 
 
 def check(root: pathlib.Path) -> None:
@@ -342,6 +371,7 @@ def check(root: pathlib.Path) -> None:
     actual = (root / RECORD).read_bytes()
     recorded = unique(actual.decode(), RECORDED.pattern, 'recording instant')
     proposed, body, block = expected(root, recorded, applied=True)
+    exact_record(actual, sha(proposed))
     require(actual == body, 'dedicated record differs from exact regeneration')
     aggregate = (root / AGGREGATE).read_bytes()
     require(aggregate.count(heading().encode()) == 1 and aggregate.count(block) == 1,
@@ -443,6 +473,50 @@ def selftest() -> int:
             (clean / build.SUBJECT).write_bytes(original)
         before = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in [build.SUBJECT, RECORD, AGGREGATE]}
         now = dt.datetime(2026, 10, 21, 0, 1, tzinfo=dt.timezone.utc)
+        real_transaction = transaction
+        for window in ['before transaction', 'during staging']:
+            for drift_rel in before:
+                foreign = ((before[drift_rel] or b'') + b'\nOwner-preserved concurrent input.\n')
+                def early(root, outputs, **kwargs):
+                    (root / drift_rel).write_bytes(foreign)
+                    return real_transaction(root, outputs, **kwargs)
+                staged_calls = [0]
+                def staging(path, body):
+                    temp_path = stage(path, body)
+                    staged_calls[0] += 1
+                    if staged_calls[0] == 3:
+                        (clean / drift_rel).write_bytes(foreign)
+                    return temp_path
+                try:
+                    if window == 'before transaction':
+                        globals()['transaction'] = early
+                    rejects(f'input drift {window}: {drift_rel}',
+                            lambda: record(clean, now, **({'write_stage': staging} if window == 'during staging' else {})),
+                            'transaction input changed')
+                finally:
+                    globals()['transaction'] = real_transaction
+                after = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in before}
+                wanted = {**before, drift_rel: foreign}
+                results.append((f'input drift {window}: preserve foreign bytes and other inputs: {drift_rel}',
+                                after == wanted and not list(clean.rglob('.p114-*'))))
+                for rel, original in before.items():
+                    if original is None:
+                        (clean / rel).unlink(missing_ok=True)
+                    else:
+                        (clean / rel).write_bytes(original)
+        replaced_calls = [0]
+        foreign = before[AGGREGATE] + b'\nOwner-preserved concurrent aggregate note.\n'
+        def drift_after_first_replace(source, target):
+            os.replace(source, target)
+            replaced_calls[0] += 1
+            if replaced_calls[0] == 1:
+                (clean / AGGREGATE).write_bytes(foreign)
+        rejects('input drift after first replacement',
+                lambda: record(clean, now, replace=drift_after_first_replace), 'transaction input changed')
+        after = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in before}
+        results.append(('late drift restores owned outputs and preserves foreign aggregate',
+                        after == {**before, AGGREGATE: foreign} and not list(clean.rglob('.p114-*'))))
+        (clean / AGGREGATE).write_bytes(before[AGGREGATE])
         for seam in ['stage', 'replace']:
             for fail_at in [1, 2, 3]:
                 calls = [0]

@@ -168,18 +168,10 @@ def machine_ceiling_link(root: pathlib.Path, record: pathlib.Path,
         raise ValueError("machine-ceiling successor manifest is not the exact reviewed registry row")
     if sha256(read(root, patch)) != MACHINE_CEILING_PATCH_SHA:
         raise ValueError("machine-ceiling successor patch differs from the reviewed patch")
-    text = read(root, record).decode()
-    required = (
-        r"^Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`$",
-        r"^Act type: `adopt-registry-entry`$",
-        r"^Artifact identity: `" + re.escape(subject.as_posix()) + r"`$",
-        r"^Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, "
-        r"the 2026-10-02 act recorded at `" + re.escape((DECISIONS / "PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md").as_posix()) + r"`\.$",
-    )
-    if (any(len(re.findall(pattern, text, re.M)) != 1 for pattern in required)
-            or text.count("- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`") != 1
-            or EXACT_DIGEST_RE.findall(text) != [MACHINE_CEILING_ARGUMENT]):
-        raise ValueError("machine-ceiling successor record identity/type/artifact/tag/target/digest differs")
+    # The owning recorder already requires exact complete regeneration.
+    # Counting only correct matching lines would miss contradictory extras.
+    import record_pwb_registry_machine_ceiling_act as ceiling
+    ceiling.exact_record(read(root, record), MACHINE_CEILING_ARGUMENT)
 
 
 @dataclass(frozen=True)
@@ -568,7 +560,7 @@ def machine_ceiling_history_fixtures() -> list[tuple[str, bool]]:
             "CONFIRM WITH EXCEPTIONS", "2026-10-21T00:01:00Z")[0])
         results.append(("machine ceiling: exact performed row recovers act B",
                         subject_at_act(clean, registry) == base and sha256(base) == MACHINE_CEILING_BASE))
-        mutants = (
+        mutants = [
             ("manifest row missing", _edit(MACHINE_CEILING_MANIFEST,
                 f"{MACHINE_CEILING_ARGUMENT}  {registry.path.as_posix()}", "")),
             ("extra manifest row", _edit(MACHINE_CEILING_MANIFEST,
@@ -594,7 +586,21 @@ def machine_ceiling_history_fixtures() -> list[tuple[str, bool]]:
             ("subject drift", _edit(registry.path, '"schemaVersion": 1', '"schemaVersion": 2')),
             ("record missing", lambda tree: (tree / record).unlink()),
             ("manifest missing", lambda tree: (tree / MACHINE_CEILING_MANIFEST).unlink()),
-        )
+        ]
+        record_text = (clean / record).read_text()
+        for label, wrong in (
+            ("Act identity:", "Act identity: `other-act`"),
+            ("Act type:", "Act type: `approve-policy`"),
+            ("Artifact identity:", "Artifact identity: `other.json`"),
+            ("Supersession / revocation:", "Supersession / revocation: none"),
+            ("- recording tag:", "- recording tag: `other-v1.0`"),
+        ):
+            original = next(line for line in record_text.splitlines() if line.startswith(label))
+            for kind, extra in (("contradictory duplicate", wrong),
+                                ("identical duplicate", original),
+                                ("malformed additional value", label + " unquoted malformed value")):
+                mutants.append((label + " " + kind,
+                                _edit(record, original, extra + "\n\n" + original)))
         for name, mutate in mutants:
             tree = pathlib.Path(tmp) / re.sub(r"\W+", "-", name)
             shutil.copytree(clean, tree)
