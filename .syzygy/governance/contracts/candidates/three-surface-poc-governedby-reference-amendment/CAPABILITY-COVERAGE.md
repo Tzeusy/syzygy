@@ -43,10 +43,36 @@ and rejects 15 retained wire counterexamples plus two classifier regressions.
 [Inferred] The four earlier block-level consumption Unknowns now have
 proposed dispositions in compatibility/COMPATIBILITY-SETTLEMENT.md and
 REQUIREMENT-CONSUMPTION.json. POC-REQ-020/022 are affected by consumption,
-with unchanged normative obligations; both generator-019 occurrences retain
-their distinct PWB compatibility boundary. The independent literal pair and
+with unchanged normative obligations; both generator-019 occurrences are
+also affected by their broad PWB wire-convention preservation limb. Their
+current distinct source/anchor projections remain preserved facts, not a
+whole-block untiedness argument. The independent literal pair and
 negative examples are reproducible with
 `python3 scripts/check_p115_compatibility_examples.py --check`.
 Fresh semantic confirmation is pending. Runtime conformance and broader
 canonical adaptation remain Unknown. These checks neither confirm the
 coverage matrix nor implement the proposed wire behavior.
+
+## Complete source-method assessment
+
+[Inferred] REQUIREMENT-CONSUMPTION.json proposes all 130 occurrence judgments:
+15 affected / 115 positively untied / 0 undecidable, independently of whether
+text must change. POC014 is the one identified block-text amendment; fourteen
+other affected blocks keep their valid obligations, with concrete acceptance
+work in IMPACT-LEDGER.md and each entry. This includes PWB006 actual final
+encoded bytes and PWB021's existing resource arm, whole-sink exclusions,
+whole-observation/identity and POC060 full-record/count/encoding comparisons.
+No broader record/freshness/secondary-annotation Unknown is closed.
+
+[Observed] Retained synthetic byte data shows growth at N=0/1 and saving at
+N=2; it does not measure production saving or change the final-byte rule.
+[Inferred] A response-level wire-fault readiness:false neither adds a retained
+model-readiness arm nor changes the nine answers/PWB022 84+2. The human model
+and renderer remain unchanged, while independent machine comparators expand
+the wire. A design invalidating any preserved obligation needs its reviewed
+same-change companion; there is no lag or coverage waiver.
+
+[Observed] Both actual failed rounds are retained; the separately dated
+source-return outcome and selected exact inert reports explain the upstream
+method repair. They are not independent semantic confirmation. Current
+offer readiness and eventual signature/implementation remain separate.

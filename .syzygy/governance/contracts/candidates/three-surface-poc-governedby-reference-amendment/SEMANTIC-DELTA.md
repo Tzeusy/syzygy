@@ -2,8 +2,9 @@
 
 > **Candidate — binds nothing.** Version 1.0; drafted 2026-10-21. No owner
 > signature, act, installation or implementation authorization is recorded by
-> this package. Round one over b81f2cf4 returned REVISE; these repairs await
-> a fresh round-two review. No confirmation is carried forward.
+> this package. Rounds one and two returned REVISE. This candidate integrates
+> the separately sealed CC-REV-4 source return; no confirmation is carried
+> forward and no third semantic verdict is supplied here.
 
 **Artifacts:** the six subjects under
 `openspec/changes/three-surface-poc-experience/`, as named in the sibling
@@ -421,10 +422,14 @@ or epistemic vocabularies.
 
 IMPACT-LEDGER.md, the block-bound REQUIREMENT-CONSUMPTION.json and generated
 IMPACT-SWEEP.json enumerate the subject, reverse-spec and tracked-citer
-sweeps, semantic classifications and unknowns. Four specific consumption
-relationships remain undecidable with settling evidence, not automatically
-unaffected. ROUND-1-DISPOSITIONS.md maps the actual REVISE findings to their
-repairs; only the new exact head can receive a fresh confirmation. Runtime
+sweeps, semantic classifications and unknowns. The complete source-method
+successor proposes 15 affected / 115 positively untied / 0 undecidable
+occurrences, with affectedness separate from normative text invalidation.
+Only POC014 text changes; fourteen affected-compatible blocks remain exact.
+ROUND-1-DISPOSITIONS.md and the byte-exact ROUND-2-DISPOSITIONS.md retain both
+actual REVISE rounds. SOURCE-RETURN-OUTCOME-2026-10-21.md records the subsequent
+upstream reconciliation; only a new exact freeze can receive independent
+confirmation. Runtime
 consumers and cache/parity seams are named in DESIGN.md. This package edits
 preparation tooling and proposed patch files only; it does not implement the
 wire contract. Earlier signed artifacts remain evidence and retain their
@@ -452,6 +457,30 @@ return to inline duplication.
 
 **Required class:** fresh-context spec/semantic-delta, consequence coverage,
 impact and digest-binding confirmation under CC-REV-1/2/6, CC-SPEC-4/8/9/11
-and CC-IMPACT-5. **Reviewer:** round one returned REVISE on the predecessor; fresh repair review pending. This author issues no verdict.
-**Raw record:** round-one raw retained unchanged by the coordinator; repair-review raw pending, to be preserved verbatim under a `-RAW.md` name.
-**Owner sign-off:** pending. **Implementation authorization:** absent.
+and CC-IMPACT-5. **Recorded history:** round one and C3 round two both returned
+REVISE; the source return is evidence, not a new review. This author issues
+no verdict. **Raw records:** the coordinator retains both failed raws
+verbatim; any later independent round keeps the numbering and names its new
+exact subject. **Owner sign-off/implementation:** neither is performed or
+authorized by this package; current offer readiness belongs to the
+coordinator's separate exact-head receipt.
+
+## Source-method consequence, 2026-10-21
+
+[Inferred] Same semantic facts do not imply the same physical oracle inputs.
+PWB006 still measures actual final encoded bytes under its existing ceilings;
+small populations can grow (synthetic N=0 +258 bytes, N=1 +35), while the
+retained N=2 pair shrinks by 188. No all-N saving, inline fallback, empty-set
+exception or changed metric is proposed. Bound copies and all 18 threshold
+expectations are in evidence/encoded-byte/.
+
+[Inferred] Both GEN019 convention-preservation limbs are affected even
+though the current source adapter and PWB anchor projections remain
+separate. PWB021's existing resource-breach arm consumes changed byte
+outcomes. The new wire-validation readiness:false is response-level refusal
+only; it neither persists a new model-readiness predicate nor changes PWB022
+84+2 act validity. Human rendering remains on the existing logical model;
+independent machine comparators/consumers perform the closed expansion.
+The full 130-row source assessments, exact clauses/excerpts and per-affected
+later obligations are retained under REQUIREMENT-CONSUMPTION.json and
+evidence/. No inherited coverage Unknown is closed by these examples.

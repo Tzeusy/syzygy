@@ -1,76 +1,152 @@
-# P115 compatibility settlement evidence
+# P115 compatibility evidence and source-method disposition
 
-[Observed] Evidence preparation, not a semantic confirmation round or an authority act. Author: OpenAI Codex worker `/root/p111_repair`. No candidate or repository file was edited. The executable proof, complete results and full snapshots remain outside Git; the adjacent Markdown/JSON/literal fixtures are the small proposed integration bundle.
+[Observed] This C4 preparation integrates the historical bounded compatibility
+capture and the later sealed CC-REV-4 source return. It is authored evidence,
+not a semantic verdict, independent confirmation or owner act. The earlier
+C3 report/data remain preserved by Git ancestry and in their original cache;
+the C4 dispositions below supersede their proposed GEN019 untiedness reading,
+not their valid narrow interface observations.
 
-[Observed at evidence capture, 2026-10-20] Source subject: `eba011dfbe254c09a88ccc374b3efe5ff5df1762`. Candidate evidence basis: `662b4b49505776c21856791abc52cda72346c5d9`. The earlier `ddf1dc69b724df72a5e3c4f224500aa51d344ef0` snapshot is retained explicitly. Their only changed path is `REVIEW-BRIEF.md`; the other 17 snapshotted candidate files and all six manifest subjects are unchanged. The ddf brief is not labelled as 662b bytes or vice versa. `SUBJECT-BINDING.json` binds this distinction.
+[Observed at original capture, 2026-10-20] Source was
+eba011dfbe254c09a88ccc374b3efe5ff5df1762; candidate evidence basis was
+662b4b49505776c21856791abc52cda72346c5d9, with the earlier ddf1 snapshot
+separately retained. SUBJECT-BINDING.json and SOURCE-MAP.json identify those
+original historical bytes. They are not relabelled as a C4 frozen head.
+The external current packet inventory binds the later review subject.
 
-[Observed] Manifest **file SHA256**: `77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd`. Proposed POC spec SHA256: `01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37`. Six manifest rows were reconstructed with exact, no-fuzz patch application into this cache and each proposed digest matched. Adopted inputs remain unchanged. `SOURCE-MAP.json` binds 36 explicitly selected source/spec/policy/doctrine snapshots by full file digest and Git blob; `GOVERNING-BLOCKS.json` binds the four complete requirement blocks.
+[Observed] The six-row manifest FILE remains
+77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd.
+Proposed POC spec remains
+01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37.
+All adopted inputs and exact five proposed patches retain their C3 bytes.
+Current complete source dispositions are in ../REQUIREMENT-CONSUMPTION.json;
+selected source/byte evidence and alias mapping are in ../evidence/.
 
-## Four occurrence-level conclusions
+## Four occurrence-level readings within the complete source set
 
-[Inferred] These are proposed design dispositions for fresh semantic confirmation. They distinguish an affected consumption edge from a textual amendment. `PROPOSED-DISPOSITIONS.json` contains the exact occurrence paths, block digests, reason, method, acceptance and limits. No new global impact-sweep totals are asserted.
+[Inferred] All four are **affected-compatible**. A changed consumption does
+not automatically invalidate normative text. PROPOSED-DISPOSITIONS.json
+contains the complete source-bound reasons/methods/excerpts and later proof
+obligations. These four are a subset of the full 15 affected / 115 positively
+untied / 0 undecidable occurrence assessment; those counts await independent
+confirmation, not mechanical blessing by a hash checker.
 
-| Occurrence | Proposed classification | Design conclusion | Later proof/limit |
-| --- | --- | --- | --- |
-| POC-REQ-020 | [Inferred] affected by consumption | Its oracle reads changed machine values. Keep the normative block unchanged: the same complete effective fact is available after one deterministic observation-local expansion. | [Unknown] Complete actual three-surface marker conformance at implementation. |
-| POC-REQ-022 | [Inferred] affected by consumption | Its sampler reads changed machine values. Keep the normative block unchanged: expand the machine expected value; the existing human fact remains exact and server-rendered. | [Unknown] Actual scripting-disabled requests/browser accessibility at implementation. |
-| REQ-polaris-generation-019, base | [Inferred] unaffected by this carrier delta | Preserve the source projection and the separate six-class PWB anchor form and meanings. The new item reference changes neither interface. | [Unknown] Broader target-specific canonical adaptation conformance. |
-| REQ-polaris-generation-019, understanding replacement | [Inferred] unaffected by this carrier delta | Same PWB boundary reasoning. Understanding/clarification/dependency record ownership and identities remain separate and unchanged. | [Unknown] Same broader canonical adaptation; no complete external/dynamic inventory claim. |
+| Occurrence | Consumption edge | Unchanged obligation / later evidence |
+| --- | --- | --- |
+| POC-REQ-020 | Independent comparator reads effective facts from the changed wire. | Same complete fact set at the same evaluation after closed local expansion; actual complete marker parity remains unverified. |
+| POC-REQ-022 | Script-less sampler derives expected machine facts from the changed wire. | Existing server-rendered facts remain on the logical model; no script/wire lookup is introduced into human rendering. |
+| REQ-polaris-generation-019, base | Explicit PWB wire-convention preservation through compatibility adaptation. | Preserve source/anchor meaning and source admission at supported boundaries; unsupported adaptation remains explicit, full conformance Unknown. |
+| REQ-polaris-generation-019, understanding overlay | Same broad convention-preservation sentence remains in the complete overlay. | Additional understanding/clarification records stay separate, while the broad PWB obligation is not narrowed to known readers. |
 
-[Observed] CC-IMPACT-3 defines the affected set as “those a declaration or a consumption ties to the change”; therefore the POC parity/sampling consumers are affected even when their clauses remain valid. The POC spec is already a same-change manifest subject. [Inferred] This design evidence does not identify an invalidated normative obligation among these four readings requiring another textual companion. If a proposed design instead weakens equality, scriptless availability, PWB meaning, identity/state or source admission, CC-IMPACT-6 still requires its invalidated successor in the same change. No exception or later remediation lag is created here.
+[Observed] CC-IMPACT-3 includes those a declaration or a consumption ties to
+the change, including compatible obligations. [Inferred] None of these four
+requires different normative wording for the chosen bounded design. Any
+actual weakening of equality, script-less availability, PWB convention,
+identity/state or source admission would still need its proper same-change
+companion under CC-IMPACT-6/CC-REV-2. No lag or authority exception is created.
 
-## Equality and scriptless sampling
+## Equality, full records and script-less sampling
 
-[Observed] POC-REQ-020 says “Every fact a client-rendered surface presents SHALL be present, with equal value, in the machine answer for the same evaluation”; its oracle is “field-by-field equality over the exhausted marker population” and imports no rendering code. POC-REQ-022 samples expected facts from the machine answer and compares their no-script HTML presence. Exact blocks, line ranges and block digests are in `GOVERNING-BLOCKS.json` and `SOURCE-REFERENCES.json`.
+[Observed] The immutable POC020/022 blocks are in GOVERNING-BLOCKS.json and
+their original source hashes/lines in SOURCE-REFERENCES.json. POC020 compares
+field values across the exhausted fact-marker population; POC022 samples
+expected facts from the machine answer and checks no-script HTML.
 
-[Inferred] Defining a closed one-hop wire reference does not require those obligations to be weakened. The independent comparator validates the complete machine body, resolves exactly the enclosing observation's value and compares every effective field with the same human fact and evaluation. Expansion is an oracle-side reading of the wire definition; no renderer import or client script supplies a missing fact. The current human Trajectory renderer reads separately served subject records by item identity; P115 preserves those records, its full Unknown tuple and the warrant instruction. Current Orrery builds its eight-slot island from the preserved Orrery projection, the unmapped entity and link metadata; its exact tables read preserved entities/relationships.
+[Inferred] Independent comparators validate the complete local form and
+expand exactly one enclosing-observation hop before comparing effective
+state/reason/full route, complete evaluation/observation identity, item order
+and counts. They cannot silently treat a missing inline label as Unknown,
+skip fields or borrow a prior body. A raw items[i].governedBy.label reader
+is physically incompatible. That is distinct from whether the required
+semantic facts remain available. The human renderer continues on the logical
+model and distinct full subject records; no wire-dependent human truth store,
+extra click, fetch or script is needed.
 
-[Observed] A raw property reader expecting `items[i].governedBy.label` fails on the reference object. The control records inline label `Unknown` versus missing inline label in the proposed encoding. [Inferred] Such a reader must use the declared expansion; it cannot silently call the reference itself an Unknown tuple, borrow a prior body or skip fields. This explicit incompatibility of a physical-property consumer is separate from the retained normative fact equality. RFC6-14's broader interpretation is not decided by these four-reading source/fixture conclusions.
+[Inferred] POC060's record-shape population is exactly entities and
+relationships. The bare three-field value is outside it. Existing full
+entity/relationship/per-item records retain their IDs, prose reason,
+provenance and all route/action fields, and are never pooled. Its complete
+record/count/Unknown-set/encoding comparisons remain affected and must still
+be checked; the positive full-record fixture does not prove the exhaustive
+runtime population. Broad RFC6-14 consequences/coverage Unknowns remain.
 
-[Observed] The independent literal pair includes two served and rendered items, three distinct existing governing-intent subjects, the complete E object, observation provenance/capture instant, item IDs/order/metadata and all reason/route/action metadata. The scratch checker imports only Python standard-library modules. Two one-hop resolutions reproduce the entire bounded inline projection exactly. It compares **40 scalar facts** over **13 declared sample markers**, plus the unchanged human warrant instruction. Machine-derived expected values also match the literal scriptless human sample. Every declared marker in this sample is counted; no full three-surface census is claimed.
+## Preserved narrow interfaces and the broad GEN019 limb
 
-[Observed] Additional positive cases preserve a distinct second body's identities, observed empty with measured zero/no item claims, and Unknown observation with no invented population/count. **42/42** executing counterexamples reject at their intended predicate. These cover missing/wrong/shared values, each route/action field, extra/recursive/external/inline references, the second item's different value, complete-evaluation/observation/item/subject drift, count drift, human label/reason/route/identity drift, warrant loss, uncounted marker and duplicate JSON keys. A valid first body followed by a second body missing its shared value is refused; no prior-body fallback occurs in the checker.
+[Observed at original source capture] source-adapter.ts accepts PocModel but
+reads projectShape only: 13 input leaf/population families, nine emitted
+GenerationSource slots, and no optional body/redaction/segment slot. The
+separate run key is preserved explicitly for deterministic comparisons.
+COMPATIBILITY-MAP.json retains exact paths, spans, file hashes and Git blobs.
+The historical named/static census counted 483 JS/TS blobs from 2,934 paths,
+with 23 named occurrences, 15 direct calls, one module edge and four exports.
+This is a bounded historical static observation, not execution or an external
+consumer inventory.
 
-[Unknown] These are literal design examples, not generated pages or complete PocModel instances. There was no browser, endpoint, HTTP/304, production serializer or observed-code execution. The candidate's typed 503 is retained as an expected literal only. Runtime admission/refusal and the exhaustive marker population remain later acceptance work.
+[Observed] The separate PWB NarrativeAnchor has seven slots and captured
+label/tier/reason, with six local target classes and universal revision.
+The work anchor represents the source-population observation, class work,
+target beads-dolt:<revision>, captured Observed/report-fact/none. It does not
+state that any item's governing intent is Observed. Those meaning/identity
+inputs and all projectShape/entity/relationship records are preserved.
 
-## Generator/PWB compatibility boundary
+[Inferred] These concrete readers are positively separate from the new
+bare value/ref. They **cannot** narrow the full GEN019 sentence requiring PWB
+wire conventions to be preserved through explicit compatibility adaptation.
+Both complete GEN019 occurrences are therefore affected-compatible. The
+convention must retain meaning and source admission at every supported
+boundary; unsupported adaptation must remain explicit without invented
+identity/state. No observation marker is a canonical identity or kernel
+evaluation, and no source revision is coerced into one.
 
-[Observed] `source-adapter.ts:27–48` accepts PocModel but reads the single `projectShape` projection. Its complete function/helper expressions select 13 leaf/population input families, construct nine GenerationSource slots and pass only those records to source validation. The type has 12 slots; optional redaction/segment/body are not emitted. The route helper reads that resulting source identity and route guards, not a work-item observation. `COMPATIBILITY-MAP.json` enumerates the fields and precise source spans. With the same explicit run key, the excluded-ID input is also unchanged; a fresh default key must not be mistaken for deterministic cross-run identity.
+[Unknown] Broader canonical-adapter implementation and external/dynamic
+consumer behavior. The narrow projections and full-block affectedness are
+source judgments, not proof that an implementation satisfies every generic
+record/anchor/version obligation.
 
-[Observed] The static census parsed **483 tracked JS/TS-family blobs** from **2,934 tracked paths**, with zero parse diagnostics. It found 23 named adapter-identifier occurrences in two files: its definition and test; 15 direct calls comprise 13 test calls and two internal helper calls. One named module import edge and four exports are retained. An independent textual identifier-file census agrees. `STATIC-TRACE.json` retains every corpus path/blob/digest, occurrence, property access and 26 selected owning type definitions. [Unknown] This does not inventory external or dynamic consumers or prove runtime use.
+## Bounded literal examples and physical bytes
 
-[Observed] The separate PWB interface has six local target classes and `NarrativeAnchor`'s seven slots (`anchorId`, targetClass, targetId, revision, supports, captured, locator), with captured label/tier/reason. SCHEMA-CONTRACT's PWB paragraph identifies that six-class/universal-revision form and requires explicit canonical compatibility rather than promoting it. The current work-items narrative anchor is the `region:work-items` source observation: class `work`, target `beads-dolt:<revision>`, same revision, and captured `Observed/report-fact/none`. That is not a claim that an item's governing intent is Observed.
+[Observed historical literal evidence] The independent pair retains two
+items, three existing subjects/routes, complete evaluation and observation
+identity and all metadata. Its local expansion restores the full bounded
+inline projection: 40 scalar facts over 13 declared sample markers. Forty-two
+counterexamples reject their intended predicates; exact old/new fragments
+and mutated subject hashes remain in COUNTEREXAMPLES.json and retained
+outside-Git results. These are synthetic projections, not complete PocModel,
+HTTP, product serializer, browser or installed-service evidence.
 
-[Inferred] Keeping this source-population boundary and all other PWB entity/relationship/shape inputs unchanged makes the P115 value/reference carrier untied to the two REQ-019 PWB anchor obligations. The proposed shared value creates no aggregate claim and must never be converted into one; complete item/observation/evaluation/subject identities stay separate. No canonical identity is recovered from the string `observation`, and no revision becomes a kernel evaluation.
+[Observed] The original independent Python/Node byte receipt is now selected
+under ../evidence/encoded-byte/. Its literal pairs show N=0 1692→1950,
+N=1 2612→2647 and N=2 3553→3365 compact UTF-8 bytes. BYTE-REPLAY.json retains
+all 18 boundary expectations and exact peers. [Inferred] Actual final bytes
+remain the metric; no always-smaller premise, expanded/old-inline metric,
+inline fallback, empty exception or guaranteed production saving follows.
+PWB006 and PWB021 are affected even though their valid rules stay unchanged.
 
-[Unknown] Neither the source projection nor this PWB narrative emitter proves the entire generic canonical adapter. Target-specific identity/state recovery and the understanding overlay's broader runtime obligations are not settled by these examples. Both REQ-019 occurrences continue to require explicit unsupported adaptation without invented identity/state. The proposed unaffected classification is limited to this carrier change, not an assertion that the existing generator fully conforms.
+[Inferred] Validate before success/revalidation, preserve complete-body
+response identity semantics, measure actual final encoded bytes, then allow
+conditional success. The new wire-fault readiness:false is response-level
+refusal only. It adds no retained PWB021 arm/resource-breach count and changes
+no PWB022 84+2 case. A different readiness design needs a companion.
 
-## Replay and retention
+## Replay and limits
 
-[Observed] Outside-Git root: `/home/tze/.cache/syzygy-post-ceiling-2026-10-21/p115/compatibility-settlement/`.
+[Observed] Run the existing preparation-only helper from the candidate root:
 
-- [Observed] Replay: `python3 check-literal-pairs.py` from that root (standard library only).
-- [Observed] Checker SHA256: `043627863e8f9dfcfb1b5564d6c75dd0d353271a1257bac2591dbe13db27152a`.
-- [Observed] Result: `LITERAL-PAIR-RESULTS.json`, SHA256 `d548400c3c3abedb46dcfadd6a862ec68798fc48a649108172e07de4ca122fbc`; readable companion `.txt`; each executed counterexample has its exact old/new fragment, target and retained mutated-subject digest.
-- [Observed] Input replay: `python3 bind-subjects.py`; static replay: `node trace-static.cjs` (uses the pinned installed TypeScript parser, not application modules).
-- [Observed] `integration-data/` contains only Markdown, JSON and inert literal HTML fixtures. No executable proof is proposed under the governed home.
-- [Observed] `SHA256SUMS` and `INVENTORY.json` inventory this controlled cache only, excluding the inventory files themselves. Their own full hashes are reported separately at handoff.
+```sh
+python3 scripts/check_p115_compatibility_examples.py --check
+python3 scripts/build_three_surface_poc_governedby_reference_amendment.py --check
+python3 scripts/build_three_surface_poc_governedby_reference_amendment.py --selftest
+```
 
-[Unknown] This appendix supplies engineering evidence and proposed dispositions. It grants no adoption, implementation, egress, source-read, provider, daemon or live-activation authority and records no independent semantic verdict.
+[Observed] The helper remains unchanged. It imports no product code and runs
+only inert fixtures, with all temporary mutants/reports in owned scratch.
+The scoped builder additionally checks selected sealed copies, exact source
+excerpts and literal byte/boundary data. Focused actual-run outputs and exact
+mutation receipts are retained outside Git by the candidate writer. Current
+packet/head readiness belongs to the coordinator, not this dated evidence.
 
-## Coordinator integration of reproducible examples
-
-[Observed] This appendix's original worker artifact is retained outside Git
-at its named evidence root. The candidate now also retains its inert literal
-fixtures and negative-case catalog here, plus the source-map, complete
-requirement blocks, static trace and subject-binding data named above.
-The preparation checker is scripts/check_p115_compatibility_examples.py,
-SHA256 `d6cceac03fd6db1f27d784c2e0344641ab65300d2687655f7b9a612eeaf20eb3` at this integration checkpoint.
-Run `python3 scripts/check_p115_compatibility_examples.py --check` from the
-repository root. It imports no product or candidate implementation, validates
-its literal case/marker populations and exact mutation targets, and writes
-mutants/reports only to its own temporary directory. The main preparation
-builder invokes it in both --check and --selftest. The earlier outside-Git
-checker/result retain their original hashes; they are not relabelled as this
-successor helper. Its source is preparation code under scripts/, with no
-product wire implementation or installed runtime conformance claim.
+[Unknown] No literal pass proves actual HTTP304, response identity/refusal
+bounds, complete rendered populations, canonical/external compatibility or
+production saving. No provider, observed body, daemon, installation, act,
+signature or independent semantic verdict is supplied here. Both earlier
+REVISE rounds stay preserved and any new review binds its exact new freeze.

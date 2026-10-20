@@ -77,7 +77,36 @@ examples supply evidence to assess against the named immutable source objects,
 never authority or a judgment to repeat. Its preparation-only checker is
 scripts/check_p115_compatibility_examples.py; --check writes only owned scratch
 space. Challenge whether POC-REQ-020/022 remain affected with valid unchanged
-normative blocks, and whether the positive PWB interface boundary establishes
-untiedness for both generator-019 occurrences. Distinguish those design
+normative blocks, and whether the full GEN019 convention-preservation limbs establish affected
+consumption despite the two preserved current interface projections. Distinguish those design
 readings from unproven runtime conformance and broader canonical adaptation.
 Challenge unresolved readings rather than converting them to unaffected.
+
+## Source-method successor to examine
+
+The first two semantic rounds remain failed history (REVISE); their outcome
+is not an operative instruction to a new reviewer. The retained selected
+reports are dated source/byte engineering evidence, not a third verdict.
+Judge the exact new freeze independently, including whether its complete-limb
+method and all 130 authored dispositions are adequate, rather than accepting
+the proposed 15/115/0 totals. Keep consumption affectedness separate from
+normative text invalidation; unchanged rules/constants/results do not by
+themselves establish untiedness. Recheck positive closed-input separation,
+whole sinks/censuses, broad compatibility, actual final-byte, identity/cache
+and derived-readiness limbs against the governing source blocks.
+
+Use evidence/EVIDENCE-SELECTION.json for exact copied-file/alias mappings
+and named Git sources. The builder can recheck literal excerpt and byte
+witness integrity from a fresh clone without a cache path or implementation
+snapshot. The synthetic N=0/1 peers grow, N=2 shrinks; challenge any claimed
+all-N saving, expanded/old-inline metric or empty/inline exception. Actual
+production sizes and conformance remain Unknown.
+
+Challenge the response-only interpretation of wire-fault readiness:false
+against complete PWB021 and PWB022 blocks. The proposed design adds no
+retained model-readiness arm and preserves PWB022's 84+2 population. Challenge
+whether the unchanged logical-model-to-human architecture and distinct full
+POC060 records/counts/Unknown sets are preserved while independent machine
+comparators expand the local form. Any discovered invalidation requires the
+proper companion, not an author-declared exception. The coordinator alone
+owns actual review launch and subsequent current readiness receipts.

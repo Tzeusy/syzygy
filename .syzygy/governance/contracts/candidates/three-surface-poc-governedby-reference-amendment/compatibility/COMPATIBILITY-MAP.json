@@ -1,13 +1,6 @@
 {
   "epistemic": "Observed",
-  "subject": {
-    "sourceCommit": "eba011dfbe254c09a88ccc374b3efe5ff5df1762",
-    "activeCandidateCommit": "662b4b49505776c21856791abc52cda72346c5d9",
-    "retainedCoreCommit": "ddf1dc69b724df72a5e3c4f224500aa51d344ef0",
-    "manifestFileSha256": "77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd",
-    "proposedPocSpecSha256": "01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37"
-  },
-  "scope": "Bounded owning interfaces and static call sites. This is not a complete consumer inventory or a canonical-adapter/runtime conformance report.",
+  "scope": "Historical bounded interface/static/literal facts retained with current inferred source-method dispositions. Neither a complete consumer inventory nor a canonical-adapter/runtime conformance report.",
   "sourceProjection": {
     "definition": {
       "commit": "eba011dfbe254c09a88ccc374b3efe5ff5df1762",
@@ -236,7 +229,8 @@
     "p115Mapping": {
       "epistemic": "Inferred",
       "referenceCarrier": "The new three-field value and one-key item reference are not a NarrativeAnchor or CapturedTargetState. P115 explicitly preserves this boundary and its identities; expansion must never reinterpret the source-population Observed state as an intent state.",
-      "normativeScope": "SCHEMA-CONTRACT identifies the PWB compatibility form by the six local classes and universal revision. Preserve that form; do not promote either it or the new POC reference into a generic canonical schema."
+      "normativeScope": "SCHEMA-CONTRACT identifies the PWB compatibility form by the six local classes and universal revision. Preserve that form; do not promote either it or the new POC reference into a generic canonical schema.",
+      "wholeOccurrenceLimit": "This positive anchor-interface preservation is not a whole-GEN019 unaffected conclusion. Its explicit broad convention-preservation limb is affected and remains normative, with unproven runtime conformance separate."
     },
     "broaderCanonicalAdaptation": {
       "epistemic": "Unknown",
@@ -334,6 +328,12 @@
       "poc020": "Existing named test compares four Orrery island fields: mappedFileCount, unmappedFileCount, totalFileCount, revision. It does not by itself exhaust all three-surface markers.",
       "poc022": "Existing named test checks noscript/unavailability text and exact-table section IDs, not a complete machine-derived sample equality.",
       "runtime": "Unknown; these production tests were read, not run for this evidence task."
+    },
+    "c4ArchitectureBoundary": {
+      "epistemic": "Inferred",
+      "logicalHumanPath": "Existing human renderer consumes the existing logical model/full per-item records, never serialized machine wire.",
+      "machineComparisonPath": "Independent machine consumers/comparators/samplers perform the one observation-local hop when deriving effective facts.",
+      "recordBoundary": "Full entities, relationships and separately served per-item records retain all identities and metadata; the bare value is not a pooled record."
     }
   },
   "literalProof": {
@@ -347,5 +347,25 @@
     "counterexamples": 42,
     "result": "All 42 reject at their intended predicate; two item hops restore the complete bounded inline projection. The physical inline-property reader is an explicit failing control.",
     "limits": "Literal synthetic projections, not complete PocModel objects, generated pages, browser census, HTTP/304 test, production serializer or runtime conformance."
+  },
+  "historicalEvidenceSubject": {
+    "sourceCommit": "eba011dfbe254c09a88ccc374b3efe5ff5df1762",
+    "activeCandidateCommit": "662b4b49505776c21856791abc52cda72346c5d9",
+    "retainedCoreCommit": "ddf1dc69b724df72a5e3c4f224500aa51d344ef0",
+    "manifestFileSha256": "77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd",
+    "proposedPocSpecSha256": "01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37"
+  },
+  "sourceReturnReconciliation": {
+    "epistemic": "Inferred",
+    "date": "2026-10-21",
+    "wholeOccurrenceClassification": "Both REQ-polaris-generation-019 occurrences are affected-compatible through the explicit broad PWB wire-convention preservation/adaptation limb. The narrow source projection and PWB anchor records below remain positively separate but cannot narrow that normative obligation.",
+    "normativeBlockTextChangeRequired": false,
+    "sameChangeObligation": "Preserve convention meaning and source admission; supported compatibility boundaries must handle the new form or expose typed inability. No canonical identity/state invention or generic schema promotion.",
+    "evidence": [
+      "../REQUIREMENT-CONSUMPTION.json",
+      "../evidence/source-return/SOURCE-CRITERIA.json",
+      "PROPOSED-DISPOSITIONS.json"
+    ],
+    "runtimeConformance": "Unknown"
   }
 }

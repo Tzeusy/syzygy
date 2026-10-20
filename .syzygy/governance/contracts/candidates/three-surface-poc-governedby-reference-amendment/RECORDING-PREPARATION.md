@@ -20,17 +20,21 @@ sign this future package. Proposed identity:
   file inventory is recorded separately for independent review. Neither
   owner phrase nor typed digest is required under Scope A.
 - Full semantic delta, design, coverage, impact, review brief and a proposed
-  owner-offer packet. Signature/review fields remain explicitly pending.
+  owner-offer packet. It is a dated offer-content snapshot; current readiness belongs to the
+  coordinator's separate exact-head receipt.
 
 ## Coordinator gates before offer — not an owner's engineering question
 
-Before offer, obtain fresh independent confirmation of the four proposed
-consumption dispositions in REQUIREMENT-CONSUMPTION.json and the same-change
-compatibility appendix. POC-REQ-020/022 are affected consumers whose normative
-blocks remain unchanged; the two generator-019 occurrences retain their
-separate PWB interfaces. Any invalidated obligation still requires its
-same-change companion. This is ordinary source/design reconciliation; it
-grants no new owner or code authority.
+Before offer, obtain fresh independent confirmation of the complete source
+method and all 130 occurrence dispositions: 15 affected / 115 positively
+untied / 0 undecidable. POC014 is the one identified block-text amendment;
+fourteen affected-compatible blocks remain exact. Both generator-019 broad
+PWB convention-preservation limbs are affected despite two preserved narrow
+interfaces. PWB006 measures actual final encoded bytes; small-N overhead is
+not an exemption. Response-level wire-fault readiness:false adds no retained
+model-readiness arm and changes no PWB022 84+2 case. Any actually invalidated
+obligation needs its same-change companion. This preparation is no owner or
+code authority and no independent semantic confirmation.
 
 1. Register the package in scripts/record_versioned_signoff.py using the
    existing manifest-backed POC Package pattern (not P-100's historical
