@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
-index a11e58d..80c60c6 100644
+index a11e58d..19b8d57 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
 @@ -587,6 +587,79 @@ flowchart TD
@@ -48,8 +48,8 @@ index a11e58d..80c60c6 100644
 +    citation whose cite names a served anchor or source record carrying
 +    that revision, and whose cite text is that record's served locator or
 +    path. Two gaps stay open and are stated in the requirement: where the
-+    citation sits (inside a sentence passes), and which tokens a served
-+    locator holds;
++    citation or an excepted identity sits (inside a sentence passes), and
++    which tokens a served locator holds;
 +  - an identity shown whole, equal to the evaluation identity or to one
 +    served source record's source identity, and no other record's;
 +  - Butlers-declared text kept verbatim;

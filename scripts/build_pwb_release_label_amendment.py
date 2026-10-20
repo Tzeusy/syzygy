@@ -195,10 +195,14 @@ REQUIRED_ONCE = (
     "the stamp's whole text is the revision that record carries, in full or as its first twelve hexadecimal digits",
     # Round 6, Finding 1 (owner: "Weaker wording + review"): "therefore never
     # a stamp" is withdrawn and both gaps are stated as limits.
-    "Two limits stay. Where a citation sits is not decided by this requirement: a citation placed inside a sentence, a heading or other running text passes these tests",
+    "Two limits stay. Where a citation or an excepted identity (below) sits is not decided by this requirement: a citation or an identity placed inside a sentence, a heading or other running text passes these tests, though its words then name the revision outside a label unit, an identity by the revision's full object id.",
     "Which tokens an anchor's served locator holds is not decided either: PWB-REQ-014's anchor shape requires a locator and fixes no values, so a one-token locator that reads as a phrase passes",
-    "**AND** whether that citation sits inside the sentence is not decided by this requirement",
-    "**THEN** outside a citation the sentence shows neither R's full object id nor its first twelve hexadecimal digits",
+    "**AND** whether that citation or an excepted identity sits inside the sentence is not decided by this requirement",
+    "**THEN** outside a citation and an excepted identity the sentence shows neither R's full object id nor its first twelve hexadecimal digits",
+    # Round 7, Finding 2 (lead, cycle 6): an excepted identity's placement
+    # is part of the first limit; Note 3: scenario 5's WHEN is guarded.
+    "It shows that identity whole, and where it sits is the first limit above;",
+    "**WHEN** a Polaris page has a sentence about the observed revision R outside every label unit - **THEN**",
     # Round 6, Note 1: the cycle-4 wordings the digest alone guarded.
     "It holds no occurrence that the text sweep below finds.",
     "holding no whitespace or equal to a path in the checker's own Git listing, and holding no swept occurrence",
@@ -285,7 +289,7 @@ NEW_SCENARIOS = (
     "#### Scenario: A revision no tag reaches is labelled honestly",
     "#### Scenario: Unread tags are never shown as untagged",
     "#### Scenario: A moved tag is disclosed, not trusted",
-    "#### Scenario: A citation's contents are decided, not its placement",
+    "#### Scenario: Citation and identity contents are decided, not placement",
 )
 #: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
 WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
@@ -327,6 +331,8 @@ DESIGN_PHRASES = (
     "and whose cite text is that record's served locator or path. Two gaps stay open and are stated in the requirement",
     "an identity shown whole, equal to the evaluation identity or to one served source record's source identity, and no other record's",
     "first twelve digits, or project name followed by a tag name; a shorter prefix is not decided.",
+    # Round 7, Note 3: which gaps, and their polarity.
+    "Two gaps stay open and are stated in the requirement: where the citation or an excepted identity sits (inside a sentence passes), and which tokens a served locator holds;",
 )
 
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
@@ -887,20 +893,38 @@ def selftest() -> int:
         ),
         # Round 6, Finding 1: the two stated limits, and the claim withdrawn.
         "placement limit withdrawn": (
-            SPEC, _replace(proposed[SPEC], "      - Two limits stay. Where a citation sits is not decided by this\n        requirement: a citation placed inside a sentence, a heading or other\n        running text passes these tests,", "      - A revision id in a sentence, a heading or any other running text is\n        therefore never a stamp,"),
-            phrase_finding("Two limits stay. Where a citation sits is not decided by this requirement: a citation placed inside a sentence, a heading or other running text passes these tests"),
+            SPEC, _replace(proposed[SPEC], "      - Two limits stay. Where a citation or an excepted identity (below)\n        sits is not decided by this requirement: a citation or an identity\n        placed inside a sentence, a heading or other running text passes\n        these tests,", "      - A revision id in a sentence, a heading or any other running text is\n        therefore never a stamp,"),
+            phrase_finding("Two limits stay. Where a citation or an excepted identity (below) sits is not decided by this requirement: a citation or an identity placed inside a sentence, a heading or other running text passes these tests, though its words then name the revision outside a label unit, an identity by the revision's full object id."),
         ),
         "locator limit withdrawn": (
             SPEC, _replace(proposed[SPEC], " Which tokens an anchor's served\n        locator holds is not decided either: PWB-REQ-014's anchor shape\n        requires a locator and fixes no values, so a one-token locator that\n        reads as a phrase passes;", ";"),
             phrase_finding("Which tokens an anchor's served locator holds is not decided either: PWB-REQ-014's anchor shape requires a locator and fixes no values, so a one-token locator that reads as a phrase passes"),
         ),
         "scenario placement limit dropped": (
-            SPEC, _replace(proposed[SPEC], "- **AND** whether that citation sits inside the sentence is not decided by\n  this requirement\n", ""),
-            phrase_finding("**AND** whether that citation sits inside the sentence is not decided by this requirement"),
+            SPEC, _replace(proposed[SPEC], "- **AND** whether that citation or an excepted identity sits inside the\n  sentence is not decided by this requirement\n", ""),
+            phrase_finding("**AND** whether that citation or an excepted identity sits inside the sentence is not decided by this requirement"),
         ),
         "scenario THEN back to the overclaim": (
-            SPEC, _replace(proposed[SPEC], "- **THEN** outside a citation the sentence shows", "- **THEN** the sentence shows"),
-            phrase_finding("**THEN** outside a citation the sentence shows neither R's full object id nor its first twelve hexadecimal digits"),
+            SPEC, _replace(proposed[SPEC], "- **THEN** outside a citation and an excepted identity the sentence shows", "- **THEN** outside a citation the sentence shows"),
+            phrase_finding("**THEN** outside a citation and an excepted identity the sentence shows neither R's full object id nor its first twelve hexadecimal digits"),
+        ),
+        # Round 7, Finding 2 and Note 3: identity placement, the WHEN, and
+        # the design's gap list and polarity.
+        "identity placement limit dropped": (
+            SPEC, _replace(proposed[SPEC], "that identity whole, and where it sits is the first limit above;", "that identity whole;"),
+            phrase_finding("It shows that identity whole, and where it sits is the first limit above;"),
+        ),
+        "scenario WHEN widened": (
+            SPEC, _replace(proposed[SPEC], "about the observed revision R\n  outside every label unit\n", "about the observed revision R\n  outside every label unit or citation\n"),
+            phrase_finding("**WHEN** a Polaris page has a sentence about the observed revision R outside every label unit - **THEN**"),
+        ),
+        "design gap polarity flipped": (
+            DESIGN, _replace(proposed[DESIGN], "sits (inside a sentence passes), and", "sits (inside a sentence fails), and"),
+            "design lacks",
+        ),
+        "design identity gap dropped": (
+            DESIGN, _replace(proposed[DESIGN], "where the\n    citation or an excepted identity sits", "where the\n    citation sits"),
+            "design lacks",
         ),
         # Round 6, Note 1: the reviewer's six digest-only deletions.
         "cite swept-occurrence clause dropped": (
@@ -1013,7 +1037,7 @@ def selftest() -> int:
             phrase_finding("the identity each citation's cite names, and that record's served locator or path"),
         ),
         "citation scenario dropped": (
-            SPEC, _replace(proposed[SPEC], "#### Scenario: A citation's contents are decided, not its placement", "#### Scenario: A citation's contents are decided"),
+            SPEC, _replace(proposed[SPEC], "#### Scenario: Citation and identity contents are decided, not placement", "#### Scenario: Citation and identity contents are decided"),
             "PWB-REQ-001 lacks exactly one",
         ),
         # Round 5, Note 1: the reviewer's identity-population mutants.

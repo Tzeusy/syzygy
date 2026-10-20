@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index aa4c032..90da068 100644
+index aa4c032..396659f 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -366,24 +366,295 @@ readers SHALL receive those identities, the capture instant and the same source
+@@ -366,24 +366,296 @@ readers SHALL receive those identities, the capture instant and the same source
  population. Every emitted project-shape fact SHALL carry its source identity,
  scope, capture instant and observer identity/version.
  
@@ -51,10 +51,11 @@ index aa4c032..90da068 100644
 +        occurrence that the text sweep below finds.
 +      - So a stamp's citation holds only a served name with no space in it,
 +        or a real path, beside the revision. A stamp carries no label.
-+      - Two limits stay. Where a citation sits is not decided by this
-+        requirement: a citation placed inside a sentence, a heading or other
-+        running text passes these tests, though its words then name the
-+        revision outside a label unit. Which tokens an anchor's served
++      - Two limits stay. Where a citation or an excepted identity (below)
++        sits is not decided by this requirement: a citation or an identity
++        placed inside a sentence, a heading or other running text passes
++        these tests, though its words then name the revision outside a label
++        unit, an identity by the revision's full object id. Which tokens an anchor's served
 +        locator holds is not decided either: PWB-REQ-014's anchor shape
 +        requires a locator and fixes no values, so a one-token locator that
 +        reads as a phrase passes;
@@ -63,7 +64,7 @@ index aa4c032..90da068 100644
 +      identity of one source record that the machine answer serves at that
 +      evaluation, and is not a revision's id alone. These two are the whole
 +      population: an identity of any other record is not excepted. It shows
-+      that identity whole;
++      that identity whole, and where it sits is the first limit above;
 +    - Butlers-declared text that PWB-REQ-014 keeps verbatim in its own leaf,
 +      or that the exact-source route serves under PWB-REQ-011. It stays
 +      byte-identical to its source, and its words are never a naming of the
@@ -298,7 +299,7 @@ index aa4c032..90da068 100644
  
  #### Scenario: Source population is complete at one revision
  
-@@ -391,11 +662,59 @@ scope, capture instant and observer identity/version.
+@@ -391,11 +663,59 @@ scope, capture instant and observer identity/version.
  - **THEN** every admitted project-shape source resolves at R
  - **AND** the human and machine views expose the same complete source set
  
@@ -338,17 +339,17 @@ index aa4c032..90da068 100644
 +  tag as moved, naming A, B and both evaluations
 +- **AND** every claim still binds to the current revision's full object id
 +
-+#### Scenario: A citation's contents are decided, not its placement
++#### Scenario: Citation and identity contents are decided, not placement
 +
 +- **WHEN** a Polaris page has a sentence about the observed revision R
 +  outside every label unit
-+- **THEN** outside a citation the sentence shows neither R's full object id
-+  nor its first twelve hexadecimal digits
++- **THEN** outside a citation and an excepted identity the sentence shows
++  neither R's full object id nor its first twelve hexadecimal digits
 +- **AND** any citation of a served anchor or source record carrying R holds
 +  only the record's served locator or path, with no whitespace unless it is
 +  a path in R's tree, and R's id as its stamp
-+- **AND** whether that citation sits inside the sentence is not decided by
-+  this requirement
++- **AND** whether that citation or an excepted identity sits inside the
++  sentence is not decided by this requirement
 +
  ```yaml
  warrants:

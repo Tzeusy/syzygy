@@ -115,6 +115,21 @@ sentence passes, which neither stated limit covers. It also found three
 notes. All are open in `ROUND-7-DISPOSITIONS.md`. These bytes are not
 repaired again and not cleared, no round 8 is dispatched, and this version
 is not offered for sign-off.)*
+*(Marked 2026-10-20, cycle 6: "not repaired again" and "no round 8 is
+dispatched" are superseded. The lead session, under your autonomy
+direction, decided "one more P-85 cycle": repair the round-7 findings with
+the reviewer's fix that keeps your chosen approach, then one fresh round 8.)*
+
+**Round-7 findings repaired once on 2026-10-20, unconfirmed pending round
+8.** This version widens the first limit so that it names an excepted
+identity's placement as well as a citation's, narrows the fifth scenario's
+THEN and AND to match, carries the gap into design decision 13 and
+Question 6, rewords the summary below, marks the delta's stale choice, and
+repairs the three round-7 notes; mapping in `ROUND-7-DISPOSITIONS.md`
+§"Repairs, 2026-10-20 (cycle 6)". It is not offered for sign-off until
+round 8 returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only;
+then Question 1 is yours, since this package has no carry-over answer. A
+`REVISE` comes back to you.
 
 ## What you would be signing
 
@@ -145,13 +160,21 @@ One amendment to PWB-REQ-001 in the signed PWB specification. Read
   visible text may not show the revision's id or "Butlers" followed by a
   tag name, with four exceptions:
   - the short id stamped in each claim's source citation, which is the
-    identity the claim binds to and carries no label. Only a citation's
-    revision counts; an id in a sentence or heading never does
-    (Question 6);
+    identity the claim binds to and carries no label. A bare id in a
+    sentence or heading, outside any citation, fails (Question 6);
   - an identity shown whole, such as the evaluation identity in the page
     footer, which contains the full id;
   - Butlers' own text shown verbatim, which stays byte-identical;
   - the shared status line above every surface's content (Question 5).
+
+  Where a citation or an identity sits is not decided: either one placed
+  inside a sentence or heading passes, so a sentence can still name the
+  revision through it, an identity by the full id.
+  *(Reworded 2026-10-20, cycle 6, for round-7 Finding 1: the first exception
+  ended "Only a citation's revision counts; an id in a sentence or heading
+  never does (Question 6)". Round 6 showed a citation inside a sentence
+  passes, and round 7 showed an identity inside a sentence passes too, so
+  that promise is withdrawn here as it was in the requirement.)*
 - **Moved tags** are disclosed when an earlier evaluation, named as compared,
   saw the tag on another commit, wherever the tag's name appears, tied names
   included. Nothing says a tag is unmoved, unchanged or stable, and the
@@ -279,7 +302,8 @@ way, and the label then leads nowhere a reader looks.
 
 | Option | Meaning |
 |---|---|
-| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)". The checker confirms that the record it cites carries that revision, and that the cite's whole text is that record's served locator or path: one token with no space in it, or a real path in the observed tree. A bare id in a sentence, heading or identity line, outside any citation, fails; such a line shows the label instead, or drops the id. Two limits are stated in the requirement and are not decided: a citation placed inside a sentence still passes, so a sentence can name the revision through its citation; and a served locator is Polaris's own output, so the text bounds it to one token but does not fix which tokens. |
+| **Only citations hold stamps** (recommended; this version) | A stamp is the revision inside a source citation such as "(git-ls-tree@1a2b3c4d5e6f)". The checker confirms that the record it cites carries that revision, and that the cite's whole text is that record's served locator or path: one token with no space in it, or a real path in the observed tree. A bare id in a sentence, heading or identity line, outside any citation, fails; such a line shows the label instead, or drops the id. Two limits are stated in the requirement and are not decided: a citation or an excepted identity placed inside a sentence still passes, so a sentence can name the revision through either, an identity by the full id; and a served locator is Polaris's own output, so the text bounds it to one token but does not fix which tokens. |
+| Bare ids in sentences may stay | An id in a sentence is allowed with no label. The label still appears once per page and first, but the claim that a stamp "cannot hide a naming" is withdrawn, and a reader may meet many bare ids. This needs a new version of this package. |
 
 *(Reworded 2026-10-15, cycle 5, for round-6 Finding 1 under your answer
 "Weaker wording + review": the recommended row said "A sentence cannot be
@@ -287,6 +311,12 @@ cast as a cite, so every sentence, heading or identity line that names the
 revision shows the label instead, or drops the id. The label then leads
 wherever the revision is named." Round 6 showed a citation inside a sentence
 passes, so that promise is withdrawn and both gaps are stated as limits.)*
-| Bare ids in sentences may stay | An id in a sentence is allowed with no label. The label still appears once per page and first, but the claim that a stamp "cannot hide a naming" is withdrawn, and a reader may meet many bare ids. This needs a new version of this package. |
+
+*(Reworded 2026-10-20, cycle 6, for round-7 Finding 2: the recommended row
+said "a citation placed inside a sentence still passes, so a sentence can
+name the revision through its citation". Round 7 showed an excepted
+identity, which holds the full id, passes inside a sentence too, so the
+first limit now names both. Round-7 Note 1: the cycle-5 note above sat
+between the table's rows and broke the table; it now sits below it.)*
 
 **If unanswered,** nothing is signed and the package stays a candidate.
