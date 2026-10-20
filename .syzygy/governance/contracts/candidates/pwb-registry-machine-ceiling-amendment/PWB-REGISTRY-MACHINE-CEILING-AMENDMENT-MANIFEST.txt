@@ -1,0 +1,8 @@
+# PWB REGISTRY MACHINE-CEILING AMENDMENT MANIFEST (P-114)
+# Candidate; this file and its row bind nothing by themselves.
+# 1 artifact; the row hashes the PROPOSED bytes: the subject with
+# proposed/*.patch applied (one value, maxMachineResponseBytes
+# 8388608 -> 16777216). It matches the tree only after the sign-off
+# applies the patch; until then the subject's current bytes stay the
+# argument of the act in force.
+f2b3573cfe35169f449a9eed36b4c3330ef037d6668bab0548dd5d5939293556  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json

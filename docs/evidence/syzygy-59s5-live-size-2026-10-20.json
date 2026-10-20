@@ -1,0 +1,58 @@
+{
+  "record": "syzygy-59s5 live response sizes, 2026-10-20: the Butlers machine answer breaches maxMachineResponseBytes",
+  "date": "2026-10-20",
+  "bead": "syzygy-59s5",
+  "subject": {
+    "commit": "8340fa220ba1bb0ed0a1e6da9f401e72791c53dc",
+    "surfaceVersion": "polaris@60d91a43940f",
+    "comparisonCommit": "0ba7200067769a5307e609cef309c63296e003e6",
+    "comparisonSurfaceVersion": "polaris@957542378841"
+  },
+  "measuredOn": "a private POC daemon (node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>) served from this lane's clean committed worktree after npm ci and npm run build:poc, against the registered locator at Butlers git revision 36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e (the same revision every 2026-10-15 reading in docs/evidence/p100-governing-intent-implementation-2026-10-15.json used); evaluation identity pwb-eval-5db7b3cd512bd68a19962f63 at both commits",
+  "method": "curl -s -o /dev/null -w '%{http_code} %{size_download}', direct and with Host: tzeusy.parrot-hen.ts.net; the machine credential was passed as a header file and never printed; no response body was printed, saved or inspected. The observed byte count of each 503 comes from the daemon's own stderr line, not the body",
+  "ceilings": {
+    "maxMachineResponseBytes": 8388608,
+    "maxHumanResponseBytes": 2097152
+  },
+  "measurements": [
+    {
+      "commit": "8340fa220ba1bb0ed0a1e6da9f401e72791c53dc",
+      "role": "origin/main at 2026-10-20",
+      "surfaceVersion": "polaris@60d91a43940f",
+      "results": {
+        "direct /api/poc": { "httpCode": 503, "bytes": 1482 },
+        "tailnet /api/poc": { "httpCode": 503, "bytes": 1482 },
+        "direct /trajectory": { "httpCode": 200, "bytes": 1672163 },
+        "tailnet /trajectory": { "httpCode": 200, "bytes": 1672253 }
+      },
+      "daemonStderr": "two lines of kind daemon-http-outcome, route /api/poc, status 503, reason response-limit-breached, limit maxMachineResponseBytes, declared 8388608, observed 8497943, population counted (sources 294, items 290, facts 312, exclusions 11), sequence 1 and 2"
+    },
+    {
+      "commit": "0ba7200067769a5307e609cef309c63296e003e6",
+      "role": "the P-100 commit measured at 7,927,433 bytes on 2026-10-15, re-measured today to separate code growth from input growth",
+      "surfaceVersion": "polaris@957542378841",
+      "results": {
+        "direct /api/poc": { "httpCode": 503, "bytes": 1482 },
+        "tailnet /trajectory": { "httpCode": 200, "bytes": 1672253 }
+      },
+      "daemonStderr": "one line of kind daemon-http-outcome, route /api/poc, status 503, reason response-limit-breached, limit maxMachineResponseBytes, declared 8388608, observed 8497943, population counted (sources 294, items 290, facts 312, exclusions 11)"
+    }
+  ],
+  "machineAnswer": {
+    "observedBytes": 8497943,
+    "fractionOfCeiling": 1.013,
+    "overBy": 109335
+  },
+  "growthSince20261015": {
+    "machineBytes": { "from": 7927433, "to": 8497943, "delta": 570510, "days": 5 },
+    "trajectoryTailnetBytes": { "from": 1251151, "to": 1672253, "delta": 421102, "days": 5 },
+    "attribution": "[Observed] at the same Syzygy commit (0ba72000) and the same Butlers git revision, both sizes grew by the same amounts as at 8340fa22, so the growth is not Syzygy code and not the Butlers git tree. [Observed] the work-item read is the one live input outside the git revision: packages/three-surface-poc-core/src/work-items.ts reads the Butlers Beads Dolt database through bd sql at dolt_hashof('HEAD'). [Inferred] the growth is work-item rows. At the P-100 per-item marginals of the synthetic fixture (1,447.06 machine bytes and 1,613.12 Trajectory bytes per item) it is about 394 and 261 item-equivalents; the two figures disagree, so changed rows (status, title) and items the board does not render are likely part of it. [Unknown] the Butlers work-item count itself: no Syzygy-side record counts it, and no body was read to count it.",
+    "ratePerDayInferred": { "machineBytes": 114102, "trajectoryBytes": 84220 }
+  },
+  "headroomAtObservedRate": {
+    "note": "[Inferred] linear extrapolation of the five-day rate; not a forecast",
+    "machineAt16MiB": { "headroomBytes": 8279273, "days": 72 },
+    "trajectoryAt2MiB": { "headroomBytes": 424899, "days": 5 }
+  },
+  "loggingFinding": "[Observed] a ceiling breach is now logged: packages/cap1-daemon/src/server.ts emitNonSuccess writes the daemon-http-outcome line with safeResponseDiagnostic (added 86bbddc4, syzygy-dov.11.1). AGENTS.md's 'serves nothing and logs nothing' guardrail is stale; bead syzygy-vqcc."
+}
