@@ -1,6 +1,7 @@
-import { spawnSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
@@ -17,14 +18,14 @@ interface BuilderFixtures {
 /** The version-4 builder's own body and whole-file fixtures, each with its stated expectation and the builder's reference oracle
  * (`withheld_lines`) run over the policy on disk: the impact ledger requires the builder's fixtures to run through the TypeScript screens,
  * because the oracle runs the patterns in Python `re`. */
-function builderFixtures(): BuilderFixtures {
+async function builderFixtures(): Promise<BuilderFixtures> {
   const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v4 as b
 policy = open(str(b.ROOT / b.POLICY)).read()
 srt = lambda s: None if s is None else sorted(s)
 print(json.dumps({'body': [{'name': n, 'body': body, 'expected': srt(w), 'oracle': srt(b.withheld_lines(body, policy))} for n, body, w in b.BODY_FIXTURES],
   'whole': [{'name': n, 'path': p, 'body': body, 'oracle': srt(b.withheld_lines(body, policy, p))} for n, p, body in b.WHOLE_FIXTURES]}))`;
-  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
-  if (run.status !== 0) throw new Error(`builder fixtures failed: ${run.stderr}`);
+  // Run without blocking the worker: a synchronous python3 child is not a short local tool (sync-child-process-guard.test.ts).
+  const run = await promisify(execFile)('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   return JSON.parse(run.stdout) as BuilderFixtures;
 }
 
@@ -37,8 +38,8 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
   let fixtures: BuilderFixtures;
   let redaction: SecretRedaction;
   let matcher: ReturnType<typeof compileEveryOffsetMatcher>;
-  beforeAll(() => {
-    fixtures = builderFixtures();
+  beforeAll(async () => {
+    fixtures = await builderFixtures();
     const doc = policyDoc();
     const read = readSecretRedaction(scopeOf(doc), idsOf(doc));
     if (!read.ok || read.redaction === null) throw new Error('the policy on disk declares no readable secretRedaction');

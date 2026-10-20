@@ -1,0 +1,713 @@
+{
+  "record": "Rule-6 mutation run for the screening scope v4 install (P-110, syzygy-3sjj)",
+  "date": "2026-10-20",
+  "subject": "the v4 predicates added by this install: secret-redaction.ts (polaris-generation-core), the v4 policy act form (package-reader.ts), the state-(1) explicit-selection reading (owner-act-record.ts), both screens' screenTargetBody, the dossier review/check/render redacted-span handling, and install_redis_sitting.py's v4 form",
+  "subjectDigests": "each mutant names its file and fileSha256AtCommit, the sha256 of that file at the run's commit",
+  "method": "each mutant replaces exactly one occurrence of `old` with `new`, runs `command` from the worktree root, counts a non-zero exit as killed, and restores the file byte for byte",
+  "runs": [
+    {
+      "commit": "00453352eba7a3828bfa4ee43903e8fcf6101f29",
+      "mutants": [
+        {
+          "id": "SR-1 whole-artifact detector ignored",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "if (found.some(match => redaction.wholeArtifactDetectors.includes(match.detectorId)))",
+          "new": "if (false && found.some(match => redaction.wholeArtifactDetectors.includes(match.detectorId)))",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation"
+          ]
+        },
+        {
+          "id": "SR-2 fragment only at the body start",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "redaction.wholeArtifactFragments.some(fragment => body.includes(fragment))",
+          "new": "redaction.wholeArtifactFragments.some(fragment => body.startsWith(fragment))",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 20 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > compares each fragment anywhere in the body, mid-line included (round-4 note 5)"
+          ]
+        },
+        {
+          "id": "SR-3 line pattern once over the body (no m flag)",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "lines.some(line => redaction.wholeArtifactLinePattern.test(withoutTerminator(line)))",
+          "new": "redaction.wholeArtifactLinePattern.test(body)",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > applies the line pattern to each line, not to the body: a six-dash header on line 3 excludes the body (round-4 note 5)"
+          ]
+        },
+        {
+          "id": "SR-4 class gate dropped",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "contentClass === undefined || !redaction.redactedClasses.includes(contentClass)",
+          "new": "contentClass === undefined",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > excludes every whole-file fixture whole: code content, an unclassified path and a nested README"
+          ]
+        },
+        {
+          "id": "SR-5 guard lines dropped",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "let n = first - redaction.guardLines; n <= last + redaction.guardLines; n++",
+          "new": "let n = first; n <= last; n++",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 20 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > keeps every non-withheld line byte for byte and empties each withheld line, keeping its terminator"
+          ]
+        },
+        {
+          "id": "SR-6 retained-text re-screen dropped",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "if (matcher(retained, 0).length > 0)",
+          "new": "if (false)",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation"
+          ]
+        },
+        {
+          "id": "SR-7 regex matches non-overlapping (skip past each match)",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "if (match !== null) out.push({ detectorId: detector.id, start: match.index, end: match.index + match[0].length });",
+          "new": "if (match !== null) { out.push({ detectorId: detector.id, start: match.index, end: match.index + match[0].length }); at = match.index + match[0].length - 1; }",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation"
+          ]
+        },
+        {
+          "id": "SR-8 literal matches non-overlapping",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "at = text.indexOf(value, at + 1)",
+          "new": "at = text.indexOf(value, at + value.length)",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "      Tests  22 passed (22)"
+          ]
+        },
+        {
+          "id": "SR-9 a match placed on its first line only",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "lineOf(match.end - 1)",
+          "new": "lineOf(match.start)",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > withholds exactly the oracle's lines for every body fixture, as project documentation"
+          ]
+        },
+        {
+          "id": "SR-10 text pins unchecked",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "sha256(value) !== REDACTION_TEXTS[key]",
+          "new": "false",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 19 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > readSecretRedaction refuses what it does not implement > refuses an edited rule text",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > readSecretRedaction refuses what it does not implement > refuses an edited cited-span rule",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > readSecretRedaction refuses what it does not implement > refuses another line pattern"
+          ]
+        },
+        {
+          "id": "SR-11 span touch excludes its first line",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "line >= startLine && line <= endLine",
+          "new": "line > startLine && line <= endLine",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > secretRedaction (policy version 4): the builder fixtures through the TypeScript reading > marks one marker per run of withheld lines, naming the total"
+          ]
+        },
+        {
+          "id": "SR-12 guard lower bound unchecked",
+          "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+          "fileSha256AtCommit": "c7355ccc1035ec469296b7b82e13aaeac634cafa463d339d905da1e54b005329",
+          "old": "guard < 1 || guard > MAX_GUARD_LINES",
+          "new": "guard > MAX_GUARD_LINES",
+          "command": "npx vitest run --project @syzygy/polaris-generation-core packages/polaris-generation-core/src/secret-redaction.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 21 passed (22)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/secret-redaction.test.ts > readSecretRedaction refuses what it does not implement > refuses a zero guard"
+          ]
+        },
+        {
+          "id": "PR-1 v4 act title is version 3",
+          "file": "packages/polaris-generation-consent/src/package-reader.ts",
+          "fileSha256AtCommit": "ebf5cbf468fd442289e11e390c9a7e3b20c39bdcd02e1a6214d096a52d0e3dc3",
+          "old": "title: '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 4)'",
+          "new": "title: '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope, version 3)'",
+          "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/package-reader.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 290 passed (293)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > puts version 4 in force from its instant over versions 3, 2 and 1, in both views",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > leaves version 3 in force before version 4's instant, and never brings it back after",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > refuses a version 4 record titled as version 3"
+          ]
+        },
+        {
+          "id": "PR-2 v4 act identity form",
+          "file": "packages/polaris-generation-consent/src/package-reader.ts",
+          "fileSha256AtCommit": "ebf5cbf468fd442289e11e390c9a7e3b20c39bdcd02e1a6214d096a52d0e3dc3",
+          "old": "SCOPE-V4-APPROVAL-${date}",
+          "new": "SCOPE-V3-APPROVAL-${date}",
+          "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/package-reader.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 290 passed (293)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > puts version 4 in force from its instant over versions 3, 2 and 1, in both views",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > leaves version 3 in force before version 4's instant, and never brings it back after",
+            " FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > screening scope version 4 policy act > refuses a version 4 record with version 3's identity"
+          ]
+        },
+        {
+          "id": "OAR-1 explicit selection only by \"selected\"",
+          "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+          "fileSha256AtCommit": "7306c43845369f7140cbb4cc24dbad178fbb993a2750827e4a2dea42371924af",
+          "old": "explicitly (?:selected|given by the owner's words)",
+          "new": "explicitly (?:selected)",
+          "command": "npx vitest run --project @syzygy/three-surface-poc-core packages/three-surface-poc-core/src/owner-act-record.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 11 passed (12)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/owner-act-record.test.ts > parseOwnerActRecord > reads the v4 recorder's trailer form exactly: explicitly given by the owner's words recorded below"
+          ]
+        },
+        {
+          "id": "SCR-1 dossier screen ignores a whole exclusion",
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "fileSha256AtCommit": "2a1a9a4189ea833703bb0004ca5988195f2608980e88beaaa328804aa406325e",
+          "old": "if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };",
+          "new": "",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 140 passed (142)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > withholds the oracle's lines for every builder body fixture, as README.md, in both screens",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > excludes every builder whole-file fixture whole at its own path, in both screens"
+          ]
+        },
+        {
+          "id": "SCR-2 dossier active scan over the retained text",
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "fileSha256AtCommit": "2a1a9a4189ea833703bb0004ca5988195f2608980e88beaaa328804aa406325e",
+          "old": "if (active(body, repositoryPath))",
+          "new": "if (active(redacted.kind === 'redacted' ? redacted.retained : body, repositoryPath))",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "      Tests  142 passed (142)"
+          ]
+        },
+        {
+          "id": "SCR-3 dossier screen accepts an unreadable redaction",
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "fileSha256AtCommit": "2a1a9a4189ea833703bb0004ca5988195f2608980e88beaaa328804aa406325e",
+          "old": "if (!redactionRead.ok) return refuse(redactionRead.why);\n  const redaction = redactionRead.redaction;",
+          "new": "const redaction = redactionRead.ok ? redactionRead.redaction : null;",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 139 passed (142)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has another rule text, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has a line pattern anchored to the body, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has an extra field, as the app does"
+          ]
+        },
+        {
+          "id": "SCR-4 app screen ignores a whole exclusion",
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "fileSha256AtCommit": "0b251ecd7ddce34a465ec3e967213de0280604a9411361db2e176fc13b1ec144",
+          "old": "if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };",
+          "new": "",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 140 passed (142)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > withholds the oracle's lines for every builder body fixture, as README.md, in both screens",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > excludes every builder whole-file fixture whole at its own path, in both screens"
+          ]
+        },
+        {
+          "id": "SCR-5 app active scan over the retained text",
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "fileSha256AtCommit": "0b251ecd7ddce34a465ec3e967213de0280604a9411361db2e176fc13b1ec144",
+          "old": "if (active(body, path))",
+          "new": "if (active(redacted.kind === 'redacted' ? redacted.retained : body, path))",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "      Tests  142 passed (142)"
+          ]
+        },
+        {
+          "id": "SCR-6 app screen accepts an unreadable redaction",
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "fileSha256AtCommit": "0b251ecd7ddce34a465ec3e967213de0280604a9411361db2e176fc13b1ec144",
+          "old": "if (!redactionRead.ok) refuse(`policy ${redactionRead.why.replace(/^its /u, '')}`);",
+          "new": "",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 140 passed (143)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has another rule text, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has a line pattern anchored to the body, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has an extra field, as the app does"
+          ]
+        },
+        {
+          "id": "REV-1 review ignores a span touching a withheld line",
+          "file": "packages/polaris-dossier/src/review.ts",
+          "fileSha256AtCommit": "6652830f25d5e1ab76080b534b85b2f5a6c671ad820c0bd3a4685f11fef48ef8",
+          "old": "spanTouchesWithheld(withheld, span.startLine, span.endLine) || ",
+          "new": "",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > the fidelity packet over a body retained as redacted-span > withholds a span that includes a withheld line whole, carrying no byte of it"
+          ]
+        },
+        {
+          "id": "REV-2 review skips the span-text re-screen",
+          "file": "packages/polaris-dossier/src/review.ts",
+          "fileSha256AtCommit": "6652830f25d5e1ab76080b534b85b2f5a6c671ad820c0bd3a4685f11fef48ef8",
+          "old": " || screen.screenBody(spanText) === 'secret-detector-match'",
+          "new": "",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "      Tests  1116 passed | 1 skipped (1117)"
+          ]
+        },
+        {
+          "id": "CHK-1 check ignores a quotation touching a withheld line",
+          "file": "packages/polaris-dossier/src/check.ts",
+          "fileSha256AtCommit": "d4acaa1d94af175e57bb6be3d115983689572f15f25efec9075299139c5e7579",
+          "old": "if (state.withheld !== undefined && spanTouchesWithheld(",
+          "new": "if (false && spanTouchesWithheld(",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 1114 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/check.test.ts > check: a quotation from a body retained as redacted-span > renders a quotation from a withheld guard line Unknown (excluded-content), with no finding",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > the fidelity packet over a body retained as redacted-span > withholds a span that includes a withheld line whole, carrying no byte of it"
+          ]
+        },
+        {
+          "id": "CHK-2 check drops the cited blob redaction",
+          "file": "packages/polaris-dossier/src/check.ts",
+          "fileSha256AtCommit": "d4acaa1d94af175e57bb6be3d115983689572f15f25efec9075299139c5e7579",
+          "old": "{ redaction: { redactionClass: 'redacted-span', withheldLines: state.withheld.length } }",
+          "new": "{}",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/check.test.ts > check: a quotation from a body retained as redacted-span > verifies a quotation from a line no match or guard touches, and records the redaction count, not the lines"
+          ]
+        },
+        {
+          "id": "RND-1 render admits a redacted body",
+          "file": "packages/polaris-dossier/src/render.ts",
+          "fileSha256AtCommit": "d7503810a0fc714d88f4f605831fbd674a8226be4c4c1d509b0b916675da0544",
+          "old": "!withheldClass.has(repositoryPath) && !redacted.has(repositoryPath)));",
+          "new": "!withheldClass.has(repositoryPath)));",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > render > draws no byte of a body retained as redacted-span, and names its redaction on the discovery page"
+          ]
+        },
+        {
+          "id": "RND-2 render shows quotations from a redacted body",
+          "file": "packages/polaris-dossier/src/render.ts",
+          "fileSha256AtCommit": "d7503810a0fc714d88f4f605831fbd674a8226be4c4c1d509b0b916675da0544",
+          "old": "!withheldClass.has(quotation.path) && redacted.has(quotation.path)).map",
+          "new": "false).map",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > render > draws no byte of a body retained as redacted-span, and names its redaction on the discovery page"
+          ]
+        },
+        {
+          "id": "INS-1 installer leaves the v3 manifest gate",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "481c4c6db3cf95d56b532785d87e7d049b5581494225b8722d4570ada6c7abfe",
+          "old": "    text = text.replace(V3_MANIFEST_GATE_OLD, V3_MANIFEST_GATE_NEW, 1)\n    return add_exemptions(text, V4_EXEMPTION)",
+          "new": "    return add_exemptions(text, V4_EXEMPTION)",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "FAIL chain edits: one version-4 row, one version-3 variant-row offering, the version-3 manifest gated, one exemption",
+            "FAIL chain edits: the version 1 to 4 edits apply and are valid Python",
+            "selftest: 119 of 121 predicates held"
+          ]
+        },
+        {
+          "id": "INS-2 installer accepts a partial v4 install",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "481c4c6db3cf95d56b532785d87e7d049b5581494225b8722d4570ada6c7abfe",
+          "old": "    if any(present):\n",
+          "new": "    if False:\n",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "selftest: 125 of 125 predicates held"
+          ]
+        },
+        {
+          "id": "INS-3 installer reads no v4 act",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "481c4c6db3cf95d56b532785d87e7d049b5581494225b8722d4570ada6c7abfe",
+          "old": ",\n                                           (\"v4\", V4_ACT, V4_SCRIPT, V4_MANIFEST, 4)):",
+          "new": "):",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": []
+        },
+        {
+          "id": "INS-4 installer accepts two owner-word lines",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "481c4c6db3cf95d56b532785d87e7d049b5581494225b8722d4570ada6c7abfe",
+          "old": "    if len(words) != 1:\n        raise Refusal(f\"the version-4 act record",
+          "new": "    if len(words) < 1:\n        raise Refusal(f\"the version-4 act record",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "FAIL battery line for version 4 refuses a record with two owner-word lines",
+            "selftest: 124 of 125 predicates held"
+          ]
+        },
+        {
+          "id": "INS-5 installer quotes no v3 argument check",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "481c4c6db3cf95d56b532785d87e7d049b5581494225b8722d4570ada6c7abfe",
+          "old": "        if f'{V4_CHAIN_ROW}     \"{v3_arg}\"),\\n' not in text:",
+          "new": "        if False:",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "FAIL chain edits: an installed version-4 row quoting another argument is refused",
+            "selftest: 124 of 125 predicates held"
+          ]
+        }
+      ],
+      "note": "tree clean at start; packages/polaris-dossier/src/screen.test.ts was edited during this run (after SCR-5 began), so the outcomes of SCR-6 and every later TypeScript mutant here ran against an uncommitted test file and are superseded by run 2; SCR-1..SCR-5 and every earlier mutant ran on the committed tree"
+    },
+    {
+      "commit": "369025ac5acd978cb0cfbb1be89421c39a1e8511",
+      "treeCleanAfter": true,
+      "mutants": [
+        {
+          "id": "SCR-2 dossier active scan over the retained text",
+          "file": "packages/polaris-dossier/src/screen.ts",
+          "fileSha256AtCommit": "2a1a9a4189ea833703bb0004ca5988195f2608980e88beaaa328804aa406325e",
+          "old": "if (active(body, repositoryPath))",
+          "new": "if (active(redacted.kind === 'redacted' ? redacted.retained : body, repositoryPath))",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 142 passed (143)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > runs the active-content scan over the withheld lines too: active content only on a matched line excludes the body whole"
+          ]
+        },
+        {
+          "id": "SCR-5 app active scan over the retained text",
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "fileSha256AtCommit": "0b251ecd7ddce34a465ec3e967213de0280604a9411361db2e176fc13b1ec144",
+          "old": "if (active(body, path))",
+          "new": "if (active(redacted.kind === 'redacted' ? redacted.retained : body, path))",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 142 passed (143)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > runs the active-content scan over the withheld lines too: active content only on a matched line excludes the body whole"
+          ]
+        },
+        {
+          "id": "SCR-6 app screen accepts an unreadable redaction",
+          "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+          "fileSha256AtCommit": "0b251ecd7ddce34a465ec3e967213de0280604a9411361db2e176fc13b1ec144",
+          "old": "if (!redactionRead.ok) refuse(`policy ${redactionRead.why.replace(/^its /u, '')}`);",
+          "new": "",
+          "command": "npx vitest run packages/polaris-dossier/src/screen.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  3 failed | 140 passed (143)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has another rule text, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has a line pattern anchored to the body, as the app does",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the secret redaction of screening scope version 4 > refuses a policy whose redaction has an extra field, as the app does"
+          ]
+        },
+        {
+          "id": "REV-1 review ignores a span touching a withheld line",
+          "file": "packages/polaris-dossier/src/review.ts",
+          "fileSha256AtCommit": "6652830f25d5e1ab76080b534b85b2f5a6c671ad820c0bd3a4685f11fef48ef8",
+          "old": "spanTouchesWithheld(withheld, span.startLine, span.endLine) || ",
+          "new": "",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > the fidelity packet over a body retained as redacted-span > withholds a span that includes a withheld line whole, carrying no byte of it"
+          ]
+        },
+        {
+          "id": "REV-2 review skips the span-text re-screen",
+          "file": "packages/polaris-dossier/src/review.ts",
+          "fileSha256AtCommit": "6652830f25d5e1ab76080b534b85b2f5a6c671ad820c0bd3a4685f11fef48ef8",
+          "old": " || screen.screenBody(spanText) === 'secret-detector-match'",
+          "new": "",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 0,
+          "outcome": "survived",
+          "testOutput": [
+            "      Tests  1116 passed | 1 skipped (1117)"
+          ]
+        },
+        {
+          "id": "CHK-1 check ignores a quotation touching a withheld line",
+          "file": "packages/polaris-dossier/src/check.ts",
+          "fileSha256AtCommit": "d4acaa1d94af175e57bb6be3d115983689572f15f25efec9075299139c5e7579",
+          "old": "if (state.withheld !== undefined && spanTouchesWithheld(",
+          "new": "if (false && spanTouchesWithheld(",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  2 failed | 1114 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/check.test.ts > check: a quotation from a body retained as redacted-span > renders a quotation from a withheld guard line Unknown (excluded-content), with no finding",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > the fidelity packet over a body retained as redacted-span > withholds a span that includes a withheld line whole, carrying no byte of it"
+          ]
+        },
+        {
+          "id": "CHK-2 check drops the cited blob redaction",
+          "file": "packages/polaris-dossier/src/check.ts",
+          "fileSha256AtCommit": "d4acaa1d94af175e57bb6be3d115983689572f15f25efec9075299139c5e7579",
+          "old": "{ redaction: { redactionClass: 'redacted-span', withheldLines: state.withheld.length } }",
+          "new": "{}",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/check.test.ts > check: a quotation from a body retained as redacted-span > verifies a quotation from a line no match or guard touches, and records the redaction count, not the lines"
+          ]
+        },
+        {
+          "id": "RND-1 render admits a redacted body",
+          "file": "packages/polaris-dossier/src/render.ts",
+          "fileSha256AtCommit": "d7503810a0fc714d88f4f605831fbd674a8226be4c4c1d509b0b916675da0544",
+          "old": "!withheldClass.has(repositoryPath) && !redacted.has(repositoryPath)));",
+          "new": "!withheldClass.has(repositoryPath)));",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > render > draws no byte of a body retained as redacted-span, and names its redaction on the discovery page"
+          ]
+        },
+        {
+          "id": "RND-2 render shows quotations from a redacted body",
+          "file": "packages/polaris-dossier/src/render.ts",
+          "fileSha256AtCommit": "d7503810a0fc714d88f4f605831fbd674a8226be4c4c1d509b0b916675da0544",
+          "old": "!withheldClass.has(quotation.path) && redacted.has(quotation.path)).map",
+          "new": "false).map",
+          "command": "npx vitest run --project @syzygy/polaris-dossier",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "      Tests  1 failed | 1115 passed | 1 skipped (1117)",
+            "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+            " FAIL  |@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > render > draws no byte of a body retained as redacted-span, and names its redaction on the discovery page"
+          ]
+        },
+        {
+          "id": "INS-2 installer accepts a partial v4 install",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "3344c3f1e30ec925fea1db064d0caa83d639b4b6f55efee35350062b7e869682",
+          "old": "    if any(present):\n",
+          "new": "    if False:\n",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": [
+            "FAIL chain edits: a partial version-4 install (the chain row alone) is refused",
+            "selftest: 125 of 126 predicates held"
+          ]
+        },
+        {
+          "id": "INS-3 installer reads no v4 act",
+          "file": "scripts/install_redis_sitting.py",
+          "fileSha256AtCommit": "3344c3f1e30ec925fea1db064d0caa83d639b4b6f55efee35350062b7e869682",
+          "old": ",\n                                           (\"v4\", V4_ACT, V4_SCRIPT, V4_MANIFEST, 4)):",
+          "new": "):",
+          "command": "python3 scripts/install_redis_sitting.py --selftest",
+          "exit": 1,
+          "outcome": "killed",
+          "testOutput": []
+        }
+      ],
+      "note": "the run-1 survivors SCR-2, SCR-5 and INS-2 after one added test and one added predicate (commit 369025ac), plus every run-1 mutant that ran against the edited test file"
+    }
+  ],
+  "killedFinal": "30 of 32 killed; survivors ['REV-2 review skips the span-text re-screen', 'SR-8 literal matches non-overlapping'], both argued equivalent below",
+  "equivalent": [
+    {
+      "id": "SR-8",
+      "reason": "the policy's one literal-fragment detector (private-key-material) is a wholeArtifactDetector, so any literal match excludes the body whole whichever matches are found; its values contain no line terminator, so a skipped overlapping match lies on a line an earlier match already touches. No body distinguishes the mutant under the approved bytes. [Inferred]"
+    },
+    {
+      "id": "REV-2",
+      "reason": "redactBody already excludes a body whole when any detector, from every offset, matches its retained text; a span is a substring of that text, and screenBody's first-match detectors find nothing the every-offset matcher misses, so the span re-screen is defence in depth that no input reaches. [Inferred]"
+    }
+  ],
+  "exitWithoutFailLine": [
+    {
+      "id": "INS-3",
+      "reason": "selftest raised an uncaught Refusal (\"the policy on disk does not hash to the final policy act's argument (v3)\"): killed by a crash, not by a named predicate"
+    }
+  ],
+  "finalOutcomes": {
+    "SR-1 whole-artifact detector ignored": "killed",
+    "SR-2 fragment only at the body start": "killed",
+    "SR-3 line pattern once over the body (no m flag)": "killed",
+    "SR-4 class gate dropped": "killed",
+    "SR-5 guard lines dropped": "killed",
+    "SR-6 retained-text re-screen dropped": "killed",
+    "SR-7 regex matches non-overlapping (skip past each match)": "killed",
+    "SR-8 literal matches non-overlapping": "survived",
+    "SR-9 a match placed on its first line only": "killed",
+    "SR-10 text pins unchecked": "killed",
+    "SR-11 span touch excludes its first line": "killed",
+    "SR-12 guard lower bound unchecked": "killed",
+    "PR-1 v4 act title is version 3": "killed",
+    "PR-2 v4 act identity form": "killed",
+    "OAR-1 explicit selection only by \"selected\"": "killed",
+    "SCR-1 dossier screen ignores a whole exclusion": "killed",
+    "SCR-3 dossier screen accepts an unreadable redaction": "killed",
+    "SCR-4 app screen ignores a whole exclusion": "killed",
+    "INS-1 installer leaves the v3 manifest gate": "killed",
+    "INS-4 installer accepts two owner-word lines": "killed",
+    "INS-5 installer quotes no v3 argument check": "killed",
+    "SCR-2 dossier active scan over the retained text": "killed",
+    "SCR-5 app active scan over the retained text": "killed",
+    "SCR-6 app screen accepts an unreadable redaction": "killed",
+    "REV-1 review ignores a span touching a withheld line": "killed",
+    "REV-2 review skips the span-text re-screen": "survived",
+    "CHK-1 check ignores a quotation touching a withheld line": "killed",
+    "CHK-2 check drops the cited blob redaction": "killed",
+    "RND-1 render admits a redacted body": "killed",
+    "RND-2 render shows quotations from a redacted body": "killed",
+    "INS-2 installer accepts a partial v4 install": "killed",
+    "INS-3 installer reads no v4 act": "killed"
+  }
+}
