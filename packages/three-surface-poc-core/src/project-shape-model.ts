@@ -96,12 +96,7 @@ export const UNKNOWN_REASON_ROUTES: Readonly<Record<UnknownReason, string>> = {
   'excluded-content': 'Policy change by the owner, or accept the exclusion',
   'contradicted-pending-adjudication': 'Owner adjudication',
   'challenge-suspended': 'Challenge resolution',
-  // RFC2-24's literal, because POC-REQ-014's oracle reads this one route
-  // from RFC2-24 (P-100); the other rows keep their short phrases. From
-  // `RFC-0002/rendering-vocabularies.md:139`: "| 10 |
-  // `source-uncaptured-or-unreachable` | ... | Repair the observer/source;
-  // new snapshot |".
-  'source-uncaptured-or-unreachable': 'Repair the observer/source; new snapshot',
+  'source-uncaptured-or-unreachable': 'Repair the observer or source; new snapshot',
   'reference-unresolvable': 'Repair the reference, owned by the governed project',
   'execution-blocked': 'Unblock or authorize the run, then capture in a new snapshot',
 };
