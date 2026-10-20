@@ -19,14 +19,17 @@ import type { PublicSourceContentClass } from './public-source-classification.js
  *   any line matching the line pattern, a class outside `redactedClasses` (code-content included), a match that cannot be placed on
  *   lines (zero length), or more than `MAX_MATCHES` matches: excluded whole, as before;
  * - otherwise each line a match touches, and `guardLines` lines before and after it, is withheld; the retained text is the body with
- *   each withheld line emptied but its terminator kept (so line numbers do not move); every detector runs again over it, and any match
+ *   each withheld line emptied but its terminator kept; the original line array carries line identity, even where emptying a line
+ *   brings a CR next to an LF from a different line. Every detector runs again over the joined retained text, and any match
  *   excludes the body whole.
  *
  * Lines are split at LF, CRLF or CR, and a final terminator opens no line, as the generator counts lines (`lineCount`).
  *
- * Resource bound [Inferred]: the every-offset scan makes the same per-offset attempts a whole-body search makes on a body that does not
- * match, so it adds no worst case the version-3 screens did not already have; `MAX_MATCHES` bounds the match set, and a body past it is
- * excluded whole. Not repaired here (the policy's own residuals): a secret no detector matches, beyond the guard lines or continuing past
+ * Resource bounds: the ordinary first-match scan decides clean bodies and classes that cannot redact before any every-offset work.
+ * Whole-artifact checks also precede that work. The overlapping scan stops at `MAX_MATCHES` or when summed match lengths exceed eight
+ * times the body length; a breach excludes whole. This bounds repeated successful scans of long suffixes, rather than just their count.
+ * Individual regular-expression searches retain the declared detectors' costs. Not repaired here (the policy's own residuals):
+ * a secret no detector matches, beyond the guard lines or continuing past
  * them, is admitted; the whole body's digest and object id stay recorded and can check a guess at a short withheld line. */
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
@@ -48,6 +51,7 @@ const REDACTION_KEYS = ['appliesTo', 'redactedClasses', 'redactionClass', 'whole
 const KNOWN_CLASSES: readonly PublicSourceContentClass[] = ['project-documentation', 'code-content'];
 /** More matches than this excludes the body whole: the match set is held in memory and each match is placed on lines. */
 export const MAX_MATCHES = 10_000;
+const MAX_MATCH_LENGTH_MULTIPLE = 8;
 const MAX_GUARD_LINES = 100;
 
 export interface SecretRedaction {
@@ -98,35 +102,69 @@ export type RedactionDetector =
   | { readonly id: string; readonly kind: 'literal-fragment'; readonly values: readonly string[] }
   | { readonly id: string; readonly kind: 'regular-expression'; readonly pattern: string; readonly flags: string };
 export interface DetectorMatch { readonly detectorId: string; readonly start: number; readonly end: number }
-/** A compiled every-offset matcher; `limit` stops the scan once more than that many matches are found. */
-export type EveryOffsetMatcher = (text: string, limit: number) => readonly DetectorMatch[];
+export interface EveryOffsetMatcher {
+  /** Ordinary first-match search, optionally restricted to the named detectors. */
+  readonly first: (text: string, detectorIds?: readonly string[]) => DetectorMatch | undefined;
+  /** Every starting offset, bounded by both match count and summed match lengths. */
+  readonly all: (text: string, limit: number) => { readonly matches: readonly DetectorMatch[]; readonly limited: boolean };
+}
 
 /** Compiles the policy's detectors for every match from every start offset. Throws on a detector the policy's own compiler would also
  * refuse (the screens compile the same list with `compileDetectors` first). */
 export function compileEveryOffsetMatcher(detectors: readonly RedactionDetector[]): EveryOffsetMatcher {
-  const each = detectors.map((detector): ((text: string, out: DetectorMatch[], limit: number) => void) => {
+  const each = detectors.map(detector => {
     if (detector.kind === 'literal-fragment') {
       const values = [...detector.values];
-      return (text, out, limit) => {
-        for (const value of values) {
-          for (let at = text.indexOf(value); at !== -1 && out.length <= limit; at = text.indexOf(value, at + 1)) out.push({ detectorId: detector.id, start: at, end: at + value.length });
-        }
+      return { id: detector.id,
+        first: (text: string): DetectorMatch | undefined => {
+          for (const value of values) { const start = text.indexOf(value); if (start !== -1) return { detectorId: detector.id, start, end: start + value.length }; }
+          return undefined;
+        },
+        all: (text: string, take: (match: DetectorMatch) => boolean): void => {
+          for (const value of values) for (let at = text.indexOf(value); at !== -1; at = text.indexOf(value, at + 1)) {
+            if (!take({ detectorId: detector.id, start: at, end: at + value.length })) return;
+          }
+        },
       };
     }
     // Sticky, without the global flag: `exec` then matches only at `lastIndex`, which is every offset in turn.
-    const sticky = new RegExp(detector.pattern, `${detector.flags.replace(/[gy]/gu, '')}y`);
-    return (text, out, limit) => {
-      for (let at = 0; at < text.length && out.length <= limit; at++) {
-        sticky.lastIndex = at;
-        const match = sticky.exec(text);
-        if (match !== null) out.push({ detectorId: detector.id, start: match.index, end: match.index + match[0].length });
-      }
+    const flags = detector.flags.replace(/[gy]/gu, '');
+    const search = new RegExp(detector.pattern, flags), sticky = new RegExp(detector.pattern, `${flags}y`);
+    return { id: detector.id,
+      first: (text: string): DetectorMatch | undefined => {
+        const match = search.exec(text);
+        return match === null ? undefined : { detectorId: detector.id, start: match.index, end: match.index + match[0].length };
+      },
+      all: (text: string, take: (match: DetectorMatch) => boolean): void => {
+        for (let at = 0; at < text.length; at++) {
+          sticky.lastIndex = at;
+          const match = sticky.exec(text);
+          if (match !== null && !take({ detectorId: detector.id, start: match.index, end: match.index + match[0].length })) return;
+        }
+      },
     };
   });
-  return (text, limit) => {
-    const out: DetectorMatch[] = [];
-    for (const run of each) { run(text, out, limit); if (out.length > limit) break; }
-    return out;
+  return {
+    first: (text, detectorIds) => {
+      for (const detector of each) {
+        if (detectorIds !== undefined && !detectorIds.includes(detector.id)) continue;
+        const match = detector.first(text);
+        if (match !== undefined) return match;
+      }
+      return undefined;
+    },
+    all: (text, limit) => {
+      const matches: DetectorMatch[] = [];
+      let matchedLength = 0, limited = false;
+      const take = (match: DetectorMatch): boolean => {
+        matches.push(match);
+        matchedLength += match.end - match.start;
+        limited = matches.length > limit || matchedLength > MAX_MATCH_LENGTH_MULTIPLE * text.length;
+        return !limited;
+      };
+      for (const detector of each) { detector.all(text, take); if (limited) break; }
+      return { matches, limited };
+    },
   };
 }
 
@@ -155,19 +193,20 @@ export type RedactionOutcome =
   | { readonly kind: 'excluded'; readonly cause: WholeExclusionCause }
   /** Retained as redacted-span: `withheld` are the 1-based withheld line numbers, ascending; `retained` is the body with each withheld
    * line emptied and its terminator kept; `detectorIds` are the ids of the detectors that matched, in policy order. */
-  | { readonly kind: 'redacted'; readonly withheld: readonly number[]; readonly retained: string; readonly detectorIds: readonly string[] };
+  | { readonly kind: 'redacted'; readonly withheld: readonly number[]; readonly retained: string; readonly retainedLines: readonly string[];
+      readonly lineByteOffsets: readonly number[]; readonly originalBytes: number; readonly detectorIds: readonly string[] };
 
 /** The rule over one body admitted under `contentClass`. `redaction` null (versions 1 to 3) excludes every matching body whole. */
 export function redactBody(body: string, contentClass: PublicSourceContentClass | undefined, matcher: EveryOffsetMatcher, redaction: SecretRedaction | null): RedactionOutcome {
-  const found = matcher(body, MAX_MATCHES);
-  if (found.length === 0) return { kind: 'clean' };
+  if (matcher.first(body) === undefined) return { kind: 'clean' };
   if (redaction === null) return { kind: 'excluded', cause: 'no-redaction-rule' };
-  if (found.length > MAX_MATCHES) return { kind: 'excluded', cause: 'match-limit' };
-  if (found.some(match => redaction.wholeArtifactDetectors.includes(match.detectorId))) return { kind: 'excluded', cause: 'whole-artifact-detector' };
-  if (redaction.wholeArtifactFragments.some(fragment => body.includes(fragment))) return { kind: 'excluded', cause: 'key-header-fragment' };
   if (contentClass === undefined || !redaction.redactedClasses.includes(contentClass)) return { kind: 'excluded', cause: 'class-not-redacted' };
+  if (matcher.first(body, redaction.wholeArtifactDetectors) !== undefined) return { kind: 'excluded', cause: 'whole-artifact-detector' };
+  if (redaction.wholeArtifactFragments.some(fragment => body.includes(fragment))) return { kind: 'excluded', cause: 'key-header-fragment' };
   const lines = bodyLines(body);
   if (lines.some(line => redaction.wholeArtifactLinePattern.test(withoutTerminator(line)))) return { kind: 'excluded', cause: 'key-header-line' };
+  const scan = matcher.all(body, MAX_MATCHES), found = scan.matches;
+  if (scan.limited) return { kind: 'excluded', cause: 'match-limit' };
   if (found.some(match => match.end <= match.start)) return { kind: 'excluded', cause: 'unplaceable-match' };
   const starts: number[] = [];
   let at = 0;
@@ -183,10 +222,14 @@ export function redactBody(body: string, contentClass: PublicSourceContentClass 
     const first = lineOf(match.start), last = lineOf(match.end - 1);
     for (let n = first - redaction.guardLines; n <= last + redaction.guardLines; n++) if (n >= 1 && n <= lines.length) held.add(n);
   }
-  const retained = lines.map((line, i) => (held.has(i + 1) ? line.slice(withoutTerminator(line).length) : line)).join('');
-  if (matcher(retained, 0).length > 0) return { kind: 'excluded', cause: 'retained-text-matches' };
+  const retainedLines = Object.freeze(lines.map((line, i) => (held.has(i + 1) ? line.slice(withoutTerminator(line).length) : line)));
+  const retained = retainedLines.join('');
+  if (matcher.first(retained) !== undefined) return { kind: 'excluded', cause: 'retained-text-matches' };
   const ids = [...new Set(found.map(match => match.detectorId))];
-  return { kind: 'redacted', withheld: Object.freeze([...held].sort((a, b) => a - b)), retained, detectorIds: Object.freeze(ids) };
+  let byte = 0;
+  const lineByteOffsets = Object.freeze(lines.map(line => { const start = byte; byte += Buffer.byteLength(line, 'utf8'); return start; }));
+  return { kind: 'redacted', withheld: Object.freeze([...held].sort((a, b) => a - b)), retained, retainedLines, lineByteOffsets,
+    originalBytes: byte, detectorIds: Object.freeze(ids) };
 }
 
 /** Whether the inclusive 1-based line range `[startLine, endLine]` includes a withheld line: such a span is withheld whole. */
@@ -200,8 +243,8 @@ export const redactionMarker = (total: number): string => `[redacted-span: ${tot
 
 /** The retained body as it may be shown or carried: each run of consecutive withheld lines becomes one marker line (with the run's
  * last terminator, or none at the end of a body without one). */
-export function retainedWithMarkers(retained: string, withheld: readonly number[]): string {
-  const lines = bodyLines(retained), held = new Set(withheld), marker = redactionMarker(withheld.length);
+export function retainedWithMarkers(lines: readonly string[], withheld: readonly number[]): string {
+  const held = new Set(withheld), marker = redactionMarker(withheld.length);
   const out: string[] = [];
   for (let i = 0; i < lines.length; i++) {
     if (!held.has(i + 1)) { out.push(lines[i]!); continue; }

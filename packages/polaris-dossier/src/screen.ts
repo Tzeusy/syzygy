@@ -63,7 +63,8 @@ export interface DossierScreen {
  * lines, is carried; `withheld` are their 1-based numbers, ascending), or excluded whole for `outcome`. */
 export type TargetBodyScreen =
   | { readonly kind: 'admitted' }
-  | { readonly kind: 'redacted'; readonly retained: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+  | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly lineByteOffsets: readonly number[];
+      readonly originalBytes: number; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
   | { readonly kind: 'excluded'; readonly outcome: ScreenExclusion };
 
 export type ScreenLoad = { readonly ok: true; readonly screen: DossierScreen } | { readonly ok: false; readonly why: string };
@@ -117,7 +118,7 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
     const redacted = redactBody(body, contentClass(repositoryPath), everyOffset, redaction);
     if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };
     if (active(body, repositoryPath)) return { kind: 'excluded', outcome: 'active-content' };
-    return redacted.kind === 'clean' ? { kind: 'admitted' } : { kind: 'redacted', retained: redacted.retained, withheld: redacted.withheld, detectorIds: redacted.detectorIds };
+    return redacted.kind === 'clean' ? { kind: 'admitted' } : redacted;
   };
   return {
     ok: true,

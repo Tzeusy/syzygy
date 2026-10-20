@@ -79,8 +79,25 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
   it('keeps every non-withheld line byte for byte and empties each withheld line, keeping its terminator', () => {
     const body = `a\r\nb\r\nc ${TOKEN}\r\nd\r\ne\r\n`;
     const got = redactBody(body, 'project-documentation', matcher, redaction);
-    expect(got).toEqual({ kind: 'redacted', withheld: [2, 3, 4], retained: 'a\r\n\r\n\r\n\r\ne\r\n', detectorIds: ['credential-assignment'] });
+    expect(got).toEqual({ kind: 'redacted', withheld: [2, 3, 4], retained: 'a\r\n\r\n\r\n\r\ne\r\n',
+      retainedLines: ['a\r\n', '\r\n', '\r\n', '\r\n', 'e\r\n'], lineByteOffsets: [0, 3, 6, 32, 35], originalBytes: 38, detectorIds: ['credential-assignment'] });
     expect(bodyLines(got.kind === 'redacted' ? got.retained : '')).toHaveLength(bodyLines(body).length);
+    const mixed = redactBody(`a\rg\n${TOKEN}\nh\nvisible\nlast\n`, 'project-documentation', matcher, redaction);
+    expect(mixed.kind).toBe('redacted');
+    if (mixed.kind !== 'redacted') throw new Error('expected retained mixed-ending body');
+    expect(mixed.retainedLines).toEqual(['a\r', '\n', '\n', '\n', 'visible\n', 'last\n']);
+    expect(mixed.lineByteOffsets).toEqual([0, 2, 4, 27, 29, 37]);
+    expect(mixed.originalBytes).toBe(42);
+    expect(retainedWithMarkers(mixed.retainedLines, mixed.withheld)).toBe('a\r[redacted-span: 3 withheld line(s) in this file]\nvisible\nlast\n');
+  });
+
+  it.each([
+    ['overlapping long matches', 'token='.repeat(4_000)],
+    ['too many short matches', 'token=abcdefgh\n'.repeat(10_001)],
+  ])('bounds matching work and fails closed for %s', (_name, body) => {
+    expect(redactBody(body, 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'match-limit' });
+    // A class that cannot redact needs only the ordinary detector check, never the every-offset pass.
+    expect(redactBody(body, 'code-content', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'class-not-redacted' });
   });
 
   it('applies the line pattern to each line, not to the body: a six-dash header on line 3 excludes the body (round-4 note 5)', () => {
@@ -104,7 +121,7 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
   });
 
   it('marks one marker per run of withheld lines, naming the total', () => {
-    expect(retainedWithMarkers('a\n\n\nd\n\n', [2, 3, 5])).toBe('a\n[redacted-span: 3 withheld line(s) in this file]\nd\n[redacted-span: 3 withheld line(s) in this file]\n');
+    expect(retainedWithMarkers(['a\n', '\n', '\n', 'd\n', '\n'], [2, 3, 5])).toBe('a\n[redacted-span: 3 withheld line(s) in this file]\nd\n[redacted-span: 3 withheld line(s) in this file]\n');
     expect(spanTouchesWithheld([2, 3], 3, 9)).toBe(true);
     expect(spanTouchesWithheld([2, 3], 4, 9)).toBe(false);
     expect(spanTouchesWithheld([2, 3], 1, 1)).toBe(false);
