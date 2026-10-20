@@ -96,8 +96,14 @@ describe('parseOwnerActRecord', () => {
 
   it.each<[string, boolean]>([
     ["explicitly given by the owner's words recorded below", true],
+    ["explicitly selected by the owner's option selection recorded below", true],
     ['explicitly given by the recorder', false],
+    ['not explicitly selected by performing the offered state-(1) phrase', false],
     ["given by the owner's words recorded below", false],
+    ["not explicitly given by the owner's words recorded below", false],
+    ["never explicitly given by the owner's words recorded below", false],
+    ['rejected: "explicitly given by the owner\'s words recorded below"', false],
+    ["explicitly given by the owner's words recorded below, but rejected", false],
   ])('reads the v4 recorder\'s trailer form exactly: %s', (trailer, explicit) => {
     const parsed = parseOwnerActRecord(RECORD.replace('explicitly selected by performing the offered state-(1) phrase', trailer));
     expect(parsed.provenanceState).toEqual({ kind: 'present', value: { label: 'owner-adopted (bootstrap, uncorrelated)', explicitSelection: explicit } });

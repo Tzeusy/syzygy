@@ -160,6 +160,23 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.admits).toBe(true);
     expect(evaluation.authorizationMode).toBe('owner-trusted-bootstrap');
+    for (const trailer of [
+      'not explicitly selected by performing the offered state-(1) phrase',
+      "not explicitly given by the owner's words recorded below",
+      "never explicitly given by the owner's words recorded below",
+      'rejected: "explicitly given by the owner\'s words recorded below"',
+      "explicitly given by the owner's words recorded below, but rejected",
+    ]) {
+      const altered = fakeTree();
+      const record = altered.files.get(PWB_ACT_RECORDS.policy)!.replace("explicitly given by the owner's words recorded below", trailer);
+      altered.files.set(PWB_ACT_RECORDS.policy, record);
+      for (const key of altered.taggedRecords.keys()) if (key.endsWith(`:${PWB_ACT_RECORDS.policy}`)) altered.taggedRecords.set(key, record);
+      const refused = evaluateBodyReadAuthority(loaderFor(altered));
+      expect(refused.admits, trailer).toBe(false);
+      expect(refused.policy.kind === 'invalid' && refused.policy.caseId, trailer).toBe('policy:state-1-not-explicitly-selected');
+      expect(refused.consent.kind).toBe('valid');
+      expect(refused.registry.kind).toBe('valid');
+    }
   });
 
   it('classifies a missing act record with an existing tag as git-ref-only', () => {
