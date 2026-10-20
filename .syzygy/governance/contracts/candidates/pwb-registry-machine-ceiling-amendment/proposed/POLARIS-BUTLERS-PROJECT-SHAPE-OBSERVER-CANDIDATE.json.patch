@@ -1,0 +1,12 @@
+diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+--- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
++++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+@@ -268,7 +268,7 @@
+         "maxIndexDepth": 4,
+         "maxParsePassesPerSource": 16,
+         "maxHumanResponseBytes": 2097152,
+-        "maxMachineResponseBytes": 8388608,
++        "maxMachineResponseBytes": 16777216,
+         "maxBriefingResponseBytes": 20480
+       },
+       "resourceLimitSemantics": {
