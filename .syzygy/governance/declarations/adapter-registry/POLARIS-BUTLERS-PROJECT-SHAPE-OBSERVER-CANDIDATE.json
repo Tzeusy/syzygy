@@ -268,7 +268,7 @@
         "maxIndexDepth": 4,
         "maxParsePassesPerSource": 16,
         "maxHumanResponseBytes": 2097152,
-        "maxMachineResponseBytes": 8388608,
+        "maxMachineResponseBytes": 16777216,
         "maxBriefingResponseBytes": 20480
       },
       "resourceLimitSemantics": {

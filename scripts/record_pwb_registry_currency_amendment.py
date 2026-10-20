@@ -151,11 +151,10 @@ def validate_artifact(
         raise ValueError(f"artifact missing: {packet.SUBJECT.as_posix()}")
     if subject_override is not None:
         subject_bytes = subject_override
-    elif applied and packet.superseded_later():
-        # Superseded for the registry role by the 2026-10-02 behaviour-contract
-        # re-pin: the bytes this act bound are the tree with that package's
-        # patch reversed (checked there against this act's exact digest).
-        subject_bytes = packet.act_bytes()
+    elif applied and packet.superseded_later(root):
+        # Recover only the named registry history: P-114, then the re-pin.
+        # The shared helper checks each exact performed argument and patch.
+        subject_bytes = packet.act_bytes(root)
     else:
         subject_bytes = subject_path.read_bytes()
     current_sha = digest(subject_bytes)

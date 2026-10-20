@@ -54,16 +54,18 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
 // reads `governingBehaviorContract`, and the 2026-09-30 direction's bar on
 // the entry's currency and briefing fields still holds.
 // The policy act is the 2026-10-20 public-source screening-scope version 4 act, superseding the
-// 2026-10-08 version-3 act; the registry act is still its 2026-10-02 re-pin act.
+// 2026-10-08 version-3 act. The registry machine-ceiling act supersedes its
+// 2026-10-02 re-pin under OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20:
+// only that registry row, its pointers and the matching runtime ceiling change.
 export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md',
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md',
-  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
+  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md',
 };
 
 export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md',
-  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md',
+  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
 };
 
 // The one project this daemon is authorized to observe on behalf of.
@@ -107,10 +109,10 @@ function pwbSyzygyButlersExpectations(evaluationInstant: string): BodyReadAuthor
       },
       registry: {
         artifactPath: PWB_AUTHORITY_ARTIFACTS.registry,
-        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02',
+        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20',
         actType: 'adopt-registry-entry',
         phrasePrefix: 'ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY',
-        recordingTag: 'pwb-adopt-registry-entry-signed-2026-10-02',
+        recordingTag: 'pwb-registry-machine-ceiling-amendment-v1.0',
         scopeAnchors: [
           'polaris-butlers-project-shape',
           '1.2.0-candidate.1',

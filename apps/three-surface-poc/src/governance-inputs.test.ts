@@ -188,6 +188,32 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:git-ref-only');
   });
 
+  it('the actual paired registry record selects state (1), while negated or quoted trailers refuse', () => {
+    const current = fakeTree();
+    const text = current.files.get(PWB_ACT_RECORDS.registry)!;
+    const affirmative = "explicitly given by the owner's words recorded below";
+    expect(text).toContain(affirmative);
+    const admitted = evaluateBodyReadAuthority(loaderFor(current));
+    expect(admitted.admits).toBe(true);
+    expect(admitted.registry.kind === 'valid' && admitted.registry.provenance).toBe('state-1');
+    for (const trailer of [
+      `not ${affirmative}`,
+      `never ${affirmative}`,
+      `rejected: "${affirmative}"`,
+      `${affirmative}, but rejected`,
+    ]) {
+      const altered = fakeTree();
+      const record = text.replace(affirmative, trailer);
+      altered.files.set(PWB_ACT_RECORDS.registry, record);
+      for (const key of altered.taggedRecords.keys()) if (key.endsWith(`:${PWB_ACT_RECORDS.registry}`)) altered.taggedRecords.set(key, record);
+      const refused = evaluateBodyReadAuthority(loaderFor(altered));
+      expect(refused.admits, trailer).toBe(false);
+      expect(refused.registry.kind === 'invalid' && refused.registry.caseId, trailer).toBe('registry:state-1-not-explicitly-selected');
+      expect(refused.consent.kind).toBe('valid');
+      expect(refused.policy.kind).toBe('valid');
+    }
+  });
+
   it('classifies a missing act record with no tag but a stamped artifact as tree-attribution-only', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.consent);
@@ -202,7 +228,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.registry);
     tree.files.delete(PWB_AUTHORITY_ARTIFACTS.registry);
-    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-10-02');
+    tree.tags.delete('pwb-registry-machine-ceiling-amendment-v1.0');
     const inputs = loaderFor(tree);
     expect(inputs.registry.artifact).toEqual({ kind: 'missing' });
     expect(inputs.registry.actRecord).toEqual({ kind: 'absent' });
@@ -276,7 +302,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     );
     tree.files.set(
       '.syzygy/governance/decisions/PWB-LATER-SUPERSESSION-ACT.md',
-      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02`\n',
+      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`\n',
     );
     const inputs = loaderFor(tree);
     expect(inputs.consent.lifecycle).toEqual({ revokedBy: '.syzygy/governance/decisions/PWB-LATER-REVOCATION-ACT.md' });
@@ -319,14 +345,14 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     expect(evaluation.registry.kind).toBe('valid');
   });
 
-  it('direction C: the gate admits under the 2026-10-02 re-pin acts and refuses when either act names another digest', () => {
+  it('the gate admits the current exact acts and refuses when either act names another digest', () => {
     const tree = fakeTree();
     const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
     expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-APPROVAL-2026-10-20');
-    expect(expected.registry.actIdentity).toBe('PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02');
+    expect(expected.registry.actIdentity).toBe('PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20');
     expect(expected.policy.recordingTag).toBe('pwb-approve-policy-public-source-scope-v4-signed-2026-10-20');
-    expect(expected.registry.recordingTag).toBe('pwb-adopt-registry-entry-signed-2026-10-02');
-    // The version anchors are unchanged by direction C.
+    expect(expected.registry.recordingTag).toBe('pwb-registry-machine-ceiling-amendment-v1.0');
+    // Registry version and scope anchors are unchanged by the ceiling act.
     expect(expected.policy.scopeAnchors).toContain('1.5.0-public-source-candidate.1.none.code-all.redact-span');
     expect(expected.registry.scopeAnchors).toContain('1.2.0-candidate.1');
     const admitted = evaluateBodyReadAuthority(loaderFor(tree));
@@ -375,16 +401,33 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
   });
 });
 
-function localTagsPresent(): boolean {
+function localTagsPresent(runGit = (args: readonly string[]): string => execFileSync('git', ['-C', REPO_ROOT, ...args], { encoding: 'utf8' }).trim()): boolean {
   try {
-    const out = execFileSync('git', ['-C', REPO_ROOT, 'tag', '--list', 'pwb-*-signed-*'], { encoding: 'utf8' });
-    const present = new Set(out.split('\n').map((line) => line.trim()));
     const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
-    return (['consent', 'policy', 'registry'] as const).every((kind) => present.has(expected[kind].recordingTag));
+    return (['consent', 'policy', 'registry'] as const).every((kind) =>
+      /^[0-9a-f]{40}$/.test(runGit(['rev-parse', '--verify', `refs/tags/${expected[kind].recordingTag}^{commit}`])),
+    );
   } catch {
     return false;
   }
 }
+
+describe('recording tag discovery', () => {
+  it('resolves each exact expected ref, including the registry version tag', () => {
+    const queried: string[][] = [];
+    expect(localTagsPresent((args) => { queried.push([...args]); return 'a'.repeat(40); })).toBe(true);
+    expect(queried).toContainEqual(['rev-parse', '--verify', 'refs/tags/pwb-registry-machine-ceiling-amendment-v1.0^{commit}']);
+    expect(queried).toHaveLength(3);
+  });
+
+  it('an actually missing required version ref remains fail-closed', () => {
+    expect(localTagsPresent((args) => {
+      if (args.at(-1) === 'refs/tags/pwb-registry-machine-ceiling-amendment-v1.0^{commit}') throw new Error('missing ref');
+      return 'a'.repeat(40);
+    })).toBe(false);
+    expect(localTagsPresent(() => '')).toBe(false);
+  });
+});
 
 // The production reader spawns one `git cat-file` per blob: 123 over the real
 // tree (about 1 s alone), the cost this test exists to exercise. Measured

@@ -79,7 +79,7 @@ export const PWB_RESOURCE_LIMITS: PwbResourceLimits = {
   maxIndexDepth: 4,
   maxParsePassesPerSource: 16,
   maxHumanResponseBytes: 2097152,
-  maxMachineResponseBytes: 8388608,
+  maxMachineResponseBytes: 16777216,
 };
 
 export const PWB_FAILURE_STATES = {

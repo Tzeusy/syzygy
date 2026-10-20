@@ -31,7 +31,7 @@ describe('resource headroom block', () => {
         { id: 'resource-headroom:maxIndexDepth', limit: 'maxIndexDepth', declared: 4, observed: { state: 'observed', value: 3 }, remaining: { state: 'observed', value: 1 } },
         { id: 'resource-headroom:maxParsePassesPerSource', limit: 'maxParsePassesPerSource', declared: 16, observed: { state: 'observed', value: 2 }, remaining: { state: 'observed', value: 14 } },
         { id: 'resource-headroom:maxHumanResponseBytes', limit: 'maxHumanResponseBytes', declared: 2097152, observed: { state: 'unknown', reason: CEILING_REASON }, remaining: { state: 'unknown', reason: CEILING_REASON } },
-        { id: 'resource-headroom:maxMachineResponseBytes', limit: 'maxMachineResponseBytes', declared: 8388608, observed: { state: 'unknown', reason: CEILING_REASON }, remaining: { state: 'unknown', reason: CEILING_REASON } },
+        { id: 'resource-headroom:maxMachineResponseBytes', limit: 'maxMachineResponseBytes', declared: 16777216, observed: { state: 'unknown', reason: CEILING_REASON }, remaining: { state: 'unknown', reason: CEILING_REASON } },
       ],
       cost: { id: 'resource-cost', state: 'observed', bodiesRead: 2, bytes: 12, parsePasses: 3, worstSourcePasses: 2 },
     });
@@ -48,7 +48,7 @@ describe('resource headroom block', () => {
       ['resource-headroom:maxIndexDepth', 4],
       ['resource-headroom:maxParsePassesPerSource', 16],
       ['resource-headroom:maxHumanResponseBytes', 2097152],
-      ['resource-headroom:maxMachineResponseBytes', 8388608],
+      ['resource-headroom:maxMachineResponseBytes', 16777216],
     ]);
     for (const entry of block.entries) {
       expect(entry.observed).toEqual(unknown);

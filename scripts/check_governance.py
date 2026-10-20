@@ -1892,11 +1892,19 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",
      "c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce"),
+    # P-114's one registry row supersedes act B; all old copies stay history.
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+     "ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
 #: later link is performed ("row" = manifest row, "phrase" = phrase line).
 PWB_EFFECT_AMENDMENT_OFFERINGS = {
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md": {
+        PWB_BEHAVIOR_REPIN_MANIFEST: "row",
+    },
     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md": {
         f"{CANDIDATES}/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
         f"{CANDIDATES}/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md": "phrase",
@@ -3431,6 +3439,19 @@ def _activate_pwb_behavior_repin_manifest_copy_registry():
         if os.path.isfile(os.path.join(ROOT, PWB_SCOPE_ACT)):
             ACT_DIGEST_COPY_FILES[PWB_BEHAVIOR_REPIN_MANIFEST] = (
                 PWB_EFFECT_ACTS[2][0],)
+        if os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md")):
+            # Both rows are now exact historical offerings. Do not re-add
+            # the old registry row as a current argument after the chain pass.
+            ACT_DIGEST_COPY_FILES.pop(PWB_BEHAVIOR_REPIN_MANIFEST, None)
+            ACT_DIGEST_COPY_FILES[
+                f"{CANDIDATES}/pwb-registry-machine-ceiling-amendment/"
+                "PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt"
+            ] = (PWB_EFFECT_ACTS[2][0],)
+            # The new version recorder takes no digest argument. The battery
+            # retains act B's argument solely for its historical --check.
+            ACT_DIGEST_COPY_FILES["PROJECT-STATUS.md"] = tuple(
+                label for label in ACT_DIGEST_COPY_FILES["PROJECT-STATUS.md"]
+                if label != PWB_EFFECT_ACTS[2][0])
 
 
 _activate_pwb_behavior_repin_manifest_copy_registry()
@@ -3836,6 +3857,16 @@ SUPERSEDED_ACT_ARGUMENT_COPIES = {
          " --date 2026-09-30"),
     ),
 }
+
+# Scope-A P-114 takes no command-line argument. Only after its record exists
+# is the retained act-B battery argument a historical copy.
+if os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md")):
+    SUPERSEDED_ACT_ARGUMENT_COPIES["PROJECT-STATUS.md"] += (
+        (PWB_EFFECT_ACTS[2][0],
+         'ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa',
+         "python3 scripts/record_pwb_behavior_contract_repin_acts.py --check registry ",
+         " --date 2026-10-02"),
+    )
 
 #: bd `syzygy-yu4a`: an argument that was offered, never performed, and then
 #: retired when its subject moved. Act 2 still awaits the owner; the install

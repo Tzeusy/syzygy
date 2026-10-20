@@ -299,7 +299,7 @@ describe('pocRoutes — the machine JSON sink is bounded by maxMachineResponseBy
 
   it('the registry values are the default ceilings', () => {
     expect(PWB_RESOURCE_LIMITS.maxHumanResponseBytes).toBe(2097152);
-    expect(PWB_RESOURCE_LIMITS.maxMachineResponseBytes).toBe(8388608);
+    expect(PWB_RESOURCE_LIMITS.maxMachineResponseBytes).toBe(16777216);
     expect(route(POC_HUMAN_PATH).handle(context(POC_HUMAN_PATH)).status).toBe(200);
     expect(route(POC_MACHINE_PATH).handle(context(POC_MACHINE_PATH, {})).status).toBe(200);
   });
