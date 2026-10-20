@@ -94,6 +94,15 @@ describe('parseOwnerActRecord', () => {
     expect(parsed.projectIdentity).toEqual({ kind: 'present', value: 'project:other' });
   });
 
+  it.each<[string, boolean]>([
+    ["explicitly given by the owner's words recorded below", true],
+    ['explicitly given by the recorder', false],
+    ["given by the owner's words recorded below", false],
+  ])('reads the v4 recorder\'s trailer form exactly: %s', (trailer, explicit) => {
+    const parsed = parseOwnerActRecord(RECORD.replace('explicitly selected by performing the offered state-(1) phrase', trailer));
+    expect(parsed.provenanceState).toEqual({ kind: 'present', value: { label: 'owner-adopted (bootstrap, uncorrelated)', explicitSelection: explicit } });
+  });
+
   it('distinguishes a state-(1) label without explicit selection from one with it', () => {
     const parsed = parseOwnerActRecord(
       RECORD.replace(' — state (1),\nexplicitly selected by performing the offered state-(1) phrase', ' — state (1)'),
