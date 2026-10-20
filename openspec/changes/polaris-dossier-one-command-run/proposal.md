@@ -5,16 +5,17 @@
 > `POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14`.
 > It is not adopted, performs no act, and grants no read, egress, write,
 > launch or execution. Effect comes only from owner acts over exact reviewed
-> bytes; `OWNER-PACKET.md` in this directory lists them. Tracking bead:
-> `syzygy-zwja`.
+> bytes; `OWNER-PACKET.md` in this directory lists them. Tracking beads:
+> `syzygy-zwja` (original change), `syzygy-fl2g` (bounded round-3 repair).
 
-**The operator should run one command and get a dossier.** Today a Redis
-dossier takes at least four operator-started sessions and a hand-over at each
+**After preparing a local clone, the operator should run one command and
+get a dossier.** Today a Redis dossier takes at least four operator-started sessions and a hand-over at each
 stage. The first operator-agent run against Redis
 (`run-e8b77d72780cc48f4dd032267d963d93`, briefed 2026-10-08) expired with no
 inventory because the inventory session started about eleven hours after the
-brief, past a three-hour deadline [Observed: that run's `run.json`, deadline
-`PT3H`, pinned 2026-10-08T01:52Z; inventory session opened 16:22Z].
+brief, past a three-hour deadline [Historical report in the 2026-10-14
+draft: deadline `PT3H`, pinned 2026-10-08T01:52Z; inventory session opened 16:22Z. Unknown to this repair:
+the external `run.json` was not read, and the figures were not re-verified.]
 
 ## Why
 
@@ -57,8 +58,8 @@ What stands in the way today [Observed unless marked]:
   required", and the code discloses this as `RECORDS_WITHIN_REACH`. Who
   started each session is the operator's declaration, labelled Inferred.
 
-The doctrine does not stand in the way. Vision says Syzygy "harnesses the
-existing actuator toolchain to close it" and that the "orchestration tools
+[Inferred] The doctrine does not stand in the way of this bounded
+candidate. Vision says Syzygy "harnesses the existing actuator toolchain to close it" and that the "orchestration tools
 remain the mechanisms; Syzygy integrates them" (`doctrine/vision.md`), and
 the loop stays human-triggered: the operator's one command triggers it.
 
@@ -99,9 +100,11 @@ with the one command:
   Syzygy builds for its role. Helpers get the clone read-only (the
   inventory only) and their own directory writable. The author gets the
   clone and the run's state directory read-only, with `drafts/` writable.
-  Every session gets the Syzygy checkout (gate records included) read-only
-  and its own private agent-tool configuration home. Every other path is
-  absent, the operator's own agent-tool configuration included. Syzygy
+  Every session gets a minimal command shim, the tool installation and
+  required system paths read-only, and its own private agent-tool
+  configuration home. The Syzygy checkout and its gate records are absent,
+  as is the operator's own agent-tool configuration. Role commands run
+  through the shim in the supervisor outside the view. Syzygy
   refuses a launched run where it cannot build that view. This is a
   separation of the sessions from each other and from the gate records; it is
   not a containment of observed code and changes nothing under SEC-3.
@@ -120,16 +123,23 @@ with the one command:
   operator declares the tool by path, version and provider. Syzygy writes
   and records the environment itself, and no credential variable passes;
   the tool authenticates only through its own credential file, the
-  operator's local login, which is checked before any session starts.
+  operator's local login. Before every session start, replacement and
+  resumed starts included, the runner re-checks the executable and version,
+  login, host view, settings, exclusions, tool limits, fixed permissions and
+  auxiliary-traffic controls against real-tool per-version evidence.
   Explicit inputs only: the workspace, an instructions file, the artifacts
   path, and the named skills and MCP servers. The operator's and the
   clone's settings, instruction files, skills, agents, commands, output
   styles, plugins, hooks and ambient MCP are excluded. Syzygy refuses the
   run when an exclusion is unobserved, when administrator-managed settings
   redirect or authenticate the provider or cannot be read, when the binary
-  is absent or mismatched, when a bypass-permissions mode is asked for, or
-  when no agent-provider statement covers the tool and provider. Each
-  session has a time bound. Syzygy carries no provider SDK, API client or
+  is absent or mismatched, when a bypass or automatic-approval mode is asked
+  for, when auxiliary telemetry, error-reporting or update traffic cannot be
+  disabled by observed per-version controls, or when no agent-provider
+  statement covers the tool and provider. A stand-in checks invocation and
+  refusal, never real-tool enforcement; the first enforcement evidence must
+  come from an operator-started attended probe outside a launched run. Until
+  it exists, no launched run starts. Each session has a time bound. Syzygy carries no provider SDK, API client or
   route. The run page lists the content classes present at the pinned
   revision, marks those the statement does not list, and says the tool may
   have sent them. It was drafted and reviewed in five rounds as
@@ -147,7 +157,9 @@ runs and edits no byte of REQ-033 to 036.
   operator's own agent tool under the operator's account. The owner ruled
   on 2026-10-14 (packet Q2) that the agents' transmissions to their declared
   provider stay the operator's own act. Launched sessions get no tool that
-  reaches any other destination (REQ-045).
+  reaches any other destination; the CLI's own auxiliary network traffic
+  must be disabled by observed per-version controls, or the run refuses
+  (REQ-045). This repair extends no egress ruling.
 - **No execution, no sandbox claim for observed code.** Launched runs are
   reading-only, both in their instructions and in the tools each launched
   process is given (REQ-044, 045). Execution stays in operator-started runs under D9.
@@ -160,6 +172,15 @@ runs and edits no byte of REQ-033 to 036.
   a refused check beyond the declared repair-cycle limit; any change to
   `polaris-dossier-arbitrary-public-repo`.
 
+## Operator prerequisite and bounded repair
+
+The operator must supply a previously made clone with `--clone`. The one
+command covers orchestration after that prerequisite; it does not clone the
+repository or meet the stronger literal goal that the operator never runs a
+preparation command. [Inferred] Removing this cost would require source-fetch
+authority that the candidate neither has nor requests. The lead keeps the
+restrictive prerequisite for this repair; no new owner answer is recorded.
+
 ## Acts this needs before it can bind
 
 1. Done 2026-10-14: the plain owner direction recording the request and
@@ -168,7 +189,9 @@ runs and edits no byte of REQ-033 to 036.
    the 2026-10-05 item 2 (packet Q0, Q1).
 2. This spec, signed by version tag, after fresh-context review.
 
-The owner packet orders them and recommends answers.
+The owner packet orders them and retains the prior answers. The lead
+selected one bounded source-design repair and round 3, recorded in
+`ROUND-3-REPAIRS.md`; that process choice is no owner act.
 
 ## Capabilities
 
