@@ -83,3 +83,6 @@ eight subjects hash as before. The builder still prints "17 requirements,
 sign-off until round 8 returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with
 notes only; even then Question 1 is the owner's, since this package has no
 carry-over answer.
+*(Marked 2026-10-20, round 8: "No round has read these bytes" is no longer
+true. Round 8 read them and returned `REVISE`; see
+`ROUND-8-DISPOSITIONS.md`. They are not cleared.)*

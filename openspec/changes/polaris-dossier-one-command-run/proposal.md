@@ -41,8 +41,9 @@ What stands in the way today [Observed unless marked]:
 - **REQ-polaris-generation-035** requires each inventory and review session
   to be "a separate top-level agent session that the operator starts", and
   accepts only two launch forms, a new terminal or the shell-escape prefix.
-  `packages/polaris-dossier/src/inventory.ts` hard-codes
-  `LAUNCH_FORMS = ['terminal', 'bang']`.
+  When this was drafted (2026-10-14), `packages/polaris-dossier/src/inventory.ts`
+  hard-coded `LAUNCH_FORMS = ['terminal', 'bang']`. The prototype has since
+  added `'syzygy-launched'` there, and it is unsigned.
 - **The waiting-sessions direction** (`decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md`,
   2026-10-08) says "**No Syzygy-launched sessions.** Syzygy starts, resumes
   and signals no session", and keeps the 2026-10-03 direction's item 2: "the
@@ -61,14 +62,25 @@ existing actuator toolchain to close it" and that the "orchestration tools
 remain the mechanisms; Syzygy integrates them" (`doctrine/vision.md`), and
 the loop stays human-triggered: the operator's one command triggers it.
 
+Two later owner directions shape how Syzygy starts each session.
+`DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15`
+(`decisions/OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`)
+keeps the provider routes parked and directs that Syzygy run the
+operator's local `codex` or `claude` binary as a subprocess, with explicit
+workspace, instructions, artifacts path and skill and MCP guidance, and no
+custom SDK or API tooling. `DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15`
+(`decisions/OWNER-DIRECTION-DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15.md`)
+answers the content-class question by choosing disclosure over refusal.
+
 ## What changes
 
-Five added requirements to `polaris-generation`, all in a new *launched*
+Six added requirements to `polaris-generation`, all in a new *launched*
 form of the operator-agent mode, taken only when the operator starts a run
 with the one command:
 
-- **040, one-command run.** `syzygy polaris <url>` runs preflight, the
-  one-commit clone, `init`, `brief`, the authoring session, the inventory,
+- **040, one-command run.** `syzygy polaris <url> --clone <dir>` runs
+  preflight, a check of the operator's own clone (Syzygy makes no clone or
+  fetch itself, since no act covers that), `init`, `brief`, the authoring session, the inventory,
   `check` and `inventory-check`, both reviews, `render` and `close`, and
   stops only at a refusal, a question for the operator, the deadline, the
   operator's stop, or a rendered and closed dossier. Re-running it with the
@@ -76,16 +88,20 @@ with the one command:
   and the operator-started flow are unchanged.
 - **041, Syzygy-launched sessions.** Syzygy, not the authoring session and
   not the operator, starts each session (authoring, inventory, fidelity
-  review, design review) as a sibling process of its own supervisor, from
-  its fixed prompt, in that session's directory, using the agent tool the
-  operator declared. A new launch form, `syzygy-launched`, is recorded from
-  what Syzygy itself did (process, command digest, directory, start, exit),
-  labelled Observed. The authoring session cannot start, signal or feed a
+  review, design review) as a child process of its own supervisor and of no
+  session, from its fixed prompt, in the working directory of its role, using
+  the agent tool the operator declared. A new launch form, `syzygy-launched`,
+  is recorded from what Syzygy itself did (process, command digest,
+  directory, start, exit). It is labelled Observed in the launching step's
+  output and Inferred wherever it is later shown from the stored record. The authoring session cannot start, signal or feed a
   helper session; packets still pass only through Syzygy.
 - **042, session isolation.** Each session runs inside a file-system view
-  Syzygy builds for its role: the clone read-only, its own directory
-  writable, the Syzygy checkout (gate records included) read-only, and every
-  other session's directory and the run's state directory absent. Syzygy
+  Syzygy builds for its role. Helpers get the clone read-only (the
+  inventory only) and their own directory writable. The author gets the
+  clone and the run's state directory read-only, with `drafts/` writable.
+  Every session gets the Syzygy checkout (gate records included) read-only
+  and its own private agent-tool configuration home. Every other path is
+  absent, the operator's own agent-tool configuration included. Syzygy
   refuses a launched run where it cannot build that view. This is a
   separation of the sessions from each other and from the gate records; it is
   not a containment of observed code and changes nothing under SEC-3.
@@ -93,9 +109,32 @@ with the one command:
   from one terminal view, can detach and reattach, and can stop the run;
   every question any session or Syzygy asks surfaces there.
 - **044, launched runs execute nothing.** A launched run carries the
-  no-execution rule of SEC-3 in every brief; Syzygy refuses `allow-execution`
+  no-execution rule of SEC-3 in every brief. Because SEC-3 binds every
+  process Syzygy launches, each launched session is started with no tool that
+  can run a program other than its role's Syzygy commands, and a tool version
+  for which that limit is unobserved is refused. Syzygy refuses `allow-execution`
   for it, because the D9 text says "Syzygy never gives the instruction to a
   session it started" (`doctrine/security.md`).
+- **045, the local agent CLI subprocess runner.** Syzygy performs every model
+  step only by starting the operator's own `claude` or `codex` binary. The
+  operator declares the tool by path, version and provider. Syzygy writes
+  and records the environment itself, and no credential variable passes;
+  the tool authenticates only through its own credential file, the
+  operator's local login, which is checked before any session starts.
+  Explicit inputs only: the workspace, an instructions file, the artifacts
+  path, and the named skills and MCP servers. The operator's and the
+  clone's settings, instruction files, skills, agents, commands, output
+  styles, plugins, hooks and ambient MCP are excluded. Syzygy refuses the
+  run when an exclusion is unobserved, when administrator-managed settings
+  redirect or authenticate the provider or cannot be read, when the binary
+  is absent or mismatched, when a bypass-permissions mode is asked for, or
+  when no agent-provider statement covers the tool and provider. Each
+  session has a time bound. Syzygy carries no provider SDK, API client or
+  route. The run page lists the content classes present at the pinned
+  revision, marks those the statement does not list, and says the tool may
+  have sent them. It was drafted and reviewed in five rounds as
+  `contracts/candidates/dossier-local-cli-subprocess-runner/`; the round-5
+  notes are carried in here.
 
 Each added requirement names the predecessor text it displaces for launched
 runs and edits no byte of REQ-033 to 036.
@@ -105,14 +144,19 @@ runs and edits no byte of REQ-033 to 036.
 - **The operator-started flow stays.** Runs started with `syzygy dossier
   init` keep REQ-035 exactly, launch forms `terminal` and `bang` included.
 - **Syzygy still makes no model-provider call itself.** It launches the
-  operator's own agent tool under the operator's account; whether that launch
-  keeps the agents' transmissions the operator's own act is packet Q2.
+  operator's own agent tool under the operator's account. The owner ruled
+  on 2026-10-14 (packet Q2) that the agents' transmissions to their declared
+  provider stay the operator's own act. Launched sessions get no tool that
+  reaches any other destination (REQ-045).
 - **No execution, no sandbox claim for observed code.** Launched runs are
-  reading-only. Execution stays in operator-started runs under D9.
+  reading-only, both in their instructions and in the tools each launched
+  process is given (REQ-044, 045). Execution stays in operator-started runs under D9.
 - **No new egress, consent or read.** Admission, screening, checks, packets
-  and verdict validation are those of REQ-033 to 036.
+  and verdict validation are those of REQ-033 to 036. The clone is the
+  operator's own, as in the operator-started flow.
 - **Out of scope:** remote or multi-host sessions; agent tools other than
-  those with a per-project provider statement in force; automatic retries of
+  `claude` and `codex`, and either of them without a per-project provider
+  statement in force for the declared provider; automatic retries of
   a refused check beyond the declared repair-cycle limit; any change to
   `polaris-dossier-arbitrary-public-repo`.
 
@@ -128,9 +172,9 @@ The owner packet orders them and recommends answers.
 
 ## Capabilities
 
-- **Modified:** `polaris-generation`, by five added requirements (040 to
-  044; free at `origin/main` `09c7a61d`, after the arbitrary-repo
-  candidate's 037 to 039).
+- **Modified:** `polaris-generation`, by six added requirements (040 to
+  045; 040 to 044 free at `origin/main` `09c7a61d`, after the arbitrary-repo
+  candidate's 037 to 039; 045 free in `openspec/` at the fold, 2026-10-20).
 - **New:** none.
 
 ## Amendment relation

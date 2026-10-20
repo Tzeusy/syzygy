@@ -170,6 +170,12 @@ unconfirmed pending round 8.** In short:
   gap list and polarity and the fifth scenario's WHEN are guarded, each
   with a mutant (Note 3).
 
+*(Marked 2026-10-20, round 8: "unconfirmed pending round 8" is no longer
+true. Round 8 returned `REVISE` (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-8-RAW.md` line 4):
+one revise finding (the fifth scenario's THEN omits the status line and
+Butlers-declared text, which the check also excepts) and three notes, all
+open in `ROUND-8-DISPOSITIONS.md`. These bytes are not cleared.)*
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
