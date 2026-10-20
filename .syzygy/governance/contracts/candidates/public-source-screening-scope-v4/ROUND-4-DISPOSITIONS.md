@@ -23,3 +23,38 @@ Revise-severity findings: 0 (five findings, all `note`; raw lines 28, 62, 88,
 Result: the bytes the raw names are cleared. P-110 is ready to offer to the
 owner: "Sign screening scope version 4, variant span-guides" (recommended),
 variant `span`, or decline.
+
+## Recorder form (added 2026-10-20, at the version-4 act)
+
+Reviewed record: docs/reviews/R-OLMR-SCREENING-SCOPE-V4-4-RAW.md
+
+*(Added 2026-10-20 when the owner's version-4 act was recorded: the line
+above and the numbered headings below are the form
+`scripts/record_public_source_screening_scope_v4_act.py` reads, through
+`record_versioned_signoff.validate_disposition`. No disposition changed; each
+heading restates the table row above by its number, and the table stays the
+disposition of record. The install items are carried in bead
+`syzygy-olmr.1`.)*
+
+### 1 — key-header "Not caught" list narrower than the bytes miss
+
+Note; accepted as stated in the table above. Carried to install and to any
+successor or readability pass.
+
+### 2 — common unmatched credential shapes not named individually
+
+Note; accepted. Covered by the general cost sentence, and named to the owner
+in the P-110 offer and the 2026-10-20 question.
+
+### 3 — the packet omits the delta's `https` password containing `/`
+
+Note; accepted. Within the general cost sentence.
+
+### 4 — editorial residue in delta lines 199–205
+
+Note; accepted as editorial, for any successor or readability pass.
+
+### 5 — the ledger does not name `wholeArtifactLinePattern` (per-line, `m` flag) or the anywhere-in-body `wholeArtifactFragments` check
+
+Note; accepted. The install bead names both checks and the `m`-flag point
+explicitly.

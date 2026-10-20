@@ -260,11 +260,11 @@ jobs:
       - name: record_pwb_behavior_contract_repin_acts --selftest
         run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
 
-      - name: record_public_source_screening_scope_v3_act --check
-        run: python3 scripts/record_public_source_screening_scope_v3_act.py --check c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce --date 2026-10-08 --question-opening 'Decision 1 (P-105):'' Redis'\''s core C files (server.c, networking.c, …) are withheld because the HTML check reads `a<b && c>d` as a tag. Screening policy v3 lets source files skip that check, but only while every page shows them as escaped text under a no-script CSP. Every secret detector still runs. Which do you choose?' --selection-label 'Variant all (Recommended)' --selection-description 'All 25 source extensions skip the HTML check. Widest:'' JS/PHP full of HTML strings are admitted too, protected only by escaping. Phrase:'' "Sign screening scope version 3, variant all".' --packet-words 'Sign screening scope version 3, variant all'
+      - name: record_public_source_screening_scope_v4_act --check
+        run: python3 scripts/record_public_source_screening_scope_v4_act.py --check 1f2836fa8379ff83a0651338448c39b66b318d36976525277425ece6ca3a83bb --date 2026-10-20 --question-opening 'Screening scope v4 (P-110) cleared round 4 (CONFIRM WITH EXCEPTIONS, 5 notes, none revise). In project-documentation files it withholds only the lines a credential matches, plus one line either side, instead of the whole file; code and config stay whole-file. Any key header anywhere withholds the whole file. Known cost, stated in the packet:'' credential formats no detector matches (e.g. Django SECRET_KEY, JSON "password", sk_live_/AIza/github_pat_ keys, Bearer headers, postgres:// passwords) reach the review packet when they appear in a documentation file. Sign it?' --selection-label 'Sign, variant span-guides (Rec.)' --selection-description 'Line redaction plus a fixed list of root guide names (INSTALL, BUILDING, HACKING, USAGE… with .md/.rst/.txt) read as documentation.' --packet-words 'Sign screening scope version 4, variant span-guides'
 
-      - name: record_public_source_screening_scope_v3_act --selftest
-        run: python3 scripts/record_public_source_screening_scope_v3_act.py --selftest
+      - name: record_public_source_screening_scope_v4_act --selftest
+        run: python3 scripts/record_public_source_screening_scope_v4_act.py --selftest
 
       - name: check_polaris_response_ceiling_reading --check
         run: python3 scripts/check_polaris_response_ceiling_reading.py --check

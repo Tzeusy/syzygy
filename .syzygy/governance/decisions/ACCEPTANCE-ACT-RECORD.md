@@ -1643,3 +1643,31 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:cap1-trusted-bootstrap-consent:v1.0 -->
+
+<!-- PWB-POLICY-SCOPE-V4:BEGIN -->
+## Public-source screening scope version 4 act — approve-policy — performed 2026-10-20
+
+**Phrase the act takes (given 2026-10-20 by option selection, not typed; see the
+dedicated record):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 1f2836fa8379ff83a0651338448c39b66b318d36976525277425ece6ca3a83bb
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the chosen row (variant `span-guides`) of the package manifest, recomputed at recording |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject | `65edb1cbbec97384afd7b71e9c069736c89d767c` |
+| Manifest | `.syzygy/governance/contracts/candidates/public-source-screening-scope-v4/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt`, SHA-256 `0621d646f91ef3b5572d882f4bb17f5bd0785d316b30516693e48884365157ec` |
+| Review outcome | `docs/reviews/R-OLMR-SCREENING-SCOPE-V4-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`, its head bound to the manifest file |
+| Recorded at (UTC) | `2026-10-20T13:41:25Z` |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md`; annotated tag `pwb-approve-policy-public-source-scope-v4-signed-2026-10-20` on the commit carrying these records |
+
+Effective status: this one record is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
+consent, read or egress, and the read gates are re-pointed by a separate change.
+<!-- PWB-POLICY-SCOPE-V4:END -->

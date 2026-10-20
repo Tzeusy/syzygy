@@ -1888,6 +1888,12 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
      "98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49"),
+    # The public-source screening-scope version-4 act supersedes the version-3 act for
+    # the policy subject (screening-scope v4 chain row, P-110, 2026-10-20).
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",
+     "c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
@@ -1921,6 +1927,10 @@ PWB_EFFECT_AMENDMENT_OFFERINGS = {
     # manifest, a row that ends in its `[variant: …]` tag; its packet carries no digest.
     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md": {
         f"{CANDIDATES}/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt": "variant-row",
+    },
+    # The version-3 act was offered the same way, as variant `all`'s row of its manifest.
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md": {
+        f"{CANDIDATES}/public-source-screening-scope-v3/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt": "variant-row",
     },
 }
 PWB_STATE1_SUBJECTS = tuple(sorted((
@@ -3626,11 +3636,34 @@ PUBLIC_SOURCE_SCOPE_V3_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBL
 def _activate_public_source_scope_v3_copy_registry():
     """The version-3 manifest is a current copy of the policy argument once the act exists."""
     if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))
-            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))):
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))
+            # once the version-4 act supersedes it, the chosen row is history
+            # (pinned by the amendment registries)
+            and not os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V4_ACT))):
         ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V3_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
 
 
+#: The public-source screening scope, version 4 (`syzygy-olmr`, register row
+#: P-110): one `approve-policy` act over ONE of two manifest rows (variants
+#: `span`, `span-guides`), reusing the policy's phrase label and superseding the
+#: version-3 act; performed 2026-10-20 (variant `span-guides`). Gated on the
+#: performed record, for the reason the version-2 registration gives.
+PUBLIC_SOURCE_SCOPE_V4_DIR = f"{CANDIDATES}/public-source-screening-scope-v4"
+PUBLIC_SOURCE_SCOPE_V4_MANIFEST = f"{PUBLIC_SOURCE_SCOPE_V4_DIR}/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt"
+PUBLIC_SOURCE_SCOPE_V4_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md"
+
+
 _activate_public_source_scope_v3_copy_registry()
+
+
+def _activate_public_source_scope_v4_copy_registry():
+    """The version-4 manifest is a current copy of the policy argument once the act exists."""
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V4_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V4_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V4_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
+_activate_public_source_scope_v4_copy_registry()
 
 
 #: The act-time digests the specification-policy restyle supersedes as the
@@ -3922,6 +3955,7 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
     (PWB_SCOPE_ACT, "manifest"): PWB_SCOPE_MANIFEST,
     (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,
     (PUBLIC_SOURCE_SCOPE_V3_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V3_MANIFEST,
+    (PUBLIC_SOURCE_SCOPE_V4_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V4_MANIFEST,
 }
 
 
