@@ -96,12 +96,16 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import importlib
+import json
+import os
 import pathlib
 import re
 import subprocess
 import sys
 import tempfile
+import shutil
 from dataclasses import dataclass, replace as dataclasses_replace
 from typing import Callable
 
@@ -328,31 +332,257 @@ def patch_package_apply(root: pathlib.Path, proposed: pathlib.Path, findings) ->
 
 
 def p115_package_apply(root: pathlib.Path) -> int:
-    """P115's exact zero-context batch, within a future authorized recording.
+    """P115's guarded batch; the recording entrypoint adds scoped recovery."""
+    try:
+        p115_apply_batch(root)
+    except (OSError, ValueError) as exc:
+        print(str(exc))
+        return 1
+    print("applied the exact five P115 patches as one preflighted batch")
+    return 0
 
-    This leaves the generic recorder's record-write and recovery protocol
-    unchanged; it does not promise a filesystem transaction.
-    """
+
+def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
+    """Whole checkout boundary; ignored build outputs are outside this gate."""
+    state = subprocess.run(["git", "--no-optional-locks", "status", "--porcelain=v1", "-z",
+                            "--untracked-files=all", "--ignore-submodules=none"],
+                           cwd=root, capture_output=True, check=True).stdout
+    if state:
+        raise ValueError("refusing P115 recording: index, worktree and untracked-not-ignored files must be clean")
+    return (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                           capture_output=True, check=True).stdout,
+            subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
+                           capture_output=True, check=True).stdout)
+
+
+def p115_apply_batch(root: pathlib.Path, before_apply=lambda: None) -> None:
+    """No write until both the exact batch preflight and final input gate pass."""
+    p115_clean(root)
     reference = _module("prepare_three_surface_poc_governedby_reference_recording")
     problems = reference.recording_findings(root)
     if problems:
-        print("refusing P115 apply: " + " | ".join(problems))
-        return 1
+        raise ValueError("refusing P115 apply: " + " | ".join(problems))
     patches = _patches(root, reference.CANDIDATE / "proposed")
     if len(patches) != 5:
-        print("refusing P115 apply: exact five-patch population changed")
-        return 1
+        raise ValueError("refusing P115 apply: exact five-patch population changed")
     batch = ["git", "apply", "--whitespace=nowarn", "--unidiff-zero"]
     names = [str(patch) for patch in patches]
     done = subprocess.run([*batch, "--check", *names], cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
-        print("P115 preflight refused: " + done.stderr.strip())
-        return 1
+        raise ValueError("P115 preflight refused: " + done.stderr.strip())
+    p115_clean(root)
+    before_apply()
     done = subprocess.run([*batch, *names], cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
-        print("P115 batch apply failed: " + done.stderr.strip())
+        raise ValueError("P115 batch apply failed: " + done.stderr.strip())
+
+
+def p115_read(path: pathlib.Path) -> bytes | None:
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise ValueError(f"P115 transaction path is not a regular file: {path}")
+    return path.read_bytes() if path.exists() else None
+
+
+def p115_stage(path: pathlib.Path, body: bytes) -> pathlib.Path:
+    """Stage on the target filesystem; replacement never truncates the target."""
+    fd, name = tempfile.mkstemp(prefix=".p115-", dir=path.parent)
+    staged = pathlib.Path(name)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(body)
+        if path.exists():
+            staged.chmod(path.stat().st_mode & 0o777)
+        return staged
+    except BaseException as failure:
+        try:
+            staged.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            # Keep the original staging failure as the cause on Python 3.10 too.
+            print(f"P115 stage cleanup failed ({staged}): {cleanup_error}")
+        raise
+
+
+def p115_write(path: pathlib.Path, body: bytes) -> None:
+    staged = p115_stage(path, body)
+    try:
+        os.replace(staged, path)
+    except BaseException:
+        try:
+            staged.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            print(f"P115 stage cleanup failed ({staged}): {cleanup_error}")
+        raise
+    staged.unlink(missing_ok=True)
+
+
+def p115_recover(root: pathlib.Path, before: dict, outputs: dict,
+                 attempted: list[pathlib.Path]) -> list[str]:
+    """Restore proven owned after-images only, preserving foreign changes."""
+    conflicts = []
+    for rel in reversed(attempted):
+        staged = None
+        try:
+            path = root / rel
+            current = p115_read(path)
+            if current == before[rel]:
+                continue
+            if current != outputs[rel]:
+                conflicts.append(f"{rel}: independently changed or deleted")
+                continue
+            if before[rel] is None:
+                # Compare again immediately before the destructive operation.
+                if p115_read(path) != outputs[rel]:
+                    conflicts.append(f"{rel}: recovery ownership changed")
+                    continue
+                path.unlink()
+            else:
+                staged = p115_stage(path, before[rel])
+                if p115_read(path) != outputs[rel]:
+                    conflicts.append(f"{rel}: recovery ownership changed")
+                    continue
+                os.replace(staged, path)
+        except (OSError, ValueError) as exc:
+            conflicts.append(f"{rel}: restoration failed: {type(exc).__name__}: {exc}")
+        finally:
+            if staged is not None:
+                try:
+                    staged.unlink(missing_ok=True)
+                except OSError as exc:
+                    conflicts.append(f"{rel}: restoration stage cleanup failed: {exc}")
+    for rel in before.keys() - set(attempted):
+        try:
+            if p115_read(root / rel) != before[rel]:
+                conflicts.append(f"{rel}: independent change retained; no owned write")
+        except (OSError, ValueError) as exc:
+            conflicts.append(f"{rel}: recovery inspection failed: {exc}")
+    return conflicts
+
+
+def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
+                 review_rel: str, disposition_rel: str | None,
+                 options: frozenset[str]) -> int:
+    """Exact P115 transaction; no change to another package's recording path.
+
+    The retained per-worktree Git-directory journal is failed-attempt evidence,
+    never an act. Recovery is scoped and ownership checked, not global atomicity.
+    """
+    reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+    attempted = []
+    journal = None
+    before, outputs = {}, {}
+    receipt = {}
+    try:
+        head, index = p115_clean(root)
+        paths = (*reference.SUBJECTS, reference.RECORD, reference.AGGREGATE)
+        before = {rel: p115_read(root / rel) for rel in paths}
+        inputs = {pathlib.Path(p) for p in reference.validation_inputs(root)}
+        inputs.add(pathlib.Path(review_rel))
+        if disposition_rel:
+            inputs.add(pathlib.Path(disposition_rel))
+        if any(p.is_absolute() or ".." in p.parts for p in inputs):
+            raise ValueError("P115 validation inputs must stay inside the repository")
+        captured = {rel: p115_read(root / rel) for rel in inputs}
+        validate_inputs(version, date, quote, pkg)
+        if version != reference.VERSION or options:
+            raise ValueError("P115 recording covers exactly v1.0 with no options")
+        if reference.transaction_present(root):
+            raise ValueError("P115 transaction is already present or partial")
+        if before[reference.AGGREGATE] is None or any(before[p] is None for p in reference.SUBJECTS):
+            raise ValueError("P115 transaction requires all six subjects and the aggregate")
+        commit, verdict = verify_reviewed(root, pkg, review_rel, disposition_rel)
+        findings = pkg.check(root) + reference.chain_findings(root, date)
+        if findings:
+            raise ValueError("package does not verify: " + " | ".join(findings))
+        current, proposed = reference.load_frozen(root).collect()
+        current = {pathlib.Path(p): body for p, body in current.items()}
+        proposed = {pathlib.Path(p): body for p, body in proposed.items()}
+        if set(current) != set(reference.SUBJECTS) or any(current[p] != before[p] for p in current):
+            raise ValueError("P115 validated subjects differ from captured preimages")
+        if (set(proposed) != set(reference.SUBJECTS) or any(
+                hashlib.sha256(proposed[pathlib.Path(p)]).hexdigest() != sha
+                for sha, p in reference.manifest_rows(root))):
+            raise ValueError("P115 proposed outputs differ from the exact six-row manifest")
+        disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
+        outputs = dict(proposed)
+        outputs[reference.RECORD] = render_record(
+            pkg, version, date, quote, review_rel, commit, verdict, disposition,
+            root=root, rows=tuple(reference.manifest_rows(root))).encode()
+        outputs[reference.AGGREGATE] = (before[reference.AGGREGATE].decode().rstrip("\n")
+            + "\n\n" + render_aggregate(pkg, version, date, review_rel, verdict, disposition)).encode()
+
+        def unchanged(expected):
+            for rel, body in {**captured, **expected}.items():
+                if p115_read(root / rel) != body:
+                    raise ValueError(f"P115 transaction input changed: {rel}")
+            if (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
+                               check=True).stdout != head
+                    or subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
+                                      capture_output=True, check=True).stdout != index):
+                raise ValueError("P115 transaction HEAD or index changed")
+            changed = subprocess.run(["git", "diff", "--name-only", "-z"], cwd=root,
+                                     capture_output=True, check=True).stdout.split(b"\0")
+            changed += subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "-z"],
+                                      cwd=root, capture_output=True, check=True).stdout.split(b"\0")
+            if any(p and p.decode() not in {rel.as_posix() for rel in paths} for p in changed):
+                raise ValueError("P115 transaction acquired unrelated worktree changes")
+
+        unchanged(before)
+        p115_clean(root)
+        # Resolve the actual per-worktree directory; .git may be a file.
+        git_dir = pathlib.Path(subprocess.run(["git", "rev-parse", "--absolute-git-dir"],
+                               cwd=root, capture_output=True, text=True, check=True).stdout.strip())
+        recovery = git_dir / "p115-recording-recovery"
+        recovery.mkdir(exist_ok=True)
+        journal = pathlib.Path(tempfile.mkdtemp(prefix="attempt-", dir=recovery))
+        receipt = {"scope": "synthetic fixture if called by selftest; otherwise failed P115 recording attempt",
+                   "ranAt": head.decode().strip(), "state": "prepared", "paths": []}
+        for number, rel in enumerate(paths):
+            body = before[rel]
+            if body is not None:
+                (journal / f"{number}.before").write_bytes(body)
+            receipt["paths"].append({"path": rel.as_posix(),
+                "before": None if body is None else hashlib.sha256(body).hexdigest(),
+                "after": hashlib.sha256(outputs[rel]).hexdigest(),
+                "preimage": None if body is None else f"{number}.before"})
+        (journal / "ATTEMPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        unchanged(before)
+        # The unchanged .openspec.yaml is validated but never rewritten/recovered.
+        def enter_apply():
+            unchanged(before)
+            attempted.extend(p for p in reference.SUBJECTS if before[p] != outputs[p])
+        p115_apply_batch(root, enter_apply)
+        if not pkg.applied(root):
+            raise ValueError("P115 applied postcondition failed")
+        expected = {**before, **{p: outputs[p] for p in reference.SUBJECTS}}
+        unchanged(expected)
+        for rel in (reference.RECORD, reference.AGGREGATE):
+            unchanged(expected)
+            attempted.append(rel)
+            p115_write(root / rel, outputs[rel])
+            expected[rel] = outputs[rel]
+        unchanged(expected)
+        findings = reference.signed_findings(root)
+        if findings:
+            raise ValueError("P115 recorded postcondition failed: " + " | ".join(findings))
+    except BaseException as failure:
+        conflicts = p115_recover(root, before, outputs, attempted)
+        message = f"{type(failure).__name__}: {failure}"
+        if journal is not None:
+            receipt.update(state="failed", originalError=message, recoveryConflicts=conflicts)
+            try:
+                (journal / "ATTEMPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+            except OSError as evidence_error:
+                conflicts.append(f"attempt receipt update failed: {evidence_error}")
+        print("FAILED P115: " + message)
+        print("P115 recovery " + ("incomplete: " + " | ".join(conflicts) if conflicts else "complete; captured preimages preserved"))
+        if journal is not None:
+            print(f"P115 failed-attempt evidence retained: {journal}")
+        if not isinstance(failure, Exception):
+            raise
         return 1
-    print("applied the exact five P115 patches as one preflighted batch")
+    shutil.rmtree(journal)
+    print(f"wrote {reference.RECORD.as_posix()}; appended exact P115 aggregate block")
+    print(f"next: review the logical Git transaction, commit, then `git tag -a {tag_for(pkg, version)}` on that commit")
     return 0
 
 
@@ -1388,6 +1618,8 @@ def parse_options(pkg: Package, text: str) -> frozenset[str]:
 def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
            review_rel: str, disposition_rel: str | None,
            options: frozenset[str] = frozenset(), *, instant: str | None = None) -> int:
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        return p115_record(root, pkg, version, date, quote, review_rel, disposition_rel, options)
     if instant is None:
         instant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
@@ -1440,6 +1672,13 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
     if not VERSION_RE.fullmatch(version):
         print(f"FAILED: version {version!r} is not major.minor")
         return 1
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+        if reference.transaction_present(root):
+            findings = reference.chain_findings(root)
+            if findings:
+                print("FAILED: " + " | ".join(findings))
+                return 1
     rec = root / record_rel(pkg, version)
     copies = aggregate_copies(root, pkg, version)
     if not rec.exists() and not copies:
