@@ -1,0 +1,94 @@
+{
+  "epistemic": "Observed",
+  "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+  "baseCommit": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+  "subjectTree": "56df58a817fd878962716a9d8c5cd7845d2aeba6",
+  "artifactScope": "Twelve changed implementation/test files; later documentation and evidence are outside this frozen source review",
+  "subjects": [
+    {
+      "path": "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+      "bytes": 15308,
+      "sha256": "8122604935a7b477ec9679884769bdb5eca80b3bb5873153937b679103073465",
+      "gitBlob": "2aba6e53b5f758f151b8ab4aed4835aa15e3186c"
+    },
+    {
+      "path": "apps/three-surface-poc/src/cdp-browser.ts",
+      "bytes": 23468,
+      "sha256": "c4dcbfe2d0f1d20e2e395b1426f52d0450fbbdbc84e165c88b80c96d62b75702",
+      "gitBlob": "38db92dbea525a554308038fb35b5a6f8cf92bef"
+    },
+    {
+      "path": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+      "bytes": 18969,
+      "sha256": "6c0849933660820e0be1bcc7e164719519a5eee6593ea2c324dfa1f4218ee946",
+      "gitBlob": "290ec1df684d55f0f3d38178f0ee046e099c0a27"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+      "bytes": 22343,
+      "sha256": "5fbabfc22440ef8481fbae837f514ff203b283ee2020e8b54a53ee57c0e69df9",
+      "gitBlob": "004526855741d5e1c03224dcafd624b59763b806"
+    },
+    {
+      "path": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "bytes": 5172,
+      "sha256": "eceb35a5c1a583b7aa7cb5e9c49db24cc35d8ef83e81771a56ea8902d9f85a51",
+      "gitBlob": "426df8b6015c59a7a7f230aaff5de413116c37a3"
+    },
+    {
+      "path": "apps/three-surface-poc/src/trajectory.ts",
+      "bytes": 16509,
+      "sha256": "99bd7785f2512ffeeba001fffbed9b50075c1782dc8dfbaa8b85ea1e54d50ef8",
+      "gitBlob": "d28e0a7d68bfb640aab9e96b60496f9e894def1e"
+    },
+    {
+      "path": "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+      "bytes": 17556,
+      "sha256": "1be8f317e87dc78aaa24a5ff82879614ecb117e7f05b0b87a6124b7dbc58f4b3",
+      "gitBlob": "e2557c7d00b5db255ee9cd1dff119a7a7c39de43"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.ts",
+      "bytes": 52059,
+      "sha256": "72c58ab8f0234c763ece630ae85a52b0871100cf6f33854f42e0eb907210f489",
+      "gitBlob": "de21d1f0d4d759f081816d216533cf02283afe3c"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+      "bytes": 57580,
+      "sha256": "33bb156f847f091ebdf7ae493373315ea4012ab7d878ee11f2c63b630f85d182",
+      "gitBlob": "7d5cf9315416bcdce336832c8ed3fd3961242663"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "bytes": 34381,
+      "sha256": "be9a7ea24b634be130378b89a735d1830ceb7625b95cc687e5dea9bd8b5daf75",
+      "gitBlob": "e036349d32d4da6d82fb8edc732746f00fa31104"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "bytes": 7609,
+      "sha256": "a697cbc3282c016f6f2762dc69489998ca22161cafe877a4693c48c529c2c517",
+      "gitBlob": "9fa2e80acd03b92f4204ea1acfa4d3c126d82010"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/work-items.ts",
+      "bytes": 9142,
+      "sha256": "002199fca7ebbeea5c77237d830bb2f586c281d606d9c739f0c4f57191d9db6f",
+      "gitBlob": "38f80882a6c9e694e7f1e84ff231cd4fb892ba1f"
+    }
+  ],
+  "raw": {
+    "path": "docs/reviews/R-IMPL-P100-RESTORATION-1-RAW.md",
+    "bytes": 2118,
+    "sha256": "d9dc97fd107223a7018e9683fec64f61aeddb934231fe484d5e46c7272dd6436",
+    "actualAssessment": "Ready to merge? Yes, conditional on required verification gates."
+  },
+  "findingPopulation": {
+    "Critical": 0,
+    "Important": 0,
+    "Minor": 1
+  },
+  "disposition": "docs/evidence/p100-restoration-review-disposition-2026-10-21.md",
+  "reviewLimits": "Read-only fresh process; no full Vitest/browser/canonical or real proving-case headroom established by reviewer; later root checks stay separate."
+}
