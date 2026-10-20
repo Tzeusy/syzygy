@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { POLICY_ACT_FORMS } from '@syzygy/polaris-generation-consent';
 import { DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, excludedSourceId, generationSourceIdentity, runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
 import { compileDetectors, detectSecrets, PWB_DENIED_PATH_RULES, PWB_SECRET_POLICY } from '@syzygy/three-surface-poc-core';
 
@@ -314,7 +315,8 @@ describe('the policy act gate fails closed', () => {
     // puts in force, whichever version that is; the expected digest is read from the latest version's own record here.
     const fs = await import('node:fs');
     const repo = new URL('../../../../', import.meta.url);
-    const latest = ['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md']
+    // The chain's own closed list of forms, latest first, so a later version's install needs no edit here.
+    const latest = [...POLICY_ACT_FORMS].reverse().map(form => form.file)
       .map(file => new URL(`.syzygy/governance/decisions/${file}`, repo)).find(url => fs.existsSync(url));
     const port = checkoutPolicyActPort();
     if (latest === undefined) { await expect(loadPublicSourceScreen(port)).rejects.toThrow(/^Corpus read refused: public-source-policy: no screening-scope policy act is in force/u); return; }
@@ -430,12 +432,16 @@ describe('the project-documentation class', () => {
 
 // syzygy-wsev / P-105: version 3's code-content exemption in this screen. The exemption's texts are the builder's own (variant all),
 // re-derived from the checkout, so this holds before and after the act; the fixture exempts `.c` only of its fixture extensions.
+// Since the version-4 act (2026-10-20) the version-3 base is recovered through version 4's base, the version-3 row `all`.
 describe('the code-content exemption (screening scope version 3)', () => {
   const C_BODY = 'static int cmp(int a, int b, int c, int d) {\n    return a<b && c>d;\n}\n';
   let exemption: Record<string, unknown> = {};
   beforeAll(async () => {
-    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
-base, _mode = b.base_bytes()
+    const py = `import json, sys; sys.path.insert(0, 'scripts')
+import build_public_source_screening_scope_v2 as b2, build_public_source_screening_scope_v3 as b, build_public_source_screening_scope_v4 as b4
+v3_all, _mode = b4.base_bytes()
+base = b2.reverse_patch((b.ROOT / b.patch_path('all')).read_text(), v3_all)
+assert b.propose(base, 'all') == v3_all
 sys.stdout.write(json.dumps(json.loads(b.propose(base, 'all'))[b.SCOPE_KEY]['activeContent']['codeContentExemption']))`;
     const run = await promisify(execFile)('python3', ['-c', py], { cwd: fileURLToPath(new URL('../../../../', import.meta.url)), encoding: 'utf8' });
     exemption = JSON.parse(run.stdout) as Record<string, unknown>;
