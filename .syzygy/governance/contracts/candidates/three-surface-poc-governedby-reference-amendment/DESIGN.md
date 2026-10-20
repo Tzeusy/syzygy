@@ -1,8 +1,9 @@
 # P-115 funnel and wire design
 
-> **Candidate — binds nothing.** Proposed v1.0; independent review, owner
-> signature and implementation authorization are pending. This is the design
-> of a specification amendment, not product implementation.
+> **Candidate — binds nothing.** Proposed v1.0; this is a dated preparation
+> design, not a readiness verdict, signature or product implementation.
+> R1 and R2 remain REVISE. The C4 source-method integration awaits its own
+> independent confirmation and separate coordinator readiness receipt.
 
 [Observed] Baseline is 4504514c019ca0ee0cb4a89ed97445a0bad21915. The adopted
 POC-REQ-014 requires per-item Unknown values; the runtime P-100 restoration
@@ -191,7 +192,9 @@ body. Two bodies may contain the same value, but each must carry its own.
 
 Producer state transition: valid identified observation + identical item
 values → validate/encode one shared value and N references → apply existing
-response identity, authentication and byte-ceiling rules → success. Invalid
+response identity and actual final encoded-byte ceiling → conditional success.
+Existing authentication precedes the handler. No old-inline/expanded-size
+metric replaces the actual carried bytes. Invalid
 value/reference → bounded typed refusal before 200 or 304. Existing Unknown
 observation → existing Unknown result, without constructing an empty success.
 The independent consumer either expands locally and validates all items or
@@ -287,17 +290,21 @@ to their six declared baseline subjects; other requirement blocks and all
 inherited coverage rows stay exact; generated dependencies match the proposed
 warrant union; report/manifest regenerate; mutation selftests fail for each
 bounded preparation predicate. Run governance checks, the generic diagnostic
-and the canonical PROJECT-STATUS battery in a clean clone at the frozen
-candidate commit, reporting exact failures and denominators. No new product
+at this candidate. The coordinator separately owns the full canonical
+PROJECT-STATUS battery in a clean clone at its final integrated commit,
+reporting exact failures and denominators; it is not run by this writer. No new product
 tests or test-suite growth in this candidate. Fresh independent non-author
 review is mandatory before any owner offer.
 
-Four requirement-consumption relationships remain explicitly undecidable in
-REQUIREMENT-CONSUMPTION.json: POC-REQ-020/022 and both occurrences of
-REQ-polaris-generation-019. Their settling evidence must be supplied or the
-necessary companions prepared before an owner offer. The assessment is not
-an authority exception or an owner question; independent review must judge
-whether the precise expansion/compatibility reading is established.
+The complete source-method assessment proposes 15 affected, 115 positively
+untied and no undecidable requirement occurrences. It distinguishes affected
+consumption from text invalidation; only POC014 text changes. All four earlier
+compatibility readings are affected-compatible, including both GEN019 broad
+PWB convention-preservation limbs. Their two current narrow interfaces remain
+preserved, but do not narrow the normative obligation. Full clauses, complete
+block bindings/excerpts and per-affected later obligations are retained under
+evidence/ and REQUIREMENT-CONSUMPTION.json. These authored judgments await
+other-party adequacy/semantic confirmation and create no authority exception.
 
 Ordinary choices settled here: package name, local field spelling, marker,
 bounded validation fault, fixtures and reuse of the dependency generator.
@@ -314,3 +321,48 @@ variant or scope need. RECORDING-PREPARATION.md names remaining integration
 gates. Sign-off: absent; recommended handoff is independent review, then
 coordinator preparation and a bounded owner offer. No owner direction is
 written by this author.
+
+## Source-return integration — physical and logical boundaries
+
+[Observed] The sealed source return read all 130 complete BASE450 requirement
+occurrences and the complete CC-IMPACT-2..6/CC-REV-2/4 clauses. Its 15 affected
+entries include full sinks, every-field/identity/record censuses, broad wire
+compatibility, actual final-byte and derived readiness consumers, even when
+their normative rules remain valid. The 115 untied entries identify closed,
+preserved input/effect populations. The retained exact copies and fresh-clone
+replay mapping are in evidence/README.md. Neither the historical reports nor
+this author supply a third semantic verdict.
+
+[Observed] Independent synthetic compact-byte witnesses are N=0: 1692→1950,
+N=1: 2612→2647 and N=2: 3553→3365. The reference is larger for these small
+populations and smaller for the two-item peer. BYTE-REPLAY.json binds the
+inert inputs and all 18 threshold expectations. [Inferred] Always measure
+actual final encoded bytes. No guaranteed headroom, expanded/old-inline
+metric, alternate inline mode or observed-empty exception follows from the
+owner's saving motivation. Actual production saving remains Unknown.
+
+[Inferred] Preserve the order: existing credential gate; captured logical
+model with no new read; pure closed wire projection/validation; response
+identity over the actual carried representation with its existing declared
+exclusions; final serialization/byte gate; then any successful conditional
+304. A malformed form must fail before revalidation success and cannot use
+a prior observation. Do not silently normalize changed carriers out of the
+complete-body identity. Response identity is not claim/evaluation identity.
+
+[Inferred] The wire-validation 503's readiness:false belongs only to that
+no-model refusal payload. It is neither a PWB006 numeric resource breach nor
+a new retained PWB021 readiness arm or PWB022 owner-act invalidity case.
+Existing actual-byte breaches still reach PWB021's existing resource arm;
+its nine answers and PWB022's 84+2 population stay exact. A design persisting
+a new wire-fault readiness predicate needs an explicit PWB021 companion,
+not an inferred existing arm. No such design is proposed.
+
+[Inferred] The logical model and human renderer stay unchanged. Independent
+machine consumers/parity/sampling oracles expand the local wire to compare
+effective facts; human rendering does not consume serialized JSON. POC060's
+full-record/encoding/count/Unknown-set oracle remains affected, but its
+closed entity/relationship record-shape population excludes the bare shared
+value. Distinct full records, identities, prose reasons, provenance and all
+route action fields remain; no new schema field or record pooling is needed.
+Bounded fixtures and source reading do not prove actual HTTP/failure bounds,
+complete product markers, canonical adapters or external consumers.
