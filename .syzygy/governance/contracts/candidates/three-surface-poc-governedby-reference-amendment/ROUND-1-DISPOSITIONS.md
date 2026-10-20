@@ -73,18 +73,35 @@ checks exact population/quotes/hashes, independently enumerates tracked paths
 through ls-tree/archive, spec files through tree/pathlib and requirement
 occurrences through regex/line-prefix methods, then regenerates IMPACT-SWEEP.
 
-The author classifications are one affected, 125 explicitly unaffected with
-specific reasons, and four undecidable: POC-REQ-020/022 and the base and
-understanding-overlay occurrences of REQ-polaris-generation-019. Their
-comparator/compatibility consumption must be settled with the named evidence
-or the necessary companions prepared before offer. These Unknowns are
-neither owner N/A nor new owner variant questions. Independent review must
-confirm adequacy; the author does not turn the original blanket assertion
-into a new blanket assertion under another name.
+[Observed at the ddf1dc69 preparation checkpoint, 2026-10-20; the following
+state is superseded by the compatibility evidence below.]
 
-**Disposition:** unsound automatic predicate removed; full corpus assessed
-and ambiguity disclosed. Repairs await fresh independent confirmation;
-the four settling gates remain open and prevent an owner offer now.
+> The author classifications are one affected, 125 explicitly unaffected with
+> specific reasons, and four undecidable: POC-REQ-020/022 and the base and
+> understanding-overlay occurrences of REQ-polaris-generation-019. Their
+> comparator/compatibility consumption must be settled with the named evidence
+> or the necessary companions prepared before offer. These Unknowns are
+> neither owner N/A nor new owner variant questions. Independent review must
+> confirm adequacy; the author does not turn the original blanket assertion
+> into a new blanket assertion under another name.
+>
+> **Disposition:** unsound automatic predicate removed; full corpus assessed
+> and ambiguity disclosed. Repairs await fresh independent confirmation;
+> the four settling gates remain open and prevent an owner offer now.
+
+## Subsequent compatibility preparation
+
+[Inferred] The four named readings now have block-bound proposed dispositions
+in compatibility/PROPOSED-DISPOSITIONS.json and REQUIREMENT-CONSUMPTION.json.
+POC-REQ-020/022 remain affected by consumption; their unchanged normative
+blocks require equal effective facts and machine-derived scriptless samples.
+The two generator-019 occurrences retain their separate PWB interfaces. The
+source/identity map, independent literal examples and intended counterexamples
+are retained in compatibility/COMPATIBILITY-SETTLEMENT.md and reproducible by
+the scoped scripts/check_p115_compatibility_examples.py checker. These are
+proposed design conclusions awaiting fresh independent semantic confirmation;
+runtime conformance and broader canonical adaptation remain Unknown. No
+previous raw verdict or owner act is changed.
 
 ## Retained limits
 

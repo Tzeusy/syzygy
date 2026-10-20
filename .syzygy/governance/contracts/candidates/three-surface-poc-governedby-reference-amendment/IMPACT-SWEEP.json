@@ -24,9 +24,9 @@
     "spec_files": 8,
     "requirement_occurrences": 130,
     "warrant_complete_requirements": 130,
-    "affected_requirements": 1,
-    "unaffected_requirements": 125,
-    "undecidable_requirements": 4
+    "affected_requirements": 3,
+    "unaffected_requirements": 127,
+    "undecidable_requirements": 0
   },
   "spec_files": [
     "openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
@@ -48,7 +48,7 @@
     "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md": 42,
     "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md": 26
   },
-  "consumption_assessment_sha256": "31ec23458cca8f28b235594a943942a3c23d09ab1fb5e10364fa2e49d9315c4d",
+  "consumption_assessment_sha256": "d0814dc083695fdc7747c45e395d68e8b7efc15316e7590c4dd06adc75055874",
   "requirements": [
     {
       "path": "openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
@@ -543,15 +543,23 @@
       "warrant_classes_complete": true,
       "direct_changed_id_warrant": false,
       "requirement_identity": "REQ-polaris-generation-019",
-      "classification": "undecidable",
-      "consumption": "Unknown compatibility scope: the block explicitly requires preservation of PWB wire conventions through adaptation, but does not settle whether that adapter consumes POC workItems governedBy carriers",
-      "reason": "Unknown compatibility scope: the block explicitly requires preservation of PWB wire conventions through adaptation, but does not settle whether that adapter consumes POC workItems governedBy carriers. Empty changed-ID warrants cannot decide this.",
-      "method": "Authored assessment of this block's normative behavior and owned input/output scope against the proposed workItems-only carrier, preserved identity/populations/records and explicit exclusions; full block digest and source excerpt retained. Declaration and full-text signals are supporting observations, never an absence-of-edge proof.",
+      "classification": "explicitly-unaffected",
+      "consumption": "Positive owning-interface trace separates the source adapter input PocModel.projectShape and the six-class PWB NarrativeAnchor/CapturedTargetState form from the proposed POC workItems value carrier. P115 preserves every identified input and all anchor/claim/evaluation/observation identities. The conclusion is scoped to this representation change, not inferred from empty warrants or a grep absence.",
+      "reason": "Proposed unaffected by this workItems-only carrier delta. The PWB compatibility obligation can remain unchanged: neither the nine-slot source projection nor the preserved seven-slot NarrativeAnchor and three-slot captured state is redefined, promoted or broadened. The work observation anchor remains a source-population fact, distinct from item governing-intent Unknown. Unsupported generic adaptation remains explicit.",
+      "method": "Complete exact requirement block and owning input/output semantics read against compatibility/COMPATIBILITY-MAP.json and source/blob/block bindings; independent literal 40-fact/13-marker expansion and 42 intended rejection cases replayed with no product imports. Positive projectShape source-projection and separate six-class NarrativeAnchor boundary establish untiedness to this carrier; the bounded static census supplies supporting observations, not an external/dynamic absence proof.",
       "evidence_quotes": [
         "PWB wire conventions SHALL be preserved through explicit compatibility adaptation, never silently promoted into a generic schema or used to widen source admission."
       ],
-      "settling_evidence": "A reviewed explicit compatibility map must identify the input fields of this generator interchange adapter. Establish whether POC workItems.governedBy is consumed; if yes, demonstrate complete local expansion and unchanged canonical anchor/claim identity or prepare the invalidated successor in the same change.",
       "actor": "OpenAI Codex, syzygy-318o candidate writer; independent confirmation pending",
+      "compatibility_evidence": [
+        "compatibility/COMPATIBILITY-SETTLEMENT.md",
+        "compatibility/PROPOSED-DISPOSITIONS.json",
+        "compatibility/SOURCE-REFERENCES.json",
+        "compatibility/COUNTEREXAMPLES.json"
+      ],
+      "acceptance_and_limits": "Preserve these owning PWB interfaces and their exact target meaning. Do not coerce a revision into a canonical evaluation or invent missing canonical state. Broader canonical-adapter implementation conformance remains Unknown; this evidence does not claim a complete external/dynamic consumer inventory.",
+      "normative_block_text_change_required": false,
+      "independent_confirmation": "pending fresh semantic review",
       "full_text_signals": [
         "provenance",
         "wire"
@@ -899,15 +907,23 @@
       "warrant_classes_complete": true,
       "direct_changed_id_warrant": false,
       "requirement_identity": "REQ-polaris-generation-019",
-      "classification": "undecidable",
-      "consumption": "Unknown compatibility scope: this replacement also preserves PWB wire conventions through explicit adaptation, without declaring whether POC governedBy carriers are input to that adapter",
-      "reason": "Unknown compatibility scope: this replacement also preserves PWB wire conventions through explicit adaptation, without declaring whether POC governedBy carriers are input to that adapter. A block-level compatibility mapping is needed.",
-      "method": "Authored assessment of this block's normative behavior and owned input/output scope against the proposed workItems-only carrier, preserved identity/populations/records and explicit exclusions; full block digest and source excerpt retained. Declaration and full-text signals are supporting observations, never an absence-of-edge proof.",
+      "classification": "explicitly-unaffected",
+      "consumption": "Positive owning-interface trace separates the source adapter input PocModel.projectShape and the six-class PWB NarrativeAnchor/CapturedTargetState form from the proposed POC workItems value carrier. P115 preserves every identified input and all anchor/claim/evaluation/observation identities. The conclusion is scoped to this representation change, not inferred from empty warrants or a grep absence.",
+      "reason": "Proposed unaffected by this workItems-only carrier delta. The PWB compatibility obligation can remain unchanged: neither the nine-slot source projection nor the preserved seven-slot NarrativeAnchor and three-slot captured state is redefined, promoted or broadened. The work observation anchor remains a source-population fact, distinct from item governing-intent Unknown. Unsupported generic adaptation remains explicit. The understanding/clarification/dependency identity clauses in this replacement remain separate owning obligations; P115 changes none of their record inputs or identity semantics.",
+      "method": "Complete exact requirement block and owning input/output semantics read against compatibility/COMPATIBILITY-MAP.json and source/blob/block bindings; independent literal 40-fact/13-marker expansion and 42 intended rejection cases replayed with no product imports. Positive projectShape source-projection and separate six-class NarrativeAnchor boundary establish untiedness to this carrier; the bounded static census supplies supporting observations, not an external/dynamic absence proof.",
       "evidence_quotes": [
         "PWB wire conventions SHALL be preserved through explicit compatibility adaptation, never silently promoted into a generic schema or used to widen source admission."
       ],
-      "settling_evidence": "Confirm the understanding overlay compatibility map against its base REQ-polaris-generation-019 and the exact P115 wire fields. Name whether governedBy is consumed and prove preserved full state/identity or prepare a same-change successor.",
       "actor": "OpenAI Codex, syzygy-318o candidate writer; independent confirmation pending",
+      "compatibility_evidence": [
+        "compatibility/COMPATIBILITY-SETTLEMENT.md",
+        "compatibility/PROPOSED-DISPOSITIONS.json",
+        "compatibility/SOURCE-REFERENCES.json",
+        "compatibility/COUNTEREXAMPLES.json"
+      ],
+      "acceptance_and_limits": "Preserve these owning PWB interfaces and their exact target meaning. Do not coerce a revision into a canonical evaluation or invent missing canonical state. Broader canonical-adapter implementation conformance remains Unknown; this evidence does not claim a complete external/dynamic consumer inventory.",
+      "normative_block_text_change_required": false,
+      "independent_confirmation": "pending fresh semantic review",
       "full_text_signals": [
         "epistemic",
         "provenance",
@@ -2388,15 +2404,23 @@
       "warrant_classes_complete": true,
       "direct_changed_id_warrant": false,
       "requirement_identity": "POC-REQ-020",
-      "classification": "undecidable",
-      "consumption": "Unknown oracle reading: the block requires field-by-field equality of client facts against machine wire outputs, while P115 supplies some effective values through an explicit local reference",
-      "reason": "Unknown oracle reading: the block requires field-by-field equality of client facts against machine wire outputs, while P115 supplies some effective values through an explicit local reference. The required comparator interpretation must be settled, not inferred from empty declarations.",
-      "method": "Authored assessment of this block's normative behavior and owned input/output scope against the proposed workItems-only carrier, preserved identity/populations/records and explicit exclusions; full block digest and source excerpt retained. Declaration and full-text signals are supporting observations, never an absence-of-edge proof.",
+      "classification": "affected",
+      "consumption": "The independent parity oracle consumes the changed machine governedBy representation to obtain the effective per-item fact. This is a consumption edge under CC-IMPACT-2/3 even though no normative words need change.",
+      "reason": "Affected by consumption. Its adopted block can remain unchanged: equal facts at the same evaluation are retained by one deterministic same-body expansion of the complete shared value. The comparator reads the two wire outputs and performs the closed expansion itself, without importing surface code. A raw inline-property reader is incompatible and must not be treated as the required effective-fact oracle.",
+      "method": "Complete exact requirement block and owning input/output semantics read against compatibility/COMPATIBILITY-MAP.json and source/blob/block bindings; independent literal 40-fact/13-marker expansion and 42 intended rejection cases replayed with no product imports. Parity/sampling consumption is affected; distinguish unchanged required outcome from changed wire reading.",
       "evidence_quotes": [
         "- **Oracle independence**: the comparator reads the wire outputs of\n  both channels; it imports no rendering code."
       ],
-      "settling_evidence": "Fresh semantic review must compare POC020 field-by-field wire equality with the exact P115 expansion contract and an independent literal human/machine fact pair. Confirm the comparator may expand locally or require a same-change POC020 companion before offer.",
       "actor": "OpenAI Codex, syzygy-318o candidate writer; independent confirmation pending",
+      "compatibility_evidence": [
+        "compatibility/COMPATIBILITY-SETTLEMENT.md",
+        "compatibility/PROPOSED-DISPOSITIONS.json",
+        "compatibility/SOURCE-REFERENCES.json",
+        "compatibility/COUNTEREXAMPLES.json"
+      ],
+      "acceptance_and_limits": "Count the complete actual parity-marker population at the later implementation; compare every field, including closed reason and all route/action metadata, against the same evaluation after the one allowed hop. Reject malformed references before extracting any facts. The 40-fact/13-marker literal proof is bounded design evidence, not that later exhaustive runtime result.",
+      "normative_block_text_change_required": false,
+      "independent_confirmation": "pending fresh semantic review",
       "full_text_signals": [
         "machine answer",
         "wire"
@@ -2429,15 +2453,23 @@
       "warrant_classes_complete": true,
       "direct_changed_id_warrant": false,
       "requirement_identity": "POC-REQ-022",
-      "classification": "undecidable",
-      "consumption": "Unknown oracle reading: sampled no-script expected facts come from the machine answer",
-      "reason": "Unknown oracle reading: sampled no-script expected facts come from the machine answer. The block does not explicitly say whether this sampler expands the proposed local references; its source-of-expected-facts contract needs confirmation.",
-      "method": "Authored assessment of this block's normative behavior and owned input/output scope against the proposed workItems-only carrier, preserved identity/populations/records and explicit exclusions; full block digest and source excerpt retained. Declaration and full-text signals are supporting observations, never an absence-of-edge proof.",
+      "classification": "affected",
+      "consumption": "The scriptless sampler derives expected values from the changed machine governedBy representation. This is a consumption edge under CC-IMPACT-2/3, separate from whether its text needs amendment.",
+      "reason": "Affected by consumption. Its adopted block can remain unchanged: the sampler obtains the same effective facts by the closed machine-side expansion, while the human Unknown/reason/route and warrant statement remain server-rendered. No client script or new lookup is needed to read them. Keeping existing per-item subject records distinct preserves the no-script human input.",
+      "method": "Complete exact requirement block and owning input/output semantics read against compatibility/COMPATIBILITY-MAP.json and source/blob/block bindings; independent literal 40-fact/13-marker expansion and 42 intended rejection cases replayed with no product imports. Parity/sampling consumption is affected; distinguish unchanged required outcome from changed wire reading.",
       "evidence_quotes": [
         "- **Oracle independence**: the sampled expected facts come from the\n  machine answer."
       ],
-      "settling_evidence": "Fresh semantic review must trace the POC022 machine-derived sample through one literal local expansion and the unchanged scriptless human fact. Confirm the effective-fact reading or require its same-change companion before offer.",
       "actor": "OpenAI Codex, syzygy-318o candidate writer; independent confirmation pending",
+      "compatibility_evidence": [
+        "compatibility/COMPATIBILITY-SETTLEMENT.md",
+        "compatibility/PROPOSED-DISPOSITIONS.json",
+        "compatibility/SOURCE-REFERENCES.json",
+        "compatibility/COUNTEREXAMPLES.json"
+      ],
+      "acceptance_and_limits": "At the later implementation, sample expected values from the complete current machine body after validated one-hop expansion and compare the no-script served HTML or explicit unavailability text. Missing/wrong/cross-body values must fail explicitly; an Unknown observation must not become an empty or zero result.",
+      "normative_block_text_change_required": false,
+      "independent_confirmation": "pending fresh semantic review",
       "full_text_signals": [
         "machine answer"
       ]

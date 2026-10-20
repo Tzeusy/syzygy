@@ -40,6 +40,13 @@ this author's classification is not confirmation (CC-SPEC-8/9/11).
 The strengthened preparation oracle uses 46 literal wire cases, including a
 positive case retaining distinct full entity/relationship/per-item records,
 and rejects 15 retained wire counterexamples plus two classifier regressions.
-[Unknown] Four block-level consumption relationships still need the exact
-settling evidence in REQUIREMENT-CONSUMPTION.json before an owner offer.
-These author checks neither confirm the coverage matrix nor implement it.
+[Inferred] The four earlier block-level consumption Unknowns now have
+proposed dispositions in compatibility/COMPATIBILITY-SETTLEMENT.md and
+REQUIREMENT-CONSUMPTION.json. POC-REQ-020/022 are affected by consumption,
+with unchanged normative obligations; both generator-019 occurrences retain
+their distinct PWB compatibility boundary. The independent literal pair and
+negative examples are reproducible with
+`python3 scripts/check_p115_compatibility_examples.py --check`.
+Fresh semantic confirmation is pending. Runtime conformance and broader
+canonical adaptation remain Unknown. These checks neither confirm the
+coverage matrix nor implement the proposed wire behavior.

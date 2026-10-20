@@ -1,0 +1,95 @@
+{
+  "epistemic": "Inferred",
+  "subject": {
+    "sourceCommit": "eba011dfbe254c09a88ccc374b3efe5ff5df1762",
+    "activeCandidateCommit": "662b4b49505776c21856791abc52cda72346c5d9",
+    "retainedCoreCommit": "ddf1dc69b724df72a5e3c4f224500aa51d344ef0",
+    "manifestFileSha256": "77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd",
+    "proposedPocSpecSha256": "01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37"
+  },
+  "purpose": "Exact proposed occurrence-level disposition text for coordinator integration and fresh semantic review; no authority act, candidate edit or verdict.",
+  "population": 4,
+  "dispositions": [
+    {
+      "epistemic": "Inferred",
+      "status": "Proposed disposition; independent semantic confirmation pending",
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "identity": "POC-REQ-020",
+      "blockSha256": "bc5859385af8cd64bb01980a794d220ff49775eb5fd03f68a2d1f1e8347216b8",
+      "blockStartLine": 544,
+      "proposedClassification": "affected",
+      "consumption": "The independent parity oracle consumes the changed machine governedBy representation to obtain the effective per-item fact. This is a consumption edge under CC-IMPACT-2/3 even though no normative words need change.",
+      "designConclusion": "Affected by consumption. Its adopted block can remain unchanged: equal facts at the same evaluation are retained by one deterministic same-body expansion of the complete shared value. The comparator reads the two wire outputs and performs the closed expansion itself, without importing surface code. A raw inline-property reader is incompatible and must not be treated as the required effective-fact oracle.",
+      "normativeBlockTextChangeRequiredByThisDelta": false,
+      "sameChangeHandling": "The POC specification is already one of the six proposed subjects. Include this consumption evidence and later acceptance obligations in the same change; no extra specification subject is introduced.",
+      "acceptanceAndLimits": "Count the complete actual parity-marker population at the later implementation; compare every field, including closed reason and all route/action metadata, against the same evaluation after the one allowed hop. Reject malformed references before extracting any facts. The 40-fact/13-marker literal proof is bounded design evidence, not that later exhaustive runtime result.",
+      "companionDeltaTrigger": "If a design changes an adopted equality, scriptless availability, PWB anchor meaning, identity/state or source admission obligation, that invalidated requirement needs a reviewed companion delta in the same change under CC-IMPACT-6. This appendix grants no exception.",
+      "evidence": [
+        "COMPATIBILITY-MAP.json",
+        "LITERAL-FACTS.json",
+        "COUNTEREXAMPLES.json"
+      ]
+    },
+    {
+      "epistemic": "Inferred",
+      "status": "Proposed disposition; independent semantic confirmation pending",
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "identity": "POC-REQ-022",
+      "blockSha256": "85f929db8aba12cadaec155a54107d82c3a0904ec96bd73049e444c5e6d0ba6a",
+      "blockStartLine": 624,
+      "proposedClassification": "affected",
+      "consumption": "The scriptless sampler derives expected values from the changed machine governedBy representation. This is a consumption edge under CC-IMPACT-2/3, separate from whether its text needs amendment.",
+      "designConclusion": "Affected by consumption. Its adopted block can remain unchanged: the sampler obtains the same effective facts by the closed machine-side expansion, while the human Unknown/reason/route and warrant statement remain server-rendered. No client script or new lookup is needed to read them. Keeping existing per-item subject records distinct preserves the no-script human input.",
+      "normativeBlockTextChangeRequiredByThisDelta": false,
+      "sameChangeHandling": "The POC specification is already one of the six proposed subjects. Include this consumption evidence and later acceptance obligations in the same change; no extra specification subject is introduced.",
+      "acceptanceAndLimits": "At the later implementation, sample expected values from the complete current machine body after validated one-hop expansion and compare the no-script served HTML or explicit unavailability text. Missing/wrong/cross-body values must fail explicitly; an Unknown observation must not become an empty or zero result.",
+      "companionDeltaTrigger": "If a design changes an adopted equality, scriptless availability, PWB anchor meaning, identity/state or source admission obligation, that invalidated requirement needs a reviewed companion delta in the same change under CC-IMPACT-6. This appendix grants no exception.",
+      "evidence": [
+        "COMPATIBILITY-MAP.json",
+        "LITERAL-FACTS.json",
+        "COUNTEREXAMPLES.json"
+      ]
+    },
+    {
+      "epistemic": "Inferred",
+      "status": "Proposed disposition; independent semantic confirmation pending",
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "identity": "REQ-polaris-generation-019",
+      "blockSha256": "ae2e8f7b811b5837aef78056a9f0e8db10d7b195cade5e768d52215fbd5cb970",
+      "blockStartLine": 1013,
+      "proposedClassification": "unaffected",
+      "consumption": "Positive owning-interface trace separates the source adapter input PocModel.projectShape and the six-class PWB NarrativeAnchor/CapturedTargetState form from the proposed POC workItems value carrier. P115 preserves every identified input and all anchor/claim/evaluation/observation identities. The conclusion is scoped to this representation change, not inferred from empty warrants or a grep absence.",
+      "designConclusion": "Proposed unaffected by this workItems-only carrier delta. The PWB compatibility obligation can remain unchanged: neither the nine-slot source projection nor the preserved seven-slot NarrativeAnchor and three-slot captured state is redefined, promoted or broadened. The work observation anchor remains a source-population fact, distinct from item governing-intent Unknown. Unsupported generic adaptation remains explicit.",
+      "normativeBlockTextChangeRequiredByThisDelta": false,
+      "sameChangeHandling": "Retain this adopted generator block and its compatibility limits unchanged.",
+      "acceptanceAndLimits": "Preserve these owning PWB interfaces and their exact target meaning. Do not coerce a revision into a canonical evaluation or invent missing canonical state. Broader canonical-adapter implementation conformance remains Unknown; this evidence does not claim a complete external/dynamic consumer inventory.",
+      "companionDeltaTrigger": "If a design changes an adopted equality, scriptless availability, PWB anchor meaning, identity/state or source admission obligation, that invalidated requirement needs a reviewed companion delta in the same change under CC-IMPACT-6. This appendix grants no exception.",
+      "evidence": [
+        "COMPATIBILITY-MAP.json",
+        "LITERAL-FACTS.json",
+        "COUNTEREXAMPLES.json"
+      ]
+    },
+    {
+      "epistemic": "Inferred",
+      "status": "Proposed disposition; independent semantic confirmation pending",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "identity": "REQ-polaris-generation-019",
+      "blockSha256": "796464323fb006f92248198ffab7296b05ddf735df9c2c84039c1a7068ecc3e7",
+      "blockStartLine": 506,
+      "proposedClassification": "unaffected",
+      "consumption": "Positive owning-interface trace separates the source adapter input PocModel.projectShape and the six-class PWB NarrativeAnchor/CapturedTargetState form from the proposed POC workItems value carrier. P115 preserves every identified input and all anchor/claim/evaluation/observation identities. The conclusion is scoped to this representation change, not inferred from empty warrants or a grep absence.",
+      "designConclusion": "Proposed unaffected by this workItems-only carrier delta. The PWB compatibility obligation can remain unchanged: neither the nine-slot source projection nor the preserved seven-slot NarrativeAnchor and three-slot captured state is redefined, promoted or broadened. The work observation anchor remains a source-population fact, distinct from item governing-intent Unknown. Unsupported generic adaptation remains explicit. The understanding/clarification/dependency identity clauses in this replacement remain separate owning obligations; P115 changes none of their record inputs or identity semantics.",
+      "normativeBlockTextChangeRequiredByThisDelta": false,
+      "sameChangeHandling": "Retain this adopted generator block and its compatibility limits unchanged.",
+      "acceptanceAndLimits": "Preserve these owning PWB interfaces and their exact target meaning. Do not coerce a revision into a canonical evaluation or invent missing canonical state. Broader canonical-adapter implementation conformance remains Unknown; this evidence does not claim a complete external/dynamic consumer inventory.",
+      "companionDeltaTrigger": "If a design changes an adopted equality, scriptless availability, PWB anchor meaning, identity/state or source admission obligation, that invalidated requirement needs a reviewed companion delta in the same change under CC-IMPACT-6. This appendix grants no exception.",
+      "evidence": [
+        "COMPATIBILITY-MAP.json",
+        "LITERAL-FACTS.json",
+        "COUNTEREXAMPLES.json"
+      ]
+    }
+  ],
+  "classificationNote": "Affected consumption is distinct from a required normative text amendment. Do not classify POC-020/022 as untied just because the existing obligations can be met. No global sweep totals are asserted here."
+}

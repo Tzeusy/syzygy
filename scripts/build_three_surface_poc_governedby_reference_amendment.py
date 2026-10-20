@@ -426,9 +426,21 @@ def sweep() -> dict:
             "actor": "OpenAI Codex, syzygy-318o candidate writer", "independent_confirmation": "pending"}
 
 
+def compatibility_findings() -> list[str]:
+    """Independent literal human/machine examples; all mutations are scratch-only."""
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/check_p115_compatibility_examples.py"), "--check"],
+        cwd=ROOT, capture_output=True, text=True)
+    if result.returncode:
+        return ["literal compatibility examples failed: " + result.stdout + result.stderr]
+    print(result.stdout, end="")
+    return []
+
+
 def check(write: bool = False) -> list[str]:
     current, proposed = collect()
     errors = structure_findings(proposed, current)
+    errors.extend(compatibility_findings())
     cases = json.loads((CANDIDATE / "fixtures/wire-cases.json").read_text())["cases"]
     errors.extend(fixture_findings(cases))
     regressions = json.loads((CANDIDATE / "fixtures/round-1-counterexamples.json").read_text())
@@ -450,6 +462,7 @@ def check(write: bool = False) -> list[str]:
 def selftest() -> list[str]:
     current, proposed = collect()
     errors = structure_findings(proposed, current)
+    errors.extend(compatibility_findings())
     if errors:
         return ["baseline fails before mutations", *errors]
     mutants = []
