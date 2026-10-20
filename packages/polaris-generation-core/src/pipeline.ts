@@ -181,6 +181,13 @@ class PipelineStop extends Error {
 
 const dataLimits = (bytes: number): CanonicalJsonLimits => ({ maxBytes: bytes, maxNodes: 100_000, maxDepth: 64 });
 
+function compactSource(source: GenerationSource): GenerationSource {
+  if (source.redaction !== undefined || source.body === undefined || source.spans.length !== 1 || source.spans[0]?.start !== 0
+    || source.spans[0]?.end !== Buffer.byteLength(source.body)) return source;
+  const { body: _duplicate, ...bound } = source;
+  return bound;
+}
+
 /** Runs the reusable editorial pipeline. This never awards rendered readiness or
  * authorship, and has no default provider, filesystem or live lifecycle adapter.
  */
@@ -212,12 +219,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     try { validateGenerationSourceTransport(detached.sources); } catch { stop('invalid-request'); }
     // A full-file span already retains the exact verified body. Do not bill a
     // second copy; partial spans keep the owning body for validation.
-    const compact = { ...detached, sources: detached.sources.map(source => {
-      if (source.redaction !== undefined || source.body === undefined || source.spans.length !== 1 || source.spans[0]?.start !== 0
-        || source.spans[0]?.end !== Buffer.byteLength(source.body)) return source;
-      const { body: _verifiedBody, ...bound } = source;
-      return bound;
-    }) };
+    const compact = { ...detached, sources: detached.sources.map(compactSource) };
     let frozen: PipelineRequest;
     try { frozen = JSON.parse(encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))) as PipelineRequest; }
     catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
@@ -249,20 +251,33 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     check();
     const verifiedSources = await bounded(() => ports.verifySources(frozen));
     if (!verifiedSources) stop('source-refused');
-    const redacted = frozen.sources.filter(source => source.redaction !== undefined);
-    if (redacted.length > 0) {
-      if (!Array.isArray(verifiedSources)) stop('source-refused');
+    const hasRedacted = frozen.sources.some(source => source.redaction !== undefined);
+    if (Array.isArray(verifiedSources)) {
       try { validateGenerationSources(verifiedSources); } catch { stop('source-refused'); }
-      const byId = new Map(verifiedSources.map(source => [source.sourceId, source]));
-      for (const source of redacted) {
-        const verified = byId.get(source.sourceId);
-        try {
-          if (verified === undefined || encodeCanonicalJson(verified, dataLimits(budget.maxInputBytes)) !== encodeCanonicalJson(source, dataLimits(budget.maxInputBytes))) stop('source-refused');
-        } catch { stop('source-refused'); }
-      }
-      // Use the freshly verified in-process records, never the JSON transport's self-declared projection.
-      frozen = { ...frozen, sources: frozen.sources.map(source => source.redaction === undefined ? source : byId.get(source.sourceId)!) };
-    }
+      if (verifiedSources.length !== frozen.sources.length) stop('source-refused');
+      // Opaque excluded ids are keyed afresh by each read. Only the alias/carrier differs: all safe metadata, reasons and multiplicity
+      // must still match. Such rows have no body, original object id or anchor; their aliases preserve the frozen consent population.
+      const opaque = (source: GenerationSource): boolean => source.objectId === null && source.exclusion.excluded && source.path === `withheld/${source.sourceId}`;
+      const keyOf = (source: GenerationSource): string => {
+        const compact = compactSource(source);
+        return encodeCanonicalJson(opaque(source) ? { ...compact, sourceId: null, path: null } : compact, dataLimits(budget.maxInputBytes));
+      };
+      const fresh = new Map<string, GenerationSource[]>();
+      try {
+        for (const source of verifiedSources) {
+          const key = keyOf(source);
+          const bucket = fresh.get(key);
+          if (bucket === undefined) fresh.set(key, [source]); else bucket.push(source);
+        }
+        const sources = frozen.sources.map(requested => {
+          const verified = fresh.get(keyOf(requested))?.pop();
+          if (verified === undefined) stop('source-refused');
+          return opaque(verified) ? { ...verified, sourceId: requested.sourceId, path: requested.path } : compactSource(verified);
+        });
+        // Every row used below comes from the fresh gated read, including ordinary bodies in mixed requests.
+        frozen = { ...frozen, sources };
+      } catch { stop('source-refused'); }
+    } else if (hasRedacted) stop('source-refused');
     const admitted = quotableGenerationSources(frozen.sources);
     if (admitted.length === 0 || admitted.length > 200) stop('source-refused');
     const sourcePopulation = frozen.sources.map(source => ({ sourceId: source.sourceId, classificationBasis: source.classificationBasis,
@@ -425,7 +440,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       check();
       return validated;
     };
-    context.inventory = await stage('inventory', { sources: admitted, sourcePopulation, readerQuestions: context.readerQuestions, requestedAssets: context.requestedAssets });
+    context.inventory = await stage('inventory', { sources: context.sources, sourcePopulation, readerQuestions: context.readerQuestions, requestedAssets: context.requestedAssets });
     context.plan = await stage('plan', { sources: sourcePopulation, readerQuestions: context.readerQuestions, inventory: context.inventory, requestedAssets: context.requestedAssets });
     context.draft = await stage('author', { sources: citedSpans(context.plan), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, requestedAssets: context.requestedAssets });
     context.draft = await stage('edit', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });

@@ -210,7 +210,7 @@ export async function readScreenedRepoCorpus(repoRoot: string, config: Pick<Read
 
 /** The existing pipeline source-verification boundary for a public-source corpus. Re-evaluates policy and observation admission, reads
  * original Git blobs by the pinned identifiers, verifies their hashes, and screens them again. Returned JSON projections never verify
- * themselves: the pipeline compares redacted request records against this newly produced population before dispatch. */
+ * themselves: the pipeline compares the complete request population against this newly produced population before dispatch. */
 export function screenedRepoCorpusVerifier(repoRoot: string, config: Pick<ReaderConfig, 'repositoryId' | 'revision' | 'include' | 'exclude' | 'oversize'>,
   ports: Omit<RepoCorpusPorts, 'screen'> & { readonly policyAct?: PublicSourcePolicyActPort; readonly runKey?: Buffer } = {}): PipelinePorts['verifySources'] {
   return async request => {
