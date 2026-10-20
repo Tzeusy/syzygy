@@ -25,11 +25,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 KEY = "three-surface-poc-governedby-reference-amendment"
 VERSION = "1.0"
-# Provisional while root finishes the coherent core; rebind before tool freeze.
-CORE_COMMIT = "ddf1dc69b724df72a5e3c4f224500aa51d344ef0"
+CORE_COMMIT = "abd3f6ca2e8e99ad59327fdfc7b38d8bf41b07b5"
 BASE = "4504514c019ca0ee0cb4a89ed97445a0bad21915"
 CANDIDATE = Path(".syzygy/governance/contracts/candidates") / KEY
 BUILDER = Path("scripts/build_three_surface_poc_governedby_reference_amendment.py")
+COMPATIBILITY = Path("scripts/check_p115_compatibility_examples.py")
 MANIFEST = CANDIDATE / "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-MANIFEST.txt"
 MANIFEST_SHA256 = "77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f27270bd"
 RECORD = Path(".syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md")
@@ -55,8 +55,8 @@ def core_paths(root: Path) -> list[str]:
     paths = git(root if (root / ".git").exists() else ROOT, "diff", "--name-only", "-z", BASE, CORE_COMMIT).decode().split("\0")
     paths = [p for p in paths if p]
     if not paths or any(not (p.startswith(CANDIDATE.as_posix() + "/")
-                            or p == BUILDER.as_posix()) for p in paths):
-        raise ValueError("frozen core path population is outside the P115 package/builder")
+                            or p in {BUILDER.as_posix(), COMPATIBILITY.as_posix()}) for p in paths):
+        raise ValueError("frozen core path population is outside the P115 package and two frozen scripts")
     return paths
 
 
@@ -391,6 +391,8 @@ def selftest(root: Path) -> int:
         expect("read-only snapshot retains signed proof and exact chain",
                is_signed(snapshot) and not outcomes(snapshot).failed)
         # One predicate per mutation, restoring exact bytes after each case.
+        unresolved = json.loads((tree / CANDIDATE / "REQUIREMENT-CONSUMPTION.json").read_text())
+        unresolved["entries"][0]["classification"] = "undecidable"
         mutations = [
             ("record-only is partial", AGGREGATE, aggregate.encode()),
             ("aggregate-only is partial", RECORD, None),
@@ -405,6 +407,8 @@ def selftest(root: Path) -> int:
             ("rollback to predecessor is refused", SUBJECTS[-1], before[SUBJECTS[-1]]),
             ("wrong patch bytes", CANDIDATE / "proposed/spec.md.patch",
              (tree / CANDIDATE / "proposed/spec.md.patch").read_bytes() + b"\n"),
+            ("unresolved consumption entry", CANDIDATE / "REQUIREMENT-CONSUMPTION.json",
+             json.dumps(unresolved).encode()),
         ]
         for name, path, changed in mutations:
             target = tree / path
@@ -414,6 +418,10 @@ def selftest(root: Path) -> int:
             else:
                 target.write_bytes(changed)
             expect(name, not is_signed(tree))
+            if name == "unresolved consumption entry":
+                expect("unresolved consumption trips its own signed predicate",
+                       "signed recognition remains gated by 1 undecidable requirement-consumption entries"
+                       in signed_findings(tree))
             if name == "record-only is partial":
                 expect("partial transaction cannot explain predecessor rows",
                        not p108.applied(tree) and not bootstrap_ok(tree)
