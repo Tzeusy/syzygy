@@ -61,9 +61,19 @@ existing actuator toolchain to close it" and that the "orchestration tools
 remain the mechanisms; Syzygy integrates them" (`doctrine/vision.md`), and
 the loop stays human-triggered: the operator's one command triggers it.
 
+Two later owner directions shape how Syzygy starts each session.
+`DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15`
+(`decisions/OWNER-DIRECTION-DOSSIER-LOCAL-CLI-SUBPROCESS-2026-10-15.md`)
+keeps the provider routes parked and directs that Syzygy run the
+operator's local `codex` or `claude` binary as a subprocess, with explicit
+workspace, instructions, artifacts path and skill and MCP guidance, and no
+custom SDK or API tooling. `DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15`
+(`decisions/OWNER-DIRECTION-DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15.md`)
+answers the content-class question by choosing disclosure over refusal.
+
 ## What changes
 
-Five added requirements to `polaris-generation`, all in a new *launched*
+Six added requirements to `polaris-generation`, all in a new *launched*
 form of the operator-agent mode, taken only when the operator starts a run
 with the one command:
 
@@ -96,6 +106,26 @@ with the one command:
   no-execution rule of SEC-3 in every brief; Syzygy refuses `allow-execution`
   for it, because the D9 text says "Syzygy never gives the instruction to a
   session it started" (`doctrine/security.md`).
+- **045, the local agent CLI subprocess runner.** Syzygy performs every model
+  step only by starting the operator's own `claude` or `codex` binary. The
+  operator declares the tool by path, version and provider. Syzygy writes
+  and records the environment itself, and no credential variable passes;
+  the tool authenticates only through its own credential file, the
+  operator's local login, which is checked before any session starts.
+  Explicit inputs only: the workspace, an instructions file, the artifacts
+  path, and the named skills and MCP servers. The operator's and the
+  clone's settings, instruction files, skills, agents, commands, output
+  styles, plugins, hooks and ambient MCP are excluded. Syzygy refuses the
+  run when an exclusion is unobserved, when administrator-managed settings
+  redirect or authenticate the provider or cannot be read, when the binary
+  is absent or mismatched, when a bypass-permissions mode is asked for, or
+  when no agent-provider statement covers the tool and provider. Each
+  session has a time bound. Syzygy carries no provider SDK, API client or
+  route. The run page lists the content classes present at the pinned
+  revision, marks those the statement does not list, and says the tool may
+  have sent them. It was drafted and reviewed in five rounds as
+  `contracts/candidates/dossier-local-cli-subprocess-runner/`; the round-5
+  notes are carried in here.
 
 Each added requirement names the predecessor text it displaces for launched
 runs and edits no byte of REQ-033 to 036.
@@ -112,7 +142,8 @@ runs and edits no byte of REQ-033 to 036.
 - **No new egress, consent or read.** Admission, screening, checks, packets
   and verdict validation are those of REQ-033 to 036.
 - **Out of scope:** remote or multi-host sessions; agent tools other than
-  those with a per-project provider statement in force; automatic retries of
+  `claude` and `codex`, and either of them without a per-project provider
+  statement in force for the declared provider; automatic retries of
   a refused check beyond the declared repair-cycle limit; any change to
   `polaris-dossier-arbitrary-public-repo`.
 
@@ -128,9 +159,9 @@ The owner packet orders them and recommends answers.
 
 ## Capabilities
 
-- **Modified:** `polaris-generation`, by five added requirements (040 to
-  044; free at `origin/main` `09c7a61d`, after the arbitrary-repo
-  candidate's 037 to 039).
+- **Modified:** `polaris-generation`, by six added requirements (040 to
+  045; 040 to 044 free at `origin/main` `09c7a61d`, after the arbitrary-repo
+  candidate's 037 to 039; 045 free in `openspec/` at the fold, 2026-10-20).
 - **New:** none.
 
 ## Amendment relation
