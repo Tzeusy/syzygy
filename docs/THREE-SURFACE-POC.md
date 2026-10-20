@@ -211,6 +211,19 @@ keeps its exact-table link as well.
   fetches every target in both forms, including the Orrery link created after
   its local script runs.
 
+**Trajectory selection.** The board renders up to 200 most recently updated
+non-closed items plus up to 50 most recently closed items. It ranks recorded
+timestamps as instants, puts missing or invalid times last, breaks timestamp
+ties by ascending item id, and orders cards by ascending id within each
+status column. The page states that rule and its rendered, excluded and full
+observed counts. A demonstrated item outside either window gets an explicit
+callout rather than an extra card. The machine answer keeps every observed
+work item in `workItems.items`; `trajectory.rendered` is the bounded selection.
+The fixed populations prevent backlog growth from adding cards; response
+ceilings still apply to the encoded bodies, whose size also depends on each
+selected item's text. The size-only comparison and choice rationale are in
+`docs/evidence/syzygy-blbu-trajectory-selection-2026-10-20.json`.
+
 **Steps.**
 
 1. Open the printed human URL. Polaris shows the purpose and governing intent

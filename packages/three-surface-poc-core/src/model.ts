@@ -45,6 +45,8 @@ import {
   type ResponseIdentity,
 } from './response-identity.js';
 
+// Fixed populations keep the human board bounded as the live backlog grows.
+const NON_CLOSED_LIMIT = 200;
 const RECENT_CLOSED_WINDOW = 50;
 
 /** The one lawful action a POC Unknown can lead to (M4 slice 1): the
@@ -1090,6 +1092,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
           ...(workItems.kind === 'observed' ? { observedItemCount: workItems.items.length } : {}),
         }
       : projectTrajectory(workItems, {
+          nonClosedLimit: NON_CLOSED_LIMIT,
           recentClosedWindow: RECENT_CLOSED_WINDOW,
         });
   const projectShape: ProjectShape =

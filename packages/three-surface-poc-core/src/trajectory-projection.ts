@@ -44,7 +44,21 @@ export interface TrajectoryProjectionUnknown {
 export type TrajectoryProjection = TrajectoryProjectionObserved | TrajectoryProjectionUnknown;
 
 export interface ProjectTrajectoryOptions {
+  readonly nonClosedLimit: number;
   readonly recentClosedWindow: number;
+}
+
+function byId(a: WorkItemFact, b: WorkItemFact): number {
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** Missing or invalid recorded times rank last; never infer one from another field. */
+function newestFirst(a: string | null, b: string | null): number {
+  const aTime = Date.parse(a ?? '');
+  const bTime = Date.parse(b ?? '');
+  const aRank = Number.isNaN(aTime) ? -Infinity : aTime;
+  const bRank = Number.isNaN(bTime) ? -Infinity : bTime;
+  return aRank === bRank ? 0 : aRank > bRank ? -1 : 1;
 }
 
 function laneItem(item: WorkItemFact): TrajectoryLaneItem {
@@ -66,8 +80,8 @@ function laneItem(item: WorkItemFact): TrajectoryLaneItem {
 /**
  * Deterministic per observation (POC-REQ-041): every temporal value comes
  * from `item.createdAt/updatedAt/closedAt`, never a render-time clock.
- * Selection is input-ordered (sorted by id) so two renders of one
- * observation select and order identically.
+ * Both populations are capped, ranked by their recorded update/closure
+ * times and then id. Cards keep ascending id order within each column.
  */
 export function projectTrajectory(
   workItems: WorkItemsResult,
@@ -77,14 +91,14 @@ export function projectTrajectory(
     return { kind: 'unknown', reason: workItems.reason };
   }
 
-  const sorted = [...workItems.items].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  const open = sorted.filter((item) => item.status !== 'closed');
+  const sorted = [...workItems.items].sort(byId);
+  const open = sorted
+    .filter((item) => item.status !== 'closed')
+    .sort((a, b) => newestFirst(a.updatedAt, b.updatedAt) || byId(a, b))
+    .slice(0, options.nonClosedLimit);
   const closed = sorted
     .filter((item) => item.status === 'closed')
-    .sort((a, b) => {
-      const byClosed = (b.closedAt ?? '').localeCompare(a.closedAt ?? '');
-      return byClosed !== 0 ? byClosed : a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-    })
+    .sort((a, b) => newestFirst(a.closedAt, b.closedAt) || byId(a, b))
     .slice(0, options.recentClosedWindow);
 
   const renderedIds = new Set<string>([...open.map((item) => item.id), ...closed.map((item) => item.id)]);
@@ -106,7 +120,7 @@ export function projectTrajectory(
   return {
     kind: 'observed',
     doltRevision: workItems.provenance.revision,
-    selectionRule: `all non-closed items, plus the ${options.recentClosedWindow} most recently closed items`,
+    selectionRule: `up to ${options.nonClosedLimit} most recently updated non-closed items, plus up to ${options.recentClosedWindow} most recently closed items; missing or invalid times last, timestamp ties and card order by ascending item id`,
     rendered,
     renderedCount: rendered.length,
     excludedCount: workItems.items.length - rendered.length,

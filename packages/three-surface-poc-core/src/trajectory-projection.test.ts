@@ -20,7 +20,7 @@ function itemsFixture(): WorkItemsObserved {
 
 describe('Trajectory projection', () => {
   it('places every rendered item by its declared status-to-column mapping (POC-REQ-040)', () => {
-    const projection = projectTrajectory(itemsFixture(), { recentClosedWindow: 1 });
+    const projection = projectTrajectory(itemsFixture(), { nonClosedLimit: 10, recentClosedWindow: 1 });
     expect(projection.kind).toBe('observed');
     if (projection.kind !== 'observed') throw new Error('unreachable');
     for (const item of projection.rendered) {
@@ -29,19 +29,21 @@ describe('Trajectory projection', () => {
   });
 
   it('declares scope and reconciles rendered + excluded against the total (POC-REQ-042)', () => {
-    const projection = projectTrajectory(itemsFixture(), { recentClosedWindow: 1 });
+    const fixture = itemsFixture();
+    const projection = projectTrajectory(fixture, { nonClosedLimit: 1, recentClosedWindow: 1 });
     if (projection.kind !== 'observed') throw new Error('unreachable');
     expect(projection.renderedCount + projection.excludedCount).toBe(projection.totalCount);
     expect(projection.totalCount).toBe(4);
-    // open + in_progress (2) + 1 most-recently-closed = 3 rendered, 1 excluded
-    expect(projection.renderedCount).toBe(3);
-    expect(projection.excludedCount).toBe(1);
-    expect(projection.rendered.map((item) => item.id)).not.toContain('bu-4');
-    expect(projection.selectionRule.length).toBeGreaterThan(0);
+    expect(projection.renderedCount).toBe(2);
+    expect(projection.excludedCount).toBe(2);
+    expect(projection.rendered.map((item) => item.id)).toEqual(['bu-2', 'bu-3']);
+    expect(projection.selectionRule).toBe('up to 1 most recently updated non-closed items, plus up to 1 most recently closed items; missing or invalid times last, timestamp ties and card order by ascending item id');
+    // The shared observation remains complete; neither sorting nor capping mutates it.
+    expect(fixture.items.map((item) => item.id)).toEqual(['bu-1', 'bu-2', 'bu-3', 'bu-4']);
   });
 
   it('never renders activity/closure as verification satisfaction (POC-REQ-043)', () => {
-    const projection = projectTrajectory(itemsFixture(), { recentClosedWindow: 5 });
+    const projection = projectTrajectory(itemsFixture(), { nonClosedLimit: 10, recentClosedWindow: 5 });
     if (projection.kind !== 'observed') throw new Error('unreachable');
     const closedItem = projection.rendered.find((item) => item.id === 'bu-3');
     expect(closedItem?.status).toBe('closed');
@@ -50,22 +52,51 @@ describe('Trajectory projection', () => {
 
   it('derives every temporal value from recorded instants, identical across two projections (POC-REQ-041)', () => {
     const fixture = itemsFixture();
-    const first = projectTrajectory(fixture, { recentClosedWindow: 5 });
-    const second = projectTrajectory(fixture, { recentClosedWindow: 5 });
+    const first = projectTrajectory(fixture, { nonClosedLimit: 10, recentClosedWindow: 5 });
+    const second = projectTrajectory(fixture, { nonClosedLimit: 10, recentClosedWindow: 5 });
     expect(second).toEqual(first);
     if (first.kind !== 'observed') throw new Error('unreachable');
     expect(first.timeRange).toEqual({ earliest: '2026-07-01T00:00:00Z', latest: '2026-08-06T00:00:00Z' });
   });
 
   it('propagates Unknown from the work-items observation', () => {
-    const projection = projectTrajectory({ kind: 'unknown', reason: 'db unreachable' }, { recentClosedWindow: 5 });
+    const projection = projectTrajectory({ kind: 'unknown', reason: 'db unreachable' }, { nonClosedLimit: 10, recentClosedWindow: 5 });
     expect(projection).toEqual({ kind: 'unknown', reason: 'db unreachable' });
   });
 
-  it('mutation check: a falsifier reconciliation would be caught', () => {
-    const projection = projectTrajectory(itemsFixture(), { recentClosedWindow: 1 });
+  it.each([
+    {
+      name: 'newest updates, with offsets compared as instants', field: 'updatedAt', status: 'open',
+      times: ['2026-08-01T00:00:00Z', '2026-08-03T01:00:00+02:00', '2026-08-03T00:00:00Z'],
+      limit: 1, expected: ['bu-c'],
+    },
+    {
+      name: 'update ties by ascending id', field: 'updatedAt', status: 'blocked',
+      times: ['2026-08-02T00:00:00Z', '2026-08-02T00:00:00Z', '2026-08-02T00:00:00Z'],
+      limit: 2, expected: ['bu-a', 'bu-b'],
+    },
+    {
+      name: 'missing and invalid updates last, without substituting creation', field: 'updatedAt', status: 'deferred',
+      times: ['', 'not-recorded', '2026-08-01T00:00:00Z'],
+      limit: 2, expected: ['bu-a', 'bu-c'],
+    },
+    {
+      name: 'closed ties and missing closure times', field: 'closedAt', status: 'closed',
+      times: ['2026-08-01T00:00:00Z', '2026-08-01T00:00:00Z', null],
+      limit: 1, expected: ['bu-a'],
+    },
+  ] as const)('selects $name independently of input order (POC-REQ-041/042)', ({ field, status, times, limit, expected }) => {
+    const base = itemsFixture().items[0]!;
+    const items = ['bu-a', 'bu-b', 'bu-c'].map((id, i) => ({
+      ...base, id, status, createdAt: '2026-08-10T00:00:00Z',
+      updatedAt: field === 'updatedAt' ? times[i] ?? '' : base.updatedAt,
+      closedAt: field === 'closedAt' ? times[i] ?? null : null,
+    }));
+    const fixture: WorkItemsObserved = { ...itemsFixture(), items };
+    const options = { nonClosedLimit: limit, recentClosedWindow: limit };
+    const projection = projectTrajectory(fixture, options);
     if (projection.kind !== 'observed') throw new Error('unreachable');
-    const falsified = { ...projection, excludedCount: projection.excludedCount + 5 };
-    expect(falsified.renderedCount + falsified.excludedCount).not.toBe(falsified.totalCount);
+    expect(projection.rendered.map((item) => item.id)).toEqual(expected);
+    expect(projectTrajectory({ ...fixture, items: [...items].reverse() }, options)).toEqual(projection);
   });
 });
