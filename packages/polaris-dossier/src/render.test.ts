@@ -466,7 +466,7 @@ describe('render', () => {
     if (!SCREEN.ok) throw new Error(SCREEN.why);
     const base = SCREEN.screen;
     const retained = KESTREL.split('\n').map((line, i) => (i === 3 ? '' : line)).join('\n');
-    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, withheld: [4], detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
+    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, withheld: [4], lines: 5, detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
     const result = await renderRun(run, renderDeps({ loadScreen: async () => redacting }));
     if (!result.ok) throw new Error(result.refusal.reason);
     const pages = [...readSite(result.report.site).values()].join('\n');

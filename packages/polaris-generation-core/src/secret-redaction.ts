@@ -17,17 +17,24 @@ import type { PublicSourceContentClass } from './public-source-classification.js
  * - no match: the body is admitted unredacted (`clean`), as before;
  * - a match from a `wholeArtifactDetectors` detector, any `wholeArtifactFragments` entry anywhere in the body (exact, case-sensitive),
  *   any line matching the line pattern, a class outside `redactedClasses` (code-content included), a match that cannot be placed on
- *   lines (zero length), or more than `MAX_MATCHES` matches: excluded whole, as before;
+ *   lines (zero length), or a scan past its bound (more than `MAX_MATCHES` matches or `MAX_MATCHED_UNITS` matched code units):
+ *   excluded whole, as before;
  * - otherwise each line a match touches, and `guardLines` lines before and after it, is withheld; the retained text is the body with
- *   each withheld line emptied but its terminator kept (so line numbers do not move); every detector runs again over it, and any match
+ *   each withheld line emptied but its terminator kept (so line numbers do not move; a body whose retained text would re-split into
+ *   other lines, a bare CR joining the next emptied line's LF, is excluded whole); every detector runs again over it, and any match
  *   excludes the body whole.
  *
  * Lines are split at LF, CRLF or CR, and a final terminator opens no line, as the generator counts lines (`lineCount`).
  *
- * Resource bound [Inferred]: the every-offset scan makes the same per-offset attempts a whole-body search makes on a body that does not
- * match, so it adds no worst case the version-3 screens did not already have; `MAX_MATCHES` bounds the match set, and a body past it is
- * excluded whole. Not repaired here (the policy's own residuals): a secret no detector matches, beyond the guard lines or continuing past
- * them, is admitted; the whole body's digest and object id stay recorded and can check a guess at a short withheld line. */
+ * Resource bound: whether each detector matches at all is decided by one ordinary search per detector, the version-3 screens' cost, and
+ * every cause that needs no more (no match, a whole-artifact detector, a fragment, a class outside `redactedClasses`, the line pattern)
+ * is decided before the every-offset scan, so a code-content body never pays that scan. The scan adds what an ordinary search skips:
+ * the attempts at offsets inside or after a match. [Inferred] a failed attempt costs what a search's attempt at that offset costs, and
+ * a successful one about its match's length; overlapping matches can each run to the end of the body (a body of `token=` repeated
+ * scanned unbounded cost about MAX_MATCHES times its length), so the scan stops past `MAX_MATCHES` matches or `MAX_MATCHED_UNITS`
+ * matched code units and the body is excluded whole. Not repaired here (the policy's own residuals): a secret no detector matches,
+ * beyond the guard lines or continuing past them, is admitted; the whole body's digest and object id stay recorded and can check a
+ * guess at a short withheld line. */
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -48,6 +55,9 @@ const REDACTION_KEYS = ['appliesTo', 'redactedClasses', 'redactionClass', 'whole
 const KNOWN_CLASSES: readonly PublicSourceContentClass[] = ['project-documentation', 'code-content'];
 /** More matches than this excludes the body whole: the match set is held in memory and each match is placed on lines. */
 export const MAX_MATCHES = 10_000;
+/** More matched UTF-16 code units than this, summed over every match, excludes the body whole: a successful attempt costs about its
+ * match's length, and overlapping matches can each run to the end of the body. */
+export const MAX_MATCHED_UNITS = 1_000_000;
 const MAX_GUARD_LINES = 100;
 
 export interface SecretRedaction {
@@ -98,35 +108,64 @@ export type RedactionDetector =
   | { readonly id: string; readonly kind: 'literal-fragment'; readonly values: readonly string[] }
   | { readonly id: string; readonly kind: 'regular-expression'; readonly pattern: string; readonly flags: string };
 export interface DetectorMatch { readonly detectorId: string; readonly start: number; readonly end: number }
-/** A compiled every-offset matcher; `limit` stops the scan once more than that many matches are found. */
-export type EveryOffsetMatcher = (text: string, limit: number) => readonly DetectorMatch[];
+/** A compiled matcher over the policy's detectors. */
+export interface EveryOffsetMatcher {
+  /** The ids of the detectors that match the text anywhere, in policy order: one ordinary left-to-right search per detector. A detector
+   * makes a match from some offset exactly when such a search finds one, so this is the every-offset reading's "no match" test at the
+   * cost of the version-3 screens' own search. */
+  readonly matching: (text: string) => readonly string[];
+  /** Every match from every start offset, overlapping matches included; `null` once the scan has found more than `MAX_MATCHES` matches
+   * or more than `MAX_MATCHED_UNITS` matched UTF-16 code units in all, so the scan's work is bounded (`redactBody` then excludes the
+   * body whole). */
+  readonly every: (text: string) => readonly DetectorMatch[] | null;
+}
 
-/** Compiles the policy's detectors for every match from every start offset. Throws on a detector the policy's own compiler would also
- * refuse (the screens compile the same list with `compileDetectors` first). */
+/** Compiles the policy's detectors. Throws on a detector the policy's own compiler would also refuse (the screens compile the same list
+ * with `compileDetectors` first). */
 export function compileEveryOffsetMatcher(detectors: readonly RedactionDetector[]): EveryOffsetMatcher {
-  const each = detectors.map((detector): ((text: string, out: DetectorMatch[], limit: number) => void) => {
+  type Budget = { matches: number; units: number };
+  const spend = (budget: Budget, length: number): boolean => { budget.matches += 1; budget.units += length; return budget.matches <= MAX_MATCHES && budget.units <= MAX_MATCHED_UNITS; };
+  const each = detectors.map((detector): { readonly any: (text: string) => boolean; readonly all: (text: string, out: DetectorMatch[], budget: Budget) => boolean } => {
     if (detector.kind === 'literal-fragment') {
       const values = [...detector.values];
-      return (text, out, limit) => {
-        for (const value of values) {
-          for (let at = text.indexOf(value); at !== -1 && out.length <= limit; at = text.indexOf(value, at + 1)) out.push({ detectorId: detector.id, start: at, end: at + value.length });
-        }
+      return {
+        any: text => values.some(value => text.includes(value)),
+        all: (text, out, budget) => {
+          for (const value of values) {
+            for (let at = text.indexOf(value); at !== -1; at = text.indexOf(value, at + 1)) {
+              out.push({ detectorId: detector.id, start: at, end: at + value.length });
+              if (!spend(budget, value.length)) return false;
+            }
+          }
+          return true;
+        },
       };
     }
+    const flags = detector.flags.replace(/[gy]/gu, '');
+    const search = new RegExp(detector.pattern, flags);
     // Sticky, without the global flag: `exec` then matches only at `lastIndex`, which is every offset in turn.
-    const sticky = new RegExp(detector.pattern, `${detector.flags.replace(/[gy]/gu, '')}y`);
-    return (text, out, limit) => {
-      for (let at = 0; at < text.length && out.length <= limit; at++) {
-        sticky.lastIndex = at;
-        const match = sticky.exec(text);
-        if (match !== null) out.push({ detectorId: detector.id, start: match.index, end: match.index + match[0].length });
-      }
+    const sticky = new RegExp(detector.pattern, `${flags}y`);
+    return {
+      any: text => search.test(text),
+      all: (text, out, budget) => {
+        for (let at = 0; at < text.length; at++) {
+          sticky.lastIndex = at;
+          const match = sticky.exec(text);
+          if (match === null) continue;
+          out.push({ detectorId: detector.id, start: match.index, end: match.index + match[0].length });
+          if (!spend(budget, match[0].length)) return false;
+        }
+        return true;
+      },
     };
   });
-  return (text, limit) => {
-    const out: DetectorMatch[] = [];
-    for (const run of each) { run(text, out, limit); if (out.length > limit) break; }
-    return out;
+  return {
+    matching: text => detectors.flatMap((detector, i) => (each[i]!.any(text) ? [detector.id] : [])),
+    every: text => {
+      const out: DetectorMatch[] = [], budget: Budget = { matches: 0, units: 0 };
+      for (const run of each) if (!run.all(text, out, budget)) return null;
+      return out;
+    },
   };
 }
 
@@ -147,27 +186,33 @@ export function bodyLines(body: string): readonly string[] {
 const withoutTerminator = (line: string): string => line.replace(/(?:\r\n|\r|\n)$/u, '');
 
 export type WholeExclusionCause = 'no-redaction-rule' | 'whole-artifact-detector' | 'key-header-fragment' | 'key-header-line' | 'class-not-redacted' | 'unplaceable-match'
-  | 'match-limit' | 'retained-text-matches';
+  | 'match-limit' | 'retained-lines-moved' | 'retained-text-matches';
 export type RedactionOutcome =
   /** No detector matched: the body is admitted unredacted, as before. */
   | { readonly kind: 'clean' }
   /** Excluded whole, as before, for the cause named. */
   | { readonly kind: 'excluded'; readonly cause: WholeExclusionCause }
   /** Retained as redacted-span: `withheld` are the 1-based withheld line numbers, ascending; `retained` is the body with each withheld
-   * line emptied and its terminator kept; `detectorIds` are the ids of the detectors that matched, in policy order. */
-  | { readonly kind: 'redacted'; readonly withheld: readonly number[]; readonly retained: string; readonly detectorIds: readonly string[] };
+   * line emptied and its terminator kept; `lines` is the body's line count, which every line of `retained` keeps its number within
+   * (a withheld final line without a terminator empties to nothing, so `retained` alone can count one line fewer); `detectorIds` are
+   * the ids of the detectors that matched, in policy order. */
+  | { readonly kind: 'redacted'; readonly withheld: readonly number[]; readonly retained: string; readonly lines: number; readonly detectorIds: readonly string[] };
 
-/** The rule over one body admitted under `contentClass`. `redaction` null (versions 1 to 3) excludes every matching body whole. */
+/** The rule over one body admitted under `contentClass`. `redaction` null (versions 1 to 3) excludes every matching body whole.
+ *
+ * The causes that need only whether a detector matches (and which) are decided first, by one ordinary search per detector; only a body
+ * that can still be retained pays the every-offset scan, and that scan is bounded (`MAX_MATCHES`, `MAX_MATCHED_UNITS`). */
 export function redactBody(body: string, contentClass: PublicSourceContentClass | undefined, matcher: EveryOffsetMatcher, redaction: SecretRedaction | null): RedactionOutcome {
-  const found = matcher(body, MAX_MATCHES);
-  if (found.length === 0) return { kind: 'clean' };
+  const matching = matcher.matching(body);
+  if (matching.length === 0) return { kind: 'clean' };
   if (redaction === null) return { kind: 'excluded', cause: 'no-redaction-rule' };
-  if (found.length > MAX_MATCHES) return { kind: 'excluded', cause: 'match-limit' };
-  if (found.some(match => redaction.wholeArtifactDetectors.includes(match.detectorId))) return { kind: 'excluded', cause: 'whole-artifact-detector' };
+  if (matching.some(id => redaction.wholeArtifactDetectors.includes(id))) return { kind: 'excluded', cause: 'whole-artifact-detector' };
   if (redaction.wholeArtifactFragments.some(fragment => body.includes(fragment))) return { kind: 'excluded', cause: 'key-header-fragment' };
   if (contentClass === undefined || !redaction.redactedClasses.includes(contentClass)) return { kind: 'excluded', cause: 'class-not-redacted' };
   const lines = bodyLines(body);
   if (lines.some(line => redaction.wholeArtifactLinePattern.test(withoutTerminator(line)))) return { kind: 'excluded', cause: 'key-header-line' };
+  const found = matcher.every(body);
+  if (found === null) return { kind: 'excluded', cause: 'match-limit' };
   if (found.some(match => match.end <= match.start)) return { kind: 'excluded', cause: 'unplaceable-match' };
   const starts: number[] = [];
   let at = 0;
@@ -183,10 +228,17 @@ export function redactBody(body: string, contentClass: PublicSourceContentClass 
     const first = lineOf(match.start), last = lineOf(match.end - 1);
     for (let n = first - redaction.guardLines; n <= last + redaction.guardLines; n++) if (n >= 1 && n <= lines.length) held.add(n);
   }
-  const retained = lines.map((line, i) => (held.has(i + 1) ? line.slice(withoutTerminator(line).length) : line)).join('');
-  if (matcher(retained, 0).length > 0) return { kind: 'excluded', cause: 'retained-text-matches' };
+  const kept = lines.map((line, i) => (held.has(i + 1) ? line.slice(withoutTerminator(line).length) : line));
+  const retained = kept.join('');
+  // Line numbers never move: the retained text must split into exactly these lines. A kept line ending in a bare CR followed by an
+  // emptied line whose terminator is LF would join into one CRLF line, so such a body is excluded whole. Only a withheld final line
+  // without a terminator may vanish from the text (it empties to nothing); `lines` still counts it.
+  const expected = kept.length > 0 && kept[kept.length - 1] === '' ? kept.slice(0, -1) : kept;
+  const split = bodyLines(retained);
+  if (split.length !== expected.length || split.some((line, i) => line !== expected[i])) return { kind: 'excluded', cause: 'retained-lines-moved' };
+  if (matcher.matching(retained).length > 0) return { kind: 'excluded', cause: 'retained-text-matches' };
   const ids = [...new Set(found.map(match => match.detectorId))];
-  return { kind: 'redacted', withheld: Object.freeze([...held].sort((a, b) => a - b)), retained, detectorIds: Object.freeze(ids) };
+  return { kind: 'redacted', withheld: Object.freeze([...held].sort((a, b) => a - b)), retained, lines: lines.length, detectorIds: Object.freeze(ids) };
 }
 
 /** Whether the inclusive 1-based line range `[startLine, endLine]` includes a withheld line: such a span is withheld whole. */

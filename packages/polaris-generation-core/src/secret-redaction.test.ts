@@ -5,7 +5,7 @@ import { promisify } from 'node:util';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { bodyLines, compileEveryOffsetMatcher, readSecretRedaction, redactBody, retainedWithMarkers, spanTouchesWithheld, type RedactionDetector, type SecretRedaction } from './secret-redaction.js';
+import { bodyLines, compileEveryOffsetMatcher, MAX_MATCHED_UNITS, MAX_MATCHES, readSecretRedaction, redactBody, retainedWithMarkers, spanTouchesWithheld, type RedactionDetector, type SecretRedaction } from './secret-redaction.js';
 
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const POLICY_PATH = '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json';
@@ -79,8 +79,51 @@ describe('secretRedaction (policy version 4): the builder fixtures through the T
   it('keeps every non-withheld line byte for byte and empties each withheld line, keeping its terminator', () => {
     const body = `a\r\nb\r\nc ${TOKEN}\r\nd\r\ne\r\n`;
     const got = redactBody(body, 'project-documentation', matcher, redaction);
-    expect(got).toEqual({ kind: 'redacted', withheld: [2, 3, 4], retained: 'a\r\n\r\n\r\n\r\ne\r\n', detectorIds: ['credential-assignment'] });
+    expect(got).toEqual({ kind: 'redacted', withheld: [2, 3, 4], retained: 'a\r\n\r\n\r\n\r\ne\r\n', lines: 5, detectorIds: ['credential-assignment'] });
     expect(bodyLines(got.kind === 'redacted' ? got.retained : '')).toHaveLength(bodyLines(body).length);
+  });
+
+  it('never moves a line number across CR, LF and CRLF mixes', () => {
+    // Lines: a CRLF, b LF, c CR (guard), the match CR, e CRLF (guard), f CR. Every emptied line keeps its own terminator, and none joins
+    // its neighbour, so the retained text splits into the same six lines.
+    const mixed = `a\r\nb\nc\rd ${TOKEN}\re\r\nf\r`;
+    const kept = redactBody(mixed, 'project-documentation', matcher, redaction);
+    expect(kept).toEqual({ kind: 'redacted', withheld: [3, 4, 5], retained: 'a\r\nb\n\r\r\r\nf\r', lines: 6, detectorIds: ['credential-assignment'] });
+    expect(bodyLines(kept.kind === 'redacted' ? kept.retained : '')).toEqual(['a\r\n', 'b\n', '\r', '\r', '\r\n', 'f\r']);
+    // A kept line ending in a bare CR, then a guard line ending in CR and the match ending in LF: emptied, the guard's CR and the match's
+    // LF would join into one CRLF line (six lines read back as five), so the body is excluded whole.
+    const joining = `a\r\nb\rc\rd ${TOKEN}\ne\nf\n`;
+    expect(bodyLines(joining)).toHaveLength(6);
+    expect(redactBody(joining, 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'retained-lines-moved' });
+    // A withheld final line without a terminator empties to nothing; `lines` still counts it.
+    const unterminated = `a\nb\nc ${TOKEN}`;
+    expect(redactBody(unterminated, 'project-documentation', matcher, redaction)).toEqual({ kind: 'redacted', withheld: [2, 3], retained: 'a\n\n', lines: 3, detectorIds: ['credential-assignment'] });
+  });
+
+  it('bounds the every-offset scan: past MAX_MATCHES matches or MAX_MATCHED_UNITS matched code units the body is excluded whole', () => {
+    expect(MAX_MATCHES).toBe(10_000);
+    expect(MAX_MATCHED_UNITS).toBe(1_000_000);
+    // One short match per line: exactly MAX_MATCHES matches is retained, one more is excluded.
+    const line = 'tok' + 'en=abcdefgh\n';
+    const atLimit = redactBody(line.repeat(10_000), 'project-documentation', matcher, redaction);
+    expect(atLimit.kind === 'redacted' ? atLimit.withheld.length : atLimit).toBe(10_000);
+    expect(redactBody(line.repeat(10_001), 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'match-limit' });
+    // Overlapping matches that each run to the end of the line: 1,000 matches (under MAX_MATCHES) of about 3,000 units each.
+    const overlapping = 'tok' + 'en=';
+    expect(redactBody(`${overlapping.repeat(1_000)}\n`, 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'match-limit' });
+    expect(redactBody(`${overlapping.repeat(100)}\n`, 'project-documentation', matcher, redaction)).toMatchObject({ kind: 'redacted', withheld: [1] });
+    // The reviewer's case: 1.2 MB of `token=` cost 29.8 s unbounded.
+    const started = performance.now();
+    expect(redactBody(overlapping.repeat(200_000), 'project-documentation', matcher, redaction)).toEqual({ kind: 'excluded', cause: 'match-limit' });
+    expect(performance.now() - started).toBeLessThan(5_000);
+  });
+
+  it('decides a class outside redactedClasses, and every other cause that needs no match positions, before the every-offset scan', () => {
+    const scanless = { matching: matcher.matching, every: (): never => { throw new Error('the every-offset scan ran'); } };
+    expect(redactBody(`a\n${TOKEN}\nb\n`, 'code-content', scanless, redaction)).toEqual({ kind: 'excluded', cause: 'class-not-redacted' });
+    expect(redactBody(`a\n${TOKEN}\nb\n`, undefined, scanless, redaction)).toEqual({ kind: 'excluded', cause: 'class-not-redacted' });
+    expect(redactBody('a\nb\n', 'project-documentation', scanless, redaction)).toEqual({ kind: 'clean' });
+    expect(redactBody(`a\n${TOKEN}\n-----BEGIN X\n`, 'project-documentation', scanless, redaction)).toEqual({ kind: 'excluded', cause: 'key-header-fragment' });
   });
 
   it('applies the line pattern to each line, not to the body: a six-dash header on line 3 excludes the body (round-4 note 5)', () => {

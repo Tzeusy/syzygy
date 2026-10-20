@@ -596,7 +596,7 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
     // A retained body (policy version 4) keeps only its retained text: a withheld line is never used to verify a quotation.
     const screened = inputs.screen.screenTargetBody(raw, blob.path);
     blobs.set(blob.path, screened.kind === 'excluded' ? { state: 'excluded', outcome: screened.outcome }
-      : screened.kind === 'redacted' ? { state: 'admitted', entry: blob, raw: screened.retained, lines: lineCount(screened.retained), tracked: null, withheld: screened.withheld }
+      : screened.kind === 'redacted' ? { state: 'admitted', entry: blob, raw: screened.retained, lines: screened.lines, tracked: null, withheld: screened.withheld }
         : { state: 'admitted', entry: blob, raw, lines: lineCount(raw), tracked: null });
   }
   const firstCited = [...new Set(citations.flatMap(({ value }) => (text(value['path']) === undefined ? [] : [text(value['path'])!])))];

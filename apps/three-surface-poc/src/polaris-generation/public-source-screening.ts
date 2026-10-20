@@ -122,7 +122,7 @@ export interface PublicSourceScreen extends CorpusScreen {
 /** The dossier screen's `TargetBodyScreen`, unforked in shape. */
 export type PublicSourceTargetBody =
   | { readonly kind: 'admitted' }
-  | { readonly kind: 'redacted'; readonly retained: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+  | { readonly kind: 'redacted'; readonly retained: string; readonly withheld: readonly number[]; readonly lines: number; readonly detectorIds: readonly string[] }
   | { readonly kind: 'excluded'; readonly outcome: 'secret-detector-match' | 'active-content' };
 
 function refuse(why: string): never { throw new CorpusRefusal(`public-source-policy: ${why}`); }
@@ -182,7 +182,7 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
     const redacted = redactBody(body, contentClass(path), everyOffset, redaction);
     if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };
     if (active(body, path)) return { kind: 'excluded', outcome: 'active-content' };
-    return redacted.kind === 'clean' ? { kind: 'admitted' } : { kind: 'redacted', retained: redacted.retained, withheld: redacted.withheld, detectorIds: redacted.detectorIds };
+    return redacted.kind === 'clean' ? { kind: 'admitted' } : { kind: 'redacted', retained: redacted.retained, withheld: redacted.withheld, lines: redacted.lines, detectorIds: redacted.detectorIds };
   };
   return {
     policyId: doc.policyId as string, policyVersion: doc.policyVersion as string, policySha256, projectDocumentation: documentation !== null,

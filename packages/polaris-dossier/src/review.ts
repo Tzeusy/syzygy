@@ -178,7 +178,9 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
   const screen = screenLoad.screen;
   const reader = (deps.openReader ?? openPinnedObjectReader)({ gitDir: path.join(subject.clone.path, '.git'), revision: pinned });
   const blobs = new Map<string, string>();
-  const withheldOf = new Map<string, readonly number[]>();
+  /** For a body retained as redacted-span: its withheld line numbers and its line count (a withheld unterminated final line is counted
+   * although the retained text no longer holds it). */
+  const withheldOf = new Map<string, { readonly withheld: readonly number[]; readonly lines: number }>();
   const outcomes = new Map<string, ScreenExclusion | 'absent'>();
   const tree = new Map<string, TreeEntry>();
   try {
@@ -197,7 +199,7 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
       // A body retained as redacted-span keeps only its retained text here: a withheld line is never carried or used to verify a quotation.
       const screened = screen.screenTargetBody(raw, blob.path);
       if (screened.kind === 'excluded') outcomes.set(blob.path, screened.outcome);
-      else if (screened.kind === 'redacted') { blobs.set(blob.path, screened.retained); withheldOf.set(blob.path, screened.withheld); }
+      else if (screened.kind === 'redacted') { blobs.set(blob.path, screened.retained); withheldOf.set(blob.path, { withheld: screened.withheld, lines: screened.lines }); }
       else blobs.set(blob.path, raw);
     }
   } catch (cause) {
@@ -215,8 +217,9 @@ export async function buildFidelityPacket(opened: Extract<OpenedRun, { ok: true 
     if (missingClass !== undefined) {
       return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId: tree.get(span.path)!.id, outcome: CLASS_NOT_CONSENTED, missingClass, citedBy: span.citedBy };
     }
-    if (raw !== undefined && span.startLine >= 1 && span.startLine <= span.endLine && span.endLine <= lines.length) {
-      const withheld = withheldOf.get(span.path), objectId = tree.get(span.path)!.id;
+    const redactedBody = withheldOf.get(span.path);
+    if (raw !== undefined && span.startLine >= 1 && span.startLine <= span.endLine && span.endLine <= (redactedBody?.lines ?? lines.length)) {
+      const withheld = redactedBody?.withheld, objectId = tree.get(span.path)!.id;
       const spanText = lines.slice(span.startLine - 1, span.endLine).join('');
       // Key order is the packet's byte order: the fields are written out, never spread from a shared base.
       if (withheld === undefined) return { id, path: span.path, startLine: span.startLine, endLine: span.endLine, objectId, outcome: 'admitted', text: spanText, citedBy: span.citedBy };

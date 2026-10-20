@@ -12,7 +12,7 @@ import { verdictSchemaDocument } from './draft-schema.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState, type ProviderStatementRecord } from './gate-sources.js';
 import { checkInventory, inventoryOfRecord, openRun } from './inventory.js';
-import { fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
+import { buildFidelityPacket, fidelityCriteria, reviewCheck, reviewOfRecord, reviewPacket, type ReviewDeps } from './review.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { buildDossierScreen, type ScreenLoad } from './screen.js';
@@ -639,20 +639,34 @@ describe('the fidelity packet over a body retained as redacted-span', () => {
     publicSourceScope: { contentClassification: { rules: LIVE_POLICY.publicSourceScope.contentClassification.rules } },
   }));
   const NOTES_CITED = [{ subject: 'draft', citationId: 'c-p2' }, { subject: 'inventory', citationId: 'c-e-snap' }];
-  const packetWith = async (withheld: readonly number[]) => {
+  const redactingWorld = (withheld: readonly number[]): string => {
     const base = buildDossierScreen(DOC_POLICY, true);
     if (!base.ok) throw new Error(base.why);
     const retained = NOTES.split('\n').map((line, i) => (withheld.includes(i + 1) ? '' : line)).join('\n');
     world = {
-      screen: { ok: true, screen: { ...base.screen, screenTargetBody: (body, repositoryPath) => (repositoryPath === 'docs/notes.txt' ? { kind: 'redacted', retained, withheld, detectorIds: ['credential-assignment'] } : base.screen.screenTargetBody(body, repositoryPath)) } },
+      screen: { ok: true, screen: { ...base.screen, screenTargetBody: (body, repositoryPath) => (repositoryPath === 'docs/notes.txt' ? { kind: 'redacted', retained, withheld, lines: 2, detectorIds: ['credential-assignment'] } : base.screen.screenTargetBody(body, repositoryPath)) } },
       classes: ['code-content', 'project-documentation'],
     };
+    return retained;
+  };
+  const packetWith = async (withheld: readonly number[]) => {
+    redactingWorld(withheld);
     const run = await prepared();
     const result = await reviewPacket(run, { kind: 'fidelity' }, deps());
     if (!result.ok) throw new Error(result.refusal.reason);
     const text = fs.readFileSync(path.join(result.report.directory, 'packet.json'), 'utf8');
     return { spans: JSON.parse(text).spans as Record<string, unknown>[], text, counts: 'spans' in result.report ? result.report.spans : undefined };
   };
+
+  it('keeps only the retained text as the blob a verdict\'s quotations verify against, never the withheld line', async () => {
+    const retained = redactingWorld([2]);
+    const built = await buildFidelityPacket(await opened(await prepared()), deps());
+    if (!built.ok) throw new Error(built.reason);
+    // Literals: line 2 emptied to its terminator, line 1 byte for byte.
+    expect(retained).toBe('Café notes.\n\n');
+    expect(built.blobs.get('docs/notes.txt')).toBe('Café notes.\n\n');
+    expect([...built.blobs.values()].join('\n')).not.toContain('Snapshots are written periodically');
+  });
 
   it('carries a span that includes no withheld line, with the body\'s redaction count beside it', async () => {
     const { spans } = await packetWith([1]);

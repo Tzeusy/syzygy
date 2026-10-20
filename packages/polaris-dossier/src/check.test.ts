@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
-import { checkDraft, reviewVisibility, type CheckDeps, type CheckResult } from './check.js';
+import { checkDraft, deriveFindings, draftRules, reviewVisibility, type CheckDeps, type CheckResult } from './check.js';
 import { runDossierCli } from './cli.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
@@ -297,6 +297,16 @@ describe('check: a quotation from a body retained as redacted-span', () => {
     expect(result.quotations.map((q) => q.blockId)).toEqual(['intro', 'p1', 'p2']);
     expect(result.citedBlobs.find((blob) => blob.path === 'src/config.c')).toMatchObject({ outcome: 'admitted', redaction: { redactionClass: 'redacted-span', withheldLines: 2 } });
     expect(read(run, 'checks/rev-0.json')).not.toContain(SECRET);
+  });
+  it('keeps only the retained text in the admitted map a render quotes from, never the withheld lines', async () => {
+    const { run } = await withQuote('int port = 6379;', 3);
+    if (!REDACTING.ok) throw new Error(REDACTING.why);
+    const doc = JSON.parse(read(run, 'drafts/rev-0.json')) as unknown;
+    const reader = openPinnedObjectReader({ gitDir: path.join(origin, '.git'), revision: commit });
+    const derived = await deriveFindings(doc, { pinned: commit, screen: REDACTING.screen, reader }, draftRules(commit, 5));
+    // Literals: lines 1 and 2 emptied to their terminators, line 3 byte for byte.
+    expect(derived.admitted.get('src/config.c')).toEqual({ objectId: expect.any(String), raw: '\n\nint port = 6379;\n', withheld: [1, 2] });
+    expect([...derived.admitted.values()].map((blob) => blob.raw).join('\n')).not.toContain(SECRET);
   });
   it('renders a quotation from a withheld guard line Unknown (excluded-content), with no finding', async () => {
     const { result } = await withQuote('The port is fixed.', 2);
