@@ -48,6 +48,11 @@ CAMPAIGNS = (
     campaign("cap1-runtime", "`R-RT-*`", r"R-RT-.*\.md"),
     campaign("three-surface-poc", "`R-POC-*`", r"R-POC-.*\.md"),
     campaign(
+        "trajectory-selection",
+        "Trajectory bounded selection",
+        r"R-TRAJECTORY-BOUNDED-SELECTION(?:-\d+)?-RAW\.md",
+    ),
+    campaign(
         "polaris-project-wide",
         "Project-wide Polaris specification and observation gate",
         r"POLARIS-PROJECT-WIDE-SIGNOFF-PACKET\.md",
@@ -417,6 +422,11 @@ CAMPAIGNS = (
         "pwb-opening-index-implementation",
         "PWB opening-index implementation",
         r"R-PWB-OPENING-INDEX-IMPL-.*\.md",
+    ),
+    campaign(
+        "pwb-registry-machine-ceiling",
+        "P-114 machine-ceiling registry gate",
+        r"R-PWB-REGISTRY-MACHINE-CEILING-.*\.md",
     ),
 )
 

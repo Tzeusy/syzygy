@@ -1,8 +1,9 @@
 # Owner packet — one-command Polaris dossier run
 
-> **Candidate — binds nothing.** Questions for you, each with a
-> recommendation. Nothing here is decided, and no act is offered until a
-> fresh-context review confirms these bytes.
+> **Candidate — binds nothing.** Prior questions and recorded
+> answers, with the remaining sign-off gate. No act is offered until a
+> fresh-context review confirms these bytes. The lead's bounded round-3
+> repair choices below are not owner answers.
 
 ## What you asked for, and what it takes
 
@@ -10,8 +11,8 @@ You asked that a Syzygy user run one command and get a Polaris dossier, with
 the independence rules settled inside Syzygy's workflow rather than by you
 starting each session (operator session, 2026-10-14; quoted in
 `proposal.md`). The draft does this with six additions to the Polaris spec:
-one command for the whole run (040); Syzygy, not you and not the authoring
-agent, starts every session (041); each session sees only what its role needs,
+one command after you supply a local clone with `--clone` (040); Syzygy,
+not you and not the authoring agent, starts every session (041); each session sees only what its role needs,
 enforced by the operating system (042); one terminal view for everything
 (043); launched runs never execute the observed project (044); and each
 session is your own local `claude` or `codex` binary, started with explicit
@@ -31,11 +32,13 @@ one command. What forbids it is narrower and is yours to change by direction:
 
 **What changes in what you can trust.** Today who started each session is
 your declaration (Inferred), and any session could write another's directory
-or the gate records. In a launched run Syzygy records each launch itself
-(Observed), and the operating system keeps each session out of the others'
-directories and the records read-only. That is stronger independence than
-today, not weaker. What stays Inferred: the model actually served, that each
-context was fresh, and that the view held for the session's whole life.
+or the gate records. In a launched run Syzygy records each launch itself,
+labelled Observed only in the launching step's output as it makes the launch; a later display
+from that stored record is Inferred. That also applies to view digests,
+login and managed-settings checks, controls and other launch metadata. The
+requested operating-system view keeps each session out of the others'
+directories and the Syzygy checkout, gate records included. What stays
+Inferred: the model actually served, that each context was fresh, and that the view held for the session's whole life.
 
 ## Questions
 
@@ -74,8 +77,9 @@ package of `polaris-dossier-local-agent-mode` through CC-REV-2.
 **Q4. Refuse launched runs where isolation cannot be built?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: yes, fail closed and point to `syzygy dossier init`. A
 launched run without isolation would be weaker than today, because nobody
-would be attending each launch. [Observed 2026-10-14 on this host:
-bubblewrap 0.11.1 builds an unprivileged view.]
+would be attending each launch. [Historical report in the 2026-10-14 draft:
+bubblewrap 0.11.1 builds an unprivileged view on this host. Unknown to this repair: the external probe
+evidence was not read or re-verified.]
 
 **Q5. May a launched run continue while you are detached?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 Recommendation: yes, but only through reading, checking, freezing,
@@ -106,10 +110,35 @@ notes only; those notes are carried into this text.
 (`decisions/OWNER-DIRECTION-DOSSIER-CLI-RUNNER-REPAIR-AND-DISCLOSE-2026-10-15.md`).*
 A launched run is not refused for them. The run page lists the classes
 present, marks the unlisted ones, and says the tool may have sent them.
-Syzygy's own packets carry only the classes the statement lists.
+Every target-derived input Syzygy gives a session carries only the
+classes the statement lists and passes screening: packets, briefs,
+instructions, named guidance and brokered command output included.
 
 What is still missing for Codex: no agent-provider statement for Codex is in
 force for any target, so REQ-045 refuses a Codex run until one is.
+
+## Restrictive choices for the bounded round-3 repair
+
+[Inferred] On 2026-10-20 the lead chose one source-design repair and one
+fresh round 3, after the two retained `REVISE` reviews. This is a process
+choice within candidate drafting, not an owner direction or sign-off.
+
+- The Syzygy checkout and gate records are absent from every role view. A
+  minimal shim forwards only that role's allowed commands to the supervisor.
+- The declared tool and version must have observed controls that disable
+  auxiliary telemetry, error-reporting and update traffic. If they are
+  unavailable or unobserved, the tool is not invoked. No auxiliary egress
+  permission is requested or inferred from Q2. The first real-tool evidence
+  must come from an operator-started attended synthetic probe outside a
+  launched run; a stand-in proves only invocation and refusal.
+- You must make the local clone before `syzygy polaris ... --clone <dir>`.
+  The command covers the run after this prerequisite. It does not fulfil
+  the stronger literal goal that you never run a preparation command. The
+  lead retains that cost because the candidate has no authority for a
+  Syzygy-made clone or fetch; this packet records no new answer from you.
+
+The complete finding map is `ROUND-3-REPAIRS.md`. Until round 3 returns,
+these bytes are not cleared and no sign-off is offered.
 
 ## Acts, in order
 

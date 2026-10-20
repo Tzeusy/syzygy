@@ -1,7 +1,8 @@
 # Tasks — one-command Polaris dossier run
 
-> **Candidate — binds nothing.** No implementation task starts before the
-> owner's acts in `OWNER-PACKET.md` are recorded.
+> **Candidate — binds nothing.** This repair schedules no implementation.
+> The separately authorized prototype is described in `design.md`; this
+> candidate still needs the owner's sign-off.
 
 ## Before sign-off
 
@@ -23,11 +24,22 @@
       readings, `inventory.ts`, `session-handover.ts`, `gate-sources.ts`
       disclosure, the runbook, the polaris-dossier skill).
 - [ ] Design-bar pass on the attended view (REQ-043) before review.
-- [ ] Round 1 fresh-context review of these bytes, REQ-045 included; raw
-      retained in `docs/reviews/` as
+- [x] Round 1 fresh-context review, REQ-045 included, returned `REVISE`;
+      verbatim raw retained in `docs/reviews/` as
       `R-POLARIS-DOSSIER-ONE-COMMAND-RUN-1-RAW.md`, with its campaign row.
-- [ ] Re-check that requirement numbers 040 to 045 are still free on `main`
-      (040 to 045 found only in this change's proposed spec, 2026-10-20).
+- [x] Round 2 confirming review returned `REVISE`; raw retained as
+      `R-POLARIS-DOSSIER-ONE-COMMAND-RUN-2-RAW.md`, with the unchanged
+      `ROUND-2-DISPOSITIONS.md` recording that lane's stop.
+- [x] Lead selected one bounded source-design repair and fresh round 3,
+      recorded separately in `ROUND-3-REPAIRS.md`; no owner act is claimed.
+- [ ] Round 3 fresh-context review of the frozen repaired commit, using
+      `REVIEW-BRIEF-ROUND-3.md`; retain its raw unchanged. A `REVISE` verdict
+      ends this bounded cycle with dispositions and a report, not another
+      repair or an offered sign-off.
+- [ ] Re-check that requirement numbers 040 to 045 remain unique to this
+      candidate across `main` and active changes
+      (the candidate retains its six identities; re-check at the frozen
+      review head and before any installation).
 - [ ] Owner sign-off by version tag.
 
 ## After sign-off

@@ -3,10 +3,11 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, UNMARKED_RECORD_REASON, workerChangeVerificationId, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN, UNMARKED_RECORD_REASON, workerChangeVerificationId, type PocModel, type TestArtifactRecord } from '@syzygy/three-surface-poc-core';
 
 import { renderTrajectoryPage } from './trajectory.js';
-import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
+import { pocRoutes } from './routes.js';
+import { buildFixtureModel, fixtureRepoWithGit, fixtureWorkItemRow } from './test-model-fixture.js';
 
 function git(root: string, args: readonly string[]): string {
   return execFileSync('git', ['-C', root, ...args], {
@@ -59,16 +60,31 @@ describe('Trajectory', () => {
     }
   });
 
-  it('states the selection rule and reconciles rendered + excluded against the total (POC-REQ-042)', () => {
-    const model = buildFixtureModel(cleanups);
+  it('serves the full machine population and reconciles the bounded board selection (POC-REQ-042)', async () => {
+    const instant = '2026-08-01T00:00:00Z';
+    const statuses = ['open', 'in_progress', 'blocked', 'deferred', 'pinned', 'hooked'];
+    const rows = [
+      ...Array.from({ length: 201 }, (_, i) => fixtureWorkItemRow(`bu-current-${String(i).padStart(3, '0')}`, statuses[i % 6]!, instant, instant, null)),
+      ...Array.from({ length: 51 }, (_, i) => fixtureWorkItemRow(`bu-closed-${String(i).padStart(3, '0')}`, 'closed', instant, instant, instant)),
+    ];
+    const model = buildFixtureModel(cleanups, { workItemRows: rows });
     const html = renderTrajectoryPage(model);
-    if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
-
-    const scopeMatch = /data-parity-field="trajectory-excluded-count">(\d+)</.exec(html);
-    expect(scopeMatch).not.toBeNull();
-    const excluded = Number(scopeMatch?.[1]);
-    expect(model.trajectory.renderedCount + excluded).toBe(model.trajectory.totalCount);
-    expect(html).toContain(model.trajectory.selectionRule);
+    const machineRoute = pocRoutes(() => model).find((route) => route.path === '/api/poc')!;
+    const response = await machineRoute.handle({ request: { method: 'GET', path: '/api/poc', query: new URLSearchParams(), headers: {} } });
+    expect(response.status).toBe(200);
+    const served = JSON.parse(response.body) as PocModel;
+    if (served.workItems.kind !== 'observed' || served.trajectory.kind !== 'observed') throw new Error('unreachable');
+    expect(served.workItems.items.map((item) => item.id)).toEqual(rows.map((row) => row.id));
+    expect(served.workItems.items).toHaveLength(252);
+    expect(served.trajectory).toMatchObject({ totalCount: 252, renderedCount: 250, excludedCount: 2 });
+    const cardIds = [...html.matchAll(/data-work-item-id="([^"]+)"/g)].map((match) => match[1]);
+    expect(cardIds).toHaveLength(250);
+    expect(cardIds.sort()).toEqual(served.trajectory.rendered.map((item) => item.id).sort());
+    expect(cardIds).not.toContain('bu-current-200');
+    expect(cardIds).not.toContain('bu-closed-050');
+    expect(served.trajectory.rendered.filter((item) => item.column === 'Done')).toHaveLength(50);
+    expect(html).toContain('Rendering 250 of 252 observed work items (up to 200 most recently updated non-closed items, plus up to 50 most recently closed items; missing, invalid or timezone-less times last, timestamp ties and card order by ascending item id)');
+    expect(html).toContain('data-parity-field="trajectory-excluded-count">2</span> items are outside this selection');
   });
 
   it('never renders closure/activity as verification satisfaction (POC-REQ-043)', () => {
@@ -386,33 +402,14 @@ describe('Trajectory', () => {
     expect(noneHtml).not.toContain('Demonstrated item');
   });
 
-  it('states honestly when the materialized item falls outside the board selection (N-1)', () => {
+  it.each(['closed', 'open'] as const)('discloses a demonstrated %s item excluded by its population limit (N-1)', (status) => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
-    // the materialized bead closed long ago; 50 newer closed items fill
-    // the recent-closed window and push it out of the selection
+    const old = '2026-01-01T00:00:00Z';
+    const newer = '2026-08-01T00:00:00Z';
     const rows = [
-      {
-        revision: 'dolt-rev-2',
-        id: 'bu-old-closed',
-        title: 'Materialized long-closed item',
-        status: 'closed',
-        issue_type: 'task',
-        priority: 2,
-        created_at: '2026-01-01T00:00:00Z',
-        updated_at: '2026-01-01T00:00:00Z',
-        closed_at: '2026-01-01T00:00:00Z',
-      },
-      ...Array.from({ length: 50 }, (_, i) => ({
-        revision: 'dolt-rev-2',
-        id: `bu-newer-closed-${String(i).padStart(2, '0')}`,
-        title: `Newer closed item ${i}`,
-        status: 'closed',
-        issue_type: 'task',
-        priority: 3,
-        created_at: '2026-08-01T00:00:00Z',
-        updated_at: '2026-08-01T00:00:00Z',
-        closed_at: `2026-08-0${(i % 9) + 1}T0${i % 10}:00:00Z`,
-      })),
+      fixtureWorkItemRow('bu-excluded-demo', status, old, old, status === 'closed' ? old : null),
+      ...Array.from({ length: status === 'closed' ? 50 : 200 }, (_, i) =>
+        fixtureWorkItemRow(`bu-newer-${String(i).padStart(3, '0')}`, status, newer, newer, status === 'closed' ? newer : null)),
     ];
     const model = buildPocModel({
       seeds: BUTLERS_POC_SEEDS,
@@ -421,34 +418,25 @@ describe('Trajectory', () => {
       observerRevision: revision,
       evaluation: { snapshot: 'butlers@excluded', asOf: '2026-08-30T12:00:00Z' },
       materializationRecord: {
-        beadId: 'bu-old-closed',
+        beadId: 'bu-excluded-demo',
         externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
         targetRepoRoot: repoRoot,
-        createdAt: '2026-01-01T00:00:00Z',
+        createdAt: old,
         doltRevisionAtCreation: 'dolt-rev-1',
         attribution: 'test-actor',
         origin: 'created',
       },
-      runWorkItemQuery: (_repoRoot, sql) =>
-        sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+      runWorkItemQuery: () => JSON.stringify(rows),
     });
-    expect(model.materializedBeadId).toBe('bu-old-closed');
+    expect(model.materializedBeadId).toBe('bu-excluded-demo');
     if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
-    expect(model.trajectory.rendered.some((item) => item.id === 'bu-old-closed')).toBe(false);
-
+    expect(model.trajectory.rendered.some((item) => item.id === 'bu-excluded-demo')).toBe(false);
     const html = renderTrajectoryPage(model);
     expect(html).toContain(
-      'The demonstrated item <code>bu-old-closed</code> was materialized by this POC but falls outside the current board selection',
+      'The demonstrated item <code>bu-excluded-demo</code> was materialized by this POC but falls outside the current board selection',
     );
-    expect(html).not.toContain('data-work-item-id="bu-old-closed"');
+    expect(html).not.toContain('data-work-item-id="bu-excluded-demo"');
     expect(html).not.toContain('The demonstrated item is <a');
-  });
-
-  it('mutation check: a falsified reconciliation would be caught', () => {
-    const model = buildFixtureModel(cleanups);
-    if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
-    const falsified = model.trajectory.excludedCount + 3;
-    expect(model.trajectory.renderedCount + falsified).not.toBe(model.trajectory.totalCount);
   });
 
   describe('footer: composite evaluation identity and substrate revision (N4)', () => {
