@@ -381,6 +381,11 @@ sys.stdout.write(json.dumps({'body': [{'name': n, 'body': body, 'oracle': srt(b.
     const body = `${['to', 'ken'].join('')}=${'abcdefgh12345678'}\nx\ny\n<script>run()</script>\n`;
     for (const screen of await both()) expect(screen.screenTargetBody(body, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
   });
+  it('runs the active-content scan over the withheld lines too: active content only on a matched line excludes the body whole', async () => {
+    // The retained text (lines 2 to 4 emptied) holds no active content, so a scan of the retained text alone would admit it.
+    const body = `a\nb\n<script>run()</script> ${['to', 'ken'].join('')}=${'abcdefgh12345678'}\nc\nd\n`;
+    for (const screen of await both()) expect(screen.screenTargetBody(body, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
+  });
   it.each([
     ['another rule text', (r: Record<string, unknown>) => ({ ...r, rule: `${r['rule'] as string} ` })],
     ['a line pattern anchored to the body', (r: Record<string, unknown>) => ({ ...r, wholeArtifactLinePattern: '^-----BEGIN ' })],

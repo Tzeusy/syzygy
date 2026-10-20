@@ -1368,6 +1368,11 @@ def policy_selftests() -> list[tuple[str, bool]]:
         ok.append(("chain edits: version 4 is idempotent", policy_cg_v4_edits(four, "d" * 64) == four))
         ok.append(("chain edits: an installed version-4 row quoting another argument is refused",
                    refused(lambda: policy_cg_v4_edits(four, "e" * 64))))
+        # Only the chain row present: the other three anchors still apply, so only the all-or-none rule refuses it.
+        row_only = (four.replace(V4_OFFERING, "", 1).replace(V3_MANIFEST_GATE_NEW, V3_MANIFEST_GATE_OLD, 1)
+                    .replace(V4_EXEMPTION, "", 1))
+        ok.append(("chain edits: a partial version-4 install (the chain row alone) is refused",
+                   row_only != four and refused(lambda: policy_cg_v4_edits(row_only, "d" * 64))))
         for k, hunk in enumerate((V4_OFFERING, V4_EXEMPTION)):
             ok.append((f"chain edits: a partial version-4 install (hunk {k + 2} missing) is refused",
                        refused(lambda: policy_cg_v4_edits(four.replace(hunk, "", 1), "d" * 64))))
