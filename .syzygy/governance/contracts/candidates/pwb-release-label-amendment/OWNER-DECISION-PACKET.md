@@ -130,6 +130,15 @@ repairs the three round-7 notes; mapping in `ROUND-7-DISPOSITIONS.md`
 round 8 returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with notes only;
 then Question 1 is yours, since this package has no carry-over answer. A
 `REVISE` comes back to you.
+*(Marked 2026-10-20, round 8: "unconfirmed pending round 8" is no longer
+true. Round 8 returned `REVISE` (`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-8-RAW.md` line 4).
+It confirmed every round-7 repair and found one revise finding: the fifth
+scenario's THEN names two exceptions where the check excepts four, so the
+shared status line, which shows the revision's twelve-digit prefix on every
+Polaris page, makes the THEN false while passing. It also found three
+notes. All are open in `ROUND-8-DISPOSITIONS.md`. These bytes are not
+repaired again and not cleared, no round 9 is dispatched, and this version
+is not offered for sign-off.)*
 
 ## What you would be signing
 
