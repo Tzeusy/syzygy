@@ -149,7 +149,7 @@ table routes each campaign to its last verdict of record.
 | PWB opening-index implementation | 2 | 2026-10-15 | Pre-merge code review of the PWB-REQ-010 opening index as signed in `pwb-opening-index-amendment` v1.0 (P-98, `syzygy-u05.23`): `apps/three-surface-poc/src/polaris-opening-index.ts`, its browser oracle, the claim-state legend heading, the narrowed existing tests and three evidence records; implementation, binds nothing | Round 1 `REVISE` (`R-PWB-OPENING-INDEX-IMPL-1-RAW.md:4`) over `1afdb08`, one revise finding (keyboard focus after following the exact-requirement row), answered by evidence and two keyboard tests, and seven notes; round 2 `CONFIRM WITH EXCEPTIONS` (`R-PWB-OPENING-INDEX-IMPL-2-RAW.md:4`) over `0115086`, five notes and no revise finding, which clears the bytes under the owner's notes-only stopping rule; the open notes are filed as `syzygy-u05.25`. |
 
 The 97 rows partition the tracked directory at HEAD: 452 files, 452 assigned,
-no remainder [Observed — re-derived for HEAD dated 2026-10-15 by
+no remainder [Observed — re-derived for HEAD dated 2026-10-20 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
 derives dates from `git log --diff-filter=A`]. These are navigation figures,
