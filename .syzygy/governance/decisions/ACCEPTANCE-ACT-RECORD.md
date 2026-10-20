@@ -1671,3 +1671,27 @@ Effective status: this one record is **effective owner authority —
 owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
 consent, read or egress, and the read gates are re-pointed by a separate change.
 <!-- PWB-POLICY-SCOPE-V4:END -->
+
+## PWB registry machine-ceiling amendment — performed 2026-10-20
+
+The owner selected `pwb-registry-machine-ceiling-amendment-v1.0` and its exact paired Ask 2 items 1–5
+on 2026-10-20, replying `yes, approve both` in the attended Codex conversation
+recorded at `.syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20.md`. The owner did not type this derived
+phrase; its argument is the package manifest's single registry row:
+
+```text
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: f2b3573cfe35169f449a9eed36b4c3330ef037d6668bab0548dd5d5939293556
+```
+
+| Field | Record |
+|---|---|
+| Subject | `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` |
+| Dedicated record | `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md` |
+| Version tag | `pwb-registry-machine-ceiling-amendment-v1.0` on the main commit carrying the record |
+| Review | `docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2-RAW.md` — `CONFIRM WITH EXCEPTIONS`, notes 1–3 retained separately |
+| Provenance | owner-adopted (bootstrap, uncorrelated), state (1); A1 explicitly absent; never independently verified |
+| Supersession | registry role only, predecessor `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md` unchanged |
+| Recorded at (UTC) | 2026-10-20T17:57:09Z |
+
+[Observed] The bounded owner selection is recorded. Implementation, gate
+admission and private response measurement require their separate evidence.

@@ -1,0 +1,2083 @@
+{
+  "schema": "p114-implementation-mutations-v3",
+  "subject_commit": "fbe90feb253e2d020b4974e3abf6755321f9063e",
+  "sources": [
+    {
+      "path": "scripts/record_pwb_registry_machine_ceiling_act.py",
+      "sha256": "79f6af07c2dcd113eaa718e7051b1d9d41fee2d583efdbb9ab797643dd44bc0e"
+    },
+    {
+      "path": "scripts/build_pwb_behavior_contract_repin.py",
+      "sha256": "2c0168653772fa0b48ba41306ed6fc4bf31b90e1dd51034d89143ae26d8aa57b"
+    }
+  ],
+  "method": "Observe existing executing selftest stimuli and real filesystem failure seams; only temporary fixture trees mutate.",
+  "fragment_encoding": {
+    "ACT_B_ARGUMENT": "BASE_DIGEST in scripts/record_pwb_registry_machine_ceiling_act.py at subject_commit",
+    "P114_ROW": "MACHINE_CEILING_ARGUMENT in scripts/build_pwb_behavior_contract_repin.py at subject_commit",
+    "meaning": "${NAME} is an exact substitution from that frozen constant, avoiding an extra copy of a performed act argument. All other old/new fragments are literal. State fingerprints hash the sorted path/existence/SHA-256 map captured before and after each transaction."
+  },
+  "commands": [
+    "python3 scripts/record_pwb_registry_machine_ceiling_act.py --selftest",
+    "python3 scripts/build_pwb_behavior_contract_repin.py --selftest"
+  ],
+  "recorder": {
+    "outcomes": 80,
+    "rejected_stimuli": 57,
+    "accepting_controls": 4,
+    "clean_filesystem_fault_restoration_assertions": 6,
+    "pending_input_preservation_assertions": 7,
+    "rollback_foreign_state_preservation_assertions": 5,
+    "recovery_failure_partial_state_assertions": 1,
+    "mutants": [
+      {
+        "id": "P114-REC-001",
+        "name": "review mutation: manifest FILE",
+        "expected_refusal_fragment": "manifest FILE",
+        "edits": [
+          {
+            "old": "Manifest SHA-256: 5396c8912cd329ba4d4413245e69c1d6fb81536713115e7ca32506e7b1768ac1",
+            "new": "Manifest SHA-256: ${ACT_B_ARGUMENT}"
+          }
+        ],
+        "observed_refusal": "review head does not bind manifest FILE digest",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-002",
+        "name": "review mutation: notes-only verdict",
+        "expected_refusal_fragment": "notes-only verdict",
+        "edits": [
+          {
+            "old": "Verdict: CONFIRM WITH EXCEPTIONS",
+            "new": "Verdict: REVISE"
+          }
+        ],
+        "observed_refusal": "review is not the cleared notes-only verdict",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-003",
+        "name": "review mutation: review commit differs",
+        "expected_refusal_fragment": "review commit differs",
+        "edits": [
+          {
+            "old": "Reviewed commit: 7d7c3a3e8a68764f987aabd80d09d9c5963d7475",
+            "new": "Reviewed commit: 0000000000000000000000000000000000000000"
+          }
+        ],
+        "observed_refusal": "review commit differs from retained review",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-004",
+        "name": "review mutation: exactly notes",
+        "expected_refusal_fragment": "exactly notes",
+        "edits": [
+          {
+            "old": "**Finding 1 \u2014",
+            "new": "**Finding 4 \u2014"
+          }
+        ],
+        "observed_refusal": "review findings are not exactly notes 1, 2, 3",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-005",
+        "name": "review mutation: finding",
+        "expected_refusal_fragment": "finding",
+        "edits": [
+          {
+            "old": "**Finding 2 \u2014",
+            "new": "**Issue 2 \u2014"
+          }
+        ],
+        "observed_refusal": "review findings are not exactly notes 1, 2, 3",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-006",
+        "name": "review mutation: exactly notes",
+        "expected_refusal_fragment": "exactly notes",
+        "edits": [
+          {
+            "old": "** (note)",
+            "new": "** (revise)"
+          }
+        ],
+        "observed_refusal": "review findings are not exactly notes 1, 2, 3",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-007",
+        "name": "retained-note identity/population mutation",
+        "expected_refusal_fragment": "disposition",
+        "edits": [
+          {
+            "old": "d",
+            "new": "wr"
+          },
+          {
+            "old": "cs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2",
+            "new": "ng"
+          }
+        ],
+        "observed_refusal": "disposition raw reference differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-008",
+        "name": "retained-note identity/population mutation",
+        "expected_refusal_fragment": "disposition",
+        "edits": [
+          {
+            "old": "2",
+            "new": "1"
+          }
+        ],
+        "observed_refusal": "disposition note population differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-009",
+        "name": "retained-note identity/population mutation",
+        "expected_refusal_fragment": "disposition",
+        "edits": [
+          {
+            "old": "3",
+            "new": "4"
+          }
+        ],
+        "observed_refusal": "disposition note population differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-010",
+        "name": "paired approval mutation",
+        "expected_refusal_fragment": "reply",
+        "edits": [
+          {
+            "old": ", approve both",
+            "new": ""
+          }
+        ],
+        "observed_refusal": "actual paired owner reply differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-011",
+        "name": "paired approval mutation",
+        "expected_refusal_fragment": "offer",
+        "edits": [
+          {
+            "old": "Ask 2 ",
+            "new": ""
+          },
+          {
+            "old": "sc",
+            "new": ""
+          },
+          {
+            "old": "pe",
+            "new": "nly"
+          }
+        ],
+        "observed_refusal": "paired version and Ask-2 offer differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-012",
+        "name": "paired approval mutation",
+        "expected_refusal_fragment": "offer",
+        "edits": [
+          {
+            "old": "pwb-",
+            "new": "othe"
+          },
+          {
+            "old": "egistry-machine-ceiling-amendment",
+            "new": ""
+          },
+          {
+            "old": "pwb-",
+            "new": "othe"
+          },
+          {
+            "old": "egistry-machine-ceiling-amendment",
+            "new": ""
+          }
+        ],
+        "observed_refusal": "paired version and Ask-2 offer differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-013",
+        "name": "paired approval mutation",
+        "expected_refusal_fragment": "differ",
+        "edits": [
+          {
+            "old": "5",
+            "new": "6"
+          }
+        ],
+        "observed_refusal": "implementation item population differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-014",
+        "name": "predecessor date/digest/identity mutation",
+        "expected_refusal_fragment": "predecessor",
+        "edits": [
+          {
+            "old": "2",
+            "new": "3"
+          }
+        ],
+        "observed_refusal": "predecessor date differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-015",
+        "name": "predecessor date/digest/identity mutation",
+        "expected_refusal_fragment": "predecessor",
+        "edits": [
+          {
+            "old": "",
+            "new": "\nExact digest (SHA-256): `${ACT_B_ARGUMENT}`\n"
+          }
+        ],
+        "observed_refusal": "predecessor exact digest differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-016",
+        "name": "predecessor date/digest/identity mutation",
+        "expected_refusal_fragment": "predecessor",
+        "edits": [
+          {
+            "old": "PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02",
+            "new": "wrong"
+          }
+        ],
+        "observed_refusal": "predecessor identity differs",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-017",
+        "name": "recording UTC/date mutation",
+        "expected_refusal_fragment": "recording",
+        "edits": [
+          {
+            "old": "2026-10-21T00:01:00Z",
+            "new": "2026-10-21"
+          }
+        ],
+        "observed_refusal": "recording instant must be strict UTC",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-018",
+        "name": "recording UTC/date mutation",
+        "expected_refusal_fragment": "recording",
+        "edits": [
+          {
+            "old": "2026-10-21T00:01:00Z",
+            "new": "2026-10-20T12:00:00+00:00"
+          }
+        ],
+        "observed_refusal": "recording instant must be strict UTC",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-019",
+        "name": "recording UTC/date mutation",
+        "expected_refusal_fragment": "recording",
+        "edits": [
+          {
+            "old": "2026-10-21T00:01:00Z",
+            "new": "2026-10-19T23:59:59Z"
+          }
+        ],
+        "observed_refusal": "recording precedes owner answer",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-020",
+        "name": "duplicate JSON key",
+        "expected_refusal_fragment": "duplicate JSON",
+        "edits": [
+          {
+            "old": "{\"x\":1}",
+            "new": "{\"x\":1,\"x\":2}"
+          }
+        ],
+        "observed_refusal": "duplicate JSON key: x",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-021",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/IMPACT-LEDGER.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/IMPACT-LEDGER.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/IMPACT-LEDGER.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-022",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/OWNER-DECISION-PACKET.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/OWNER-DECISION-PACKET.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/OWNER-DECISION-PACKET.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-023",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-024",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/REVIEW-BRIEF.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/REVIEW-BRIEF.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/REVIEW-BRIEF.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-025",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/ROUND-2-DISPOSITIONS.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/ROUND-2-DISPOSITIONS.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/ROUND-2-DISPOSITIONS.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-026",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/SEMANTIC-DELTA.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/SEMANTIC-DELTA.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/SEMANTIC-DELTA.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-027",
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-028",
+        "name": "frozen-file drift: .syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-029",
+        "name": "frozen-file drift: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-030",
+        "name": "frozen-file drift: docs/evidence/syzygy-59s5-live-size-2026-10-20.json",
+        "expected_refusal_fragment": "frozen source",
+        "path": "docs/evidence/syzygy-59s5-live-size-2026-10-20.json",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: docs/evidence/syzygy-59s5-live-size-2026-10-20.json",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-031",
+        "name": "frozen-file drift: docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2-RAW.md",
+        "expected_refusal_fragment": "frozen source",
+        "path": "docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2-RAW.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2-RAW.md",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-032",
+        "name": "frozen-file drift: scripts/build_pwb_registry_machine_ceiling_amendment.py",
+        "expected_refusal_fragment": "frozen source",
+        "path": "scripts/build_pwb_registry_machine_ceiling_amendment.py",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\n"
+          }
+        ],
+        "observed_refusal": "frozen source differs or is missing: scripts/build_pwb_registry_machine_ceiling_amendment.py",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-033",
+        "name": "subject exact-base mutation",
+        "expected_refusal_fragment": "subject",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "edits": [
+          {
+            "old": "\"maxMachineResponseBytes\": 8388608,",
+            "new": "\"maxMachineResponseBytes\": 8388608,\n\"maxMachineResponseBytes\": 8388608,"
+          }
+        ],
+        "observed_refusal": "the subject carries neither exactly one old nor exactly one new literal: a sibling changed it; regenerate with --write over the new base and review again",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-034",
+        "name": "subject exact-base mutation",
+        "expected_refusal_fragment": "subject",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "edits": [
+          {
+            "old": "\"schemaVersion\": 1",
+            "new": "\"schemaVersion\": 2"
+          }
+        ],
+        "observed_refusal": "subject is not the exact act-B base",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-035",
+        "name": "input drift before transaction: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457"
+      },
+      {
+        "id": "P114-REC-036",
+        "name": "input drift before transaction: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "edits": [
+          {
+            "operation": "create previously absent file",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b"
+      },
+      {
+        "id": "P114-REC-037",
+        "name": "input drift before transaction: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9"
+      },
+      {
+        "id": "P114-REC-038",
+        "name": "input drift during staging: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457"
+      },
+      {
+        "id": "P114-REC-039",
+        "name": "input drift during staging: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "edits": [
+          {
+            "operation": "create previously absent file",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b"
+      },
+      {
+        "id": "P114-REC-040",
+        "name": "input drift during staging: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\nOwner-preserved concurrent input.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9"
+      },
+      {
+        "id": "P114-REC-041",
+        "name": "input drift after first replacement",
+        "expected_refusal_fragment": "transaction input changed",
+        "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "edits": [
+          {
+            "operation": "append at EOF",
+            "old": "",
+            "new": "\nOwner-preserved concurrent aggregate note.\n"
+          }
+        ],
+        "observed_refusal": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "original_cause": null,
+        "predicate_held": true,
+        "expected_after_state_fingerprint": "385a34f8814a3e6f0b595989d4bd1f5462737521d92bc147e619f21367c51245"
+      },
+      {
+        "id": "P114-REC-042",
+        "name": "rollback ownership modify: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "rollback_mode": "modify",
+        "edits": [
+          {
+            "operation": "append at EOF after owned replacement",
+            "old": "",
+            "new": "\nIndependent edit after owned replacement.\n"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-043",
+        "name": "rollback ownership delete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "rollback_mode": "delete",
+        "edits": [
+          {
+            "operation": "unlink after owned replacement",
+            "old": "transaction installed output",
+            "new": "file absent"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-044",
+        "name": "rollback ownership modify: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "rollback_mode": "modify",
+        "edits": [
+          {
+            "operation": "append at EOF after owned replacement",
+            "old": "",
+            "new": "\nIndependent edit after owned replacement.\n"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md: independently changed or deleted",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-045",
+        "name": "rollback ownership delete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "rollback_mode": "delete",
+        "edits": [
+          {
+            "operation": "unlink after owned replacement",
+            "old": "transaction installed output",
+            "new": "file absent"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md: independently changed or deleted",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-046",
+        "name": "rollback ownership during restoration staging",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "rollback_mode": "modify",
+        "edits": [
+          {
+            "operation": "append at EOF after owned replacement",
+            "old": "",
+            "new": "\nIndependent edit while preparing restoration.\n"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-047",
+        "name": "rollback restoration I/O failure",
+        "expected_refusal_fragment": "rollback incomplete",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "rollback_mode": "recovery I/O failure",
+        "edits": [
+          {
+            "operation": "raise OSError while staging restoration",
+            "old": "stage prior bytes for restoration",
+            "new": "OSError('injected restoration staging failure')"
+          }
+        ],
+        "later_failure": "OSError('injected later replacement failure') after real prior replacements",
+        "observed_refusal": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: restoration failed: injected restoration staging failure",
+        "original_cause": {
+          "type": "OSError",
+          "message": "injected later replacement failure"
+        },
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-048",
+        "name": "stage 1 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "stage",
+          "call": 1,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-049",
+        "name": "stage 2 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "stage",
+          "call": 2,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-050",
+        "name": "stage 3 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "stage",
+          "call": 3,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-051",
+        "name": "replace 1 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "replace",
+          "call": 1,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-052",
+        "name": "replace 2 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "replace",
+          "call": 2,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-053",
+        "name": "replace 3 refuses",
+        "expected_refusal_fragment": "injected",
+        "fault": {
+          "seam": "replace",
+          "call": 3,
+          "old": "call the real filesystem operation",
+          "new": "raise OSError('injected transaction failure') before this operation"
+        },
+        "observed_refusal": "injected transaction failure",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-054",
+        "name": "second act refuses",
+        "expected_refusal_fragment": "already exists",
+        "operation": "invoke record again after a successful temporary transaction",
+        "observed_refusal": "dedicated act already exists",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-055",
+        "name": "changed approval provenance refuses",
+        "expected_refusal_fragment": "regeneration",
+        "edits": [
+          {
+            "old": "explicitly given by the owner's words recorded below",
+            "new": "not explicitly given by the owner's words recorded below"
+          }
+        ],
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-056",
+        "name": "duplicate complete aggregate refuses",
+        "expected_refusal_fragment": "exactly one",
+        "operation": "append render(...)[1] using the same exact recorded instant and row",
+        "observed_refusal": "aggregate does not carry exactly one complete act block",
+        "original_cause": null,
+        "predicate_held": true
+      },
+      {
+        "id": "P114-REC-057",
+        "name": "missing aggregate block refuses",
+        "expected_refusal_fragment": "exactly one",
+        "edits": [
+          {
+            "old": "## PWB registry machine-ceiling amendment \u2014 performed 2026-10-20",
+            "new": "## Other act"
+          }
+        ],
+        "observed_refusal": "aggregate does not carry exactly one complete act block",
+        "original_cause": null,
+        "predicate_held": true
+      }
+    ],
+    "transactions": [
+      {
+        "id": "P114-TXN-01",
+        "stimulus": "input drift before transaction: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "raised": "transaction input changed: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457",
+        "after_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457"
+      },
+      {
+        "id": "P114-TXN-02",
+        "stimulus": "input drift before transaction: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "raised": "transaction input changed: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b",
+        "after_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b"
+      },
+      {
+        "id": "P114-TXN-03",
+        "stimulus": "input drift before transaction: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "raised": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9",
+        "after_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9"
+      },
+      {
+        "id": "P114-TXN-04",
+        "stimulus": "input drift during staging: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "raised": "transaction input changed: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "77b370994f37e1d8dbd17e94fc2569bf99c59addf693ba28d3615b8a5205a457"
+      },
+      {
+        "id": "P114-TXN-05",
+        "stimulus": "input drift during staging: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "raised": "transaction input changed: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "50439e67fc623f7a94d11b2a404e856375e89a43ddc23082e2491f709582441b"
+      },
+      {
+        "id": "P114-TXN-06",
+        "stimulus": "input drift during staging: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "raised": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "056ff7e163ecd114e11ae573b5a48fc1471fbf6f5d6c2b71a199d9b3ae271cf9"
+      },
+      {
+        "id": "P114-TXN-07",
+        "stimulus": "input drift after first replacement",
+        "raised": "transaction input changed: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "385a34f8814a3e6f0b595989d4bd1f5462737521d92bc147e619f21367c51245",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "385a34f8814a3e6f0b595989d4bd1f5462737521d92bc147e619f21367c51245"
+      },
+      {
+        "id": "P114-TXN-08",
+        "stimulus": "rollback ownership modify: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "54db852b0d22e8e121fdab17e3ef56c4255aa17a4fa9b63bf4f2373a083cdacf",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "54db852b0d22e8e121fdab17e3ef56c4255aa17a4fa9b63bf4f2373a083cdacf"
+      },
+      {
+        "id": "P114-TXN-09",
+        "stimulus": "rollback ownership delete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3e093a0fd2ac7713c3935186e1901d744603554b93cd2d8c4c78c7cbd6a1919b",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "3e093a0fd2ac7713c3935186e1901d744603554b93cd2d8c4c78c7cbd6a1919b"
+      },
+      {
+        "id": "P114-TXN-10",
+        "stimulus": "rollback ownership modify: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md: independently changed or deleted",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "101fc84e67481bead069c9e99defba0d23084820a450f213d1fbf96f65c2fd43",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "101fc84e67481bead069c9e99defba0d23084820a450f213d1fbf96f65c2fd43"
+      },
+      {
+        "id": "P114-TXN-11",
+        "stimulus": "rollback ownership delete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md: independently changed or deleted",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7"
+      },
+      {
+        "id": "P114-TXN-12",
+        "stimulus": "rollback ownership during restoration staging",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: independently changed or deleted",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": true,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "9b2de0ba7a92de74c47aa0c5d95893de04a729f848fa640c7426c55e2073b6ad",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": "9b2de0ba7a92de74c47aa0c5d95893de04a729f848fa640c7426c55e2073b6ad"
+      },
+      {
+        "id": "P114-TXN-13",
+        "stimulus": "rollback restoration I/O failure",
+        "raised": "OSError: injected later replacement failure; rollback incomplete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json: restoration failed: injected restoration staging failure",
+        "restored_exact_state": false,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": true,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "932cd22ebd536cf5d595a701e58bd7ce0769195923ade546e1dc6e8771b38d2f",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null,
+        "expected_recovery_failure_state_state_fingerprint": "932cd22ebd536cf5d595a701e58bd7ce0769195923ade546e1dc6e8771b38d2f"
+      },
+      {
+        "id": "P114-TXN-14",
+        "stimulus": "stage 1 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-15",
+        "stimulus": "stage 2 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-16",
+        "stimulus": "stage 3 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-17",
+        "stimulus": "replace 1 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-18",
+        "stimulus": "replace 2 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-19",
+        "stimulus": "replace 3 refuses",
+        "raised": "injected transaction failure",
+        "restored_exact_state": true,
+        "all_outputs_installed": false,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      },
+      {
+        "id": "P114-TXN-20",
+        "stimulus": "accepting control",
+        "restored_exact_state": null,
+        "all_outputs_installed": true,
+        "preserved_foreign_state": null,
+        "reported_partial_recovery_state": null,
+        "before_state_fingerprint": "3a2aa02d324b55424bc5136c2590ccdcec17e970460d688fdf65dc4150c3d7b7",
+        "after_state_fingerprint": "5a7c4744b8513dbc7175cbb23a2596903fb1b3a6a0fe07d6126368c12730a774",
+        "expected_state_fingerprint": "c051c686e5be82c23b7e4f12185d5a694114b3024f70d3fbe073c3e5278f178a",
+        "expected_foreign_state_state_fingerprint": null
+      }
+    ],
+    "fixtures": [
+      {
+        "name": "notes-only review and retained note adapter accept",
+        "passed": true
+      },
+      {
+        "name": "actual paired selection and date-only predecessor accept",
+        "passed": true
+      },
+      {
+        "name": "review mutation: manifest FILE",
+        "passed": true
+      },
+      {
+        "name": "review mutation: notes-only verdict",
+        "passed": true
+      },
+      {
+        "name": "review mutation: review commit differs",
+        "passed": true
+      },
+      {
+        "name": "review mutation: exactly notes",
+        "passed": true
+      },
+      {
+        "name": "review mutation: finding",
+        "passed": true
+      },
+      {
+        "name": "review mutation: exactly notes",
+        "passed": true
+      },
+      {
+        "name": "retained-note identity/population mutation",
+        "passed": true
+      },
+      {
+        "name": "retained-note identity/population mutation",
+        "passed": true
+      },
+      {
+        "name": "retained-note identity/population mutation",
+        "passed": true
+      },
+      {
+        "name": "paired approval mutation",
+        "passed": true
+      },
+      {
+        "name": "paired approval mutation",
+        "passed": true
+      },
+      {
+        "name": "paired approval mutation",
+        "passed": true
+      },
+      {
+        "name": "paired approval mutation",
+        "passed": true
+      },
+      {
+        "name": "predecessor date/digest/identity mutation",
+        "passed": true
+      },
+      {
+        "name": "predecessor date/digest/identity mutation",
+        "passed": true
+      },
+      {
+        "name": "predecessor date/digest/identity mutation",
+        "passed": true
+      },
+      {
+        "name": "recording UTC/date mutation",
+        "passed": true
+      },
+      {
+        "name": "recording UTC/date mutation",
+        "passed": true
+      },
+      {
+        "name": "recording UTC/date mutation",
+        "passed": true
+      },
+      {
+        "name": "duplicate JSON key",
+        "passed": true
+      },
+      {
+        "name": "unapplied accepting control verifies",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/IMPACT-LEDGER.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/OWNER-DECISION-PACKET.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/REVIEW-BRIEF.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/ROUND-2-DISPOSITIONS.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/SEMANTIC-DELTA.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-INSTALL-2026-10-20.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: docs/evidence/syzygy-59s5-live-size-2026-10-20.json",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-2-RAW.md",
+        "passed": true
+      },
+      {
+        "name": "frozen-file drift: scripts/build_pwb_registry_machine_ceiling_amendment.py",
+        "passed": true
+      },
+      {
+        "name": "subject exact-base mutation",
+        "passed": true
+      },
+      {
+        "name": "subject exact-base mutation",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: preserve foreign bytes and other inputs: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: preserve foreign bytes and other inputs: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "passed": true
+      },
+      {
+        "name": "input drift before transaction: preserve foreign bytes and other inputs: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: preserve foreign bytes and other inputs: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: preserve foreign bytes and other inputs: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "passed": true
+      },
+      {
+        "name": "input drift during staging: preserve foreign bytes and other inputs: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        "passed": true
+      },
+      {
+        "name": "input drift after first replacement",
+        "passed": true
+      },
+      {
+        "name": "late drift restores owned outputs and preserves foreign aggregate",
+        "passed": true
+      },
+      {
+        "name": "rollback ownership modify: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "rollback preserves independent modify, restores other outputs and reports original I/O cause: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "rollback ownership delete: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "rollback preserves independent delete, restores other outputs and reports original I/O cause: .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "passed": true
+      },
+      {
+        "name": "rollback ownership modify: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "rollback preserves independent modify, restores other outputs and reports original I/O cause: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "rollback ownership delete: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "rollback preserves independent delete, restores other outputs and reports original I/O cause: .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "passed": true
+      },
+      {
+        "name": "rollback ownership during restoration staging",
+        "passed": true
+      },
+      {
+        "name": "rollback rechecks ownership after restoration staging and retains original I/O cause",
+        "passed": true
+      },
+      {
+        "name": "rollback restoration I/O failure",
+        "passed": true
+      },
+      {
+        "name": "incomplete restoration reports both I/O failures and restores the other owned output",
+        "passed": true
+      },
+      {
+        "name": "stage 1 refuses",
+        "passed": true
+      },
+      {
+        "name": "stage 1 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "stage 2 refuses",
+        "passed": true
+      },
+      {
+        "name": "stage 2 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "stage 3 refuses",
+        "passed": true
+      },
+      {
+        "name": "stage 3 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "replace 1 refuses",
+        "passed": true
+      },
+      {
+        "name": "replace 1 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "replace 2 refuses",
+        "passed": true
+      },
+      {
+        "name": "replace 2 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "replace 3 refuses",
+        "passed": true
+      },
+      {
+        "name": "replace 3 restores exact prior population/bytes",
+        "passed": true
+      },
+      {
+        "name": "record, patch, exact regeneration and aggregate accepting control",
+        "passed": true
+      },
+      {
+        "name": "second act refuses",
+        "passed": true
+      },
+      {
+        "name": "changed approval provenance refuses",
+        "passed": true
+      },
+      {
+        "name": "duplicate complete aggregate refuses",
+        "passed": true
+      },
+      {
+        "name": "missing aggregate block refuses",
+        "passed": true
+      }
+    ]
+  },
+  "historical_recovery": {
+    "whole_builder_outcomes": 66,
+    "named_successor_outcomes": 29,
+    "refused_stimuli": 28,
+    "accepting_controls": 1,
+    "mutants": [
+      {
+        "id": "P114-HIST-01",
+        "name": "manifest row missing",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "old": "${P114_ROW}  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "new": "",
+        "observed_refusal": "machine-ceiling successor manifest is not the exact reviewed registry row",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-02",
+        "name": "extra manifest row",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "old": "${P114_ROW}  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "new": "${P114_ROW}  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json\n0000000000000000000000000000000000000000000000000000000000000000  other.json",
+        "observed_refusal": "machine-ceiling successor manifest is not the exact reviewed registry row",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-03",
+        "name": "manifest subject differs",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "old": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "new": "other.json",
+        "observed_refusal": "machine-ceiling successor manifest is not the exact reviewed registry row",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-04",
+        "name": "unapproved row",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "old": "${P114_ROW}",
+        "new": "0000000000000000000000000000000000000000000000000000000000000000",
+        "observed_refusal": "machine-ceiling successor manifest is not the exact reviewed registry row",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-05",
+        "name": "patch differs",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch",
+        "old": "+        \"maxMachineResponseBytes\": 16777216,",
+        "new": "+        \"maxMachineResponseBytes\": 16777217,",
+        "observed_refusal": "machine-ceiling successor patch differs from the reviewed patch",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-06",
+        "name": "record identity differs",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20",
+        "new": "other-act",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-07",
+        "name": "record type differs",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act type: `adopt-registry-entry`",
+        "new": "Act type: `approve-policy`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-08",
+        "name": "record tag differs",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`",
+        "new": "- recording tag: `other-v1.0`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-09",
+        "name": "record target differs",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+        "new": "other-ACT.md",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-10",
+        "name": "record digest differs",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Exact digest (SHA-256): `${P114_ROW}`",
+        "new": "Exact digest (SHA-256): `0000000000000000000000000000000000000000000000000000000000000000`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-11",
+        "name": "subject drift",
+        "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+        "old": "\"schemaVersion\": 1",
+        "new": "\"schemaVersion\": 2",
+        "observed_refusal": "registry: the subject with the later patches reversed so far hashes to 3d6eac6b6c91bed4e95f32d2542a77a2ff9bd9d8b080f29272f9c3678ecbc0f4, not the argument ${P114_ROW} of .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-12",
+        "name": "record missing",
+        "operation": "unlink",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-13",
+        "name": "manifest missing",
+        "operation": "unlink",
+        "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "observed_refusal": "missing input: .syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-14",
+        "name": "Act identity: contradictory duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "new": "Act identity: `other-act`\n\nAct identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-15",
+        "name": "Act identity: identical duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "new": "Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`\n\nAct identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-16",
+        "name": "Act identity: malformed additional value",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "new": "Act identity: unquoted malformed value\n\nAct identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-17",
+        "name": "Act type: contradictory duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act type: `adopt-registry-entry`",
+        "new": "Act type: `approve-policy`\n\nAct type: `adopt-registry-entry`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-18",
+        "name": "Act type: identical duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act type: `adopt-registry-entry`",
+        "new": "Act type: `adopt-registry-entry`\n\nAct type: `adopt-registry-entry`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-19",
+        "name": "Act type: malformed additional value",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Act type: `adopt-registry-entry`",
+        "new": "Act type: unquoted malformed value\n\nAct type: `adopt-registry-entry`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-20",
+        "name": "Artifact identity: contradictory duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Artifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "new": "Artifact identity: `other.json`\n\nArtifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-21",
+        "name": "Artifact identity: identical duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Artifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "new": "Artifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`\n\nArtifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-22",
+        "name": "Artifact identity: malformed additional value",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Artifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "new": "Artifact identity: unquoted malformed value\n\nArtifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-23",
+        "name": "Supersession / revocation: contradictory duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "new": "Supersession / revocation: none\n\nSupersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-24",
+        "name": "Supersession / revocation: identical duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "new": "Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.\n\nSupersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-25",
+        "name": "Supersession / revocation: malformed additional value",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "new": "Supersession / revocation: unquoted malformed value\n\nSupersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-26",
+        "name": "- recording tag: contradictory duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "new": "- recording tag: `other-v1.0`\n\n- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-27",
+        "name": "- recording tag: identical duplicate",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "new": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this\n\n- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      },
+      {
+        "id": "P114-HIST-28",
+        "name": "- recording tag: malformed additional value",
+        "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+        "old": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "new": "- recording tag: unquoted malformed value\n\n- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`, on the main commit carrying this",
+        "observed_refusal": "dedicated record differs from exact regeneration",
+        "predicate_held": true
+      }
+    ],
+    "fixtures": [
+      {
+        "name": "machine ceiling: exact performed row recovers act B",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: manifest row missing",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: extra manifest row",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: manifest subject differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: unapproved row",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: patch differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record identity differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record type differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record tag differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record target differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record digest differs",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: subject drift",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: record missing",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: manifest missing",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act identity: contradictory duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act identity: identical duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act identity: malformed additional value",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act type: contradictory duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act type: identical duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Act type: malformed additional value",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Artifact identity: contradictory duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Artifact identity: identical duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Artifact identity: malformed additional value",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Supersession / revocation: contradictory duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Supersession / revocation: identical duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: Supersession / revocation: malformed additional value",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: - recording tag: contradictory duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: - recording tag: identical duplicate",
+        "passed": true
+      },
+      {
+        "name": "machine ceiling refuses recovery: - recording tag: malformed additional value",
+        "passed": true
+      }
+    ]
+  },
+  "failed_checkpoints": [
+    {
+      "subject_commit": "9adae4f2935f2e82bb295eb6d6683a8d1c3a2bda",
+      "verdict": "REVISE",
+      "raw_path": "docs/reviews/R-P114-CORE-9ADA-1-RAW.md",
+      "immutable_cache": "/home/tze/.cache/syzygy-p114-install-final-review-2026-10-20",
+      "artifacts": {
+        "CORE-9ADA-1-RAW.md": "5f0e54cdc05871a5e8a1c9c0747142aec94e6c615cc919e4fb4a0031ae3ca35f",
+        "core-independent-probes.json": "4cc4a1ab521650f9782136850c6dea654261f5185fd468f372ddc4634d1fa0ee",
+        "core_independent_probes.py": "03d8d2302595c4cb3ec1dd15ee171aadacba222f2192e2ffea869295ba83b955"
+      },
+      "reproduced_failing_stimuli": [
+        {
+          "id": "aggregate-edit-after-validation-before-staging",
+          "old": "aggregate bytes read before expected(root,...)",
+          "new": "same bytes plus independent owner note before transaction snapshots inputs",
+          "accepted": true,
+          "concurrent_edit_retained": false
+        },
+        {
+          "id": "history-identity-contradictory-duplicate",
+          "old": "Act identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+          "new": "Act identity: `OTHER-ACT-2026-10-20`\n\nAct identity: `PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20`",
+          "history_accepted": true,
+          "history_refusal": null,
+          "dedicated_check_refusal": "dedicated record differs from exact regeneration"
+        },
+        {
+          "id": "history-type-contradictory-duplicate",
+          "old": "Act type: `adopt-registry-entry`",
+          "new": "Act type: `approve-policy`\n\nAct type: `adopt-registry-entry`",
+          "history_accepted": true,
+          "history_refusal": null,
+          "dedicated_check_refusal": "dedicated record differs from exact regeneration"
+        },
+        {
+          "id": "history-artifact-contradictory-duplicate",
+          "old": "Artifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+          "new": "Artifact identity: `.syzygy/governance/policies/OTHER.json`\n\nArtifact identity: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`",
+          "history_accepted": true,
+          "history_refusal": null,
+          "dedicated_check_refusal": "dedicated record differs from exact regeneration"
+        },
+        {
+          "id": "history-target-contradictory-duplicate",
+          "old": "Supersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+          "new": "Supersession / revocation: supersedes `OTHER-ACT`\n\nSupersession / revocation: this act supersedes, for the `adopt-registry-entry` role only, the 2026-10-02 act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`.",
+          "history_accepted": true,
+          "history_refusal": null,
+          "dedicated_check_refusal": "dedicated record differs from exact regeneration"
+        },
+        {
+          "id": "history-tag-contradictory-duplicate",
+          "old": "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`",
+          "new": "- recording tag: `other-v1.0`\n\n- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`",
+          "history_accepted": true,
+          "history_refusal": null,
+          "dedicated_check_refusal": "dedicated record differs from exact regeneration"
+        }
+      ],
+      "meaning": "The old local selftests passed but omitted these two failure classes. Their original results and the independent REVISE remain unchanged; current-source outcomes above are additive."
+    },
+    {
+      "subject_commit": "f11d6727fbc902a88fde600c988fb525c5385dce",
+      "verdict": "REVISE",
+      "raw_path": "docs/reviews/R-P114-CORE-F11-2-RAW.md",
+      "disclosure_path": "docs/reviews/R-P114-CORE-F11-2-DISCLOSURE-RAW.md",
+      "immutable_cache": "/home/tze/.cache/syzygy-p114-install-final-review-2026-10-20",
+      "artifacts": {
+        "CORE-F11-2-RAW.md": "27a91fa07d7fae4f2c55759e5ebcd3b161764011b09862126b62b509f8e3dadf",
+        "CORE-F11-2-DISCLOSURE-RAW.md": "bf38b4f001b6c32fc1eb340c7dc7570ddf74af27003de8320587a14692fc7fd4",
+        "repair-original-probes.json": "809c4ca7eceea536f56642173621c0f5569bc03eee85297389b6c99de407cd6e",
+        "repair-extended-probes.json": "49af7e1c864d9f242cb928015b9d303b4db89aed3f7586a893de7c022c8d995f"
+      },
+      "probe_populations": {
+        "original_replay": 25,
+        "extended": 29,
+        "relationship": "overlapping populations; do not sum"
+      },
+      "reproduced_failing_stimuli": [
+        {
+          "id": "rollback-after-independent-edit-to-POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+          "old": "transaction output has been installed",
+          "new": "independent writer appends after replacement, later replacement raises OSError",
+          "refusal": "independent probe: later replacement fails",
+          "foreign_edit_retained": false,
+          "file_exists_after_rollback": true,
+          "literal_append": {
+            "old": "",
+            "new": "\nIndependent edit after owned replacement.\n"
+          }
+        },
+        {
+          "id": "rollback-after-independent-edit-to-PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+          "old": "transaction output has been installed",
+          "new": "independent writer appends after replacement, later replacement raises OSError",
+          "refusal": "independent probe: later replacement fails",
+          "foreign_edit_retained": false,
+          "file_exists_after_rollback": false,
+          "literal_append": {
+            "old": "",
+            "new": "\nIndependent edit after owned replacement.\n"
+          }
+        }
+      ],
+      "meaning": "Early input and strict history fixes confirmed for the tested populations; rollback ownership still lost independent bytes. These failures remain preserved and are corrected additively at the current subject."
+    }
+  ],
+  "resolved_external_artifacts": {
+    "rollback-recorder-mutations-resolved.json": "5ea0e3530a9c9a7ee1a29782cfed9de6d94d786d4b0fc562ef6bc510a1e026f4",
+    "rollback-history-mutations-resolved.json": "a36ac6279228ae452c105f87903a9188b76cc011dd8918d3e92a8fadadfaf013"
+  },
+  "repository_unchanged_by_capture": true,
+  "residual_validation_limit": {
+    "followup": "syzygy-8tsz",
+    "scope": "Existing CG-26 count-sentence parser covers 0..99 and misses the >=100 word-form claim. Command-list parity still operates. Final counts and both sentence values use a separate comparator and rejecting count mutations."
+  },
+  "independent_confirmation": {
+    "subject_commit": "fbe90feb253e2d020b4974e3abf6755321f9063e",
+    "verdict": "CONFIRM",
+    "scope": "bounded core implementation; overall merge remains WITHHELD",
+    "raw_path": "docs/reviews/R-P114-CORE-FBE-3-RAW.md",
+    "raw_sha256": "04889043fe6fe94f16aae228712b680f62050ceceefeb7f1ddb3eb3e57ebac35",
+    "artifact_index_sha256": "9c8b01e99110d357e93c3c9e7a57cdcbcdc89c98129a3be0944755173ffdf98b",
+    "artifacts": [
+      {
+        "file": "CORE-FBE-3-RAW.md",
+        "sha256": "04889043fe6fe94f16aae228712b680f62050ceceefeb7f1ddb3eb3e57ebac35",
+        "bytes": 9949
+      },
+      {
+        "file": "confirmation-original-probes.json",
+        "sha256": "3810fd774ac7563c8780fc98a22d2ddca9d2c4639f1cf7ea55c521311c22acf8",
+        "bytes": 23120
+      },
+      {
+        "file": "confirmation_original_probes.py",
+        "sha256": "3fb7068b45a38ab04c42ce3597fddb34344d1f0dad2fc82202e2ecaa3d798f71",
+        "bytes": 8586
+      },
+      {
+        "file": "confirmation-extended-probes.json",
+        "sha256": "3a73fc639917c79df71316cfeea1e86042c60da468a1340a7d396f226d02725d",
+        "bytes": 23082
+      },
+      {
+        "file": "confirmation_extended_probes.py",
+        "sha256": "734ff41ff4108d4197cb2e7865033df0635d8f300a5226189981b2ddefc2b289",
+        "bytes": 8390
+      },
+      {
+        "file": "confirmation-recovery-probes.json",
+        "sha256": "16501f01bfce81a4f8194f1a617ea4661f81f25904722e6b0828aa5bcd42589f",
+        "bytes": 8930
+      },
+      {
+        "file": "confirmation_recovery_probes.py",
+        "sha256": "7c9f788c01b75174f5c7922227bbf3a3c5bf57f7d407ec1139ece67ca53370b6",
+        "bytes": 6325
+      },
+      {
+        "file": "confirmation-summary.json",
+        "sha256": "3da4cc398f62917d80357a40b0eb596bbccb273989b8c65e1710514a34ce8f92",
+        "bytes": 2196
+      },
+      {
+        "file": "confirmation-recorder-selftest.log",
+        "sha256": "3bff42bd119f8c9f3ea31c26c282628c142129ce8bcf3eea97e82b75a05a6ca1",
+        "bytes": 6275
+      },
+      {
+        "file": "confirmation-history-selftest.log",
+        "sha256": "e9812a9c72469f6c65faa9a05900cbba2b6fc709089ce3616ea8846e127cf97a",
+        "bytes": 3818
+      },
+      {
+        "file": "confirmation-recorder-check.log",
+        "sha256": "1bf0bbae3d4eb9935a2d0299918cdeebb783e4062f36cce590f85cf00d0d5581",
+        "bytes": 107
+      }
+    ],
+    "probe_populations": {
+      "original_replay": 25,
+      "extended": 29,
+      "additional_recovery": 6,
+      "relationship": "campaign observation populations overlap; not a unique-mutant total"
+    }
+  }
+}

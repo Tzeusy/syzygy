@@ -432,6 +432,7 @@ CAMPAIGNS = (
         "pwb-registry-machine-ceiling",
         "P-114 machine-ceiling registry gate",
         r"R-PWB-REGISTRY-MACHINE-CEILING-.*\.md",
+        r"R-P114-.*-RAW\.md",
     ),
 )
 

@@ -114,6 +114,11 @@ LATER_SPEC_SIGNOFFS = (
 #: subject as the re-pin left it is the tree with these patches reversed,
 #: newest first, each from its own act's exact digest (`subject_at_act`).
 LATER_SUBJECT_ACTS: dict[str, tuple[tuple[pathlib.Path, pathlib.Path], ...]] = {
+    "registry": (
+        (DECISIONS / "PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md",
+         pathlib.Path(".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/"
+                      "proposed/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json.patch")),
+    ),
     "policy": (
         (DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
          pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope/"
@@ -138,6 +143,35 @@ CHOSEN_VARIANT_RE = re.compile(r"^Chosen variant: `([a-z]+(?:-[a-z]+)*)`\.?\s*$"
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 EXACT_DIGEST_RE = re.compile(
     r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`\s*$", re.MULTILINE)
+
+# This one approved row is the only later registry act this successor knows.
+# These are generated from P-114's unchanged reviewed files, not live subjects.
+MACHINE_CEILING_MANIFEST = pathlib.Path(
+    ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/"
+    "PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt")
+MACHINE_CEILING_ARGUMENT = "f2b3573cfe35169f449a9eed36b4c3330ef037d6668bab0548dd5d5939293556"
+MACHINE_CEILING_MANIFEST_SHA = "5396c8912cd329ba4d4413245e69c1d6fb81536713115e7ca32506e7b1768ac1"
+MACHINE_CEILING_PATCH_SHA = "5c7c89494ab86b1514839adc9100a96e7b65f42fb4f272a2443bcc50ae673290"
+MACHINE_CEILING_BASE = "ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa"
+
+
+def machine_ceiling_link(root: pathlib.Path, record: pathlib.Path,
+                         patch: pathlib.Path, subject: pathlib.Path) -> None:
+    """Validate only P-114's named performed row before historical reversal.
+
+    This checks a history link, not attendance, live admission or the current
+    runtime. The dedicated recorder and authority evaluator own those checks.
+    """
+    manifest = read(root, MACHINE_CEILING_MANIFEST)
+    if (sha256(manifest) != MACHINE_CEILING_MANIFEST_SHA
+            or ROW.findall(manifest.decode()) != [(MACHINE_CEILING_ARGUMENT, subject.as_posix())]):
+        raise ValueError("machine-ceiling successor manifest is not the exact reviewed registry row")
+    if sha256(read(root, patch)) != MACHINE_CEILING_PATCH_SHA:
+        raise ValueError("machine-ceiling successor patch differs from the reviewed patch")
+    # The owning recorder already requires exact complete regeneration.
+    # Counting only correct matching lines would miss contradictory extras.
+    import record_pwb_registry_machine_ceiling_act as ceiling
+    ceiling.exact_record(read(root, record), MACHINE_CEILING_ARGUMENT)
 
 
 @dataclass(frozen=True)
@@ -267,6 +301,8 @@ def subject_at_act(root: pathlib.Path, subject: Subject) -> bytes:
     for record, patch in reversed(LATER_SUBJECT_ACTS.get(subject.key, ())):
         if not (root / record).is_file():
             continue
+        if subject.key == "registry":
+            machine_ceiling_link(root, record, patch, subject.path)
         found = EXACT_DIGEST_RE.findall(read(root, record).decode())
         if len(found) != 1:
             raise ValueError(f"{record.as_posix()} does not carry exactly one exact "
@@ -278,6 +314,8 @@ def subject_at_act(root: pathlib.Path, subject: Subject) -> bytes:
                 f"{record.as_posix()}")
         body = _git_apply(root, _later_patch(root, record, patch), subject.path, body,
                           reverse=True)
+        if subject.key == "registry" and sha256(body) != MACHINE_CEILING_BASE:
+            raise ValueError("machine-ceiling reversal does not recover the exact act-B registry")
     return body
 
 
@@ -499,6 +537,81 @@ def _edit(rel: pathlib.Path, old: str, new: str):
             raise AssertionError(f"mutation target absent in {rel.as_posix()}: {old[:60]!r}")
         (root / rel).write_text(text.replace(old, new, 1))
     return mutate
+
+
+def machine_ceiling_history_fixtures() -> list[tuple[str, bool]]:
+    """Execute P-114's restricted history link against temporary subjects."""
+    import record_pwb_registry_machine_ceiling_act as ceiling
+    registry = next(s for s in SUBJECTS if s.key == "registry")
+    record, patch = LATER_SUBJECT_ACTS["registry"][0]
+    base, _ = ceiling.build.base_and_state(read(ROOT, registry.path))
+    proposed = ceiling.build.proposed_bytes(base)
+    results = []
+    with tempfile.TemporaryDirectory() as tmp:
+        clean = pathlib.Path(tmp) / "clean"
+        for rel in (MACHINE_CEILING_MANIFEST, patch):
+            (clean / rel).parent.mkdir(parents=True, exist_ok=True)
+            (clean / rel).write_bytes(read(ROOT, rel))
+        (clean / registry.path).parent.mkdir(parents=True, exist_ok=True)
+        (clean / registry.path).write_bytes(proposed)
+        (clean / record).parent.mkdir(parents=True, exist_ok=True)
+        (clean / record).write_bytes(ceiling.render(
+            MACHINE_CEILING_ARGUMENT, ceiling.FROZEN_SUBJECT,
+            "CONFIRM WITH EXCEPTIONS", "2026-10-21T00:01:00Z")[0])
+        results.append(("machine ceiling: exact performed row recovers act B",
+                        subject_at_act(clean, registry) == base and sha256(base) == MACHINE_CEILING_BASE))
+        mutants = [
+            ("manifest row missing", _edit(MACHINE_CEILING_MANIFEST,
+                f"{MACHINE_CEILING_ARGUMENT}  {registry.path.as_posix()}", "")),
+            ("extra manifest row", _edit(MACHINE_CEILING_MANIFEST,
+                f"{MACHINE_CEILING_ARGUMENT}  {registry.path.as_posix()}",
+                f"{MACHINE_CEILING_ARGUMENT}  {registry.path.as_posix()}\n{'0' * 64}  other.json")),
+            ("manifest subject differs", _edit(MACHINE_CEILING_MANIFEST,
+                registry.path.as_posix(), "other.json")),
+            ("unapproved row", _edit(MACHINE_CEILING_MANIFEST,
+                MACHINE_CEILING_ARGUMENT, "0" * 64)),
+            ("patch differs", _edit(patch, "+        \"maxMachineResponseBytes\": 16777216,",
+                                   "+        \"maxMachineResponseBytes\": 16777217,")),
+            ("record identity differs", _edit(record,
+                "PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20", "other-act")),
+            ("record type differs", _edit(record, "Act type: `adopt-registry-entry`", "Act type: `approve-policy`")),
+            ("record tag differs", _edit(record,
+                "- recording tag: `pwb-registry-machine-ceiling-amendment-v1.0`",
+                "- recording tag: `other-v1.0`")),
+            ("record target differs", _edit(record,
+                "PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md", "other-ACT.md")),
+            ("record digest differs", _edit(record,
+                f"Exact digest (SHA-256): `{MACHINE_CEILING_ARGUMENT}`",
+                f"Exact digest (SHA-256): `{'0' * 64}`")),
+            ("subject drift", _edit(registry.path, '"schemaVersion": 1', '"schemaVersion": 2')),
+            ("record missing", lambda tree: (tree / record).unlink()),
+            ("manifest missing", lambda tree: (tree / MACHINE_CEILING_MANIFEST).unlink()),
+        ]
+        record_text = (clean / record).read_text()
+        for label, wrong in (
+            ("Act identity:", "Act identity: `other-act`"),
+            ("Act type:", "Act type: `approve-policy`"),
+            ("Artifact identity:", "Artifact identity: `other.json`"),
+            ("Supersession / revocation:", "Supersession / revocation: none"),
+            ("- recording tag:", "- recording tag: `other-v1.0`"),
+        ):
+            original = next(line for line in record_text.splitlines() if line.startswith(label))
+            for kind, extra in (("contradictory duplicate", wrong),
+                                ("identical duplicate", original),
+                                ("malformed additional value", label + " unquoted malformed value")):
+                mutants.append((label + " " + kind,
+                                _edit(record, original, extra + "\n\n" + original)))
+        for name, mutate in mutants:
+            tree = pathlib.Path(tmp) / re.sub(r"\W+", "-", name)
+            shutil.copytree(clean, tree)
+            mutate(tree)
+            try:
+                recovered = subject_at_act(tree, registry)
+                refused = sha256(recovered) != MACHINE_CEILING_BASE
+            except (ValueError, OSError):
+                refused = True
+            results.append(("machine ceiling refuses recovery: " + name, refused))
+    return results
 
 
 def selftest() -> int:
@@ -734,6 +847,7 @@ def selftest() -> int:
         results.append(("replay fails: a later patch's added line corrupted",
                         replay_refused(corrupt_added_line)))
 
+    results.extend(machine_ceiling_history_fixtures())
     failing = sum(0 if ok else 1 for _n, ok in results)
     for name, ok in results:
         print(f"{'PASS' if ok else 'FAIL'} {name}")

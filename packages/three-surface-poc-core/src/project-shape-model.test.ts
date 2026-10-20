@@ -920,7 +920,7 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
         },
         maxMachineResponseBytes: {
           limit: 'maxMachineResponseBytes',
-          declared: 8388608,
+          declared: 16777216,
           observed: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
           remaining: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
         },

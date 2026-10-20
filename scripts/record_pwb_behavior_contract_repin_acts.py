@@ -198,8 +198,14 @@ def validate_artifact(
             raise ValueError(f"frozen subject does not carry {packet.patch_path(s).as_posix()}")
     if subject_override is None and not (root / subject.path).is_file():
         raise ValueError(f"artifact missing: {subject.path.as_posix()}")
-    subject_bytes = (subject_override if subject_override is not None
-                     else (root / subject.path).read_bytes())
+    if subject_override is not None:
+        subject_bytes = subject_override
+    elif applied and act.key == "registry":
+        # Only the named P-114 row may recover this registry act's history.
+        # Policy recovery and its later variants keep their existing path.
+        subject_bytes = packet.subject_at_act(root, subject)
+    else:
+        subject_bytes = (root / subject.path).read_bytes()
     current = digest(subject_bytes)
     if applied:
         if current != argument:

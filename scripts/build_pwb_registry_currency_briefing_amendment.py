@@ -137,17 +137,22 @@ LATER_ACT_RECORD = pathlib.Path(
 )
 
 
-def superseded_later() -> bool:
-    return (ROOT / LATER_ACT_RECORD).is_file()
+def superseded_later(root: pathlib.Path = ROOT) -> bool:
+    return (root / LATER_ACT_RECORD).is_file()
 
 
-def act_bytes() -> bytes:
-    """The bytes this act bound: the tree, or the tree before the later re-pin."""
-    if not superseded_later():
-        return live_bytes()
+def act_bytes(root: pathlib.Path = ROOT) -> bytes:
+    """Recover this act through the re-pin and its named P-114 successor only.
+
+    The shared re-pin helper validates P-114's exact performed registry row
+    and reverses it first. Do not accept an arbitrary later live digest here.
+    ``root`` keeps the recorder and temporary-fixture checks on one tree.
+    """
+    if not superseded_later(root):
+        return (root / SUBJECT).read_bytes()
     import build_pwb_behavior_contract_repin as repin
     registry = next(s for s in repin.SUBJECTS if s.key == "registry")
-    return repin.base_bytes(ROOT, registry)
+    return repin.base_bytes(root, registry)
 
 
 def current_bytes(override: bytes | None = None) -> bytes:
