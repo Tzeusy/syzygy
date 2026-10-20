@@ -41,8 +41,9 @@ What stands in the way today [Observed unless marked]:
 - **REQ-polaris-generation-035** requires each inventory and review session
   to be "a separate top-level agent session that the operator starts", and
   accepts only two launch forms, a new terminal or the shell-escape prefix.
-  `packages/polaris-dossier/src/inventory.ts` hard-codes
-  `LAUNCH_FORMS = ['terminal', 'bang']`.
+  When this was drafted (2026-10-14), `packages/polaris-dossier/src/inventory.ts`
+  hard-coded `LAUNCH_FORMS = ['terminal', 'bang']`. The prototype has since
+  added `'syzygy-launched'` there, and it is unsigned.
 - **The waiting-sessions direction** (`decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md`,
   2026-10-08) says "**No Syzygy-launched sessions.** Syzygy starts, resumes
   and signals no session", and keeps the 2026-10-03 direction's item 2: "the
@@ -77,8 +78,9 @@ Six added requirements to `polaris-generation`, all in a new *launched*
 form of the operator-agent mode, taken only when the operator starts a run
 with the one command:
 
-- **040, one-command run.** `syzygy polaris <url>` runs preflight, the
-  one-commit clone, `init`, `brief`, the authoring session, the inventory,
+- **040, one-command run.** `syzygy polaris <url> --clone <dir>` runs
+  preflight, a check of the operator's own clone (Syzygy makes no clone or
+  fetch itself, since no act covers that), `init`, `brief`, the authoring session, the inventory,
   `check` and `inventory-check`, both reviews, `render` and `close`, and
   stops only at a refusal, a question for the operator, the deadline, the
   operator's stop, or a rendered and closed dossier. Re-running it with the
@@ -86,16 +88,20 @@ with the one command:
   and the operator-started flow are unchanged.
 - **041, Syzygy-launched sessions.** Syzygy, not the authoring session and
   not the operator, starts each session (authoring, inventory, fidelity
-  review, design review) as a sibling process of its own supervisor, from
-  its fixed prompt, in that session's directory, using the agent tool the
-  operator declared. A new launch form, `syzygy-launched`, is recorded from
-  what Syzygy itself did (process, command digest, directory, start, exit),
-  labelled Observed. The authoring session cannot start, signal or feed a
+  review, design review) as a child process of its own supervisor and of no
+  session, from its fixed prompt, in the working directory of its role, using
+  the agent tool the operator declared. A new launch form, `syzygy-launched`,
+  is recorded from what Syzygy itself did (process, command digest,
+  directory, start, exit). It is labelled Observed in the launching step's
+  output and Inferred wherever it is later shown from the stored record. The authoring session cannot start, signal or feed a
   helper session; packets still pass only through Syzygy.
 - **042, session isolation.** Each session runs inside a file-system view
-  Syzygy builds for its role: the clone read-only, its own directory
-  writable, the Syzygy checkout (gate records included) read-only, and every
-  other session's directory and the run's state directory absent. Syzygy
+  Syzygy builds for its role. Helpers get the clone read-only (the
+  inventory only) and their own directory writable. The author gets the
+  clone and the run's state directory read-only, with `drafts/` writable.
+  Every session gets the Syzygy checkout (gate records included) read-only
+  and its own private agent-tool configuration home. Every other path is
+  absent, the operator's own agent-tool configuration included. Syzygy
   refuses a launched run where it cannot build that view. This is a
   separation of the sessions from each other and from the gate records; it is
   not a containment of observed code and changes nothing under SEC-3.
@@ -103,7 +109,10 @@ with the one command:
   from one terminal view, can detach and reattach, and can stop the run;
   every question any session or Syzygy asks surfaces there.
 - **044, launched runs execute nothing.** A launched run carries the
-  no-execution rule of SEC-3 in every brief; Syzygy refuses `allow-execution`
+  no-execution rule of SEC-3 in every brief. Because SEC-3 binds every
+  process Syzygy launches, each launched session is started with no tool that
+  can run a program other than its role's Syzygy commands, and a tool version
+  for which that limit is unobserved is refused. Syzygy refuses `allow-execution`
   for it, because the D9 text says "Syzygy never gives the instruction to a
   session it started" (`doctrine/security.md`).
 - **045, the local agent CLI subprocess runner.** Syzygy performs every model
@@ -135,12 +144,16 @@ runs and edits no byte of REQ-033 to 036.
 - **The operator-started flow stays.** Runs started with `syzygy dossier
   init` keep REQ-035 exactly, launch forms `terminal` and `bang` included.
 - **Syzygy still makes no model-provider call itself.** It launches the
-  operator's own agent tool under the operator's account; whether that launch
-  keeps the agents' transmissions the operator's own act is packet Q2.
+  operator's own agent tool under the operator's account. The owner ruled
+  on 2026-10-14 (packet Q2) that the agents' transmissions to their declared
+  provider stay the operator's own act. Launched sessions get no tool that
+  reaches any other destination (REQ-045).
 - **No execution, no sandbox claim for observed code.** Launched runs are
-  reading-only. Execution stays in operator-started runs under D9.
+  reading-only, both in their instructions and in the tools each launched
+  process is given (REQ-044, 045). Execution stays in operator-started runs under D9.
 - **No new egress, consent or read.** Admission, screening, checks, packets
-  and verdict validation are those of REQ-033 to 036.
+  and verdict validation are those of REQ-033 to 036. The clone is the
+  operator's own, as in the operator-started flow.
 - **Out of scope:** remote or multi-host sessions; agent tools other than
   `claude` and `codex`, and either of them without a per-project provider
   statement in force for the declared provider; automatic retries of

@@ -7,7 +7,7 @@
 ## Shape
 
 ```
-operator ── syzygy polaris <url> ──► supervisor (Syzygy, in a tmux session)
+operator ── syzygy polaris <url> --clone <dir> ──► supervisor (Syzygy, in a tmux session)
                                         │
                 ┌───────────────┬───────┴───────┬────────────────┐
                 ▼               ▼               ▼                ▼
@@ -30,7 +30,7 @@ operator ── syzygy polaris <url> ──► supervisor (Syzygy, in a tmux ses
 ## State machine
 
 ```
-preflight → clone → init → brief → AUTHOR ⇄ check
+preflight → clone check → init → brief → AUTHOR ⇄ check
    → INVENTORY ⇄ inventory-check → freeze
    → FIDELITY (packet → verdict → review-check)
        └─ blocking finding → AUTHOR (new draft revision retires reviews)
@@ -53,14 +53,18 @@ any state ── refusal | deadline | limit | stop ──► stopped (resumable 
 - **Mechanism:** bubblewrap (`bwrap`), unprivileged user namespaces; no
   root, no new OS user. One view per role, built from a pure function
   `viewFor(role, run)` whose output is hashed into the launch record.
-- **Mounts:** `/usr`, `/etc`, the agent tool's install read-only; the
-  agent tool's own config and state directory read-write (it needs its
-  login and transcripts); the clone read-only; the Syzygy checkout
-  read-only; the session's own directory read-write; for the author only,
-  the run's draft path read-write. Nothing else from `$HOME` or the state
-  root.
-- **Network:** shared. The agent tool must reach its provider. Restricting
-  destinations is out of scope and disclosed.
+- **Mounts:** `/usr`, `/etc` and the agent tool's install, read-only. A
+  private configuration home per session, read-write, holds only the copied
+  credential file and the tool's own state for that session; the operator's
+  own configuration directory is never mounted. The clone is read-only, and
+  so is the Syzygy checkout. Each helper's own directory is read-write. The
+  author works in the run's state directory, read-only, with `drafts/`
+  read-write. Nothing else from `$HOME` or the state root.
+- **Network:** shared at the operating-system level, because the agent tool
+  must reach its provider. No session is given a tool that reaches anything
+  else: no general shell, no web fetch or search, and no network-opening MCP
+  server (REQ-045). That the tool opened nothing else is Inferred and
+  disclosed.
 - **Probe:** before `init`, build a throwaway view and test read, write and
   listing for each path class; refuse on any failure (Q4).
 - **Not a sandbox claim.** It separates sessions from each other and from
@@ -181,9 +185,23 @@ above:
   sessions.
 - **Author view.** The run directory read-only and `drafts/` writable, rather
   than "own directory plus draft path".
-- **Agent executable from the environment.** `claudeExecutable()` honours
-  `SYZYGY_POLARIS_AGENT`. REQ-045 forbids this: a stand-in is declared by
-  absolute path instead.
+- **Agent executable from the environment or `PATH`.** `claudeExecutable()`
+  honours `SYZYGY_POLARIS_AGENT` and otherwise resolves `claude` from `PATH`
+  (`command -v claude`). REQ-045 forbids both: the executable is declared by
+  absolute path.
+- **Automatic approval.** Every session starts with `--permission-mode auto`.
+  REQ-045 forbids automatic-approval modes.
+- **Prompt as an argument.** The role prompt goes on the command line as a
+  positional argument, not as an instructions file the command line names.
+- **Typing into the author's pane.** Syzygy sends messages to the authoring
+  pane with `tmux send-keys`. REQ-043 and REQ-045 forbid typing or pasting
+  into a session's terminal.
+- **Syzygy fetches the clone.** The prototype runs a one-commit
+  `git fetch` itself. REQ-040 now requires the operator's own clone, given
+  with `--clone`, because no act covers a Syzygy-made fetch.
+- **Hard-coded declarations.** `agentProvider: 'anthropic'` and
+  `operatorIsOwner: true` are written into the run configuration rather than
+  declared by the operator.
 - **Bypass mode.** The authoring session can be started with
   `--dangerously-skip-permissions` (`state.authorSkipPermissions`). REQ-045
   forbids every bypass mode.

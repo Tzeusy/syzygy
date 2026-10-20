@@ -55,8 +55,9 @@ not recommended while execution runs (D9) still need it.
 **Q2. Whose act are the agents' provider transmissions in a launched run?** *Answered with the recommendation 2026-10-14 (direction follow-up).*
 REQ-033 says Syzygy makes "no model-provider call" and that the sessions'
 transmissions are "the operator's own act". The 2026-10-08 packet warned that
-if Syzygy launches, that disclosure "turns false" and RFC7-20 and the public
-egress record would apply.
+if Syzygy launches, the "no provider call" disclosure "turns false". This
+packet's drafter added that RFC7-20 and the public egress record would then
+apply; that addition is not in the 2026-10-08 packet.
 Recommendation: rule that a launch Syzygy makes on your one command, of your
 own agent tool, under your own account, with the agent tool and provider you
 declared, keeps the transmissions your own act; Syzygy still makes no
