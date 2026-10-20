@@ -43,7 +43,9 @@ export interface GenerationSource {
   readonly redaction?: SourceRedaction;
   /** Present only on one contiguous piece of a blob too long to quote whole.
    * `start`/`end` are UTF-8 byte offsets into the full blob; `body` and span
-   * offsets are relative to the piece, anchors use the blob offsets. */
+   * offsets are relative to the piece, anchors use the blob offsets. For redacted
+   * sources the segment covers the safe marker projection; every evidence span
+   * separately carries its original Git coordinates. */
   readonly segment?: { readonly index: number; readonly count: number; readonly start: number; readonly end: number; readonly blobBytes: number };
   readonly exclusion: { readonly excluded: false } | { readonly excluded: true; readonly reason: GenerationExclusionReason };
   /** Present only for an admitted body. Never sent to a provider except in

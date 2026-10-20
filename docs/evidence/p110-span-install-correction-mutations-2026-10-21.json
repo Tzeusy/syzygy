@@ -1,0 +1,634 @@
+{
+  "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+  "mutants": [
+    {
+      "id": "M01-count-cap",
+      "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "old": "export const MAX_MATCHES = 10_000;",
+      "new": "export const MAX_MATCHES = 20_000;",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/secret-redaction.test.ts",
+        "-t",
+        "too many short matches"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "6567b00948e88e5b222d6c734061c473ff16f1a5bf17b0aa117117dfa2d4e1c2",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M01-count-cap.log",
+      "logSha256": "919cf370353de3227707bfc734e3165c0f203767171058ce7408622987f6abf1",
+      "elapsedSeconds": 1.621
+    },
+    {
+      "id": "M02-successful-work",
+      "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "old": "const MAX_MATCH_LENGTH_MULTIPLE = 8;",
+      "new": "const MAX_MATCH_LENGTH_MULTIPLE = Number.MAX_SAFE_INTEGER;",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/secret-redaction.test.ts",
+        "-t",
+        "overlapping long matches"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "6567b00948e88e5b222d6c734061c473ff16f1a5bf17b0aa117117dfa2d4e1c2",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M02-successful-work.log",
+      "logSha256": "481dfdb4edc70b04ae7139f60fbca5013a573c58d347105da80db82286463316",
+      "elapsedSeconds": 1.431
+    },
+    {
+      "id": "M03-class-gate",
+      "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "old": "return { kind: 'excluded', cause: 'class-not-redacted' };",
+      "new": "return { kind: 'clean' };",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/secret-redaction.test.ts",
+        "-t",
+        "bounds matching work"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "6567b00948e88e5b222d6c734061c473ff16f1a5bf17b0aa117117dfa2d4e1c2",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M03-class-gate.log",
+      "logSha256": "a70aca91b7986b47658ed4acbb2255b81806828f7d9a3fc83c915b543fd71edb",
+      "elapsedSeconds": 1.496
+    },
+    {
+      "id": "M04-url-failed-first",
+      "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "old": "        let first: DetectorMatch | undefined;\n        credentialUrls(text, detector.id, match => { first = match; return false; });\n        return first;",
+      "new": "        const hit = new RegExp(detector.pattern, flags).exec(text);\n        return hit === null ? undefined : { detectorId: detector.id, start: hit.index, end: hit.index + hit[0].length };",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/secret-redaction.test.ts",
+        "-t",
+        "bounds failed URL searches"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "6567b00948e88e5b222d6c734061c473ff16f1a5bf17b0aa117117dfa2d4e1c2",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M04-url-failed-first.log",
+      "logSha256": "fd5825223c1ef6b4143f31f2cda5c62d2e47b1641369c8a75b1bd115c5b6adaa",
+      "elapsedSeconds": 7.92
+    },
+    {
+      "id": "M05-url-grammar",
+      "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "old": "text[end] === '@' && colon !== -1 && colon < end - 1",
+      "new": "text[end] === '@' && colon !== -1",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/secret-redaction.test.ts",
+        "-t",
+        "bounded native-oracle"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "6567b00948e88e5b222d6c734061c473ff16f1a5bf17b0aa117117dfa2d4e1c2",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M05-url-grammar.log",
+      "logSha256": "4102e49ae8a0c6395cc3081d18933471f0ebe7d72c74774070a2240c46eb93f1",
+      "elapsedSeconds": 1.561
+    },
+    {
+      "id": "M06-mixed-line-identity",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "lines: screened.retainedLines.length,",
+      "new": "lines: lineCount(screened.retained),",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-dossier/src/check.test.ts",
+        "-t",
+        "bare CR before withheld"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "e44f7a0525faf72cda0ea0d4c265c42a4bff89393ddac380e534d1c5191ada43",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M06-mixed-line-identity.log",
+      "logSha256": "36e510bb9b99196e6a3b33a4d18511c7f10a44f7895adfbd7aeae9055015749a",
+      "elapsedSeconds": 3.204
+    },
+    {
+      "id": "M07-check-raw-leak",
+      "file": "packages/polaris-dossier/src/check.ts",
+      "old": "raw: retainedWithMarkers(screened.retainedLines, screened.withheld),",
+      "new": "raw,",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-dossier/src/check.test.ts",
+        "-t",
+        "verifies a quotation from a line no match"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "e44f7a0525faf72cda0ea0d4c265c42a4bff89393ddac380e534d1c5191ada43",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M07-check-raw-leak.log",
+      "logSha256": "be854cf0c1fb4ef1bb62ae8974ff33ac97df1633425420e1ab0c4e271161a2e6",
+      "elapsedSeconds": 3.533
+    },
+    {
+      "id": "M08-review-raw-leak",
+      "file": "packages/polaris-dossier/src/review.ts",
+      "old": "blobs.set(blob.path, retainedWithMarkers(screened.retainedLines, screened.withheld));",
+      "new": "blobs.set(blob.path, raw);",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-dossier/src/review.test.ts",
+        "-t",
+        "withholds a span that includes a withheld line whole"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "7b2e332134ca53f02d2b0c4c5e454aefb0c2545966bfc5a2ec797ce9923b636f",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M08-review-raw-leak.log",
+      "logSha256": "a0bd1fb77ddd750568035b1ee6847efe6c27ac39f0c473f25dd82e854d3ebd4e",
+      "elapsedSeconds": 3.005
+    },
+    {
+      "id": "M09-constructor-identity",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "if (!hexObjectId.test(objectId) || gitBlobObjectId(body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');",
+      "new": "",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "verifies original bytes in the constructor"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M09-constructor-identity.log",
+      "logSha256": "d9d8abbaa94a93be13cb65321038f646e0910dd679ce0e5147d2869c39ef4fc9",
+      "elapsedSeconds": 1.455
+    },
+    {
+      "id": "M10-constructor-retained-forgery",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "screened.retainedLines[index] !== retained",
+      "new": "false",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "verifies original bytes in the constructor"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M10-constructor-retained-forgery.log",
+      "logSha256": "3791a6f1e0a2d48629146d6e51770aad2b7ccba95195869856f31e74aa29cefa",
+      "elapsedSeconds": 1.597
+    },
+    {
+      "id": "M11-untrusted-json",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "return validateSources(value, true);",
+      "new": "return validateSources(value, false);",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "never grants pure evaluation"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M11-untrusted-json.log",
+      "logSha256": "4319555b4b9a8e9edbb592df3c9cfee80583174d350cd9f301d6b358b6b93251",
+      "elapsedSeconds": 1.654
+    },
+    {
+      "id": "M12-fresh-equality",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "encodeCanonicalJson(verified, dataLimits(budget.maxInputBytes)) !== encodeCanonicalJson(source, dataLimits(budget.maxInputBytes))",
+      "new": "false",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "replays JSON only"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "049208a8250241743272d984219e6e6bf66c88f68d28cfac03f813f2577325eb",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M12-fresh-equality.log",
+      "logSha256": "df8ae1caa7014b69de4e88c2cd08e625d75020a64947380d62c4d508feb0ca92",
+      "elapsedSeconds": 1.493
+    },
+    {
+      "id": "M13-fresh-population",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "frozen = { ...frozen, sources: frozen.sources.map(source => source.redaction === undefined ? source : byId.get(source.sourceId)!) };",
+      "new": "frozen = { ...frozen, sources: frozen.sources };",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "replays JSON only"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "049208a8250241743272d984219e6e6bf66c88f68d28cfac03f813f2577325eb",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M13-fresh-population.log",
+      "logSha256": "333be91e10ba820130a233f65ea5825cc6679e06648aa0a7a45bf5cbdbcb334b",
+      "elapsedSeconds": 1.373
+    },
+    {
+      "id": "M14-marker",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "append(marker + retainedLines[last]!);",
+      "new": "append(retainedLines[last]!);",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "retains the original object|splits only retained"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M14-marker.log",
+      "logSha256": "1ba598ed5426eaa6c8abc0613cd2877b09361d30fee6ee75002e01f5eefe8220",
+      "elapsedSeconds": 1.47
+    },
+    {
+      "id": "M15-original-offset",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "originalByte += length;",
+      "new": "originalByte += length + 1;",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "splits only retained"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M15-original-offset.log",
+      "logSha256": "b6b5154506454400578c6a31dd20201747bc480052925bebaf3843da1bbfeecf",
+      "elapsedSeconds": 1.459
+    },
+    {
+      "id": "M16-quote-gap",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "out.set(piece.sourceId, runs.map(run => run.text));",
+      "new": "out.set(piece.sourceId, runs.map(run => run.text).join(''));",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "quotes surviving runs"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "ab3711ace84aee46dae600be5ee4772638e3623f98ce68cd267c39f19808fd7d",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M16-quote-gap.log",
+      "logSha256": "c1fdbee13d49ce662a29820bde0434d3eb8209c2b76d7e0c0db61753dc146a1c",
+      "elapsedSeconds": 1.42
+    },
+    {
+      "id": "M17-render-retained-population",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "for (const kept of source.spans) {",
+      "new": "for (const kept of source.spans.slice(0, 1)) {",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-dossier/src/render.test.ts",
+        "-t",
+        "draws retained spans"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "927dbd8d3471e14700a793adb4b997efb6d7e505ab5a657b6de8fed11543f511",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M17-render-retained-population.log",
+      "logSha256": "047a94e4a93bd369c84a005d2c7c3e3b7c12ddcb1d8f6ffbe71debdc690ad3de",
+      "elapsedSeconds": 3.194
+    },
+    {
+      "id": "M18-corpus-identity",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');",
+      "new": "",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+        "-t",
+        "refuses wrong original bytes"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "f834c3525bbb0d779fd6cdf40b4649c23e2b9a0d09331a8eff9b1409fa64bbc5",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M18-corpus-identity.log",
+      "logSha256": "0f84026fa7dd45e4d417aab2eb14d0c558805add5de1311cb382337b1f0df07c",
+      "elapsedSeconds": 2.617
+    },
+    {
+      "id": "M19-affirmative-record",
+      "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+      "old": "      explicitSelection: /^ \\u2014 state \\(1\\), explicitly (?:selected by (?:performing the offered state-\\(1\\) phrase|the owner's option selection recorded below)|given by the owner's words recorded below)$/.test(trailer),",
+      "new": "      explicitSelection: /\\bexplicitly (?:selected|given by the owner's words)\\b/.test(trailer),",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/three-surface-poc-core/src/owner-act-record.test.ts",
+        "apps/three-surface-poc/src/governance-inputs.test.ts"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "656a7ff4b14774a925a1f9514f0d37f95fb450191a1da40ab751ed6346772c3a",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M19-affirmative-record.log",
+      "logSha256": "6d699beec9d8a2da23be4accb7d09bbe011b70a4065b7fae26ba06ea490f9f50",
+      "elapsedSeconds": 2.279
+    },
+    {
+      "id": "M20-simulator-v4",
+      "file": "scripts/simulate_redis_sitting.py",
+      "old": "        self.record(\"record_public_source_screening_scope_v4_act.py\", None, argument, \"rowP110-policy-v4\",\n                    [\"--owner-words\", V4_OWNER_WORDS], date=V4_DATE)",
+      "new": "        return",
+      "command": [
+        "python3",
+        "scripts/simulate_redis_sitting.py",
+        "--selftest"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "33773fdef3b4162a076ef7675c839c470e23925f8984e7078fdec96e32e2781f",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M20-simulator-v4.log",
+      "logSha256": "df50eafef68469b22f1f4f3acfa2bc86d465549a6005b61830a872975ae30dbb",
+      "elapsedSeconds": 0.233
+    },
+    {
+      "id": "M21-historical-successor",
+      "file": "scripts/build_pwb_behavior_contract_repin.py",
+      "old": "        (DECISIONS / \"PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md\",\n         pathlib.Path(\".syzygy/governance/contracts/candidates/public-source-screening-scope-v4/\"\n                      \"proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.\"\n                      \"{variant}.patch\")),",
+      "new": "",
+      "command": [
+        "python3",
+        "scripts/build_pwb_behavior_contract_repin.py",
+        "--selftest"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "fea5ff542e0c1d9769781ea156c15a50bfdad699f2e6f78f62a6ff7d9571c7d5",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M21-historical-successor.log",
+      "logSha256": "596cfaeb31b0fdc7d91ef641ce859fddb62fc5f3a94ad4dd4a30b2b82ebd8c2c",
+      "elapsedSeconds": 0.097
+    },
+    {
+      "id": "M22-bom-ordinary",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.from(body).subarray(start - base, end - base))",
+      "new": "new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(body).subarray(start - base, end - base))",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "retains the original object"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M22-bom-ordinary.log",
+      "logSha256": "7e13dad662be6426d7e9e025eef0217009488b08890d03382a6811a5e4716b1d",
+      "elapsedSeconds": 1.683
+    },
+    {
+      "id": "M23-bom-redacted",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.from(span.text).subarray(start - base, end - base))",
+      "new": "new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(span.text).subarray(start - base, end - base))",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+        "-t",
+        "retains the original object"
+      ],
+      "subjectCommit": "01acff07c828c1adaaf1bc9c92ba87cb4d4abf2b",
+      "sourceSha256": "5c920db981fb80bf82018881eb6d805744c9df041126cece2d12690fbe69c6e1",
+      "exit": 1,
+      "executedBehaviorFailed": true,
+      "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M23-bom-redacted.log",
+      "logSha256": "a9342d4d5b0333d4d6d3f254746c869d0c65150b909682b53894457b78dd9312",
+      "elapsedSeconds": 1.381
+    }
+  ],
+  "scope": "P-110 owner-authorized span install corrections; no service, provider or observed-project execution",
+  "historicalSuccessorQualification": "M21 fails inside the canonical selftest fixture construction at subject_at_act, with the original policy successor reversal ValueError; it is not a completed 37-fixture census.",
+  "earlierEvidence": [
+    "focused-mutation-results-6ef-first-eight.json",
+    "focused-mutation-results-1ba-url-survival.json",
+    "M04-survived-1ba.log"
+  ],
+  "followup": {
+    "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+    "mutants": [
+      {
+        "id": "M24-complete-population",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "const sources = frozen.sources.map(requested => {",
+        "new": "const sources = frozen.sources.map(requested => {\n          if (requested.redaction === undefined) return compactSource(requested);",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "-t",
+          "binds the complete mixed population"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M24-complete-population.log",
+        "logSha256": "829d2ca85c600c367318ace1b9083dfe46e0e55b6abfafdb3a61fadef44608e0",
+        "elapsedSeconds": 2.227
+      },
+      {
+        "id": "M25-opaque-aliases",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "opaque(source) ? { ...compact, sourceId: null, path: null } : compact",
+        "new": "false ? { ...compact, sourceId: null, path: null } : compact",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "-t",
+          "binds the complete mixed population"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M25-opaque-aliases.log",
+        "logSha256": "c26e043e62e937074ad342d9a36982f7b432888c6dae6d4ae7793aa58e47b319",
+        "elapsedSeconds": 2.145
+      },
+      {
+        "id": "M26-excluded-reason",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "{ ...compact, sourceId: null, path: null }",
+        "new": "{ ...compact, sourceId: null, path: null, exclusion: null }",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "-t",
+          "binds the complete mixed population"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M26-excluded-reason.log",
+        "logSha256": "bce65bcc7be4c03cd0c2025879a17f6a597b97c6b056a8b385cb7c6a39e86825",
+        "elapsedSeconds": 2.199
+      },
+      {
+        "id": "M27-use-fresh",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "frozen = { ...frozen, sources };",
+        "new": "frozen = { ...frozen, sources: frozen.sources };",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/polaris-generation-core/src/redacted-generation-source.test.ts",
+          "-t",
+          "replays JSON only"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M27-use-fresh.log",
+        "logSha256": "12bed257230942049dc37695d8608d9099407fea45c84b100f0252da05728126",
+        "elapsedSeconds": 1.176
+      },
+      {
+        "id": "M28-inventory-admission",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "stage('inventory', { sources: context.sources,",
+        "new": "stage('inventory', { sources: admitted,",
+        "command": [
+          "python3",
+          "scripts/build_public_repo_admission.py",
+          "--check"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M28-inventory-admission.log",
+        "logSha256": "f919a311872b944bf0ef4c9d59bbfc995082f9f815e8ac52007e6786bab3baa2",
+        "elapsedSeconds": 1.933
+      },
+      {
+        "id": "M29-inventory-egress",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "stage('inventory', { sources: context.sources,",
+        "new": "stage('inventory', { sources: admitted,",
+        "command": [
+          "python3",
+          "scripts/build_public_egress_v2.py",
+          "--check"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M29-inventory-egress.log",
+        "logSha256": "3581c3f5d211a3f48546e6decb63bdb2a4be72df82025f1a60e73475f3917e13",
+        "elapsedSeconds": 0.867
+      },
+      {
+        "id": "M30-cardinality",
+        "file": "packages/polaris-generation-core/src/pipeline.ts",
+        "old": "if (verifiedSources.length !== frozen.sources.length) stop('source-refused');",
+        "new": "",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+          "-t",
+          "binds the complete mixed population"
+        ],
+        "subjectCommit": "1cdb74805f09d647a9ba42a7dc9db124b53c7709",
+        "sourceSha256": "d4fbf19f6d1fa5fa260de2f3c637ae408153a206242053299f2461802475e711",
+        "exit": 1,
+        "executedBehaviorFailed": true,
+        "log": "/home/tze/.cache/syzygy-3sjj-install-2026-10-20/mutants/M30-cardinality.log",
+        "logSha256": "7667815c1de771cc8cd120e494360b12b3b65e5328fbbebb0023d0747fc632c0",
+        "elapsedSeconds": 2.2
+      }
+    ]
+  }
+}
