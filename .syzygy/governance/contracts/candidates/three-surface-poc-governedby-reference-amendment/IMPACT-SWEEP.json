@@ -1,0 +1,1536 @@
+{
+  "subject": "P-115 POC-REQ-014 candidate reverse-impact sweep",
+  "baseline_commit": "4504514c019ca0ee0cb4a89ed97445a0bad21915",
+  "changed_identities": {
+    "doctrine": [],
+    "contracts": [],
+    "policies": [],
+    "decisions": [],
+    "topology": [],
+    "parent_requirements": [
+      "POC-REQ-014"
+    ]
+  },
+  "citer_predicate": "POC-REQ-014|governedBy|GoverningIntentUnknown|governing.intent.amendment",
+  "methods": [
+    "git ls-tree -rz baseline blobs + Python regex; git ls-files -z baseline inclusion",
+    "git grep -I -l -E at baseline; pathlib spec enumeration; per-block six-class warrant scan"
+  ],
+  "counts": {
+    "tracked_baseline_paths": 2927,
+    "binary_paths": 5,
+    "text_paths": 2922,
+    "matching_citer_paths": 63,
+    "spec_files": 8,
+    "requirement_occurrences": 130,
+    "warrant_complete_requirements": 130,
+    "affected_requirements": 1,
+    "unaffected_requirements": 129,
+    "undecidable_requirements": 0
+  },
+  "spec_files": [
+    "openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
+    "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+    "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+    "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+    "openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md",
+    "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+    "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+    "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md"
+  ],
+  "requirements": [
+    {
+      "path": "openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 1,
+      "heading": "CAP1-REQ-011 \u2014 Consent is a visible recorded fact, never an assumption",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 2,
+      "heading": "CAP1-REQ-046 \u2014 Owning authority and effective status are exposed, stamp and record readable apart",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "ordinal": 1,
+      "heading": "Operator-agent authoring mode",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "ordinal": 2,
+      "heading": "Agent brief and mechanically checked draft",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "ordinal": 3,
+      "heading": "Fresh-context review in the operator-agent mode",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "ordinal": 4,
+      "heading": "Self-reported discovery and in-session clarification",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 1,
+      "heading": "Admitted project input",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 2,
+      "heading": "Project argument and voice",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 3,
+      "heading": "Bounded anchored assets",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 4,
+      "heading": "Understandable reading depths",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 5,
+      "heading": "Explicit bounded generation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 6,
+      "heading": "Independent review and repair",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 7,
+      "heading": "Cancellation and interruption",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 8,
+      "heading": "Safe resume and duplicate requests",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 9,
+      "heading": "Source drift and regeneration",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 10,
+      "heading": "Human authorship provenance",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 11,
+      "heading": "Rejection and retention",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 12,
+      "heading": "Safe accessible presentation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 13,
+      "heading": "Shared drafting lifecycle",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 14,
+      "heading": "Reusable product validation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 15,
+      "heading": "Presentation profile admission",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 16,
+      "heading": "Authored artifact ownership and writes",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 17,
+      "heading": "Registered adapter boundaries",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 18,
+      "heading": "Complete execution history",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 19,
+      "heading": "Versioned interchange and reference integrity",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 20,
+      "heading": "Guided start and materialization",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 21,
+      "heading": "Scoped caller admission for generator operations",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 22,
+      "heading": "Protected audit and prospective revocation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 23,
+      "heading": "Fixed manifesto entry and repository discoverability",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 24,
+      "heading": "Owner walkthrough and review-freeze discipline",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 25,
+      "heading": "Provenance-bound source policy",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 26,
+      "heading": "Stable selection and explicit context",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 27,
+      "heading": "Shared facts and honest aggregate composition",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 28,
+      "heading": "Evidence-derived work state and liveness",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "ordinal": 29,
+      "heading": "Captured work history and traceable accounting",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 1,
+      "heading": "Project argument and voice",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 2,
+      "heading": "Understandable reading depths",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 3,
+      "heading": "Independent review and repair",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 4,
+      "heading": "Source drift and regeneration",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 5,
+      "heading": "Safe accessible presentation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 6,
+      "heading": "Reusable product validation",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 7,
+      "heading": "Versioned interchange and reference integrity",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 8,
+      "heading": "Accounted unfamiliar-project discovery",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "ordinal": 9,
+      "heading": "Consequential owner clarification",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md",
+      "ordinal": 1,
+      "heading": "Non-governed narrative profile",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 1,
+      "heading": "PWB-REQ-001 \u2014 Project-shape observation is revision-bound and explicitly scoped",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 2,
+      "heading": "PWB-REQ-002 \u2014 Every declared project-shape item is accounted for",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 3,
+      "heading": "PWB-REQ-003 \u2014 Missing, unreadable and excluded sources remain visible",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 4,
+      "heading": "PWB-REQ-005 \u2014 Consent and policy authority precede every body read",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 5,
+      "heading": "PWB-REQ-006 \u2014 Project-shape content stays contained, inert and bounded",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 6,
+      "heading": "PWB-REQ-007 \u2014 Every project claim carries its complete epistemic state",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 7,
+      "heading": "PWB-REQ-004 \u2014 Conflicting declarations are disclosed and precedence is explicit",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 8,
+      "heading": "PWB-REQ-010 \u2014 Polaris opens with the whole project",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 9,
+      "heading": "PWB-REQ-011 \u2014 Project summary, catalogs and exact sources are progressively reachable",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 10,
+      "heading": "PWB-REQ-012 \u2014 Owner-facing copy is direct and concise",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 11,
+      "heading": "PWB-REQ-013 \u2014 Proposed work stays subordinate to current project truth",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 12,
+      "heading": "PWB-REQ-014 \u2014 Every narrative claim is bounded, anchored and non-authoritative",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 13,
+      "heading": "PWB-REQ-015 \u2014 Item detail preserves authority bands and exact intent",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 14,
+      "heading": "PWB-REQ-016 \u2014 Project comprehension works without vision or a pointing device",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 15,
+      "heading": "PWB-REQ-020 \u2014 Project-wide facts remain identical across human and machine views",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 16,
+      "heading": "PWB-REQ-021 \u2014 POC success includes whole-project cold-open comprehension",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "ordinal": 17,
+      "heading": "PWB-REQ-022 \u2014 Absent or unlawful owner judgment never becomes success",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 1,
+      "heading": "CAP1-REQ-001 \u2014 A valid declaration registers exactly one project",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 2,
+      "heading": "CAP1-REQ-002 \u2014 An invalid declaration is a named failure, never a partial registration",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 3,
+      "heading": "CAP1-REQ-003 \u2014 Missing required information is visible",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 4,
+      "heading": "CAP1-REQ-004 \u2014 Syzygy never silently invents, repairs, or infers a declaration field",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 5,
+      "heading": "CAP1-REQ-005 \u2014 Registration facts are deterministic per declaration and revision",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 6,
+      "heading": "CAP1-REQ-006 \u2014 Governance-root count violations surface; they are never repaired",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 7,
+      "heading": "CAP1-REQ-010 \u2014 Every declared repository has an explicit coverage result",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 8,
+      "heading": "CAP1-REQ-011 \u2014 Consent is a visible recorded fact, never an assumption",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 9,
+      "heading": "CAP1-REQ-012 \u2014 Unconsented renders Unknown as a policy state, never as error or absence",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 10,
+      "heading": "CAP1-REQ-013 \u2014 Coverage failure states are distinguishable",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 11,
+      "heading": "CAP1-REQ-014 \u2014 Incomplete coverage is never rendered as complete coverage",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 12,
+      "heading": "CAP1-REQ-015 \u2014 One coverage boundary, retrievable identically by human and machine",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 13,
+      "heading": "CAP1-REQ-016 \u2014 No source is inspected through authority the project did not grant",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 14,
+      "heading": "CAP1-REQ-020 \u2014 One fixed Syzygy-owned human entry path",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 15,
+      "heading": "CAP1-REQ-021 \u2014 The entry routes to exact authority and is never itself authority",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 16,
+      "heading": "CAP1-REQ-022 \u2014 Missing, unreadable, stale, or contradictory entry material renders honestly",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 17,
+      "heading": "CAP1-REQ-023 \u2014 Entry behavior requires no write outside the governed plane",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 18,
+      "heading": "CAP1-REQ-030 \u2014 The seven project-shape answers, defined here and answered independently",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 19,
+      "heading": "CAP1-REQ-031 \u2014 No combined score, badge, colour, percentage, or passing count",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 20,
+      "heading": "CAP1-REQ-032 \u2014 Registration is never certification",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 21,
+      "heading": "CAP1-REQ-033 \u2014 Every answer exposes its constituent facts and scope",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 22,
+      "heading": "CAP1-REQ-034 \u2014 Missing evidence yields Unknown; non-satisfaction yields Gap; absence is never zero",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 23,
+      "heading": "CAP1-REQ-035 \u2014 Several reasons may be visible at once; one never hides the others",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 24,
+      "heading": "CAP1-REQ-036 \u2014 Mission-ready renders only its deferred posture",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 25,
+      "heading": "CAP1-REQ-037 \u2014 Uncomputed reconciliation is Unknown",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 26,
+      "heading": "CAP1-REQ-038 \u2014 A negative or Unknown answer never erases the others",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 27,
+      "heading": "CAP1-REQ-040 \u2014 Every answer is explainable: \"Why this answer?\"",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 28,
+      "heading": "CAP1-REQ-041 \u2014 Humans and machines receive the same facts",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 29,
+      "heading": "CAP1-REQ-042 \u2014 Equivalent queries at one revision expose equivalent facts",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 30,
+      "heading": "CAP1-REQ-043 \u2014 A parity disagreement is visible and fails; presentation precedence never resolves it",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 31,
+      "heading": "CAP1-REQ-044 \u2014 A missing explanation is never replaced by an optimistic summary",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 32,
+      "heading": "CAP1-REQ-045 \u2014 Inferred is distinguishable from observed; generated presentation is never the source",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 33,
+      "heading": "CAP1-REQ-046 \u2014 Owning authority and effective status are exposed, stamp and record readable apart",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 34,
+      "heading": "CAP1-REQ-050 \u2014 Per-repository discoverability, in the closed four-value vocabulary",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 35,
+      "heading": "CAP1-REQ-051 \u2014 yes and no require current evidence; missing evidence is Unknown with its reason",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 36,
+      "heading": "CAP1-REQ-052 \u2014 not-applicable only under its accepted condition",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 37,
+      "heading": "CAP1-REQ-053 \u2014 Syzygy may propose the link; it never writes it, and a proposal never renders as applied",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 38,
+      "heading": "CAP1-REQ-060 \u2014 Identities are the accepted, stable, literal ones",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 39,
+      "heading": "CAP1-REQ-061 \u2014 Capability 1 observes and presents; its write boundary is the governed plane",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 40,
+      "heading": "CAP1-REQ-062 \u2014 Stale evidence cannot silently remain current or favourable",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 41,
+      "heading": "CAP1-REQ-063 \u2014 Proposed material never renders as current state",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "ordinal": 42,
+      "heading": "CAP1-REQ-064 \u2014 Every distinction is machine-readable and recoverable without vision",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "other capability/overlay scope; complete six-class declarations have no changed-requirement edge; this delta changes no governing clause"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 1,
+      "heading": "POC-REQ-001 \u2014 Code-structure observation is bound to an exact revision",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 2,
+      "heading": "POC-REQ-002 \u2014 Structure observation captures metadata, never indexed contents",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 3,
+      "heading": "POC-REQ-003 \u2014 Failed structure observation renders Unknown with its reason",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 4,
+      "heading": "POC-REQ-004 \u2014 Structure facts are deterministic per revision",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 5,
+      "heading": "POC-REQ-010 \u2014 Work items are read from the Dolt database and revision-stamped",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 6,
+      "heading": "POC-REQ-011 \u2014 Work-item observation is scoped to the registered bead-prefix",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 7,
+      "heading": "POC-REQ-012 \u2014 The passive export is never a work-item source",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 8,
+      "heading": "POC-REQ-013 \u2014 An unreadable work-item source renders Unknown",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 9,
+      "heading": "POC-REQ-014 \u2014 Every work item's governing intent renders as a counted Unknown",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "affected",
+      "reason_and_method": "changed requirement identity; exact proposed replacement"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 10,
+      "heading": "POC-REQ-020 \u2014 Client-rendered facts are the shared model's facts",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 11,
+      "heading": "POC-REQ-021 \u2014 Client code is a build output, never fetched at runtime",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 12,
+      "heading": "POC-REQ-022 \u2014 Script-less reading still gets honest facts",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 13,
+      "heading": "POC-REQ-030 \u2014 Polaris renders a multi-page long-form narrative from intent facts",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 14,
+      "heading": "POC-REQ-031 \u2014 Every positive Polaris claim carries resolvable provenance",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 15,
+      "heading": "POC-REQ-032 \u2014 Polaris never fills evidence gaps with narrative",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 16,
+      "heading": "POC-REQ-040 \u2014 Trajectory columns come from the closed status vocabulary",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 17,
+      "heading": "POC-REQ-041 \u2014 Trajectory's time visualization uses recorded instants only",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 18,
+      "heading": "POC-REQ-042 \u2014 Trajectory declares its scope and denominator",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 19,
+      "heading": "POC-REQ-043 \u2014 Activity is never rendered as satisfaction",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 20,
+      "heading": "POC-REQ-050 \u2014 Orrery projects declared mappings deterministically",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 21,
+      "heading": "POC-REQ-051 \u2014 Unmapped code is a visible Unknown region with a denominator",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 22,
+      "heading": "POC-REQ-052 \u2014 Orrery never infers relationships",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 23,
+      "heading": "POC-REQ-053 \u2014 Every Orrery entity resolves to its exact route",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 24,
+      "heading": "POC-REQ-055 \u2014 Every relationship is named in or flagged outside the closed vocabulary",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 25,
+      "heading": "POC-REQ-060 \u2014 One design language, one epistemic encoding and record shape",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "ordinal": 26,
+      "heading": "POC-REQ-061 \u2014 The accessibility floor holds on every surface",
+      "warrant_classes_complete": true,
+      "direct_changed_id_warrant": false,
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "same POC: complete block preserved; only effective representation of 014 changes, not this obligation"
+    }
+  ],
+  "citer_paths": [
+    {
+      "path": ".github/workflows/governance-docs.yml",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-anchor-resolution-amendment/ROUND-2-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/OWNER-DECISION-PACKET.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-registry-machine-ceiling-amendment/SEMANTIC-DELTA.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/IMPACT-LEDGER.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/OWNER-DECISION-PACKET.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/REVIEW-BRIEF.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/ROUND-1-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/ROUND-2-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/ROUND-3-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/SEMANTIC-DELTA.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/proposed/CONTRACT-COVERAGE.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/proposed/GOVERNING-DEPENDENCIES.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/proposed/proposal.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-governing-intent-amendment/proposed/spec.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-identity-amendment/IMPACT-LEDGER.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-identity-amendment/ROUND-4-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-identity-amendment/ROUND-6-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-identity-amendment/SEMANTIC-DELTA.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/IMPACT-LEDGER.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/OWNER-DECISION-PACKET.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/REVIEW-BRIEF.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/ROUND-1-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/ROUND-2-DISPOSITIONS.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/SEMANTIC-DELTA.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/proposed/CONTRACT-COVERAGE.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/three-surface-poc-vocabulary-epistemic-amendment/proposed/GOVERNING-DEPENDENCIES.md.patch",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/DECISION-HISTORY.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2-2026-10-14.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-DIRECTION-CONFIRMATION-CYCLE-2026-10-14.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-DIRECTION-MACHINE-CEILING-2026-10-15.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "PROJECT-STATUS.md",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "docs/README.md",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "docs/evidence/block-provenance-sibling-classification-mutants-2026-10-04.json",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/evidence/p100-governing-intent-implementation-2026-10-15.json",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/evidence/spec-readability-reconciliation-2026-10-02/census.json",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/pursuits/2026-09-22-vision-pursuit-data.json",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/pursuits/2026-09-22-vision-pursuit-harvest.json",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/pursuits/2026-09-22-vision-pursuit.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-IMPL-P100-GOVERNING-INTENT-1-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-IMPL-P100-GOVERNING-INTENT-2-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-1-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-M9-POC-VOCABULARY-EPISTEMIC-AMENDMENT-2-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-N10-POC-GOVERNING-INTENT-1-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-N10-POC-GOVERNING-INTENT-2-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-N10-POC-GOVERNING-INTENT-3-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-2-RAW.md",
+      "classification": "explicitly-unaffected",
+      "reason_and_method": "retained dated evidence, prior packet or performed owner record: historical subject/choice unchanged; preserve bytes, do not rewrite as current P115 authority"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md",
+      "classification": "affected",
+      "reason_and_method": "same-change proposed POC successor subject"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md",
+      "classification": "affected",
+      "reason_and_method": "same-change proposed POC successor subject"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/proposal.md",
+      "classification": "affected",
+      "reason_and_method": "same-change proposed POC successor subject"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "classification": "affected",
+      "reason_and_method": "same-change proposed POC successor subject"
+    },
+    {
+      "path": "scripts/build_three_surface_poc_block_provenance_amendment.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/build_three_surface_poc_readability_successor.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/build_three_surface_poc_vocabulary_epistemic_amendment.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/check_governance.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/check_spec_reconciliation.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/record_pwb_behavior_amendment_acts.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    },
+    {
+      "path": "scripts/record_versioned_signoff.py",
+      "classification": "affected-preparation-gate",
+      "reason_and_method": "coordinator must assess/register exact signed successor and preserve predecessor checks before offer/adoption; not changed by this author"
+    }
+  ],
+  "not_lexically_enumerable_unknowns": [
+    "actual external API consumers",
+    "post-restoration code integration and measured savings"
+  ],
+  "actor": "OpenAI Codex, syzygy-318o candidate writer",
+  "independent_confirmation": "pending"
+}

@@ -1,0 +1,1756 @@
+{
+  "note": "Independent preparation fixtures; IDs/revisions are synthetic literals, not observed repository data. Validation imports no product helper.",
+  "cases": [
+    {
+      "name": "two-distinct-claims-one-rendered",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [
+        "A"
+      ],
+      "expected": {
+        "valid": true,
+        "effectiveIds": [
+          "A",
+          "B"
+        ],
+        "unknownCount": 2,
+        "fault": null
+      }
+    },
+    {
+      "name": "title-is-not-a-warrant",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 1,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [
+        "A"
+      ],
+      "expected": {
+        "valid": true,
+        "effectiveIds": [
+          "A"
+        ],
+        "unknownCount": 1,
+        "fault": null
+      }
+    },
+    {
+      "name": "observed-empty",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 0,
+          "items": []
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": true,
+        "effectiveIds": [],
+        "unknownCount": 0,
+        "fault": null
+      }
+    },
+    {
+      "name": "failed-observation-is-unknown",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "unknown",
+          "reason": "source-uncaptured-or-unreachable"
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": true,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": null
+      }
+    },
+    {
+      "name": "shared-missing-label",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-missing-closedReason",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-missing-resolutionRoutes",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable"
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-wrong-label",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Observed",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-wrong-closedReason",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "reference-unresolvable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-wrong-resolutionRoutes",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              "Repair the wrong source"
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "shared-extra-field",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ],
+            "tier": "unearned"
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "dangling-no-shared-value",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "inline-value",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "label": "Unknown",
+                "closedReason": "source-uncaptured-or-unreachable",
+                "resolutionRoutes": [
+                  {
+                    "reason": "source-uncaptured-or-unreachable",
+                    "route": "Repair the observer/source; new snapshot",
+                    "actor": "operator",
+                    "verb": "repair",
+                    "target": "evaluation"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "missing-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {}
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "external-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "https://example.invalid/value"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "recursive-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "items.0.governedBy"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "cross-observation-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "fixture-evaluation-A"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "extra-key-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation",
+                "fallback": {
+                  "label": "Unknown",
+                  "closedReason": "source-uncaptured-or-unreachable",
+                  "resolutionRoutes": [
+                    {
+                      "reason": "source-uncaptured-or-unreachable",
+                      "route": "Repair the observer/source; new snapshot",
+                      "actor": "operator",
+                      "verb": "repair",
+                      "target": "evaluation"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "null-ref",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": null
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "item-missing-governedBy",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010"
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "nonidentical-item-value",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "label": "Unknown",
+                "closedReason": "reference-unresolvable",
+                "resolutionRoutes": [
+                  "Inspect anchor"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "unknown-to-zero",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 0,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "merged-or-duplicate-subject",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "A",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "unknown-with-fabricated-empty-zero",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "unknown",
+          "reason": "source-uncaptured-or-unreachable",
+          "items": [],
+          "governedByUnknownCount": 0
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "later-body-cannot-use-previous-value",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-B",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:01:00Z",
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-missing-reason",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-wrong-reason",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "incorrect",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-missing-route",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-wrong-route",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "incorrect",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-missing-actor",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-wrong-actor",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "incorrect",
+                "verb": "repair",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-missing-verb",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-wrong-verb",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "incorrect",
+                "target": "evaluation"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-missing-target",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    },
+    {
+      "name": "route-wrong-target",
+      "body": {
+        "evaluation": {
+          "snapshot": "fixture-evaluation-A",
+          "asOf": "2026-10-21T00:00:00Z"
+        },
+        "workItems": {
+          "kind": "observed",
+          "provenance": {
+            "revision": "fixture-revision-A"
+          },
+          "capturedAt": "2026-10-21T00:00:00Z",
+          "governedBy": {
+            "label": "Unknown",
+            "closedReason": "source-uncaptured-or-unreachable",
+            "resolutionRoutes": [
+              {
+                "reason": "source-uncaptured-or-unreachable",
+                "route": "Repair the observer/source; new snapshot",
+                "actor": "operator",
+                "verb": "repair",
+                "target": "incorrect"
+              }
+            ]
+          },
+          "governedByUnknownCount": 2,
+          "items": [
+            {
+              "id": "A",
+              "title": "Implement POC-REQ-010",
+              "governedBy": {
+                "ref": "observation"
+              }
+            },
+            {
+              "id": "B",
+              "title": "Unrelated work",
+              "governedBy": {
+                "ref": "observation"
+              }
+            }
+          ]
+        }
+      },
+      "renderedIds": [],
+      "expected": {
+        "valid": false,
+        "effectiveIds": [],
+        "unknownCount": null,
+        "fault": "invalid-governing-intent-reference"
+      }
+    }
+  ]
+}

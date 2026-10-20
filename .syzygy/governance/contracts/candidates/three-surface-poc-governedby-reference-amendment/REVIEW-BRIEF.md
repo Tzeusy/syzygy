@@ -1,0 +1,52 @@
+# Fresh review brief — P-115 observation-local governedBy value
+
+> **Candidate — binds nothing.** Author requests challenge, not a preferred
+> verdict. This author must not review or confirm this artifact.
+
+Independently review the frozen branch subject and the sibling manifest
+FILE hash, not a manifest row or a historical P-100 implementation. Store
+raw unchanged under a -RAW.md filename outside any bound earlier review.
+The coordinator supplies a scripted binding inventory for every packet file
+and the exact candidate commit. Use these first four nonblank raw lines:
+`# Review — three-surface-poc-governedby-reference-amendment`;
+`Reviewed commit: <full commit>`;
+`Manifest SHA-256: <scripted full manifest FILE hash>`;
+`Verdict: CONFIRM`, `Verdict: CONFIRM WITH EXCEPTIONS` or `Verdict: REVISE`.
+Put reviewer identity/date and the exact manifest path immediately below. If exceptions, say
+which are notes and which block sign-off; copy verdict words exactly.
+
+Read SEMANTIC-DELTA.md, DESIGN.md, CAPABILITY-COVERAGE.md, IMPACT-LEDGER.md,
+IMPACT-SWEEP.json, the exact five patches, six-subject manifest, literal
+fixtures and scoped preparation builder. Read the actual adopted POC
+requirements 010/011/013/014/020/042/060 and governing clauses by identifier:
+VIS-1/2/4/6/7; SEC boundaries; RFC2-24; RFC4-15; RFC6-14/15/18/22/23;
+RFC8-22/23/24; CC-REV-1/2/4/6; in-force CC-SPEC-1..11 and CC-IMPACT-1..6.
+Read the exact owner draft direction of 2026-10-15 and P-100/P-108 sign-off
+records plus Scope-A POC extension. Candidate banners/indexes are not
+binding authority. Earlier P-100 runtime/raws are historical context only.
+
+Challenge separately:
+
+1. Faithfulness and bounded scope: identical value once per observation,
+   every item still a distinct Unknown subject, no new reads/warrant edges,
+   no title inference or optimistic fallback; POC-REQ-060 unchanged.
+2. Source-level semantics and wire choice: is the local marker exact and
+   sufficient, one-hop/evaluation-bound/deterministic, and are observed empty,
+   invalid/missing/mismatched/extra/recursive/external/cross-observation and
+   non-identical cases falsifiable without inventing an RFC reason?
+3. Whole outcome: complete served population versus rendered selection,
+   counts/reason/route/warrant text/filter/encoding, human parity and existing
+   distinct per-item records; compatibility/cache/byte-ceiling refusal.
+4. Independent oracle quality: literal expected values and separate full
+   ID/marker censuses; preparatory fixture results must not be presented as
+   installed runtime evidence; all inherited Unknown coverage stays honest.
+5. Complete same-change impact/coverage and proposed artifact authority.
+   Record any gap in coordinator-owned recorder/successor/CI preparation as
+   an explicit gate; do not call the unsigned package already offer-ready.
+
+Review may run preparation-only --check/--selftest and inspect local git
+objects. Do not read the observed repository or private API body, run a
+provider/daemon/product test suite, install patches into adopted subjects,
+invoke a recorder mutation, sign/tag/adopt, edit raw output or ask the owner
+new routine wire choices. Independent review authority is no execution
+permission. Return concrete findings and exact subject/freshness limits.
