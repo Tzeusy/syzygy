@@ -51,17 +51,18 @@ invoke a recorder mutation, sign/tag/adopt, edit raw output or ask the owner
 new routine wire choices. Independent review authority is no execution
 permission. Return concrete findings and exact subject/freshness limits.
 
-## Round two — repairs after actual REVISE
+## Independent evidence checks
 
-[Observed] Round one reviewed b81f2cf480e57ce7741b32e9d9a55e713d77ab66 and
-returned REVISE. Read the unchanged R-P115-GOVERNEDBY-REFERENCE-1-RAW.md
-provided by the coordinator and the sibling ROUND-1-DISPOSITIONS.md.
-Recheck the exact Decision ID warrant, generated union and semantic twin;
-independently try every retained counterexample and the positive full-record
-fixture. Do not infer complete coverage from passing preparation fixtures.
-Inspect all 130 occurrence-specific consumption judgments and four declared
-Unknowns; verify source excerpts/digests, specific reasons/methods and the
-settling evidence. Challenge the interpretation rather than smoothing those
-Unknowns into unaffected. A later exact freeze replaces the prior subject;
-round one's REVISE remains evidence, never a confirmation of these bytes.
-No author verdict or owner action is supplied by this disposition pass.
+Judge this exact freeze from its artifacts, governing references and acceptance
+criteria. Earlier raw reviews and author dispositions record history; they
+supply neither the current verdict nor a preferred outcome. The coordinator
+does not supply a prior raw as an operative review instruction.
+
+Independently check the Decision ID warrant, generated dependency union and
+semantic twin, and exercise the literal counterexamples and full-record
+fixture. Passing preparation fixtures do not establish complete coverage.
+Examine every occurrence-specific consumption judgment and declared Unknown:
+verify source excerpts/digests, specific reasons/methods and settling evidence.
+A separately frozen compatibility appendix, if supplied, is evidence to assess
+against its named sources, never authority or an author judgment to repeat.
+Challenge unresolved readings rather than converting them to unaffected.
