@@ -24,10 +24,13 @@ sign this future package. Proposed identity:
 
 ## Coordinator gates before offer — not an owner's engineering question
 
-Before registration/offer, settle the four block-level consumption Unknowns
-in REQUIREMENT-CONSUMPTION.json using its named comparator/compatibility
-evidence, or prepare any necessary same-change companions. This is ordinary
-source/design reconciliation; it grants no new owner or code authority.
+Before offer, obtain fresh independent confirmation of the four proposed
+consumption dispositions in REQUIREMENT-CONSUMPTION.json and the same-change
+compatibility appendix. POC-REQ-020/022 are affected consumers whose normative
+blocks remain unchanged; the two generator-019 occurrences retain their
+separate PWB interfaces. Any invalidated obligation still requires its
+same-change companion. This is ordinary source/design reconciliation; it
+grants no new owner or code authority.
 
 1. Register the package in scripts/record_versioned_signoff.py using the
    existing manifest-backed POC Package pattern (not P-100's historical
@@ -76,6 +79,17 @@ the manifest, raw review subject, same-change patches, generated dependency
 and coverage files, reconciliation/previous-successor checks and canonical
 status/index claims must all agree. All active gates land in one logical
 change. No --apply command against this candidate is authorized now.
+
+[Observed] The existing generic version recorder applies subjects before
+writing its dedicated record and aggregate entry; it does not provide a
+filesystem rollback for a later record-write failure. P115's future hook must
+preflight its exact five zero-context patches together and apply that same
+batch only after its strict preparation gate. This is not a claim of atomic
+record-file writes. The coordinator must use an owned clean isolated checkout,
+retain any failed attempt and recover only its own proven writes before
+retrying. A partial transaction must fail signed recognition and must never
+be committed or merged as a performed act. One logical Git change remains
+the adoption boundary; no general recorder rewrite is proposed here.
 
 Implementation needs an explicit separate bounded direction naming the
 machine projection, validators, known consumers, cache identity, parity and

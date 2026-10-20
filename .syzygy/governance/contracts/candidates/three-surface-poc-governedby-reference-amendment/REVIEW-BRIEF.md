@@ -12,8 +12,17 @@ and the exact candidate commit. Use these first four nonblank raw lines:
 `Reviewed commit: <full commit>`;
 `Manifest SHA-256: <scripted full manifest FILE hash>`;
 `Verdict: CONFIRM`, `Verdict: CONFIRM WITH EXCEPTIONS` or `Verdict: REVISE`.
-Put reviewer identity/date and the exact manifest path immediately below. If exceptions, say
-which are notes and which block sign-off; copy verdict words exactly.
+Put reviewer identity/date and the exact manifest path immediately below.
+Use exactly one `## Findings` section for every finding, numbered consecutively
+from 1 with this heading form: `**Finding 1 — title** (blocking)`, `(revise)`
+or `(note)`. A review with no findings says `No findings.` in that section.
+The verdict reports the reviewer's actual judgment: a blocking/revise finding
+cannot accompany CONFIRM or CONFIRM WITH EXCEPTIONS, and the latter requires
+at least one note and no blocking/revise finding. Strengths, recommendations,
+limitations and assessment may use separate sections; do not hide a finding
+outside `## Findings`. This is the existing recorder's transport grammar,
+not an instruction to reach any particular verdict. Raw is retained verbatim;
+any subsequent author disposition is a separate record.
 
 Read SEMANTIC-DELTA.md, DESIGN.md, CAPABILITY-COVERAGE.md, IMPACT-LEDGER.md,
 IMPACT-SWEEP.json, REQUIREMENT-CONSUMPTION.json, the exact five patches, six-subject manifest, literal
@@ -61,8 +70,14 @@ does not supply a prior raw as an operative review instruction.
 Independently check the Decision ID warrant, generated dependency union and
 semantic twin, and exercise the literal counterexamples and full-record
 fixture. Passing preparation fixtures do not establish complete coverage.
-Examine every occurrence-specific consumption judgment and declared Unknown:
+Examine every occurrence-specific consumption judgment and retained Unknown:
 verify source excerpts/digests, specific reasons/methods and settling evidence.
-A separately frozen compatibility appendix, if supplied, is evidence to assess
-against its named sources, never authority or an author judgment to repeat.
+The frozen compatibility/COMPATIBILITY-SETTLEMENT.md appendix and its literal
+examples supply evidence to assess against the named immutable source objects,
+never authority or a judgment to repeat. Its preparation-only checker is
+scripts/check_p115_compatibility_examples.py; --check writes only owned scratch
+space. Challenge whether POC-REQ-020/022 remain affected with valid unchanged
+normative blocks, and whether the positive PWB interface boundary establishes
+untiedness for both generator-019 occurrences. Distinguish those design
+readings from unproven runtime conformance and broader canonical adaptation.
 Challenge unresolved readings rather than converting them to unaffected.
