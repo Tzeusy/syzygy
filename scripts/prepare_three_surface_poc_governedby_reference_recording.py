@@ -375,6 +375,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
         "foreign-subject-edit", "foreign-subject-delete", "foreign-record-edit", "foreign-record-delete",
         "foreign-aggregate-edit", "foreign-aggregate-delete", "restore-failure", "restore-stage-drift",
         "linked-worktree-control", "linked-worktree-aggregate-failure",
+        *(f"T{n:02}" for n in (*range(1, 16), 19)),
     )
     with tempfile.TemporaryDirectory(prefix="p115-entrypoint-fixtures-") as temp:
         template = Path(temp) / "template"
@@ -399,11 +400,12 @@ def recording_failure_selftest(root: Path, expect) -> None:
             else:
                 subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(template), str(tree)],
                                check=True, capture_output=True)
-            positive = name in {"control", "linked-worktree-control"}
+            cleanup_case = name in {"T09", "T10", "T11"}
+            positive = name in {"control", "linked-worktree-control"} or cleanup_case
             before = {p: recorder.p115_read(tree / p) for p in paths}
             expected = dict(before)
-            events, foreign = [], {}
-            index = git(tree, "ls-files", "--stage", "-z")
+            events, foreign, foreign_identities = [], {}, {}
+            initial_head = git(tree, "rev-parse", "HEAD")
             dirty = tree / "README.md"
             if name in {"dirty-staged", "dirty-unstaged"}:
                 dirty.write_bytes(dirty.read_bytes() + b"\nSynthetic unrelated dirt.\n")
@@ -416,6 +418,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
             initial_index = git(tree, "ls-files", "--stage", "-z")
             original_run, original_write = recorder.subprocess.run, recorder.p115_write
             original_stage, original_replace = recorder.p115_stage, recorder.os.replace
+            original_link, original_unlink = recorder.os.link, Path.unlink
+            original_rmtree, original_read = recorder.shutil.rmtree, recorder.p115_read
             original_render = recorder.render_record
             failed_once = set()
 
@@ -451,12 +455,24 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     events.append("real preimage drift during output construction")
                 return result
 
-            def write(path, body):
+            def write(path, body, **publication):
                 rel = path.relative_to(tree)
                 label = "dedicated" if rel == RECORD else "aggregate"
+                if rel == RECORD and name in {"T12", "T13", "T14", "T15"}:
+                    events.append("real write barrier with " + name + " exception chain")
+                    try:
+                        filename = tree / "synthetic-volume" if name == "T12" else str(tree / "synthetic-volume")
+                        raise OSError(28, "P115 root storage exhausted", filename)
+                    except OSError as cause:
+                        if name in {"T12", "T15"}:
+                            filename = recorder.os.fsencode(path) if name == "T12" else str(path)
+                            raise OSError(5, "P115 record wrapper", filename) from cause
+                        if name == "T13":
+                            raise OSError(5, "P115 record wrapper", str(path))
+                        raise OSError(5, "P115 record wrapper", str(path)) from None
                 if name == label + "-before-write":
                     inject(label + " before staging")
-                original_write(path, body)
+                original_write(path, body, **publication)
                 events.append(label + " real staged replace")
                 if name == label + "-after-write":
                     inject(label + " after completed replacement")
@@ -475,10 +491,12 @@ def recording_failure_selftest(root: Path, expect) -> None:
                                                 "linked-worktree-aggregate-failure"}:
                     inject("after real aggregate write before recovery fault")
 
-            def stage(path, body):
-                rel = path.relative_to(tree)
+            def stage(path, body, **ownership):
+                rel = path.relative_to(tree) if path.is_relative_to(tree) else None
                 label = "dedicated" if rel == RECORD else "aggregate" if rel == AGGREGATE else "subject"
-                if name == label + "-stage-prefix-failure" and name not in failed_once:
+                completion = path.name.endswith(".ATTEMPT.json") and b'"state": "completed"' in body
+                if ((name == label + "-stage-prefix-failure" or name == "T07" and completion)
+                        and name not in failed_once):
                     failed_once.add(name)
                     fdopen = recorder.os.fdopen
                     class PrefixStream:
@@ -490,12 +508,24 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         def write(self, value):
                             self.stream.write(value[:max(1, len(value)//2)])
                             self.stream.flush()
-                            inject(label + " real stage prefix write")
+                            inject(("completion receipt" if name == "T07" else label) + " real stage prefix write")
                         def __exit__(self, *exc):
                             return self.stream.__exit__(*exc)
                     with mock.patch.object(recorder.os, "fdopen", PrefixStream):
-                        return original_stage(path, body)
-                result = original_stage(path, body)
+                        return original_stage(path, body, **ownership)
+                result = original_stage(path, body, **ownership)
+                if name in {"T01", "T02", "T03", "T04"} and name not in failed_once:
+                    target = AGGREGATE if name in {"T01", "T02"} else RECORD
+                    if rel == target:
+                        failed_once.add(name)
+                        foreign[target] = (None if name == "T02" else body if name == "T04"
+                                           else b"Foreign write during forward staging.\n")
+                        if foreign[target] is None:
+                            path.unlink()
+                        else:
+                            path.write_bytes(foreign[target])
+                        foreign_identities[target] = recorder.p115_identity(path)
+                        events.append("real forward stage then " + name + " foreign mutation")
                 if (name == "restore-stage-drift" and rel == SUBJECTS[-1]
                         and body == before[rel] and name not in failed_once):
                     failed_once.add(name)
@@ -505,11 +535,57 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return result
 
             def replace(source, destination):
-                if (name == "restore-failure" and destination == tree / SUBJECTS[-1]
+                if (name in {"restore-failure", "T15"} and destination == tree / SUBJECTS[-1]
                         and Path(source).read_bytes() == before[SUBJECTS[-1]]):
                     foreign[SUBJECTS[-1]] = proposed[SUBJECTS[-1]]
                     inject("real restoration replacement failure")
+                if Path(destination).name.endswith(".ATTEMPT.json"):
+                    body = Path(source).read_bytes()
+                    if name == "T08" and b'"state": "completed"' in body:
+                        inject("completion receipt native publication failure")
+                    if name == "T15" and b'"state": "failed"' in body:
+                        events.append("real failed receipt publication barrier")
+                        raise OSError(30, "P115 failure receipt storage refused", str(destination))
                 return original_replace(source, destination)
+
+            def link(source, destination):
+                if name == "T05" and destination == tree / RECORD:
+                    foreign[RECORD] = Path(source).read_bytes()
+                    Path(destination).write_bytes(foreign[RECORD])
+                    foreign_identities[RECORD] = recorder.p115_identity(Path(destination))
+                    events.append("native exclusive create meets same-byte foreign inode")
+                return original_link(source, destination)
+
+            def unlink(path, *args, **kwargs):
+                if (name == "T06" and name not in failed_once and path.name.startswith(".p115-")
+                        and path.parent == (tree / RECORD).parent and (tree / RECORD).exists()):
+                    failed_once.add(name)
+                    inject("native staged unlink after confirmed publication")
+                if name == "T11" and path.name.endswith(".ATTEMPT.json") and name not in failed_once:
+                    journal = path.with_name(path.name.removesuffix(".ATTEMPT.json"))
+                    if not journal.exists():
+                        failed_once.add(name)
+                        inject("native completed receipt unlink after payload deletion")
+                return original_unlink(path, *args, **kwargs)
+
+            def rmtree(path, *args, **kwargs):
+                if (name in {"T09", "T10"} and Path(path).name.startswith("attempt-")
+                        and Path(path).parent.name == "p115-recording-recovery"):
+                    if name == "T10":
+                        original_unlink(Path(path) / "0.before")
+                        events.append("real cleanup removed one captured preimage")
+                    inject("postcommit journal cleanup failure")
+                return original_rmtree(path, *args, **kwargs)
+
+            def read(path):
+                result = original_read(path)
+                if (name == "T19" and name not in failed_once and path.name.endswith(".ATTEMPT.json")
+                        and result is not None and b'"state": "completed"' in result):
+                    failed_once.add(name)
+                    foreign[SUBJECTS[-1]] = proposed[SUBJECTS[-1]] + b"\nForeign edit during completed receipt readback.\n"
+                    (tree / SUBJECTS[-1]).write_bytes(foreign[SUBJECTS[-1]])
+                    events.append("real completion receipt readback then foreign subject edit")
+                return result
 
             output = io.StringIO()
             saved_root = recorder.ROOT
@@ -520,6 +596,10 @@ def recording_failure_selftest(root: Path, expect) -> None:
                      mock.patch.object(recorder, "p115_stage", stage), \
                      mock.patch.object(recorder, "render_record", render), \
                      mock.patch.object(recorder.os, "replace", replace), \
+                     mock.patch.object(recorder.os, "link", link), \
+                     mock.patch.object(Path, "unlink", unlink), \
+                     mock.patch.object(recorder.shutil, "rmtree", rmtree), \
+                     mock.patch.object(recorder, "p115_read", read), \
                      contextlib.redirect_stdout(output):
                     code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
                         "--review", raw, "--owner-selection-quote", "Synthetic fixture only; no owner action"])
@@ -537,22 +617,57 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     + recorder.render_aggregate(pkg, VERSION, "2026-10-21", raw, "CONFIRM", None)).encode()
             expected.update({p: body for p, body in foreign.items() if p in before})
             git_dir = Path(git(tree, "rev-parse", "--absolute-git-dir").decode().strip())
-            retained = list((git_dir / "p115-recording-recovery").glob("attempt-*/ATTEMPT.json"))
+            retained = list((git_dir / "p115-recording-recovery").glob("attempt-*.ATTEMPT.json"))
             journals = [json.loads(p.read_text()) for p in retained]
             lines = output.getvalue()
             state_ok = actual == expected
             gate_ok = code == (0 if positive else 1) and is_signed(tree) == positive
-            index_ok = git(tree, "ls-files", "--stage", "-z") == initial_index
+            index_ok = (git(tree, "ls-files", "--stage", "-z") == initial_index
+                        and git(tree, "rev-parse", "HEAD") == initial_head)
             dirt_ok = dirty_body is None or dirty.read_bytes() == dirty_body
             reached = ("real five-patch apply" in events) == (name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch"})
+            originals = [json.loads(line.removeprefix("P115 original exception: "))
+                         for line in lines.splitlines() if line.startswith("P115 original exception: ")]
             failure_evidence = (positive and not retained or
                 name.startswith("dirty-") and not retained or name == "construction-drift" and not retained or
-                bool(journals) and all(j["state"] == "failed" and j["originalError"] for j in journals))
+                bool(journals) and all(j["state"] == "failed" and j.get("originalError")
+                                      and j.get("originalException") == originals[0] for j in journals))
+            if cleanup_case:
+                failure_evidence = (len(journals) == 1 and journals[0]["state"] == "completed"
+                    and journals[0]["postconditions"] == {"sixSubjects": True, "exactRecords": True,
+                        "signedChain": True, "capturedInputsAndIndex": True}
+                    and journals[0]["cleanupException"]["nodes"][0]["errno"] == 5
+                    and "P115 WARNING: recording completed; private cleanup failed:" in lines
+                    and "P115 completed outcome receipt retained:" in lines and not originals)
+            if name == "T15":
+                # The explicitly faulted failure-receipt update leaves prepared
+                # evidence. Its original diagnostic still precedes secondaries.
+                failure_evidence = (len(journals) == 1 and journals[0]["state"] == "prepared"
+                    and len(originals) == 1 and "P115 diagnostic fallback:" in lines
+                    and "durable failure update unavailable" in lines)
+            captured_payload = [{"path": f"{n}.before", "bytes": len(body), "sha256": digest(body)}
+                                for n, body in enumerate(before.values()) if body is not None]
             preimages_ok = all(
                 row["before"] == (None if before[Path(row["path"])] is None else
                                   digest((p.parent / row["preimage"]).read_bytes()))
-                for p, j in zip(retained, journals) for row in j["paths"])
+                for p, j in zip(retained, journals) for row in j["paths"]
+                if not cleanup_case)
+            if cleanup_case and journals:
+                payload = retained[0].with_name(retained[0].name.removesuffix(".ATTEMPT.json"))
+                survivors = recorder.p115_payload_inventory(payload)
+                wanted = ([] if name == "T11" else
+                          captured_payload[1:] if name == "T10" else captured_payload)
+                preimages_ok = (journals[0]["payloadCapturedAtCompletion"] == captured_payload
+                                and journals[0]["payloadSurvivors"] == wanted == survivors)
+            receipt_identity_ok = all(j["attemptId"] + ".ATTEMPT.json" == p.name
+                and j["ranAt"] == initial_head.decode().strip()
+                and j["indexSha256"] == digest(initial_index)
+                and j["capturedAt"].endswith("Z") and j["updatedAt"].endswith("Z")
+                and datetime.datetime.fromisoformat(j["capturedAt"][:-1] + "+00:00")
+                    <= datetime.datetime.fromisoformat(j["updatedAt"][:-1] + "+00:00")
+                for p, j in zip(retained, journals))
+            failure_evidence = failure_evidence and receipt_identity_ok
             recovery_ok = positive or (
                 ("P115 recovery incomplete:" in lines) if actual != before else
                 ("P115 recovery complete;" in lines))
@@ -579,9 +694,29 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 family, operation = name.removeprefix("foreign-").rsplit("-", 1)
                 barrier = "aggregate" if family == "aggregate" else "dedicated"
                 required = [f"after real {barrier} write and foreign {family} {operation}"]
+            required += {
+                "T01": ["real forward stage then T01 foreign mutation"],
+                "T02": ["real forward stage then T02 foreign mutation"],
+                "T03": ["real forward stage then T03 foreign mutation"],
+                "T04": ["real forward stage then T04 foreign mutation"],
+                "T05": ["native exclusive create meets same-byte foreign inode"],
+                "T06": ["native staged unlink after confirmed publication"],
+                "T07": ["completion receipt real stage prefix write"],
+                "T08": ["completion receipt native publication failure"],
+                "T09": ["postcommit journal cleanup failure"],
+                "T10": ["real cleanup removed one captured preimage", "postcommit journal cleanup failure"],
+                "T11": ["native completed receipt unlink after payload deletion"],
+                "T12": ["real write barrier with T12 exception chain"],
+                "T13": ["real write barrier with T13 exception chain"],
+                "T14": ["real write barrier with T14 exception chain"],
+                "T15": ["real write barrier with T15 exception chain", "real restoration replacement failure",
+                        "real failed receipt publication barrier"],
+                "T19": ["real completion receipt readback then foreign subject edit"],
+            }.get(name, [])
             reached = reached and all(event in events for event in required)
-            injected = not positive and name not in {"dirty-staged", "dirty-unstaged", "dirty-untracked",
-                                                    "construction-drift", "preflight-bad-patch", "postcondition-drift"}
+            injected = not positive and not name.startswith("T") and name not in {
+                "dirty-staged", "dirty-unstaged", "dirty-untracked",
+                "construction-drift", "preflight-bad-patch", "postcondition-drift"}
             cause_ok = not injected or fingerprint in lines
             if injected:
                 original_error = f"OSError: [Errno 5] {fingerprint}: {required[0]}"
@@ -591,10 +726,47 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 cause_ok = "P115 applied postcondition failed" in lines
             if name == "preflight-bad-patch":
                 cause_ok = "P115 preflight refused:" in lines
+            if name in {"T06", "T07", "T08"}:
+                cause_ok = (len(originals) == 1 and originals[0]["nodes"][0]["errno"] == 5
+                            and fingerprint in originals[0]["traceback"])
+            if name in {"T12", "T13", "T14", "T15"}:
+                nodes = originals[0]["nodes"] if originals else []
+                cause_ok = (len(nodes) == 2 and nodes[0]["errno"] == 5
+                    and nodes[0]["filename"] == str(tree / RECORD)
+                    and nodes[0]["context"] == 1
+                    and nodes[0]["cause"] == (1 if name in {"T12", "T15"} else None)
+                    and nodes[0]["suppressContext"] == (name != "T13")
+                    and nodes[1]["errno"] == 28 and nodes[1]["filename"] == str(tree / "synthetic-volume")
+                    and "P115 record wrapper" in originals[0]["traceback"]
+                    and ("P115 root storage exhausted" in originals[0]["traceback"]) == (name != "T14"))
+                if name == "T12":
+                    cause_ok = (cause_ok
+                        and nodes[0]["filenameEvidence"] == {"type": "builtins.bytes",
+                            "filesystemBytesHex": recorder.os.fsencode(tree / RECORD).hex()}
+                        and nodes[1]["filenameEvidence"] == {"type": "pathlib.PosixPath",
+                            "filesystemBytesHex": recorder.os.fsencode(tree / "synthetic-volume").hex()}
+                        and nodes[0]["filename2"] is None and nodes[1]["filename2"] is None)
+                if name == "T15":
+                    secondary = [json.loads(line.split(": ", 1)[1]) for line in lines.splitlines()
+                                 if line.startswith(("P115 secondary evidence error: ",
+                                                     "P115 secondary recovery error: "))]
+                    cause_ok = (cause_ok and len(secondary) == 2
+                        and sorted(e["nodes"][0]["errno"] for e in secondary) == [5, 30]
+                        and lines.index("P115 original exception: ") < lines.index("P115 secondary "))
+            if name in {"T01", "T02", "T03", "T04", "T19"}:
+                cause_ok = len(originals) == 1 and "P115 transaction input changed:" in originals[0]["nodes"][0]["message"]
+            if name == "T05":
+                cause_ok = len(originals) == 1 and originals[0]["nodes"][0]["errno"] == 17
+            ownership_ok = all(recorder.p115_identity(tree / rel) == identity
+                               for rel, identity in foreign_identities.items())
+            if name in {"T03", "T04", "T05", "T12", "T13", "T14"}:
+                ownership_ok = ownership_ok and all(str(RECORD) not in j["publications"] for j in journals)
+            if name in {"T06", "T07", "T08", "T19"}:
+                ownership_ok = ownership_ok and all(str(RECORD) in j["publications"] for j in journals)
             stages_clean = not any(any(parent.glob(".p115-*")) for parent in
                                    {(tree / rel).parent for rel in paths})
             expect("entrypoint " + name, state_ok and gate_ok and index_ok and dirt_ok and reached
-                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean)
+                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok)
             mutation_receipt(tree, "entrypoint " + name, before, actual,
                              "exact scoped preimages/foreign states; no failed transaction signed")
             print("P115-TRANSACTION-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
@@ -606,11 +778,150 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "exit": code, "events": events, "expectedStates": {str(p): None if b is None else digest(b) for p,b in expected.items()},
                 "actualStates": {str(p): None if b is None else digest(b) for p,b in actual.items()},
                 "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
-                               "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok},
+                               "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok,
+                               "ownership": ownership_ok},
                 "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
+                "receiptIdentityAndCaptureTime": receipt_identity_ok,
                 "requiredEvents": required, "stageFilesRemoved": stages_clean,
+                "originalException": originals, "foreignIdentities": {str(p): t for p,t in foreign_identities.items()},
                 "journals": journals, "output": lines}, sort_keys=True))
             shutil.rmtree(tree)
+
+
+def recording_render_selftest(root: Path, expect) -> None:
+    """Three pure full-output controls; no check, apply or recording is called."""
+    import types
+    import record_versioned_signoff as recorder
+    historical = "5c07616c4c5719c9de4ce92c137162394bb32bb3"
+    old = types.ModuleType("p115_historical_render_selftest")
+    old.__file__ = str(root / "scripts/record_versioned_signoff.py")
+    sys.modules[old.__name__] = old
+    try:
+        source = git(root, "show", historical + ":scripts/record_versioned_signoff.py")
+        exec(compile(source, "Git:" + historical + ":record_versioned_signoff.py", "exec"), old.__dict__)
+        packages, historical_packages = recorder.real_packages(), old.real_packages()
+        pkg = packages[KEY]
+        review = "docs/reviews/R-P115-RENDER-SELFTEST-RAW.md"
+        quote = "Synthetic structured selection; no owner action"
+        expected_aggregate = """<!-- versioned-signoff:three-surface-poc-governedby-reference-amendment:v1.0 -->
+## Versioned sign-off — three-surface-poc-governedby-reference-amendment — v1.0 — recorded 2026-10-21
+
+The owner signed off version 1.0 by selecting an option in a structured
+question naming this package and version (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification amendment |
+| Review outcome | `docs/reviews/R-P115-RENDER-SELFTEST-RAW.md`: `CONFIRM` |
+| Recording | `.syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `three-surface-poc-governedby-reference-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, extended by `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:three-surface-poc-governedby-reference-amendment:v1.0 -->
+"""
+        expected_record = """# Three-Surface POC governedBy reference amendment — version-tagged sign-off v1.0
+
+Date: 2026-10-21
+
+Owner: Tzeusy
+
+Package: three-surface-poc-governedby-reference-amendment
+
+Version: 1.0
+
+Tag: three-surface-poc-governedby-reference-amendment-v1.0
+
+Kind: specification amendment
+
+Owner selection: Synthetic structured selection; no owner action
+
+Review: docs/reviews/R-P115-RENDER-SELFTEST-RAW.md
+
+Reviewed commit: 9ef5d35836e722abbd4041900fa27bd02f82e277
+
+Review verdict: CONFIRM
+
+Disposition: none
+
+Scope A extension: `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md` extends the direction below to this package's kind
+
+Signed under `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`: the owner's selection of an option naming this package and version is the sign-off; no phrase or digest argument exists.
+
+## What this records
+
+The owner signed off version 1.0 of `.syzygy/governance/contracts/candidates/three-surface-poc-governedby-reference-amendment` by the
+selection quoted above. The review named above read the package bytes this
+sign-off applies; the recorder confirmed that the package directory still
+equals the package at the reviewed commit (disposition records excepted) and
+that the frozen P115 builder check passed before the exact five patches were applied
+as one preflighted Git batch through the P115 recording adapter.
+
+The binding is the annotated tag `three-surface-poc-governedby-reference-amendment-v1.0` on the commit that
+carries this record and the applied result. A later edit to the package is a
+new version signed separately; it does not retire this one.
+
+## What this does not do
+
+It authorizes no implementation of the signed semantics, widens no consent,
+read, write or egress, and approves no registry or policy byte. Every
+exclusion of the acts in force stands.
+"""
+        actual_aggregate = recorder.render_aggregate(pkg, VERSION, "2026-10-21", review, "CONFIRM", None)
+        actual_record = recorder.render_record(pkg, VERSION, "2026-10-21", quote, review, CORE_COMMIT,
+                                               "CONFIRM", None)
+        for name, expected, actual, before in (
+            ("T16 exact neutral P115 aggregate", expected_aggregate, actual_aggregate,
+             old.render_aggregate(historical_packages[KEY], VERSION, "2026-10-21", review, "CONFIRM", None)),
+            ("T18 exact P115 application provenance record", expected_record, actual_record,
+             old.render_record(historical_packages[KEY], VERSION, "2026-10-21", quote, review,
+                               CORE_COMMIT, "CONFIRM", None)),
+        ):
+            expect(name, actual == expected)
+            print("P115-RENDER-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+                "ranAt": git(root, "rev-parse", "HEAD").decode().strip(), "historicalHead": historical,
+                "predicate": "full independent literal output; P115-only provenance", "old": before,
+                "new": actual, "expected": expected, "passed": actual == expected}, sort_keys=True))
+        keys = (
+            "pwb-missing-currency-disclosure-scenario", "pwb-dismissal-expiry-amendment",
+            "pwb-container-shape-profile-amendment", "pwb-item-depth-amendment", "pwb-readability-successor",
+            "pwb-tree-framing-amendment", "pwb-anchor-resolution-amendment",
+            "three-surface-poc-block-provenance-amendment", "pwb-class-granular-extraction-amendment",
+            "pwb-accessible-name-amendment", "pwb-opening-index-amendment",
+            "three-surface-poc-governing-intent-amendment", "three-surface-poc-vocabulary-epistemic-amendment",
+            "cap1-trusted-bootstrap-consent", "polaris-dossier-local-agent-mode",
+            "public-git-source-acquisition-local-agent", "polaris-dossier-local-agent-mode@1.1",
+            "polaris-dossier-local-agent-mode@1.2",
+        )
+        controls = []
+        for key in keys:
+            new_pkg, old_pkg = packages[key], historical_packages[key]
+            version = key.split("@", 1)[1] if "@" in key else "1.0"
+            choices = (frozenset(), frozenset({"n6"})) if key.endswith("@1.1") else (frozenset(),)
+            rows = tuple(("0" * 64, p.as_posix()) for p in old_pkg.applied_subjects)
+            for options in choices:
+                for verdict, disposition in (("CONFIRM", None), ("CONFIRM WITH EXCEPTIONS", "synthetic-disposition.md")):
+                    args = version, "2026-10-21", quote, review, CORE_COMMIT, verdict, disposition, options
+                    kwargs = {"root": root, "instant": "2026-10-21T00:00:00Z", "rows": rows}
+                    before_record = old.render_record(old_pkg, *args, **kwargs)
+                    after_record = recorder.render_record(new_pkg, *args, **kwargs)
+                    before_aggregate = old.render_aggregate(old_pkg, version, "2026-10-21", review, verdict, disposition)
+                    after_aggregate = recorder.render_aggregate(new_pkg, version, "2026-10-21", review, verdict, disposition)
+                    controls.append({"key": key, "version": version, "options": sorted(options), "verdict": verdict,
+                        "disposition": disposition, "oldRecord": before_record, "newRecord": after_record,
+                        "oldAggregate": before_aggregate, "newAggregate": after_aggregate,
+                        "passed": before_record == after_record and before_aggregate == after_aggregate})
+        passed = (set(keys) == set(packages) - {KEY} == set(historical_packages) - {KEY}
+                  and len(controls) == 38 and all(row["passed"] for row in controls))
+        expect("T17 all non-P115 full historical record and aggregate outputs", passed)
+        print("P115-RENDER-EVIDENCE " + json.dumps({"case": "T17", "syntheticOnly": True,
+            "ranAt": git(root, "rev-parse", "HEAD").decode().strip(), "historicalHead": historical,
+            "predicate": "entire non-P115 payloads match frozen historical formatter", "keys": list(keys),
+            "packageCount": len(keys), "argumentCases": len(controls), "fullOutputs": 2 * len(controls),
+            "controls": controls, "passed": passed}, sort_keys=True))
+    finally:
+        sys.modules.pop(old.__name__, None)
 
 
 def selftest(root: Path) -> int:
@@ -844,6 +1155,7 @@ def selftest(root: Path) -> int:
         finally:
             CORE_COMMIT = saved_commit
     recording_failure_selftest(root, expect)
+    recording_render_selftest(root, expect)
     for name, passed in cases:
         print(f"P115 selftest: {name}: {'ok' if passed else 'FAILED'}")
     failed = sum(not passed for _name, passed in cases)

@@ -105,6 +105,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import traceback
 import shutil
 from dataclasses import dataclass, replace as dataclasses_replace
 from typing import Callable
@@ -383,98 +384,179 @@ def p115_read(path: pathlib.Path) -> bytes | None:
     return path.read_bytes() if path.exists() else None
 
 
-def p115_stage(path: pathlib.Path, body: bytes) -> pathlib.Path:
-    """Stage on the target filesystem; replacement never truncates the target."""
+def p115_identity(path: pathlib.Path) -> tuple[int, int] | None:
+    return (path.lstat().st_dev, path.lstat().st_ino) if path.exists() else None
+
+
+def p115_exception(failure: BaseException) -> dict:
+    """Freeze both visible and suppressed diagnostic edges, without locals."""
+    pending, identities, nodes = [failure], {id(failure): 0}, []
+    for error in pending:
+        node = {"id": identities[id(error)],
+                "type": type(error).__module__ + "." + type(error).__qualname__,
+                "message": str(error), "suppressContext": error.__suppress_context__}
+        for name, target in (("cause", error.__cause__), ("context", error.__context__)):
+            if target is not None and id(target) not in identities:
+                identities[id(target)] = len(pending)
+                pending.append(target)
+            node[name] = None if target is None else identities[id(target)]
+        if isinstance(error, OSError):
+            node["errno"] = error.errno
+            for field in ("filename", "filename2"):
+                value = getattr(error, field)
+                kind = type(value).__module__ + "." + type(value).__qualname__
+                if value is None:
+                    node[field], evidence = None, {"type": kind}
+                else:
+                    try:
+                        raw = os.fsencode(value)
+                        node[field] = os.fsdecode(raw)
+                        evidence = {"type": kind, "filesystemBytesHex": raw.hex()}
+                    except TypeError:
+                        # OSError accepts non-path diagnostic objects too.
+                        node[field], evidence = repr(value), {"type": kind, "representation": "repr"}
+                node[field + "Evidence"] = evidence
+        nodes.append(node)
+    return {"root": 0, "nodes": nodes, "secondaryExceptions": getattr(failure, "_p115_secondary", []),
+            "traceback": "".join(traceback.format_exception(type(failure), failure,
+                                                            failure.__traceback__, chain=True))}
+
+
+def p115_stage(path: pathlib.Path, body: bytes, *, on_stage=lambda path, identity: None) -> pathlib.Path:
+    """Close complete bytes on the target filesystem before publication."""
     fd, name = tempfile.mkstemp(prefix=".p115-", dir=path.parent)
     staged = pathlib.Path(name)
+    identity = os.fstat(fd).st_dev, os.fstat(fd).st_ino
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(body)
+            stream.flush()
+            os.fsync(stream.fileno())
         if path.exists():
             staged.chmod(path.stat().st_mode & 0o777)
+        on_stage(staged, identity)
         return staged
     except BaseException as failure:
         try:
             staged.unlink(missing_ok=True)
-        except OSError as cleanup_error:
-            # Keep the original staging failure as the cause on Python 3.10 too.
-            print(f"P115 stage cleanup failed ({staged}): {cleanup_error}")
+        except BaseException as cleanup_error:
+            failure._p115_secondary = [*getattr(failure, "_p115_secondary", []), p115_exception(cleanup_error)]
         raise
 
 
-def p115_write(path: pathlib.Path, body: bytes) -> None:
-    staged = p115_stage(path, body)
+def p115_publish(path: pathlib.Path, body: bytes, *, expected: bytes | None,
+                  expected_identity, guard=lambda staged, identity, body: None,
+                  published=lambda identity: None) -> None:
+    """One bounded native publication; equality alone never grants ownership."""
+    token = {}
+    staged = p115_stage(path, body, on_stage=lambda _p, identity: token.update(identity=identity))
+    operation_error = None
     try:
-        os.replace(staged, path)
-    except BaseException:
+        if p115_identity(staged) != token["identity"] or p115_read(staged) != body:
+            raise ValueError(f"P115 owned stage changed: {staged}")
+        guard(staged, token["identity"], body)
+        if p115_read(path) != expected or p115_identity(path) != expected_identity:
+            raise ValueError(f"P115 publication destination changed: {path}")
+        if expected is None:
+            os.link(staged, path)  # EEXIST refuses even a same-byte foreign creator.
+        else:
+            os.replace(staged, path)
+        # This must precede fallible private cleanup and caller wrapper faults.
+        published(token["identity"])
+    except BaseException as failure:
+        operation_error = failure
+        raise
+    finally:
         try:
             staged.unlink(missing_ok=True)
-        except OSError as cleanup_error:
-            print(f"P115 stage cleanup failed ({staged}): {cleanup_error}")
-        raise
-    staged.unlink(missing_ok=True)
+        except BaseException as cleanup_error:
+            # Retain the first native-unlink error even when a retry cleans up.
+            try:
+                staged.unlink(missing_ok=True)
+            except BaseException as retry_error:
+                cleanup_error._p115_secondary = [p115_exception(retry_error)]
+            if operation_error is None:
+                raise
+            operation_error._p115_secondary = [*getattr(operation_error, "_p115_secondary", []),
+                                              p115_exception(cleanup_error)]
+
+
+def p115_write(path: pathlib.Path, body: bytes, **publication) -> None:
+    p115_publish(path, body, **publication)
 
 
 def p115_recover(root: pathlib.Path, before: dict, outputs: dict,
-                 attempted: list[pathlib.Path]) -> list[str]:
-    """Restore proven owned after-images only, preserving foreign changes."""
-    conflicts = []
-    for rel in reversed(attempted):
+                  owned_order: list[pathlib.Path], publications: dict) -> tuple[list[str], list[dict]]:
+    """Only confirmed record publications or bounded Git-phase outputs are owned."""
+    conflicts, errors = [], []
+    for rel in reversed(owned_order):
         staged = None
         try:
             path = root / rel
-            current = p115_read(path)
-            if current == before[rel]:
+            def owned():
+                return (p115_read(path) == outputs[rel]
+                        and (rel not in publications or p115_identity(path) == publications[rel]))
+            if p115_read(path) == before[rel]:
                 continue
-            if current != outputs[rel]:
+            if not owned():
                 conflicts.append(f"{rel}: independently changed or deleted")
                 continue
             if before[rel] is None:
-                # Compare again immediately before the destructive operation.
-                if p115_read(path) != outputs[rel]:
+                if not owned():
                     conflicts.append(f"{rel}: recovery ownership changed")
                     continue
                 path.unlink()
             else:
                 staged = p115_stage(path, before[rel])
-                if p115_read(path) != outputs[rel]:
+                if not owned():
                     conflicts.append(f"{rel}: recovery ownership changed")
                     continue
                 os.replace(staged, path)
-        except (OSError, ValueError) as exc:
-            conflicts.append(f"{rel}: restoration failed: {type(exc).__name__}: {exc}")
+        except BaseException as error:
+            conflicts.append(f"{rel}: restoration failed: {type(error).__name__}: {error}")
+            errors.append(p115_exception(error))
         finally:
             if staged is not None:
                 try:
                     staged.unlink(missing_ok=True)
-                except OSError as exc:
-                    conflicts.append(f"{rel}: restoration stage cleanup failed: {exc}")
-    for rel in before.keys() - set(attempted):
+                except BaseException as error:
+                    conflicts.append(f"{rel}: restoration stage cleanup failed: {error}")
+                    errors.append(p115_exception(error))
+    for rel in before.keys() - set(owned_order):
         try:
             if p115_read(root / rel) != before[rel]:
                 conflicts.append(f"{rel}: independent change retained; no owned write")
-        except (OSError, ValueError) as exc:
-            conflicts.append(f"{rel}: recovery inspection failed: {exc}")
-    return conflicts
+        except BaseException as error:
+            conflicts.append(f"{rel}: recovery inspection failed: {error}")
+            errors.append(p115_exception(error))
+    return conflicts, errors
+
+
+def p115_payload_inventory(journal: pathlib.Path) -> list[dict]:
+    return [{"path": p.name, "bytes": p.stat().st_size,
+             "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+            for p in sorted(journal.iterdir()) if p.is_file()] if journal.exists() else []
 
 
 def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
                  review_rel: str, disposition_rel: str | None,
                  options: frozenset[str]) -> int:
-    """Exact P115 transaction; no change to another package's recording path.
+    """P115-only provisional publication, receipt commit, then private cleanup.
 
-    The retained per-worktree Git-directory journal is failed-attempt evidence,
-    never an act. Recovery is scoped and ownership checked, not global atomicity.
+    Assumes the admitted checkout is exclusively operated. Immediate drift
+    checks and no-clobber creation are not a universal CAS or crash guarantee.
     """
     reference = _module("prepare_three_surface_poc_governedby_reference_recording")
-    attempted = []
-    journal = None
-    before, outputs = {}, {}
-    receipt = {}
+    owned_order, publications = [], {}
+    journal = outcome = None
+    before, outputs, receipt = {}, {}, {}
+    receipt_state = {"body": None, "identity": None}
+    committed = False
     try:
         head, index = p115_clean(root)
         paths = (*reference.SUBJECTS, reference.RECORD, reference.AGGREGATE)
         before = {rel: p115_read(root / rel) for rel in paths}
+        target_identity = {rel: p115_identity(root / rel) for rel in paths}
         inputs = {pathlib.Path(p) for p in reference.validation_inputs(root)}
         inputs.add(pathlib.Path(review_rel))
         if disposition_rel:
@@ -509,11 +591,14 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
             root=root, rows=tuple(reference.manifest_rows(root))).encode()
         outputs[reference.AGGREGATE] = (before[reference.AGGREGATE].decode().rstrip("\n")
             + "\n\n" + render_aggregate(pkg, version, date, review_rel, verdict, disposition)).encode()
+        expected = dict(before)
 
-        def unchanged(expected):
-            for rel, body in {**captured, **expected}.items():
-                if p115_read(root / rel) != body:
+        def unchanged(staged=None, identity=None, body=None):
+            for rel, value in {**captured, **expected}.items():
+                if p115_read(root / rel) != value:
                     raise ValueError(f"P115 transaction input changed: {rel}")
+            if any(p115_identity(root / rel) != target_identity[rel] for rel in paths):
+                raise ValueError("P115 transaction target identity changed")
             if (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
                                check=True).stdout != head
                     or subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
@@ -523,64 +608,126 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
                                      capture_output=True, check=True).stdout.split(b"\0")
             changed += subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "-z"],
                                       cwd=root, capture_output=True, check=True).stdout.split(b"\0")
-            if any(p and p.decode() not in {rel.as_posix() for rel in paths} for p in changed):
+            allowed = {rel.as_posix() for rel in paths}
+            if staged is not None:
+                if p115_identity(staged) != identity or p115_read(staged) != body:
+                    raise ValueError("P115 private stage ownership changed")
+                # Only this exact verified live stage may be omitted from dirt.
+                if staged.is_relative_to(root):
+                    allowed.add(staged.relative_to(root).as_posix())
+            if any(p and p.decode() not in allowed for p in changed):
                 raise ValueError("P115 transaction acquired unrelated worktree changes")
 
-        unchanged(before)
+        def persist(guard=lambda staged, identity, body: None):
+            receipt["updatedAt"] = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+            body = (json.dumps(receipt, indent=2) + "\n").encode()
+            def published(identity):
+                receipt_state.update(body=body, identity=identity)
+            p115_publish(outcome, body, expected=receipt_state["body"],
+                          expected_identity=receipt_state["identity"], guard=guard, published=published)
+            if p115_read(outcome) != body or p115_identity(outcome) != receipt_state["identity"]:
+                raise ValueError("P115 outcome receipt failed readback")
+
+        unchanged()
         p115_clean(root)
-        # Resolve the actual per-worktree directory; .git may be a file.
         git_dir = pathlib.Path(subprocess.run(["git", "rev-parse", "--absolute-git-dir"],
                                cwd=root, capture_output=True, text=True, check=True).stdout.strip())
         recovery = git_dir / "p115-recording-recovery"
         recovery.mkdir(exist_ok=True)
         journal = pathlib.Path(tempfile.mkdtemp(prefix="attempt-", dir=recovery))
-        receipt = {"scope": "synthetic fixture if called by selftest; otherwise failed P115 recording attempt",
-                   "ranAt": head.decode().strip(), "state": "prepared", "paths": []}
+        outcome = journal.with_name(journal.name + ".ATTEMPT.json")
+        receipt = {"scope": "P115 recording attempt; selftest calls are synthetic/no owner action",
+                   "ranAt": head.decode().strip(), "indexSha256": hashlib.sha256(index).hexdigest(),
+                   "attemptId": journal.name,
+                   "capturedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+                   "state": "prepared", "paths": [],
+                   "validationInputs": {str(p): None if b is None else hashlib.sha256(b).hexdigest()
+                                        for p,b in sorted(captured.items())}}
         for number, rel in enumerate(paths):
             body = before[rel]
+            name = journal.name + f"/{number}.before"
             if body is not None:
-                (journal / f"{number}.before").write_bytes(body)
+                (outcome.parent / name).write_bytes(body)
             receipt["paths"].append({"path": rel.as_posix(),
                 "before": None if body is None else hashlib.sha256(body).hexdigest(),
                 "after": hashlib.sha256(outputs[rel]).hexdigest(),
-                "preimage": None if body is None else f"{number}.before"})
-        (journal / "ATTEMPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
-        unchanged(before)
-        # The unchanged .openspec.yaml is validated but never rewritten/recovered.
+                "preimage": None if body is None else name})
+        persist(unchanged)
+        unchanged()
         def enter_apply():
-            unchanged(before)
-            attempted.extend(p for p in reference.SUBJECTS if before[p] != outputs[p])
+            unchanged()
+            owned_order.extend(p for p in reference.SUBJECTS if before[p] != outputs[p])
         p115_apply_batch(root, enter_apply)
         if not pkg.applied(root):
             raise ValueError("P115 applied postcondition failed")
-        expected = {**before, **{p: outputs[p] for p in reference.SUBJECTS}}
-        unchanged(expected)
+        expected.update({p: outputs[p] for p in reference.SUBJECTS})
+        target_identity.update({p: p115_identity(root / p) for p in reference.SUBJECTS})
+        unchanged()
         for rel in (reference.RECORD, reference.AGGREGATE):
-            unchanged(expected)
-            attempted.append(rel)
-            p115_write(root / rel, outputs[rel])
-            expected[rel] = outputs[rel]
-        unchanged(expected)
+            unchanged()
+            def published(identity, rel=rel):
+                publications[rel] = identity
+                owned_order.append(rel)
+                expected[rel], target_identity[rel] = outputs[rel], identity
+            p115_write(root / rel, outputs[rel], expected=expected[rel],
+                        expected_identity=target_identity[rel], guard=unchanged, published=published)
+        unchanged()
         findings = reference.signed_findings(root)
         if findings:
             raise ValueError("P115 recorded postcondition failed: " + " | ".join(findings))
+        receipt.update(state="completed", postconditions={"sixSubjects": True, "exactRecords": True,
+            "signedChain": True, "capturedInputsAndIndex": True},
+            publications={str(p): list(t) for p,t in publications.items()},
+            payloadCapturedAtCompletion=p115_payload_inventory(journal))
+        persist(unchanged)
+        # Receipt I/O is precommit too: it must not conceal intervening drift.
+        unchanged()
+        committed = True
     except BaseException as failure:
-        conflicts = p115_recover(root, before, outputs, attempted)
+        original = p115_exception(failure)  # Freeze BEFORE any recovery operation.
         message = f"{type(failure).__name__}: {failure}"
-        if journal is not None:
-            receipt.update(state="failed", originalError=message, recoveryConflicts=conflicts)
+        print("P115 original exception: " + json.dumps(original))
+        conflicts, recovery_errors = p115_recover(root, before, outputs, owned_order, publications)
+        if outcome is not None:
+            receipt.update(state="failed", originalError=message, originalException=original,
+                           recoveryConflicts=conflicts, recoveryExceptions=recovery_errors,
+                           publications={str(p): list(t) for p,t in publications.items()})
             try:
-                (journal / "ATTEMPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
-            except OSError as evidence_error:
-                conflicts.append(f"attempt receipt update failed: {evidence_error}")
+                persist()
+            except BaseException as evidence_error:
+                evidence = p115_exception(evidence_error)
+                conflicts.append("failure receipt persistence failed; durable failure update unavailable")
+                print("P115 secondary evidence error: " + json.dumps(evidence))
+                print("P115 diagnostic fallback: original exception snapshot printed above; "
+                      "no durable failure update is claimed")
+        for error in recovery_errors:
+            print("P115 secondary recovery error: " + json.dumps(error))
         print("FAILED P115: " + message)
         print("P115 recovery " + ("incomplete: " + " | ".join(conflicts) if conflicts else "complete; captured preimages preserved"))
-        if journal is not None:
-            print(f"P115 failed-attempt evidence retained: {journal}")
+        if outcome is not None:
+            print(f"P115 failed-attempt evidence retained: {outcome}")
         if not isinstance(failure, Exception):
             raise
         return 1
-    shutil.rmtree(journal)
+    assert committed  # No governed recovery is permitted beyond this point.
+    try:
+        shutil.rmtree(journal)
+        outcome.unlink()
+    except BaseException as cleanup_error:
+        cleanup = p115_exception(cleanup_error)
+        print("P115 WARNING: recording completed; private cleanup failed: " + json.dumps(cleanup))
+        try:
+            survivors = p115_payload_inventory(journal)
+            receipt.update(payloadSurvivors=survivors)
+        except BaseException as inventory_error:
+            receipt.update(payloadSurvivors=None, payloadInventoryException=p115_exception(inventory_error))
+            print("P115 WARNING: surviving payload inventory unavailable: " + json.dumps(p115_exception(inventory_error)))
+        receipt.update(state="completed", cleanupException=cleanup)
+        try:
+            persist()
+        except BaseException as evidence_error:
+            print("P115 WARNING: cleanup diagnostic persistence failed: " + json.dumps(p115_exception(evidence_error)))
+        print(f"P115 completed outcome receipt retained: {outcome}")
     print(f"wrote {reference.RECORD.as_posix()}; appended exact P115 aggregate block")
     print(f"next: review the logical Git transaction, commit, then `git tag -a {tag_for(pkg, version)}` on that commit")
     return 0
@@ -1458,6 +1605,9 @@ def note_section(pkg: Package) -> str:
 
 def checked_phrase(pkg: Package) -> str:
     """How the record says the package was checked and applied."""
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        return ("that the frozen P115 builder check passed before the exact five patches were applied\n"
+                "as one preflighted Git batch through the P115 recording adapter.")
     if pkg.applied_subjects:
         return ("that the package's checks passed (every patch applies to the signed\n"
                 "bytes, and the dependency generator over the patched specification\n"
@@ -1565,11 +1715,15 @@ def render_aggregate(pkg: Package, version: str, date: str, review: str,
     review_row = f"`{review}`: `{verdict}`"
     if disposition:
         review_row += f"; disposition: `{disposition}`"
+    selection = ("The owner signed off version " + version + " by selecting an option in the\n"
+                 "Claude Code CLI (quoted in the dedicated record).")
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        selection = (f"The owner signed off version {version} by selecting an option in a structured\n"
+                     "question naming this package and version (quoted in the dedicated record).")
     return f"""{start}
 ## Versioned sign-off — {pkg.key} — v{version} — recorded {date}
 
-The owner signed off version {version} by selecting an option in the
-Claude Code CLI (quoted in the dedicated record).
+{selection}
 
 | | |
 |---|---|
