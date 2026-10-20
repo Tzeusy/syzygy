@@ -7,7 +7,9 @@ Frozen proposal/support hashes below are generated from the retained sources;
 the reviewed commit is provenance, not a required reachable Git ancestor.
 
 --record constructs and validates every output before replacing the subject,
-dedicated act and aggregate. A failed replacement restores their prior bytes.
+dedicated act and aggregate. A failed replacement restores outputs still
+owned by this transaction; independent changes/deletions are preserved and
+reported as incomplete rollback with the original failure context.
 It consumes only the actual paired approval in the canonical direction, never
 arbitrary owner-word arguments. It creates no tag, starts no process and reads
 no observed repository. --builder-selftest runs the unchanged frozen builder
@@ -335,13 +337,34 @@ def transaction(root: pathlib.Path, outputs: dict[pathlib.Path, bytes], *,
             unchanged(rel)
             replace(temp, root / rel)
             changed.append(rel)
-    except BaseException:
+    except BaseException as failure:
+        conflicts = []
         for rel in reversed(changed):
-            if before[rel] is None:
-                (root / rel).unlink(missing_ok=True)
-            else:
-                backup = stage(root / rel, before[rel])
-                os.replace(backup, root / rel)
+            backup = None
+            try:
+                path = root / rel
+                current = path.read_bytes() if path.exists() else None
+                if current != outputs[rel]:
+                    conflicts.append(f'{rel}: independently changed or deleted')
+                    continue
+                if before[rel] is None:
+                    path.unlink()
+                else:
+                    backup = stage(path, before[rel])
+                    # Preparing the restoration is another I/O window.
+                    current = path.read_bytes() if path.exists() else None
+                    if current != outputs[rel]:
+                        conflicts.append(f'{rel}: independently changed or deleted')
+                        continue
+                    os.replace(backup, path)
+            except OSError as recovery_error:
+                conflicts.append(f'{rel}: restoration failed: {recovery_error}')
+            finally:
+                if backup is not None:
+                    backup.unlink(missing_ok=True)
+        if conflicts:
+            raise ValueError(f'{type(failure).__name__}: {failure}; rollback incomplete: '
+                             + '; '.join(conflicts)) from failure
         raise
     finally:
         for temp in staged.values():
@@ -517,6 +540,94 @@ def selftest() -> int:
         results.append(('late drift restores owned outputs and preserves foreign aggregate',
                         after == {**before, AGGREGATE: foreign} and not list(clean.rglob('.p114-*'))))
         (clean / AGGREGATE).write_bytes(before[AGGREGATE])
+        for drift_rel, replaced_at in [(build.SUBJECT, 1), (RECORD, 2)]:
+            for operation in ['modify', 'delete']:
+                calls, caught, foreign_state = [0], [], [None]
+                def late_failure(source, target):
+                    calls[0] += 1
+                    if calls[0] == replaced_at + 1:
+                        raise OSError('injected later replacement failure')
+                    os.replace(source, target)
+                    if calls[0] == replaced_at:
+                        if operation == 'modify':
+                            foreign_state[0] = target.read_bytes() + b'\nIndependent edit after owned replacement.\n'
+                            target.write_bytes(foreign_state[0])
+                        else:
+                            target.unlink()
+                def attempt():
+                    try:
+                        record(clean, now, replace=late_failure)
+                    except ValueError as exc:
+                        caught.append(exc)
+                        raise
+                rejects(f'rollback ownership {operation}: {drift_rel}', attempt, 'rollback incomplete')
+                after = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in before}
+                results.append((f'rollback preserves independent {operation}, restores other outputs and reports original I/O cause: {drift_rel}',
+                                after == {**before, drift_rel: foreign_state[0]}
+                                and calls[0] == replaced_at + 1 and len(caught) == 1
+                                and isinstance(caught[0].__cause__, OSError)
+                                and str(caught[0].__cause__) == 'injected later replacement failure'
+                                and str(drift_rel) in str(caught[0])
+                                and not list(clean.rglob('.p114-*'))))
+                for rel, original in before.items():
+                    if original is None:
+                        (clean / rel).unlink(missing_ok=True)
+                    else:
+                        (clean / rel).write_bytes(original)
+        real_stage = stage
+        foreign = [None]
+        calls, caught = [0], []
+        def rollback_stage(path, body):
+            temp_path = real_stage(path, body)
+            if path == clean / build.SUBJECT and body == before[build.SUBJECT]:
+                foreign[0] = path.read_bytes() + b'\nIndependent edit while preparing restoration.\n'
+                path.write_bytes(foreign[0])
+            return temp_path
+        def failure_at_third(source, target):
+            calls[0] += 1
+            if calls[0] == 3:
+                raise OSError('injected later replacement failure')
+            os.replace(source, target)
+        def attempt_rollback_stage():
+            try:
+                record(clean, now, replace=failure_at_third)
+            except ValueError as exc:
+                caught.append(exc)
+                raise
+        try:
+            globals()['stage'] = rollback_stage
+            rejects('rollback ownership during restoration staging', attempt_rollback_stage, 'rollback incomplete')
+        finally:
+            globals()['stage'] = real_stage
+        after = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in before}
+        results.append(('rollback rechecks ownership after restoration staging and retains original I/O cause',
+                        after == {**before, build.SUBJECT: foreign[0]} and foreign[0] is not None
+                        and calls[0] == 3 and len(caught) == 1
+                        and isinstance(caught[0].__cause__, OSError)
+                        and str(caught[0].__cause__) == 'injected later replacement failure'
+                        and not list(clean.rglob('.p114-*'))))
+        (clean / build.SUBJECT).write_bytes(before[build.SUBJECT])
+        caught.clear()
+        calls[0] = 0
+        proposed = build.proposed_bytes(before[build.SUBJECT])
+        def failed_restoration_stage(path, body):
+            if path == clean / build.SUBJECT and body == before[build.SUBJECT]:
+                raise OSError('injected restoration staging failure')
+            return real_stage(path, body)
+        try:
+            globals()['stage'] = failed_restoration_stage
+            rejects('rollback restoration I/O failure', attempt_rollback_stage, 'rollback incomplete')
+        finally:
+            globals()['stage'] = real_stage
+        after = {rel: (clean / rel).read_bytes() if (clean / rel).exists() else None for rel in before}
+        results.append(('incomplete restoration reports both I/O failures and restores the other owned output',
+                        after == {**before, build.SUBJECT: proposed} and calls[0] == 3
+                        and len(caught) == 1 and isinstance(caught[0].__cause__, OSError)
+                        and str(caught[0].__cause__) == 'injected later replacement failure'
+                        and 'injected restoration staging failure' in str(caught[0])
+                        and str(build.SUBJECT) in str(caught[0])
+                        and not list(clean.rglob('.p114-*'))))
+        (clean / build.SUBJECT).write_bytes(before[build.SUBJECT])
         for seam in ['stage', 'replace']:
             for fail_at in [1, 2, 3]:
                 calls = [0]
