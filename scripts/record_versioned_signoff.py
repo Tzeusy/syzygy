@@ -327,6 +327,35 @@ def patch_package_apply(root: pathlib.Path, proposed: pathlib.Path, findings) ->
     return 0
 
 
+def p115_package_apply(root: pathlib.Path) -> int:
+    """P115's exact zero-context batch, within a future authorized recording.
+
+    This leaves the generic recorder's record-write and recovery protocol
+    unchanged; it does not promise a filesystem transaction.
+    """
+    reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+    problems = reference.recording_findings(root)
+    if problems:
+        print("refusing P115 apply: " + " | ".join(problems))
+        return 1
+    patches = _patches(root, reference.CANDIDATE / "proposed")
+    if len(patches) != 5:
+        print("refusing P115 apply: exact five-patch population changed")
+        return 1
+    batch = ["git", "apply", "--whitespace=nowarn", "--unidiff-zero"]
+    names = [str(patch) for patch in patches]
+    done = subprocess.run([*batch, "--check", *names], cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        print("P115 preflight refused: " + done.stderr.strip())
+        return 1
+    done = subprocess.run([*batch, *names], cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        print("P115 batch apply failed: " + done.stderr.strip())
+        return 1
+    print("applied the exact five P115 patches as one preflighted batch")
+    return 0
+
+
 def patch_package_applied(root: pathlib.Path, proposed: pathlib.Path,
                           record: pathlib.Path) -> bool:
     """Before its record exists, every patch reverses over the tree; after,
@@ -366,6 +395,7 @@ def real_packages() -> dict[str, Package]:
     intent_record = DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"
     vocabulary = lambda: _module("build_three_surface_poc_vocabulary_epistemic_amendment")  # noqa: E731
     vocabulary_dir = CANDIDATES / "three-surface-poc-vocabulary-epistemic-amendment"
+    reference = lambda: _module("prepare_three_surface_poc_governedby_reference_recording")  # noqa: E731
     consent = lambda: _module("build_cap1_trusted_bootstrap_consent_adoption")  # noqa: E731
     consent_change = pathlib.Path("openspec/changes/cap1-trusted-bootstrap-consent")
 
@@ -591,6 +621,21 @@ def real_packages() -> dict[str, Package]:
                 "also re-judges POC-REQ-014's encoding arm and its RFC2-24 and RFC8-24\n"
                 "rows against P-84's amended POC-REQ-060, which that arm now reads (the\n"
                 "round-3 raw's note 4). The P-84 package is not edited by this sign-off.\n"),
+        ),
+        # Prospective P-115: registration is neither signature nor installation.
+        "three-surface-poc-governedby-reference-amendment": Package(
+            "three-surface-poc-governedby-reference-amendment",
+            "Three-Surface POC governedBy reference amendment",
+            "specification amendment",
+            CANDIDATES / "three-surface-poc-governedby-reference-amendment",
+            "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT",
+            lambda root: reference().recording_findings(root),
+            p115_package_apply,
+            lambda root: reference().applied_rows_match(root),
+            subject=CANDIDATES / "three-surface-poc-governedby-reference-amendment" /
+                    "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-MANIFEST.txt",
+            extension=POC_EXTENSION_REL,
+            review_alias="build_three_surface_poc_governedby_reference_amendment.py",
         ),
         # P-108, cleared by its round-2 notes-only raw; signed 2026-10-15
         # under the POC extension (its item 1 reaches any package patching
