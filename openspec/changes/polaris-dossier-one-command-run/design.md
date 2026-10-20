@@ -1,6 +1,6 @@
 # Design — one-command Polaris dossier run
 
-> **Candidate — binds nothing.** Design sketch for the five added
+> **Candidate — binds nothing.** Design sketch for the six added
 > requirements in `proposed/polaris-generation/spec.md`. Where this file and
 > the spec disagree, the spec governs.
 
@@ -76,6 +76,28 @@ Trade-offs considered:
   to investigate, not drafted.
 - *Containers (podman/docker)* — heavier, image management, and the docker
   socket is itself a privilege; rejected.
+
+## The agent CLI runner (REQ-045)
+
+- **The executable comes from the declaration.** The operator declares the
+  tool's absolute path, its version and its provider. Syzygy checks all
+  three before `init` and never resolves a binary from `PATH` or the
+  environment.
+- **Settings isolation**, per tool, comes from the flag evaluation kept with
+  the reviewed candidate
+  (`.syzygy/governance/contracts/candidates/dossier-local-cli-subprocess-runner/SEMANTIC-DELTA.md`,
+  "Settings isolation: the flags evaluated"). For Claude Code that means
+  `--restricted` or `--setting-sources` with `--strict-mcp-config`, a
+  private configuration home holding only the copied credential file, and
+  never `--bare`, which forces key-only authentication. For Codex it means
+  `--ignore-user-config` and `--ignore-rules`. Every exclusion stays
+  unobserved, and refuses the run, until a stand-in or an attended run
+  observes it.
+- **Managed settings** are read only for their provider-relevant keys, by
+  name. A key that redirects the provider, or authenticates by anything
+  other than the credential file, refuses the run.
+- **Login check.** Before any session starts, the tool's own login-status
+  command runs inside the view.
 
 ## Attended view (REQ-043)
 
@@ -159,6 +181,14 @@ above:
   sessions.
 - **Author view.** The run directory read-only and `drafts/` writable, rather
   than "own directory plus draft path".
+- **Agent executable from the environment.** `claudeExecutable()` honours
+  `SYZYGY_POLARIS_AGENT`. REQ-045 forbids this: a stand-in is declared by
+  absolute path instead.
+- **Bypass mode.** The authoring session can be started with
+  `--dangerously-skip-permissions` (`state.authorSkipPermissions`). REQ-045
+  forbids every bypass mode.
+- **No settings-source flag.** The prototype relies on its private home
+  alone and passes neither `--setting-sources` nor `--restricted`.
 - **Not built:** question detection in the state window (REQ-043 names the
   pane holding a question), the attached/detached interval record, the
   Observed launch record for the author, slice 6's fixture battery and
