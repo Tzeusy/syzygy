@@ -182,3 +182,26 @@ final independent review, hosted CI, recording tag and private admission remain
 pending at this report's preparation. The lead retains responsibility for
 integration, push/merge routing, tag and private admission. No claim here treats
 a focused check or old-head review as a complete installation approval.
+
+## Final-integration citation correction
+
+[Observed] The first complete clone run at `da08266afda81c1493ab61cc2c870cde3b61f336`
+passed the 105 canonical checks and the tag-orientation command. Its full unit
+run failed four tests in three files: 4,742 passed and five skipped out of 4,751.
+The added pending-register sentence named the policy act in both its link label
+and URL, triggering the existing closed policy-record sweep. Independent review
+records this Important finding as `REVISE` in
+`docs/reviews/R-P110-DOC-POLICY-SWEEP-DA08266A-1-RAW.md`; its seven-probe raw
+preserves the isolated cause, both single-occurrence counterexamples and the
+unknown-withdrawal refusal. The earlier bounded final-document assessment is
+superseded for this issue. The failed full-run receipts remain in the task cache;
+they are not treated as a successful final-head run.
+
+[Observed] The correction routes that sentence through the owning
+`ACCEPTANCE-ACT-RECORD.md`, retaining the dated approval, existing implementation
+direction and historical offering. The policy reader, citation allowlist, act,
+policy and implementation are unchanged. All 149 tests in the three affected
+files pass on this exact working-text correction; individual assertion counts
+agree with the report total. That focused control is not a final-commit battery.
+The corrected committed head must receive independent confirmation and repeat
+the complete clone and hosted gates before merge.
