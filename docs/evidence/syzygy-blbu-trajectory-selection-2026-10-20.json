@@ -1,6 +1,6 @@
 {
   "kind": "syzygy-blbu-trajectory-selection-evidence",
-  "status": "timestamp repair prepared after initial REVISE; repaired-head source mutation, after-size, independent review and clean-clone gates pending",
+  "status": "repaired source independently CONFIRM; focused mutation/size and clean-clone full code checks complete; final repository battery and exact integrated-head review are separate records",
   "authority": {
     "requirement": "POC-REQ-042",
     "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
@@ -106,6 +106,631 @@
   ],
   "after": {
     "kind": "syzygy-blbu-size-measurement",
+    "capturedAt": "2026-10-20T14:46:04.202Z",
+    "observerCommit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+    "repositoryRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "doltRevision": "8rdacsji5grbvds9ladvcbft2tvvmk49",
+    "fullItemCount": 9194,
+    "renderedCount": 250,
+    "excludedCount": 8944,
+    "nonClosedCount": 954,
+    "closedCount": 8240,
+    "maxHumanResponseBytes": 2097152,
+    "measurements": [
+      {
+        "path": "/trajectory",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 284540
+      },
+      {
+        "path": "/api/poc",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 5240282
+      },
+      {
+        "path": "/trajectory",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 284630
+      },
+      {
+        "path": "/api/poc",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 5240282
+      }
+    ],
+    "candidates": []
+  },
+  "sizeComparison": [
+    {
+      "path": "/trajectory",
+      "host": "127.0.0.1",
+      "beforeBytes": 1077589,
+      "afterBytes": 284540,
+      "savedBytes": 793049,
+      "afterPercentOfHumanCeiling": 13.5679
+    },
+    {
+      "path": "/api/poc",
+      "host": "127.0.0.1",
+      "beforeBytes": 5691405,
+      "afterBytes": 5240282,
+      "savedBytes": 451123,
+      "afterPercentOfHumanCeiling": null
+    },
+    {
+      "path": "/trajectory",
+      "host": "tzeusy.parrot-hen.ts.net",
+      "beforeBytes": 1077679,
+      "afterBytes": 284630,
+      "savedBytes": 793049,
+      "afterPercentOfHumanCeiling": 13.5722
+    },
+    {
+      "path": "/api/poc",
+      "host": "tzeusy.parrot-hen.ts.net",
+      "beforeBytes": 5691405,
+      "afterBytes": 5240282,
+      "savedBytes": 451123,
+      "afterPercentOfHumanCeiling": null
+    }
+  ],
+  "measurementLimitations": "[Observed] The Butlers Git revision and item population count match; the live Dolt revision changed between observations. Evaluation timestamps and provenance differ. Candidate probes re-rendered the before observation in memory with a provisional rule and no served-operability status, so they were cap-choice estimates rather than final HTTP sizes.",
+  "rule6": {
+    "kind": "syzygy-blbu-rule6",
+    "subjectCommit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+    "mutations": [
+      {
+        "id": "non-closed-cap-removed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "    .slice(0, options.nonClosedLimit);",
+        "new": "    ;",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "declares scope",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "declares scope",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/non-closed-cap-removed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection declares scope and reconciles rendered + excluded against the total (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 1.347,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/non-closed-cap-removed.log",
+        "logSha256": "6cc205da964b991199b4adc81c235e477d13c6fbe050c31d900a0df19669519c"
+      },
+      {
+        "id": "newest-order-reversed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "newestFirst(a.updatedAt, b.updatedAt)",
+        "new": "newestFirst(b.updatedAt, a.updatedAt)",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "newest updates",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "newest updates",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/newest-order-reversed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'newest updates, with offsets compared\u2026' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 1.689,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/newest-order-reversed.log",
+        "logSha256": "ab5c5cdf7a789bb1c0c5aa236500c155135f49c3bcee0e70a3527b5a341cd0d0"
+      },
+      {
+        "id": "timestamps-compared-lexically",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "  const aTime = recordedInstant(a);\n  const bTime = recordedInstant(b);",
+        "new": "  return (b ?? '').localeCompare(a ?? '');\n  const aTime = recordedInstant(a);\n  const bTime = recordedInstant(b);",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "newest updates",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "newest updates",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/timestamps-compared-lexically.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'newest updates, with offsets compared\u2026' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 1.966,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/timestamps-compared-lexically.log",
+        "logSha256": "b3ca22312b441a24572538dff75d87e7685486351de9c719192944e4690e2f4d"
+      },
+      {
+        "id": "update-ties-reversed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": ".sort((a, b) => newestFirst(a.updatedAt, b.updatedAt) || byId(a, b))",
+        "new": ".sort((a, b) => newestFirst(a.updatedAt, b.updatedAt) || byId(b, a))",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "update ties",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "update ties",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/update-ties-reversed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'update ties by ascending id' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 2.138,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/update-ties-reversed.log",
+        "logSha256": "5ea2e6d6b50d9dfcb8eb6d2071f8266044066d5fab0071b6b1517f757e052091"
+      },
+      {
+        "id": "undated-ranked-first",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "  if (aTime === null) return 1;\n  if (bTime === null) return -1;",
+        "new": "  if (aTime === null) return -1;\n  if (bTime === null) return 1;",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "missing and invalid updates",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "missing and invalid updates",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/undated-ranked-first.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'missing and invalid updates last, wit\u2026' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 2.055,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/undated-ranked-first.log",
+        "logSha256": "a31b2f91769809b69c3524a1fd02707892c852492b6692309c79a0c975f0c3af"
+      },
+      {
+        "id": "closed-ties-reversed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": ".sort((a, b) => newestFirst(a.closedAt, b.closedAt) || byId(a, b))",
+        "new": ".sort((a, b) => newestFirst(a.closedAt, b.closedAt) || byId(b, a))",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "closed ties",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "closed ties",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/closed-ties-reversed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'closed ties and missing closure times' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 1.757,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/closed-ties-reversed.log",
+        "logSha256": "6434fb7e114ef70bab9c22b495744362c15dd7b4b2e850bdf3112394be904878"
+      },
+      {
+        "id": "closed-window-removed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "    .slice(0, options.recentClosedWindow);",
+        "new": "    ;",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "declares scope",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "declares scope",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/closed-window-removed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection declares scope and reconciles rendered + excluded against the total (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 1.647,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/closed-window-removed.log",
+        "logSha256": "7b5149b665e893252fbcc19feba1fb72c8f0f5ed720684d5704daf1738af97a7"
+      },
+      {
+        "id": "exclusions-undercounted",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "excludedCount: workItems.items.length - rendered.length,",
+        "new": "excludedCount: 0,",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "declares scope",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "declares scope",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/exclusions-undercounted.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection declares scope and reconciles rendered + excluded against the total (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 1.587,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/exclusions-undercounted.log",
+        "logSha256": "acca56fcd1671e2cedd4ae6d5de629da9f7db8db4f7310ed10716328aa7c0dbc"
+      },
+      {
+        "id": "visible-rule-stale",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "up to ${options.nonClosedLimit} most recently updated non-closed items",
+        "new": "all non-closed items",
+        "test": "apps/three-surface-poc/src/trajectory.test.ts",
+        "pattern": "full machine population",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--testNamePattern",
+          "full machine population",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/visible-rule-stale.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory serves the full machine population and reconciles the bounded board selection (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 3.406,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/visible-rule-stale.log",
+        "logSha256": "051aedeb903ee7f8290aa80d7c867118f8e6221ab6ee1d94244b4391ae8442fa"
+      },
+      {
+        "id": "production-cap-widened",
+        "path": "packages/three-surface-poc-core/src/model.ts",
+        "old": "const NON_CLOSED_LIMIT = 200;",
+        "new": "const NON_CLOSED_LIMIT = 201;",
+        "test": "apps/three-surface-poc/src/trajectory.test.ts",
+        "pattern": "full machine population",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "c31c6937ec4592fca828fe511ac87e896ca2bd047a3d9b08ccbc185340eb0460",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--testNamePattern",
+          "full machine population",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/production-cap-widened.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory serves the full machine population and reconciles the bounded board selection (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 3.37,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/production-cap-widened.log",
+        "logSha256": "b1600ed0832db2a124b06f5d598c8eda5e2c66f5f983ef6953ec221bcd838796"
+      },
+      {
+        "id": "machine-population-truncated",
+        "path": "apps/three-surface-poc/src/routes.ts",
+        "old": "const full = boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model), recorder);",
+        "new": "const full = boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify({ ...model, workItems: model.workItems.kind === 'observed' ? { ...model.workItems, items: model.workItems.items.slice(0, 200) } : model.workItems }), recorder);",
+        "test": "apps/three-surface-poc/src/trajectory.test.ts",
+        "pattern": "full machine population",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "81cd2099b9a162579a87c154137217e97d1e08e11542c07d91d42ad9a8cdd050",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--testNamePattern",
+          "full machine population",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/machine-population-truncated.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory serves the full machine population and reconciles the bounded board selection (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 4.332,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/machine-population-truncated.log",
+        "logSha256": "b35b720dbb6cff6de8eca12fe7ae5425f2212bc14bd58493f0650ebb89bd7cb8"
+      },
+      {
+        "id": "excluded-demo-linked-as-rendered",
+        "path": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "demonstratedId !== null && trajectory.rendered.some((item) => item.id === demonstratedId);",
+        "new": "demonstratedId !== null;",
+        "test": "apps/three-surface-poc/src/trajectory.test.ts",
+        "pattern": "demonstrated open item",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "547176f290df886b7e63033a144e8fd56b5485da70ac7d5b176cf248999c7d7d",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "apps/three-surface-poc/src/trajectory.test.ts",
+          "--testNamePattern",
+          "demonstrated open item",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/excluded-demo-linked-as-rendered.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory discloses a demonstrated open item excluded by its population limit (N-1)"
+        ],
+        "killed": true,
+        "seconds": 4.593,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/excluded-demo-linked-as-rendered.log",
+        "logSha256": "6c54d11744475243ff65c4cee7d1a2c4b8413a2c88269a780c345bdc4fe07cdc"
+      },
+      {
+        "id": "ambiguous-timestamps-admitted",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "  if (match === null) return null;",
+        "new": "  if (match === null) { const time = Date.parse(value ?? ''); return Number.isFinite(time) ? BigInt(time) * 1_000_000n : null; }",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "timezone-less",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "timezone-less",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/ambiguous-timestamps-admitted.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 2,
+        "failedTests": [
+          "Trajectory projection selects 'timezone-less updates last on every h\u2026' independently of input order (POC-REQ-041/042)",
+          "Trajectory projection selects 'timezone-less closures last on every \u2026' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 2.28,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/ambiguous-timestamps-admitted.log",
+        "logSha256": "c00ce55092d17197407bef75dfcab7ebfaa7eb56af3a0b8b07bece2faa98ed82"
+      },
+      {
+        "id": "calendar-validation-removed",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "  if (month < 1 || month > 12 || day < 1 || day > days[month - 1]!) return null;",
+        "new": "  // Invalid calendar dates incorrectly admitted.",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "impossible",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "impossible",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/calendar-validation-removed.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 2,
+        "failedTests": [
+          "Trajectory projection selects 'impossible update dates last' independently of input order (POC-REQ-041/042)",
+          "Trajectory projection selects 'impossible closure dates last' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 2.065,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/calendar-validation-removed.log",
+        "logSha256": "f628ae61ce4705f1e80dd5a94d4e096ae039ba694f7c73248e4b465a5420ca53"
+      },
+      {
+        "id": "fractional-precision-lost",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "BigInt((match[7] ?? '').padEnd(9, '0'))",
+        "new": "0n",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "valid leap days",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "valid leap days",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations-tail/fractional-precision-lost.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection selects 'valid leap days and fractional precis\u2026' independently of input order (POC-REQ-041/042)"
+        ],
+        "killed": true,
+        "seconds": 1.233,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations-tail/fractional-precision-lost.log",
+        "logSha256": "d33769d930a4b6e0c5dadbe218aa45b2cfcac297ebb51fe612c0e17daecbbaa6"
+      },
+      {
+        "id": "input-sorted-in-place",
+        "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "old": "const sorted = [...workItems.items].sort(byId);",
+        "new": "const sorted = workItems.items.sort(byId);",
+        "test": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+        "pattern": "declares scope",
+        "commit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+        "sourceSha256": "f0d2a5b90e8b76e8a7fad815b96c66bbe7cc53b3f671c982ab088c1bcfd91647",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "declares scope",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations-tail/input-sorted-in-place.vitest.json"
+        ],
+        "exitCode": 1,
+        "collected": 14,
+        "failed": 1,
+        "failedTests": [
+          "Trajectory projection declares scope and reconciles rendered + excluded against the total (POC-REQ-042)"
+        ],
+        "killed": true,
+        "seconds": 1.358,
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations-tail/input-sorted-in-place.log",
+        "logSha256": "137c80c5c29f761c76bc28d76b1df423623d28c4085b732d919d84b37f2a345f"
+      }
+    ],
+    "sourceRestored": true,
+    "notExecutedAttempts": [
+      {
+        "id": "fractional-precision-lost",
+        "reason": "Vitest abbreviated the table-case name, so the first long test-name filter skipped every case; rerun with a shorter filter executed and killed this mutant.",
+        "log": "/tmp/syzygy-blbu-verification/repaired-mutations/fractional-precision-lost.log",
+        "command": [
+          "npx",
+          "vitest",
+          "run",
+          "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+          "--testNamePattern",
+          "valid leap days and fractional precision",
+          "--reporter=json",
+          "--outputFile=/tmp/syzygy-blbu-verification/repaired-mutations/fractional-precision-lost.vitest.json"
+        ]
+      }
+    ]
+  },
+  "targetedTests": {
+    "command": [
+      "npx",
+      "vitest",
+      "run",
+      "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "apps/three-surface-poc/src/trajectory.test.ts"
+    ],
+    "passed": 28,
+    "files": 2,
+    "restoredResultSha256": "02dc318cb2101111e733ecfaf50c5d57990afb1913b2ff567aa6d15ce04c2c06"
+  },
+  "riskFloors": "Truth floor touched: bounded declared presentation scope, deterministic selection, complete observed machine population and reconciled counts. Other CC-BAR-5 floors unchanged.",
+  "initialSubjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
+  "initialSubjects": [
+    {
+      "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+      "sha256": "6e403030b266f2e49cfd53514324ab2547dc0110bd4b54334e39289b314bcfb8"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.ts",
+      "sha256": "c31c6937ec4592fca828fe511ac87e896ca2bd047a3d9b08ccbc185340eb0460"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+      "sha256": "be3d30f84d24b3011d688904c9c007312029b0ecfbba73fe592682e6e70ab102"
+    },
+    {
+      "path": "apps/three-surface-poc/src/trajectory.test.ts",
+      "sha256": "032c46a9987c845de085e36f161d0a6e104870149435a63d88e6c19f6dcd486f"
+    }
+  ],
+  "timestampRepair": {
+    "finding": "P2",
+    "disposition": "[Observed] Supported timestamps require an explicit Z or numeric offset, a valid Gregorian date and bounded clock fields; unsupported/ambiguous timestamps rank last. Fractional order is preserved to nine digits. Literal fixtures run under UTC and Asia/Singapore for both populations.",
+    "P3": "[Observed] Reconciliation now uses a frozen, unsorted observation and frozen item records, so an in-place sort or fact mutation fails the checked-in regression.",
+    "firstReviewRaw": {
+      "path": "docs/reviews/R-TRAJECTORY-BOUNDED-SELECTION-RAW.md",
+      "sha256": "6bea0d844b7d4419858b4c6f787fa5026aa70b31d8e8bf2da934d57a511f1ad3",
+      "verdict": "REVISE"
+    },
+    "confirmation": "[Observed] The second independent raw closes P2 and P3 at the repaired subject; final receipt/doc integration is reviewed separately."
+  },
+  "subjectCommit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+  "initialAfter": {
+    "kind": "syzygy-blbu-size-measurement",
     "capturedAt": "2026-10-20T14:37:36.035Z",
     "observerCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
     "repositoryRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
@@ -144,42 +769,7 @@
     ],
     "candidates": []
   },
-  "sizeComparison": [
-    {
-      "path": "/trajectory",
-      "host": "127.0.0.1",
-      "beforeBytes": 1077589,
-      "afterBytes": 284525,
-      "savedBytes": 793064,
-      "afterPercentOfHumanCeiling": 13.5672
-    },
-    {
-      "path": "/api/poc",
-      "host": "127.0.0.1",
-      "beforeBytes": 5691405,
-      "afterBytes": 5240267,
-      "savedBytes": 451138,
-      "afterPercentOfHumanCeiling": null
-    },
-    {
-      "path": "/trajectory",
-      "host": "tzeusy.parrot-hen.ts.net",
-      "beforeBytes": 1077679,
-      "afterBytes": 284615,
-      "savedBytes": 793064,
-      "afterPercentOfHumanCeiling": 13.5715
-    },
-    {
-      "path": "/api/poc",
-      "host": "tzeusy.parrot-hen.ts.net",
-      "beforeBytes": 5691405,
-      "afterBytes": 5240267,
-      "savedBytes": 451138,
-      "afterPercentOfHumanCeiling": null
-    }
-  ],
-  "measurementLimitations": "[Observed] The Butlers Git revision and item population count match; the live Dolt revision changed between observations. Evaluation timestamps and provenance differ. Candidate probes re-rendered the before observation in memory with a provisional rule and no served-operability status, so they were cap-choice estimates rather than final HTTP sizes.",
-  "rule6": {
+  "initialRule6": {
     "kind": "syzygy-blbu-rule6",
     "subjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
     "mutations": [
@@ -546,7 +1136,7 @@
     ],
     "sourceRestored": true
   },
-  "targetedTests": {
+  "initialTargetedTests": {
     "command": [
       "npx",
       "vitest",
@@ -558,34 +1148,178 @@
     "files": 2,
     "restoredResultSha256": "8a466f6a1a905c4590cc4163411fe865580526242eaa09ad680e7eddffd4bcf9"
   },
-  "riskFloors": "Truth floor touched: bounded declared presentation scope, deterministic selection, complete observed machine population and reconciled counts. Other CC-BAR-5 floors unchanged.",
-  "initialSubjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
-  "initialSubjects": [
+  "initialCleanCloneCodeGates": {
+    "kind": "syzygy-blbu-clean-clone-node-gates",
+    "subjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
+    "sourceWorkflowSha256": "703e83737c033a6c7581baa746d3a8b2ebb6961a2427c052e111f7a026f31331",
+    "gates": [
+      {
+        "name": "install (npm ci)",
+        "command": "npm ci",
+        "exitCode": 0,
+        "seconds": 1.036,
+        "log": "/tmp/syzygy-blbu-verification/node-01.log",
+        "logSha256": "786eefb527b30bf4b1774bb84ae0ca7e91ae25e937f8f59e59041fa5b9c8a738"
+      },
+      {
+        "name": "build (npm run build)",
+        "command": "npm run build",
+        "exitCode": 0,
+        "seconds": 14.698,
+        "log": "/tmp/syzygy-blbu-verification/node-02.log",
+        "logSha256": "598506fd1002083a8b8895ef5213fdd81296d012d6258a5a48b043ba4543ce93"
+      },
+      {
+        "name": "typecheck (npm run typecheck)",
+        "command": "npm run typecheck",
+        "exitCode": 0,
+        "seconds": 0.293,
+        "log": "/tmp/syzygy-blbu-verification/node-03.log",
+        "logSha256": "e2c8b37ba8c2974699631485e9c24406b9eb7c793bbbd178345cd4a0f86ce13f"
+      },
+      {
+        "name": "public-repo admission builder --check",
+        "command": "python3 scripts/build_public_repo_admission.py --check",
+        "exitCode": 0,
+        "seconds": 0.934,
+        "log": "/tmp/syzygy-blbu-verification/node-04.log",
+        "logSha256": "3d5632959f5dd56641dbde99d0f18bd72ff21b45aad58a0b2db35f082cb69c4f"
+      },
+      {
+        "name": "public egress v2 builder --check",
+        "command": "python3 scripts/build_public_egress_v2.py --check",
+        "exitCode": 0,
+        "seconds": 0.919,
+        "log": "/tmp/syzygy-blbu-verification/node-05.log",
+        "logSha256": "56d1ca8fbb5eb105356508d4ee61a47995f0000ee17ef8c472416f0c0ebc5df5"
+      },
+      {
+        "name": "redis-observation --check",
+        "command": "python3 scripts/record_public_repo_admission_acts.py --check redis-observation a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4 --date 2026-10-07 --question-opening 'Do you sign the Redis observation consent, redis/OBSERVATION-CONSENT.md at its row of the public-repo admission manifest?' --selection-label 'Sign it' --selection-description 'Syzygy may read the Git objects of the four consented Redis commits and nothing else of Redis.'",
+        "exitCode": 0,
+        "seconds": 0.993,
+        "log": "/tmp/syzygy-blbu-verification/node-06.log",
+        "logSha256": "1cd08f98b20e31c32b36e9822f72809bec5ab35e1bd109f3ae477c85bc55d256"
+      },
+      {
+        "name": "unit + conformance tests (npm test)",
+        "command": "npm test -- --reporter=dot",
+        "exitCode": 0,
+        "seconds": 107.976,
+        "log": "/tmp/syzygy-blbu-verification/node-07.log",
+        "logSha256": "6a5fcf6c166d2af28e8c3d84072b860e7f084f9fd6366163c03b6504cf8dcd86"
+      },
+      {
+        "name": "system tests (npm run test:system)",
+        "command": "npm run test:system -- --reporter=dot",
+        "exitCode": 0,
+        "seconds": 18.956,
+        "log": "/tmp/syzygy-blbu-verification/node-08.log",
+        "logSha256": "89530428175ffbb9203f2574bf87d3747861b7fffb8037b1c8dad75d3c9dff48"
+      }
+    ]
+  },
+  "cleanCloneCodeGates": {
+    "kind": "syzygy-blbu-clean-clone-node-gates",
+    "subjectCommit": "0631e720176ab1c9ea431553965f7582c938eba9",
+    "sourceWorkflowSha256": "703e83737c033a6c7581baa746d3a8b2ebb6961a2427c052e111f7a026f31331",
+    "gates": [
+      {
+        "name": "install (npm ci)",
+        "command": "npm ci",
+        "exitCode": 0,
+        "seconds": 1.291,
+        "log": "/tmp/syzygy-blbu-verification/node-final-01.log",
+        "logSha256": "edb2451f17248bc74f9fa14a85a2503839cc646fb81e21781655323f4329188b"
+      },
+      {
+        "name": "build (npm run build)",
+        "command": "npm run build",
+        "exitCode": 0,
+        "seconds": 0.319,
+        "log": "/tmp/syzygy-blbu-verification/node-final-02.log",
+        "logSha256": "598506fd1002083a8b8895ef5213fdd81296d012d6258a5a48b043ba4543ce93"
+      },
+      {
+        "name": "typecheck (npm run typecheck)",
+        "command": "npm run typecheck",
+        "exitCode": 0,
+        "seconds": 0.343,
+        "log": "/tmp/syzygy-blbu-verification/node-final-03.log",
+        "logSha256": "e2c8b37ba8c2974699631485e9c24406b9eb7c793bbbd178345cd4a0f86ce13f"
+      },
+      {
+        "name": "public-repo admission builder --check",
+        "command": "python3 scripts/build_public_repo_admission.py --check",
+        "exitCode": 0,
+        "seconds": 1.271,
+        "log": "/tmp/syzygy-blbu-verification/node-final-04.log",
+        "logSha256": "3d5632959f5dd56641dbde99d0f18bd72ff21b45aad58a0b2db35f082cb69c4f"
+      },
+      {
+        "name": "public egress v2 builder --check",
+        "command": "python3 scripts/build_public_egress_v2.py --check",
+        "exitCode": 0,
+        "seconds": 1.204,
+        "log": "/tmp/syzygy-blbu-verification/node-final-05.log",
+        "logSha256": "56d1ca8fbb5eb105356508d4ee61a47995f0000ee17ef8c472416f0c0ebc5df5"
+      },
+      {
+        "name": "redis-observation --check",
+        "command": "python3 scripts/record_public_repo_admission_acts.py --check redis-observation a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4 --date 2026-10-07 --question-opening 'Do you sign the Redis observation consent, redis/OBSERVATION-CONSENT.md at its row of the public-repo admission manifest?' --selection-label 'Sign it' --selection-description 'Syzygy may read the Git objects of the four consented Redis commits and nothing else of Redis.'",
+        "exitCode": 0,
+        "seconds": 1.494,
+        "log": "/tmp/syzygy-blbu-verification/node-final-06.log",
+        "logSha256": "1cd08f98b20e31c32b36e9822f72809bec5ab35e1bd109f3ae477c85bc55d256"
+      },
+      {
+        "name": "unit + conformance tests (npm test)",
+        "command": "npm test -- --reporter=dot",
+        "exitCode": 0,
+        "seconds": 225.971,
+        "log": "/tmp/syzygy-blbu-verification/node-final-07.log",
+        "logSha256": "bda14e10fdd7439d19d1ae2d1c73d005c08f6c87798823b5930cf69064b3956a"
+      },
+      {
+        "name": "system tests (npm run test:system)",
+        "command": "npm run test:system -- --reporter=dot",
+        "exitCode": 0,
+        "seconds": 40.609,
+        "log": "/tmp/syzygy-blbu-verification/node-final-08.log",
+        "logSha256": "1efb9d0f6fcc19cb7262e51fb03a2686a9e28606d7ae5581cc831394ef403bdb"
+      }
+    ]
+  },
+  "codeGateOutputSummaries": {
+    "node-final-07.log": [
+      "Test Files  225 passed | 3 skipped (228)",
+      "Tests  4674 passed | 5 skipped (4679)",
+      "Duration  224.74s (transform 22.13s, setup 4.56s, collect 86.27s, tests 754.03s, environment 90ms, prepare 36.78s)"
+    ],
+    "node-final-08.log": [
+      "Test Files  9 passed (9)",
+      "Tests  48 passed (48)",
+      "Duration  38.37s (transform 1.57s, setup 0ms, collect 4.50s, tests 56.35s, environment 21ms, prepare 3.26s)"
+    ]
+  },
+  "independentReviews": [
     {
-      "path": "packages/three-surface-poc-core/src/trajectory-projection.ts",
-      "sha256": "6e403030b266f2e49cfd53514324ab2547dc0110bd4b54334e39289b314bcfb8"
+      "subjectCommit": "bbecf52136f79ebaa77377968e53adba8d5ef037",
+      "verdict": "REVISE",
+      "rawPath": "docs/reviews/R-TRAJECTORY-BOUNDED-SELECTION-RAW.md",
+      "rawSha256": "6bea0d844b7d4419858b4c6f787fa5026aa70b31d8e8bf2da934d57a511f1ad3"
     },
     {
-      "path": "packages/three-surface-poc-core/src/model.ts",
-      "sha256": "c31c6937ec4592fca828fe511ac87e896ca2bd047a3d9b08ccbc185340eb0460"
-    },
-    {
-      "path": "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
-      "sha256": "be3d30f84d24b3011d688904c9c007312029b0ecfbba73fe592682e6e70ab102"
-    },
-    {
-      "path": "apps/three-surface-poc/src/trajectory.test.ts",
-      "sha256": "032c46a9987c845de085e36f161d0a6e104870149435a63d88e6c19f6dcd486f"
+      "subjectCommit": "c336bc262fad278b742f6ebf64f9d76368b1457e",
+      "verdict": "CONFIRM",
+      "rawPath": "docs/reviews/R-TRAJECTORY-BOUNDED-SELECTION-2-RAW.md",
+      "rawSha256": "ec719f6e6ead1473bc5cb7ab6cf49e91bce08328f7b1e3a5483ea977cb6fd914"
     }
   ],
-  "timestampRepair": {
-    "finding": "P2",
-    "disposition": "[Observed] Supported timestamps require an explicit Z or numeric offset, a valid Gregorian date and bounded clock fields; unsupported/ambiguous timestamps rank last. Fractional order is preserved to nine digits. Literal fixtures run under UTC and Asia/Singapore for both populations.",
-    "P3": "[Observed] Reconciliation now uses a frozen, unsorted observation and frozen item records, so an in-place sort or fact mutation fails the checked-in regression.",
-    "firstReviewRaw": {
-      "path": "docs/reviews/R-TRAJECTORY-BOUNDED-SELECTION-RAW.md",
-      "sha256": "6bea0d844b7d4419858b4c6f787fa5026aa70b31d8e8bf2da934d57a511f1ad3",
-      "verdict": "REVISE"
-    }
-  }
+  "finalRepositoryBattery": {
+    "source": "PROJECT-STATUS.md, How to verify this page, canonical shell block",
+    "receipt": "/tmp/syzygy-blbu-verification/canonical-battery.json",
+    "boundary": "Run on a clean clone after committing review/evidence integration. The separate receipt identifies the exact integrated commit and the canonical check population; this source review does not stand in for that battery or terminal CI."
+  },
+  "captureProvenance": "Worker-run outputs are retained report facts, with commands, subject identities and log digests. Independent source review and GitHub CI/final-head review are separate merge gates."
 }
