@@ -313,6 +313,7 @@ These gates remain open; none of them is on the launch path.
 | Craft amendment CC-TEST-2 | Awaiting confirmation at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block |
 | Topology bundle | Candidate — no act performed | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
+| Governing-intent value once per observation (P-115, `syzygy-318o`) | [Observed 2026-10-21 preparation snapshot] Candidate v1.0 at C4: rounds 1 and 2 remain `REVISE`; after the CC-REV-4 source return, fresh round 3 is `CONFIRM WITH EXCEPTIONS`, two Minor notes preserved separately. Its 130-occurrence impact set is 15 affected / 115 explicitly unaffected / 0 undecidable; those are bounded source judgments, never runtime conformance. The seven-tool preparation checks passed. Owner signature remains open; final whole-PR review, clone/hosted verification and recorder-readiness results belong to the coordinator's exact-commit offering. No signature or implementation authority is inferred. | `contracts/candidates/three-surface-poc-governedby-reference-amendment/OWNER-DECISION-PACKET.md`; `decisions/PENDING-OWNER-DECISIONS.md` row P-115 |
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline. **D4 was ruled 2026-08-18** (inside VIS-4's bounds; reviewer's §1.2 wording designated) — a D3 rev2 and its VIS-3 fresh-reader review precede act 5 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `decisions/D4-RULING-DECISION.md` |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
@@ -404,6 +405,9 @@ python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-
 python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02   # render-mode act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02   # machine-view act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --selftest   # version-tagged sign-off recorder (Scope A); per-package --check lines join the battery with each sign-off
+python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --check   # P-115 unsigned candidate or exact signed successor; grants no authority
+python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --selftest   # P-115 recording, successor and unresolved-impact refusal fixtures
+python3 scripts/build_three_surface_poc_vocabulary_epistemic_amendment.py --selftest   # P-108 historical fixtures retain the adopted POC-REQ-014 guard
 python3 scripts/pwb_signed_selftest.py --selftest   # reruns a signed builder's fixtures against its pre-adoption tree (git archive; needs full history)
 python3 scripts/build_pwb_missing_currency_disclosure_scenario.py --selftest   # missing-currency builder fixtures, at its pre-adoption tree
 python3 scripts/build_pwb_dismissal_expiry_amendment.py --selftest   # dismissal-expiry builder fixtures, at its pre-adoption tree
@@ -471,7 +475,7 @@ python3 scripts/record_narrative_profile_adoption.py --check --date 2026-10-07 -
 python3 scripts/record_rfc5_project_documentation_act.py --selftest   # rfc5 --selftest
 ```
 
-The one hundred and nine checks above are the same one hundred and nine the hosted workflow runs
+The one hundred and twelve checks above are the same one hundred and twelve the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

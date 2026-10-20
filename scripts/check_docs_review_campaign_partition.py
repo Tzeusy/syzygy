@@ -434,6 +434,11 @@ CAMPAIGNS = (
         r"R-PWB-REGISTRY-MACHINE-CEILING-.*\.md",
         r"R-P114-.*-RAW\.md",
     ),
+    campaign(
+        "p115-governedby-reference",
+        "P-115 governedBy reference amendment",
+        r"R-P115-GOVERNEDBY-REFERENCE-[1-3]-RAW\.md",
+    ),
 )
 
 
