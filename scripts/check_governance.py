@@ -1888,6 +1888,10 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
      f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
      "98a87f818e0c60ca11f808f9122bbd4b1df1ad72a29f85eb81b879fd644d3f49"),
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",
+     "c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
@@ -1921,6 +1925,10 @@ PWB_EFFECT_AMENDMENT_OFFERINGS = {
     # manifest, a row that ends in its `[variant: …]` tag; its packet carries no digest.
     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md": {
         f"{CANDIDATES}/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt": "variant-row",
+    },
+    # The version-3 screening-scope act was offered the same way (variant row of its manifest).
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md": {
+        f"{CANDIDATES}/public-source-screening-scope-v3/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt": "variant-row",
     },
 }
 PWB_STATE1_SUBJECTS = tuple(sorted((
@@ -3626,7 +3634,8 @@ PUBLIC_SOURCE_SCOPE_V3_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBL
 def _activate_public_source_scope_v3_copy_registry():
     """The version-3 manifest is a current copy of the policy argument once the act exists."""
     if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))
-            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))):
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))
+            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md"))):
         ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V3_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
 
 
@@ -3946,6 +3955,7 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
     (PWB_SCOPE_ACT, "manifest"): PWB_SCOPE_MANIFEST,
     (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,
     (PUBLIC_SOURCE_SCOPE_V3_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V3_MANIFEST,
+    (f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md", "manifest"): f"{CANDIDATES}/public-source-screening-scope-v4/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt",
 }
 
 

@@ -423,8 +423,8 @@ python3 scripts/record_pwb_registry_currency_amendment.py --selftest
 python3 scripts/build_pwb_behavior_contract_repin.py --selftest
 python3 scripts/record_pwb_behavior_contract_repin_acts.py --check registry ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa --date 2026-10-02   # registry re-pin act: record, aggregate block and applied subject
 python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
-python3 scripts/record_public_source_screening_scope_v3_act.py --check c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce --date 2026-10-08 --question-opening 'Decision 1 (P-105):'' Redis'\''s core C files (server.c, networking.c, …) are withheld because the HTML check reads `a<b && c>d` as a tag. Screening policy v3 lets source files skip that check, but only while every page shows them as escaped text under a no-script CSP. Every secret detector still runs. Which do you choose?' --selection-label 'Variant all (Recommended)' --selection-description 'All 25 source extensions skip the HTML check. Widest:'' JS/PHP full of HTML strings are admitted too, protected only by escaping. Phrase:'' "Sign screening scope version 3, variant all".' --packet-words 'Sign screening scope version 3, variant all'   # screening-scope policy act: record, aggregate block and applied subject
-python3 scripts/record_public_source_screening_scope_v3_act.py --selftest
+python3 scripts/record_public_source_screening_scope_v4_act.py --check 319e404ee413220550d65644f6c93db096ed1cda431760baec70a1e190adb0bd --date 2026-10-20 --owner-words 'Sign screening scope version 4, variant span'   # screening-scope v4 policy act: record, aggregate block and applied subject
+python3 scripts/record_public_source_screening_scope_v4_act.py --selftest
 python3 scripts/check_polaris_response_ceiling_reading.py --check   # P-77 Q2 reading: quotes intact, compression only under the 2026-09-30 direction
 python3 scripts/check_polaris_response_ceiling_reading.py --selftest
 python3 scripts/build_contract_readability_restyle.py --check   # restyle package: manifest = exact regeneration, applied
