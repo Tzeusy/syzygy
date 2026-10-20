@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import datetime
 import hashlib
 import importlib.util
 import io
@@ -35,6 +36,13 @@ MANIFEST_SHA256 = "77e53d37ac42c5db4edb4f99d76d937629df5a80d370ac47751c0e62f2727
 RECORD = Path(".syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md")
 AGGREGATE = Path(".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md")
 MARKER = f"<!-- versioned-signoff:{KEY}:v{VERSION} -->"
+END_MARKER = f"<!-- /versioned-signoff:{KEY}:v{VERSION} -->"
+BASE_RECORD = Path(".syzygy/governance/decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md")
+PREDECESSORS = (
+    "three-surface-poc-block-provenance-amendment",
+    "three-surface-poc-governing-intent-amendment",
+    "three-surface-poc-vocabulary-epistemic-amendment",
+)
 CHANGE = Path("openspec/changes/three-surface-poc-experience")
 SUBJECTS = tuple(CHANGE / p for p in (
     ".openspec.yaml", "CONTRACT-COVERAGE.md", "GOVERNING-DEPENDENCIES.md",
@@ -92,7 +100,75 @@ def applied_rows_match(root: Path) -> bool:
 def transaction_present(root: Path) -> bool:
     """A partial transaction is present too, so it cannot disappear as absent."""
     body = (root / AGGREGATE).read_text() if (root / AGGREGATE).is_file() else ""
-    return (root / RECORD).exists() or MARKER in body
+    return (root / RECORD).exists() or MARKER in body or END_MARKER in body
+
+
+def chain_findings(root: Path, prospective_date: str | None = None) -> list[str]:
+    """Leaf validation of this exact frozen POC chain, never later-row readers.
+
+    Complete predecessor records are immutable C4 inputs. Their regenerated
+    blocks must be unique, balanced and wholly before the next complete block.
+    The prospective arm checks the append position before any recording write.
+    """
+    import record_versioned_signoff as recorder
+    aggregate = (root / AGGREGATE).read_text()
+    objects = root if (root / ".git").exists() else ROOT
+    packages = recorder.real_packages()
+
+    def fail(message):
+        raise ValueError("P115 signed chain: " + message)
+
+    def calendar(text):
+        dates = re.findall(r"^Date: (.+)$", text, re.M)
+        if len(dates) != 1 or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", dates[0]):
+            fail("record must carry exactly one calendar Date line")
+        return datetime.date.fromisoformat(dates[0])
+
+    def block_position(start, end, block):
+        if aggregate.count(start) != 1 or aggregate.count(end) != 1:
+            fail("each begin/end delimiter must occur exactly once")
+        begin, finish = aggregate.index(start), aggregate.index(end) + len(end)
+        if finish <= begin or aggregate[begin:finish] != block.rstrip("\n"):
+            fail("delimiters must enclose the complete regenerated block")
+        return begin, finish
+
+    def frozen_record(path):
+        body = (root / path).read_bytes()
+        if body != git(objects, "show", f"{CORE_COMMIT}:{path.as_posix()}"):
+            fail(f"frozen predecessor record differs: {path}")
+        return body.decode()
+
+    try:
+        baseline = frozen_record(BASE_RECORD)
+        instants = re.findall(r"^Act instant: (.+)$", baseline, re.M)
+        if len(instants) != 1:
+            fail("baseline must carry exactly one act instant")
+        previous_date = datetime.datetime.strptime(instants[0], "%Y-%m-%dT%H:%M:%SZ").date()
+        start = "<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:BEGIN -->"
+        end = "<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:END -->"
+        _begin, previous_end = block_position(start, end, start + "\n" + baseline + end)
+        for key in (*PREDECESSORS, *((KEY,) if prospective_date is None else ())):
+            pkg = packages[key]
+            path = recorder.record_rel(pkg, VERSION)
+            body = (root / path).read_text() if key == KEY else frozen_record(path)
+            date = calendar(body)
+            fields = recorder.parse_record(body)
+            disposition = None if fields["Disposition"] == "none" else fields["Disposition"]
+            block = recorder.render_aggregate(pkg, VERSION, fields["Date"], fields["Review"],
+                                              fields["Review verdict"], disposition)
+            begin, finish = block_position(*recorder.block_markers(pkg, VERSION), block)
+            if begin <= previous_end:
+                fail(f"complete block does not follow its predecessor: {key}")
+            if date < previous_date:
+                fail(f"date precedes its predecessor: {key}")
+            previous_end, previous_date = finish, date
+        if prospective_date is not None:
+            date = calendar("Date: " + prospective_date)
+            if date < previous_date:
+                fail("prospective date precedes its predecessor")
+        return []
+    except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as exc:
+        return [str(exc)]
 
 
 def builder_run(root: Path, mode: str) -> tuple[list[str], str]:
@@ -141,6 +217,9 @@ def signed_findings(root: Path) -> list[str]:
         findings.append("P115 signed six current subjects do not match the frozen manifest")
     if findings:
         return findings
+    findings.extend(chain_findings(root))
+    if findings:
+        return findings
     import record_versioned_signoff as recorder
     pkg = recorder.real_packages()[KEY]
     fields = recorder.parse_record((root / RECORD).read_text())
@@ -178,8 +257,11 @@ def is_signed(root: Path) -> bool:
 def validation_inputs(root: Path) -> set[str]:
     """Exact additional inputs needed by reconciliation's read-only snapshots."""
     paths = set(core_paths(root)) | {RECORD.as_posix(), AGGREGATE.as_posix(),
+        BASE_RECORD.as_posix(),
         ".syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md",
         ".syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md"}
+    paths.update((Path(".syzygy/governance/decisions") /
+                  (key.upper() + "-SIGNOFF-v1.0.md")).as_posix() for key in PREDECESSORS)
     if (root / RECORD).is_file():
         for name in ("Review", "Disposition"):
             values = re.findall(rf"^{name}: (.+)$", (root / RECORD).read_text(), re.M)
@@ -249,6 +331,286 @@ def load_frozen(root: Path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def mutation_receipt(root: Path, name: str, before: dict, after: dict, predicate: str) -> None:
+    """Retain literal changed fragments, identities and the intended predicate."""
+    changes = []
+    for path in sorted(before.keys() | after.keys()):
+        old, new = before.get(path), after.get(path)
+        if old == new:
+            continue
+        left, right = 0, 0
+        if old is not None and new is not None:
+            while left < min(len(old), len(new)) and old[left] == new[left]:
+                left += 1
+            while right < min(len(old), len(new)) - left and old[-right-1] == new[-right-1]:
+                right += 1
+        changes.append({"path": str(path), "offset": left,
+            "old": None if old is None else old[left:len(old)-right if right else None].decode(),
+            "new": None if new is None else new[left:len(new)-right if right else None].decode(),
+            "oldSha256": None if old is None else digest(old),
+            "newSha256": None if new is None else digest(new)})
+    print("P115-MUTATION-EVIDENCE " + json.dumps({"name": name, "ranAt": git(root, "rev-parse", "HEAD").decode().strip(),
+        "predicate": predicate, "changes": changes}, sort_keys=True))
+
+
+def recording_failure_selftest(root: Path, expect) -> None:
+    """Real main(argv), review gate, Git batch, writes and recovery in own clones.
+
+    Fault barriers delegate real I/O. No package/readiness/postcondition result
+    is mocked. Synthetic review commits and failed journals die with fixtures;
+    their exact state/old/new/cause receipts are emitted to the retained log.
+    """
+    import record_versioned_signoff as recorder
+    from unittest import mock
+    paths = (*SUBJECTS, RECORD, AGGREGATE)
+    raw = "docs/reviews/R-P115-ENTRYPOINT-SELFTEST-RAW.md"
+    fingerprint = "P115 synthetic injected errno-5"
+    cases = (
+        "control", "dirty-staged", "dirty-unstaged", "dirty-untracked",
+        "construction-drift", "preflight-bad-patch", "apply-after-write-failure", "postcondition-drift",
+        "dedicated-before-write", "dedicated-stage-prefix-failure", "dedicated-after-write",
+        "aggregate-before-write", "aggregate-stage-prefix-failure", "aggregate-after-write",
+        "foreign-subject-edit", "foreign-subject-delete", "foreign-record-edit", "foreign-record-delete",
+        "foreign-aggregate-edit", "foreign-aggregate-delete", "restore-failure", "restore-stage-drift",
+        "linked-worktree-control", "linked-worktree-aggregate-failure",
+    )
+    with tempfile.TemporaryDirectory(prefix="p115-entrypoint-fixtures-") as temp:
+        template = Path(temp) / "template"
+        subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(root), str(template)],
+                       check=True, capture_output=True)
+        for name in (Path(__file__).name, "record_versioned_signoff.py"):
+            shutil.copyfile(root / "scripts" / name, template / "scripts" / name)
+        (template / raw).write_text(f"# Synthetic entrypoint fixture — {KEY}\nReviewed commit: {CORE_COMMIT}\n"
+            f"Manifest SHA-256: {MANIFEST_SHA256}\nVerdict: CONFIRM\n\n## Findings\n\n"
+            "No findings. Synthetic fixture only; no owner action.\n")
+        git(template, "add", "--all")
+        git(template, "-c", "user.name=P115 synthetic fixture", "-c", "user.email=fixture@invalid",
+            "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "-m",
+            "Synthetic recording failure fixtures; no owner action")
+        _current, proposed = load_frozen(template).collect()
+        proposed = {Path(p): body for p, body in proposed.items()}
+        for name in cases:
+            tree = Path(temp) / name
+            if name.startswith("linked-worktree-"):
+                git(template, "-c", "core.hooksPath=/dev/null", "worktree", "add", "--quiet",
+                    "--detach", str(tree), "HEAD")
+            else:
+                subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(template), str(tree)],
+                               check=True, capture_output=True)
+            positive = name in {"control", "linked-worktree-control"}
+            before = {p: recorder.p115_read(tree / p) for p in paths}
+            expected = dict(before)
+            events, foreign = [], {}
+            index = git(tree, "ls-files", "--stage", "-z")
+            dirty = tree / "README.md"
+            if name in {"dirty-staged", "dirty-unstaged"}:
+                dirty.write_bytes(dirty.read_bytes() + b"\nSynthetic unrelated dirt.\n")
+                if name == "dirty-staged":
+                    git(tree, "add", "README.md")
+            if name == "dirty-untracked":
+                dirty = tree / "p115-unrelated-untracked.txt"
+                dirty.write_text("Synthetic unrelated untracked file.\n")
+            dirty_body = dirty.read_bytes() if name.startswith("dirty-") else None
+            initial_index = git(tree, "ls-files", "--stage", "-z")
+            original_run, original_write = recorder.subprocess.run, recorder.p115_write
+            original_stage, original_replace = recorder.p115_stage, recorder.os.replace
+            original_render = recorder.render_record
+            failed_once = set()
+
+            def inject(label):
+                events.append(label)
+                raise OSError(5, fingerprint + ": " + label)
+
+            def run(argv, *args, **kwargs):
+                apply = len(argv) > 1 and argv[:2] == ["git", "apply"]
+                if apply and "--check" in argv and name == "preflight-bad-patch":
+                    patch = tree / CANDIDATE / "proposed/spec.md.patch"
+                    patch.write_text("--- a/p115-no-such-subject\n+++ b/p115-no-such-subject\n"
+                                     "@@ -1 +1 @@\n-missing\n+bad\n")
+                    foreign[patch.relative_to(tree)] = patch.read_bytes()
+                    events.append("real bad-patch preflight")
+                result = original_run(argv, *args, **kwargs)
+                if apply and "--check" not in argv:
+                    events.append("real five-patch apply")
+                    if name == "apply-after-write-failure":
+                        inject("after real Git apply")
+                    if name == "postcondition-drift":
+                        target = SUBJECTS[-1]
+                        foreign[target] = proposed[target] + b"\nSynthetic foreign post-apply edit.\n"
+                        (tree / target).write_bytes(foreign[target])
+                return result
+
+            def render(*args, **kwargs):
+                result = original_render(*args, **kwargs)
+                if name == "construction-drift" and "construction" not in failed_once:
+                    failed_once.add("construction")
+                    foreign[SUBJECTS[1]] = before[SUBJECTS[1]] + b"\nSynthetic construction-window edit.\n"
+                    (tree / SUBJECTS[1]).write_bytes(foreign[SUBJECTS[1]])
+                    events.append("real preimage drift during output construction")
+                return result
+
+            def write(path, body):
+                rel = path.relative_to(tree)
+                label = "dedicated" if rel == RECORD else "aggregate"
+                if name == label + "-before-write":
+                    inject(label + " before staging")
+                original_write(path, body)
+                events.append(label + " real staged replace")
+                if name == label + "-after-write":
+                    inject(label + " after completed replacement")
+                foreign_barrier = AGGREGATE if name.startswith("foreign-aggregate-") else RECORD
+                if rel == foreign_barrier and name.startswith("foreign-"):
+                    family, operation = name.removeprefix("foreign-").rsplit("-", 1)
+                    target = {"subject": SUBJECTS[-1], "record": RECORD, "aggregate": AGGREGATE}[family]
+                    if operation == "delete":
+                        (tree / target).unlink()
+                        foreign[target] = None
+                    else:
+                        foreign[target] = (tree / target).read_bytes() + b"\nSynthetic foreign edit.\n"
+                        (tree / target).write_bytes(foreign[target])
+                    inject("after real " + label + " write and foreign " + family + " " + operation)
+                if rel == AGGREGATE and name in {"restore-failure", "restore-stage-drift",
+                                                "linked-worktree-aggregate-failure"}:
+                    inject("after real aggregate write before recovery fault")
+
+            def stage(path, body):
+                rel = path.relative_to(tree)
+                label = "dedicated" if rel == RECORD else "aggregate" if rel == AGGREGATE else "subject"
+                if name == label + "-stage-prefix-failure" and name not in failed_once:
+                    failed_once.add(name)
+                    fdopen = recorder.os.fdopen
+                    class PrefixStream:
+                        def __init__(self, fd, mode):
+                            self.stream = fdopen(fd, mode)
+                        def __enter__(self):
+                            self.stream.__enter__()
+                            return self
+                        def write(self, value):
+                            self.stream.write(value[:max(1, len(value)//2)])
+                            self.stream.flush()
+                            inject(label + " real stage prefix write")
+                        def __exit__(self, *exc):
+                            return self.stream.__exit__(*exc)
+                    with mock.patch.object(recorder.os, "fdopen", PrefixStream):
+                        return original_stage(path, body)
+                result = original_stage(path, body)
+                if (name == "restore-stage-drift" and rel == SUBJECTS[-1]
+                        and body == before[rel] and name not in failed_once):
+                    failed_once.add(name)
+                    foreign[rel] = proposed[rel] + b"\nSynthetic restoration-window edit.\n"
+                    path.write_bytes(foreign[rel])
+                    events.append("real restoration-stage ownership drift")
+                return result
+
+            def replace(source, destination):
+                if (name == "restore-failure" and destination == tree / SUBJECTS[-1]
+                        and Path(source).read_bytes() == before[SUBJECTS[-1]]):
+                    foreign[SUBJECTS[-1]] = proposed[SUBJECTS[-1]]
+                    inject("real restoration replacement failure")
+                return original_replace(source, destination)
+
+            output = io.StringIO()
+            saved_root = recorder.ROOT
+            try:
+                recorder.ROOT = tree
+                with mock.patch.object(recorder.subprocess, "run", run), \
+                     mock.patch.object(recorder, "p115_write", write), \
+                     mock.patch.object(recorder, "p115_stage", stage), \
+                     mock.patch.object(recorder, "render_record", render), \
+                     mock.patch.object(recorder.os, "replace", replace), \
+                     contextlib.redirect_stdout(output):
+                    code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
+                        "--review", raw, "--owner-selection-quote", "Synthetic fixture only; no owner action"])
+            finally:
+                recorder.ROOT = saved_root
+            actual = {p: recorder.p115_read(tree / p) for p in paths}
+            if positive:
+                expected.update(proposed)
+                # Literal protocol outputs, independent of any transaction snapshots.
+                pkg = recorder.real_packages()[KEY]
+                expected[RECORD] = original_render(pkg, VERSION, "2026-10-21",
+                    "Synthetic fixture only; no owner action", raw, CORE_COMMIT, "CONFIRM", None,
+                    root=tree, rows=tuple(manifest_rows(tree))).encode()
+                expected[AGGREGATE] = (before[AGGREGATE].decode().rstrip("\n") + "\n\n"
+                    + recorder.render_aggregate(pkg, VERSION, "2026-10-21", raw, "CONFIRM", None)).encode()
+            expected.update({p: body for p, body in foreign.items() if p in before})
+            git_dir = Path(git(tree, "rev-parse", "--absolute-git-dir").decode().strip())
+            retained = list((git_dir / "p115-recording-recovery").glob("attempt-*/ATTEMPT.json"))
+            journals = [json.loads(p.read_text()) for p in retained]
+            lines = output.getvalue()
+            state_ok = actual == expected
+            gate_ok = code == (0 if positive else 1) and is_signed(tree) == positive
+            index_ok = git(tree, "ls-files", "--stage", "-z") == initial_index
+            dirt_ok = dirty_body is None or dirty.read_bytes() == dirty_body
+            reached = ("real five-patch apply" in events) == (name not in {
+                "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch"})
+            failure_evidence = (positive and not retained or
+                name.startswith("dirty-") and not retained or name == "construction-drift" and not retained or
+                bool(journals) and all(j["state"] == "failed" and j["originalError"] for j in journals))
+            preimages_ok = all(
+                row["before"] == (None if before[Path(row["path"])] is None else
+                                  digest((p.parent / row["preimage"]).read_bytes()))
+                for p, j in zip(retained, journals) for row in j["paths"])
+            recovery_ok = positive or (
+                ("P115 recovery incomplete:" in lines) if actual != before else
+                ("P115 recovery complete;" in lines))
+            if name.startswith("linked-worktree-"):
+                preimages_ok = preimages_ok and (tree / ".git").is_file() and git_dir != template / ".git"
+            required = {
+                "construction-drift": ["real preimage drift during output construction"],
+                "preflight-bad-patch": ["real bad-patch preflight"],
+                "apply-after-write-failure": ["after real Git apply"],
+                "postcondition-drift": ["real five-patch apply"],
+                "restore-failure": ["after real aggregate write before recovery fault",
+                                    "real restoration replacement failure"],
+                "restore-stage-drift": ["after real aggregate write before recovery fault",
+                                        "real restoration-stage ownership drift"],
+                "linked-worktree-aggregate-failure": ["after real aggregate write before recovery fault"],
+            }.get(name, [])
+            for label in ("dedicated", "aggregate"):
+                required += {
+                    label + "-before-write": [label + " before staging"],
+                    label + "-stage-prefix-failure": [label + " real stage prefix write"],
+                    label + "-after-write": [label + " after completed replacement"],
+                }.get(name, [])
+            if name.startswith("foreign-"):
+                family, operation = name.removeprefix("foreign-").rsplit("-", 1)
+                barrier = "aggregate" if family == "aggregate" else "dedicated"
+                required = [f"after real {barrier} write and foreign {family} {operation}"]
+            reached = reached and all(event in events for event in required)
+            injected = not positive and name not in {"dirty-staged", "dirty-unstaged", "dirty-untracked",
+                                                    "construction-drift", "preflight-bad-patch", "postcondition-drift"}
+            cause_ok = not injected or fingerprint in lines
+            if injected:
+                original_error = f"OSError: [Errno 5] {fingerprint}: {required[0]}"
+                cause_ok = cause_ok and bool(journals) and all(
+                    journal["originalError"] == original_error for journal in journals)
+            if name == "postcondition-drift":
+                cause_ok = "P115 applied postcondition failed" in lines
+            if name == "preflight-bad-patch":
+                cause_ok = "P115 preflight refused:" in lines
+            stages_clean = not any(any(parent.glob(".p115-*")) for parent in
+                                   {(tree / rel).parent for rel in paths})
+            expect("entrypoint " + name, state_ok and gate_ok and index_ok and dirt_ok and reached
+                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean)
+            mutation_receipt(tree, "entrypoint " + name, before, actual,
+                             "exact scoped preimages/foreign states; no failed transaction signed")
+            print("P115-TRANSACTION-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+                "ranAt": git(tree, "rev-parse", "HEAD").decode().strip(), "sourceHead": git(root, "rev-parse", "HEAD").decode().strip(),
+                "tools": {p: digest((root / "scripts" / p).read_bytes()) for p in
+                          (Path(__file__).name, "record_versioned_signoff.py")},
+                "old": "real main(argv), clean captured inputs, real five-patch batch and staged writes",
+                "new": name, "predicate": "P115 clean admission, exact postconditions and ownership-preserving recovery",
+                "exit": code, "events": events, "expectedStates": {str(p): None if b is None else digest(b) for p,b in expected.items()},
+                "actualStates": {str(p): None if b is None else digest(b) for p,b in actual.items()},
+                "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
+                               "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok},
+                "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
+                "requiredEvents": required, "stageFilesRemoved": stages_clean,
+                "journals": journals, "output": lines}, sort_keys=True))
+            shutil.rmtree(tree)
 
 
 def selftest(root: Path) -> int:
@@ -329,6 +691,11 @@ def selftest(root: Path) -> int:
                preview(tree, raw, disposition)["reviewReady"])
         (tree / disposition).unlink()
         (tree / raw).write_bytes(confirm_raw)
+        # The actual P115 apply/record path admits only a clean checkout.
+        git(tree, "add", "--all")
+        git(tree, "-c", "user.name=P115 synthetic fixture", "-c", "user.email=fixture@invalid",
+            "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "-m",
+            "Synthetic P115 preparation fixture; no owner action")
         _current, proposed = load_frozen(tree).collect()
         reference = recorder._module(Path(__file__).stem)
         original_gate = reference.recording_findings
@@ -418,6 +785,7 @@ def selftest(root: Path) -> int:
             else:
                 target.write_bytes(changed)
             expect(name, not is_signed(tree))
+            mutation_receipt(tree, name, {path: saved}, {path: changed}, "signed recognition refuses exact mutation")
             if name == "unresolved consumption entry":
                 expect("unresolved consumption trips its own signed predicate",
                        "signed recognition remains gated by 1 undecidable requirement-consumption entries"
@@ -427,6 +795,38 @@ def selftest(root: Path) -> int:
                        not p108.applied(tree) and not bootstrap_ok(tree)
                        and "R1" in outcomes(tree).failed)
             target.write_bytes(saved)
+        end = recorder.block_markers(pkg, VERSION)[1]
+        signed_aggregate = (tree / AGGREGATE).read_bytes()
+        chain_mutations = [
+            ("P115 block before all predecessors", {AGGREGATE: (block + aggregate).encode()}),
+            ("P115 backdated before predecessors", {
+                RECORD: record.replace("Date: 2026-10-21", "Date: 2026-01-01").encode(),
+                AGGREGATE: signed_aggregate.replace(b"recorded 2026-10-21", b"recorded 2026-01-01")}),
+            ("P115 duplicate closing delimiter", {AGGREGATE: signed_aggregate + end.encode() + b"\n"}),
+            ("P115 orphan closing is present", {RECORD: None, AGGREGATE: aggregate.encode() + end.encode() + b"\n"}),
+            ("P115 invalid calendar date", {
+                RECORD: record.replace("Date: 2026-10-21", "Date: 2026-02-30").encode(),
+                AGGREGATE: signed_aggregate.replace(b"recorded 2026-10-21", b"recorded 2026-02-30")}),
+        ]
+        predecessor = recorder.real_packages()[PREDECESSORS[-1]]
+        pred_start, pred_end = recorder.block_markers(predecessor, VERSION)
+        # Preserve the predecessor start position but break its complete block.
+        chain_mutations.append(("P115 nested inside predecessor block", {AGGREGATE:
+            (aggregate.replace(pred_end, block + pred_end)).encode()}))
+        chain_mutations.append(("predecessor orphan closing delimiter", {AGGREGATE:
+            signed_aggregate + pred_end.encode() + b"\n"}))
+        pred_record = recorder.record_rel(predecessor, VERSION)
+        chain_mutations.append(("predecessor duplicate date", {pred_record:
+            (tree / pred_record).read_bytes() + b"\nDate: 2026-10-15\n"}))
+        for name, changes in chain_mutations:
+            saved = {path: (tree / path).read_bytes() for path in changes}
+            for path, body in changes.items():
+                (tree / path).unlink() if body is None else (tree / path).write_bytes(body)
+            findings = signed_findings(tree)
+            expect(name, transaction_present(tree) and not is_signed(tree) and bool(findings))
+            mutation_receipt(tree, name, saved, changes, "leaf complete-chain dates/order/unique balanced delimiters")
+            for path, body in saved.items():
+                (tree / path).write_bytes(body)
         expect("mutations restore the signed fixture", is_signed(tree))
         findings, output = historical_run(tree, "--selftest")
         expect("signed replay runs frozen selftest, not current subjects", not findings and "Preparation selftest:" in output)
@@ -443,6 +843,7 @@ def selftest(root: Path) -> int:
                 expect("missing frozen history refuses replay", False)
         finally:
             CORE_COMMIT = saved_commit
+    recording_failure_selftest(root, expect)
     for name, passed in cases:
         print(f"P115 selftest: {name}: {'ok' if passed else 'FAILED'}")
     failed = sum(not passed for _name, passed in cases)
