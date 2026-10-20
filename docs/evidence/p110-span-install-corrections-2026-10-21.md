@@ -52,7 +52,7 @@ the full installation still requires its own final review.
 | Inventory source restructuring ceased to match the signed egress derivation | [Observed] The existing classified `context.sources` carrier is restored. Both public-admission and public-egress builders report current without regenerating signed records. M28/M29 independently restore the unclassified carrier and make each builder refuse. |
 | The first URL native-call assertion compared a regex's canonical source with unescaped pattern text | [Observed] Rule-6 exposed a surviving native-search mutant at `1ba0cfdd`. Test-only `01acff07` repairs the assertion. Both the surviving log and the later explicit assertion failure remain in the task cache. No production URL code changed in that test correction. |
 
-[Observed] The eight retained `R-P110-…-RAW.md` files preserve two preliminary
+[Observed] The initial eight retained `R-P110-…-RAW.md` files preserve two preliminary
 `REVISE` slices, the parser correction `CONFIRM` slice, the later Important
 fresh-population finding and their four probe records byte for byte. They are
 bounded evidence for their named subjects, not a final implementation verdict. Original copies and digests remain under
@@ -205,3 +205,12 @@ files pass on this exact working-text correction; individual assertion counts
 agree with the report total. That focused control is not a final-commit battery.
 The corrected committed head must receive independent confirmation and repeat
 the complete clone and hosted gates before merge.
+
+[Observed] Independent committed-head correction review at
+`171e036b969776cb044c00553ad68b6325ccabbf` returns `CONFIRM WITH EXCEPTIONS`
+in `docs/reviews/R-P110-CITATION-CORRECTION-171E-1-RAW.md`. The same three
+files pass 149/149 tests, and seven actual reader/chain probes preserve both the
+restored valid policy chain and unknown-withdrawal refusal. Application/package
+code, scripts and the 17 protected subjects remain unchanged. This bounded
+confirmation and its probe record are retained verbatim before the complete
+corrected-head clone and hosted rerun; final merge attestation remains held.
