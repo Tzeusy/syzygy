@@ -1,0 +1,49 @@
+{
+  "schema": "p114-battery-count-comparison-v1",
+  "source_commit": "fbe90feb253e2d020b4974e3abf6755321f9063e",
+  "recorded_at_utc": "2026-10-20T18:38:51Z",
+  "subjects": [
+    {
+      "path": "PROJECT-STATUS.md",
+      "sha256": "6934c6b731e31de51df4b15c58eb007ce731a3787325401c8f2865594bdbb67e"
+    },
+    {
+      "path": ".github/workflows/governance-docs.yml",
+      "sha256": "2f877a280f1c5ec27b40dc4244504f6ef3d48fb90901a1cf2be7bbb3e384c04c"
+    }
+  ],
+  "method": "Workflow parsed as YAML; command shell arguments and assignments parsed/expanded; normalized unique sets compared. Separately count physical Python invocation lines. Parse both exact count-sentence number-word values and compare with each population.",
+  "comparison": {
+    "normalized_published": 109,
+    "normalized_hosted": 109,
+    "physical_published": 109,
+    "physical_hosted": 109,
+    "parsed_sentence": [
+      109,
+      109
+    ],
+    "orientation": [
+      "git tag --list 'doctrine-*'"
+    ]
+  },
+  "independent_physical_line_counts": {
+    "published": 109,
+    "hosted": 109
+  },
+  "mutants": [
+    {
+      "sentence_value": 1,
+      "old": "one hundred and nine",
+      "new": "one hundred and ten",
+      "refusal": "count sentence (110, 109) differs from (109, 109)"
+    },
+    {
+      "sentence_value": 2,
+      "old": "one hundred and nine",
+      "new": "one hundred and ten",
+      "refusal": "count sentence (109, 110) differs from (109, 109)"
+    }
+  ],
+  "cg26_residual_limit": "Existing 0..99 number-word/claim regex does not validate >=100 count words; separate follow-up syzygy-8tsz. This is the independent sentence check, not a CG-26 result.",
+  "scope": "Exact named file bytes during authoring; lead repeats final-head comparison. Establishes no full battery, CI, tag, runtime admission or measurement result."
+}
