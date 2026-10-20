@@ -36,7 +36,7 @@ defining its identifiers renders an empty table rather than a stale one.
 | `VIS-4` | Humans steer the vision; agents shape within it | `.syzygy/governance/doctrine/vision.md`:168 |
 | `VIS-5` | Syzygy never writes code; direct writes are confined to two namespaces | `.syzygy/governance/doctrine/vision.md`:193 |
 | `VIS-6` | Syzygy is derived, with two closed exceptions | `.syzygy/governance/doctrine/vision.md`:229 |
-| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:250 |
+| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:260 |
 
 ## Security doctrine — `SEC`
 

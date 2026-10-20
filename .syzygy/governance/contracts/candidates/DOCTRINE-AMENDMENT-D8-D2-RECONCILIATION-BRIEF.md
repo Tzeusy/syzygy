@@ -7,6 +7,12 @@
 
 ## Where (d2) stands
 
+*(Marked 2026-10-20: this section, and "adopted and not applied" below,
+describe the state before (d2) landed. All four items under "What the Q-A1
+path therefore needs" are done and (d2) is applied; row D8 of
+`../../decisions/DOCTRINE-AMENDMENT-LOG.md` records how, with the reviews.
+The text below is kept as written.)*
+
 The owner adopted clause (d) on 2026-10-15 (Q4, "Adopt (Recommended)") and
 answered Q-A1 "Fresh reconciliation review" — "Re-review over the amended
 vision.md." (`../../decisions/DOCTRINE-AMENDMENT-LOG.md`, row D8). Insert 1,
