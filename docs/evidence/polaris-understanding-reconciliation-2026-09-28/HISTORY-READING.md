@@ -135,7 +135,57 @@ it already read the status pages and the governance checker, at C1.
   - A later change to the recorder needs a new, higher-numbered raw; earlier
     raws stay unchanged. A later review of the same bytes supersedes an
     earlier verdict only by being a fresh review, retained beside it.
-- **Where the raws live.** Here, beside the package. `check_governance.py`
+- **A later `vision.md`, under a fresh reconciliation review** (since round
+  18, bead `syzygy-5rxi`). The owner adopted doctrine amendment D8's clause
+  (d) on 2026-10-15 and answered its Q-A1 "Fresh reconciliation review" —
+  "Re-review over the amended vision.md." (`DOCTRINE-AMENDMENT-LOG.md`, row
+  D8). `vision.md` is one of the C1 inputs compared against today's bytes,
+  not read as history; the other Q-A1 arm, reading it as history, is the one
+  the owner did not choose. So the recorder admits a later `vision.md` only
+  under a retained, confirming fresh review, and `REVIEW-RAW.md` stays the
+  C1 review, never overwritten.
+  - The raws are `docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-<n>-RAW.md`,
+    numbered 1 to n with no gap and no leading zero, and "latest" is the
+    highest `<n>`, compared as a number. They sit in `docs/reviews/`, so
+    `check_governance.py` already classifies them as raw review output and
+    `docs/README.md` gives them a campaign row.
+  - Retention is the history reviews' rule over that directory: the
+    population is every such raw ever added on HEAD's history plus every one
+    on disk, by the same Git query (rename detection off, every merge
+    parent, `-z`). A raw deleted, added twice, on disk but never committed,
+    or changed since its introducing commit is refused. Its introducing
+    commit must differ from C2's (the commit that added `REVIEW-RAW.md`) and
+    have C2 as an ancestor.
+  - Any basename in `docs/reviews/` or below that matches
+    `understanding[^a-z0-9]*reconciliation` (case-insensitive, a search) and
+    is not exactly that name at the top level is refused, never skipped.
+    `R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-<n>-RAW.md` does not
+    match and is not read.
+  - The latest raw carries exactly one `Verdict:` header, `CONFIRM` or
+    `CONFIRM WITH EXCEPTIONS`; exactly one `Reviewed commit:` header holding
+    a full 40-hex SHA; and exactly one binding line
+    `` - `<path>`: `<sha256>` `` for each of the seven inputs C1 compares
+    against today's bytes — the package `README.md`, `proof.json`,
+    `technical-record-template.json`, `final-documentation.patch`,
+    `documentation-images.json`, `review-inputs.json` and
+    `.syzygy/governance/doctrine/vision.md` — and no other line of that
+    form.
+  - Only `vision.md` may differ from the digest C1's review bound; each of
+    the other six bindings must equal C1's. Today's bytes of all seven must
+    equal the latest raw's binding. With no such raw, C1's digests bind, as
+    before.
+  - The original freeze (`--candidate-check`'s comparison of
+    `review-inputs.json` with each input) reads `vision.md` at C1, as it
+    reads the history inputs.
+  - The reviewed commit is provenance, never checked for ancestry: a review
+    commit on a rebase-merged branch is unreachable from `main`.
+  - What this does not do: it admits no change to any other C1 input, it
+    does not read the raw's prose, and it does not check that the reviewer
+    reviewed the bytes it binds — the binding is the reviewer's claim,
+    retained verbatim. D7's Q6 asks the same question for D7's `vision.md`
+    insertion; that edit needs its own raw, `<n+1>`, over the bytes it
+    produces.
+- **Where the history raws live.** Here, beside the package. `check_governance.py`
   classifies `HISTORY-REVIEW-<n>-RAW.md` in this directory as raw review
   output, like `docs/reviews/*-RAW.md`, so a raw is stored unchanged.
 - **Rule-6 evidence.** [`history-reading-rule6.json`](history-reading-rule6.json)
@@ -202,6 +252,31 @@ it already read the status pages and the governance checker, at C1.
     fixture builds two such branches, so the identical-claim case has no row
     of its own.
 
+  Twenty-nine more (round 18, at `ea764977`, rows 127 to 155) pin the
+  fresh reconciliation review: the malformed-name guard, its `search`, its
+  separator class, the added-once guard, the numbering, the numeric order,
+  the on-disk join, the deletion guard, the retained, after-C2, ancestry
+  and unchanged-bytes tests, the verdict, reading the latest raw, both
+  reviewed-commit tests, the bound population and its count, the
+  fixed-input test and its scope, the current-bytes comparison, the frozen
+  view, the `REBINDABLE` and `SUCCESSOR_BOUND` populations, the no-review
+  case, three flags of the population query and the call itself. Each ran
+  in a scratch clone; each fails the recorder selftest. Nine fail by an
+  exception or a different refusal rather than their named one, and each
+  still fails closed: the deletion guard (missing evidence), the retained
+  test (a type error), the after-C2 and ancestry tests (the blob at an
+  absent commit), the one-header count (an index error), the bound
+  population guard (a key error), the fixed-input test and its scope (the
+  original freeze's candidate input drift) and the no-review case (an index
+  error). Rows 145 and 146 exempt inputs the original freeze already
+  guards, so they do not show the fixed-input test is needed (round 18's
+  M1). Three more (round 19's subject, at `f3e5ffa7`, rows 156 to 158) pin
+  it for `review-inputs.json`, the one input that is not one of its own
+  rows, so that only the fixed-input test refuses it rebound to new bytes
+  with unchanged rows; the end anchor of the binding line; and the
+  lowercase-hex class of the reviewed commit (round 18's N1). All 32 new
+  mutants, rows 127 to 158, were re-run at `f3e5ffa7` and each fails the
+  selftest; rows 127 to 155 keep the commit they first ran at.
   Recorded refusals replace temporary directory names with `<tmpdir>`; row
   42 predates that form. Row 120's refusal embeds a set-ordered dict, so
   only its text before the colon reproduces byte for byte (round 16's N2).
@@ -340,7 +415,7 @@ it already read the status pages and the governance checker, at C1.
       path no adopted subject depends on can contest an adopted one. That
       matches the tool and fails closed.
   - Round 17 (`HISTORY-REVIEW-17-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
-    only) binds the current recorder, closing both residuals of round 16's
+    only) bound the recorder as it stood then, closing both residuals of round 16's
     N1 (`syzygy-lmjg`). Under the 2026-09-26 stopping rule its notes are
     answered here, not in the reviewed bytes:
     - N1: an honest revert (P11) is now refused; named above as a
@@ -354,6 +429,40 @@ it already read the status pages and the governance checker, at C1.
     - N4: in `baseline_proof` the successor row rebinds the loop's `row`
       name. Behaviour is correct; renaming it is left for the recorder's
       next change, since any edit retires this review.
+  - Round 18 (`HISTORY-REVIEW-18-RAW.md`, REVISE) reviewed the fresh
+    reconciliation review's first form (`syzygy-5rxi`). M1, no fixture
+    killing the fixed-input test where it is the only guard
+    (`review-inputs.json`), is answered by that fixture and row 156. N1, the
+    binding line's end anchor and the reviewed commit's hex class unpinned,
+    by two fixtures and rows 157 and 158. N2 (the PASS line does not name
+    the reconciliation raw that bound `vision.md`) is not changed: the raw
+    is named in this page and in the D8 log row. N3 (an uncommitted edit
+    beside a committed raw passes) is the predecessor's behaviour for every
+    input. N4 (quote the raw-head contract in the dispatch brief) was done
+    for reconciliation review 1. The repair also makes the selftest's C1
+    fixture read `vision.md` at C1, as it reads the history inputs: round
+    18 reviewed a commit before (d2) was applied, and with (d2) applied
+    the unrepaired selftest failed ("candidate input drift: vision.md"),
+    because its fixture took today's `vision.md` as C1's.
+  - Round 19 (`HISTORY-REVIEW-19-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
+    only) binds the current recorder. A first round-19 dispatch left no raw;
+    this is the re-dispatch, over the rebased branch head. Under the
+    2026-09-26 stopping rule its notes are answered here, not in the
+    reviewed bytes:
+    - N1: round 18's N2 disposition said the raw that bound `vision.md` is
+      named in this page and in the D8 log row, and at the reviewed commit
+      neither named it. Both do now: the raw that binds today's
+      `vision.md` is
+      `docs/reviews/R-POLARIS-UNDERSTANDING-RECONCILIATION-1-RAW.md`
+      (`CONFIRM WITH EXCEPTIONS`), and row D8 of `DOCTRINE-AMENDMENT-LOG.md`
+      records it with (d2)'s application.
+    - N2: a mutant comparing stripped verdict headers survives, so the exact
+      header form of the reconciliation raw is unpinned (the code refuses
+      `\r`). A fixture needs a recorder change and a new history review;
+      left for the recorder's next change.
+    - N3: rows 156 to 158 record `f3e5ffa7`, a commit the branch's rebase
+      left off-branch; the recorder bytes there equal the reviewed ones, and
+      the stored fragments re-run at the reviewed commit.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws

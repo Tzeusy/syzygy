@@ -232,6 +232,16 @@ holds must be rebuildable from the artifact that owns it.
 - **Syzygy's databases and views are projections.** Content it authors is
   committed out to the governed plane, which then becomes the authoritative
   source.
+  - **Observed-only projects** (architecture.md): content Syzygy authors about
+    such a project — a promoted annotation, an attributed answer — is
+    committed out to the `.syzygy/**` of the observing project, the governed
+    project that records the consent to observe it. There it is Syzygy's
+    attributed record about the project: it never anchors the project's
+    capability map, is never presented as the project's own declaration, is
+    never cited as the project's text, and never suppresses a gap of the
+    project. A dismissal of such a project's gap is not committed there: it
+    takes effect only in the project's own governed plane, so it waits for an
+    act that names that write.
 - **The only exceptions:**
   - **(a) The owner's personal presentation state** — layouts, filters,
     bookmarks, unpromoted notes.
