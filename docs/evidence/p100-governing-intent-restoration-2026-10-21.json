@@ -1665,12 +1665,13 @@
       "actual private admitted /api/poc response below95% of16MiB",
       "push/PR/protected merge and Bead closure"
     ],
-    "workerBoundary": "This worker performed no provider/live Butlers/daemon operations and no push/PR/tag/Beads lifecycle write. Synthetic and historical size values are not current private admitted-size evidence."
+    "workerBoundary": "This worker performed no provider/live Butlers/daemon operations and no push/PR/tag/Beads lifecycle write. Synthetic and historical size values are not current private admitted-size evidence.",
+    "asOf": "worker handoff; subsequent lead checks are recorded separately below"
   },
   "finalDocsConsequence": {
     "path": "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md",
     "location": "existing route-comparison paragraph near lines583\u2013596",
-    "status": "root owns dated sentence-local historical qualification",
+    "status": "dated sentence-local historical qualification added in lead integration; original comparison preserved",
     "currentCensus": {
       "population": 12,
       "matching": 6,
@@ -1679,5 +1680,190 @@
       "sha256": "9e4fcb1ddd9799d8165f5f368dbfb4a372f7069dd8a0b6fd2b0ac96b35d948cb"
     },
     "scope": "Do not change the six other route strings under this restoration."
+  },
+  "leadPreMergePrivateVerification": {
+    "epistemic": "Observed",
+    "scope": "Private operator check at committed source checkpoint; no service activation or P115 implementation",
+    "startedAt": "2026-10-20T19:31:17.605Z",
+    "capturedAt": "2026-10-20T19:31:21.443Z",
+    "observerCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "observerTree": "56df58a817fd878962716a9d8c5cd7845d2aeba6",
+    "metadataSha256": "432fd96a3025ee0c9ae4abedd8ed6db6901289d9883029a1e86b94134d8be595",
+    "measurementScriptSha256": "e4325444e39fbcef817afa2848b7d7c415cc675b3a3f4b7df06266c113274d5a",
+    "predicateScriptSha256": "af3c87b41c77e888e7ba37480b1584c60bd2848258a6e4b8fd7f6350cc49f0aa",
+    "repositoryRevision": "36f0e0eb080c7c78cf55ce54a02fecab1dfd4f8e",
+    "doltRevision": "ptt00v2gqammp6jrsv055v8o3nl4lo5i",
+    "authorizationMode": "owner-trusted-bootstrap",
+    "admitted": true,
+    "independentlyVerified": false,
+    "itemCount": 9328,
+    "renderedCount": 250,
+    "excludedCount": 9078,
+    "resourceLimits": {
+      "maxSources": 512,
+      "maxBytesPerSource": 1048576,
+      "maxTotalBytes": 16777216,
+      "maxIndexDepth": 4,
+      "maxParsePassesPerSource": 16,
+      "maxHumanResponseBytes": 2097152,
+      "maxMachineResponseBytes": 16777216,
+      "maxBriefingResponseBytes": 20480
+    },
+    "measurements": [
+      {
+        "path": "/polaris",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 1372347,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/trajectory",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 443665,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/orrery",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 48772,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 7801566,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc/polaris",
+        "host": "127.0.0.1",
+        "status": 200,
+        "bytes": 562817,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/polaris",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 1378677,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/trajectory",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 443755,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/orrery",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 48862,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 7801566,
+        "contentEncoding": "identity"
+      },
+      {
+        "path": "/api/poc/polaris",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200,
+        "bytes": 562817,
+        "contentEncoding": "identity"
+      }
+    ],
+    "apiSemantics": [
+      {
+        "host": "127.0.0.1",
+        "scope": "Complete private API population only; human semantics use separate browser/sweep tests",
+        "enumeratedItems": 9328,
+        "distinctServedIds": 9328,
+        "validItemIdentities": true,
+        "exactUnknownValues": 9328,
+        "servedUnknownCount": 9328,
+        "enumeratedRenderedItems": 250,
+        "distinctRenderedIds": 250,
+        "validRenderedIdentities": true,
+        "renderedSubjectCount": 250,
+        "distinctRenderedSubjects": 250,
+        "exactSubjectUnknownValues": 250,
+        "countRegionSubjects": 1,
+        "exactCountRegionValues": 1,
+        "projectionCountsReconcile": true,
+        "renderedSubjectsMatchSelection": true,
+        "machineBytes": 7801566,
+        "machineLimit": 16777216,
+        "fractionOfCeiling": 0.46500957012176514,
+        "headroomBytes": 8975650,
+        "passed": true,
+        "authorityAdmitted": true,
+        "projectShapeObserved": true
+      },
+      {
+        "host": "tzeusy.parrot-hen.ts.net",
+        "scope": "Complete private API population only; human semantics use separate browser/sweep tests",
+        "enumeratedItems": 9328,
+        "distinctServedIds": 9328,
+        "validItemIdentities": true,
+        "exactUnknownValues": 9328,
+        "servedUnknownCount": 9328,
+        "enumeratedRenderedItems": 250,
+        "distinctRenderedIds": 250,
+        "validRenderedIdentities": true,
+        "renderedSubjectCount": 250,
+        "distinctRenderedSubjects": 250,
+        "exactSubjectUnknownValues": 250,
+        "countRegionSubjects": 1,
+        "exactCountRegionValues": 1,
+        "projectionCountsReconcile": true,
+        "renderedSubjectsMatchSelection": true,
+        "machineBytes": 7801566,
+        "machineLimit": 16777216,
+        "fractionOfCeiling": 0.46500957012176514,
+        "headroomBytes": 8975650,
+        "passed": true,
+        "authorityAdmitted": true,
+        "projectShapeObserved": true
+      }
+    ],
+    "humanVerificationScope": "HTTP status and byte limits only; semantic and interactive human oracles run separately in the exact-head clone",
+    "daemon": {
+      "pid": 1730411,
+      "exitCode": 0,
+      "stdoutBytes": 594,
+      "stdoutSha256": "dcb0afc5380397e4c31ae75d5fcca069cb9d9acf66466e672168f0be222a920a",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stopped": true,
+      "stateDirectoryRemoved": true
+    },
+    "postMeasurementTreeClean": true,
+    "passed": true,
+    "landingAndFullFinalGates": "pending; this check applies only to its named committed source checkpoint"
+  },
+  "leadRouteComparison": {
+    "record": "docs/evidence/p100-route-literal-census-2026-10-21.json",
+    "subjectCommit": "2910f32b28b672ec03702e58c7bfa590d3a8b238",
+    "denominator": 12,
+    "same": 6,
+    "different": 6,
+    "bothMethodsAgree": true
+  },
+  "leadIndependentReview": {
+    "binding": "docs/evidence/p100-restoration-review-binding-2026-10-21.json",
+    "actualAssessment": "Ready to merge? Yes, conditional on required verification gates.",
+    "blockingSourceFindings": 0,
+    "minorFindings": 1,
+    "disposition": "docs/evidence/p100-restoration-review-disposition-2026-10-21.md",
+    "sourceSubjectsByteIdentical": 12
   }
 }
