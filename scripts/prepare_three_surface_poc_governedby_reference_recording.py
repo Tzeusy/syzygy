@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 KEY = "three-surface-poc-governedby-reference-amendment"
 VERSION = "1.0"
-CORE_COMMIT = "abd3f6ca2e8e99ad59327fdfc7b38d8bf41b07b5"
+CORE_COMMIT = "9ef5d35836e722abbd4041900fa27bd02f82e277"
 BASE = "4504514c019ca0ee0cb4a89ed97445a0bad21915"
 CANDIDATE = Path(".syzygy/governance/contracts/candidates") / KEY
 BUILDER = Path("scripts/build_three_surface_poc_governedby_reference_amendment.py")
