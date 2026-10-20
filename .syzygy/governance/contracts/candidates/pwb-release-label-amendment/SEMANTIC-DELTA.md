@@ -146,6 +146,30 @@ choice 1 below; an excepted identity placed in a sentence passes, uncovered
 by the stated limits) and three notes, all open in
 `ROUND-7-DISPOSITIONS.md`. These bytes are not cleared.)*
 
+**Repaired a sixth time:** 2026-10-20 (cycle 6), over `main` at
+`8340fa22`, under the lead session's decision, taken under the owner's
+autonomy direction, of "one more P-85 cycle", quoted in
+`ROUND-7-DISPOSITIONS.md`. **Round-7 findings repaired once on 2026-10-20,
+unconfirmed pending round 8.** In short:
+
+- **Identity placement is a stated limit (round-7 Finding 2).** The first
+  limit now reads "Where a citation or an excepted identity (below) sits is
+  not decided by this requirement", and says that an identity placed in
+  running text names the revision by its full object id. The identity
+  bullet points back to it. The fifth scenario is renamed "Citation and
+  identity contents are decided, not placement"; its THEN covers the
+  sentence "outside a citation and an excepted identity", and its AND names
+  both. Design decision 13 and Question 6's recommended row say the same.
+  No decide-line changes: a placement rule for identities would be a
+  content change, not a repair.
+- **The withdrawal is completed (round-7 Finding 1).** The packet's "What
+  you would be signing" no longer says an id in a sentence or heading never
+  counts, and cycle-3 choice 1 below carries a dated mark.
+- **Notes.** Question 6's dated note moved below its table (Note 1); the
+  residual census below carries a dated re-measure (Note 2); the design's
+  gap list and polarity and the fifth scenario's WHEN are guarded, each
+  with a mutant (Note 3).
+
 ## The warrant
 
 [Observed — read with `bd show syzygy-l362` on 2026-10-03] The bead records
@@ -331,8 +355,10 @@ both. Added:
     `unmoved`, `not moved`, `unchanged`, `stable` and `still points` beside a
     tag name.
 - **Five new scenarios.** A tagged revision; a revision no tag reaches; unread
-  tags never shown as untagged; a moved tag disclosed; a citation's contents
-  decided, not its placement.
+  tags never shown as untagged; a moved tag disclosed; citation and identity
+  contents decided, not placement.
+  *(Updated 2026-10-20, cycle 6, for round-7 Finding 2: the fifth read "a
+  citation's contents decided, not its placement".)*
   *(Updated 2026-10-15, cycle 5, for round-6 Note 2: this section read "Four
   new scenarios", an identity equal to "a served record's own `identity`",
   and "A revision id in a sentence, a heading or other running text is
@@ -672,6 +698,12 @@ Question 1 *Revise*.
    is the raw's proposed repair (raw lines 124–129). The alternative it
    offered, bare stamps allowed in prose with the "cannot hide a naming"
    claim withdrawn, is Question 6.
+   *(Marked 2026-10-20, cycle 6, for round-7 Finding 1: "So a revision id in
+   a sentence, a heading or the shape-identity line is never a stamp; it is
+   a label unit, or it goes" no longer holds. A bare id outside any citation
+   still fails, but cycle 5 withdrew the "never" for a citation placed in
+   running text, and cycle 6 states the same limit for an excepted
+   identity: either, inside a sentence or heading, passes.)*
 2. **"The label leads" means first in document order.** On each page, the
    first id of the revision the text sweep finds lies in a label unit, and
    in each unit the label precedes the full id. The status line is the one
@@ -733,6 +765,12 @@ Each is [Observed] at `0a10977b` unless it names another commit.
      (lines 255–274) holds the tree-framing, anchor-resolution and
      class-granular sign-offs, and this package's sign-off is appended
      after them.)*
+   - *(Marked 2026-10-20, cycle 6, for round-7 Note 2: re-measured at
+     `8340fa22`. `EXPECTED_TOTALS` reads 17 requirements and 63 scenarios,
+     with PWB-REQ-001 at 1; after `--apply` they read 17, 68 and 6 (the
+     builder's `--check` prints 68), as `IMPACT-LEDGER.md` also records.
+     The signing change appends this package's sign-off after the
+     successors the `successors` tuple then holds.)*
 3. **The battery.** Add the builder's `--check` line to `PROJECT-STATUS.md`
    at sign-off, under the CG-26 coupled-triple rule. A draft leaves the
    battery alone.

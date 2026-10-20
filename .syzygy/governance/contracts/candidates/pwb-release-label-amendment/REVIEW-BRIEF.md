@@ -404,3 +404,72 @@ it read, and its notes are dispositioned beside the package. The package
 then goes to the owner for Question 1; clearing signs nothing. Any other
 verdict is classified and stops, and no round 8 is dispatched without a new
 owner instruction.
+*(Marked 2026-10-20, cycle 6: "no round 8 is dispatched without a new owner
+instruction" is superseded. After round 7 the lead session, under the
+owner's autonomy direction, decided "one more P-85 cycle" and one round 8,
+quoted in `ROUND-7-DISPOSITIONS.md`.)*
+
+## Round 8 (added 2026-10-20, cycle 6)
+
+Round 7 returned `REVISE`: two revise findings and three notes. Finding 1:
+the packet's signing summary and the delta's cycle-3 choice 1 still said an
+id in a sentence or heading never counts. Finding 2: an excepted identity,
+which holds the full object id, placed in a sentence passed every
+decide-line, so the fifth scenario's THEN claimed more than the checks
+decide and neither stated limit covered it. The lead session decided one
+more cycle: repair the round-7 findings with the reviewer's fix that keeps
+the owner's chosen approach, repair the three notes, then one fresh review.
+Round 8 reviews these bytes against the same seven criteria, on their own
+merits.
+
+In particular, judge:
+
+- whether the first limit, now naming an excepted identity's placement as
+  well as a citation's, is true and stated in the requirement itself, and
+  whether any requirement text, scenario, design line or packet sentence
+  still claims more than the decide-lines decide about a sentence, heading
+  or identity line;
+- whether the fifth scenario's THEN and ANDs are carried by the
+  decide-lines;
+- whether what remains decided is still a sweep with a denominator and a
+  falsifier the oracle catches (CC-SPEC).
+
+A disclosed, owner-chosen limit is not by itself a revise finding. Raise a
+revise finding only where the text still claims more than its oracle
+decides, or where a stated limit is false.
+
+**Read the prior round.** You SHOULD read
+`docs/reviews/R-PWB-RELEASE-LABEL-AMENDMENT-7-RAW.md` and
+`ROUND-7-DISPOSITIONS.md`, whose §"Repairs, 2026-10-20 (cycle 6)" maps each
+finding to its repair. Judge each repair against the raw, never against the
+mapping's own account of it; build the round-7 raw's identity-in-a-sentence
+fragment against the new text and say what the text now says of it. You may
+read the implementation and decision files §"Round 6" lists, and
+`packages/three-surface-poc-core/src/project-shape-observation.ts` for the
+identity formats. Do not read `ROUND-1-DISPOSITIONS.md` to
+`ROUND-6-DISPOSITIONS.md` or any other raw. Never read any Butlers
+repository or other observed target's content: everything you need is in
+this repository.
+
+**Raw-head digest predicate.** This is the same as rounds 6 and 7. Over the
+first four non-blank lines of your raw:
+
+1. the title;
+2. `Reviewed commit: ` followed by the 40-hex commit you read;
+3. `Manifest SHA-256: ` followed by the lowercase 64-hex sha256 of the bytes
+   of the manifest **file** `PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt` at the
+   reviewed commit, computed by script. It is never a row inside the
+   manifest, and never the proposed spec's digest;
+4. `Verdict: ` followed by exactly one of `CONFIRM`,
+   `CONFIRM WITH EXCEPTIONS` or `REVISE`.
+
+Number findings as `**Finding N — title** (blocking|revise|note)`, and end
+with one line counting them by severity.
+
+**Stopping rule, set before this round.** A notes-only round (`CONFIRM`, or
+`CONFIRM WITH EXCEPTIONS` with every finding a note) clears the bytes it
+read, and its notes are dispositioned beside the package, never by editing
+those bytes. Clearing is not signing: this package has no carry-over
+answer, so it then goes to the owner for Question 1. Any other verdict is
+classified and stops, and no round 9 is dispatched without a new owner or
+lead instruction.
