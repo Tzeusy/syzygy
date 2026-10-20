@@ -3633,6 +3633,30 @@ def _activate_public_source_scope_v3_copy_registry():
 _activate_public_source_scope_v3_copy_registry()
 
 
+#: The public-source screening scope, version 4 (`syzygy-olmr`, register row
+#: P-110; recorder `scripts/record_public_source_screening_scope_v4_act.py`,
+#: `syzygy-3sjj`): one `approve-policy` act over ONE of two manifest rows
+#: (variants `span`, `span-guides`), reusing the policy's phrase label and
+#: superseding the version-3 act. Its packet carries no digest, so the manifest
+#: is the only copy. Registered at drafting time and gated on the performed
+#: record, for the reason the version-2 registration gives; the version-3
+#: copies' historical pinning (gating the version-3 manifest off), the chain
+#: link and the record's manifest-heading exemption arrive with the act.
+PUBLIC_SOURCE_SCOPE_V4_DIR = f"{CANDIDATES}/public-source-screening-scope-v4"
+PUBLIC_SOURCE_SCOPE_V4_MANIFEST = f"{PUBLIC_SOURCE_SCOPE_V4_DIR}/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt"
+PUBLIC_SOURCE_SCOPE_V4_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md"
+
+
+def _activate_public_source_scope_v4_copy_registry():
+    """The version-4 manifest is a current copy of the policy argument once the act exists."""
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V4_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V4_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V4_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
+_activate_public_source_scope_v4_copy_registry()
+
+
 #: The act-time digests the specification-policy restyle supersedes as the
 #: current policy state: act 7's CC-IMPACT argument and the bootstrap
 #: transaction's CC-SPEC row (row 5 of its act, line 11 of its manifest).
