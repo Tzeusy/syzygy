@@ -431,13 +431,13 @@ export function generationSourceTextAt(source: GenerationSource, start: number, 
     const span = source.spans.find(candidate => { const range = generationSpanRange(source, candidate); return start >= range[0] && end <= range[1]; });
     if (span === undefined) return undefined;
     const base = generationSpanRange(source, span)[0];
-    try { return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(span.text).subarray(start - base, end - base)); } catch { return undefined; }
+    try { return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.from(span.text).subarray(start - base, end - base)); } catch { return undefined; }
   }
   const body = source.body ?? (source.spans.length === 1 && source.spans[0]?.start === 0 ? source.spans[0].text : undefined);
   if (body === undefined) return undefined;
   const base = source.segment?.start ?? 0;
   if (start < base || end - base > Buffer.byteLength(body)) return undefined;
-  try { return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(body).subarray(start - base, end - base)); } catch { return undefined; }
+  try { return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.from(body).subarray(start - base, end - base)); } catch { return undefined; }
 }
 
 /** Only quotable source text crosses the provider boundary. The population

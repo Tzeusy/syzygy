@@ -36,6 +36,12 @@ describe('redacted Git source fidelity and safe transport', () => {
     expect(source.spans.map(span => generationSpanRange(source, span))).toEqual([[0, 2], [23, 36]]);
     expect(source.spans[1]!.anchorId).toBe(generationAnchorId(identity, 23, 36));
     expect(generationSourceTextAt(source, 31, 35)).toBe('last');
+    const bomBody = '\uFEFFVisible\n';
+    const ordinary = generationSourcesForBody({ ...identity, objectId: gitBlobObjectId(bomBody), body: bomBody })[0]!;
+    expect(validateGenerationSources([ordinary])).toHaveLength(1);
+    expect(generationSourceTextAt(ordinary, 0, 11)).toBe('\uFEFFVisible\n');
+    const bomRetained = make(BODY.replace('visible', '\uFEFFvisible'))[0]!;
+    expect(generationSourceTextAt(bomRetained, 23, 33)).toBe('\uFEFFvisible');
     expect(generationSourceTextAt(source, 1, 24)).toBeUndefined();
     expect(JSON.stringify(sources)).not.toContain('abcdefghij');
     expect(JSON.stringify(sources)).not.toContain('token=');
