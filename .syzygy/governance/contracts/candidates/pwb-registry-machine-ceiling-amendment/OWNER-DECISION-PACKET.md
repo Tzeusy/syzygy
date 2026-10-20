@@ -11,8 +11,10 @@
 Since 2026-10-20 the Butlers machine answer (`/api/poc`) is refused. It is
 8,497,943 bytes against an 8,388,608-byte ceiling, so the daemon serves a
 503 and nothing else [Observed,
-`docs/evidence/syzygy-59s5-live-size-2026-10-20.json`]. The growth is not
-code. It comes from the live work-item read, about 114 KB a day [Inferred].
+`docs/evidence/syzygy-59s5-live-size-2026-10-20.json`]. The same size
+comes back at the 2026-10-15 commit, against the same Butlers revision
+[Observed]. So the growth is most likely the live work-item read, not code,
+at about 114 KB a day [Inferred].
 The P-100 implementation was reverted to bring the answer back under the
 ceiling (PR #474), and that buys time, not a fix. This package changes one
 number in the Butlers observer registry entry, the machine-answer ceiling,
@@ -41,8 +43,8 @@ narrow code change in the same commit. Ask 2 asks for it.
 
 ## Ask 2 — the implementation authorization that has to travel with it
 
-> **Authorize the ceiling's code change**: exactly the following, nothing
-> else, no new Butlers read or egress.
+> **Authorize the ceiling's code change**: exactly the following items, no
+> other change, no new Butlers read or egress.
 
 1. `PWB_RESOURCE_LIMITS.maxMachineResponseBytes` 8388608 → 16777216
    (`packages/three-surface-poc-core/src/project-shape-observation.ts:82`).
@@ -53,8 +55,19 @@ narrow code change in the same commit. Ask 2 asks for it.
 3. The test literals that pin the old value or act B
    (`IMPACT-LEDGER.md`, parts A and B1).
 4. The four builder and recorder successors that read this entry
-   (`IMPACT-LEDGER.md`, part B2): each accepts a later performed act's row
-   over the subject.
+   (`IMPACT-LEDGER.md`, part B2). Each accepts **this package's manifest
+   row, named explicitly**, as the one later performed act over the
+   subject. No check is loosened for any other act.
+5. The recording machinery for this one sign-off:
+   - one dedicated recorder that writes the gate-readable record
+     (`IMPACT-LEDGER.md`, part B3);
+   - its `check_governance.py` registration (`_act_subjects`,
+     `ACT_DIGEST_COPY_FILES`, act B moved to performed history);
+   - the battery and hosted-workflow lines for this package's builder and
+     recorder, with the count sentence (the CG-26 triple).
+
+   *(Added after round 1, finding 5: these scripts verify this act. They
+   are named here so that "nothing else" has no unnamed exception.)*
 
 **Why it is separate.** [Observed] The daemon does not read the registry
 entry's limits. A signature changes nothing served until item 1 changes.
@@ -65,9 +78,16 @@ And until item 2 changes, the gate refuses every Butlers read (dry run:
 records, implements and re-runs the battery, then `/api/poc` is measured on
 a private daemon. Sign without authorizing: the sign-off is **not
 recorded**. Recording without item 2 would refuse every Butlers read, so it
-waits for the authorization. Authorize without signing: nothing is built,
-because item 1 never runs ahead of the signed entry (the builder fails
-closed on that).
+waits for the authorization. Authorize without signing: nothing is built, because the authorization
+covers only the code that follows a signed entry. The builder's `--check`
+also refuses a constant or gate pointer that runs ahead of the entry, but
+it joins the battery only in the sign-off commit, so before then it is a
+manual check, not a guard.
+
+**Asked together, recorded together.** Nothing is recorded until both
+answers exist in one exchange. A sign-off given without the authorization
+lapses unrecorded, and both asks are offered again together. *(Added after
+round 1, finding 8.)*
 
 ## Not asked here
 
@@ -79,11 +99,16 @@ closed on that).
   patch the same entry. Both are unperformed, and this one goes first by
   your "ceiling first". Each is regenerated and reviewed again after it
   (`IMPACT-LEDGER.md`, part C).
-- Version numbers. The entry keeps `1.2.0-candidate.1`, following the act B
-  precedent (`SEMANTIC-DELTA.md`). The review is asked to test this.
+- Version numbers, which you may overrule. The entry keeps
+  `1.2.0-candidate.1`. That departs from its own minor-bump convention:
+  `.18` bumped the version for a `resourceLimits` change, and only act B
+  did not. The delta explains why it departs (`SEMANTIC-DELTA.md`, "What
+  explicitly does NOT change"). If you prefer the convention, say so, and
+  the package is redrafted as `1.2.1-candidate.1` and reviewed again.
 
 ## Review record
 
 | Round | Raw | Verdict (copied from the raw) | Disposition |
 |---|---|---|---|
-| 1 | (pending; it will be retained under `docs/reviews/`) | (pending) | (pending) |
+| 1 | `docs/reviews/R-PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-RAW.md` over `cd653f04` | `REVISE` (raw line 4) | five revise findings and four notes, all repaired once; mapped in `ROUND-1-DISPOSITIONS.md` |
+| 2 | (pending) | (pending) | (pending) |

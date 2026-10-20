@@ -26,15 +26,27 @@ types no digest.
   package must be regenerated with `--write` over the new base and reviewed
   again.
 
-In both states the patch file equals its regeneration and applies with
-`git apply --check` (forward unapplied, reverse applied), the manifest is
-exactly one row equal to the proposed bytes' SHA-256, and no package Markdown
-file carries a 64-hex token. It also holds the code to the entry, since the
-daemon hard-codes the ceiling rather than reading it: unapplied, the
-`PWB_RESOURCE_LIMITS` constant must still say 8388608 (code never runs ahead
-of the signed entry); applied, it must say 16777216 and the gate's registry
-act pointer must have left the 2026-10-02 re-pin act, or every Butlers read
-is refused.
+In both states the patch file and the one-row manifest equal their
+regeneration, and no package Markdown file carries a 64-hex token. The patch
+is also run through `git apply --check` (forward unapplied, reverse applied).
+That step is defence in depth: while the patch equals its regeneration it
+cannot fail, so no selftest mutant isolates it.
+
+The check also holds the code to the entry, because the daemon hard-codes
+the ceiling rather than reading it. It parses the `PWB_RESOURCE_LIMITS`
+object (comments removed) and the gate's three registry pointer sites in
+`governance-inputs.ts`: `PWB_ACT_RECORDS`, `PWB_SUPERSEDED_ACT_RECORDS` and
+the registry authority's `actIdentity` and `recordingTag`.
+
+- Unapplied: the constant says 8388608, and the gate still names act B's
+  record, identity and tag. Code never runs ahead of the signed entry.
+- Applied: the constant says 16777216. The record and identity are no
+  longer act B's, the tag is `pwb-registry-machine-ceiling-amendment-v1.0`,
+  and the supersession target is act B's record. Any other state makes the
+  PWB-REQ-005 gate refuse every Butlers read.
+
+The check does not run automatically until its `--check` line joins the
+battery, which happens in the sign-off commit.
 
   --write             regenerate the patch and the manifest
   --check             verify (writes nothing)
@@ -69,15 +81,17 @@ PATCH = PKG / "proposed" / f"{SUBJECT.name}.patch"
 MANIFEST = PKG / "PWB-REGISTRY-MACHINE-CEILING-AMENDMENT-MANIFEST.txt"
 CONSTANT_FILE = pathlib.Path("packages/three-surface-poc-core/src/project-shape-observation.ts")
 GATE_FILE = pathlib.Path("apps/three-surface-poc/src/governance-inputs.ts")
-#: The act the gate follows for the registry today; an applied entry must not still point at it.
-CURRENT_GATE_RECORD = ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
+#: Act B, the registry act the gate follows today: unapplied, the gate must still name it;
+#: applied, the gate must name a new record, identity and tag, with act B as the supersession target.
+ACT_B_RECORD = ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
+ACT_B_IDENTITY = "PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02"
+ACT_B_TAG = "pwb-adopt-registry-entry-signed-2026-10-02"
+NEW_TAG = "pwb-registry-machine-ceiling-amendment-v1.0"
 KEY_PATH = ("entries", 0, "resourceLimits", "maxMachineResponseBytes")
 OLD_VALUE = 8388608
 NEW_VALUE = 16777216
 OLD = f'"maxMachineResponseBytes": {OLD_VALUE},'.encode()
 NEW = f'"maxMachineResponseBytes": {NEW_VALUE},'.encode()
-CONSTANT_OLD = f"maxMachineResponseBytes: {OLD_VALUE},"
-CONSTANT_NEW = f"maxMachineResponseBytes: {NEW_VALUE},"
 HEX64 = re.compile(r"[0-9a-f]{64}")
 ROW_RE = re.compile(r"^([0-9a-f]{64})  (\S+)$", re.MULTILINE)
 HEADER = (
@@ -182,8 +196,6 @@ def check(root: pathlib.Path = ROOT) -> tuple[list[str], str]:
     manifest = root / MANIFEST
     if not manifest.is_file() or manifest.read_text(encoding="utf-8") != render_manifest(proposed):
         out.append(f"{MANIFEST.as_posix()} differs from its regeneration; run --write")
-    elif len(ROW_RE.findall(manifest.read_text(encoding="utf-8"))) != 1:
-        out.append("the manifest does not carry exactly one row")
     if state == "applied" and sha(subject.read_bytes()) != sha(proposed):
         out.append("the applied subject does not hash to the manifest row")
     for md in sorted((root / PKG).glob("*.md")):
@@ -191,17 +203,67 @@ def check(root: pathlib.Path = ROOT) -> tuple[list[str], str]:
             continue
         if HEX64.search(md.read_text(encoding="utf-8")):
             out.append(f"{md.name}: carries a 64-hex token")
-    constant = (root / CONSTANT_FILE).read_text(encoding="utf-8") if (root / CONSTANT_FILE).is_file() else ""
-    if state == "unapplied" and CONSTANT_OLD not in constant:
-        out.append(f"{CONSTANT_FILE.as_posix()} no longer declares {CONSTANT_OLD!r}: code runs ahead of the signed entry")
-    if state == "applied":
-        if CONSTANT_NEW not in constant:
-            out.append(f"the entry is applied but {CONSTANT_FILE.as_posix()} does not declare {CONSTANT_NEW!r}")
-        gate = (root / GATE_FILE).read_text(encoding="utf-8") if (root / GATE_FILE).is_file() else ""
-        if f"registry: '{CURRENT_GATE_RECORD}'" in gate:
-            out.append(f"the entry is applied but {GATE_FILE.as_posix()} still points the registry act at "
-                       f"{CURRENT_GATE_RECORD}: the PWB-REQ-005 gate refuses every Butlers read")
+    out += code_findings(root, state)
     return out, state
+
+
+def _strip_comments(text: str) -> str:
+    return re.sub(r"//[^\n]*", "", text)
+
+
+def object_block(text: str, name: str) -> str | None:
+    """The body of `export const <name> ... = { ... };`, comments removed."""
+    m = re.search(rf"^export const {re.escape(name)}\b[^=]*=\s*\{{(.*?)^\}};", text, re.M | re.S)
+    return None if m is None else _strip_comments(m.group(1))
+
+
+def _quoted(block: str, key: str) -> list[str]:
+    return re.findall(rf"\b{key}:\s*['\"`]([^'\"`]*)['\"`]", block)
+
+
+def registry_authority(gate: str) -> str | None:
+    """The `registry: { artifactPath: PWB_AUTHORITY_ARTIFACTS.registry, ... }` expectations object."""
+    m = re.search(r"registry:\s*\{\s*artifactPath:\s*PWB_AUTHORITY_ARTIFACTS\.registry,(.*?)\n\s*\},", gate, re.S)
+    return None if m is None else _strip_comments(m.group(1))
+
+
+def code_findings(root: pathlib.Path, state: str) -> list[str]:
+    """Hold the daemon's hard-coded ceiling and the gate's registry pointers to the entry's state."""
+    out: list[str] = []
+    text = (root / CONSTANT_FILE).read_text(encoding="utf-8") if (root / CONSTANT_FILE).is_file() else ""
+    limits = object_block(text, "PWB_RESOURCE_LIMITS")
+    values = [] if limits is None else [int(v) for v in re.findall(r"\bmaxMachineResponseBytes:\s*(\d+)", limits)]
+    want = OLD_VALUE if state == "unapplied" else NEW_VALUE
+    if values != [want]:
+        what = ("code runs ahead of the signed entry" if state == "unapplied"
+                else "the entry is applied without the constant change")
+        out.append(f"{CONSTANT_FILE.as_posix()} PWB_RESOURCE_LIMITS.maxMachineResponseBytes is {values}, "
+                   f"not [{want}]: {what}")
+    gate = (root / GATE_FILE).read_text(encoding="utf-8") if (root / GATE_FILE).is_file() else ""
+    records = object_block(gate, "PWB_ACT_RECORDS")
+    superseded = object_block(gate, "PWB_SUPERSEDED_ACT_RECORDS")
+    authority = registry_authority(gate)
+    if records is None or superseded is None or authority is None:
+        return out + [f"{GATE_FILE.as_posix()}: the registry act pointers cannot be located"]
+    record = _quoted(records, "registry")
+    target = _quoted(superseded, "registry")
+    identity = _quoted(authority, "actIdentity")
+    tag = _quoted(authority, "recordingTag")
+    if state == "unapplied":
+        if (record, identity, tag) != ([ACT_B_RECORD], [ACT_B_IDENTITY], [ACT_B_TAG]):
+            out.append(f"{GATE_FILE.as_posix()}: the gate's registry act moved off act B before the entry: "
+                       "code runs ahead of the signed entry")
+        return out
+    if record in ([], [ACT_B_RECORD]) or len(record) != 1:
+        out.append(f"{GATE_FILE.as_posix()} PWB_ACT_RECORDS.registry is {record}: "
+                   "the PWB-REQ-005 gate refuses every Butlers read")
+    if target != [ACT_B_RECORD]:
+        out.append(f"{GATE_FILE.as_posix()} PWB_SUPERSEDED_ACT_RECORDS.registry is {target}, not act B's record")
+    if identity in ([], [ACT_B_IDENTITY]) or len(identity) != 1:
+        out.append(f"{GATE_FILE.as_posix()} registry actIdentity is {identity}: still act B's")
+    if tag != [NEW_TAG]:
+        out.append(f"{GATE_FILE.as_posix()} registry recordingTag is {tag}, not {NEW_TAG!r}")
+    return out
 
 
 def write(root: pathlib.Path = ROOT) -> int:
@@ -216,14 +278,23 @@ def write(root: pathlib.Path = ROOT) -> int:
 
 # --- selftest ---------------------------------------------------------------
 
+def _set_constant(path: pathlib.Path, value: int) -> None:
+    text = path.read_text(encoding="utf-8")
+    block = object_block(text, "PWB_RESOURCE_LIMITS")
+    assert block is not None
+    new = re.sub(r"(\bmaxMachineResponseBytes:\s*)\d+", rf"\g<1>{value}", text, count=1)
+    path.write_text(new, encoding="utf-8")
+
+
 def _fixture(tmp: pathlib.Path) -> pathlib.Path:
+    """The unapplied state over the real files: entry base, constant 8 MiB, gate on act B."""
     for rel in (SUBJECT, CONSTANT_FILE, GATE_FILE):
         (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / rel, tmp / rel)
     (tmp / PKG).mkdir(parents=True, exist_ok=True)
     base, _ = base_and_state((ROOT / SUBJECT).read_bytes())
     (tmp / SUBJECT).write_bytes(base)
-    (tmp / CONSTANT_FILE).write_text((ROOT / CONSTANT_FILE).read_text().replace(CONSTANT_NEW, CONSTANT_OLD))
+    _set_constant(tmp / CONSTANT_FILE, OLD_VALUE)
     write_quiet(tmp)
     return tmp
 
@@ -235,12 +306,28 @@ def write_quiet(root: pathlib.Path) -> None:
         write(root)
 
 
+NEXT_RECORD = ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md"
+NEXT_IDENTITY = "PWB-OBSERVER-REGISTRY-ENTRY-MACHINE-CEILING-2026-10-20"
+CURRENCY_RECORD = ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md"
+
+
 def _apply_fixture(tmp: pathlib.Path) -> None:
+    """The state ask 2 prescribes: entry patched, constant 16 MiB, the four gate pointers moved
+    (record, identity and tag to the new act; supersession target to act B)."""
     (tmp / SUBJECT).write_bytes(proposed_bytes((tmp / SUBJECT).read_bytes()))
-    (tmp / CONSTANT_FILE).write_text((tmp / CONSTANT_FILE).read_text().replace(CONSTANT_OLD, CONSTANT_NEW))
-    gate = (tmp / GATE_FILE).read_text()
-    (tmp / GATE_FILE).write_text(gate.replace(f"registry: '{CURRENT_GATE_RECORD}'",
-                                              "registry: '.syzygy/governance/decisions/NEXT-ACT.md'"))
+    _set_constant(tmp / CONSTANT_FILE, NEW_VALUE)
+    gate = (tmp / GATE_FILE).read_text(encoding="utf-8")
+    gate = gate.replace(f"registry: '{ACT_B_RECORD}'", f"registry: '{NEXT_RECORD}'", 1)
+    gate = gate.replace(f"registry: '{CURRENCY_RECORD}'", f"registry: '{ACT_B_RECORD}'", 1)
+    gate = gate.replace(f"actIdentity: '{ACT_B_IDENTITY}'", f"actIdentity: '{NEXT_IDENTITY}'", 1)
+    gate = gate.replace(f"recordingTag: '{ACT_B_TAG}'", f"recordingTag: '{NEW_TAG}'", 1)
+    (tmp / GATE_FILE).write_text(gate, encoding="utf-8")
+
+
+def _edit_gate(tmp: pathlib.Path, old: str, new: str) -> None:
+    gate = (tmp / GATE_FILE).read_text(encoding="utf-8")
+    assert gate.count(old) >= 1, old
+    (tmp / GATE_FILE).write_text(gate.replace(old, new, 1), encoding="utf-8")
 
 
 def selftest() -> int:
@@ -252,15 +339,25 @@ def selftest() -> int:
             mutate(tmp)
             found, _ = check(tmp)
             ok = (found == []) if expect_clean else any(needle in f for f in found)
+            if not ok:
+                print(f"     ({name}: {found})")
             results.append((name, ok))
 
     case("the shipped package verifies unapplied", lambda tmp: None, expect_clean=True)
-    case("the applied state verifies with the paired code change", _apply_fixture, expect_clean=True)
+    case("the prescribed applied state verifies (entry, constant, four gate pointers)",
+         _apply_fixture, expect_clean=True)
 
-    def edit_subject_elsewhere(tmp):
+    def edit_inside_context(tmp):
         p = tmp / SUBJECT
         p.write_bytes(p.read_bytes().replace(b'"maxHumanResponseBytes": 2097152', b'"maxHumanResponseBytes": 2097153', 1))
-    case("a sibling's edit to the subject makes the patch stale", edit_subject_elsewhere, "differs from its regeneration")
+    case("a sibling's edit inside the hunk context makes the patch stale", edit_inside_context,
+         ".patch differs from its regeneration")
+
+    def edit_outside_context(tmp):
+        p = tmp / SUBJECT
+        p.write_bytes(p.read_bytes().replace(b'"schemaVersion": 1,', b'"schemaVersion": 1, ', 1))
+    case("a sibling's edit outside the hunk context makes the manifest stale", edit_outside_context,
+         "MANIFEST.txt differs from its regeneration")
 
     def two_values(tmp):
         p = tmp / SUBJECT
@@ -269,8 +366,9 @@ def selftest() -> int:
 
     def stale_manifest(tmp):
         m = tmp / MANIFEST
-        m.write_text(m.read_text().replace(m.read_text().splitlines()[-1][:4], "0000", 1))
-    case("a stale manifest row refuses", stale_manifest, "MANIFEST.txt differs")
+        last = m.read_text().splitlines()[-1]
+        m.write_text(m.read_text().replace(last, "0" * 64 + last[64:]))
+    case("a stale manifest row refuses", stale_manifest, "MANIFEST.txt differs from its regeneration")
 
     def edited_patch(tmp):
         p = tmp / PATCH
@@ -285,37 +383,75 @@ def selftest() -> int:
         (tmp / PKG / "ROUND-1-DISPOSITIONS.md").write_text("x " + "a" * 64 + "\n")
     case("a round disposition record may quote a digest", disposition_hex, expect_clean=True)
 
-    def code_ahead(tmp):
+    case("code running ahead of the signed entry refuses",
+         lambda tmp: _set_constant(tmp / CONSTANT_FILE, NEW_VALUE), "code runs ahead")
+
+    def ahead_with_comment(tmp):
+        _set_constant(tmp / CONSTANT_FILE, NEW_VALUE)
         p = tmp / CONSTANT_FILE
-        p.write_text(p.read_text().replace(CONSTANT_OLD, CONSTANT_NEW))
-    case("code running ahead of the signed entry refuses", code_ahead, "runs ahead")
+        p.write_text(p.read_text().replace("export const PWB_RESOURCE_LIMITS",
+                                           "// maxMachineResponseBytes: 8388608,\nexport const PWB_RESOURCE_LIMITS", 1))
+    case("an old value left in a comment does not hide code running ahead", ahead_with_comment, "code runs ahead")
+
+    def ahead_comment_inside(tmp):
+        _set_constant(tmp / CONSTANT_FILE, NEW_VALUE)
+        p = tmp / CONSTANT_FILE
+        p.write_text(p.read_text().replace("  maxMachineResponseBytes: 16777216,",
+                                           "  // maxMachineResponseBytes: 8388608,\n  maxMachineResponseBytes: 16777216,", 1))
+    case("an old value in a comment inside the object does not hide code running ahead",
+         ahead_comment_inside, "code runs ahead")
+
+    case("the gate moving off act B before the entry refuses",
+         lambda tmp: _edit_gate(tmp, f"recordingTag: '{ACT_B_TAG}'", f"recordingTag: '{NEW_TAG}'"),
+         "moved off act B before the entry")
 
     def applied_no_code(tmp):
         _apply_fixture(tmp)
-        p = tmp / CONSTANT_FILE
-        p.write_text(p.read_text().replace(CONSTANT_NEW, CONSTANT_OLD))
-    case("an applied entry without the constant change refuses", applied_no_code, "does not declare")
+        _set_constant(tmp / CONSTANT_FILE, OLD_VALUE)
+    case("an applied entry without the constant change refuses", applied_no_code, "without the constant change")
 
-    def applied_old_gate(tmp):
+    def applied_record_unmoved(tmp):
         _apply_fixture(tmp)
-        shutil.copyfile(ROOT / GATE_FILE, tmp / GATE_FILE)
-    case("an applied entry with the gate still on the 2026-10-02 act refuses", applied_old_gate,
+        _edit_gate(tmp, f"registry: '{NEXT_RECORD}'", f"registry: '{ACT_B_RECORD}'")
+    case("applied, the act record pointer left on act B refuses", applied_record_unmoved,
          "refuses every Butlers read")
 
-    # The JSON predicate on its own: a proposal that moves a second key.
+    def applied_record_double_quoted(tmp):
+        _apply_fixture(tmp)
+        _edit_gate(tmp, f"registry: '{NEXT_RECORD}'", f'registry: "{ACT_B_RECORD}"')
+    case("applied, act B's record in double quotes still refuses", applied_record_double_quoted,
+         "refuses every Butlers read")
+
+    def applied_target_unmoved(tmp):
+        _apply_fixture(tmp)
+        _edit_gate(tmp, f"registry: '{ACT_B_RECORD}'", f"registry: '{CURRENCY_RECORD}'")
+    case("applied, the supersession target left on the currency-briefing act refuses", applied_target_unmoved,
+         "not act B's record")
+
+    def applied_identity_unmoved(tmp):
+        _apply_fixture(tmp)
+        _edit_gate(tmp, f"actIdentity: '{NEXT_IDENTITY}'", f"actIdentity: '{ACT_B_IDENTITY}'")
+    case("applied, act B's identity left in place refuses", applied_identity_unmoved, "still act B's")
+
+    def applied_tag_unmoved(tmp):
+        _apply_fixture(tmp)
+        _edit_gate(tmp, f"recordingTag: '{NEW_TAG}'", f"recordingTag: '{ACT_B_TAG}'")
+    case("applied, act B's recording tag left in place refuses", applied_tag_unmoved, "recordingTag")
+
+    def gate_unlocatable(tmp):
+        _edit_gate(tmp, "export const PWB_ACT_RECORDS", "export const PWB_ACT_RECORDZ")
+    case("a gate whose pointers cannot be located refuses", gate_unlocatable, "cannot be located")
+
+    # The JSON predicate on its own: a proposal that moves a second key, or another value.
     with tempfile.TemporaryDirectory() as t:
         tmp = _fixture(pathlib.Path(t))
         base = (tmp / SUBJECT).read_bytes()
         bad = proposed_bytes(base).replace(b'"maxBriefingResponseBytes": 20480', b'"maxBriefingResponseBytes": 20481')
-        found = json_findings(base, bad)
         results.append(("a second changed key is refused by the parsed comparison",
-                        any("not exactly at" in f for f in found)))
+                        any("not exactly at" in f for f in json_findings(base, bad))))
         wrong = base.replace(OLD, b'"maxMachineResponseBytes": 9999999,', 1)
         results.append(("another new value is refused by the parsed comparison",
                         any("not 8388608 -> 16777216" in f for f in json_findings(base, wrong))))
-        results.append(("the proposed bytes differ from the base in exactly one line",
-                        sum(1 for a, b in zip(base.splitlines(), proposed_bytes(base).splitlines()) if a != b) == 1
-                        and len(base.splitlines()) == len(proposed_bytes(base).splitlines())))
 
     failed = [n for n, ok in results if not ok]
     for name, ok in results:

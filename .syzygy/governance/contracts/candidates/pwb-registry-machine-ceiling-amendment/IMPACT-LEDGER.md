@@ -16,14 +16,23 @@ All sweeps were run 2026-10-20 on this branch, off origin/main `8340fa22`:
    key `maxMachineResponseBytes` returns 73 files. They are the 40 above,
    plus files that name the key without the value: code that passes the
    limit identity, tests that set a fixture value, and historical docs.
-   ugrep for `8 MiB` / `8 MB` adds no file outside those 73.
-3. **Dry run.** In the working tree, apply the one-value patch, run the
-   whole PROJECT-STATUS battery (105 checks plus the `git tag` line) and the
-   gate's tests
-   (`npx vitest run apps/three-surface-poc/src/governance-inputs.test.ts packages/three-surface-poc-core/src/body-read-authority.test.ts`),
-   then revert. Before the patch, the battery returned 0 non-zero commands.
-   With the patch it returned **7 non-zero**, and the gate tests had
-   **4 failures** in one file. Every one is listed in part B.
+   `git grep -l -F -e "8 MiB" -e "8 MB"` returns 18 files, 7 of them
+   outside those 73. Three of the seven name this machine ceiling in prose
+   and are listed in part A. The other four are false positives (`128 MiB`,
+   `256 MiB`, `2.13 MB`, size prose). *(Corrected after round 1, finding
+   4a: the first version said the prose sweep added no file.)*
+3. **Dry run.** Apply the one-value patch in the working tree, run two
+   suites, then revert:
+   - the whole PROJECT-STATUS battery (105 checks plus the `git tag` line).
+     Before the patch, 0 non-zero commands. With the patch, **7 non-zero**;
+   - the full non-browser vitest suites of both POC packages
+     (`npx vitest run packages/three-surface-poc-core apps/three-surface-poc`,
+     2,017 tests in 124 files). Before the patch, 0 failed. With the patch,
+     **5 failed** in 2 files: 4 in `governance-inputs.test.ts` and 1 in
+     `project-shape-observation.test.ts`. *(Widened after round 1, finding
+     4b: the first dry run ran only the gate's two test files.)*
+
+   Browser tests were not run. Every failure is listed in part B.
 
 ## A. Every place that hard-codes the value
 
@@ -40,6 +49,9 @@ All sweeps were run 2026-10-20 on this branch, off origin/main `8340fa22`:
 | `.syzygy/governance/contracts/candidates/pwb-registry-currency-briefing-amendment/SEMANTIC-DELTA.md` | 81 | performed `.18` package prose | unchanged (performed history) |
 | `.syzygy/governance/contracts/candidates/pwb-registry-currency-briefing-amendment/proposed/…json.patch` | 25, 26 | the performed `.18` patch's own `-`/`+` lines for this key (`.18` added the trailing comma and `maxBriefingResponseBytes`) | unchanged (performed history). **Its `+` line is the line this package changes**, so reversing `.18` directly over the patched subject no longer applies. Successors 1 and 2 (part B) must first reverse this package's patch to recover act B's bytes, then reverse `.18` |
 | `.syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/SEMANTIC-DELTA.md` | 92 | performed package prose | unchanged (performed history) |
+| `.syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md` | 76, 85, 137 | "8 MiB" prose, performed packet | unchanged (performed history) |
+| `docs/reviews/R-IMPL-P100-GOVERNING-INTENT-1-RAW.md` | 37 | "8 MiB" prose, raw review | never edited (CC-REV-6) |
+| `docs/reviews/R-PWB-TRUTH-POLICY-COMPREHENSION-CONFIRMATION-RAW.md` | 21 | "8 MiB" prose, raw review | never edited (CC-REV-6) |
 | `.syzygy/governance/decisions/POLARIS-RESPONSE-CEILING-READING-DECISION-PACKET.md` | 161 | the P-77 reading packet, which describes the ceiling at the time | unchanged. Its reading ("final encoded HTTP body") is value-independent, and `check_polaris_response_ceiling_reading.py` quotes only the semantics sentences, which this package keeps |
 | `docs/design/POLARIS-M5-…`, `-M9-…`, `-M10-…`, `-M12-…` funnels | as listed by the sweep | design history | unchanged (dated design records) |
 | `docs/plans/2026-10-03-smooth-example-roadmap.md` | 56 | plan history | unchanged |
@@ -59,6 +71,16 @@ its own owner authorization. The 2026-10-15 implementation direction
 (`decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-15.md`)
 names its amendments one by one and does not cover this entry.
 
+### A2. Readers of the entry's bytes *(added after round 1, finding 4b)*
+
+| Reader | What it reads | Effect of the patch |
+|---|---|---|
+| `packages/three-surface-poc-core/src/project-shape-observation.test.ts` (lines 758–790, "registry-bound constants") | the installed entry's identity, `resourceLimits` and failure states, compared to the code constants | fails until item 1 of ask 2 lands, and fails on item 1 without the patch. This test is what keeps the entry and the constant in step |
+| `packages/three-surface-poc-core/src/project-shape-manifest.test.ts` (line 576) | `maxIndexDepth` only | none |
+| `apps/three-surface-poc/src/governance-inputs.ts` and `walkthrough-inputs.ts` (path only) | the entry's bytes, digested by the PWB-REQ-005 gate against the act record | refuses every Butlers read until the pointers move (B1) |
+| the builders and recorders in B2 | the entry's bytes, against performed acts' arguments | fail until their successors land (B2) |
+| `walkthroughEvaluationIdentity` (`walkthrough-readiness.ts`), through `resourceLimitsDigest` (`project-shape-observation.ts:622`) and the registry act identity | the limits the code carries, and the act | the `pwb-eval-…` identity changes, so a walkthrough record bound to the old identity reads as an evaluation mismatch [Inferred: expected, harmless] |
+
 ## B. What signing breaks unless it moves in the same commit
 
 ### B1. The body-read gate refuses every Butlers read [Observed, dry run]
@@ -69,7 +91,7 @@ authority at act B: `PWB_ACT_RECORDS.registry` (line 61), its act identity
 (`PWB_SUPERSEDED_ACT_RECORDS.registry`, line 66). Act B's record names the
 entry's current digest. With the entry patched and the pointers unmoved, the
 direction-C case of `governance-inputs.test.ts` (line 316) gets
-`admits: false`, and 3 more cases in that file fail. On a live daemon that
+`admits: false`, and 3 more cases in that file fail (4 in all). On a live daemon that
 would be an Unknown project shape on every surface. It is fail-closed, but
 it is still an outage.
 
@@ -86,19 +108,19 @@ Code moves under ask 2:
 
 | Check | Dry-run failure | Successor (ask 2, item 4) |
 |---|---|---|
-| `check_governance.py` CG-7e | 5 findings: the act phrase `ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY` is registered with act B's record, the re-pin manifest, `ACCEPTANCE-ACT-RECORD.md` and `PROJECT-STATUS.md` as copies of its current argument | **recording, not code**: register the new record and its copies, and move act B's copies to performed history. This is the recorder registration every digest-bound act gets |
-| `build_pwb_registry_currency_briefing_amendment.py --check` | the subject with `.18` reversed no longer hashes to the `.18` act's argument | **successor 1**: accept a later performed act's row over the subject, the way `build_pwb_registry_loaded_profile_amendment.py` does with `PERFORMED_SUCCESSORS` |
+| `check_governance.py` CG-7e | 5 findings: the act phrase `ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY` is registered with act B's record, the re-pin manifest, `ACCEPTANCE-ACT-RECORD.md` and `PROJECT-STATUS.md` as copies of its current argument | **ask 2, item 5**: register the new record and its copies, and move act B's copies to performed history. This is the registration every digest-bound act gets |
+| `build_pwb_registry_currency_briefing_amendment.py --check` | the subject with `.18` reversed no longer hashes to the `.18` act's argument | **successor 1**: name this package's manifest row explicitly as the one later performed act over the subject. Recover act B's bytes by reversing this package's patch, then reverse `.18` (its `+` line is the line this package changes). Same pattern as `PERFORMED_SUCCESSORS` in `build_pwb_registry_loaded_profile_amendment.py`, which names specific packages |
 | `build_pwb_registry_currency_briefing_amendment.py --selftest` | same cause ("does not verify on current bytes") | covered by successor 1 |
-| `record_pwb_registry_currency_amendment.py --check …` | same cause | **successor 2**: the same acceptance |
-| `build_pwb_behavior_contract_repin.py --selftest` | `base_bytes` raises: the subject is not act B's argument | **successor 3**: `base_bytes` recognises a later performed act's row |
-| `record_pwb_behavior_contract_repin_acts.py --check registry …` | "registry subject hashes to … not the owner argument" | **successor 4**: the same acceptance, for the registry act only |
+| `record_pwb_registry_currency_amendment.py --check …` | same cause | **successor 2**: the same explicitly named row |
+| `build_pwb_behavior_contract_repin.py --selftest` | `base_bytes` raises: the subject is not act B's argument | **successor 3**: `base_bytes` recognises this package's manifest row, named explicitly |
+| `record_pwb_behavior_contract_repin_acts.py --check registry …` | "registry subject hashes to … not the owner argument" | **successor 4**: the same explicitly named row, for the registry act only |
 | `check_spec_reconciliation.py --selftest` | raises through `build_pwb_behavior_contract_repin.base_bytes` | covered by successor 3; no change of its own |
 
 The two `--check` lines for this package's own record and builder join the
 battery (the CG-26 triple: battery block, hosted workflow, count sentence)
 in the same commit.
 
-### B3. The recording itself (governance tooling, not implementation)
+### B3. The recording itself (named in ask 2 after round 1, finding 5)
 
 The gate reads only a record carrying the phrase form
 `<PREFIX>: <64-hex>` and an `Exact digest (SHA-256):` line
@@ -112,7 +134,7 @@ phrase argument from this package's manifest row, writes the record with
 `Supersession / revocation:` naming act B for the registry role, appends
 the aggregate block, and names the version tag
 `pwb-registry-machine-ceiling-amendment-v1.0` as the recording tag. That
-recorder is written by the signing lane, not by this package. [Inferred] The
+recorder is written by the signing lane, not by this package, and ask 2 item 5 names it. [Inferred] The
 same holds for P-112, whose recorder does not exist yet either.
 
 ## C. Sibling packages on the same subject (unperformed)
