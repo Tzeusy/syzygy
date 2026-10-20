@@ -459,6 +459,29 @@ describe('render', () => {
     expect(await renderRun(run, renderDeps({ renderer: undeclared }))).toMatchObject({ ok: true });
   });
 
+  it('draws retained spans with original coordinates and markers while withholding only the removed line', async () => {
+    const run = await prepared(draft(), false);
+    if (!SCREEN.ok) throw new Error(SCREEN.why);
+    const base = SCREEN.screen;
+    const lines = KESTREL.match(/[^\n]*\n|[^\n]+$/gu)!;
+    const retainedLines = lines.map((line, i) => i === 3 ? '\n' : line);
+    const lineByteOffsets: number[] = []; let offset = 0;
+    for (const line of lines) { lineByteOffsets.push(offset); offset += Buffer.byteLength(line); }
+    const retained = retainedLines.join('');
+    const redacting = { ok: true as const, screen: { ...base, screenTargetBody: (body: string, repositoryPath: string) => (repositoryPath === 'src/kestrel.c' ? { kind: 'redacted' as const, retained, retainedLines, lineByteOffsets, originalBytes: offset, contentSha256: createHash('sha256').update(KESTREL).digest('hex'), withheld: [4], detectorIds: ['credential-assignment'] } : base.screenTargetBody(body, repositoryPath)) } };
+    const result = await renderRun(run, renderDeps({ loadScreen: async () => redacting }));
+    if (!result.ok) throw new Error(result.refusal.reason);
+    const pages = [...readSite(result.report.site).values()].join('\n');
+    expect(pages).not.toContain('int main(void) { return 0; }');
+    expect(pages).toContain('Kestrel keeps every key in memory.');
+    expect(pages).toContain('[redacted-span: 1 withheld line(s) in this file]');
+    expect(pages).toContain('surviving spans use original Git byte coordinates');
+    expect(pages).toContain('each withheld run is marked on its source page; surviving spans retain their original coordinates');
+    const sourcePage = [...readSite(result.report.site).entries()].find(([file, page]) => file.startsWith('sources/') && page.includes('Kestrel keeps every key'))![1];
+    expect(sourcePage).toContain(`data-quote-start="${Buffer.byteLength(lines.slice(0, 4).join(''))}"`);
+    expect(sourcePage.match(/class="redaction-note"/gu)).toHaveLength(1);
+  });
+
   it('refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure', async () => {
     const run = await prepared(draft(), false);
     expect(await renderRun(run, renderDeps({ now: () => NOW + 3_600_000 }))).toMatchObject({ ok: false, refusal: { stage: 'deadline' } });

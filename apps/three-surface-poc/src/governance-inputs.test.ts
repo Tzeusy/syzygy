@@ -32,7 +32,7 @@ import {
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
-const EVALUATION_INSTANT = '2026-10-08T00:00:00Z';
+const EVALUATION_INSTANT = '2026-10-20T00:00:00Z';
 const CURRENT_COMMIT = 'f'.repeat(40);
 const cleanups: string[] = [];
 
@@ -160,13 +160,30 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.admits).toBe(true);
     expect(evaluation.authorizationMode).toBe('owner-trusted-bootstrap');
+    for (const trailer of [
+      'not explicitly selected by performing the offered state-(1) phrase',
+      "not explicitly given by the owner's words recorded below",
+      "never explicitly given by the owner's words recorded below",
+      'rejected: "explicitly given by the owner\'s words recorded below"',
+      "explicitly given by the owner's words recorded below, but rejected",
+    ]) {
+      const altered = fakeTree();
+      const record = altered.files.get(PWB_ACT_RECORDS.policy)!.replace("explicitly given by the owner's words recorded below", trailer);
+      altered.files.set(PWB_ACT_RECORDS.policy, record);
+      for (const key of altered.taggedRecords.keys()) if (key.endsWith(`:${PWB_ACT_RECORDS.policy}`)) altered.taggedRecords.set(key, record);
+      const refused = evaluateBodyReadAuthority(loaderFor(altered));
+      expect(refused.admits, trailer).toBe(false);
+      expect(refused.policy.kind === 'invalid' && refused.policy.caseId, trailer).toBe('policy:state-1-not-explicitly-selected');
+      expect(refused.consent.kind).toBe('valid');
+      expect(refused.registry.kind).toBe('valid');
+    }
   });
 
   it('classifies a missing act record with an existing tag as git-ref-only', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.policy);
     const inputs = loaderFor(tree);
-    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-public-source-scope-v3-signed-2026-10-08' });
+    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-public-source-scope-v4-signed-2026-10-20' });
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:git-ref-only');
   });
@@ -305,12 +322,12 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
   it('direction C: the gate admits under the 2026-10-02 re-pin acts and refuses when either act names another digest', () => {
     const tree = fakeTree();
     const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
-    expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-08');
+    expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-APPROVAL-2026-10-20');
     expect(expected.registry.actIdentity).toBe('PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02');
-    expect(expected.policy.recordingTag).toBe('pwb-approve-policy-public-source-scope-v3-signed-2026-10-08');
+    expect(expected.policy.recordingTag).toBe('pwb-approve-policy-public-source-scope-v4-signed-2026-10-20');
     expect(expected.registry.recordingTag).toBe('pwb-adopt-registry-entry-signed-2026-10-02');
     // The version anchors are unchanged by direction C.
-    expect(expected.policy.scopeAnchors).toContain('1.4.0-public-source-candidate.1.none.code-all');
+    expect(expected.policy.scopeAnchors).toContain('1.5.0-public-source-candidate.1.none.code-all.redact-span');
     expect(expected.registry.scopeAnchors).toContain('1.2.0-candidate.1');
     const admitted = evaluateBodyReadAuthority(loaderFor(tree));
     expect(admitted.admits).toBe(true);

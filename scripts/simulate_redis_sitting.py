@@ -23,7 +23,7 @@ Steps, in the order of the sitting packet (PR 260):
              `--route a`: PR 255 recorder) and the Git source adapter, the three
              admission consents (PR 215), the RFC5-14 amendment (PR 257), the
              egress version 2 consent (row 8), the screening-scope version 2
-             (row 12, `--v2-variant`) and version 3 (row P-105, `--v3-variant`)
+             (row 12, `--v2-variant`) and version 3 (row P-105, `--v3-variant`), and version 4 span (row P-110, `--v4-variant`)
              acts and the narrative-profile adoption (PR 256)
   4 install  `scripts/install_redis_sitting.py`, then again (idempotent) and
              with `--check`; then row 8's end: egress version 1 stays
@@ -104,6 +104,11 @@ V3_RECORDER = "scripts/record_public_source_screening_scope_v3_act.py"
 V3_VARIANTS = ("all", "non-web")
 V3_PACKET_WORDS = {"all": "Sign screening scope version 3, variant all",
                    "non-web": "Sign screening scope version 3, variant non-web"}
+PKG_SCOPE_V4 = f"{CAND}/public-source-screening-scope-v4"
+V4_RECORDER = "scripts/record_public_source_screening_scope_v4_act.py"
+# This installation is only the owner-selected span variant. The held guide-name expansion is not rehearsed here.
+V4_OWNER_WORDS = "Sign screening scope version 4, variant span"
+V4_DATE = "2026-10-20"
 PKG_RFC5 = f"{CAND}/rfc5-project-documentation-class"
 PKG_EGRESS_V2 = f"{CAND}/public-egress-v2"
 EGRESS_V2_RECORDER = "record_public_egress_v2_act.py"
@@ -264,6 +269,7 @@ class Sim:
         self.vitest = vitest
         self.v2_variant = "none"
         self.v3_variant = "all"
+        self.v4_variant = "span"
         self.steps = []
         self.findings = []
         self.baseline_failing = set()
@@ -430,21 +436,21 @@ class Sim:
     SELECTION = ["--question-opening", "SIM opening", "--selection-label", "SIM at the manifest rows",
                  "--selection-description", "SIM synthetic selection; scratch clone only"]
 
-    def instant(self):
+    def instant(self, date=DATE):
         """Strictly increasing UTC instants on the act date, so chain order is defined."""
         self.clock = getattr(self, "clock", 0) + 1
-        return f"{DATE}T{9 + self.clock // 60:02d}:{self.clock % 60:02d}:00Z"
+        return f"{date}T{9 + self.clock // 60:02d}:{self.clock % 60:02d}:00Z"
 
-    def record(self, script, key, argument, label, extra=()):
+    def record(self, script, key, argument, label, extra=(), date=DATE):
         argv = [sys.executable, f"scripts/{script}", "--record"] + ([key] if key else []) + ([argument] if argument else [])
-        inst = self.instant()
-        tail = ["--date", DATE, "--instant", inst, *extra]
+        inst = self.instant(date)
+        tail = ["--date", date, "--instant", inst, *extra]
         p = self.run(argv + tail)
         if p.returncode:
             self.step(label, record_exit=p.returncode, stderr=(p.stderr + p.stdout).strip()[-240:])
             return p
         c = self.run([sys.executable, f"scripts/{script}", "--check"] + ([key] if key else []) + ([argument] if argument else [])
-                     + ["--date", DATE, *extra])
+                     + ["--date", date, *extra])
         self.step(label, record_exit=p.returncode, check_exit=c.returncode, instant=inst)
         return p
 
@@ -517,6 +523,22 @@ class Sim:
         self.record("record_public_source_screening_scope_v3_act.py", None, arg, "rowP105-policy-v3",
                     [*sel, "--packet-words", V3_PACKET_WORDS[self.v3_variant]])
 
+    def policy_v4(self):
+        """Rehearse the frozen span recorder only; no guide expansion or synthetic replacement of its review package."""
+        v3_record = self.scratch / f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"
+        if not self.v4_variant or not (self.scratch / V4_RECORDER).is_file() or not v3_record.is_file():
+            self.step("rowP110-policy-v4", note="not run: the recorder or version-3 act is absent, or --v4-variant skip was given")
+            return
+        if self.v3_variant != "all":
+            self.step("rowP110-policy-v4", note="not run: version 4 requires version-3 variant all")
+            return
+        argument = self.v2_row("span", PKG_SCOPE_V4, "PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt")
+        if argument is None:
+            self.step("rowP110-policy-v4", note="no span manifest row")
+            return
+        self.record("record_public_source_screening_scope_v4_act.py", None, argument, "rowP110-policy-v4",
+                    ["--owner-words", V4_OWNER_WORDS], date=V4_DATE)
+
     def acts(self, route):
         scope = (self.scratch / PKG_SCOPE / "PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt").read_text()
         reg = (self.scratch / PKG_REGISTRY / "PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt").read_text()
@@ -554,6 +576,7 @@ class Sim:
         else:
             self.step("row12-policy-v2", note="not run: the package is absent or --no-v2 was given")
         self.policy_v3(sel)
+        self.policy_v4()
         self.record("record_narrative_profile_adoption.py", None, None, "row8-profile", sel)
         self.commit("sim: every recorder run")
         self.checks("after-acts")
@@ -754,6 +777,8 @@ def main(argv):
                     help="the screening-scope v2 variant row recorded as row 12 (skip: version 1 only)")
     ap.add_argument("--v3-variant", choices=V3_VARIANTS + ("skip",), default="all",
                     help="the screening-scope v3 variant row recorded after version 2 (register row P-105; skip: no version 3)")
+    ap.add_argument("--v4-variant", choices=("span", "skip"), default="span",
+                    help="the owner-selected screening-scope v4 span row after version-3 all (P-110; skip: no version 4)")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args(argv)
@@ -768,6 +793,7 @@ def main(argv):
     sim = Sim(scratch, a.report, a.base, a.vitest)
     sim.v2_variant = None if a.v2_variant == "skip" else a.v2_variant
     sim.v3_variant = None if a.v3_variant == "skip" or sim.v2_variant is None else a.v3_variant
+    sim.v4_variant = None if a.v4_variant == "skip" else a.v4_variant
     try:
         sim.merge_all()
         sim.merge_fixup()
@@ -859,6 +885,33 @@ def selftest():
         sim.scratch = ROOT
         expect("version 3: each variant names one manifest row",
                all(sim.v2_row(v, PKG_SCOPE_V3, v3_manifest.name) is not None for v in V3_VARIANTS))
+
+    # Execute the v4 consumer in a synthetic filesystem, capturing only its recorder command, never performing an act.
+    import record_public_source_screening_scope_v4_act as v4rec
+    expect("version 4: only the span owner words are offered here", V4_OWNER_WORDS == v4rec.OWNER_WORDS[0])
+    with tempfile.TemporaryDirectory() as t:
+        sim = Sim(t, "unused", "HEAD", False)
+        rec = sim.scratch / V4_RECORDER
+        predecessor = sim.scratch / DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"
+        manifest = sim.scratch / PKG_SCOPE_V4 / "PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt"
+        for file in (rec, predecessor, manifest):
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_text("fixture")
+        argument = "a" * 64
+        manifest.write_text(f"{argument}  proposed/policy.json  [variant: span]\n")
+        calls = []
+        sim.record = lambda *args, **kwargs: calls.append((args, kwargs))
+        sim.policy_v4()
+        expect("version 4: executes the span recorder with exact manifest row, words and date", calls == [((
+            "record_public_source_screening_scope_v4_act.py", None, argument, "rowP110-policy-v4", ["--owner-words", V4_OWNER_WORDS]), {"date": V4_DATE})])
+        for missing in ("skip", "non-web", "absent predecessor"):
+            calls.clear()
+            sim.v4_variant = None if missing == "skip" else "span"
+            sim.v3_variant = "non-web" if missing == "non-web" else "all"
+            if missing == "absent predecessor":
+                predecessor.unlink()
+            sim.policy_v4()
+            expect(f"version 4: {missing} does not record", not calls)
 
     # The scratch builder refuses a directory inside the real tree and the real
     # tree comparison notices a change, on a throwaway repository.

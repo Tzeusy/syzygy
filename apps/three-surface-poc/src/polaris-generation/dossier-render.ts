@@ -4,7 +4,7 @@ import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
   DOSSIER_FORMAT, OWNER_TOPICS, PAGE_SINK_CONTRACT, checkDraftQuotes, diagramToMermaid, isDossierPagePath, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById, withoutReviewStatusRegion,
-  validateDraftRecord, validateGenerationSources, validateRequestedAssets,
+  generationSpanRange, validateDraftRecord, validateGenerationSources, validateRequestedAssets,
   type DossierManifest, type EpistemicMarking, type GenerationSource, type LocalPageItem, type LocalRenderInput, type LocalSegment, type OwnerTopic, type PipelineResult,
   type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph, type RequestedAsset,
 } from '@syzygy/polaris-generation-core';
@@ -107,9 +107,9 @@ export class DossierRenderError extends Error {
 const digest = (value: string): string => createHash('sha256').update(value).digest('hex');
 
 /** The page a quotable source's exact text lives on, from its anchor alone. */
-export function sourceRoute(source: Pick<GenerationSource, 'spans'>): string {
-  if (source.spans.length !== 1) throw new DossierRenderError('ambiguous-source-anchor');
-  return `sources/${digest(source.spans[0]!.anchorId).slice(0, 24)}.html`;
+export function sourceRoute(source: Pick<GenerationSource, 'spans' | 'redaction'>): string {
+  if (source.spans.length === 0 || (source.redaction === undefined && source.spans.length !== 1)) throw new DossierRenderError('ambiguous-source-anchor');
+  return `sources/${digest(source.spans.map(span => span.anchorId).join('\n')).slice(0, 24)}.html`;
 }
 
 const deepDivePath = (id: string): string => `deep-dives/${id.replace(/[^A-Za-z0-9_.-]/gu, '_')}.html`;
@@ -239,7 +239,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
     if (source === undefined) throw new DossierRenderError('unknown-source');
     const target = sourcePaths.get(id);
     if (target === undefined) throw new DossierRenderError('unquotable-source');
-    return `<a href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(id)}">[${escape(id)}]</a>`;
+    return `<a href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(id)}">[${escape(id)}]</a>${source.redaction === undefined ? '' : ` <span class="redaction-note">[redacted-span: ${source.redaction.withheldLines} withheld line(s) in this file]</span>`}`;
   }).join(' ')}</span>`;
   // Every claim a page carries, in the order it is built; `add` files them under that page for the machine view.
   const pending: { id: string; epistemic: EpistemicMarking; unknownReason: string | null }[] = [];
@@ -251,14 +251,16 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   // An operator-agent block: its segments (Syzygy's located bytes for every quotation), its marking and reason, and the commands a claim
   // resting on execution names. A non-normative block is no claim and carries no anchor.
   const nonNormative: { page: string; id: string }[] = [];
-  const quotations: { page: string; blockId: string; sourceId: string; start: number; end: number; anchor: unknown }[] = [];
+  const quotations: { page: string; blockId: string; sourceId: string; start: number; end: number; anchor: unknown; redaction?: { redactionClass: 'redacted-span'; withheldLines: number } }[] = [];
   const segment = (from: string, blockId: string, part: LocalSegment): string => {
     if (part.kind === 'prose') return escape(part.text);
     if (part.kind === 'withheld') return `<span class="quote-withheld" data-unknown-reason="${escape(part.reason)}">[quotation withheld: the file it cites is excluded by screening]</span>`;
     const target = sourcePaths.get(part.sourceId);
     if (target === undefined) throw new DossierRenderError('unquotable-source');
-    quotations.push({ page: from, blockId, sourceId: part.sourceId, start: part.start, end: part.end, anchor: part.anchor });
-    return `<q class="verified-quote" data-quote-source="${escape(part.sourceId)}" data-quote-start="${part.start}" data-quote-end="${part.end}">${escape(part.text).replace(/\r/gu, '&#13;')}</q> ${marking('observed')} <a class="anchor-link" href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(part.sourceId)}"${anchorAttributes(part.anchor, escape)}>[${escape(part.anchor.algorithm)}:${escape(part.anchor.identifier.slice(0, 12))} bytes ${part.anchor.fragment === null ? 'all' : `${part.anchor.fragment.start}–${part.anchor.fragment.end}`}]</a>`;
+    const redaction = sources.get(part.sourceId)?.redaction;
+    const disclosure = redaction === undefined ? {} : { redaction: { redactionClass: redaction.redactionClass, withheldLines: redaction.withheldLines } };
+    quotations.push({ page: from, blockId, sourceId: part.sourceId, start: part.start, end: part.end, anchor: part.anchor, ...disclosure });
+    return `<q class="verified-quote" data-quote-source="${escape(part.sourceId)}" data-quote-start="${part.start}" data-quote-end="${part.end}">${escape(part.text).replace(/\r/gu, '&#13;')}</q> ${marking('observed')} <a class="anchor-link" href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(part.sourceId)}"${anchorAttributes(part.anchor, escape)}>[${escape(part.anchor.algorithm)}:${escape(part.anchor.identifier.slice(0, 12))} bytes ${part.anchor.fragment === null ? 'all' : `${part.anchor.fragment.start}–${part.anchor.fragment.end}`}]</a>${redaction === undefined ? '' : ` <span class="redaction-note">[redacted-span: ${redaction.withheldLines} withheld line(s) in this file]</span>`}`;
   };
   const localParagraph = (from: string, p: ProviderParagraph, tag: string): string => {
     const b = local!.blocks.get(p.id);
@@ -390,23 +392,37 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   // --- sources: the whole population as a denominator, then one page per quotable source
   const list = input.sources.map(source => {
     const target = sourcePaths.get(source.sourceId);
+    const redactedNote = source.redaction === undefined ? '' : ` · redacted-span: ${source.redaction.withheldLines} withheld line(s) in this file`;
     const reason = source.exclusion.excluded ? source.exclusion.reason : source.classificationBasis === 'path-only' ? 'path-only; body not read' : 'body unavailable for citation';
     return target === undefined
-      ? `<li>${escape(source.path)} [${escape(source.sourceId)}] — counted; exact text unavailable: ${escape(reason)}.</li>`
-      : `<li><a href="${escape(href('sources/index.html', target))}">${escape(source.path)}</a> [${escape(source.sourceId)}]</li>`;
+      ? `<li>${escape(source.path)} [${escape(source.sourceId)}] — counted; exact text unavailable: ${escape(reason)}${escape(redactedNote)}.</li>`
+      : `<li><a href="${escape(href('sources/index.html', target))}">${escape(source.path)}</a> [${escape(source.sourceId)}]${escape(redactedNote)}</li>`;
   }).join('');
   add('sources/index.html', 1, 'Sources', `<section id="sources"><h1>Sources</h1><p>${input.sources.length} sources counted, ${quotable.length} with admitted text.</p><ul>${list}</ul></section>`);
   for (const source of quotable) {
     const path = sourcePaths.get(source.sourceId)!;
     const span = source.spans[0]!;
-    const base = source.segment?.start ?? 0;
-    const [start, end] = [base + span.start, base + span.end];
+    const [start, end] = generationSpanRange(source, span);
     const anchor = local?.sourceAnchors.get(source.sourceId);
     if (local !== undefined && anchor === undefined) throw new DossierRenderError('unquotable-source');
-    // An operator-agent source page names its RFC7-10 anchor, whose identity is the recomputed object id; the path is a label only.
     const identity = anchor === undefined ? ` · <code>${escape(span.anchorId)}</code></p>` : `</p>${anchorDetails(anchor, escape)}`;
-    const read = anchor === undefined ? '' : `<p class="read-note">${marking('observed')} Syzygy read these bytes at the pinned revision at this render and recomputed the object identifier from them.</p>`;
-    add(path, 2, source.path, `<section id="exact-text" data-reading-level="3"><h1 class="source-path">${escape(source.path)}</h1><p class="source-anchor">${escape(source.sourceId)} · bytes ${start}–${end} of the file${identity}<blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${start}" data-quote-end="${end}">${escape(span.text).replace(/\r/gu, '&#13;')}</blockquote>${read}</section>`);
+    const read = anchor === undefined ? '' : `<p class="read-note">${marking('observed')} Syzygy read the original Git blob at the pinned revision at this render and recomputed its object identifier before screening.</p>`;
+    let exact = '';
+    if (source.redaction === undefined) exact = `<blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${start}" data-quote-end="${end}">${escape(span.text).replace(/\r/gu, '&#13;')}</blockquote>`;
+    else {
+      // Only surviving original spans are quotation evidence. Projection gaps are the screen's marker lines, never quotable bytes.
+      const bytes = Buffer.from(source.body!);
+      let at = 0;
+      for (const kept of source.spans) {
+        if (kept.start > at) exact += `<pre class="redaction-note">${escape(bytes.subarray(at, kept.start).toString('utf8')).replace(/\r/gu, '&#13;')}</pre>`;
+        const [from, to] = generationSpanRange(source, kept);
+        exact += `<blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${from}" data-quote-end="${to}">${escape(kept.text).replace(/\r/gu, '&#13;')}</blockquote>`;
+        at = kept.end;
+      }
+      if (at < bytes.length) exact += `<pre class="redaction-note">${escape(bytes.subarray(at).toString('utf8')).replace(/\r/gu, '&#13;')}</pre>`;
+    }
+    const extent = source.redaction === undefined ? `bytes ${start}–${end} of the file` : `redacted-span: ${source.redaction.withheldLines} withheld line(s) in this file; surviving spans use original Git byte coordinates`;
+    add(path, 2, source.path, `<section id="exact-text" data-reading-level="3"><h1 class="source-path">${escape(source.path)}</h1><p class="source-anchor">${escape(source.sourceId)} · ${extent}${identity}${exact}${read}</section>`);
   }
 
   // --- the operator-agent run's own pages: understanding, discovery, clarifications, executions, review
@@ -447,7 +463,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
       claims: claimsByPage,
       nonNormative,
       quotations,
-      sources: quotable.map(source => ({ sourceId: source.sourceId, page: sourcePaths.get(source.sourceId)!, anchor: local.sourceAnchors.get(source.sourceId)! })),
+      sources: quotable.map(source => ({ sourceId: source.sourceId, page: sourcePaths.get(source.sourceId)!, anchor: local.sourceAnchors.get(source.sourceId)!, ...(source.redaction === undefined ? {} : { redaction: { redactionClass: source.redaction.redactionClass, withheldLines: source.redaction.withheldLines } }) })),
       localPages: localPages,
     }, null, 2)}\n`);
   }

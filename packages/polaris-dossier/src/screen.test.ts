@@ -242,12 +242,17 @@ describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
 });
 
 // P-105 (owner act of 2026-10-08; syzygy-wsev): the version-3 scope's code-content exemption, in both screens. The scopes are the
-// builder's proposed bytes for each variant (scripts/build_public_source_screening_scope_v3.py), so this holds on either side of the act.
+// builder's proposed bytes for each variant (scripts/build_public_source_screening_scope_v3.py). Since the version-4 act the policy on
+// disk is neither the version-3 base nor a version-3 row, so the version-3 base is recovered as the version-4 builder recovers its own:
+// version 4's base (the version-3 row `all`) with version 3's own `all` patch reversed.
 describe('the code-content exemption of screening scope version 3', () => {
   let V3: Record<string, Record<string, unknown>> = {};
   beforeAll(() => {
-    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v3 as b
-base, _mode = b.base_bytes()
+    const py = `import json, sys; sys.path.insert(0, 'scripts')
+import build_public_source_screening_scope_v2 as b2, build_public_source_screening_scope_v3 as b, build_public_source_screening_scope_v4 as b4
+v3_all, _mode = b4.base_bytes()
+base = b2.reverse_patch((b.ROOT / b.patch_path('all')).read_text(), v3_all)
+assert b.sha(base) != b.sha(v3_all) and b.propose(base, 'all') == v3_all
 sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for v in b.VARIANTS}))`;
     V3 = JSON.parse(execFileSync('python3', ['-c', py], { cwd: REAL_ROOT, encoding: 'utf8' })) as Record<string, Record<string, unknown>>;
   });
@@ -317,6 +322,78 @@ sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for 
     const scope = V3['all']!, active = scope['activeContent'] as Record<string, unknown>;
     const policy = policyOf({ ...scope, activeContent: { ...active, codeContentExemption: mutate(active['codeContentExemption'] as Record<string, unknown>) } });
     expect(buildDossierScreen(encode(policy), true)).toMatchObject({ ok: false, why: expect.stringContaining('its code-content exemption') });
+    await expect(appScreen(policy, true)).rejects.toThrow();
+  });
+});
+
+// P-110 (owner act of 2026-10-20; syzygy-3sjj): the version-4 scope's secret redaction, in both screens. The scope is the live
+// policy's (the variant-span bytes the act binds); the bodies are the version-4 builder's own fixtures with its reference oracle's answers
+// (scripts/build_public_source_screening_scope_v4.py `withheld_lines`), so the TypeScript reading is held to the oracle in both screens.
+describe('the secret redaction of screening scope version 4', () => {
+  type TargetScreen = { screenTargetBody: (b: string, p: string) => { kind: string; withheld?: readonly number[]; retained?: string }; screenBody: (b: string, p?: string) => string | undefined; secretRedaction: boolean };
+  let fixtures: { body: { name: string; body: string; oracle: number[] | null }[]; whole: { name: string; path: string; body: string; oracle: number[] | null }[] } = { body: [], whole: [] };
+  beforeAll(() => {
+    const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v4 as b
+policy = open(str(b.ROOT / b.POLICY)).read()
+srt = lambda s: None if s is None else sorted(s)
+sys.stdout.write(json.dumps({'body': [{'name': n, 'body': body, 'oracle': srt(b.withheld_lines(body, policy))} for n, body, _w in b.BODY_FIXTURES],
+  'whole': [{'name': n, 'path': p, 'body': body, 'oracle': srt(b.withheld_lines(body, policy, p))} for n, p, body in b.WHOLE_FIXTURES]}))`;
+    fixtures = JSON.parse(execFileSync('python3', ['-c', py], { cwd: REAL_ROOT, encoding: 'utf8' })) as typeof fixtures;
+  });
+  const both = async (): Promise<readonly [TargetScreen, TargetScreen]> => {
+    const policy = policyOf(LIVE.publicSourceScope);
+    const ours = buildDossierScreen(encode(policy), true);
+    if (!ours.ok) throw new Error(ours.why);
+    return [ours.screen, (await appScreen(policy, true)) as unknown as TargetScreen];
+  };
+  const withheldOf = (got: { kind: string; withheld?: readonly number[] }): readonly number[] | null => (got.kind === 'redacted' ? got.withheld! : got.kind === 'admitted' ? [] : null);
+
+  it('declares the redaction in both screens', async () => {
+    expect((await both()).map((screen) => screen.secretRedaction)).toEqual([true, true]);
+  });
+  it('withholds the oracle\'s lines for every builder body fixture, as README.md, in both screens', async () => {
+    expect(fixtures.body.length).toBe(16);
+    for (const screen of await both()) {
+      for (const fixture of fixtures.body) expect(withheldOf(screen.screenTargetBody(fixture.body, 'README.md')), fixture.name).toEqual(fixture.oracle);
+    }
+    // The population reaches all three outcomes, so agreement is not agreement on one answer.
+    const [ours] = await both();
+    expect(new Set(fixtures.body.map((fixture) => ours.screenTargetBody(fixture.body, 'README.md').kind))).toEqual(new Set(['admitted', 'redacted', 'excluded']));
+  });
+  it('excludes every builder whole-file fixture whole at its own path, in both screens', async () => {
+    expect(fixtures.whole.length).toBe(3);
+    for (const screen of await both()) {
+      for (const fixture of fixtures.whole) {
+        expect(fixture.oracle, fixture.name).toBeNull();
+        expect(screen.screenTargetBody(fixture.body, fixture.path), fixture.name).toEqual({ kind: 'excluded', outcome: 'secret-detector-match' });
+      }
+    }
+  });
+  it('keeps screenBody whole-text: agent text and untaught consumers still exclude a redactable body whole', async () => {
+    const body = `a\n${['to', 'ken'].join('')}=${'abcdefgh12345678'}\nb\nc\n`;
+    for (const screen of await both()) {
+      expect(screen.screenTargetBody(body, 'README.md')).toMatchObject({ kind: 'redacted', withheld: [1, 2, 3], retained: '\n\n\nc\n' });
+      expect(screen.screenBody(body, 'README.md')).toBe('secret-detector-match');
+      expect(screen.screenBody(body)).toBe('secret-detector-match');
+    }
+  });
+  it('runs the active-content scan over the complete body of a redacted one, excluding it whole', async () => {
+    const body = `${['to', 'ken'].join('')}=${'abcdefgh12345678'}\nx\ny\n<script>run()</script>\n`;
+    for (const screen of await both()) expect(screen.screenTargetBody(body, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
+  });
+  it('runs the active-content scan over the withheld lines too: active content only on a matched line excludes the body whole', async () => {
+    // The retained text (lines 2 to 4 emptied) holds no active content, so a scan of the retained text alone would admit it.
+    const body = `a\nb\n<script>run()</script> ${['to', 'ken'].join('')}=${'abcdefgh12345678'}\nc\nd\n`;
+    for (const screen of await both()) expect(screen.screenTargetBody(body, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
+  });
+  it.each([
+    ['another rule text', (r: Record<string, unknown>) => ({ ...r, rule: `${r['rule'] as string} ` })],
+    ['a line pattern anchored to the body', (r: Record<string, unknown>) => ({ ...r, wholeArtifactLinePattern: '^-----BEGIN ' })],
+    ['an extra field', (r: Record<string, unknown>) => ({ ...r, scope: 'all' })],
+  ])('refuses a policy whose redaction has %s, as the app does', async (_name, mutate) => {
+    const scope = LIVE.publicSourceScope as Record<string, unknown>;
+    const policy = policyOf({ ...scope, secretRedaction: mutate(scope['secretRedaction'] as Record<string, unknown>) });
+    expect(buildDossierScreen(encode(policy), true)).toMatchObject({ ok: false, why: expect.stringContaining('its secret redaction') });
     await expect(appScreen(policy, true)).rejects.toThrow();
   });
 });

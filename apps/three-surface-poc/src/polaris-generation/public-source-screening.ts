@@ -25,7 +25,12 @@
 // policy's own path lists. Under version 3, a code-content body whose
 // extension the scope's `codeContentExemption` lists skips the active-content
 // scan (`codeContentExempt`, shared with the dossier's screen); every detector
-// still runs over it. The exemption holds at a page only while the page meets
+// still runs over it. Under version 4, `screenTargetBody` applies the scope's
+// `secretRedaction` (`redactBody`, shared with the dossier's screen): a
+// project-documentation body whose detector matches are all line-redactable
+// is retained as `redacted-span` with its matched and guard lines withheld;
+// `screenBody` stays whole-text, and this reader's corpus still excludes such
+// a body whole (it is not yet taught to carry withheld lines). The exemption holds at a page only while the page meets
 // the scope's `renderCondition`: this app's page sinks are the dossier
 // renderer and the draft preview, which write every body byte through
 // `escape` under `DRAFT_PREVIEW_CSP_META`, and their tests fail if either
@@ -50,7 +55,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { POLICY_ACT_FORMS, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { codeContentExempt, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, type PublicSourceContentClass } from '@syzygy/polaris-generation-core';
+import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PipelinePorts, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 import { excludedSourceId, newGenerationRunKey } from './run-key.js';
@@ -105,10 +110,21 @@ export interface PublicSourceScreen extends CorpusScreen {
   readonly projectDocumentation: boolean;
   /** Whether the policy declares the version-3 code-content exemption. */
   readonly codeContentExemption: boolean;
+  /** Whether the policy declares the version-4 secret redaction. */
+  readonly secretRedaction: boolean;
+  /** A target body screened under the policy's secret redaction (version 4) where it applies; see the dossier's `screenTargetBody`. */
+  readonly screenTargetBody: (body: string, path: string) => PublicSourceTargetBody;
   /** The content class `screenPath` admits a path under, or undefined when it excludes the path. Whoever hands an admitted body to an
    * agent or a provider gates it by the classes the consent for that pair lists; screening is not that consent. */
   readonly contentClass: (path: string) => PublicSourceContentClass | undefined;
 }
+
+/** The dossier screen's `TargetBodyScreen`, unforked in shape. */
+export type PublicSourceTargetBody =
+  | { readonly kind: 'admitted' }
+  | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly lineByteOffsets: readonly number[];
+      readonly originalBytes: number; readonly contentSha256: string; readonly withheld: readonly number[]; readonly detectorIds: readonly string[] }
+  | { readonly kind: 'excluded'; readonly outcome: 'secret-detector-match' | 'active-content' };
 
 function refuse(why: string): never { throw new CorpusRefusal(`public-source-policy: ${why}`); }
 const stringList = (value: unknown): value is readonly string[] => Array.isArray(value) && value.every(item => typeof item === 'string' && item.length > 0);
@@ -148,23 +164,37 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   const exemptionRead = readCodeContentExemption(scope, sourceExtensions);
   if (!exemptionRead.ok) refuse(`policy ${exemptionRead.why.replace(/^its /u, '')}`);
   const exemption = exemptionRead.ok ? exemptionRead.exemption : null;
+  const detectorIds = Array.isArray(doc.detectors) ? doc.detectors.flatMap((d: unknown) => (d !== null && typeof d === 'object' && typeof (d as Record<string, unknown>).id === 'string' ? [(d as Record<string, unknown>).id as string] : [])) : [];
+  const redactionRead = readSecretRedaction(scope, detectorIds);
+  if (!redactionRead.ok) refuse(`policy ${redactionRead.why.replace(/^its /u, '')}`);
+  const redaction = redactionRead.ok ? redactionRead.redaction : null;
   const rules: DeniedPathRules = { basenames: admission!.deniedPathBasenames as string[], prefixes: admission!.deniedPathPrefixes as string[], suffixes: admission!.deniedPathSuffixes as string[] };
   let detectors: ReturnType<typeof compileDetectors>;
   try { detectors = compileDetectors({ detectors: doc.detectors as readonly SecretDetector[] }); } catch (error) { return refuse(`detectors: ${error instanceof Error ? error.message : 'invalid'}`); }
+  const everyOffset = compileEveryOffsetMatcher(doc.detectors as readonly RedactionDetector[]);
   const key = Buffer.from(runKey);
   // Unread: denied path, then a detector match anywhere in the path, then a path in neither project-documentation nor code-content.
   const screenPath = (path: string) => deniedPathReason(path, rules) !== undefined ? 'denied-path' as const
     : detectSecrets(detectors, path) !== undefined ? 'secret-detector-match' as const
       : publicSourceContentClass(path, sourceExtensions, documentation) !== undefined ? undefined : 'unknown-extraction-class' as const;
   const contentClass = (path: string): PublicSourceContentClass | undefined => screenPath(path) === undefined ? publicSourceContentClass(path, sourceExtensions, documentation) : undefined;
+  const active = (body: string, path: string | undefined): boolean => !(path !== undefined && codeContentExempt(path, contentClass(path), exemption)) && scanActiveContent(body).length > 0;
+  const screenTargetBody = (body: string, path: string): PublicSourceTargetBody => {
+    const redacted = redactBody(body, contentClass(path), everyOffset, redaction);
+    if (redacted.kind === 'excluded') return { kind: 'excluded', outcome: 'secret-detector-match' };
+    if (active(body, path)) return { kind: 'excluded', outcome: 'active-content' };
+    return redacted.kind === 'clean' ? { kind: 'admitted' } : redacted;
+  };
   return {
     policyId: doc.policyId as string, policyVersion: doc.policyVersion as string, policySha256, projectDocumentation: documentation !== null,
     codeContentExemption: exemption !== null,
+    secretRedaction: redaction !== null,
+    screenTargetBody,
     screenPath,
     contentClass,
     // Detectors scan the raw text (inert code contexts included), then the active-content scan unless the exemption names the body's path.
     screenBody: (body, path) => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match'
-      : !(path !== undefined && codeContentExempt(path, contentClass(path), exemption)) && scanActiveContent(body).length > 0 ? 'active-content' : undefined,
+      : active(body, path) ? 'active-content' : undefined,
     opaqueId: identity => excludedSourceId(key, identity),
   };
 }
@@ -176,4 +206,15 @@ export async function readScreenedRepoCorpus(repoRoot: string, config: Pick<Read
   const runKey = ports.runKey ?? newGenerationRunKey();
   const screen = await loadPublicSourceScreen(ports.policyAct, runKey);
   return readRepoCorpus(repoRoot, config, { ...(ports.admission === undefined ? {} : { admission: ports.admission }), ...(ports.readBlobs === undefined ? {} : { readBlobs: ports.readBlobs }), screen, runKey });
+}
+
+/** The existing pipeline source-verification boundary for a public-source corpus. Re-evaluates policy and observation admission, reads
+ * original Git blobs by the pinned identifiers, verifies their hashes, and screens them again. Returned JSON projections never verify
+ * themselves: the pipeline compares the complete request population against this newly produced population before dispatch. */
+export function screenedRepoCorpusVerifier(repoRoot: string, config: Pick<ReaderConfig, 'repositoryId' | 'revision' | 'include' | 'exclude' | 'oversize'>,
+  ports: Omit<RepoCorpusPorts, 'screen'> & { readonly policyAct?: PublicSourcePolicyActPort; readonly runKey?: Buffer } = {}): PipelinePorts['verifySources'] {
+  return async request => {
+    if (request.sources.some(source => source.repositoryId !== config.repositoryId || source.revision !== config.revision)) return false;
+    try { return (await readScreenedRepoCorpus(repoRoot, config, ports)).sources; } catch { return false; }
+  };
 }

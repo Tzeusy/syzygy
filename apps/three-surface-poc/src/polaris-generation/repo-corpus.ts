@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateReaderQuestions, validateRequestedAssets,
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, generationSourcesForRedactedBody, gitBlobObjectId, validateGenerationSources, verifiedRedactedBody, validateReaderQuestions, validateRequestedAssets,
   type GenerationBudget, type GenerationExclusionReason, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
@@ -131,6 +131,8 @@ export interface RepoCorpusCount {
   /** Unquotable paths (never selected, never read) whose path a detector matched; counted apart from
    * `secretDetectorMatches`, which counts selected sources only. Zero without a screen. */
   readonly unquotablePathSecretMatches: number;
+  readonly redactedFiles: number;
+  readonly withheldLines: number;
 }
 export interface RepoCorpus {
   readonly repositoryId: string;
@@ -153,6 +155,13 @@ export interface CorpusScreen {
   readonly screenPath: (path: string) => Exclude<CorpusScreenReason, 'active-content'> | undefined;
   /** With the blob's path, a body the scope's code-content exemption names may skip the active-content scan. */
   readonly screenBody: (body: string, path?: string) => 'secret-detector-match' | 'active-content' | undefined;
+  /** Absent on a whole-body screen. A v4 target-body screen must return only safe retained material and original coordinates. */
+  readonly screenTargetBody?: (body: string, path: string) =>
+    | { readonly kind: 'admitted' }
+    | { readonly kind: 'excluded'; readonly outcome: 'secret-detector-match' | 'active-content' }
+    | { readonly kind: 'redacted'; readonly retained: string; readonly retainedLines: readonly string[]; readonly withheld: readonly number[];
+        readonly lineByteOffsets: readonly number[]; readonly originalBytes: number; readonly contentSha256: string };
+  readonly policySha256?: string;
   readonly opaqueId: (identity: string) => string;
 }
 /** `runKey` keys every excluded row's id and the unrepresentable path digests
@@ -179,6 +188,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   });
   let unquotablePathSecretMatches = 0;
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
+  let redactedFiles = 0, withheldLines = 0;
   const screened: Record<CorpusScreenReason, number> = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0, 'unknown-extraction-class': 0 };
   const unrepresentable: { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
@@ -225,8 +235,18 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       if (body === undefined) { binaryOrNonUtf8++; sources.push(excludedRow('binary-or-non-utf8')); continue; }
       if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
       if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
-      const screenedOut = screen?.screenBody(body, record.path);
+      const targeted = screen?.screenTargetBody?.(body, record.path);
+      const screenedOut = targeted?.kind === 'excluded' ? targeted.outcome : targeted === undefined ? screen?.screenBody(body, record.path) : undefined;
       if (screenedOut !== undefined) { screened[screenedOut]++; sources.push(withheld(record, screenedOut)); continue; }
+      if (targeted?.kind === 'redacted') {
+        if (screen?.policySha256 === undefined) throw new CorpusRefusal('redacted-body-without-policy-identity');
+        redactedFiles++; withheldLines += targeted.withheld.length;
+        const projection = verifiedRedactedBody(body, record.objectId, record.path, screen.screenTargetBody!);
+        const retained = generationSourcesForRedactedBody({ ...base, projection, policySha256: screen.policySha256, oversize: config.oversize });
+        if (retained.some(row => row.segment !== undefined || row.exclusion.excluded)) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
+        sources.push(...retained.map(row => row.exclusion.excluded ? withheld(record, row.exclusion.reason) : row));
+        continue;
+      }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
       sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => !row.exclusion.excluded ? row
         : screen !== undefined ? withheld(record, row.exclusion.reason) : { ...row, sourceId: excludedSourceId(runKey, record.path) }));
@@ -235,7 +255,8 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
     count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
-      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'], unquotablePathSecretMatches },
+      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'], unquotablePathSecretMatches,
+      redactedFiles, withheldLines },
     unrepresentable,
     rawBytes, // The digest binds the population across runs, so a path-bearing excluded row contributes its unkeyed id, never its keyed one.
     // A withheld row (objectId null) carries only the screen's own keyed id, as before.
