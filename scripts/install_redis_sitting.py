@@ -126,11 +126,15 @@ V2_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-A
 V3_PKG = f"{CAND}/public-source-screening-scope-v3"
 V3_MANIFEST = f"{V3_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt"
 V3_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md"
+V4_PKG = f"{CAND}/public-source-screening-scope-v4"
+V4_MANIFEST = f"{V4_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt"
+V4_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md"
 V1_SCRIPT = "record_public_source_screening_scope_act"
 V2_SCRIPT = "record_public_source_screening_scope_v2_act"
 V3_SCRIPT = "record_public_source_screening_scope_v3_act"
+V4_SCRIPT = "record_public_source_screening_scope_v4_act"
 #: The scope recorders in chain order; the battery carries only the final act's.
-SCOPE_SCRIPTS = (V1_SCRIPT, V2_SCRIPT, V3_SCRIPT)
+SCOPE_SCRIPTS = (V1_SCRIPT, V2_SCRIPT, V3_SCRIPT, V4_SCRIPT)
 REPIN_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
 AMENDMENT_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md"
 POLICY_JSON = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
@@ -797,6 +801,60 @@ def policy_cg_v3_edits(text: str, v2_arg: str) -> str:
     return add_exemptions(text, '    (PUBLIC_SOURCE_SCOPE_V3_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V3_MANIFEST,\n')
 
 
+#: The version-4 install (2026-10-20) carries no mark comment: it is recognized by its four hunks'
+#: exact text, which are the hunks the install commit wrote into check_governance.py.
+V4_CHAIN_ROW = ('    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],\n'
+                '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",\n'
+                '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",\n')
+V4_OFFERING = ('    # The version-3 screening-scope act was offered the same way (variant row of its manifest).\n'
+               '    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md": {\n'
+               '        f"{CANDIDATES}/public-source-screening-scope-v3/PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt": "variant-row",\n'
+               '    },\n')
+V3_MANIFEST_GATE_OLD = ("    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))\n"
+                        "            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))):\n")
+V3_MANIFEST_GATE_NEW = ("    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))\n"
+                        "            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))\n"
+                        '            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/'
+                        'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md"))):\n')
+V4_EXEMPTION = ('    (f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md", "manifest"): '
+                'f"{CANDIDATES}/public-source-screening-scope-v4/PUBLIC-SOURCE-SCREENING-SCOPE-V4-MANIFEST.txt",\n')
+
+
+def policy_cg_v4_edits(text: str, v3_arg: str) -> str:
+    """The version-4 act supersedes the version-3 act for the policy subject. Applies on top of
+    `policy_cg_v3_edits`: the chain row, the version-3 manifest's chosen row pinned as variant-row
+    history, the version-3 manifest registration gated off, and the version-4 manifest heading
+    exemption. All four hunks or none: a file carrying only some of them is refused."""
+    present = [V4_CHAIN_ROW in text, V4_OFFERING in text, V3_MANIFEST_GATE_NEW in text, V4_EXEMPTION in text]
+    if all(present):
+        if f'{V4_CHAIN_ROW}     "{v3_arg}"),\n' not in text:
+            raise Refusal("the version-4 chain row quotes another argument than the version-3 act's")
+        return text
+    if any(present):
+        raise Refusal(f"check_governance.py carries part of the version-4 install only ({present})")
+    if V3_CHAIN_MARK not in text:
+        raise Refusal("the version-4 chain row needs the version-3 install first (policy_cg_v3_edits)")
+    i = once(text, ")\n#: For a chained amendment row", "policy chain end")
+    text = text[:i] + V4_CHAIN_ROW + f'     "{v3_arg}"),\n' + text[i:]
+    i = once(text, OFFERINGS_END_ANCHOR, "policy offerings end")
+    text = text[:i] + V4_OFFERING + text[i:]
+    once(text, V3_MANIFEST_GATE_OLD, "version-3 manifest registration")
+    text = text.replace(V3_MANIFEST_GATE_OLD, V3_MANIFEST_GATE_NEW, 1)
+    return add_exemptions(text, V4_EXEMPTION)
+
+
+def battery_lines_v4(record: str, new_arg: str, date: str) -> tuple[str, str]:
+    """Version 4's recorder takes the owner's words, which its record quotes on one `> ` line."""
+    words = re.findall(r"^> (.+)$", record, re.M)
+    if len(words) != 1:
+        raise Refusal(f"the version-4 act record quotes {len(words)} owner-word lines, expected one")
+    if "#" in words[0]:
+        raise Refusal("the owner's words contain '#', which the battery splitter reads as a comment; "
+                      "add the --check line to PROJECT-STATUS.md and the workflow by hand")
+    return (f"python3 scripts/{V4_SCRIPT}.py --check {new_arg} --date {date} --owner-words {shell_word(words[0])}",
+            f"python3 scripts/{V4_SCRIPT}.py --selftest")
+
+
 def battery_lines(record: str, new_arg: str, date: str, script: str = V1_SCRIPT) -> tuple[str, str]:
     """The scope recorder's --check line needs the owner's selection text, read back from the record."""
     opening = " ".join(grab(r'that opened "(.+?)" by selecting', record, "question opening", re.S).split())
@@ -948,13 +1006,14 @@ def read_policy_act(root: pathlib.Path, key: str, path: str, script: str, manife
 
 
 def policy_acts(root: pathlib.Path) -> list[PolicyAct]:
-    """The policy acts in force, in order: version 1, then version 2 and version 3 when each exists.
+    """The policy acts in force, in order: version 1, then versions 2, 3 and 4 when each exists.
     Each later version needs the one before it. Refuses an order or a pair the records themselves
     contradict, so the wrong order is never installed."""
     v1 = read_policy_act(root, "v1", SCOPE_ACT, V1_SCRIPT, SCOPE_MANIFEST, REPIN_ACT)
     acts = [v1]
     for key, path, script, manifest, n in (("v2", V2_ACT, V2_SCRIPT, V2_MANIFEST, 2),
-                                           ("v3", V3_ACT, V3_SCRIPT, V3_MANIFEST, 3)):
+                                           ("v3", V3_ACT, V3_SCRIPT, V3_MANIFEST, 3),
+                                           ("v4", V4_ACT, V4_SCRIPT, V4_MANIFEST, 4)):
         if not (root / path).is_file():
             continue
         prev = acts[-1]
@@ -998,6 +1057,9 @@ def repoint_gate(inputs: str, desired: list[str], comment: str) -> str:
 
 def gate_comment(acts: list[PolicyAct]) -> str:
     final = acts[-1]
+    if final.key == "v4":
+        return (f"// The policy act is the {final.date} public-source screening-scope version 4 act, superseding the\n"
+                f"// {acts[2].date} version-3 act; the registry act is still its 2026-10-02 re-pin act.\n")
     if final.key == "v3":
         return (f"// The policy act is the {final.date} public-source screening-scope version 3 act, superseding the\n"
                 f"// {acts[1].date} version-2 act; the registry act is still its 2026-10-02 re-pin act.\n")
@@ -1022,10 +1084,12 @@ def step_policy(root: pathlib.Path, write: bool) -> bool:
     cg = root / CG
     text = cg.read_text()
     new_text = policy_cg_edits(text, repin_arg)
-    if final.key in ("v2", "v3"):
+    if final.key in ("v2", "v3", "v4"):
         new_text = policy_cg_v2_edits(new_text, acts[0].arg)
-    if final.key == "v3":
+    if final.key in ("v3", "v4"):
         new_text = policy_cg_v3_edits(new_text, acts[1].arg)
+    if final.key == "v4":
+        new_text = policy_cg_v4_edits(new_text, acts[2].arg)
     if new_text != text:
         changed = True
         if write:
@@ -1053,7 +1117,8 @@ def step_policy(root: pathlib.Path, write: bool) -> bool:
             t = re.sub(r"const EVALUATION_INSTANT = '[^']+';", f"const EVALUATION_INSTANT = '{final.date}T00:00:00Z';", t)
             J.write(root / INPUTS_TEST, t)
     # the status battery and the hosted workflow carry the final recorder's lines
-    check_cmd, selftest_cmd = battery_lines(final.text, final.arg, final.date, final.script)
+    check_cmd, selftest_cmd = (battery_lines_v4(final.text, final.arg, final.date) if final.key == "v4"
+                               else battery_lines(final.text, final.arg, final.date, final.script))
     status = (root / STATUS).read_text()
     workflow = (root / WORKFLOW).read_text()
     ns, nw = edit_battery(status, workflow, check_cmd, selftest_cmd, final.script)
@@ -1154,6 +1219,12 @@ def _activate_public_source_scope_v2_copy_registry():
         ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V2_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
 
 
+def _activate_public_source_scope_v3_copy_registry():
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V3_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V3_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
 BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
     (f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md", "three-artifact manifest"):
         f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt",
@@ -1179,10 +1250,12 @@ def policy_selftests() -> list[tuple[str, bool]]:
 
     a1, a2, repin = "1" * 64, "2" * 64, "0" * 64
     pol1, pol2, pol3 = b'{"policyVersion": "1.2.0"}\n', b'{"policyVersion": "1.3.0"}\n', b'{"policyVersion": "1.4.0"}\n'
-    a1, a2, a3 = sha(pol1), sha(pol2), sha(pol3)
+    pol4 = b'{"policyVersion": "1.5.0"}\n'
+    a1, a2, a3, a4 = sha(pol1), sha(pol2), sha(pol3), sha(pol4)
 
     def tree(t, v2=True, v2_instant="2026-10-04T10:00:00Z", v2_arg=None, policy=None, naming=True, v1=True,
-             v3=False, v3_instant="2026-10-09T10:00:00Z", v3_arg=None, v3_naming=True):
+             v3=False, v3_instant="2026-10-09T10:00:00Z", v3_arg=None, v3_naming=True,
+             v4=False, v4_instant="2026-10-20T10:00:00Z", v4_arg=None, v4_naming=True):
         root = pathlib.Path(t)
         (root / SCOPE_ACT).parent.mkdir(parents=True, exist_ok=True)
         if v1:
@@ -1194,8 +1267,12 @@ def policy_selftests() -> list[tuple[str, bool]]:
         if v3:
             extra = f"supersedes `{V2_ACT}` argument `{v2_arg or a2}`\n" if v3_naming else "\n"
             (root / V3_ACT).write_text(record(v3_arg or a3, "ID3", "tag3", "2026-10-09", v3_instant, extra))
+        if v4:
+            extra = f"supersedes `{V3_ACT}` argument `{v3_arg or a3}`\n" if v4_naming else "\n"
+            (root / V4_ACT).write_text(record(v4_arg or a4, "ID4", "tag4", "2026-10-20", v4_instant, extra))
         (root / POLICY_JSON).parent.mkdir(parents=True, exist_ok=True)
-        (root / POLICY_JSON).write_bytes(policy if policy is not None else (pol3 if v3 else pol2 if v2 else pol1))
+        (root / POLICY_JSON).write_bytes(policy if policy is not None
+                                         else (pol4 if v4 else pol3 if v3 else pol2 if v2 else pol1))
         return root
 
     with tempfile.TemporaryDirectory() as t:
@@ -1212,6 +1289,11 @@ def policy_selftests() -> list[tuple[str, bool]]:
         ok.append(("policy acts: versions 1, 2 then 3, the final act supersedes version 2",
                    [a.key for a in got] == ["v1", "v2", "v3"] and got[-1].supersedes == V2_ACT
                    and got[-1].script == V3_SCRIPT and got[-1].arg == a3 and got[-1].manifest == V3_MANIFEST))
+    with tempfile.TemporaryDirectory() as t:
+        got = policy_acts(tree(t, v3=True, v4=True))
+        ok.append(("policy acts: versions 1 to 4, the final act supersedes version 3",
+                   [a.key for a in got] == ["v1", "v2", "v3", "v4"] and got[-1].supersedes == V3_ACT
+                   and got[-1].script == V4_SCRIPT and got[-1].arg == a4 and got[-1].manifest == V4_MANIFEST))
     for name, kwargs in (("version 2 recorded before version 1", dict(v2_instant="2026-10-04T08:00:00Z")),
                          ("version 2 recorded at the same instant", dict(v2_instant="2026-10-04T09:00:00Z")),
                          ("version 2 carrying version 1's argument", dict(v2_arg=a1, policy=pol1)),
@@ -1223,7 +1305,13 @@ def policy_selftests() -> list[tuple[str, bool]]:
                          ("version 3 recorded at version 2's instant", dict(v3=True, v3_instant="2026-10-04T10:00:00Z")),
                          ("version 3 carrying version 2's argument", dict(v3=True, v3_arg=a2, policy=pol2)),
                          ("version 3 that does not name version 2", dict(v3=True, v3_naming=False)),
-                         ("the policy still at version 2's bytes after version 3", dict(v3=True, policy=pol2))):
+                         ("the policy still at version 2's bytes after version 3", dict(v3=True, policy=pol2)),
+                         ("version 4 without version 3", dict(v4=True)),
+                         ("version 4 recorded before version 3", dict(v3=True, v4=True, v4_instant="2026-10-09T09:00:00Z")),
+                         ("version 4 recorded at version 3's instant", dict(v3=True, v4=True, v4_instant="2026-10-09T10:00:00Z")),
+                         ("version 4 carrying version 3's argument", dict(v3=True, v4=True, v4_arg=a3, policy=pol3)),
+                         ("version 4 that does not name version 3", dict(v3=True, v4=True, v4_naming=False)),
+                         ("the policy still at version 3's bytes after version 4", dict(v3=True, v4=True, policy=pol3))):
         with tempfile.TemporaryDirectory() as t:
             root = tree(t, **kwargs)
             ok.append((f"policy acts refuse the wrong order or pair: {name}", refused(lambda: policy_acts(root))))
@@ -1269,9 +1357,38 @@ def policy_selftests() -> list[tuple[str, bool]]:
         ast.parse(live3)
         ok.append(("chain edits: version 3 applies to the live check_governance.py once and stays valid Python",
                    live3.count(V3_CHAIN_MARK) == 1 and (live3 == live if installed else live3 != live)))
+        four = policy_cg_v4_edits(three, "d" * 64)
+        ast.parse(four)
+        ok.append(("chain edits: version 4 on top of version 3 is valid Python", True))
+        ok.append(("chain edits: one version-4 row, one version-3 variant-row offering, the version-3 manifest gated, one exemption",
+                   four.count(V4_CHAIN_ROW) == 1 and four.count(f'{V4_CHAIN_ROW}     "{"d" * 64}"),\n') == 1
+                   and four.count('PUBLIC-SOURCE-SCREENING-SCOPE-V3-MANIFEST.txt": "variant-row"') == 1
+                   and V3_MANIFEST_GATE_NEW in four and V3_MANIFEST_GATE_OLD not in four
+                   and four.count(V4_EXEMPTION) == 1))
+        ok.append(("chain edits: version 4 is idempotent", policy_cg_v4_edits(four, "d" * 64) == four))
+        ok.append(("chain edits: an installed version-4 row quoting another argument is refused",
+                   refused(lambda: policy_cg_v4_edits(four, "e" * 64))))
+        for k, hunk in enumerate((V4_OFFERING, V4_EXEMPTION)):
+            ok.append((f"chain edits: a partial version-4 install (hunk {k + 2} missing) is refused",
+                       refused(lambda: policy_cg_v4_edits(four.replace(hunk, "", 1), "d" * 64))))
+        # The live file carries the version-4 install (2026-10-20), which wrote no mark: undoing its four
+        # hunks and re-applying the edit must give the live bytes back exactly.
+        v3_live_arg = "c13bd56c70698ccdf55fa2b0a81ed51f4b3f385848d5eccd97b8be3cfad48fce"
+        if V4_CHAIN_ROW in live:
+            pre4 = (live.replace(f'{V4_CHAIN_ROW}     "{v3_live_arg}"),\n', "", 1).replace(V4_OFFERING, "", 1)
+                    .replace(V3_MANIFEST_GATE_NEW, V3_MANIFEST_GATE_OLD, 1).replace(V4_EXEMPTION, "", 1))
+            ok.append(("chain edits: version 4 reproduces the live install byte for byte and is idempotent on it",
+                       pre4 != live and policy_cg_v4_edits(pre4, v3_live_arg) == live
+                       and policy_cg_v4_edits(live, v3_live_arg) == live))
+        else:
+            live4 = policy_cg_v4_edits(live, v3_live_arg)
+            ast.parse(live4)
+            ok.append(("chain edits: version 4 applies to the live check_governance.py once", live4 != live))
     except (SyntaxError, Refusal) as exc:
         print(f"  (chain edit failure: {exc})")
-        ok.append(("chain edits: the version 1, 2 and 3 edits apply and are valid Python", False))
+        ok.append(("chain edits: the version 1 to 4 edits apply and are valid Python", False))
+    ok.append(("chain edits: version 4 without version 3 is refused",
+               refused(lambda: policy_cg_v4_edits(policy_cg_v2_edits(policy_cg_edits(cg_text, "a" * 64), "b" * 64), "d" * 64))))
     ok.append(("chain edits: version 2 without version 1 is refused",
                refused(lambda: policy_cg_v2_edits(cg_text, "b" * 64))))
     ok.append(("chain edits: version 3 without version 2 is refused",
@@ -1286,10 +1403,12 @@ def policy_selftests() -> list[tuple[str, bool]]:
     acts_v1 = [PolicyAct("v1", SCOPE_ACT, "", "", "", "", "2026-10-04", "", V1_SCRIPT, REPIN_ACT, "")]
     acts_v2 = [acts_v1[0], PolicyAct("v2", V2_ACT, "", "", "", "", "2026-10-05", "", V2_SCRIPT, SCOPE_ACT, "")]
     acts_v3 = acts_v2 + [PolicyAct("v3", V3_ACT, "", "", "", "", "2026-10-09", "", V3_SCRIPT, V2_ACT, "")]
+    acts_v4 = acts_v3 + [PolicyAct("v4", V4_ACT, "", "", "", "", "2026-10-20", "", V4_SCRIPT, V3_ACT, "")]
     for name, start, acts in (("re-pin to version 1", gate(REPIN_ACT, amend), acts_v1),
                               ("re-pin straight to version 2", gate(REPIN_ACT, amend), acts_v2),
                               ("version 1 up to version 2", gate(SCOPE_ACT, REPIN_ACT, gate_comment(acts_v1)), acts_v2),
-                              ("version 2 up to version 3", gate(V2_ACT, SCOPE_ACT, gate_comment(acts_v2)), acts_v3)):
+                              ("version 2 up to version 3", gate(V2_ACT, SCOPE_ACT, gate_comment(acts_v2)), acts_v3),
+                              ("version 3 up to version 4", gate(V3_ACT, V2_ACT, gate_comment(acts_v3)), acts_v4)):
         desired = [acts[-1].path, acts[-1].supersedes]
         done = repoint_gate(start, desired, gate_comment(acts))
         ok.append((f"gate pointers: {name}",
@@ -1338,6 +1457,20 @@ def policy_selftests() -> list[tuple[str, bool]]:
                refused(lambda: edit_battery(n2, wf, c3, s3, V3_SCRIPT))))
     ok.append(("gate comment: version 3 names version 2's date",
                gate_comment(acts_v3).startswith("// The policy act is the 2026-10-09 public-source screening-scope version 3 act, superseding the\n// 2026-10-05 version-2 act;")))
+    ok.append(("gate comment: version 4 names version 3's date",
+               gate_comment(acts_v4).startswith("// The policy act is the 2026-10-20 public-source screening-scope version 4 act, superseding the\n// 2026-10-09 version-3 act;")))
+    live_v3 = PolicyAct("v3", V3_ACT, "", "", "", "", "2026-10-08", "", V3_SCRIPT, V2_ACT, "")
+    ok.append(("gate comment: version 4's, over the recorded dates, is the live read gate's comment",
+               gate_comment(acts_v2 + [live_v3, acts_v4[3]]) in (ROOT / INPUTS_TS).read_text()))
+    c4, s4 = f"python3 scripts/{V4_SCRIPT}.py --check w", f"python3 scripts/{V4_SCRIPT}.py --selftest"
+    n4, w4 = edit_battery(st, wf, c4, s4, V4_SCRIPT)
+    n34, w34 = edit_battery(n23, w23, c4, s4, V4_SCRIPT)
+    ok.append(("battery: version 3 up to version 4 replaces its lines in place, keeping the count at three",
+               V3_SCRIPT not in n34 + w34 and c4 in n34 and s4 in n34 and (n34, w34) == (n4, w4)
+               and edit_battery(n34, w34, c4, s4, V4_SCRIPT) == (n34, w34)
+               and "The three checks above are the same three" in n34 and n34.count("python3 ") == 3))
+    ok.append(("battery: a workflow without the version-3 steps is refused on upgrade to version 4",
+               refused(lambda: edit_battery(n23, wf, c4, s4, V4_SCRIPT))))
     return ok
 
 
@@ -1548,6 +1681,23 @@ def selftest() -> int:
                               "a" * 64, "2026-10-09", V3_SCRIPT)
     ok.append(("battery line carries version 3's packet words, folded across a wrap",
                cmd3.endswith("--selection-description 'D d' --packet-words 'Sign it, variant all'")))
+    cmd4, st4 = battery_lines_v4("x\n\n> Sign it, variant span\n\ny\n", "a" * 64, "2026-10-20")
+    ok.append(("battery line carries version 4's owner words and no selection text",
+               cmd4 == f"python3 scripts/{V4_SCRIPT}.py --check {'a' * 64} --date 2026-10-20 --owner-words 'Sign it, variant span'"
+               and st4 == f"python3 scripts/{V4_SCRIPT}.py --selftest"))
+    for name, rec in (("no", "x\n"), ("two", "> a\n> b\n")):
+        try:
+            battery_lines_v4(rec, "a" * 64, "2026-10-20")
+            ok.append((f"battery line for version 4 refuses a record with {name} owner-word lines", False))
+        except Refusal:
+            ok.append((f"battery line for version 4 refuses a record with {name} owner-word lines", True))
+    live4 = ROOT / V4_ACT
+    if live4.is_file():
+        rec4 = live4.read_text()
+        arg4 = grab(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`$", rec4, "v4 digest")
+        c, _s = battery_lines_v4(rec4, arg4, "2026-10-20")
+        ok.append(("battery line for the live version-4 record is the status battery's line",
+                   c in (ROOT / STATUS).read_text() and c in (ROOT / WORKFLOW).read_text()))
     try:
         battery_lines('that opened "Q # x" by selecting the\n| "L" | "D" |\n', "a" * 64, "2026-10-04")
         ok.append(("selection text the battery splitter cannot carry is refused", False))

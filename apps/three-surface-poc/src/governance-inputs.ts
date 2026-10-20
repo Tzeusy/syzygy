@@ -53,7 +53,7 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
 // changes only these pointers, identities, tags and targets. Nothing here
 // reads `governingBehaviorContract`, and the 2026-09-30 direction's bar on
 // the entry's currency and briefing fields still holds.
-// The policy act is the 2026-10-20 public-source screening-scope version 4 act (variant span), superseding the
+// The policy act is the 2026-10-20 public-source screening-scope version 4 act, superseding the
 // 2026-10-08 version-3 act; the registry act is still its 2026-10-02 re-pin act.
 export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md',
