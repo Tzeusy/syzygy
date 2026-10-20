@@ -217,10 +217,15 @@ as history.
 | `superpowers/plans/2026-08-27-syzygy-vky-validator-hardening.md` | `syzygy-vky` (closed) | Spent |
 | `plans/2026-08-26-syzygy-vky-validator-hardening-design.md` | `syzygy-vky` (closed) | Spent. The design for the same work as the row above — two files, one bead, split only by which harness wrote them. Neither is cited by anything |
 | `plans/2026-10-03-smooth-example-roadmap.md` | the beads labelled `self-drivable` | **Live.** The 2026-10-03 roadmap for a smooth functional example: live-run status, ranked steps, the owner decisions batched for one sitting |
+| `plans/2026-10-21-greenfield-parity-audit.md` | epic `syzygy-bpyt` | **Live.** The 2026-10-21 greenfield-parity audit at `dd520e8d`: from-scratch estimate, delta table, findings and the beads filed for them, convergence record |
 
 [Added 2026-10-03: the last row is a fifth file. "One of the four is not
 spent" above counts the four files present when it was written; with this
 row, two of five are live.]
+
+[Added 2026-10-21: a sixth file, the greenfield-parity audit, is now the
+last row, so the 2026-10-03 note's "last row" is the one above it. The audit
+is live too; three of six are live.]
 
 [Observed — swept 2026-09-06: four files across the three directories; each
 searched for `syzygy-*` identifiers in its own text, and each filename searched
