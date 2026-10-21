@@ -1,0 +1,64 @@
+{
+  "format": "owner-act-live-records-before-after/1",
+  "bead": "syzygy-bpyt.6.2",
+  "subject": [
+    "packages/three-surface-poc-core/src/act-fields.ts",
+    "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+    "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+  ],
+  "subjectSha256": {
+    "packages/three-surface-poc-core/src/act-fields.ts": "09a7c2e5c0514349e10b2b82a0aaf55aee9f3fac261385716ec3f70672552986",
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "f612651d13421c0ffcba0d8db9f5240dcb521aa2c0315b5316b92c52a7cb7b77",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "c33d0140539525175a267382d2f61f9ca891abbf4abed91bafa0ad33e1a716e6"
+  },
+  "baseSubjectSha256": {
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "647a9583590ead29fb7d82ef4689470fdaaac24be0ba58769c2bf2cba361c002",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "81be59320fb352ee6748b679fce1ae7376baaa966e4729ccd4e24393c6a849f1"
+  },
+  "fixCommit": "88c79070db6ed64bd820e47f1c41fb10b6376f1b",
+  "baseCommit": "fdc866afc4430a63074d52e13418ae319c9aa0a6",
+  "governanceRevision": "fdc866afc4430a63074d52e13418ae319c9aa0a6",
+  "method": "live_gates.mjs ran once with the two gate sources restored from the base commit and once at the fix, each after npm run build:poc, over the same governance revision. It evaluates both gates through their production loaders (loadBodyReadAuthorityInputs; walkthroughJudgmentInputsFor) and runs parseOwnerActRecord over every tracked Markdown file at that revision, testing each parsed Owner value against both former rules (hand-typed literals) and the shared rule. owner_sweep.py is the second method: a line-start Owner: regex over every tracked Markdown file in the worktree, against both former rules.",
+  "results": {
+    "liveOutputOldSha256": "f8e3cc2fc8c606bf8482e1a501cf9e566b62825ef0a2ad54230b337e94009180",
+    "liveOutputNewSha256": "f8e3cc2fc8c606bf8482e1a501cf9e566b62825ef0a2ad54230b337e94009180",
+    "liveOutputIdentical": true,
+    "bodyRead": {
+      "consent": "valid",
+      "policy": "valid",
+      "registry": "valid",
+      "admits": true
+    },
+    "walkthroughJudgment": {
+      "kind": "absent",
+      "what": "no-run-record",
+      "detail": "walkthrough execution record missing",
+      "criterion": "unknown-never-met"
+    },
+    "parserMethod": {
+      "markdownFiles": 1691,
+      "ownerFields": 117,
+      "distinctOwnerValues": [
+        "Tzeusy",
+        "{{OWNER}}"
+      ],
+      "nonHumanUnderOldBody": 0,
+      "nonHumanUnderOldJudgment": 0,
+      "nonHumanUnderShared": 0
+    },
+    "lineMethodOutput": [
+      "owner lines 138 files 126 distinct values 2",
+      "\"Tzeusy\" body False judg False 130",
+      "\"{{OWNER}}\" body False judg False 8",
+      "DIVERGENT 0"
+    ],
+    "flippedAdmittedToRefused": 0
+  },
+  "conclusion": "No owner-act or judgment record on main changes outcome: the two gates produce byte-identical evaluations at the base and the fix, and every Owner value either method finds (Tzeusy; the template placeholder {{OWNER}}) is human under both former rules and the shared one.",
+  "harness": {
+    "live_gates.mjs": "// Before/after harness for syzygy-bpyt.6.2: evaluates both owner-act gates\n// through their production loaders over one governance revision, and runs\n// the owner-act parser over every tracked Markdown file at that revision,\n// testing each parsed Owner value against both former rules and the\n// current shared rule. Usage: node live_gates.mjs <worktree> <revision> <out.json>\nimport { execFileSync } from 'node:child_process';\nimport { writeFileSync } from 'node:fs';\nimport { pathToFileURL } from 'node:url';\nimport { join } from 'node:path';\n\nconst [root, revision, out] = process.argv.slice(2);\nconst core = await import(pathToFileURL(join(root, 'packages/three-surface-poc-core/dist/index.js')).href);\nconst gov = await import(pathToFileURL(join(root, 'apps/three-surface-poc/dist/governance-inputs.js')).href);\nconst walk = await import(pathToFileURL(join(root, 'apps/three-surface-poc/dist/walkthrough-inputs.js')).href);\nlet shared;\ntry {\n  shared = await import(pathToFileURL(join(root, 'packages/three-surface-poc-core/dist/act-fields.js')).href);\n} catch {\n  shared = undefined;\n}\n\nconst OLD_BODY = /^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b/i;\nconst OLD_JUDGMENT = /^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;\nconst INSTANT = '2026-10-21T12:00:00Z';\nconst options = { repoRoot: root, governanceRevision: revision, evaluationInstant: INSTANT };\n\nconst body = core.evaluateBodyReadAuthority(\n  gov.loadBodyReadAuthorityInputs({ ...options, evaluationId: 'evaluation:pwb-body-read:bpyt-6-2' }),\n);\nconst judgmentInputs = walk.walkthroughJudgmentInputsFor({\n  ...options,\n  evaluationId: 'evaluation:pwb-walkthrough-judgment:bpyt-6-2',\n})({ evaluationIdentity: 'bpyt-6-2' });\nconst judgment = core.evaluateWalkthroughJudgment(judgmentInputs);\n\nconst files = execFileSync('git', ['-C', root, 'ls-tree', '-r', '-z', '--name-only', revision], { maxBuffer: 1 << 28 })\n  .toString('utf8')\n  .split('\\0')\n  .filter((path) => path.endsWith('.md'));\nconst owners = [];\nfor (const path of files) {\n  const text = execFileSync('git', ['-C', root, 'show', `${revision}:${path}`], { maxBuffer: 1 << 28 }).toString('utf8');\n  const parsed = core.parseOwnerActRecord(text);\n  if (parsed.owner.kind === 'missing') continue;\n  const value = parsed.owner.kind === 'present' ? parsed.owner.value : parsed.owner.raw;\n  owners.push({\n    path,\n    kind: parsed.owner.kind,\n    value,\n    oldBody: OLD_BODY.test(value),\n    oldJudgment: OLD_JUDGMENT.test(value),\n    shared: shared === undefined ? null : shared.NON_HUMAN_PRINCIPAL.test(value),\n  });\n}\n\nwriteFileSync(\n  out,\n  JSON.stringify(\n    {\n      revision,\n      markdownFiles: files.length,\n      ownerFields: owners.length,\n      distinctOwnerValues: [...new Set(owners.map((row) => row.value))],\n      owners,\n      bodyRead: body,\n      walkthroughJudgment: judgment,\n    },\n    null,\n    2,\n  ) + '\\n',\n);\nconsole.log(`md ${files.length} owners ${owners.length} body.admits ${body.admits} judgment ${judgment.outcome.kind}`);\n",
+    "owner_sweep.py": "import re, subprocess, sys, json\nOLD_BODY = re.compile(r'^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b', re.I)\nOLD_JUDG = re.compile(r'^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$', re.I)\nfiles = subprocess.run(['git','ls-files','-z'], capture_output=True, check=True).stdout.decode().split('\\0')\nrows = []\nfor f in files:\n    if not f.endswith('.md'): continue\n    try: text = open(f, encoding='utf-8').read()\n    except Exception: continue\n    for i, line in enumerate(text.split('\\n'), 1):\n        m = re.match(r'^\\s*(?:[-*]\\s+)?(?:\\*\\*)?Owner:(?:\\*\\*)?\\s*(.*)$', line)\n        if m: rows.append((f, i, m.group(1).strip()))\nvals = {}\nfor f, i, v in rows:\n    vals.setdefault(v, []).append(f'{f}:{i}')\nprint('owner lines', len(rows), 'files', len({r[0] for r in rows}), 'distinct values', len(vals))\nflips = []\nfor v, locs in sorted(vals.items()):\n    b, j = bool(OLD_BODY.search(v)), bool(OLD_JUDG.search(v))\n    if b != j: flips.append((v, b, j, locs))\n    print(json.dumps(v), 'body', b, 'judg', j, len(locs))\nprint('DIVERGENT', len(flips))\nfor x in flips: print(x)\n"
+  }
+}
