@@ -35,7 +35,7 @@ def main() -> int:
                       'identicalAfterCommentStrip': norm(before) == norm(after)})
     script = ("const m = await import(process.argv[1] + '/packages/three-surface-poc-core/dist/evidence-population.js');"
               "const b = await import(process.argv[1] + '/packages/three-surface-poc-core/dist/index.js');"
-              "console.log(JSON.stringify({moduleExportsFunction: typeof m.derivePopulationBlock === 'function', barrelReexportsSameFunction: b.derivePopulationBlock === m.derivePopulationBlock}));")
+              "console.log(JSON.stringify({moduleExportsFunction: typeof m.derivePopulationBlock === 'function', barrelReexportsSameFunction: typeof b.derivePopulationBlock === 'function' && b.derivePopulationBlock === m.derivePopulationBlock}));")
     node = json.loads(subprocess.run(['node', '--input-type=module', '-e', script, str(tree)], capture_output=True, text=True, check=True).stdout)
     record = {
         'tool': 'comment_only_check.py',
