@@ -131,6 +131,79 @@ describe('the credential list', () => {
   });
 });
 
+// syzygy-bpyt.8.9 (owner direction GP-Q7): the hand-kept list fails closed when a configured adapter declares a credential it lacks.
+describe('a configured adapter\'s credential declaration', () => {
+  const REFUSAL = 'a configured typed adapter declares a credential the repository\'s adapter-credential list does not hold: ';
+  const counted = (paths: readonly string[]): CredentialListSource & { readonly reads: () => number } => {
+    let reads = 0;
+    return { describe: 'fixture list', list: () => { reads += 1; return { ok: true, paths }; }, reads: () => reads };
+  };
+  const opens: string[] = [];
+  const absent: OpenForRead = (file) => { opens.push(file); return { opened: false, code: 'ENOENT' }; };
+  afterEach(() => { opens.splice(0); });
+
+  it('refuses a declared credential the list does not hold, before reading the declared list or attempting any read', async () => {
+    const source = counted(['/x/listed.token']);
+    const probe = createCredentialProbe(source, absent, [], [{ adapter: 'fixture-scheduler', credentials: ['/x/scheduler.token'] }]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `${REFUSAL}fixture-scheduler: /x/scheduler.token` });
+    expect(probe.last()).toEqual({ source: 'fixture list, together with 0 credential paths configured by typed adapters in this repository', outcomes: [] });
+    expect(source.reads()).toBe(0);
+    expect(opens).toEqual([]);
+  });
+
+  it('names every unlisted declaration, of every adapter, and none the list holds', async () => {
+    const probe = createCredentialProbe(listOf([]), absent, ['/x/a.token'], [
+      { adapter: 'fixture-ci', credentials: ['/x/a.token', '/x/b.token'] },
+      { adapter: 'fixture-provider', credentials: ['/x/c.token'] },
+    ]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `${REFUSAL}fixture-ci: /x/b.token, fixture-provider: /x/c.token` });
+  });
+
+  it('refuses a declaration the list spells differently: membership is exact', async () => {
+    const probe = createCredentialProbe(listOf([]), absent, ['/x/a.token'], [{ adapter: 'fixture-ci', credentials: ['/x//a.token'] }]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `${REFUSAL}fixture-ci: /x//a.token` });
+  });
+
+  it('refuses on the declaration, not the list source, when no list source is configured either', async () => {
+    const probe = createCredentialProbe(credentialListFromEnv({}), absent, [], [{ adapter: 'fixture-scheduler', credentials: ['/x/scheduler.token'] }]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `${REFUSAL}fixture-scheduler: /x/scheduler.token` });
+  });
+
+  it('is not satisfied by the operator-declared list holding the path', async () => {
+    const probe = createCredentialProbe(listOf(['/x/scheduler.token']), absent, [], [{ adapter: 'fixture-scheduler', credentials: ['/x/scheduler.token'] }]);
+    expect(await probe.probe()).toEqual({ passed: false, why: `${REFUSAL}fixture-scheduler: /x/scheduler.token` });
+  });
+
+  it('probes as before when the list holds every declared credential', async () => {
+    const source = counted([]);
+    const probe = createCredentialProbe(source, absent, ['/x/a.token'], [{ adapter: 'fixture-ci', credentials: ['/x/a.token'] }]);
+    expect(await probe.probe()).toEqual({ passed: true, checked: 1, source: 'fixture list, together with 1 credential path configured by typed adapters in this repository' });
+    expect(source.reads()).toBe(1);
+    expect(opens).toEqual(['/x/a.token']);
+    const dir = tempDir();
+    const token = path.join(dir, 'ci.token');
+    fs.writeFileSync(token, 'secret', { mode: 0o600 });
+    expect(await createCredentialProbe(listOf([]), undefined, [token], [{ adapter: 'fixture-ci', credentials: [token] }]).probe())
+      .toEqual({ passed: false, why: `adapter credentials readable by the operator's user: ${token}` });
+  });
+
+  it('changes nothing for an adapter that declares no credential, or for no adapter', async () => {
+    const expected = {
+      passed: true, checked: 0,
+      source: 'no adapter credential declared; list operator-declared, Inferred (fixture list, together with 0 credential paths configured by typed adapters in this repository)',
+    };
+    expect(await createCredentialProbe(listOf([]), absent, [], [{ adapter: 'fixture-ci', credentials: [] }]).probe()).toEqual(expected);
+    expect(await createCredentialProbe(listOf([]), absent, [], []).probe()).toEqual(expected);
+    expect(opens).toEqual([]);
+  });
+
+  it('configures no adapter declaration in this repository', async () => {
+    const { CONFIGURED_ADAPTER_DECLARATIONS } = await import('./credential-probe.js');
+    expect(CONFIGURED_ADAPTER_DECLARATIONS).toEqual([]);
+    expect(Object.isFrozen(CONFIGURED_ADAPTER_DECLARATIONS)).toBe(true);
+  });
+});
+
 describe('the step hook every later step calls', () => {
   const runWith = (brief: string | null, record: unknown): string => {
     const run = tempDir();
