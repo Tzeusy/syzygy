@@ -1,8 +1,10 @@
 // THROWAWAY (never committed): old script vs new main(), same fakes.
 // `zz-main-old.ts` is the base main.ts (blob 5f873660fe95974eb8adaf67d554d3d46d886a5f).
 // Each scenario runs the old script (top-level, reading process.* and the
-// mocked modules) and the new exported main (default deps, fake io over the
-// same mocked modules), and the two transcripts must be equal.
+// mocked modules), the new exported main in poc-main.ts (default deps, fake
+// io over the same mocked modules) and the new entry main.ts (a module that
+// reads process.* like the old script and calls main), and the three
+// transcripts must be equal.
 import { createHash } from 'node:crypto';
 import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -143,7 +145,7 @@ interface Transcript { stdout: string; stderr: string; exitCode: number; calls: 
 
 function normalize(t: Transcript): Transcript { return t; }
 
-async function runOld(scenario: Scenario): Promise<Transcript> {
+async function runScript(scenario: Scenario, load: () => Promise<unknown>): Promise<Transcript> {
   fx.calls = []; fx.scenario = scenario; fx.repoN = 0; fx.cleanN = 0; fx.horizonN = 0; fx.modelN = 0; fx.daemonOptions = null; fx.afterDone = []; fx.closed = 0;
   let stdout = ''; let stderr = '';
   fx.stdin = new PassThrough();
@@ -162,7 +164,7 @@ async function runOld(scenario: Scenario): Promise<Transcript> {
   fx.PocError = (await import('@syzygy/three-surface-poc-core')).PocObservationError;
   let thrown: string | null = null;
   try {
-    await import('./zz-main-old.js');
+    await load();
   } catch (cause) {
     thrown = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
   } finally {
@@ -176,6 +178,9 @@ async function runOld(scenario: Scenario): Promise<Transcript> {
   return normalize({ stdout, stderr, exitCode, calls: fx.calls, thrown, after: fx.afterDone, closed: fx.closed });
 }
 
+const runOld = (scenario: Scenario) => runScript(scenario, () => import('./zz-main-old.js'));
+const runEntry = (scenario: Scenario) => runScript(scenario, () => import('./main.js'));
+
 async function runNew(scenario: Scenario): Promise<Transcript> {
   fx.calls = []; fx.scenario = scenario; fx.repoN = 0; fx.cleanN = 0; fx.horizonN = 0; fx.modelN = 0; fx.daemonOptions = null; fx.afterDone = []; fx.closed = 0;
   fx.stdin = new PassThrough();
@@ -184,7 +189,7 @@ async function runNew(scenario: Scenario): Promise<Transcript> {
   const listeners: { signal: 'SIGINT' | 'SIGTERM'; listener: () => void }[] = [];
   fx.emit = (signal) => { for (const l of listeners.filter((entry) => entry.signal === signal)) l.listener(); };
   const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(scenario.cwd ?? '/observer/syzygy');
-  const { main } = await import('./main.js');
+  const { main } = await import('./poc-main.js');
   let thrown: string | null = null;
   let exitCode = -1;
   try {
@@ -333,6 +338,8 @@ describe('old script vs new main(): identical transcripts', () => {
       const oldRun = await runOld(scenario);
       const newRun = await runNew(scenario);
       expect(newRun).toEqual(oldRun);
+      const entryRun = await runEntry(scenario);
+      expect(entryRun).toEqual(oldRun);
       const want = EXPECT[scenario.name];
       if (want !== undefined) {
         expect(oldRun.exitCode).toBe(want.exit);
@@ -341,7 +348,7 @@ describe('old script vs new main(): identical transcripts', () => {
         if (want.thrown !== undefined) expect(oldRun.thrown).toContain(want.thrown);
       }
       // The comparison must be about something: record that a path was exercised.
-      ((globalThis as { __zzTranscripts?: unknown[] }).__zzTranscripts ??= []).push({ name: scenario.name, old: oldRun, new: newRun });
+      ((globalThis as { __zzTranscripts?: unknown[] }).__zzTranscripts ??= []).push({ name: scenario.name, old: oldRun, new: newRun, entryEqualsOld: true });
       (globalThis as { __zzScenarioSummary?: string[] }).__zzScenarioSummary ??= [];
       (globalThis as { __zzScenarioSummary?: string[] }).__zzScenarioSummary!.push(`${scenario.name}: exit=${oldRun.exitCode} calls=${oldRun.calls.length} stdout=${oldRun.stdout.length} stderr=${oldRun.stderr.length} thrown=${oldRun.thrown ?? '-'} after=${oldRun.after.length}`);
     });

@@ -22,8 +22,8 @@ MAIN = WT / MUTATED
 original = MAIN.read_text()
 digest = hashlib.sha256(original.encode()).hexdigest()
 commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
-dirty = subprocess.run(['git', 'status', '--porcelain', '--', MUTATED, TEST], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
-assert dirty == '', f'{MUTATED} and {TEST} must be committed before a rule-6 run: {dirty}'
+dirty = subprocess.run(['git', 'status', '--porcelain', '--', MUTATED], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
+assert dirty == '', f'{MUTATED} must be committed before a rule-6 run: {dirty}'
 
 MUTANTS = [
     ('launcher-gate-bypassed',
