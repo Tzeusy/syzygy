@@ -1,0 +1,17 @@
+{
+ "tool": "compare_test_lists.py",
+ "baseLines": 4919,
+ "headLines": 4929,
+ "baseDistinctNames": 4910,
+ "headDistinctNames": 4920,
+ "added": 19,
+ "removed": 9,
+ "addedByFile": {
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/main.test.ts": 18,
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/watch-mode.test.ts": 1
+ },
+ "removedByFile": {
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts": 9
+ },
+ "testsLine": "Tests: +19 ~0 -9"
+}

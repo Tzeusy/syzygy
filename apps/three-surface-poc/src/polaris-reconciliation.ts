@@ -27,16 +27,16 @@ const PLACEHOLDER_OPENING = '<!--polaris-catalog-reconciliation';
  * HTML, counted per occurrence — never per distinct claim id. */
 const ITEM_MARKER = /\sdata-polaris-item="/g;
 
-export function countItemMarkers(html: string): number {
+function countItemMarkers(html: string): number {
   return [...html.matchAll(ITEM_MARKER)].length;
 }
 
 /** The reason and route of the remainder: the mapping from markers to
  * machine items is not established by a count, and the route is to make it
  * by claim identity. */
-export const REMAINDER_REASON = 'mapping-coverage-absent';
+const REMAINDER_REASON = 'mapping-coverage-absent';
 
-export type CatalogReconciliation =
+type CatalogReconciliation =
   | {
       readonly kind: 'observed';
       readonly sources: number;

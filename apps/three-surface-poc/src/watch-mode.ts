@@ -9,9 +9,9 @@ import { reevaluationLines } from './reevaluation-copy.js';
 // time: it schedules nothing, polls nothing and watches no file. Each
 // result names the evaluation it supersedes and the three clock readings.
 
-export const WATCH_PROMPT = 'Press Enter to re-observe. Nothing re-observes on its own; close input (Ctrl-D) to leave watch mode.';
+const WATCH_PROMPT = 'Press Enter to re-observe. Nothing re-observes on its own; close input (Ctrl-D) to leave watch mode.';
 
-export interface WatchModeOptions {
+interface WatchModeOptions {
   readonly input: Readable;
   readonly output: Writable;
   readonly reobserve: () => Promise<ReobserveResult>;

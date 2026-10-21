@@ -2,7 +2,7 @@ import type { ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
 import type { PolarisCopyId } from './polaris-copy.js';
 
-export type PocEpistemicLabel = 'Observed' | 'Unknown';
+type PocEpistemicLabel = 'Observed' | 'Unknown';
 
 interface EpistemicEncoding {
   readonly label: PocEpistemicLabel;
@@ -12,6 +12,7 @@ interface EpistemicEncoding {
   readonly token: '--observed' | '--unknown';
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /**
  * The one declared epistemic encoding table (POC-REQ-060). Every surface
  * imports this table rather than styling Observed/Unknown ad hoc, and the
@@ -36,7 +37,7 @@ export const EPISTEMIC_ENCODING: readonly EpistemicEncoding[] = [
 ];
 
 /** One treatment for each live badge, project-shape tuple and Unknown disclosure. */
-export const EPISTEMIC_TREATMENTS_CSS = EPISTEMIC_ENCODING.map((entry) => {
+const EPISTEMIC_TREATMENTS_CSS = EPISTEMIC_ENCODING.map((entry) => {
   const selectors = [
     `.epistemic.${entry.className}`,
     `.claim-tuple[data-epistemic-label="${entry.label}"]`,
@@ -50,7 +51,7 @@ type Tier = NonNullable<ProjectShapeClaim['epistemic']['tier']>;
 type Freshness = NonNullable<ProjectShapeClaim['epistemic']['freshness']>;
 type Challenge = ProjectShapeClaim['challenge'];
 
-export type TupleField = 'tier' | 'freshness' | 'challenge';
+type TupleField = 'tier' | 'freshness' | 'challenge';
 
 /** One declared treatment of a tuple field value (syzygy-dov.3.2; P-70 M3
  * slice 5): the value, the class its span and its glossary row carry, the
@@ -141,7 +142,7 @@ export const TUPLE_MARKS_CSS = TUPLE_FIELD_TREATMENTS
  * section takes `className`, its label `labelClassName`; the glossary row
  * that defines it carries `labelClassName` too. `--proposed` and its
  * contrast evidence landed in M3 slices 1–4 and are not changed here. */
-export interface DisclosureEncoding {
+interface DisclosureEncoding {
   readonly value: 'proposed';
   readonly className: 'proposal';
   readonly labelClassName: 'proposal-label';

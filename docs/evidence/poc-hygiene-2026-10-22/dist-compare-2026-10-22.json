@@ -1,0 +1,67 @@
+{
+ "tool": "dist-compare.mjs",
+ "toolSha256": "91a6ed0a587dfbd08cb1112519c5989b9d1aade6753fe8b987e2bf5987f56a2d",
+ "trees": {
+  "base": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p501/base",
+  "head": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.5.5"
+ },
+ "typescriptVersion": "5.9.3",
+ "population": "non-test .js files under apps/three-surface-poc/dist in both trees (a stale file left in a dist that was not cleaned would show as present; build each tree from a clean dist)",
+ "commonFiles": 90,
+ "addedInHead": [
+  "poc-main.js"
+ ],
+ "removedInHead": [
+  "polaris-generation/source-adapter.js"
+ ],
+ "tally": {
+  "byte-identical": 41,
+  "identical after normalisation": 47,
+  "differs": 2
+ },
+ "differing": [
+  "main.js",
+  "polaris-narrative.js"
+ ],
+ "recordReadingModules": {
+  "predicate": "emitted JS imports node:fs, node:fs/promises or node:child_process (regex /from ['\"]node:(?:fs|fs\\/promises|child_process)['\"]/)",
+  "count": 29,
+  "tally": {
+   "byte-identical": 14,
+   "identical after normalisation": 15,
+   "differs": 0
+  },
+  "differing": [],
+  "files": [
+   "capture-test-artifact-main.js",
+   "cdp-browser.js",
+   "fresh-checkout-demo-main.js",
+   "git-observation.js",
+   "governance-inputs.js",
+   "polaris-accessibility-main.js",
+   "polaris-accessible-names-main.js",
+   "polaris-generation/dossier-evaluation-main.js",
+   "polaris-generation/dossier-render-main.js",
+   "polaris-generation/dossier-trigger.js",
+   "polaris-generation/durable-lifecycle.js",
+   "polaris-generation/generation-mutation-run-main.js",
+   "polaris-generation/isolated-git.js",
+   "polaris-generation/pipeline-demo-main.js",
+   "polaris-generation/public-source-screening.js",
+   "polaris-generation/redis-shaped-fixture.js",
+   "polaris-generation/redis-shaped-measure-main.js",
+   "polaris-generation/repo-corpus-main.js",
+   "polaris-generation/self-corpus-main.js",
+   "polaris-generation/self-corpus.js",
+   "polaris-keyboard-sweep-main.js",
+   "pwb-mutation-run-main.js",
+   "pwb-mutation-sweep-main.js",
+   "pwb-n8-synthetic-corpus-coverage-matrix-main.js",
+   "restart.js",
+   "temporary-directory.js",
+   "test-model-fixture.js",
+   "verbatim-route.js",
+   "walkthrough-inputs.js"
+  ]
+ }
+}

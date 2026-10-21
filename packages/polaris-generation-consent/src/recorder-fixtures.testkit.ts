@@ -112,6 +112,25 @@ sys.stdout.write(json.dumps({'acts': {k: a.record.as_posix() for k, a in m.ACT_B
   return JSON.parse(run.stdout) as { acts: Record<DossierLocalAgentActKey, string>; signoff: string };
 }
 
+/** Alterations of an act record that leave every head field as it was (syzygy-bpyt.8.10): the first paragraph of its Effect (`What
+ * this records` in a sign-off) replaced by a grant of everything, its limits section (`What this does not do` in a sign-off) removed,
+ * the owner's selection replaced by `Decline` (the label cell of the ceremony's selection row, else the first quoted owner words,
+ * else the `Owner selection:` line), and a section withdrawing the act appended to the record itself. Each returns the text unchanged
+ * when the record has nothing it applies to; a caller asserts it took. */
+export const PROSE_ALTERATIONS: ReadonlyArray<readonly [name: string, alter: (text: string) => string]> = Object.freeze([
+  ['effect-widened', (text: string) => text.replace(/(\n## (?:Effect|What this records)\n\n)[^\n]+(?:\n[^\n]+)*/, '$1The act grants every read, egress, write and execution, for every repository, tool and provider.')],
+  ['limits-removed', (text: string) => text.replace(/\n## What this (?:act does not authorize|does not do)\n[\s\S]*?(?=\n## |$)/, '')],
+  ['selection-replaced', (text: string) => {
+    for (const [pattern, replacement] of [[/^\| "[^"\n]*" \| "/m, '| "Decline" | "'], [/^> .+$/m, '> Decline'], [/^Owner selection: .+$/m, 'Owner selection: Decline']] as const) {
+      if (pattern.test(text)) return text.replace(pattern, replacement);
+    }
+    return text;
+  }],
+  ['withdrawal-appended', (text: string) => `${text}\n## Withdrawal\n\nThe owner withdraws this act; it no longer counts.\n`],
+]);
+/** The control for `PROSE_ALTERATIONS`: one head field every reader reads, the `Date:` line, altered. */
+export const HEAD_FIELD_ALTERATION = (text: string): string => text.replace(/^(Date: .+)$/m, '$1 [altered]');
+
 /** The public Git-hosting source-acquisition registry entry act as scripts/record_public_admission_registry_entries_acts.py renders it
  * (key `git-source-acquisition`). */
 export function renderRegistryAct(argument: string, date: string, instant: string): string {

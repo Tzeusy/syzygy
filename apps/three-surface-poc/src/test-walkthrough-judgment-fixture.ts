@@ -1,3 +1,5 @@
+// Test support: exports with no non-test importer are consumed by tests only, by design.
+
 // Test fixture: one lawful cold-open walkthrough pair (run record, judgment,
 // owner act record) in the PWB-REQ-021/022 grammar, plus the knobs the
 // app-level tests need to reach every presentation state. Never a real
@@ -12,7 +14,7 @@ import {
   type WalkthroughJudgmentInputs,
 } from '@syzygy/three-surface-poc-core';
 
-export const JUDGMENT_FIXTURE = {
+const JUDGMENT_FIXTURE = {
   owner: 'Tzeusy',
   project: 'project:syzygy',
   criterion: 'polaris-cold-open-comprehension',
@@ -46,7 +48,7 @@ function bytes(text: string): Uint8Array {
 }
 
 /** The nine PWB-REQ-021 answer identities, hand-typed here (never imported). */
-export const FIXTURE_ANSWER_IDENTITIES = [
+const FIXTURE_ANSWER_IDENTITIES = [
   'why',
   'promises',
   'refusals-and-rule',
@@ -76,14 +78,14 @@ export function fixtureAnswers(): FixtureAnswer[] {
   }));
 }
 
-export interface RunRecordOptions {
+interface RunRecordOptions {
   /** Traversed paths; default is the fixture's `/polaris`, `/entry`, `/polaris`. */
   readonly traversed?: readonly string[];
   /** Answers section; `null` omits it; default is the nine fixture answers. */
   readonly answers?: readonly FixtureAnswer[] | null;
 }
 
-export function fixtureRunRecordText(options: RunRecordOptions = {}): string {
+function fixtureRunRecordText(options: RunRecordOptions = {}): string {
   const lines = [
     '# Cold-open walkthrough execution record',
     '',
@@ -115,7 +117,7 @@ export function fixtureRunRecordText(options: RunRecordOptions = {}): string {
   return lines.join('\n');
 }
 
-export function fixtureJudgmentText(runDigest: string, verdict: 'met' | 'not-met' = 'met', judgingParty: string = F.owner): string {
+function fixtureJudgmentText(runDigest: string, verdict: 'met' | 'not-met' = 'met', judgingParty: string = F.owner): string {
   return [
     '# Owner judgment — Polaris cold-open walkthrough',
     '',
@@ -134,7 +136,7 @@ export function fixtureJudgmentText(runDigest: string, verdict: 'met' | 'not-met
   ].join('\n');
 }
 
-export function fixtureActRecordText(digest: string, state: 'state-1' | 'state-2' = 'state-1'): string {
+function fixtureActRecordText(digest: string, state: 'state-1' | 'state-2' = 'state-1'): string {
   const provenance =
     state === 'state-2'
       ? '`Syzygy-verified` — state (2), correlated through the A1 audit record'
@@ -189,7 +191,7 @@ export function fixtureActRecordText(digest: string, state: 'state-1' | 'state-2
   ].join('\n');
 }
 
-export function fixtureJudgmentExpectations(a1: 'absent' | 'identity' = 'absent'): WalkthroughJudgmentExpectations {
+function fixtureJudgmentExpectations(a1: 'absent' | 'identity' = 'absent'): WalkthroughJudgmentExpectations {
   return {
     observingProject: F.project,
     owner: F.owner,
