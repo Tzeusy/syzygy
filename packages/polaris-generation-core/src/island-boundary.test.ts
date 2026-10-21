@@ -104,14 +104,14 @@ describe('the syzygy CLI and the parked provider island', () => {
 
   it('resolves every workspace import the CLI reaches, dynamic ones included', () => {
     const { reachable, unresolved } = reach(UNFOLLOWED);
-    expect(unresolved).toEqual([]);
+    expect(unresolved.map(edge => `${edge.from} imports ${edge.specifier}`)).toEqual([]);
     expect(reachable).toContain('apps/three-surface-poc/src/polaris-generation/dossier-site.ts');
     expect(reachable).toContain(UNFOLLOWED[0]);
   });
 
   it('reaches no island module from the CLI entry', () => {
     const { reachable, intoIsland } = reach(UNFOLLOWED);
-    expect(intoIsland).toEqual([]);
+    expect(intoIsland.map(edge => `${edge.from} imports ${edge.specifier} (${edge.to})`)).toEqual([]);
     expect(reachable.filter(path => ISLAND.includes(path))).toEqual([]);
   });
 
