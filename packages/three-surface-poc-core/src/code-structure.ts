@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 
+import { parseGitLsTree } from './git-tree.js';
 import type { PocProvenance } from './model.js';
 
 export const CODE_LANGUAGE_CLASSIFICATIONS = [
@@ -95,18 +96,21 @@ function defaultRunGit(repoRoot: string, args: readonly string[]): string {
   });
 }
 
-const LS_TREE_LINE = /^([0-7]{6}) (blob|tree|commit) ([0-9a-f]{40})\s+(\d+|-)\t(.+)$/;
+const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
 
 /**
  * `git ls-tree` reads only tree/blob metadata for the named revision; it
  * never opens blob contents, so this observer structurally cannot leak
- * file bytes (POC-REQ-002).
+ * file bytes (POC-REQ-002). `-z` keeps every path byte-exact: without it
+ * git C-quotes a path holding a special or non-ASCII byte, and the quoted
+ * form was recorded as the path (syzygy-bpyt.6.1). A record the shared
+ * parser cannot read makes the whole inventory Unknown, never a skip.
  */
 export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStructureResult {
   const runGit = input.runGit ?? defaultRunGit;
   let raw: string;
   try {
-    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-l', input.revision]);
+    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);
   } catch {
     return {
       kind: 'unknown',
@@ -114,28 +118,26 @@ export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStru
     };
   }
 
+  const parsed = parseGitLsTree(raw);
+  const malformed: CodeStructureUnknown = {
+    kind: 'unknown',
+    reason: 'code-structure observation produced a malformed inventory entry',
+  };
+  if (parsed.kind === 'malformed') {
+    return malformed;
+  }
   const files: CodeStructureFileEntry[] = [];
-  for (const line of raw.split('\n')) {
-    if (line.trim() === '') {
-      continue;
-    }
-    const match = LS_TREE_LINE.exec(line);
-    if (match === null || match[2] !== 'blob') {
-      continue;
-    }
-    const sizeText = match[4] ?? '-';
-    const path = match[5] ?? '';
-    if (sizeText === '-' || path === '') {
-      return {
-        kind: 'unknown',
-        reason: 'code-structure observation produced a malformed inventory entry',
-      };
+  // Submodule gitlinks (`commit`) are not files of this revision.
+  for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {
+    // The digest names its scheme; an id of another object format would make it false.
+    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {
+      return malformed;
     }
     files.push({
-      path,
-      sizeBytes: Number(sizeText),
-      digest: `git-blob-sha1:${match[3]}`,
-      language: classifyLanguage(path),
+      path: entry.path,
+      sizeBytes: entry.sizeBytes,
+      digest: `git-blob-sha1:${entry.objectId}`,
+      language: classifyLanguage(entry.path),
     });
   }
 

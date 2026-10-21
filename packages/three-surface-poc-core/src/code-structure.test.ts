@@ -94,6 +94,46 @@ describe('code-structure observer', () => {
     expect(() => expect(result.reason.length).toBeGreaterThan(0)).toThrow();
   });
 
+  it('records a path with a space, a tab, a double quote or a non-ASCII byte exactly as committed (syzygy-bpyt.6.1)', () => {
+    const { root } = fixtureRepo('sentinel-paths');
+    // Unicode escapes keep the fixture bytes exact (AGENTS.md: the Write tool has emitted mixed NFC/NFD).
+    const names = ['with space.md', 'tab\there.md', 'a "b".txt', '\u00f1.md', 'dir \u00e9/x.ts'];
+    for (const name of names) {
+      mkdirSync(dirname(join(root, name)), { recursive: true });
+      writeFileSync(join(root, name), 'x\n', 'utf8');
+    }
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-qm', 'awkward paths']);
+    const revision = git(root, ['rev-parse', 'HEAD']);
+    const result = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' });
+    if (result.kind !== 'observed') throw new Error(`expected observed, got ${JSON.stringify(result)}`);
+    expect(result.files.map((file) => file.path)).toEqual(
+      ['README.md', 'a "b".txt', 'data.json', 'dir \u00e9/x.ts', 'src/app.ts', 'src/nested/lib.py', 'tab\there.md', 'with space.md', '\u00f1.md'],
+    );
+    expect(result.files.find((file) => file.path === '\u00f1.md')?.language).toBe('markdown');
+    expect(result.files.find((file) => file.path === 'dir \u00e9/x.ts')?.digest).toBe(`git-blob-sha1:${git(root, ['rev-parse', `${revision}:dir \u00e9/x.ts`])}`);
+  });
+
+  it('asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip', () => {
+    const blob = (path: string, id = '1'.repeat(40), size = '12'): string => `100644 blob ${id} ${size}\t${path}\0`;
+    const observe = (listing: string, calls: string[][] = []) => observeCodeStructure({
+      repoRoot: '/unused', revision: 'r', capturedAt: '2026-10-21T00:00:00Z',
+      runGit: (_root, args) => { calls.push([...args]); return listing; },
+    });
+    const calls: string[][] = [];
+    const observed = observe(`${blob('a.ts')}160000 commit ${'2'.repeat(40)}       -\tvendor/sub\0${blob('b.md', '3'.repeat(40), '7')}`, calls);
+    expect(calls).toEqual([['ls-tree', '-r', '-z', '-l', 'r']]);
+    expect(observed).toMatchObject({ kind: 'observed', files: [
+      { path: 'a.ts', sizeBytes: 12, digest: `git-blob-sha1:${'1'.repeat(40)}`, language: 'typescript' },
+      { path: 'b.md', sizeBytes: 7, digest: `git-blob-sha1:${'3'.repeat(40)}`, language: 'markdown' },
+    ] });
+    const unknown = { kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' };
+    expect(observe(`${blob('a.ts')}not a tree record\0`)).toEqual(unknown);
+    expect(observe(`${blob('a.ts')}100644 blob ${'1'.repeat(40)} 12\t"\\303\\261.md"\0`)).toEqual(unknown);
+    expect(observe(blob('a.ts', '4'.repeat(64)))).toEqual(unknown);
+    expect(observe(blob('a.ts', '1'.repeat(40), '-'))).toEqual(unknown);
+  });
+
   it('produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004)', () => {
     const { root, revision } = fixtureRepo('sentinel-004');
     const first = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-08-30T00:00:00Z' });
