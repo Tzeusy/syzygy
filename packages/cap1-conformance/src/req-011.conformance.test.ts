@@ -9,6 +9,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-011 — Consent is a visible recorded fact, never an
 // assumption.
@@ -24,30 +25,16 @@ import {
 
 const PROJECT = 'prj-consent-b2' as ProjectId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-consent-b2
-  name: Consent Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-inforce
-    role: governance-root
-    consent: consent-inforce
-  - id: repo-withdrawn
-    role: observed-source
-    consent: consent-withdrawn
-  - id: repo-recordless
-    role: observed-source
-    consent: consent-missing
-consents:
-  - consent-inforce
-  - consent-withdrawn
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Consent Fixture',
+  repositories: [
+    { id: 'repo-inforce', role: 'governance-root', consent: 'consent-inforce' },
+    { id: 'repo-withdrawn', role: 'observed-source', consent: 'consent-withdrawn' },
+    { id: 'repo-recordless', role: 'observed-source', consent: 'consent-missing' },
+  ],
+  consents: ['consent-inforce', 'consent-withdrawn'],
+});
 
 function declaration(): ProjectDeclaration {
   const read = readDeclaration(SOURCE);
@@ -55,23 +42,18 @@ function declaration(): ProjectDeclaration {
   return read.declaration;
 }
 
-const IN_FORCE: ConsentRecord = {
+const IN_FORCE = consent({
   id: 'consent-inforce',
   projectId: PROJECT,
   repositoryId: 'repo-inforce' as RepositoryId,
-  scope: 'observe',
-  attribution: 'owner',
-  grantState: 'in-force',
-};
+});
 
-const WITHDRAWN: ConsentRecord = {
+const WITHDRAWN = consent({
   id: 'consent-withdrawn',
   projectId: PROJECT,
   repositoryId: 'repo-withdrawn' as RepositoryId,
-  scope: 'observe',
-  attribution: 'owner',
   grantState: 'withdrawn',
-};
+});
 
 const CONSENTS: ConsentRecord[] = [IN_FORCE, WITHDRAWN];
 
@@ -174,27 +156,15 @@ describe('CAP1-REQ-011 — consent is a visible recorded fact, never an assumpti
 
 const CITATION_PROJECT = 'prj-citation-blo' as ProjectId;
 
-const CITATION_SOURCE = `
-schema_version: "1"
-project:
-  id: prj-citation-blo
-  name: Citation Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-capture-failed
-    role: observed-source
-    consent: consent-capture-failed
-  - id: repo-stale
-    role: observed-source
-    consent: consent-stale
-consents:
-  - consent-capture-failed
-  - consent-stale
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const CITATION_SOURCE = projectYaml({
+  id: CITATION_PROJECT,
+  name: 'Citation Fixture',
+  repositories: [
+    { id: 'repo-capture-failed', role: 'observed-source', consent: 'consent-capture-failed' },
+    { id: 'repo-stale', role: 'observed-source', consent: 'consent-stale' },
+  ],
+  consents: ['consent-capture-failed', 'consent-stale'],
+});
 
 function citationDeclaration(): ProjectDeclaration {
   const read = readDeclaration(CITATION_SOURCE);
@@ -202,23 +172,17 @@ function citationDeclaration(): ProjectDeclaration {
   return read.declaration;
 }
 
-const CAPTURE_FAILED_RECORD: ConsentRecord = {
+const CAPTURE_FAILED_RECORD = consent({
   id: 'consent-capture-failed',
   projectId: CITATION_PROJECT,
   repositoryId: 'repo-capture-failed' as RepositoryId,
-  scope: 'observe',
-  attribution: 'owner',
-  grantState: 'in-force',
-};
+});
 
-const STALE_RECORD: ConsentRecord = {
+const STALE_RECORD = consent({
   id: 'consent-stale',
   projectId: CITATION_PROJECT,
   repositoryId: 'repo-stale' as RepositoryId,
-  scope: 'observe',
-  attribution: 'owner',
-  grantState: 'in-force',
-};
+});
 
 const CITATION_CONSENTS: ConsentRecord[] = [CAPTURE_FAILED_RECORD, STALE_RECORD];
 
@@ -266,24 +230,14 @@ describe('CAP1-REQ-011 R-S2 finding #4 — capture-failed and stale cite their i
 const CONFLICT_PROJECT = 'prj-conflict-b2' as ProjectId;
 const CONFLICT_REPO = 'repo-conflict' as RepositoryId;
 
-const CONFLICT_SOURCE = `
-schema_version: "1"
-project:
-  id: prj-conflict-b2
-  name: Conflict Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-conflict
-    role: governance-root
-    consent: consent-conflict-grant
-consents:
-  - consent-conflict-grant
-  - consent-conflict-withdrawal
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const CONFLICT_SOURCE = projectYaml({
+  id: CONFLICT_PROJECT,
+  name: 'Conflict Fixture',
+  repositories: [
+    { id: 'repo-conflict', role: 'governance-root', consent: 'consent-conflict-grant' },
+  ],
+  consents: ['consent-conflict-grant', 'consent-conflict-withdrawal'],
+});
 
 function conflictDeclaration(): ProjectDeclaration {
   const read = readDeclaration(CONFLICT_SOURCE);
@@ -291,23 +245,18 @@ function conflictDeclaration(): ProjectDeclaration {
   return read.declaration;
 }
 
-const CONFLICT_GRANT: ConsentRecord = {
+const CONFLICT_GRANT = consent({
   id: 'consent-conflict-grant',
   projectId: CONFLICT_PROJECT,
   repositoryId: CONFLICT_REPO,
-  scope: 'observe',
-  attribution: 'owner',
-  grantState: 'in-force',
-};
+});
 
-const CONFLICT_WITHDRAWAL: ConsentRecord = {
+const CONFLICT_WITHDRAWAL = consent({
   id: 'consent-conflict-withdrawal',
   projectId: CONFLICT_PROJECT,
   repositoryId: CONFLICT_REPO,
-  scope: 'observe',
-  attribution: 'owner',
   grantState: 'withdrawn',
-};
+});
 
 // Content WAS captured — so only the consent decision stands between the
 // conflicted pair and its content being served.

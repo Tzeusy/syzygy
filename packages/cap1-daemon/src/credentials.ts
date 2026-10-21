@@ -21,8 +21,8 @@ import { admitClient, type AdmissionResult, type Credential } from '@syzygy/cap1
 //   it: a credential core would refuse is refused here by core itself,
 //   before any comparison runs.
 // - Every filesystem write is routed through `authorizeStateWrite` —
-//   the state-plane analogue of write-guard's governed-plane boundary.
-//   The state directory is the daemon's ONE authorized write home;
+//   the daemon's only write boundary (it performs no governed-plane
+//   write). The state directory is the daemon's ONE authorized write home;
 //   nothing here can write anywhere else.
 
 // The fixed credential location inside the state directory. Fixed here
@@ -40,12 +40,12 @@ export const CREDENTIAL_TOKEN_BYTES = 32;
 
 // --- State-directory write boundary -------------------------------------
 
-// The daemon's runtime writes fall in exactly two planes: the governed
-// plane (openspec/**, .syzygy/** — write-guard.ts owns that boundary)
-// and the daemon state directory (credential and daemon state — THIS
-// boundary). The refusal vocabulary mirrors write-guard's: judgment is
-// on the NORMALIZED path, symlink reality included, and every arm that
-// is not affirmatively authorized is a named refusal.
+// The daemon's runtime writes fall in exactly one plane: the daemon state
+// directory (credential and daemon state — THIS boundary). It performs no
+// governed-plane write (openspec/**, .syzygy/**; CAP1-REQ-061, observed
+// externally by the cap1-system write-boundary test). Judgment is on the
+// NORMALIZED path, symlink reality included, and every arm that is not
+// affirmatively authorized is a named refusal.
 export const STATE_WRITE_REFUSALS = [
   'degenerate-input',
   'traversal',
@@ -128,7 +128,7 @@ export function authorizeStateWrite(
   // Symlink escape: a component under the state dir may be a symlink
   // whose target lives outside it. Judge the write target's REAL
   // location (nearest existing ancestor resolved, unbuilt tail
-  // re-appended), same discipline as write-guard.ts.
+  // re-appended).
   const realRoot = fs.existsSync(root) ? fs.realpathSync(root) : root;
   const ancestor = nearestExistingAncestor(resolved);
   const realAncestor = fs.realpathSync(ancestor);

@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   computeShapeAnswers,
   shapeAnswerComposition,
-  type EvaluationIdentity,
   type ProjectId,
   type ShapeAnswerInputs,
   type ShapeAnswerSet,
 } from '@syzygy/cap1-core';
+import { evaluation } from './fixtures/index.js';
 
 // CAP1-REQ-031 — No combined score, badge, colour, percentage, or
 // passing count (prohibition).
@@ -25,7 +25,7 @@ import {
 // changes when one facet flips while it claims to summarize them.
 
 const PROJECT = 'prj-shape-031' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-031', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-031');
 
 // A fixture with a Gap and several Unknown values (the requirement's
 // scenario): Traceable Gap; Shape present / Human-understandable /

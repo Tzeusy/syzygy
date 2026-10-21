@@ -16,5 +16,4 @@ export * from './drawer.js';
 export * from './parity.js';
 export * from './entry.js';
 export * from './discoverability.js';
-export * from './write-boundary.js';
 export * from './distinction.js';
