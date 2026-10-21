@@ -12,6 +12,7 @@ present in only one tree. Source maps and tsbuildinfo are not compared.
 """
 import difflib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -35,6 +36,11 @@ def emitted(tree: Path, project: str) -> dict[str, list[str]]:
     return out
 
 
+def tree_state(tree: Path) -> dict:
+    git = lambda *args: subprocess.run(['git', *args], cwd=tree, capture_output=True, text=True, check=True).stdout.strip()
+    return {'commit': git('rev-parse', 'HEAD'), 'trackedFilesModified': git('status', '--porcelain', '--untracked-files=no') != ''}
+
+
 def main() -> int:
     base, head, out = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
     projects = []
@@ -54,6 +60,8 @@ def main() -> int:
         })
     record = {
         'tool': 'dist_code_diff.py',
+        'baseTree': tree_state(base),
+        'headTree': tree_state(head),
         'projects': projects,
         'filesCompared': sum(p['filesCompared'] for p in projects),
         'filesDiffering': sum(len(p['differingAfterCommentStrip']) for p in projects),
