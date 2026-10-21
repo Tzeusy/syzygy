@@ -1,0 +1,214 @@
+{
+  "format": "syzygy-bpyt-8-1-index/1",
+  "bead": "syzygy-bpyt.8.1",
+  "subjectCommit": "2106f2608d861aa13509e9d8b4bffe0145ee6454",
+  "commitBefore": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+  "beadBaseCommit": "3000698f3706a7e583a21be37dfdc30e3ffef551",
+  "subjectFileSha256": {
+    "apps/syzygy/src/main.ts": "0d07992fb55cc7f256ac4d0b49dfa672e54fc65d869f02587a476b9df18bdbae",
+    "apps/three-surface-poc/package.json": "da64c38df848d39389b08bf7dc82c50dfb094c9266a9c1c6251ef11813172e08",
+    "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts": "41cb62258b2ecef69b546a0adff2cdc322f49f381a1542b90aa70af7187c0eaf",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts": "0f0f56681b83e081cf7a4b97d2b5db224235c24bb78cecc66d691493ee5fdac4",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts": "890ced7bf89d7ed93793e16efe1f3d497308eb9854369739c6730b93ae1821c7",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "bb7a78a6c77225b166e448c592b05f1e862d853b89609011996cd1d8945c2883",
+    "apps/three-surface-poc/src/polaris-generation/dossier-site.ts": "c1f82e84a0ad7d398fcc617c19b0de9b4deff3affd2d2e3f757e0a73560bb8f9",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "2ca88887779eba1c7d503fd3358ca5e3e12283065e835800539bc080e3b64bfa",
+    "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts": "59a3e63e976fff6ea52a28768c31a676bd175dabea98df745907d80665f41944",
+    "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts": "8cdf783965250cf824df26b6f9f314516d5e3b93ec547d5c9d69203c7e9d2b3f",
+    "packages/polaris-dossier/src/brief.test.ts": "e117172021abfc3b55350b43e4d75c6cf67bf025f6dc92634ef2441ac4745f44",
+    "packages/polaris-dossier/src/brief.ts": "e5462829e60200ad906cd3037644c400cbf545b246638f41a24034f6c4427809",
+    "packages/polaris-dossier/src/check.ts": "6a219d7485d390a67fac27d5f243402973a46339da938c6970f690860fab3fbd",
+    "packages/polaris-dossier/src/class-gate.ts": "0ef83b50db6b7db0b7c1d12b9853648c4f390b20a2e754bd488ed3bce1d5b4c3",
+    "packages/polaris-dossier/src/close.test.ts": "4fab536f900ed66fbdb399ca2a9706ba20991876eaeb2e7e06028f3d5db78ca7",
+    "packages/polaris-dossier/src/close.ts": "62fd68e31bcdb94f6b089b51c913dcf931616aa5e164348da345605095720889",
+    "packages/polaris-dossier/src/credential-probe.ts": "001a5cdb951d00cc07fef725dcd5fdd024fb99411d19780a381586679af1402d",
+    "packages/polaris-dossier/src/design-review.ts": "bd6e69a1ca12830b91e125b3f9bb49e0ce67855a38c4b78d49104f0970a27f7d",
+    "packages/polaris-dossier/src/draft-schema.ts": "bdd0bc51c008448d902f1673e4793f65ae04b5f893232d7f3d4b59535049de5f",
+    "packages/polaris-dossier/src/execution-choice.ts": "e3f6c7035090c2477fd8c4e7748231afd8e2253d371bf2703de4da1ebce39a77",
+    "packages/polaris-dossier/src/execution-flags.test.ts": "a7f7c046d80288e165107df276227c625e3cee5622b7eeb05cd2ee3186f7f96d",
+    "packages/polaris-dossier/src/inventory.ts": "c43de954f0e884550dde874516b161f8a99be4ab3f261c09d2c4924a09ba287c",
+    "packages/polaris-dossier/src/no-egress.test.ts": "b019d0a6d6f33fd36041724c1b6d22c30ad215d2340980bfff6a3ec34ac6182e",
+    "packages/polaris-dossier/src/render.test.ts": "ff3b6991df5fb008aad4e0b12f753a15f2f866112e5b312a42fdc63e2722ff5c",
+    "packages/polaris-dossier/src/render.ts": "5f644761ca774f5707690c629b7c74f5ebdf63c12652a82de7d567ead1e69f4b",
+    "packages/polaris-dossier/src/reverify.ts": "a5afec43f0eb0ff680cf87a97c743b77051b08c7313db1a9abffb44fc908dab2",
+    "packages/polaris-dossier/src/review.ts": "7d8ca2da1cc95d8cd9420922bbf17747287ad4f98d20bc47ca517bf5a03c81ad",
+    "packages/polaris-dossier/src/run-config.ts": "65b07347f6364875d6f3e6ac6930d02eb0c084d6bd865fa0c7d3fd00d3abc2b7",
+    "packages/polaris-dossier/src/run-evidence.test.ts": "de42ec199044b33e4b8a118d32cdf9177364bd5907cf202b9b8ae71e57b44894",
+    "packages/polaris-dossier/src/run-record.ts": "20cda92756495f74581812bd679300b0c370fc6b71928e08f1c217445cd35064",
+    "packages/polaris-dossier/src/screen.ts": "6388357c4cd8a2c5a242a1ba720bfe176ff9899289bf8171aab3f43de0c439b7",
+    "packages/polaris-dossier/src/status.ts": "79efcfdd54a264277f5e7a48424a9431c6498a189700c959c38b0a03b4143c48",
+    "packages/polaris-dossier/src/waiting-sessions.test.ts": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+    "packages/polaris-dossier/src/waiting-sessions.ts": "a72090179eb44ac5c6b349edcdbcf74dbc6be68173c54be57ba2d11e63833e9b",
+    "packages/polaris-dossier/test-support/no-egress-driver.ts": "848e99b2e7dcce4220291cf799f77f6dd74448f933ffffc3dc0bed9f8665c566",
+    "packages/polaris-generation-core/README.md": "a92ad4768e93b1e4e6d955d6a4779ffae3c881421246f800329d7fa999e308fe",
+    "packages/polaris-generation-core/package.json": "a25d67046b3a7c3f727b5bcd5011ece0fe74ed22bbb18d82796968878024a831",
+    "packages/polaris-generation-core/src/admitted-input.ts": "02ce622341e5bd789d77c2684002a596600a63ed2ae7850a77a27aaba81d6d8a",
+    "packages/polaris-generation-core/src/closed-schema.ts": "8592fb3e41e312da0da6bb48ac4bfdacb28b4ecbcf2ab929634b3a0cb44fe6fe",
+    "packages/polaris-generation-core/src/dossier-evaluation.ts": "39f0ad1f13eed182f31b3ccb67b7b44ec6f8e3c34553cabd0b5943f77d0ca5d8",
+    "packages/polaris-generation-core/src/dossier-profile.ts": "4a316ae452ab16a5cec6051810ce562af2ab988af63ff1212c237b19e5f356df",
+    "packages/polaris-generation-core/src/draft-model.ts": "0c64dd7330a52676f2ae46e520cc97ee021cfdb1ab50ccf91e39902596c5b42a",
+    "packages/polaris-generation-core/src/generation-source.ts": "3ff111820b63f4f198f8cef20d0cd88312881ef5c73d10a0ca7a471aea25a069",
+    "packages/polaris-generation-core/src/index.ts": "988193e7867bc0295c3751ba212b5f2724cc2c1d62a7e156657946595a3fd027",
+    "packages/polaris-generation-core/src/island-boundary.test.ts": "4dfbb7f1f5afeb47c971e92483b0d699c786fabe7a350d7cd40208df320be4ba",
+    "packages/polaris-generation-core/src/live.ts": "b09f9a109ac8e89d93377e7673b8c5e17da561419b310d5c3b161477c7f69862",
+    "packages/polaris-generation-core/src/local-render.ts": "f08119b4053d297062f78942742b7bbd3681fccaf02f3158cad9f643710a4b6f",
+    "packages/polaris-generation-core/src/provider-draft.ts": "9294fd906187fd2abe8012e363beecbb3d9d420f4d272bd8accc2fb6a9d01734",
+    "packages/polaris-generation-core/src/reader-questions.ts": "1c6cab067225d99243d5fff63a16c1f2c0f1af37ca52f6e5f932ee8021ecb1ca",
+    "packages/polaris-generation-core/src/source-model.ts": "4929df1ab831a553cd136ce02dee126aff41df8743f8dba4388f50ec5cd5efbe",
+    "packages/polaris-generation-core/src/topics.ts": "69c0fb7078bd5b5c2d6abae31ea433340bad3991ae1c40126135d9c798b8f172",
+    "scripts/dossier_scale_measure.mjs": "3d37ead5fb61f1b0b045aeba215da644dd7f9ed9c571c04e4f7f0780ae6473b3",
+    "vitest.config.ts": "ffb1627f3de8a1fa4ac64bf651eb8274a99a422949f3c7cbb326db1202add11f"
+  },
+  "records": {
+    "differential.json": "93f46599a2822857093d93d1b303a49ca7a255ecff13e5b80d604617061eef01",
+    "digest-citers.json": "850326df75b9ea860c6dc1d511f17149af1c98da9a7660269c5ea28c252532f5",
+    "mutants-spec.json": "2f5069597c89c4dc9eef8b8b7acf2d5b345d8e27e78b9a568f5d9c96e646fb66",
+    "mutants.json": "f753a2f8493826a5f42afb33e33be8350325a15124414fa3a69c19bc65bc0ffa",
+    "reach-after.json": "9d38b9ff79abd989391d0ce695ce0c72d6682008ed10221094511fd939142a7b",
+    "reach-before.json": "f091a27d748182488c065fb5ef40cd57a56f57fee4dc6c89defaf3e2ddc66cbf",
+    "regen-check.json": "8e9b135774035daa3c13a38afd73dd39273651dbc0c020e15844413654ce8f6e",
+    "tests-delta.json": "dc80996165059cf83a4b4a5c9f601a73a326f506996c56b505d9a83eb78d8d3d"
+  },
+  "scripts": {
+    "assemble.py": "fc2423bfce493f5b8ad69618aba27c78ed598936d27222b2fa39b11b8d65fd6c",
+    "differential.mjs": "0c7bb409220a0167ca33ab666e40a8dd7b155932aec3b42972d5b1efa61576ae",
+    "digest_citers.py": "9d189268a5a0111115852691fc64417144ea1418d299bdea8ed48a38840f826a",
+    "gen/guidance.mjs": "805808833949ce61baeb44e970f135d1c9e0fc77c4b821ede05cf9d7ae6d398f",
+    "gen/split_dossier_render.py": "d744ed73085246b239f0fac53a604ba8f14fb10fd1ad38e4c89c7a3cb1520e66",
+    "gen/split_provider_draft.py": "bd675bd169b5bb48d4459d4372deeda1446a090a59b030ec2a063950f8e65798",
+    "mutate.py": "31f3a14f9b2cc19e730af615a11c810eb9fe7a2a29da01348190765e86627748",
+    "reach_sweep.mjs": "249291a176172778c0a43eaa05e089d428a6dbad7154dd30b49b0f57d2e35dbe",
+    "regen_check.py": "221a76ee8ab88c2756a722a87aff6a3039c3038dde57000721b68017b9ff3d99",
+    "tests_delta.mjs": "c30ed2b899f9ed6d77242723e05980ca4e17c1eb1b5284b767b18f8b02e2be11"
+  },
+  "reachability": {
+    "before": {
+      "everyEdge": {
+        "reachableModules": 138,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+          "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+          "packages/polaris-dossier/src/brief.ts",
+          "packages/polaris-dossier/src/check.ts",
+          "packages/polaris-dossier/src/class-gate.ts",
+          "packages/polaris-dossier/src/close.ts",
+          "packages/polaris-dossier/src/credential-probe.ts",
+          "packages/polaris-dossier/src/design-review.ts",
+          "packages/polaris-dossier/src/draft-schema.ts",
+          "packages/polaris-dossier/src/execution-choice.ts",
+          "packages/polaris-dossier/src/inventory.ts",
+          "packages/polaris-dossier/src/render.ts",
+          "packages/polaris-dossier/src/reverify.ts",
+          "packages/polaris-dossier/src/review.ts",
+          "packages/polaris-dossier/src/run-config.ts",
+          "packages/polaris-dossier/src/run-record.ts",
+          "packages/polaris-dossier/src/screen.ts",
+          "packages/polaris-dossier/src/status.ts",
+          "packages/polaris-dossier/src/waiting-sessions.ts",
+          "packages/polaris-generation-consent/src/consent-ports.ts"
+        ],
+        "edgesIntoIsland": 14,
+        "unresolved": 0
+      },
+      "consentPortsUnfollowed": {
+        "reachableModules": 138,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+          "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+          "packages/polaris-dossier/src/brief.ts",
+          "packages/polaris-dossier/src/check.ts",
+          "packages/polaris-dossier/src/class-gate.ts",
+          "packages/polaris-dossier/src/close.ts",
+          "packages/polaris-dossier/src/credential-probe.ts",
+          "packages/polaris-dossier/src/design-review.ts",
+          "packages/polaris-dossier/src/draft-schema.ts",
+          "packages/polaris-dossier/src/execution-choice.ts",
+          "packages/polaris-dossier/src/inventory.ts",
+          "packages/polaris-dossier/src/render.ts",
+          "packages/polaris-dossier/src/reverify.ts",
+          "packages/polaris-dossier/src/review.ts",
+          "packages/polaris-dossier/src/run-config.ts",
+          "packages/polaris-dossier/src/run-record.ts",
+          "packages/polaris-dossier/src/screen.ts",
+          "packages/polaris-dossier/src/status.ts",
+          "packages/polaris-dossier/src/waiting-sessions.ts"
+        ],
+        "edgesIntoIsland": 14,
+        "unresolved": 0
+      }
+    },
+    "after": {
+      "everyEdge": {
+        "reachableModules": 143,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "packages/polaris-generation-consent/src/consent-ports.ts"
+        ],
+        "edgesIntoIsland": 11,
+        "unresolved": 0
+      },
+      "consentPortsUnfollowed": {
+        "reachableModules": 135,
+        "reachableIslandModules": 0,
+        "coreRootImporters": [],
+        "edgesIntoIsland": 0,
+        "unresolved": 0
+      }
+    },
+    "islandModules": 20
+  },
+  "differential": {
+    "localRender": {
+      "fixtures": 16,
+      "identical": 16,
+      "distinctOutputs": 15
+    },
+    "providerRender": {
+      "fixtures": 26,
+      "identical": 26,
+      "distinctOutputs": 16
+    },
+    "brief": {
+      "fixtures": 3,
+      "identical": 3,
+      "distinctOutputs": 3
+    },
+    "validators": {
+      "fixtures": 62,
+      "identical": 62,
+      "distinctOutputs": 18
+    },
+    "guidanceIdentical": true,
+    "compiledModules": {
+      "modules": 24,
+      "identicalAfterLiveSpecifier": 20,
+      "identicalOutsideImportStatements": 23,
+      "identicalCodeOutsideImportStatements": 24
+    }
+  },
+  "mutants": {
+    "total": 21,
+    "killed": 19,
+    "survived": 2,
+    "survivors": [
+      "S4-local-view-runs-the-quote-check",
+      "S4b-local-view-runs-the-quote-check-dossier-render-step"
+    ]
+  },
+  "regeneratedSplitIdentical": true,
+  "digestCiters": {
+    "changedFiles": 53,
+    "citedFiles": 21,
+    "citerClasses": [
+      "evidence record"
+    ],
+    "governedPlaneCiters": []
+  },
+  "tests": "Tests: +7 ~9 -0"
+}

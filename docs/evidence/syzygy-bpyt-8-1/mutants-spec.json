@@ -1,0 +1,225 @@
+{
+  "mutants": [
+    {
+      "id": "B1-type-import-of-core-root-in-dossier-site",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "import { assertInertSvg } from './svg-inert.js';\n",
+      "new": "import { assertInertSvg } from './svg-inert.js';\nimport type { PipelineResult } from '@syzygy/polaris-generation-core';\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "a type-only edge from a CLI-reachable module to the package root, which re-exports the island"
+    },
+    {
+      "id": "B2-relative-island-import-in-live",
+      "file": "packages/polaris-generation-core/src/live.ts",
+      "old": "} from './canonical-json.js';\n",
+      "new": "} from './canonical-json.js';\nimport './excerpt.js';\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "B3-dynamic-core-root-import-in-dossier-render-step",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';\n",
+      "new": "import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';\nexport const loadPipeline = (): Promise<unknown> => import('@syzygy/polaris-generation-core');\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "B4-cli-subpath-resolves-to-provider-adapter",
+      "file": "apps/three-surface-poc/package.json",
+      "old": "\"./dossier-site\": \"./dist/polaris-generation/dossier-site.js\"",
+      "new": "\"./dossier-site\": \"./dist/polaris-generation/dossier-render.js\"",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "B5-cli-imports-a-subpath-the-app-no-longer-exports",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "    }, { renderer: renderLocalDossier });\n",
+      "new": "    }, { renderer: (await import('@syzygy/three-surface-poc-app/dossier-render')).renderDossier });\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "the boundary test refuses a workspace specifier that names no module"
+    },
+    {
+      "id": "B6-consent-ports-exception-removed",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "const UNFOLLOWED = ['packages/polaris-generation-consent/src/consent-ports.ts'];",
+      "new": "const UNFOLLOWED: string[] = [];",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "B7-exception-outlives-its-reason",
+      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+      "old": "type PipelineRequest } from '@syzygy/polaris-generation-core';",
+      "new": "type PipelineRequest } from '@syzygy/polaris-generation-core/live';",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "a transient mutation of the parked file, restored from git; the last test must fail once the excepted edge stops reaching the island"
+    },
+    {
+      "id": "B8-island-entry-names-no-file",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "  'packages/polaris-generation-core/src/excerpt.ts',\n",
+      "new": "  'packages/polaris-generation-core/src/excerpts.ts',\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "B9-island-entry-dropped",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "  'packages/polaris-generation-core/src/pipeline.ts',\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core"
+    },
+    {
+      "id": "C1-pin-cli-imports-the-provider-adapter",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n    return runPolarisCli(",
+      "new": "    const { renderDossier: renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');\n    return runPolarisCli(",
+      "tests": [
+        "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts"
+      ],
+      "config": "packages/cap1-system/vitest.config.ts"
+    },
+    {
+      "id": "G1-guidance-one-byte",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "Seven rules hold at every stage:",
+      "new": "Seven rules hold at every stage;",
+      "tests": [
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier"
+    },
+    {
+      "id": "G2-guidance-version",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "export const DOSSIER_GUIDANCE_VERSION = 'polaris-author-dossier-v2';",
+      "new": "export const DOSSIER_GUIDANCE_VERSION = 'polaris-author-dossier-v3';",
+      "tests": [
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier"
+    },
+    {
+      "id": "P1-local-prose-segment-unescaped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "if (part.kind === 'prose') return escape(part.text);",
+      "new": "if (part.kind === 'prose') return part.text;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "P2-local-entry-undeclared-sink-contract",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "renderLocalDossier.pageSinkContract = PAGE_SINK_CONTRACT;",
+      "new": "renderLocalDossier.pageSinkContract = 'undeclared';",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "P3-local-disclosure-text-unescaped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+      "old": ">${escape(item.text)}${",
+      "new": ">${item.text}${",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "P4-local-entry-drops-the-local-input",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "  return renderDossierSite(input, localView(input.local));",
+      "new": "  return renderDossierSite({ sources: input.sources }, localView(input.local));",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "S1-provider-view-drops-pipeline-quote-findings",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "      quoteFindings: Array.isArray(result.quoteFindings) ? result.quoteFindings : [] };",
+      "new": "      quoteFindings: [] };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "S2-site-skips-the-fresh-quote-check-when-the-pipeline-found-none",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "  if (view.quoteFindings !== null) {",
+      "new": "  if (view.quoteFindings !== null && view.quoteFindings.length > 0) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "S3-xor-check-removed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "  if ((result === undefined) === (local === undefined)) throw new DossierRenderError('not-renderable');\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app"
+    },
+    {
+      "id": "S4-local-view-runs-the-quote-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "notGenerated: [], quoteFindings: null,",
+      "new": "notGenerated: [], quoteFindings: [],",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "note": "expected survivor (equivalent): quote flags are read only on the provider paragraph path, so an operator-agent page is the same either way; the null arm keeps the check off that path, as `result !== undefined` did"
+    },
+    {
+      "id": "S4b-local-view-runs-the-quote-check-dossier-render-step",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "notGenerated: [], quoteFindings: null,",
+      "new": "notGenerated: [], quoteFindings: [],",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier",
+      "note": "expected survivor (equivalent): quote flags are read only on the provider paragraph path, so an operator-agent page is the same either way; the null arm keeps the check off that path, as `result !== undefined` did"
+    }
+  ]
+}

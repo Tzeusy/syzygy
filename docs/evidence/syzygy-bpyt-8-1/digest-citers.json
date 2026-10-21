@@ -1,0 +1,405 @@
+{
+  "old": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+  "new": "2106f2608d861aa13509e9d8b4bffe0145ee6454",
+  "changedFiles": 53,
+  "existingAtOld": 46,
+  "addedFiles": [
+    "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+    "packages/polaris-generation-core/src/closed-schema.ts",
+    "packages/polaris-generation-core/src/draft-model.ts",
+    "packages/polaris-generation-core/src/island-boundary.test.ts",
+    "packages/polaris-generation-core/src/live.ts",
+    "packages/polaris-generation-core/src/source-model.ts",
+    "packages/polaris-generation-core/src/topics.ts"
+  ],
+  "citedFiles": 21,
+  "citerClasses": [
+    "evidence record"
+  ],
+  "governedPlaneCiters": [],
+  "rows": [
+    {
+      "file": "apps/syzygy/src/main.ts",
+      "oldSha256": "46a27dc243b343f817dab3e2b090d335cd8b13b79b4bc6307b24c798925905ff",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/package.json",
+      "oldSha256": "f49046a5b2f50b15911e74057e6bea5145b6572c087220e64027eb0c7ac2485f",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
+      "oldSha256": "608222a02d0438e90990878ea0eca06532194845c54b4c2c2a2c141ff9d940be",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+      "oldSha256": "6300eda88a229d23fd201aeed97e8a5f7ec632366789919ea8f0266d520eb33f",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+      "oldSha256": "311784f9e58cd3c727ea95c8d636ed91549b1fc071a054a8f0b1a6ac5a3ce8ae",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "oldSha256": "c5074742af6fece7d5b27fe092507d84e8bcfd5f830ec8c93d92f5cbb3ed00dc",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "oldSha256": "2c5397559c48db5b76e8182513f31bdf3131210f5a1cd33ae9b198ee94f37c74",
+      "citers": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts",
+      "oldSha256": "6d145d878640d2cf8e9ddcf87df4b8912f77daa15501600cb92f2fa1a78d11b0",
+      "citers": [
+        {
+          "path": "docs/evidence/dossier-blockers-install-mutants-ts-2026-10-08.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+      "oldSha256": "d07bfcbd2990647f16addf9a1cf2bb1a18bd01006b0e994b0c3304e37712a3f3",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/brief.test.ts",
+      "oldSha256": "fc142979af372dfb7cee7b0f97ac9aabf44fc0244c7cb370b071e36ce75dfaed",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "oldSha256": "9a78a4a299c7614fff78b7a927b970dc955a64acb67d8947dcf7e71b8757db17",
+      "citers": [
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-differential-2026-10-21-r2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21-r2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21-r3.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/check.ts",
+      "oldSha256": "e44f7a0525faf72cda0ea0d4c265c42a4bff89393ddac380e534d1c5191ada43",
+      "citers": [
+        {
+          "path": "docs/evidence/p110-span-install-correction-mutations-2026-10-21.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "oldSha256": "a885417de2bbcaf3229f430a7f21b3861a99c062bb63bbcf96812b82720c048c",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/close.test.ts",
+      "oldSha256": "e5851fa6b934c6e09df49090777e76132f27f25fa0ce100cec6fe9bd3c5fa90d",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/close.ts",
+      "oldSha256": "bd4872c519a67c77bb0789ae7c0218061b7af23dc9eeb30c58d3341aa5237a6c",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s10b-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/credential-probe.ts",
+      "oldSha256": "0c5e699f407bb4c17f3a31deb245c92001d465a755fe7a77039d7206a8c02ff5",
+      "citers": [
+        {
+          "path": "docs/evidence/adapter-credential-declaration-differential-2026-10-22.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/adapter-credential-declaration-mutants-2026-10-22.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/design-review.ts",
+      "oldSha256": "f1d0065a57847141e1e398c35eb7606eaa78f87e5ca62815a7eb21c52896aecc",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s9b-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/draft-schema.ts",
+      "oldSha256": "2693e2f5732cc3a29ae5c0b4ce40cb419400b65f087278fddf1b83a4ae194d1d",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s10b-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/execution-choice.ts",
+      "oldSha256": "beaf3ec27c9b2bc4d6557905a2147c0383d27456b4ed32c6ea8e96c4c4391538",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/execution-flags.test.ts",
+      "oldSha256": "c3f99a2f9158017b3e8d3cf4c5ca22f5660722417809128f02a9b77c5a9146a6",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s10b-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "oldSha256": "3dbec2698ae12f4aff0f3d0326c11463f029e5fd0333f44d80abd64c5c9204cd",
+      "citers": [
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-differential-2026-10-21-r2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21-r2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21-r3.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/no-egress.test.ts",
+      "oldSha256": "fea6050994c58188c4c1a4aa0f18bb03fe551fb242f9f131d588fed6f0fc20be",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/render.test.ts",
+      "oldSha256": "3a6f7e41898c2b9ce2d1cb95a8e9bafe858fe6a33ef31a0d52cfeecb7cd31ad0",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/render.ts",
+      "oldSha256": "f760a40b1566d92d712bdc00d292df1480799e05a2de20efee3aed21cd893a57",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/reverify.ts",
+      "oldSha256": "908809b52ae67b364b182ba4a29ee18dfcabac78849381e01c925f5de9fbd640",
+      "citers": [
+        {
+          "path": "docs/evidence/project-documentation-screen-mutants-2026-10-08.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/review.ts",
+      "oldSha256": "2e51368586d9198d6bdeff88fd57cfb7549071c1a1450af9b55c509fe7ae3933",
+      "citers": [
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-differential-2026-10-21-r2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-differential-2026-10-21.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21-r3.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/run-config.ts",
+      "oldSha256": "25978fa8d926a588ff127b4c0ed914b613ca13b9f54b84ae31fd60ee0b7e18b2",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s1-mutants-2026-10-06.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+      "oldSha256": "4e9d26e90a0c8670598150b8ae6b244a97e31d8f72736e6a99fc0c6eec9d51fb",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/run-record.ts",
+      "oldSha256": "7ea6fe080a20a963ffb561ead72afd9fd045b4c01f4abec1f79f3cab86819e0d",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s6-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "oldSha256": "a86d18e557a402852ea99a0e6f93d1a142b81dffa8215ecdba615fd1dc980e75",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/status.ts",
+      "oldSha256": "e1095697451b02b6c4e421c8f63e5a763987e0f80acaade7ffbc388c799f474f",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s10-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+      "oldSha256": "c28e33879d18b50ad4aa63ffe3a4e2b8120b9f3a5adfaba1f5678b98086d459b",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "oldSha256": "748afb167b34dcc80906735adaf41e7d4db794c5d1dcc9c08b694dd2ff811d80",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-waiting-sessions-mutants-2026-10-09.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/test-support/no-egress-driver.ts",
+      "oldSha256": "438c9d051c74609fa90990e1c7f74bf41d6064cf7bb1ca7780d71365e87bea19",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s10-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/README.md",
+      "oldSha256": "f74560d4bb463aa5aca6fb5d5aac33500ab4a965f52c9d25cd7ba4346fca2a7f",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/package.json",
+      "oldSha256": "a46588c592606ee153ff0a424ce3b13c96577a5cf6778cdd06b4d43a57a9b4b2",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/admitted-input.ts",
+      "oldSha256": "abfe9e8ac16e4f4561743fb54198118fa45c52714fb7ddc7d314587b4636ad59",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "oldSha256": "4011300437e72df0fc4287addddcb077f40eab8abc9e06a7b91c6c74ee7c9498",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "oldSha256": "17d978723bca1c8f533e810d26a42f4b978159e12d577bbeb8874dc678c49807",
+      "citers": [
+        {
+          "path": "docs/evidence/dossier-engine-259-mutants.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "oldSha256": "a881ab1206bce8e773652c4c45460e73d98c6ef8de8a1026a98534191e2f82d4",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/index.ts",
+      "oldSha256": "487f4f7753d5aff4ea75f1811c59ed5fa5f1b24cd23680aad8517f66b3470b96",
+      "citers": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/local-render.ts",
+      "oldSha256": "04667c37d159bbfa2928ad92ffb7d9bf6bccaab7b50de438f59525e5c02167fb",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-s9b-mutants-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "oldSha256": "910b01c8919610026a0568a7f936a3194bbcc0721bec6cdfc22eb2142bd0ba6b",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-discovery-provider-mutants-2026-10-04.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/polaris-discovery-sent-text-2026-10-04-rev2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/polaris-discovery-sent-text-2026-10-04-rev3.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/polaris-discovery-sent-text-2026-10-04.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/polaris-prompt-mutants-2026-10-04-rev2.json",
+          "class": "evidence record"
+        },
+        {
+          "path": "docs/evidence/polaris-prompt-mutants-2026-10-04.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/reader-questions.ts",
+      "oldSha256": "ec59bad9104019f373b70d082091c6dcbf6590089f9b79f00a737aebb769d516",
+      "citers": [
+        {
+          "path": "docs/evidence/dossier-engine-259-mutants.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "scripts/dossier_scale_measure.mjs",
+      "oldSha256": "0cddf01b23fc639c480bfc2e91adc9f8203744f1f1c865fb7572b22c9573289e",
+      "citers": [
+        {
+          "path": "docs/evidence/polaris-dossier-redis-scale-measurement-2026-10-07.json",
+          "class": "evidence record"
+        }
+      ]
+    },
+    {
+      "file": "vitest.config.ts",
+      "oldSha256": "38fcad2d96e73d5d1bd27663dcb6fa6edf192f0183e40eb3ca1995e0ceb021b9",
+      "citers": []
+    }
+  ]
+}

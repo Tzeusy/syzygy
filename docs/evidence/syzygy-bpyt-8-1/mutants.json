@@ -1,0 +1,443 @@
+{
+  "format": "syzygy-bpyt-8-1-mutants/1",
+  "commit": "2106f2608d861aa13509e9d8b4bffe0145ee6454",
+  "runnerSha256": "31f3a14f9b2cc19e730af615a11c810eb9fe7a2a29da01348190765e86627748",
+  "runner": "single-occurrence replacement of `old` by `new` in `file`, then `npx vitest run` over `tests` (by project, or by config); killed = at least one failed test, errored = no test result (the file failed to collect); restored from git after each run",
+  "fileSha256": {
+    "apps/syzygy/src/main.ts": "0d07992fb55cc7f256ac4d0b49dfa672e54fc65d869f02587a476b9df18bdbae",
+    "apps/three-surface-poc/package.json": "da64c38df848d39389b08bf7dc82c50dfb094c9266a9c1c6251ef11813172e08",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts": "0f0f56681b83e081cf7a4b97d2b5db224235c24bb78cecc66d691493ee5fdac4",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "bb7a78a6c77225b166e448c592b05f1e862d853b89609011996cd1d8945c2883",
+    "apps/three-surface-poc/src/polaris-generation/dossier-site.ts": "c1f82e84a0ad7d398fcc617c19b0de9b4deff3affd2d2e3f757e0a73560bb8f9",
+    "packages/polaris-dossier/src/brief.ts": "e5462829e60200ad906cd3037644c400cbf545b246638f41a24034f6c4427809",
+    "packages/polaris-dossier/src/render.ts": "5f644761ca774f5707690c629b7c74f5ebdf63c12652a82de7d567ead1e69f4b",
+    "packages/polaris-generation-consent/src/consent-ports.ts": "44dcaf5ae547d72c92885a9bd44dec33e2c6e7dd43bec599db54ff79afb69b15",
+    "packages/polaris-generation-core/src/island-boundary.test.ts": "4dfbb7f1f5afeb47c971e92483b0d699c786fabe7a350d7cd40208df320be4ba",
+    "packages/polaris-generation-core/src/live.ts": "b09f9a109ac8e89d93377e7673b8c5e17da561419b310d5c3b161477c7f69862"
+  },
+  "testFileSha256": {
+    "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts": "1211ff8a46bb86402862d96b4f477608b678cd2caf3d8b73989ea61b39a3a179",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts": "ed4578ea5b1c804a7bf4e4b1700eb30e009fcc3b280312bd1c248739fded4104",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts": "890ced7bf89d7ed93793e16efe1f3d497308eb9854369739c6730b93ae1821c7",
+    "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts": "59a3e63e976fff6ea52a28768c31a676bd175dabea98df745907d80665f41944",
+    "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts": "8cdf783965250cf824df26b6f9f314516d5e3b93ec547d5c9d69203c7e9d2b3f",
+    "packages/polaris-dossier/src/brief.test.ts": "e117172021abfc3b55350b43e4d75c6cf67bf025f6dc92634ef2441ac4745f44",
+    "packages/polaris-dossier/src/render.test.ts": "ff3b6991df5fb008aad4e0b12f753a15f2f866112e5b312a42fdc63e2722ff5c",
+    "packages/polaris-generation-core/src/island-boundary.test.ts": "4dfbb7f1f5afeb47c971e92483b0d699c786fabe7a350d7cd40208df320be4ba"
+  },
+  "ranAt": "2026-10-21T22:30:45+00:00",
+  "mutants": [
+    {
+      "id": "B1-type-import-of-core-root-in-dossier-site",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "import { assertInertSvg } from './svg-inert.js';\n",
+      "new": "import { assertInertSvg } from './svg-inert.js';\nimport type { PipelineResult } from '@syzygy/polaris-generation-core';\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island reaches no island module from the CLI entry",
+          "firstErrorLine": "AssertionError: expected [ \u2026(11) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": [],
+      "note": "a type-only edge from a CLI-reachable module to the package root, which re-exports the island"
+    },
+    {
+      "id": "B2-relative-island-import-in-live",
+      "file": "packages/polaris-generation-core/src/live.ts",
+      "old": "} from './canonical-json.js';\n",
+      "new": "} from './canonical-json.js';\nimport './excerpt.js';\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island reaches no island module from the CLI entry",
+          "firstErrorLine": "AssertionError: expected [ Array(1) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "B3-dynamic-core-root-import-in-dossier-render-step",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';\n",
+      "new": "import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';\nexport const loadPipeline = (): Promise<unknown> => import('@syzygy/polaris-generation-core');\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island reaches no island module from the CLI entry",
+          "firstErrorLine": "AssertionError: expected [ \u2026(11) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "B4-cli-subpath-resolves-to-provider-adapter",
+      "file": "apps/three-surface-poc/package.json",
+      "old": "\"./dossier-site\": \"./dist/polaris-generation/dossier-site.js\"",
+      "new": "\"./dossier-site\": \"./dist/polaris-generation/dossier-render.js\"",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island reaches no island module from the CLI entry",
+          "firstErrorLine": "AssertionError: expected [ \u2026(11) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "B5-cli-imports-a-subpath-the-app-no-longer-exports",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "    }, { renderer: renderLocalDossier });\n",
+      "new": "    }, { renderer: (await import('@syzygy/three-surface-poc-app/dossier-render')).renderDossier });\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island resolves every workspace import the CLI reaches, dynamic ones included",
+          "firstErrorLine": "AssertionError: expected [ Array(1) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": [],
+      "note": "the boundary test refuses a workspace specifier that names no module"
+    },
+    {
+      "id": "B6-consent-ports-exception-removed",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "const UNFOLLOWED = ['packages/polaris-generation-consent/src/consent-ports.ts'];",
+      "new": "const UNFOLLOWED: string[] = [];",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island resolves every workspace import the CLI reaches, dynamic ones included",
+          "firstErrorLine": "AssertionError: expected [ 'apps/syzygy/src/main.ts', \u2026(142) ] to include undefined"
+        },
+        {
+          "test": "the syzygy CLI and the parked provider island reaches no island module from the CLI entry",
+          "firstErrorLine": "AssertionError: expected [ \u2026(11) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "B7-exception-outlives-its-reason",
+      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+      "old": "type PipelineRequest } from '@syzygy/polaris-generation-core';",
+      "new": "type PipelineRequest } from '@syzygy/polaris-generation-core/live';",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island follows every edge but one, and that one still reaches the island",
+          "firstErrorLine": "AssertionError: expected 0 to be greater than 0"
+        }
+      ],
+      "erroredFiles": [],
+      "note": "a transient mutation of the parked file, restored from git; the last test must fail once the excepted edge stops reaching the island"
+    },
+    {
+      "id": "B8-island-entry-names-no-file",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "  'packages/polaris-generation-core/src/excerpt.ts',\n",
+      "new": "  'packages/polaris-generation-core/src/excerpts.ts',\n",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island lists twenty island modules, each a file in the tree",
+          "firstErrorLine": "AssertionError: expected [ Array(1) ] to deeply equal []"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "B9-island-entry-dropped",
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "old": "  'packages/polaris-generation-core/src/pipeline.ts',\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/island-boundary.test.ts"
+      ],
+      "project": "@syzygy/polaris-generation-core",
+      "outcome": "killed",
+      "totalTests": 4,
+      "failedTests": [
+        {
+          "test": "the syzygy CLI and the parked provider island lists twenty island modules, each a file in the tree",
+          "firstErrorLine": "AssertionError: expected 19 to be 20 // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "C1-pin-cli-imports-the-provider-adapter",
+      "file": "apps/syzygy/src/main.ts",
+      "old": "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n    return runPolarisCli(",
+      "new": "    const { renderDossier: renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');\n    return runPolarisCli(",
+      "tests": [
+        "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts"
+      ],
+      "config": "packages/cap1-system/vitest.config.ts",
+      "outcome": "killed",
+      "totalTests": 15,
+      "failedTests": [
+        {
+          "test": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+          "firstErrorLine": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "G1-guidance-one-byte",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "Seven rules hold at every stage:",
+      "new": "Seven rules hold at every stage;",
+      "tests": [
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier",
+      "outcome": "killed",
+      "totalTests": 26,
+      "failedTests": [
+        {
+          "test": "brief: issued carries its own writing guidance, byte-identical to the author-prompt cut it replaced",
+          "firstErrorLine": "AssertionError: expected '7b9351488cc6890b7b96d98863ca30b32e129\u2026' to be '17ea6ff5bc05f02b27343da8184033104295b\u2026' // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "G2-guidance-version",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "export const DOSSIER_GUIDANCE_VERSION = 'polaris-author-dossier-v2';",
+      "new": "export const DOSSIER_GUIDANCE_VERSION = 'polaris-author-dossier-v3';",
+      "tests": [
+        "packages/polaris-dossier/src/brief.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier",
+      "outcome": "killed",
+      "totalTests": 26,
+      "failedTests": [
+        {
+          "test": "brief: issued writes the brief, the schema and the brief record, binding the run, the pinned revision and the schema version",
+          "firstErrorLine": "AssertionError: expected { \u2026(13) } to match object { \u2026(13) }"
+        },
+        {
+          "test": "brief: issued states the five reader topics, the understanding record and every rule 034 and 036 name",
+          "firstErrorLine": "AssertionError: expected '# Polaris dossier brief\\n\\n- Brief ve\u2026' to contain '## Writing guidance from the dossier \u2026'"
+        },
+        {
+          "test": "brief: issued carries its own writing guidance, byte-identical to the author-prompt cut it replaced",
+          "firstErrorLine": "AssertionError: expected 'polaris-author-dossier-v3' to be 'polaris-author-dossier-v2' // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "P1-local-prose-segment-unescaped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "if (part.kind === 'prose') return escape(part.text);",
+      "new": "if (part.kind === 'prose') return part.text;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 3,
+      "failedTests": [
+        {
+          "test": "page sinks under the version-3 renderCondition the operator-agent entry the CLI injects writes every canary string entity-encoded, never raw, on every page under the policy CSP",
+          "firstErrorLine": "AssertionError: index.html: <script>: expected true to be false // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "P2-local-entry-undeclared-sink-contract",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "renderLocalDossier.pageSinkContract = PAGE_SINK_CONTRACT;",
+      "new": "renderLocalDossier.pageSinkContract = 'undeclared';",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 3,
+      "failedTests": [
+        {
+          "test": "page sinks under the version-3 renderCondition the operator-agent entry the CLI injects writes every canary string entity-encoded, never raw, on every page under the policy CSP",
+          "firstErrorLine": "AssertionError: expected 'undeclared' to be 'polaris/page-sink/escaped-text-under-\u2026' // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "P3-local-disclosure-text-unescaped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+      "old": ">${escape(item.text)}${",
+      "new": ">${item.text}${",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 3,
+      "failedTests": [
+        {
+          "test": "page sinks under the version-3 renderCondition the operator-agent entry the CLI injects writes every canary string entity-encoded, never raw, on every page under the policy CSP",
+          "firstErrorLine": "AssertionError: index.html: <script>: expected true to be false // Object.is equality"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "P4-local-entry-drops-the-local-input",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "  return renderDossierSite(input, localView(input.local));",
+      "new": "  return renderDossierSite({ sources: input.sources }, localView(input.local));",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 3,
+      "failedTests": [
+        {
+          "test": "page sinks under the version-3 renderCondition the operator-agent entry the CLI injects writes every canary string entity-encoded, never raw, on every page under the policy CSP",
+          "firstErrorLine": "DossierRenderError: Dossier render refused: invalid-inventory"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "S1-provider-view-drops-pipeline-quote-findings",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "      quoteFindings: Array.isArray(result.quoteFindings) ? result.quoteFindings : [] };",
+      "new": "      quoteFindings: [] };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 63,
+      "failedTests": [
+        {
+          "test": "quotation marks inside a cited block (deterministic fidelity) honours a recorded finding on a block the fresh check would not flag",
+          "firstErrorLine": "AssertionError: expected '<p data-claim-id=\"opening\" data-epist\u2026' to contain 'data-epistemic=\"unknown\"'"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "S2-site-skips-the-fresh-quote-check-when-the-pipeline-found-none",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "  if (view.quoteFindings !== null) {",
+      "new": "  if (view.quoteFindings !== null && view.quoteFindings.length > 0) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 63,
+      "failedTests": [
+        {
+          "test": "quotation marks inside a cited block (deterministic fidelity) flags the same block when the result carries no record of the finding, by checking the draft itself",
+          "firstErrorLine": "AssertionError: expected '<p data-claim-id=\"opening\" data-epist\u2026' to contain 'data-epistemic=\"unknown\"'"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "S3-xor-check-removed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "  if ((result === undefined) === (local === undefined)) throw new DossierRenderError('not-renderable');\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-render-provider-golden.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "killed",
+      "totalTests": 63,
+      "failedTests": [
+        {
+          "test": "multi-page dossier render refuses an input carrying both a pipeline result and an operator-agent run, or neither",
+          "firstErrorLine": "AssertionError: expected [Function] to throw error including 'Dossier render refused: not-renderable' but got 'Cannot read properties of undefined (\u2026'"
+        }
+      ],
+      "erroredFiles": []
+    },
+    {
+      "id": "S4-local-view-runs-the-quote-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "notGenerated: [], quoteFindings: null,",
+      "new": "notGenerated: [], quoteFindings: [],",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts"
+      ],
+      "project": "@syzygy/three-surface-poc-app",
+      "outcome": "survived",
+      "totalTests": 3,
+      "failedTests": [],
+      "erroredFiles": [],
+      "note": "expected survivor (equivalent): quote flags are read only on the provider paragraph path, so an operator-agent page is the same either way; the null arm keeps the check off that path, as `result !== undefined` did"
+    },
+    {
+      "id": "S4b-local-view-runs-the-quote-check-dossier-render-step",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "old": "notGenerated: [], quoteFindings: null,",
+      "new": "notGenerated: [], quoteFindings: [],",
+      "tests": [
+        "packages/polaris-dossier/src/render.test.ts"
+      ],
+      "project": "@syzygy/polaris-dossier",
+      "outcome": "survived",
+      "totalTests": 42,
+      "failedTests": [],
+      "erroredFiles": [],
+      "note": "expected survivor (equivalent): quote flags are read only on the provider paragraph path, so an operator-agent page is the same either way; the null arm keeps the check off that path, as `result !== undefined` did"
+    }
+  ]
+}
