@@ -29,11 +29,10 @@ starts on this record until that line exists and the file is on `main`.
 
 ## Owner confirmation
 
-Not yet confirmed. Before merge, the lead replaces this paragraph with
-exactly one line of this form:
-
-"Confirmed by the owner on <date>, channel <channel>, over commit <commit>,
-record SHA-256 <sha256>."
+"Confirmed by the owner on 2026-10-21T11:59:04+00:00, channel owner via
+questionnaire web form (token-gated, from 127.0.0.1), over commit
+8c334f67e6883a5d229bf04512c65eeaa878a5ea, record SHA-256
+f669546c788d5ed598b916cf1369d58b65e1825bd53adc33dec2b2f2ab963166."
 
 - `<commit>` is the commit that carries the bytes the owner was shown.
 - `<sha256>` is the SHA-256 of this file at that commit, computed by script
