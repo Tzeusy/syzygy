@@ -13,9 +13,9 @@ import { designCriteria } from './design-review.js';
 import { designVerdictSchemaDocument } from './draft-schema.js';
 import { openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
-import { checkInventory } from './inventory.js';
+import { checkInventory, openRun } from './inventory.js';
 import { NO_RENDERER, renderRun, type DossierRenderer, type DossierRendererInput, type RenderDeps } from './render.js';
-import { reviewCheck, reviewPacket } from './review.js';
+import { buildStoredDesignPacket, designReviewOfRecord, reviewCheck, reviewPacket } from './review.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { buildDossierScreen } from './screen.js';
@@ -712,6 +712,15 @@ describe('rendered-design review (S9b)', () => {
     expect(await launchForm(run, { role: 'review', form: 'terminal', kind: 'design' }, { sources: sources(), now: () => LATER })).toMatchObject({ ok: true, report: { session: 1 } });
     const launched = await renderRun(run, renderDeps());
     expect(launched.ok && launched.report.designReview).toEqual({ counts: true, packetSha256: digest, label: 'Observed' });
+    // The review verdict's wording once the marker is present but unreadable (R-GP-IMPL-LAUNCHED-MARKER-1 N5). A render never reaches it:
+    // the inventory and the fidelity review stop counting too, which changes the pages, so the design verdict is retired as a stale packet
+    // first. The design review of record is asked directly, against the packet of the pages the last render stored.
+    fs.writeFileSync(path.join(run, 'launched.json'), '');
+    const opened = await openRun(run, sources(), LATER, 'test');
+    const stored = opened.ok ? buildStoredDesignPacket(opened) : undefined;
+    if (!opened.ok || !stored?.ok) throw new Error('fixture: no stored design packet');
+    expect(stored.sha256).toBe(digest);
+    expect(await designReviewOfRecord(opened, stored, { sources: sources(), now: () => LATER })).toEqual({ counts: false, why: 'the launch-form record of design session 1 is not a countable launch (the run\'s launched marker is present but unreadable, so none counts) of that session\'s prompt' });
   });
 
   it('states a counted review that declares the pages not ready beside its blocking finding', async () => {
