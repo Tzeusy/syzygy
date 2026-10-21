@@ -1,0 +1,5 @@
+scope files (non-test cap1-core, cap1-daemon, apps/syzygy): 32
+reached from apps/syzygy/src/main.ts: 27
+NOT REACHED: packages/cap1-core/src/parity-oracle.ts
+NOT REACHED: packages/cap1-core/src/testing.ts
+NOT REACHED: packages/cap1-core/src/write-boundary.ts

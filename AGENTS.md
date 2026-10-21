@@ -176,7 +176,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 
 - `packages/cap1-core/`: pure domain modules; one conformance file per
   CAP1-REQ in `packages/cap1-conformance/`. One `FactModel` feeds both
-  channels; an independent oracle compares their outputs.
+  channels; an independent oracle compares their outputs. The oracle and
+  the REQ-061 reference model ship from `@syzygy/cap1-core/testing`, never
+  the barrel; conformance fixtures build through
+  `packages/cap1-conformance/src/fixtures/` (inputs only, expected values
+  stay literals).
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
   split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored
@@ -277,8 +281,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 - Never quote a performed act's argument or a truncated signed digest in a
   new artifact unless it is in `ACT_DIGEST_COPY_FILES` (CG-7e/CG-15); cite
   the record by path. Never backtick a Butlers path in a packet (CG-1b).
-- `authorizeWrite` uses raw `startsWith` for containment; callers must
-  normalize paths first (tracked, unfixed).
+- Capability 1 has no runtime governed-plane write guard: the daemon
+  performs no governed write and CAP1-REQ-061's write oracle is external
+  (`syzygy-bpyt.7.2` removed `write-guard.ts`). `authorizeWrite` survives
+  only as test support (`@syzygy/cap1-core/testing`) and compares raw
+  `startsWith`; a future write path must normalize first.
 - App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves both
   `packages/three-surface-poc-core` and `packages/polaris-generation-core`
   through `dist` declarations: run `tsc -b` on each (or `npm run build:poc`)

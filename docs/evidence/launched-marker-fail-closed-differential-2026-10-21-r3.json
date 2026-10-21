@@ -1,0 +1,2667 @@
+{
+  "format": "differential-evidence/1",
+  "bead": "syzygy-bpyt.8.12",
+  "predecessor": "docs/evidence/launched-marker-fail-closed-differential-2026-10-21-r2.json (syzygy-bpyt.8.8 round 2; retained unchanged)",
+  "answers": "R-GP-IMPL-LAUNCHED-MARKER-2 R2-N1: a regular file that grows after the fstat size check was read to end-of-file",
+  "subject": [
+    "packages/polaris-dossier/src/launched.ts"
+  ],
+  "baseCommit": "c571fb9f176ef7ed3c979654511885056a637455",
+  "fixCommit": "24fcf9c476d166704dc3fc88afff9df9ffbc576a",
+  "subjectSha256": {
+    "base": {
+      "packages/polaris-dossier/src/launched.ts": "37fc8429d35dc350321c562646d9b79a56cea79a1f74d9bf1e06b72e543150ee"
+    },
+    "fix": {
+      "packages/polaris-dossier/src/launched.ts": "c7a25b8b45fe12e2add7874f88d46b2bad1eef16ffa4a17e2464d5c671424921"
+    }
+  },
+  "method": "The round-2 harness and driver of syzygy-bpyt.8.8 with three race variants added and its two pre-8.8 skips removed. The harness runs once per side over 20 variants, and once per (variant, probe) in its own process group under a 120 s kill timeout for the two that blocked or exhausted the pre-8.8 reader (a FIFO; a symbolic link to /dev/zero); at c571fb9f neither can, so every probe runs at both sides. The base side writes the subject file from c571fb9f over the fix, then the fix is restored. A race variant replaces node:fs's fstatSync through the CommonJS module and syncBuiltinESMExports: at every fstat of a descriptor that names the marker (by /proc/self/fd) it writes the variant's first bytes into the file, takes the real fstat, then writes its second bytes, so every read of the marker in a probe loses the race. Each variant plants launched.json in a fresh run directory at a fixed path per probe; probes are public entry points present at both commits.",
+  "command": "python3 drive.py <worktree> <base> <scratch> <out.json>; the harness is copied to packages/polaris-dossier/src/zz-b812-differential.test.ts and run with B88_BASE, B88_OUT and optionally B88_SKIP, B88_ONLY_VARIANT, B88_ONLY_PROBE set: npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/zz-b812-differential.test.ts",
+  "attempts": "This is the second run of the driver. The first, at the same commits, recorded harnessFailed for every probe of the FIFO variant at both sides: its plant returned execFileSync's output, which the restore step called as a function. The harness was corrected to keep only a returned function, and the whole run was repeated; the first run's output is not used.",
+  "harness": {
+    "text": "import { createHash } from 'node:crypto';\nimport { execFileSync } from 'node:child_process';\nimport * as fs from 'node:fs';\nimport { createRequire, syncBuiltinESMExports } from 'node:module';\nimport * as path from 'node:path';\nimport { fileURLToPath } from 'node:url';\nimport { it } from 'vitest';\nimport { issueBrief } from './brief.js';\nimport { runDossierCli } from './cli.js';\nimport { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';\nimport type { PinnedObjectReader } from './git-object-reader.js';\nimport { launchFormRefusal, writeLaunchedMarker } from './launched.js';\nimport { parseRunConfig } from './run-config.js';\nimport { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';\nimport { launchForm, sessionPrompt } from './session-handover.js';\n\n// syzygy-bpyt.8.12 old-versus-new differential harness (not committed as a test), the round-2 harness of syzygy-bpyt.8.8 with three race\n// variants added. Public entry points only, present at both c571fb9f and the fix: allow-execution (CLI), launchFormRefusal, launchForm on a\n// handed-over inventory session, issueBrief with the permitting arm off (bytes on fixed paths) and on (fixture ports). One fresh run\n// directory per variant and probe. B88_ONLY_VARIANT and B88_ONLY_PROBE restrict a run to one variant and one probe, so a variant that\n// could block a reader runs each probe in its own process. A race variant replaces node:fs's fstatSync for the probe: at every fstat of a\n// descriptor naming the marker it writes `before` into the file, takes the real fstat, then writes `after`, so each read the reader makes\n// sees the file change between its measurement and its read.\n\nconst OUT = process.env['B88_OUT']!;\nconst BASE = process.env['B88_BASE']!;\nconst ONLY_VARIANT = process.env['B88_ONLY_VARIANT'];\nconst ONLY_PROBE = process.env['B88_ONLY_PROBE'];\nconst SKIP = (process.env['B88_SKIP'] ?? '').split('|').filter((name) => name !== '');\nconst probing = (probe: string): boolean => ONLY_PROBE === undefined || ONLY_PROBE === probe;\nconst REAL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');\nconst NOW = Date.UTC(2026, 9, 7, 12, 0, 0);\nconst RUN_ID = `run-${'a'.repeat(32)}`;\nconst ALL = ['owner-started-session', 'owners-own-host', 'owner-attends'];\nconst GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };\nconst sha = (bytes: Buffer | string): string => createHash('sha256').update(bytes).digest('hex');\nconst cjsFs = createRequire(import.meta.url)('node:fs') as { fstatSync: (fd: number, ...rest: unknown[]) => fs.Stats };\nconst PREFIX = '{\"format\": \"polaris-dossier-launched/1\", \"pad\": \"';\n/** A marker of the right format, exactly `bytes` long, ending in a newline. */\nconst padded = (bytes: number): string => `${PREFIX}${'x'.repeat(bytes - PREFIX.length - 3)}\"}\\n`;\nconst TYPED = '{\\n  \"format\": \"polaris-dossier-launched/1\",\\n  \"runId\": \"run-x\",\\n  \"startedAt\": \"2026-10-21T00:00:00.000Z\",\\n  \"command\": \"syzygy polaris\",\\n  \"executionPermitted\": false,\\n  \"direction\": \"POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14\"\\n}\\n';\nconst raced = (before: string, after: string) => (m: string): (() => void) => {\n  fs.writeFileSync(m, before);\n  const real = fs.realpathSync(m);\n  const original = cjsFs.fstatSync;\n  cjsFs.fstatSync = (fd: number, ...rest: unknown[]) => {\n    let mine = false;\n    try { mine = fs.readlinkSync(`/proc/self/fd/${fd}`) === real; } catch { /* not a descriptor this process can name */ }\n    if (mine) fs.writeFileSync(m, before);\n    const stat = original(fd, ...rest);\n    if (mine) fs.writeFileSync(m, after);\n    return stat;\n  };\n  syncBuiltinESMExports();\n  return () => { cjsFs.fstatSync = original; syncBuiltinESMExports(); };\n};\n\nconst VARIANTS: readonly [string, (marker: string, run: string) => unknown][] = [\n  ['absent', () => undefined],\n  ['launched (written by writeLaunchedMarker)', (_m, run) => writeLaunchedMarker(run, RUN_ID, NOW)],\n  ['launched format, another runId', (m) => fs.writeFileSync(m, JSON.stringify({ format: 'polaris-dossier-launched/1', runId: 'run-other' }))],\n  ['empty file', (m) => fs.writeFileSync(m, '')],\n  ['invalid JSON', (m) => fs.writeFileSync(m, '{\"format\": \"polaris-dossier-launched/1\"')],\n  ['JSON null', (m) => fs.writeFileSync(m, 'null')],\n  ['JSON array', (m) => fs.writeFileSync(m, '[]')],\n  ['JSON string', (m) => fs.writeFileSync(m, '\"polaris-dossier-launched/1\"')],\n  ['another format', (m) => fs.writeFileSync(m, '{\"format\": \"polaris-dossier-launched/2\"}')],\n  ['no format', (m) => fs.writeFileSync(m, '{\"runId\": \"run-x\"}')],\n  ['non-string format', (m) => fs.writeFileSync(m, '{\"format\": 1}')],\n  ['byte-order mark before the marker', (m) => fs.writeFileSync(m, '\\uFEFF{\"format\": \"polaris-dossier-launched/1\"}')],\n  ['directory', (m) => fs.mkdirSync(m)],\n  ['dangling symbolic link', (m, run) => fs.symlinkSync(path.join(run, 'nowhere.json'), m)],\n  ['mode 000 marker', (m) => { fs.writeFileSync(m, '{\"format\": \"polaris-dossier-launched/1\"}'); fs.chmodSync(m, 0o000); }],\n  ['symbolic link to a valid marker', (m, run) => { const other = path.join(path.dirname(run), 'elsewhere'); fs.mkdirSync(other, { recursive: true }); writeLaunchedMarker(other, RUN_ID, NOW); fs.symlinkSync(path.join(other, 'launched.json'), m); }],\n  ['valid marker padded past 4096 bytes', (m) => fs.writeFileSync(m, JSON.stringify({ format: 'polaris-dossier-launched/1', runId: RUN_ID, pad: 'x'.repeat(4096) }))],\n  ['FIFO', (m) => execFileSync('mkfifo', [m])],\n  ['symbolic link to /dev/zero', (m) => fs.symlinkSync('/dev/zero', m)],\n  ['valid marker grown after fstat from 49 bytes to exactly 4097 bytes', raced(PREFIX, padded(4097))],\n  ['valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review\\'s case)', raced(PREFIX, padded(5051))],\n  ['marker shrunk after fstat from 4097 bytes to the hand-typed marker', raced(padded(4097), TYPED)],\n];\n\nconst OK: GateState = { state: 'ok', record: 'FIXTURE-ACT' };\nconst REV = '498ecd0d6d007db11ddb3aea9428552598a78622';\nconst FIXED_SUBJECT: RunSubject = {\n  repository: { url: 'https://github.com/redis/redis', repositoryId: 'redis-redis' },\n  clone: { path: '/srv/clones/redis', declaredBy: 'operator', label: 'Inferred', use: 'read' },\n  pinnedRevision: { commit: REV, label: '8.10.2', consentRecord: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7', pinnedAt: '2026-10-07T10:00:00.000Z' },\n  startGates: { registryEntry: 'REGISTRY-ACT-FIXTURE', screeningPolicy: 'POLICY-ACT-FIXTURE' },\n  governed: { kind: 'non-governed', because: ['fixture'] },\n  providerStatement: null,\n  workItem: { identity: null, reason: NO_WORK_ITEM_REASON },\n};\nconst sourcesFor = (commit: string): GateSources => ({\n  recordsRoot: REAL_ROOT,\n  repositoryIdsFor: async () => ['redis-redis'],\n  consentedRevisionsFor: async () => [{ label: '8.10.2', commitId: commit }],\n  observationConsentFor: async (_id, revision) => (revision === commit ? { satisfied: true, record: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' } : { satisfied: false, why: 'not named' }),\n  registryEntry: async () => OK,\n  screeningPolicy: async () => OK,\n  d9: async () => OK,\n  rfc720Ruling: async () => OK,\n  projectInput: { drawerFor: async () => ({ stated: true, drawer: 'absent', record: 'PROJECT-INPUT-FIXTURE@1' }) },\n  providerStatements: NO_PROVIDER_STATEMENTS,\n});\nconst openReader = () => ({ listTree: async () => [{ path: 'src/server.c' }] }) as unknown as PinnedObjectReader;\nconst config = () => {\n  const parsed = parseRunConfig(JSON.stringify({\n    operator: 'Tzeusy', agentTool: 'claude-code', agentToolVersion: '2.1.0', agentProvider: 'anthropic', model: 'claude-opus-5-5',\n    deadline: 'PT1H', agentTokenBudget: 100_000, maxRepairCycles: 3, maxQuestions: 2, audience: 'an operator', operatorIsOwner: true,\n  }));\n  if (!parsed.ok) throw new Error('fixture configuration refused');\n  return parsed.config;\n};\n/** A fresh run directory at a fixed path, so the bytes a brief writes compare across the two trees. */\nconst fixedRun = (probe: string, subject: RunSubject = FIXED_SUBJECT): string => {\n  const root = path.join(BASE, 'runs', probe);\n  fs.rmSync(root, { recursive: true, force: true });\n  const run = path.join(root, RUN_ID);\n  fs.mkdirSync(run, { recursive: true });\n  fs.writeFileSync(path.join(run, 'run.json'), encodeRunRecord(config(), subject));\n  return run;\n};\nlet restore: (() => void) | undefined;\nconst plant = (variant: (m: string, r: string) => unknown, run: string): void => {\n  const planted = variant(path.join(run, 'launched.json'), run);\n  restore = typeof planted === 'function' ? planted as () => void : undefined;\n};\nconst unplant = (run: string): void => {\n  restore?.();\n  restore = undefined;\n  try { fs.chmodSync(path.join(run, 'launched.json'), 0o600); } catch { /* absent or a link */ }\n};\n\nit('differential', async () => {\n  // A real pinned clone for the hand-over probe: launch-form needs a handed-over inventory session.\n  const origin = path.join(BASE, 'origin');\n  fs.rmSync(origin, { recursive: true, force: true });\n  fs.mkdirSync(path.join(origin, 'src'), { recursive: true });\n  const git = (...args: string[]): string => execFileSync('git', ['-C', origin, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();\n  git('init', '-q', '-b', 'main');\n  fs.writeFileSync(path.join(origin, 'src', 'kestrel.c'), 'int main(void) { return 0; }\\n');\n  git('add', '-A');\n  git('-c', 'user.name=t', '-c', 'user.email=t@example.invalid', 'commit', '-q', '-m', 'fixture');\n  const commit = git('rev-parse', 'HEAD');\n  const gitSources = sourcesFor(commit);\n\n  const rows: Record<string, unknown>[] = [];\n  for (const [name, variant] of VARIANTS) {\n    if ((ONLY_VARIANT !== undefined && ONLY_VARIANT !== name) || SKIP.includes(name)) continue;\n    const row: Record<string, unknown> = { variant: name };\n\n    // allow-execution through the CLI.\n    if (probing('allowExecution')) {\n      const run = fixedRun('allow');\n      plant(variant, run);\n      let stdout = '';\n      const code = await runDossierCli(['allow-execution', run, '--revision', REV, '--declare', ALL.join(','), '--json'], { stdout: (t) => { stdout += t; }, stderr: () => undefined }, { sources: sourcesFor(REV), now: () => NOW, openReader });\n      const doc = JSON.parse(stdout);\n      row['allowExecution'] = { exit: code, outcome: doc.outcome, stage: doc.stage ?? null, reason: doc.reason ?? null, choiceWritten: fs.existsSync(path.join(run, 'execution-choice.json')) };\n      unplant(run);\n    }\n\n    // launchFormRefusal, the gate inventory-of-record and the review verdict reader also call.\n    if (probing('launchFormRefusal')) {\n      const run = fixedRun('refusal');\n      plant(variant, run);\n      row['launchFormRefusal'] = {\n        terminal: launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' }),\n        bang: launchFormRefusal(run, { value: 'bang', declaredBy: 'operator', label: 'Inferred' }),\n        syzygyLaunched: launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' }),\n      };\n      unplant(run);\n    }\n\n    // launch-form on a handed-over inventory session: the marker is planted after the hand-over.\n    if (probing('launchForm')) {\n      const clone = path.join(BASE, 'runs', 'handover-clone');\n      fs.rmSync(clone, { recursive: true, force: true });\n      execFileSync('git', ['clone', '-q', '--no-hardlinks', origin, clone], { env: GIT_ENV });\n      const run = fixedRun('handover', { ...FIXED_SUBJECT, clone: { ...FIXED_SUBJECT.clone, path: clone }, pinnedRevision: { ...FIXED_SUBJECT.pinnedRevision, commit } });\n      const brief = await issueBrief(run, { sources: gitSources, now: () => NOW });\n      if (!brief.ok) throw new Error(`fixture brief refused: ${brief.refusal.reason}`);\n      fs.mkdirSync(path.join(run, 'drafts'));\n      fs.writeFileSync(path.join(run, 'drafts', 'rev-0.json'), JSON.stringify({ sessionId: 'author-1', title: 'draft' }));\n      fs.writeFileSync(path.join(run, 'drafts', 'next.json'), JSON.stringify({ sessionId: 'author-1', title: 'draft' }));\n      const handed = await sessionPrompt(run, { role: 'inventory' }, { sources: gitSources, now: () => NOW + 60_000 });\n      if (!handed.ok) throw new Error(`fixture session-prompt refused: ${handed.refusal.reason}`);\n      plant(variant, run);\n      const result = await launchForm(run, { role: 'inventory', form: 'terminal' }, { sources: gitSources, now: () => NOW + 60_000 });\n      row['launchForm'] = result.ok\n        ? { ok: true, form: result.report.form, recordWritten: fs.existsSync(path.join(run, 'inventory', 'session-1.launch.json')) }\n        : { ok: false, stage: result.refusal.stage, reason: result.refusal.reason, recordWritten: fs.existsSync(path.join(run, 'inventory', 'session-1.launch.json')) };\n      unplant(run);\n    }\n\n    // issueBrief with the permitting arm off: what this build ships.\n    if (probing('briefArmOff')) {\n      const run = fixedRun('brief-off');\n      plant(variant, run);\n      const result = await issueBrief(run, { sources: sourcesFor(REV), openReader, now: () => NOW });\n      row['briefArmOff'] = result.ok\n        ? { ok: true, briefMdSha256: sha(fs.readFileSync(path.join(run, 'brief.md'))), briefJsonSha256: sha(fs.readFileSync(path.join(run, 'brief.json'))), executionRule: JSON.parse(fs.readFileSync(path.join(run, 'brief.json'), 'utf8')).executionRule }\n        : { ok: false, stage: result.refusal.stage };\n      unplant(run);\n    }\n\n    // issueBrief with the arm switched on through fixture ports (never on in this build).\n    if (probing('briefArmOn')) {\n      const run = fixedRun('brief-on');\n      plant(variant, run);\n      const choice = { recordId: 'choice-1', command: 'allow-execution' as const, runId: RUN_ID, revision: REV, recordedAt: '2026-10-07T11:59:00.000Z', declarations: { ownerStartedSession: true, ownersOwnHost: true, ownerAttends: true } };\n      const result = await issueBrief(run, { sources: sourcesFor(REV), openReader, now: () => NOW, permitting: { enabled: true, choices: { choiceFor: async () => ({ state: 'ok' as const, choice }) }, probe: { probe: async () => ({ passed: true as const, checked: 1, source: 'fixture' }) } } });\n      const rule = result.ok ? JSON.parse(fs.readFileSync(path.join(run, 'brief.json'), 'utf8')).executionRule : null;\n      row['briefArmOn'] = result.ok ? { ok: true, arm: rule.arm, notPermittedBecause: rule.notPermittedBecause ?? null } : { ok: false, stage: result.refusal.stage };\n      unplant(run);\n    }\n    rows.push(row);\n  }\n  fs.rmSync(path.join(BASE, 'runs'), { recursive: true, force: true });\n  fs.rmSync(origin, { recursive: true, force: true });\n  fs.writeFileSync(OUT, `${JSON.stringify(rows, null, 2)}\\n`);\n}, 300_000);\n",
+    "sha256": "a2c31f87e2d6445d3e768593f0ad4a605a951debf4ef4f3723b91a04db1d8a66"
+  },
+  "driver": {
+    "text": "\"\"\"Drives the syzygy-bpyt.8.12 differential (the syzygy-bpyt.8.8 round-2 driver, adapted): the harness runs once per side over every variant\nbut two, and once per (variant, probe) in its own process group, under a kill timeout, for the two that blocked or exhausted the pre-8.8\nreader (a FIFO, a link to /dev/zero). At c571fb9f neither can, so no probe is skipped at either side. The base side writes the subject\nsource files from the base commit over the fix, then the fix is restored. Test files and test support (*.testkit.ts) are not subject files.\nUsage: python3 drive.py <worktree> <base> <scratch> <out.json>\"\"\"\nimport json, os, signal, subprocess, sys\nfrom pathlib import Path\n\nROOT, BASE, SCRATCH, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3]), Path(sys.argv[4])\nHERE = Path(__file__).resolve().parent\nTARGET = ROOT / 'packages/polaris-dossier/src/zz-b812-differential.test.ts'\nPROBES = ['allowExecution', 'launchFormRefusal', 'launchForm', 'briefArmOff', 'briefArmOn']\nBLOCKING = ['FIFO', 'symbolic link to /dev/zero']\nTIMEOUT = 120\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\nSUBJECT = [f for f in git('diff', '--name-only', BASE, 'HEAD', '--', 'packages/polaris-dossier/src').split() if not f.endswith(('.test.ts', '.testkit.ts'))]\n\ndef run(side, env_extra, out):\n    env = {**os.environ, 'B88_BASE': str(SCRATCH / side), 'B88_OUT': str(out), 'CI': '1', **env_extra}\n    (SCRATCH / side).mkdir(parents=True, exist_ok=True)\n    proc = subprocess.Popen(['npx', 'vitest', 'run', '--project', '@syzygy/polaris-dossier', str(TARGET.relative_to(ROOT))], cwd=ROOT, env=env,\n                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)\n    try:\n        log, _ = proc.communicate(timeout=TIMEOUT)\n    except subprocess.TimeoutExpired:\n        os.killpg(proc.pid, signal.SIGKILL)\n        proc.communicate()\n        return {'blocked': True, 'killedAfterSeconds': TIMEOUT}\n    if not out.exists():\n        return {'harnessFailed': True, 'exit': proc.returncode, 'logTail': log.decode('utf8', 'replace')[-2000:]}\n    return json.loads(out.read_text())\n\ndef side(name):\n    rows = {r['variant']: r for r in run(name, {'B88_SKIP': '|'.join(BLOCKING)}, SCRATCH / f'{name}-main.json')}\n    for variant in BLOCKING:\n        row = {'variant': variant}\n        for probe in PROBES:\n            result = run(name, {'B88_ONLY_VARIANT': variant, 'B88_ONLY_PROBE': probe}, SCRATCH / f'{name}-{BLOCKING.index(variant)}-{probe}.json')\n            row[probe] = result[0][probe] if isinstance(result, list) else result\n        rows[variant] = row\n    return rows\n\nTARGET.write_text((HERE / 'harness.test.ts').read_text())\ntry:\n    new = side('new')\n    git('checkout', BASE, '--', *SUBJECT)\n    try:\n        old = side('base')\n    finally:\n        git('checkout', 'HEAD', '--', *SUBJECT)\nfinally:\n    TARGET.unlink()\nOUT.write_text(json.dumps({'subject': SUBJECT, 'base': BASE, 'fix': git('rev-parse', 'HEAD').strip(), 'old': old, 'new': new,\n                           'trackedTreeClean': git('status', '--porcelain', '--untracked-files=no') == ''}, indent=2) + '\\n')\nprint('done', len(old), len(new))\n",
+    "sha256": "0f3971fe0966fe171a7a112abb461fa75868535c21843eb26715b339d0ddbd16"
+  },
+  "summary": {
+    "variants": 22,
+    "probes": 5,
+    "comparisons": 110,
+    "changed": 8,
+    "classes": {
+      "unchanged": 102,
+      "stricter": 2,
+      "refused-at-both-with-a-new-reason": 6,
+      "more-lenient": 0,
+      "not-comparable": 0
+    },
+    "briefArmOffChanged": 0,
+    "briefArmOffBytePairs": [
+      [
+        "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+        "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12"
+      ]
+    ],
+    "trackedTreeCleanAfter": true
+  },
+  "round2Comparison": {
+    "text": "Every (variant, probe) of the round-2 record, compared with that record's fix side (cf3ba3fe, the reviewed head of syzygy-bpyt.8.8): this run's base side (c571fb9f, its merge) and this run's fix side.",
+    "comparisons": 95,
+    "baseEqualsRound2Fix": 95,
+    "fixEqualsRound2Fix": 95,
+    "mismatches": []
+  },
+  "changedOutcomes": {
+    "text": "Only the two variants whose marker grows past 4096 bytes after fstat change, and only from a launched run to a marker present but unreadable: a fail-closed change of an input that was already unsafe at c571fb9f, where the reader read the grown file to end-of-file. At c571fb9f such a marker counted a syzygy-launched form at launchFormRefusal; at the fix no form counts. The other three changed probes of each refuse at both commits and change only their reason. briefArmOff never opens the marker and is unchanged. The marker shrunk after fstat from 4097 bytes is refused by the fstat bound at both commits and is unchanged.",
+    "grownVariants": [
+      "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+      "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)"
+    ],
+    "rows": [
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+        "probe": "allowExecution",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+        "probe": "launchFormRefusal",
+        "class": "stricter",
+        "permittedAtBase": [
+          "syzygyLaunched"
+        ],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+        "probe": "launchForm",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+        "probe": "briefArmOn",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)",
+        "probe": "allowExecution",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)",
+        "probe": "launchFormRefusal",
+        "class": "stricter",
+        "permittedAtBase": [
+          "syzygyLaunched"
+        ],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)",
+        "probe": "launchForm",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      },
+      {
+        "variant": "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)",
+        "probe": "briefArmOn",
+        "class": "refused-at-both-with-a-new-reason",
+        "permittedAtBase": [],
+        "permittedAtFix": []
+      }
+    ]
+  },
+  "rows": [
+    {
+      "variant": "absent",
+      "allowExecution": {
+        "old": {
+          "exit": 0,
+          "outcome": "recorded",
+          "stage": null,
+          "reason": null,
+          "choiceWritten": true
+        },
+        "new": {
+          "exit": 0,
+          "outcome": "recorded",
+          "stage": null,
+          "reason": null,
+          "choiceWritten": true
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": null,
+          "bang": null,
+          "syzygyLaunched": "a run the operator started counts only a terminal or bang launch the operator declared"
+        },
+        "new": {
+          "terminal": null,
+          "bang": null,
+          "syzygyLaunched": "a run the operator started counts only a terminal or bang launch the operator declared"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": true,
+          "form": {
+            "value": "terminal",
+            "declaredBy": "operator",
+            "label": "Inferred"
+          },
+          "recordWritten": true
+        },
+        "new": {
+          "ok": true,
+          "form": {
+            "value": "terminal",
+            "declaredBy": "operator",
+            "label": "Inferred"
+          },
+          "recordWritten": true
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "permitting",
+          "notPermittedBecause": null
+        },
+        "new": {
+          "ok": true,
+          "arm": "permitting",
+          "notPermittedBecause": null
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "launched (written by writeLaunchedMarker)",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "new": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "launched format, another runId",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "new": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "empty file",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "invalid JSON",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "JSON null",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "JSON array",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "JSON string",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "another format",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "no format",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "non-string format",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "byte-order mark before the marker",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "directory",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "dangling symbolic link",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "mode 000 marker",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "symbolic link to a valid marker",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "valid marker padded past 4096 bytes",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "FIFO",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "symbolic link to /dev/zero",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    },
+    {
+      "variant": "valid marker grown after fstat from 49 bytes to exactly 4097 bytes",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": true,
+        "class": "stricter"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      }
+    },
+    {
+      "variant": "valid marker grown after fstat from 49 bytes to 5051 bytes (the round-2 review's case)",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "bang": "a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)",
+          "syzygyLaunched": null
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": true,
+        "class": "stricter"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": true,
+        "class": "refused-at-both-with-a-new-reason"
+      }
+    },
+    {
+      "variant": "marker shrunk after fstat from 4097 bytes to the hand-typed marker",
+      "allowExecution": {
+        "old": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "new": {
+          "exit": 1,
+          "outcome": "refused",
+          "stage": "launched",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)",
+          "choiceWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchFormRefusal": {
+        "old": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "new": {
+          "terminal": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "bang": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched",
+          "syzygyLaunched": "the run's launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched"
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "launchForm": {
+        "old": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "new": {
+          "ok": false,
+          "stage": "form",
+          "reason": "this run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it",
+          "recordWritten": false
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOff": {
+        "old": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "new": {
+          "ok": true,
+          "briefMdSha256": "af5253644108fad53e59187f757f6f0607c88bd881801e868f675dc5fe37feed",
+          "briefJsonSha256": "19feb99936b134767dfa2ecf7e302dc8244288fd72d6ca533cc8e83a60b67e12",
+          "executionRule": {
+            "arm": "sec-3",
+            "cites": "SEC-3",
+            "doctrine": {
+              "path": ".syzygy/governance/doctrine/security.md",
+              "sha256": "766c953d01d1a7bba3319b538a35851c88b9901d8fe79399af0f23ec3011bc00"
+            },
+            "sec3Head": {
+              "text": "**SEC-3 \u2014 Observed code is untrusted, everywhere.** Syzygy runs\nobserved-project code only inside an explicit, opt-in execution profile.",
+              "startLine": 61,
+              "endLine": 62
+            },
+            "notPermittedBecause": [
+              "the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution"
+            ]
+          }
+        },
+        "changed": false,
+        "class": "unchanged"
+      },
+      "briefArmOn": {
+        "old": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "new": {
+          "ok": true,
+          "arm": "sec-3",
+          "notPermittedBecause": [
+            "the run's launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched"
+          ]
+        },
+        "changed": false,
+        "class": "unchanged"
+      }
+    }
+  ],
+  "notCovered": [
+    "A real concurrent writer: every race here is forced by the fstatSync hook, so each read loses it. The round-2 review observed the unforced race (an unprivileged toggler won 386,653 of 588,531 reads in 15 s).",
+    "Growth between two reads of the bounded loop at the five probes (the reader test in launched.test.ts covers it at the reader).",
+    "A character device reached without a link (needs mknod, root).",
+    "The library allowExecution called directly, and the check-then-act window at allow-execution (R-GP-IMPL-LAUNCHED-MARKER-1 N1, N2; unchanged by this bead)."
+  ]
+}

@@ -1,0 +1,655 @@
+[
+ {
+  "file": "packages/cap1-conformance/src/req-001.conformance.test.ts",
+  "line": 15,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: <<DECLARED_PROJECT_ID>>\n  name: <<DECLARED_DISPLAY_NAME>>\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-opaque-01\n    role: governance-root\n    consent: consent-record-01\nconsents:\n  - consent-record-01\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "<<DECLARED_PROJECT_ID>>",
+   "name": "<<DECLARED_DISPLAY_NAME>>",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-opaque-01",
+     "role": "governance-root",
+     "consent": "consent-record-01"
+    }
+   ],
+   "consents": [
+    "consent-record-01"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-002.conformance.test.ts",
+  "line": 13,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-opaque-7f3a\n  name: Orbital Mechanics\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-opaque-01\n    role: governance-root\n    consent: consent-record-01\nconsents:\n  - consent-record-01\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-opaque-7f3a",
+   "name": "Orbital Mechanics",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-opaque-01",
+     "role": "governance-root",
+     "consent": "consent-record-01"
+    }
+   ],
+   "consents": [
+    "consent-record-01"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-004.conformance.test.ts",
+  "line": 13,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-opaque-7f3a\n  name: Orbital Mechanics\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-opaque-01\n    role: governance-root\n    consent: consent-record-01\nconsents:\n  - consent-record-01\ndeclarations:\n  spec_root: openspec/\nrelations:\n  - type: depends-on\n    project: prj-opaque-b2c4\nprofiles:\n  - portfolio\n",
+  "fields": {
+   "id": "prj-opaque-7f3a",
+   "name": "Orbital Mechanics",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-opaque-01",
+     "role": "governance-root",
+     "consent": "consent-record-01"
+    }
+   ],
+   "consents": [
+    "consent-record-01"
+   ],
+   "relations": [
+    {
+     "type": "depends-on",
+     "project": "prj-opaque-b2c4"
+    }
+   ],
+   "profiles": [
+    "portfolio"
+   ]
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-005.conformance.test.ts",
+  "line": 12,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-opaque-7f3a\n  name: Orbital Mechanics\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-opaque-01\n    role: governance-root\n    consent: consent-record-01\nconsents:\n  - consent-record-01\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-opaque-7f3a",
+   "name": "Orbital Mechanics",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-opaque-01",
+     "role": "governance-root",
+     "consent": "consent-record-01"
+    }
+   ],
+   "consents": [
+    "consent-record-01"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-010.conformance.test.ts",
+  "line": 26,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-cov-a1\n  name: Coverage Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-observed\n    role: governance-root\n    consent: consent-r1\n  - id: repo-unconsented\n    role: observed-source\n    consent: consent-r2\n  - id: repo-never-captured\n    role: observed-source\n    consent: consent-r3\nconsents:\n  - consent-r1\n  - consent-r3\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-cov-a1",
+   "name": "Coverage Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-observed",
+     "role": "governance-root",
+     "consent": "consent-r1"
+    },
+    {
+     "id": "repo-unconsented",
+     "role": "observed-source",
+     "consent": "consent-r2"
+    },
+    {
+     "id": "repo-never-captured",
+     "role": "observed-source",
+     "consent": "consent-r3"
+    }
+   ],
+   "consents": [
+    "consent-r1",
+    "consent-r3"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-011.conformance.test.ts",
+  "line": 27,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-consent-b2\n  name: Consent Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-inforce\n    role: governance-root\n    consent: consent-inforce\n  - id: repo-withdrawn\n    role: observed-source\n    consent: consent-withdrawn\n  - id: repo-recordless\n    role: observed-source\n    consent: consent-missing\nconsents:\n  - consent-inforce\n  - consent-withdrawn\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-consent-b2",
+   "name": "Consent Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-inforce",
+     "role": "governance-root",
+     "consent": "consent-inforce"
+    },
+    {
+     "id": "repo-withdrawn",
+     "role": "observed-source",
+     "consent": "consent-withdrawn"
+    },
+    {
+     "id": "repo-recordless",
+     "role": "observed-source",
+     "consent": "consent-missing"
+    }
+   ],
+   "consents": [
+    "consent-inforce",
+    "consent-withdrawn"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-011.conformance.test.ts",
+  "line": 177,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-citation-blo\n  name: Citation Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-capture-failed\n    role: observed-source\n    consent: consent-capture-failed\n  - id: repo-stale\n    role: observed-source\n    consent: consent-stale\nconsents:\n  - consent-capture-failed\n  - consent-stale\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-citation-blo",
+   "name": "Citation Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-capture-failed",
+     "role": "observed-source",
+     "consent": "consent-capture-failed"
+    },
+    {
+     "id": "repo-stale",
+     "role": "observed-source",
+     "consent": "consent-stale"
+    }
+   ],
+   "consents": [
+    "consent-capture-failed",
+    "consent-stale"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-011.conformance.test.ts",
+  "line": 269,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-conflict-b2\n  name: Conflict Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-conflict\n    role: governance-root\n    consent: consent-conflict-grant\nconsents:\n  - consent-conflict-grant\n  - consent-conflict-withdrawal\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-conflict-b2",
+   "name": "Conflict Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-conflict",
+     "role": "governance-root",
+     "consent": "consent-conflict-grant"
+    }
+   ],
+   "consents": [
+    "consent-conflict-grant",
+    "consent-conflict-withdrawal"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-012.conformance.test.ts",
+  "line": 26,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-policy-c3\n  name: Policy State Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-consented\n    role: governance-root\n    consent: consent-ok\n  - id: repo-withheld\n    role: observed-source\n    consent: consent-withheld\nconsents:\n  - consent-ok\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-policy-c3",
+   "name": "Policy State Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-consented",
+     "role": "governance-root",
+     "consent": "consent-ok"
+    },
+    {
+     "id": "repo-withheld",
+     "role": "observed-source",
+     "consent": "consent-withheld"
+    }
+   ],
+   "consents": [
+    "consent-ok"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-013.conformance.test.ts",
+  "line": 32,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-distinct-d4\n  name: Distinguishability Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-no-consent\n    role: observed-source\n    consent: consent-absent\n  - id: repo-unreachable\n    role: observed-source\n    consent: consent-u\n  - id: repo-stale\n    role: observed-source\n    consent: consent-s\n  - id: repo-degraded\n    role: governance-root\n    consent: consent-d\nconsents:\n  - consent-u\n  - consent-s\n  - consent-d\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-distinct-d4",
+   "name": "Distinguishability Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-no-consent",
+     "role": "observed-source",
+     "consent": "consent-absent"
+    },
+    {
+     "id": "repo-unreachable",
+     "role": "observed-source",
+     "consent": "consent-u"
+    },
+    {
+     "id": "repo-stale",
+     "role": "observed-source",
+     "consent": "consent-s"
+    },
+    {
+     "id": "repo-degraded",
+     "role": "governance-root",
+     "consent": "consent-d"
+    }
+   ],
+   "consents": [
+    "consent-u",
+    "consent-s",
+    "consent-d"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-014.conformance.test.ts",
+  "line": 31,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-partial-e5\n  name: Partial Snapshot Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-full\n    role: governance-root\n    consent: consent-f\n  - id: repo-partial\n    role: observed-source\n    consent: consent-p\nconsents:\n  - consent-f\n  - consent-p\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-partial-e5",
+   "name": "Partial Snapshot Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-full",
+     "role": "governance-root",
+     "consent": "consent-f"
+    },
+    {
+     "id": "repo-partial",
+     "role": "observed-source",
+     "consent": "consent-p"
+    }
+   ],
+   "consents": [
+    "consent-f",
+    "consent-p"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-015.conformance.test.ts",
+  "line": 40,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-boundary-f6\n  name: Boundary Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-full\n    role: governance-root\n    consent: consent-f\n  - id: repo-partial\n    role: observed-source\n    consent: consent-p\n  - id: repo-unconsented\n    role: observed-source\n    consent: consent-x\nconsents:\n  - consent-f\n  - consent-p\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-boundary-f6",
+   "name": "Boundary Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-full",
+     "role": "governance-root",
+     "consent": "consent-f"
+    },
+    {
+     "id": "repo-partial",
+     "role": "observed-source",
+     "consent": "consent-p"
+    },
+    {
+     "id": "repo-unconsented",
+     "role": "observed-source",
+     "consent": "consent-x"
+    }
+   ],
+   "consents": [
+    "consent-f",
+    "consent-p"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-016.conformance.test.ts",
+  "line": 44,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: <<projectId>>\n  name: <<name>>\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-shared-r\n    role: observed-source\n    consent: consent-a-r\nconsents:\n  - consent-a-r\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "<<projectId>>",
+   "name": "<<name>>",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-shared-r",
+     "role": "observed-source",
+     "consent": "consent-a-r"
+    }
+   ],
+   "consents": [
+    "consent-a-r"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-030.conformance.test.ts",
+  "line": 46,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-030\n  name: Shape Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-main\n    role: governance-root\n    consent: consent-1\nconsents:\n  - consent-1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-030",
+   "name": "Shape Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-main",
+     "role": "governance-root",
+     "consent": "consent-1"
+    }
+   ],
+   "consents": [
+    "consent-1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-032.conformance.test.ts",
+  "line": 39,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-032\n  name: Flip Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-main\n    role: governance-root\n    consent: consent-1\nconsents:\n  - consent-1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-032",
+   "name": "Flip Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-main",
+     "role": "governance-root",
+     "consent": "consent-1"
+    }
+   ],
+   "consents": [
+    "consent-1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-033.conformance.test.ts",
+  "line": 32,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-033\n  name: Facts Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-main\n    role: governance-root\n    consent: consent-1\n  - id: repo-unconsented\n    role: observed-source\n    consent: consent-2\nconsents:\n  - consent-1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-033",
+   "name": "Facts Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-main",
+     "role": "governance-root",
+     "consent": "consent-1"
+    },
+    {
+     "id": "repo-unconsented",
+     "role": "observed-source",
+     "consent": "consent-2"
+    }
+   ],
+   "consents": [
+    "consent-1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-035.conformance.test.ts",
+  "line": 51,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-035\n  name: Two Conditions Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-a\n    role: governance-root\n    consent: consent-a\n  - id: repo-b\n    role: observed-source\n    consent: consent-b\nconsents:\n  - consent-b\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-035",
+   "name": "Two Conditions Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-a",
+     "role": "governance-root",
+     "consent": "consent-a"
+    },
+    {
+     "id": "repo-b",
+     "role": "observed-source",
+     "consent": "consent-b"
+    }
+   ],
+   "consents": [
+    "consent-b"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-036.conformance.test.ts",
+  "line": 35,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-036\n  name: Posture Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-main\n    role: governance-root\n    consent: consent-1\nconsents:\n  - consent-1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-036",
+   "name": "Posture Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-main",
+     "role": "governance-root",
+     "consent": "consent-1"
+    }
+   ],
+   "consents": [
+    "consent-1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-038.conformance.test.ts",
+  "line": 25,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-shape-038\n  name: Mixed Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-main\n    role: governance-root\n    consent: consent-1\nconsents:\n  - consent-1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-shape-038",
+   "name": "Mixed Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-main",
+     "role": "governance-root",
+     "consent": "consent-1"
+    }
+   ],
+   "consents": [
+    "consent-1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-040.conformance.test.ts",
+  "line": 38,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-drawer-40\n  name: Drawer Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-drawer-01\n    role: governance-root\n    consent: consent-d1\nconsents:\n  - consent-d1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-drawer-40",
+   "name": "Drawer Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-drawer-01",
+     "role": "governance-root",
+     "consent": "consent-d1"
+    }
+   ],
+   "consents": [
+    "consent-d1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-041.conformance.test.ts",
+  "line": 36,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-parity-41\n  name: Parity Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-parity-01\n    role: governance-root\n    consent: consent-p1\n  - id: repo-parity-02\n    role: observed-source\n    consent: consent-p2\nconsents:\n  - consent-p1\n  - consent-p2\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-parity-41",
+   "name": "Parity Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-parity-01",
+     "role": "governance-root",
+     "consent": "consent-p1"
+    },
+    {
+     "id": "repo-parity-02",
+     "role": "observed-source",
+     "consent": "consent-p2"
+    }
+   ],
+   "consents": [
+    "consent-p1",
+    "consent-p2"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-042.conformance.test.ts",
+  "line": 37,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-query-eq-11\n  name: Query Equivalence Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-query-eq-01\n    role: governance-root\n    consent: consent-q1\nconsents:\n  - consent-q1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-query-eq-11",
+   "name": "Query Equivalence Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-query-eq-01",
+     "role": "governance-root",
+     "consent": "consent-q1"
+    }
+   ],
+   "consents": [
+    "consent-q1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-060.conformance.test.ts",
+  "line": 29,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-stable-9c\n  name: Original Name\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-stable-01\n    role: governance-root\n    consent: consent-s1\nconsents:\n  - consent-s1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-stable-9c",
+   "name": "Original Name",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-stable-01",
+     "role": "governance-root",
+     "consent": "consent-s1"
+    }
+   ],
+   "consents": [
+    "consent-s1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-063.conformance.test.ts",
+  "line": 28,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: prj-proposal-3e\n  name: Proposal Fixture\nowner: uniquosity@gmail.com\nrepositories:\n  - id: repo-proposal-01\n    role: governance-root\n    consent: consent-p1\nconsents:\n  - consent-p1\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "prj-proposal-3e",
+   "name": "Proposal Fixture",
+   "owner": "uniquosity@gmail.com",
+   "repositories": [
+    {
+     "id": "repo-proposal-01",
+     "role": "governance-root",
+     "consent": "consent-p1"
+    }
+   ],
+   "consents": [
+    "consent-p1"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ },
+ {
+  "file": "packages/cap1-conformance/src/req-integration.conformance.test.ts",
+  "line": 55,
+  "old": "\nschema_version: \"1\"\nproject:\n  id: <<PROJECT_ID>>\n  name: Integration Test Project\nowner: test-owner@example.com\nrepositories:\n  - id: <<GOVERNANCE_REPO>>\n    role: governance-root\n    consent: consent-gov-root\n  - id: <<OBSERVED_REPO>>\n    role: observed-source\n    consent: consent-observed\n  - id: <<UNCONSENTED_REPO>>\n    role: observed-source\n    consent: consent-unconsented\nconsents:\n  - consent-gov-root\n  - consent-observed\n  - consent-unconsented\ndeclarations:\n  spec_root: openspec/\nrelations: []\nprofiles: []\n",
+  "fields": {
+   "id": "<<PROJECT_ID>>",
+   "name": "Integration Test Project",
+   "owner": "test-owner@example.com",
+   "repositories": [
+    {
+     "id": "<<GOVERNANCE_REPO>>",
+     "role": "governance-root",
+     "consent": "consent-gov-root"
+    },
+    {
+     "id": "<<OBSERVED_REPO>>",
+     "role": "observed-source",
+     "consent": "consent-observed"
+    },
+    {
+     "id": "<<UNCONSENTED_REPO>>",
+     "role": "observed-source",
+     "consent": "consent-unconsented"
+    }
+   ],
+   "consents": [
+    "consent-gov-root",
+    "consent-observed",
+    "consent-unconsented"
+   ],
+   "relations": [],
+   "profiles": []
+  }
+ }
+]

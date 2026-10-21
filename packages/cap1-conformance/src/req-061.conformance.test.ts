@@ -1,13 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { isInsideGovernedPlane, GOVERNED_WRITE_NAMESPACES } from '@syzygy/cap1-core';
 import {
-  isInsideGovernedPlane,
   authorizeWrite,
   detectWideningFields,
   reportEffectBoundary,
-  GOVERNED_WRITE_NAMESPACES,
   WIDENING_FIELD_NAMES,
   CAPABILITY_1_EXTERNAL_EFFECTS,
-} from '@syzygy/cap1-core';
+} from '@syzygy/cap1-core/testing';
 
 // CAP1-REQ-061 — Write boundary hardening.
 //

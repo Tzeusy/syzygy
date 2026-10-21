@@ -4,14 +4,13 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
-  compareRenderings,
   deterministicLayer,
-  disclosureOf,
   renderHuman,
   serveMachine,
   type EvaluationIdentity,
   type MachineAnswer,
 } from '@syzygy/cap1-core';
+import { compareRenderings, disclosureOf } from '@syzygy/cap1-core/testing';
 
 import { evaluateProject, type ProjectEvaluation } from './pipeline.js';
 import { machineRoutes, MACHINE_PROJECT_PATH } from './routes-machine.js';

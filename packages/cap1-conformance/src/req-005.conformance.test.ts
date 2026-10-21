@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDeclaration, registerProject } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-005 — Registration facts are deterministic per declaration
 // and revision (invariant).
@@ -9,23 +10,14 @@ import { readDeclaration, registerProject } from '@syzygy/cap1-core';
 // layer of the two answers, judged by comparison of two independent
 // runs — never by either run's own claim of determinism.
 
-const VALID_SOURCE = `
-schema_version: "1"
-project:
-  id: prj-opaque-7f3a
-  name: Orbital Mechanics
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-opaque-01
-    role: governance-root
-    consent: consent-record-01
-consents:
-  - consent-record-01
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const VALID_SOURCE = projectYaml({
+  id: 'prj-opaque-7f3a',
+  name: 'Orbital Mechanics',
+  repositories: [
+    { id: 'repo-opaque-01', role: 'governance-root', consent: 'consent-record-01' },
+  ],
+  consents: ['consent-record-01'],
+});
 
 describe('CAP1-REQ-005 — registration facts are deterministic per (declaration, revision)', () => {
   it('scenario: same declaration, same revision — same facts, byte-level', () => {

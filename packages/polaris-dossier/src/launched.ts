@@ -29,7 +29,8 @@ export interface LaunchedMarker {
 
 /** What the run directory's launched marker says, read fail-closed (syzygy-bpyt.8.8): `absent` when no file of that name exists, a run
  * the operator started; `launched` when it is the marker Syzygy writes; `unreadable` when something is there that cannot be read as that
- * marker (unreadable bytes, invalid JSON, another format, a directory, a link of any kind, a FIFO, a device, a file larger than any marker).
+ * marker (unreadable bytes, invalid JSON, another format, a directory, a link of any kind, a FIFO, a device, a file larger than any marker
+ * when it is opened or by the time it is read).
  * No caller may treat `unreadable` more leniently than `launched`: whether Syzygy started the run's sessions cannot be told, so SEC-3's
  * instruction is never given and no launch form counts. */
 export type LaunchedMarkerState = 'absent' | 'launched' | 'unreadable';
@@ -40,7 +41,8 @@ const MARKER_BYTES_MAX = 4096;
 export function launchedMarkerState(runDir: string): LaunchedMarkerState {
   const file = path.join(runDir, RUN_LAYOUT.launched);
   // Opened without following a link and without blocking, then judged by the open descriptor, so a FIFO or a device at the name can
-  // neither hang nor exhaust the reader, and nothing can swap the file between the check and the read.
+  // neither hang nor exhaust the reader, and nothing can swap the file between the check and the read. The size the descriptor reports can
+  // still grow before the read (syzygy-bpyt.8.12), so the read is bounded too: one byte past the bound is enough to refuse the file.
   let fd: number;
   try {
     fd = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
@@ -50,7 +52,15 @@ export function launchedMarkerState(runDir: string): LaunchedMarkerState {
   try {
     const stat = fs.fstatSync(fd);
     if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';
-    const marker = JSON.parse(fs.readFileSync(fd, 'utf8')) as unknown;
+    const bytes = Buffer.alloc(MARKER_BYTES_MAX + 1);
+    let length = 0;
+    while (length < bytes.length) {
+      const read = fs.readSync(fd, bytes, length, bytes.length - length, null);
+      if (read === 0) break;
+      length += read;
+    }
+    if (length > MARKER_BYTES_MAX) return 'unreadable';
+    const marker = JSON.parse(bytes.toString('utf8', 0, length)) as unknown;
     return typeof marker === 'object' && marker !== null && (marker as Record<string, unknown>)['format'] === LAUNCHED_FORMAT ? 'launched' : 'unreadable';
   } catch {
     return 'unreadable';
