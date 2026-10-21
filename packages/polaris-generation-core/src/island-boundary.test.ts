@@ -42,7 +42,8 @@ const ISLAND = [
 // re-exports it and package-reader.ts imports two of its helpers, and the
 // screen and the gate sources reach both. Neither file is this bead's to
 // change (package-reader.ts is syzygy-bpyt.8.4's), so the edge stands as a
-// named residual; the last test fails once it no longer reaches the island.
+// named residual until syzygy-bpyt.8.19 removes it; the last test fails once
+// it no longer reaches the island.
 const UNFOLLOWED = ['packages/polaris-generation-consent/src/consent-ports.ts'];
 
 interface Edge { readonly from: string; readonly specifier: string; readonly to: string }
