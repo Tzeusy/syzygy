@@ -8,6 +8,19 @@ service, provider dispatch, filesystem writes or owner acts live here.
   adapters; a successful run ends at `awaiting-rendered-review`, never ready
   or adopted.
 
+## Entry points
+
+The package root exports everything. The provider pipeline is parked, not
+deleted (owner packet Q8). Its modules are `admitted-input`, `discovery`,
+`discovery-provider`, `excerpt`, `pipeline`, `provider-draft` and
+`rendered-design`, and only the root exports them.
+`@syzygy/polaris-generation-core/live` exports everything else: the dossier
+draft model, prompts, quotation, screening and evaluation modules. A module
+the `syzygy` CLI reaches imports `/live`, and
+`src/island-boundary.test.ts` fails when one reaches the island. That
+covers these seven modules and the thirteen provider modules of
+`apps/three-surface-poc`.
+
 ## Canonical JSON
 
 `encodeCanonicalJson(value, limits)` defines `polaris-json-v1`, and
@@ -251,9 +264,11 @@ npm run poc:dossier-evaluation -- --dossier <run-dir> --sources <sources.json> \
 The command refuses a page that is a symlink, is not a regular file, or
 resolves outside the run directory.
 
-The renderer that emits this format from a pipeline run is
-`apps/three-surface-poc/src/polaris-generation/dossier-render.ts`
-(`npm run poc:dossier-render -- --run <run.json> --out <new-dir>`).
+The renderer that emits this format is
+`apps/three-surface-poc/src/polaris-generation/dossier-site.ts`. A pipeline
+run reaches it through `dossier-render.ts`
+(`npm run poc:dossier-render -- --run <run.json> --out <new-dir>`), and an
+operator-agent run through `renderLocalDossier`.
 Generated prose is labelled Inferred when the fidelity review judged its
 block supported and Unknown otherwise; diagram elements keep their own
 marking. Quote offsets are blob-absolute. Without `--topics`, a section or deep

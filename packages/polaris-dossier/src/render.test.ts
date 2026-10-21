@@ -27,7 +27,7 @@ import { launchForm, sessionPrompt } from './session-handover.js';
 // are found in the fixture strings here, object identifiers come from `git rev-parse`, and texts are literals written before the code ran.
 
 const REAL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const RENDERER_MODULE = pathToFileURL(path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/dossier-render.ts')).href;
+const RENDERER_MODULE = pathToFileURL(path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/dossier-site.ts')).href;
 const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };
 const NOW = Date.UTC(2026, 9, 7, 12, 0, 0);
 const LATER = NOW + 60_000;
@@ -53,9 +53,9 @@ const SCREEN = buildDossierScreen(policy(['.c', '.txt']));
 
 let origin: string, commit: string;
 const objectIds: Record<string, string> = {};
-let renderDossier: DossierRenderer;
+let renderLocalDossier: DossierRenderer;
 beforeAll(async () => {
-  renderDossier = ((await import(RENDERER_MODULE)) as { renderDossier: DossierRenderer }).renderDossier;
+  renderLocalDossier = ((await import(RENDERER_MODULE)) as { renderLocalDossier: DossierRenderer }).renderLocalDossier;
   origin = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-render-origin-')));
   const git = (...args: string[]): string => execFileSync('git', ['-C', origin, ...args], { encoding: 'utf8', env: GIT_ENV }).trim();
   git('init', '-q', '-b', 'main');
@@ -113,7 +113,7 @@ const sources = (ruling: GateState = { state: 'ok', record: 'RFC7-20-RULING-FIXT
 });
 const neverProbe = { probe: async () => { throw new Error('the credential probe must not run after a brief that permits no execution'); } };
 const checkDeps = (): CheckDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN });
-const renderDeps = (overrides: Partial<RenderDeps> = {}): RenderDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN, renderer: renderDossier, ...overrides });
+const renderDeps = (overrides: Partial<RenderDeps> = {}): RenderDeps => ({ sources: sources(), now: () => LATER, probe: neverProbe, loadScreen: async () => SCREEN, renderer: renderLocalDossier, ...overrides });
 
 type Doc = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const cite = (id: string, file = 'src/kestrel.c', startLine = 1, endLine = 5) => ({ id, path: file, startLine, endLine });
@@ -226,7 +226,7 @@ async function prepared(doc: Doc = draft(), reviewed = true): Promise<string> {
 /** The renderer, recording what it was given. */
 function capturing(): { renderer: DossierRenderer; inputs: DossierRendererInput[] } {
   const inputs: DossierRendererInput[] = [];
-  return { inputs, renderer: (input) => { inputs.push(input); return renderDossier(input); } };
+  return { inputs, renderer: (input) => { inputs.push(input); return renderLocalDossier(input); } };
 }
 const readSite = (site: string): Map<string, string> => {
   const out = new Map<string, string>();
@@ -443,16 +443,16 @@ describe('render', () => {
     const base = SCREEN.screen;
     const exempt = { ok: true as const, screen: { ...base, codeContentExemption: true, screenBody: (body: string, repositoryPath?: string) => (repositoryPath === undefined && body === KESTREL ? 'active-content' as const : base.screenBody(body, repositoryPath)) } };
     const deps = (renderer: DossierRenderer) => renderDeps({ loadScreen: async () => exempt, renderer });
-    const undeclared: DossierRenderer = (input) => renderDossier(input);
+    const undeclared: DossierRenderer = (input) => renderLocalDossier(input);
     const why = (unconfirmed: string) => `1 cited blob(s) were admitted only under the screening policy's code-content exemption, and these pages cannot be confirmed to meet its render condition (${unconfirmed}); scanned as before for these pages they hold active content, so nothing is rendered`;
     expect(await renderRun(run, deps(undeclared))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: why('the injected renderer does not declare that it writes every source byte as entity-encoded text') } });
-    const noCsp: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'index.html' ? page.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/u, '') : page])) }), { pageSinkContract: renderDossier.pageSinkContract });
+    const noCsp: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'index.html' ? page.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/u, '') : page])) }), { pageSinkContract: renderLocalDossier.pageSinkContract });
     expect(await renderRun(run, deps(noCsp))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: expect.stringContaining('index.html') } });
-    const reportOnly: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, page.replace('http-equiv="Content-Security-Policy"', 'http-equiv="Content-Security-Policy-Report-Only"')])) }), { pageSinkContract: renderDossier.pageSinkContract });
+    const reportOnly: DossierRenderer = Object.assign((input: DossierRendererInput) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, page.replace('http-equiv="Content-Security-Policy"', 'http-equiv="Content-Security-Policy-Report-Only"')])) }), { pageSinkContract: renderLocalDossier.pageSinkContract });
     expect(await renderRun(run, deps(reportOnly))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: expect.stringContaining('Report-Only') } });
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
-    expect(renderDossier.pageSinkContract).toBe('polaris/page-sink/escaped-text-under-csp/1');
-    const result = await renderRun(run, deps(renderDossier));
+    expect(renderLocalDossier.pageSinkContract).toBe('polaris/page-sink/escaped-text-under-csp/1');
+    const result = await renderRun(run, deps(renderLocalDossier));
     if (!result.ok) throw new Error(result.refusal.reason);
     expect(result.report.outcome).toBe('rendered');
     // Without an exempt body the contract is not needed: the same undeclared renderer renders.
@@ -485,7 +485,7 @@ describe('render', () => {
   it('refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure', async () => {
     const run = await prepared(draft(), false);
     expect(await renderRun(run, renderDeps({ now: () => NOW + 3_600_000 }))).toMatchObject({ ok: false, refusal: { stage: 'deadline' } });
-    const bare: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, page.replace('class="run-disclosure"', 'class="x"')])) });
+    const bare: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, page.replace('class="run-disclosure"', 'class="x"')])) });
     expect(await renderRun(run, renderDeps({ renderer: bare }))).toMatchObject({ ok: false, refusal: { stage: 'render' } });
     expect(await renderRun(run, renderDeps({ renderer: () => { throw new Error('boom'); } }))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: 'the renderer refused the run: boom' } });
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
@@ -537,7 +537,7 @@ describe('render', () => {
     };
     const out: string[] = [];
     const io = { stdout: (text: string) => { out.push(text); }, stderr: () => {} };
-    expect(await runDossierCli(['render', run, '--json'], io, { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, renderer: renderDossier, openReader })).toBe(1);
+    expect(await runDossierCli(['render', run, '--json'], io, { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, renderer: renderLocalDossier, openReader })).toBe(1);
     expect(JSON.parse(out.join(''))).toMatchObject({ command: 'render', stage: 'reverify', refusals: [{ code: 'governed-changed' }, { code: 'statement' }] });
     expect(opened.length).toBe(1);
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
@@ -551,7 +551,7 @@ describe('render', () => {
     expect(await runDossierCli(['render', run, '--json'], a.io, ports)).toBe(1);
     expect(JSON.parse(a.out.stdout)).toMatchObject({ stage: 'renderer', reason: NO_RENDERER });
     const b = capture();
-    expect(await runDossierCli(['render', run, '--json'], b.io, { ...ports, renderer: renderDossier })).toBe(0);
+    expect(await runDossierCli(['render', run, '--json'], b.io, { ...ports, renderer: renderLocalDossier })).toBe(0);
     expect(JSON.parse(b.out.stdout)).toMatchObject({ format: 'polaris-dossier-render/1', outcome: 'rendered', site: path.join(run, 'site', '0') });
   });
 });
@@ -669,7 +669,7 @@ describe('rendered-design review (S9b)', () => {
     const run = await prepared();
     const { digest } = await designReviewed(run);
     // One byte outside the region of one page.
-    const altered: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'glossary.html' ? page.replace('<h1>Glossary</h1>', '<h1>Glossary.</h1>') : page])) });
+    const altered: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'glossary.html' ? page.replace('<h1>Glossary</h1>', '<h1>Glossary.</h1>') : page])) });
     const one = await renderRun(run, renderDeps({ renderer: altered }));
     if (!one.ok) throw new Error(one.refusal.reason);
     expect(one.report.designReview).toMatchObject({ counts: false, why: 'design verdict 0 no longer validates against the packet built from these pages (stale-packet); a change to the pages outside the review-status region retires it' });
@@ -679,11 +679,11 @@ describe('rendered-design review (S9b)', () => {
     const two = await renderRun(run, renderDeps({ loadScreen: async () => buildDossierScreen(policy(['.c'])) }));
     expect(two.ok && two.report.designReview).toMatchObject({ counts: false });
     // The machine view outside its reviewStatus member is part of the subject.
-    const machine: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'machine.json' ? page.replace('"title": "Kestrel"', '"title": "Kestrel."') : page])) });
+    const machine: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'machine.json' ? page.replace('"title": "Kestrel"', '"title": "Kestrel."') : page])) });
     const three = await renderRun(run, renderDeps({ renderer: machine }));
     expect(three.ok && three.report.designReview).toMatchObject({ counts: false });
     // Even a change of layout alone: a machine view not in the renderer's serialization is refused rather than re-serialized.
-    const spaced: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'machine.json' ? page.replace('"title"', '"title" ') : page])) });
+    const spaced: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'machine.json' ? page.replace('"title"', '"title" ') : page])) });
     expect(await renderRun(run, renderDeps({ renderer: spaced }))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: 'the rendered pages cannot be compared outside the review-status region: machine.json is not in the renderer\'s serialization' } });
     // The unaltered renderer again: the pages are the reviewed ones, and it counts again.
     const four = await renderRun(run, renderDeps());
@@ -692,12 +692,12 @@ describe('rendered-design review (S9b)', () => {
 
   it('refuses a render whose statement of the design review leaks outside the region, and writes no site', async () => {
     const run = await prepared();
-    const leaky: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'index.html' ? page.replace('</main>', `<p>${input.local.reviewStatus.map((item) => item.text).join(' ')}</p></main>`) : page])) });
+    const leaky: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'index.html' ? page.replace('</main>', `<p>${input.local.reviewStatus.map((item) => item.text).join(' ')}</p></main>`) : page])) });
     expect(await renderRun(run, renderDeps({ renderer: leaky }))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: 'stating the rendered-design review in the review-status region changed the pages outside that region, so the review of record cannot be decided from them' } });
     // A page with no region, or two, cannot be compared outside it.
-    const bare: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'contents.html' ? page.replace(REGION, '') : page])) });
+    const bare: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'contents.html' ? page.replace(REGION, '') : page])) });
     expect(await renderRun(run, renderDeps({ renderer: bare }))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: 'the rendered pages cannot be compared outside the review-status region: contents.html does not hold exactly one review-status region' } });
-    const twice: DossierRenderer = (input) => ({ files: new Map([...renderDossier(input).files].map(([file, page]) => [file, file === 'contents.html' ? page.replace('</main>', `${regionOf(page)}</main>`) : page])) });
+    const twice: DossierRenderer = (input) => ({ files: new Map([...renderLocalDossier(input).files].map(([file, page]) => [file, file === 'contents.html' ? page.replace('</main>', `${regionOf(page)}</main>`) : page])) });
     expect(await renderRun(run, renderDeps({ renderer: twice }))).toMatchObject({ ok: false, refusal: { stage: 'render', reason: 'the rendered pages cannot be compared outside the review-status region: contents.html does not hold exactly one review-status region' } });
     expect(fs.existsSync(path.join(run, 'site'))).toBe(false);
   });
@@ -828,7 +828,7 @@ describe('rendered-design review (S9b)', () => {
   it('drives the design review through the CLI', async () => {
     const run = await prepared();
     const capture = () => { const out = { stdout: '', stderr: '' }; return { out, io: { stdout: (t: string) => { out.stdout += t; }, stderr: (t: string) => { out.stderr += t; } } }; };
-    const ports = { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, renderer: renderDossier };
+    const ports = { sources: sources(), now: () => LATER, loadScreen: async () => SCREEN, renderer: renderLocalDossier };
     expect(await runDossierCli(['render', run, '--json'], capture().io, ports)).toBe(0);
     const a = capture();
     expect(await runDossierCli(['session-prompt', run, 'review', '--kind', 'design', '--json'], a.io, ports)).toBe(0);

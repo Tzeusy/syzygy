@@ -1,4 +1,4 @@
-import type { EpistemicMarking } from '@syzygy/polaris-generation-core';
+import type { EpistemicMarking } from '@syzygy/polaris-generation-core/live';
 
 /**
  * Deterministic layered left-to-right layout for draft-preview diagrams. No
