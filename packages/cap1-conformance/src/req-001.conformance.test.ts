@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDeclaration, registerProject } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-001 — A valid declaration registers exactly one project.
 //
@@ -12,23 +13,14 @@ import { readDeclaration, registerProject } from '@syzygy/cap1-core';
 const DECLARED_PROJECT_ID = 'prj-opaque-7f3a';
 const DECLARED_DISPLAY_NAME = 'Orbital Mechanics';
 
-const VALID_SOURCE = `
-schema_version: "1"
-project:
-  id: ${DECLARED_PROJECT_ID}
-  name: ${DECLARED_DISPLAY_NAME}
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-opaque-01
-    role: governance-root
-    consent: consent-record-01
-consents:
-  - consent-record-01
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const VALID_SOURCE = projectYaml({
+  id: DECLARED_PROJECT_ID,
+  name: DECLARED_DISPLAY_NAME,
+  repositories: [
+    { id: 'repo-opaque-01', role: 'governance-root', consent: 'consent-record-01' },
+  ],
+  consents: ['consent-record-01'],
+});
 
 describe('CAP1-REQ-001 — valid declaration registers exactly one project', () => {
   it('reads the checker-authored valid declaration without failure', () => {

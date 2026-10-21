@@ -11,6 +11,7 @@ import {
   type RepositoryId,
   type ShapeAnswerInputs,
 } from '@syzygy/cap1-core';
+import { consent, evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-033 — Every answer exposes its constituent facts and scope
 // (state projection/query).
@@ -27,38 +28,24 @@ import {
 // stated basis.
 
 const PROJECT = 'prj-shape-033' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-033', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-033');
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-shape-033
-  name: Facts Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-main
-    role: governance-root
-    consent: consent-1
-  - id: repo-unconsented
-    role: observed-source
-    consent: consent-2
-consents:
-  - consent-1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Facts Fixture',
+  repositories: [
+    { id: 'repo-main', role: 'governance-root', consent: 'consent-1' },
+    { id: 'repo-unconsented', role: 'observed-source', consent: 'consent-2' },
+  ],
+  consents: ['consent-1'],
+});
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-1',
     projectId: PROJECT,
     repositoryId: 'repo-main' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [

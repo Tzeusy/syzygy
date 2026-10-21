@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDeclaration, registerProject } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-004 — Syzygy never silently invents, repairs, or infers a
 // declaration field (prohibition).
@@ -10,26 +11,16 @@ import { readDeclaration, registerProject } from '@syzygy/cap1-core';
 // compare every served declaration-derived fact against the input; the
 // denominator is the served fact set.
 
-const VALID_SOURCE = `
-schema_version: "1"
-project:
-  id: prj-opaque-7f3a
-  name: Orbital Mechanics
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-opaque-01
-    role: governance-root
-    consent: consent-record-01
-consents:
-  - consent-record-01
-declarations:
-  spec_root: openspec/
-relations:
-  - type: depends-on
-    project: prj-opaque-b2c4
-profiles:
-  - portfolio
-`;
+const VALID_SOURCE = projectYaml({
+  id: 'prj-opaque-7f3a',
+  name: 'Orbital Mechanics',
+  repositories: [
+    { id: 'repo-opaque-01', role: 'governance-root', consent: 'consent-record-01' },
+  ],
+  consents: ['consent-record-01'],
+  relations: [{ type: 'depends-on', project: 'prj-opaque-b2c4' }],
+  profiles: ['portfolio'],
+});
 
 describe('CAP1-REQ-004 — no silent invention, repair, or inference', () => {
   it('a field with an unknown (typo) name fails, naming that field — the set is closed (RFC3-5)', () => {

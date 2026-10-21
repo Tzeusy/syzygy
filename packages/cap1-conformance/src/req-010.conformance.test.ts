@@ -8,6 +8,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-010 — Every declared repository has an explicit coverage
 // result.
@@ -23,30 +24,16 @@ const PROJECT = 'prj-cov-a1' as ProjectId;
 
 // Three repositories declared: one consented and reachable, one
 // unconsented, one consented but with no observation outcome at all.
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-cov-a1
-  name: Coverage Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-observed
-    role: governance-root
-    consent: consent-r1
-  - id: repo-unconsented
-    role: observed-source
-    consent: consent-r2
-  - id: repo-never-captured
-    role: observed-source
-    consent: consent-r3
-consents:
-  - consent-r1
-  - consent-r3
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Coverage Fixture',
+  repositories: [
+    { id: 'repo-observed', role: 'governance-root', consent: 'consent-r1' },
+    { id: 'repo-unconsented', role: 'observed-source', consent: 'consent-r2' },
+    { id: 'repo-never-captured', role: 'observed-source', consent: 'consent-r3' },
+  ],
+  consents: ['consent-r1', 'consent-r3'],
+});
 
 function declaration(): ProjectDeclaration {
   const read = readDeclaration(SOURCE);
@@ -55,23 +42,17 @@ function declaration(): ProjectDeclaration {
 }
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-r1',
     projectId: PROJECT,
     repositoryId: 'repo-observed' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
   // repo-unconsented deliberately has NO record.
-  {
+  consent({
     id: 'consent-r3',
     projectId: PROJECT,
     repositoryId: 'repo-never-captured' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [

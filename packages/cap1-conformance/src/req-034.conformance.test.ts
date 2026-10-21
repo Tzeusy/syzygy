@@ -3,10 +3,10 @@ import {
   computeShapeAnswers,
   readDeclaration,
   registerProject,
-  type EvaluationIdentity,
   type ProjectId,
   type ShapeAnswerInputs,
 } from '@syzygy/cap1-core';
+import { evaluation } from './fixtures/index.js';
 
 // CAP1-REQ-034 — Missing evidence yields Unknown; non-satisfaction
 // yields Gap; absence is never zero (invariant).
@@ -43,7 +43,7 @@ const TWELVE_REASONS = [
 ] as const;
 
 const PROJECT = 'prj-shape-034' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-034', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-034');
 
 // Fixture (a): no evidence anywhere — every input absent.
 const NO_EVIDENCE: ShapeAnswerInputs = {};

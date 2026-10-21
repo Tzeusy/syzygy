@@ -7,7 +7,6 @@ import {
   computeDiscoverabilityWithProposal,
   computeDiscoverability,
   deriveEffectiveStatus,
-  fullDisclosure,
   proposeEntryLink,
   renderHuman,
   serveMachine,
@@ -15,6 +14,7 @@ import {
   type EvaluationIdentity,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { fullDisclosure } from '@syzygy/cap1-core/testing';
 
 import { evaluateProject, type ProjectEvaluation } from './pipeline.js';
 import { createDaemon, type Route, type RunningDaemon } from './server.js';

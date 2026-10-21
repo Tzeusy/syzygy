@@ -10,6 +10,7 @@ import {
   type Proposal,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-063 — Proposed material never renders as current state
 // (prohibition).
@@ -25,23 +26,14 @@ import {
 const PROJECT = 'prj-proposal-3e' as ProjectId;
 const REPO = 'repo-proposal-01' as RepositoryId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-proposal-3e
-  name: Proposal Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-proposal-01
-    role: governance-root
-    consent: consent-p1
-consents:
-  - consent-p1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Proposal Fixture',
+  repositories: [
+    { id: 'repo-proposal-01', role: 'governance-root', consent: 'consent-p1' },
+  ],
+  consents: ['consent-p1'],
+});
 
 const CONSENTS: readonly ConsentRecord[] = [
   {
