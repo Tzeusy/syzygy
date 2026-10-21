@@ -1,13 +1,12 @@
 {
  "subject": {
-  "baseCommit": "32c16625e3a14e6db995adff81379cf32baf49c3",
-  "headCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
-  "laterChange": "the code commit put one Test seam comment line above applyPredicateMutation in pwb-mutation.ts; a later commit on the branch removed it, because the bead says not to touch the mutation runners beyond un-exports (syzygy-bpyt.4.6 replaces them). A comment changes no census class, so the counts stand for the final tree; the Test seam comment count is one lower there.",
-  "note": "counts below are computed by the scripts named in tools from tracked files at each commit; head is the code commit, the evidence commit after it adds only files under docs/evidence/poc-hygiene-2026-10-22"
+  "baseCommit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+  "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+  "note": "counts below are computed by assemble_census.py from tracked files of the two trees; the base is the main branch the PR merged (b7697f6a at the repair), the head is the tree the scripts ran on"
  },
  "tools": {
   "export_census.py": {
-   "sha256": "62d9ec38759adc82282490e9ebfa58fbe877551ce75051961f0fb421d498721f"
+   "sha256": "13c0e22cd2fd512b7dfd9fcf86bc06862fe42f6860f3f649fe865cff6d16a475"
   },
   "orphans.py": {
    "sha256": "a80930a6f9b42d153eedc64c4c311b3c1193c6e29ac9d7709f4c6a9cf0088da0"
@@ -15,60 +14,83 @@
   "deexport.py": {
    "sha256": "d8862dcd26271cc56ba088f6684a9e775a20b084d894e6d654bf4b01fbb8dfa0"
   },
-  "route-capture.mjs": {
-   "sha256": "349c982a8dab151b6f2240bb5da4b35f869a64bb678cf8347f2cb6d33808817d"
-  },
-  "mutate_main.py": {
-   "sha256": "b34e9769720e0da5d235453276e8b0b7b9be2d38aa54e445aa6e19b30cda837c"
+  "assemble_census.py": {
+   "sha256": "891f9ede648c2e9990e85b036e425a0a8b1743b0727c49497ec55f9949df7c2d"
   }
  },
- "method": "export_census.py: enumerate tracked non-test .ts files under apps/three-surface-poc/src, parse top-level export declarations and export lists with Python re, then count identifier-token matches of each exported name in (prod) every other tracked non-test code file anywhere in the repository (.ts .mts .mjs .js .cjs), (test) every tracked *.test.* file, (self) the declaring file beyond the declaration. Classes: dead (no use anywhere), self-only, test-only, prod. Default mode strips comments first and keeps string text; --raw skips comment stripping. The two modes disagree on 2 of 561 exports at the base commit (AdmissionRecordsPort, RedisShapedMeasurement), both examined by hand.",
+ "method": "export_census.py: enumerate tracked non-test .ts files under apps/three-surface-poc/src, parse top-level export declarations and export lists with Python re, then count identifier-token matches of each exported name in (prod) every other tracked non-test code file anywhere in the repository (.ts .mts .mjs .js .cjs and .py; a .py file counts as a consumer because three governance scripts parse TypeScript declarations by their literal text, and its comments are kept; .py files under docs/evidence/ are measurement tooling and are not consumers), (test) every tracked *.test.* file, (self) the declaring file beyond the declaration. Classes: dead (no use anywhere), self-only, test-only, prod. Default mode strips C-style comments first (not from .py files) and keeps string text; --raw skips comment stripping. Policy for types: a type named in an exported signature stays private by design when no other file names it, and is re-exported when the first caller needs to name one; this is a code-quality choice, not a defect (typesNamedInExportedSignature counts the affected types). The un-export list is the set difference of the two exports (base minus head) less the deleted adapter file and the deleted constant.",
  "denominators": {
-  "baseCommitDeclaringFiles": 80,
-  "headDeclaringFiles": 79
+  "definition": {
+   "filesScanned": "tracked non-test .ts files under apps/three-surface-poc/src (export_census.py \"declaring files\": every file the census parses for export declarations)",
+   "filesWithAtLeastOneExport": "the files among those that declare one or more exports (distinct `file` values among the census rows)"
+  },
+  "base": {
+   "filesScanned": 91,
+   "filesWithAtLeastOneExport": 80,
+   "exports": 561
+  },
+  "head": {
+   "filesScanned": 91,
+   "filesWithAtLeastOneExport": 79,
+   "exports": 398
+  }
  },
  "before": {
   "exports": 561,
   "classes": {
    "dead": 3,
-   "prod": 268,
+   "prod": 271,
    "self-only": 167,
-   "test-only": 123
+   "test-only": 120
   },
   "rawModeClasses": {
    "dead": 2,
-   "prod": 269,
+   "prod": 272,
    "self-only": 168,
-   "test-only": 122
+   "test-only": 119
   }
  },
  "after": {
   "exports": 398,
   "classes": {
    "dead": 1,
-   "prod": 272,
+   "prod": 275,
    "self-only": 5,
-   "test-only": 120
+   "test-only": 117
   },
   "rawModeClasses": {
    "dead": 1,
-   "prod": 273,
+   "prod": 276,
    "self-only": 5,
-   "test-only": 119
+   "test-only": 116
   }
+ },
+ "defaultVsRawDisagreements": {
+  "base": [
+   "polaris-generation/dossier-trigger.ts:AdmissionRecordsPort",
+   "polaris-generation/redis-shaped-measure.ts:RedisShapedMeasurement"
+  ],
+  "head": [
+   "polaris-generation/dossier-trigger.ts:AdmissionRecordsPort"
+  ]
  },
  "dispositions": {
   "unexportedSelfOnly": {
    "count": 161,
-   "selfOnlyInDeletedFile": [],
+   "selfOnlyInDeletedFile": [
+    "polaris-generation/source-adapter.ts:generationExclusionReason",
+    "polaris-generation/source-adapter.ts:generationSourceRoute",
+    "polaris-generation/source-adapter.ts:generationSourcesFromPocModel",
+    "polaris-generation/source-adapter.ts:newGenerationRunKey"
+   ],
    "exportKeywordRemovalsInDiff": 160,
    "exportListEditsInDiff": 1,
+   "diffMethod": "git diff --unified=0 b7697f6a fa79bca6 over the app src minus main.ts, poc-main.ts, main.test.ts and the deleted adapter pair (both commits are reachable from the PR branch): removed lines that start with export and reappear without it, plus removed export-list lines",
+   "handBuiltException": "governance-inputs.ts readText was unexported by editing the export list, not by the script",
    "selfOnlyAtBaseThatGainedAUserFromTheNewMainAndItsTest": [
     "cli.ts:PocCliConfig",
     "git-observation.ts:GitObservation"
    ],
-   "diffMethod": "git diff 32c16625 60877d39 over the app src minus main.ts, main.test.ts and the deleted adapter pair: removed lines that start with export and reappear without it (160), plus the readText edit of one export list (1)",
-   "handBuiltException": "governance-inputs.ts readText was unexported by editing the export list (line 441 form), not by the script",
    "names": [
     "capability-detail.ts:BAND_AUTHORITY_CLASS",
     "capability-detail.ts:BandAuthorityClass",
@@ -231,14 +253,90 @@
     "walkthrough-preflight.ts:WalkthroughPreflight",
     "watch-mode.ts:WATCH_PROMPT",
     "watch-mode.ts:WatchModeOptions"
+   ],
+   "pyConsumerSweep": {
+    "population": "115 tracked .py files (git ls-files) at fa79bca6, less the .py files under docs/evidence/ (measurement tooling that names the exports it measures)",
+    "names": 162,
+    "methodTokens": "Python re [A-Za-z_$][\\w$]* tokens of each file, name in token set",
+    "methodGitGrep": "git grep -n -w -F -f <names> -- '*.py'",
+    "hitsByTokens": 0,
+    "hitsByGitGrep": 0,
+    "newlyFoundConsumers": [],
+    "exportKeywordsRestored": []
+   }
+  },
+  "typesNamedInExportedSignature": {
+   "method": "for each type or interface un-exported by the PR, a whole-word match in the same file on a line that starts a still-exported function, const, type, interface or class declaration",
+   "unexportedTypes": 100,
+   "namedInAStillExportedDeclaration": 53,
+   "names": [
+    "capability-detail.ts:ReadingMode",
+    "capability-detail.ts:VerbatimRequirement",
+    "capture-test-artifact.ts:FocusedTestCommandInput",
+    "capture-test-artifact.ts:IngestTestArtifactInput",
+    "capture-test-artifact.ts:IngestTestArtifactResult",
+    "capture-test-artifact.ts:OperatorInstructionsInput",
+    "cli.ts:PocCliParse",
+    "design-tokens.ts:DisclosureEncoding",
+    "design-tokens.ts:PocEpistemicLabel",
+    "design-tokens.ts:TupleField",
+    "evaluation-footer.ts:SubstrateFooterInput",
+    "fresh-checkout-verdict.ts:DaemonStderrLine",
+    "fresh-checkout-verdict.ts:FreshCheckoutVerdict",
+    "keyboard-sweep-record.ts:KeyboardSweepArguments",
+    "keyboard-sweep-record.ts:ServedEvaluationBinding",
+    "materialize-action.ts:MaterializeRoutesOptions",
+    "page-shell.ts:PageShellInput",
+    "polaris-accessibility-variants.ts:RenderedVariant",
+    "polaris-accessibility.ts:CheckOptions",
+    "polaris-accessibility.ts:Rgb",
+    "polaris-accessible-names.ts:PolarisPage",
+    "polaris-copy.ts:CopyRole",
+    "polaris-generation/diagram-layout.ts:DiagramLayout",
+    "polaris-generation/diagram-layout.ts:LayoutEdgeInput",
+    "polaris-generation/diagram-layout.ts:LayoutNodeInput",
+    "polaris-generation/dossier-evaluation-main.ts:DossierEvaluationArgs",
+    "polaris-generation/dossier-render.ts:RenderedDossier",
+    "polaris-generation/dossier-trigger.ts:AdmissionRequirement",
+    "polaris-generation/dossier-trigger.ts:TriggerOutcome",
+    "polaris-generation/draft-preview.ts:DraftPreviewOptions",
+    "polaris-generation/durable-lifecycle.ts:ScriptedLifecycleOptions",
+    "polaris-generation/pipeline-demo.ts:SyntheticProject",
+    "polaris-generation/redis-shaped-fixture.ts:RedisShapedOptions",
+    "polaris-generation/redis-shaped-measure.ts:RedisShapedMeasurement",
+    "polaris-generation/repo-corpus.ts:CorpusAdmissionDecision",
+    "polaris-generation/repo-corpus.ts:CorpusAdmissionRequest",
+    "polaris-generation/self-corpus.ts:SelfCorpus",
+    "polaris-reconciliation.ts:CatalogReconciliation",
+    "polaris-source.ts:PolarisSourceRenderInputs",
+    "polaris-source.ts:SourceRouteResolution",
+    "production-reobserve.ts:ProductionModelBuildOptions",
+    "reobserve-action.ts:ReobserveRoutesOptions",
+    "reobserve-session.ts:ReobserveSession",
+    "reobserve-state.ts:ReobserveStateOptions",
+    "restart.ts:RestartOptions",
+    "routes.ts:PolarisRenderInputsFor",
+    "routes.ts:ResponseLimitIdentity",
+    "test-model-fixture.ts:FixtureModelOptions",
+    "test-model-fixture.ts:FixtureRepo",
+    "test-walkthrough-judgment-fixture.ts:RunRecordOptions",
+    "walkthrough-inputs.ts:LoadWalkthroughJudgmentInputsOptions",
+    "walkthrough-preflight.ts:WalkthroughPreflight",
+    "watch-mode.ts:WatchModeOptions"
    ]
   },
+  "newExportsAtHead": [
+   "poc-main.ts:PocIo",
+   "poc-main.ts:PocMainDeps",
+   "poc-main.ts:main"
+  ],
   "testOnlyAfter": {
-   "own Test seam comment (or documented JSDoc in main.ts)": 92,
+   "own Test seam comment": 89,
    "untouched by constraint (polaris.ts, public-source-screening.ts)": 10,
-   "mutation runner, not edited beyond un-exports (applyPredicateMutation)": 1,
+   "mutation runner, not edited beyond un-exports": 1,
    "test-support module, one module-head comment": 17
   },
+  "testOnlyUnbucketed": [],
   "remainingSelfOnlyOrDead": [
    "polaris-generation/public-source-screening.ts:PUBLIC_SOURCE_ACT_RECORD_PATH (dead)",
    "polaris-generation/public-source-screening.ts:PUBLIC_SOURCE_POLICY_PATH (self-only)",
@@ -282,7 +380,7 @@
    ]
   },
   "after": {
-   "line": "# modules: 90; with no non-test importer: 19",
+   "line": "# modules: 91; with no non-test importer: 19",
    "noNonTestImporter": [
     "capture-test-artifact-main.ts",
     "fresh-checkout-demo-main.ts",

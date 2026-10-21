@@ -1,11 +1,12 @@
 {
- "mutatedFile": "apps/three-surface-poc/src/main.ts",
+ "mutatedFile": "apps/three-surface-poc/src/poc-main.ts",
  "testFile": "apps/three-surface-poc/src/main.test.ts",
- "command": "npx vitest run apps/three-surface-poc/src/main.test.ts",
- "ranAtCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
- "mainTsSha256AtCommit": "5fc4e3648ff19a46e4270d8730a8bd9f5558c8b7de51e5de7bd83c92dca1e59c",
- "mutants": 24,
- "killed": 24,
+ "command": "npx vitest run apps/three-surface-poc/src/main.test.ts --reporter=json --outputFile=/tmp/zz-mutate-main-_e2skb4y/report.json",
+ "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+ "mutatedFileSha256AtCommit": "c5e5dc78cd9107d0e99dc39e32a6d7e4bfa493d527f76bdb26e17f94fe9337c1",
+ "testFileSha256AtCommit": "55bc26ce4643d35ed8c1f7f5c378f1ca4054953f6a93d726df0ce313c0472e8b",
+ "mutants": 27,
+ "killed": 27,
  "results": [
   {
    "id": "launcher-gate-bypassed",
@@ -13,15 +14,28 @@
    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 5008ms",
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
-    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
-    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
-    "names a dirty observer checkout and starts no daemon 4ms",
-    "prints the banner, registers the three route groups, and closes once on the first signal 8ms",
-    "the shipped collaborators reject a directory that is not the registered repository 10ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: daemon did not start (dup\u2026' to be 'syzygy POC: configured repository aut\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the P1 authority gate the shipped collaborators reject a directory that is not the registered repository",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: a required git revision c\u2026' to match /^syzygy POC: configured repository au\u2026/"
+    },
+    {
+     "test": "main(argv, io): startup refusals after the gate names a dirty observer checkout and starts no daemon",
+     "firstErrorLine": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(3) ]"
+    },
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected [ \u2026(6) ] to deeply equal [ \u2026(7) ]"
+    },
+    {
+     "test": "main(argv, io): serving prints no console prompt and ignores Enter without --watch",
+     "firstErrorLine": "AssertionError: expected [ \u2026(6) ] to have a length of 7 but got 6"
+    }
    ]
   },
   {
@@ -30,9 +44,12 @@
    "new": "    io.stdout.write(USAGE);\n    return 1;",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): early exits > prints the usage on --help and exits 0 without touching a collaborator",
-    "prints the usage on --help and exits 0 without touching a collaborator 11ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): early exits prints the usage on --help and exits 0 without touching a collaborator",
+     "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+    }
    ]
   },
   {
@@ -41,9 +58,12 @@
    "new": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 2;",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): early exits > refuses an unknown argument with the usage on stderr and exits 1",
-    "refuses an unknown argument with the usage on stderr and exits 1 10ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): early exits refuses an unknown argument with the usage on stderr and exits 1",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    }
    ]
   },
   {
@@ -52,9 +72,12 @@
    "new": "configured repository is unreadable",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): early exits > refuses a repository path that cannot be resolved before the gate is consulted",
-    "refuses a repository path that cannot be resolved before the gate is consulted 9ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): early exits refuses a repository path that cannot be resolved before the gate is consulted",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: configured repository is \u2026' to be 'syzygy POC: configured repository is \u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -63,11 +86,16 @@
    "new": "authority rejected (${launch.reason})\\n`);\n    return 2;",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 10ms",
-    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
-    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
-    "the shipped collaborators reject a directory that is not the registered repository 5ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the P1 authority gate the shipped collaborators reject a directory that is not the registered repository",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    }
    ]
   },
   {
@@ -76,11 +104,16 @@
    "new": "authority rejected",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 8ms",
-    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
-    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
-    "the shipped collaborators reject a directory that is not the registered repository 2ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: configured repository aut\u2026' to be 'syzygy POC: configured repository aut\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the P1 authority gate the shipped collaborators reject a directory that is not the registered repository",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: configured repository aut\u2026' to match /^syzygy POC: configured repository au\u2026/"
+    }
    ]
   },
   {
@@ -89,9 +122,12 @@
    "new": "observeCheckouts('observer-dirty')",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
-    "names a dirty observer checkout and starts no daemon 19ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate names a dirty observer checkout and starts no daemon",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: a required git revision c\u2026' to be 'syzygy POC: POC runtime inputs have u\u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -100,9 +136,12 @@
    "new": "  let capture: PocRuntimeCapture;\n  try { capture = observeCapture(observed); } catch (cause) { io.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\\n`); return 1; }\n",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "lets a horizon failure at startup reject, as the script it replaced did 8ms",
-    "main(argv, io): startup refusals after the gate > lets a horizon failure at startup reject, as the script it replaced did"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate lets a horizon failure at startup reject, as the script it replaced did",
+     "firstErrorLine": "Error: promise resolved \"1\" instead of rejecting"
+    }
    ]
   },
   {
@@ -111,13 +150,20 @@
    "new": "const observer = deps.observeGitRepository(process.cwd());",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 115ms",
-    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
-    "names a dirty observer checkout and starts no daemon 5008ms",
-    "prints the banner, registers the three route groups, and closes once on the first signal 11ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate names a dirty observer checkout and starts no daemon",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected [ \u2026(7) ] to deeply equal [ \u2026(7) ]"
+    },
+    {
+     "test": "main(argv, io): serving attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    }
    ]
   },
   {
@@ -126,9 +172,12 @@
    "new": "    observerRoot: process.cwd(),",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 19ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected [ \u2026(7) ] to deeply equal [ \u2026(7) ]"
+    }
    ]
   },
   {
@@ -137,9 +186,12 @@
    "new": "buildPocEvaluationEvidence(new Date().toISOString(),",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 17ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected [ \u2026(7) ] to deeply equal [ \u2026(7) ]"
+    }
    ]
   },
   {
@@ -148,9 +200,12 @@
    "new": "deps.observeObservatoryDrift(repoRoot, buildRevision)",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected [ \u2026(7) ] to deeply equal [ \u2026(7) ]"
+    }
    ]
   },
   {
@@ -159,9 +214,12 @@
    "new": "slice(0, 15)",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "defaults the state directory to a per-repository directory under the OS temp directory 12ms",
-    "main(argv, io): serving > defaults the state directory to a per-repository directory under the OS temp directory"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving defaults the state directory to a per-repository directory under the OS temp directory",
+     "firstErrorLine": "AssertionError: expected '/tmp/syzygy-three-surface-poc/970a869\u2026' to be '/tmp/syzygy-three-surface-poc/970a869\u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -170,9 +228,12 @@
    "new": "      return 0;\n    }\n    const daemon = start.daemon;",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): startup refusals after the gate > reports a daemon that did not start with its named kind and exits 1",
-    "reports a daemon that did not start with its named kind and exits 1 7ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a daemon that did not start with its named kind and exits 1",
+     "firstErrorLine": "AssertionError: expected +0 to be 1 // Object.is equality"
+    }
    ]
   },
   {
@@ -181,9 +242,12 @@
    "new": "daemon did not start (${daemonStartDetail(start.failure)})",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): startup refusals after the gate > reports a daemon that did not start with its named kind and exits 1",
-    "reports a daemon that did not start with its named kind and exits 1 7ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a daemon that did not start with its named kind and exits 1",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: daemon did not start (two\u2026' to be 'syzygy POC: daemon did not start (dup\u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -192,9 +256,12 @@
    "new": "",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 12ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' to be 'Syzygy Three-Surface POC: http://127.\u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -203,9 +270,12 @@
    "new": "",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' to be 'Syzygy Three-Surface POC: http://127.\u2026' // Object.is equality"
+    }
    ]
   },
   {
@@ -214,9 +284,12 @@
    "new": "{ input: io.stdin, output: io.stderr }",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 16ms",
-    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' to contain 'Press Enter to re-observe. Nothing re\u2026'"
+    }
    ]
   },
   {
@@ -225,9 +298,12 @@
    "new": "'POC runtime inputs are dirty'",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 115ms",
-    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    }
    ]
   },
   {
@@ -236,11 +312,16 @@
    "new": "`syzygy POC: ${signal} received\\n`",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints no walkthrough binding while readiness is not evaluated",
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints no walkthrough binding while readiness is not evaluated 7ms",
-    "prints the banner, registers the three route groups, and closes once on the first signal 12ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected false to be true // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): serving prints no walkthrough binding while readiness is not evaluated",
+     "firstErrorLine": "AssertionError: expected false to be true // Object.is equality"
+    }
    ]
   },
   {
@@ -249,9 +330,12 @@
    "new": "",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    }
    ]
   },
   {
@@ -260,17 +344,28 @@
    "new": "",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 5001ms",
-    "defaults the state directory to a per-repository directory under the OS temp directory 5001ms",
-    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
-    "main(argv, io): serving > defaults the state directory to a per-repository directory under the OS temp directory",
-    "main(argv, io): serving > prints no console prompt and ignores Enter without --watch",
-    "main(argv, io): serving > prints no walkthrough binding while readiness is not evaluated",
-    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
-    "prints no console prompt and ignores Enter without --watch 5002ms",
-    "prints no walkthrough binding while readiness is not evaluated 5002ms",
-    "prints the banner, registers the three route groups, and closes once on the first signal 5009ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "test": "main(argv, io): serving prints no walkthrough binding while readiness is not evaluated",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "test": "main(argv, io): serving defaults the state directory to a per-repository directory under the OS temp directory",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "test": "main(argv, io): serving attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "test": "main(argv, io): serving prints no console prompt and ignores Enter without --watch",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    }
    ]
   },
   {
@@ -279,11 +374,24 @@
    "new": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 2;",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): startup refusals after the gate > reports a model failure by its observation kind and exits 1",
-    "main(argv, io): startup refusals after the gate > reports an unexpected failure by its class only",
-    "reports a model failure by its observation kind and exits 1 7ms",
-    "reports an unexpected failure by its class only 1ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a model failure by its observation kind and exits 1",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a bare observation error by its kind alone",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): startup refusals after the gate reports an observation error with a detail and no artifact path without a placeholder",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): startup refusals after the gate reports an unexpected failure by its class only",
+     "firstErrorLine": "AssertionError: expected 2 to be 1 // Object.is equality"
+    }
    ]
   },
   {
@@ -292,14 +400,63 @@
    "new": ".filter((part): part is string => part !== undefined && part !== cause.artifactPath)",
    "exit": 1,
    "outcome": "killed",
-   "failingTests": [
-    "main(argv, io): startup refusals after the gate > reports a model failure by its observation kind and exits 1",
-    "reports a model failure by its observation kind and exits 1 9ms"
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a model failure by its observation kind and exits 1",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: observation failed (requi\u2026' to be 'syzygy POC: observation failed (requi\u2026' // Object.is equality"
+    }
+   ]
+  },
+  {
+   "id": "suffix-filter-dropped",
+   "old": ".filter((part): part is string => part !== undefined)",
+   "new": ".filter((part): part is string => true)",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): startup refusals after the gate reports a bare observation error by its kind alone",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: observation failed (requi\u2026' to be 'syzygy POC: observation failed (requi\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): startup refusals after the gate reports an observation error with a detail and no artifact path without a placeholder",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: observation failed (inval\u2026' to be 'syzygy POC: observation failed (inval\u2026' // Object.is equality"
+    }
+   ]
+  },
+  {
+   "id": "console-attached-without-watch",
+   "old": "void session.startConsole(config.watch,",
+   "new": "void session.startConsole(true,",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): serving prints the banner, registers the three route groups, and closes once on the first signal",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' to be 'Syzygy Three-Surface POC: http://127.\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): serving prints no console prompt and ignores Enter without --watch",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' not to contain 'Press Enter'"
+    }
+   ]
+  },
+  {
+   "id": "pre-gate-state-directory-write",
+   "old": "  const launch = await launchAfterPwbRepositoryBinding(",
+   "new": "  if (parsed.config.stateDir !== undefined) (await import('node:fs')).mkdirSync(parsed.config.stateDir, { recursive: true });\n  const launch = await launchAfterPwbRepositoryBinding(",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 18,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+    }
    ]
   }
- ],
- "subject": {
-  "testFile": "apps/three-surface-poc/src/main.test.ts",
-  "testFileSha256AtCommit": "5021684596d0ba24609cbcf577cd0aa2180772dad8938cf3354f2b9edf4f6bd9"
- }
+ ]
 }

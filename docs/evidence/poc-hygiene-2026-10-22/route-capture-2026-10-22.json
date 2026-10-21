@@ -1,13 +1,20 @@
 {
  "subject": {
-  "baseCommit": "32c16625e3a14e6db995adff81379cf32baf49c3",
-  "headCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789"
+  "baseCommit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+  "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5"
  },
  "tool": {
   "path": "docs/evidence/poc-hygiene-2026-10-22/route-capture.mjs",
-  "sha256": "349c982a8dab151b6f2240bb5da4b35f869a64bb678cf8347f2cb6d33808817d"
+  "sha256": "fc6ede4f6e8239792e971e26d2361e0096a5a1b980a7eefd3e79daa029a58c8b"
  },
  "method": "For each of five fixture models (shape not evaluated, admitted, rejected, with a secret, with a baseline spec) the app route set main.ts registers (pocRoutes, materializeRoutes, reobserveRoutes) is served on a private daemon (--port 0, scratch state directory, never port 7478) and every route is requested in its direct and tailnet Host forms, with and without the machine bearer for machine-credentialed routes, recording status, content type, body length and body sha256 (scratch paths and the port masked). Credentialed POSTs are not sent. No observed repository is read: every model comes from the app fixtures, on one fixed fixture repository path so the evaluation inputs digest is stable.",
+ "fixtureRepository": {
+  "path": "/tmp/zz-route-capture-fixture-repo",
+  "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+  "creation": "first run only: fixtureRepoWithGit([]) from apps/three-surface-poc/dist/test-model-fixture.js builds a git repository from eight fixed files with pinned commit instants (GIT_AUTHOR_DATE and GIT_COMMITTER_DATE 2026-08-24T00:00:00Z) and no global or system git config, so its revision is a function of the files alone; the script copies it to the path above and writes the revision to <path>.json; later runs reuse the path",
+  "comparability": "the evaluation inputs digest inside the page bodies includes the repository root, so a capture reproduces the digests below only when run with this exact path (rm -rf the path and its .json to recreate it; the revision above is then reproduced)",
+  "revisionRecreated": true
+ },
  "denominator": {
   "variants": 5,
   "routesPerVariant": [
@@ -19,15 +26,22 @@
   "baseRunsByteIdentical": true,
   "headEqualsBaseByteForByte": true,
   "responsesDiffering": 0,
-  "baseCaptureSha256": "760f650e8cd09a6402e114c2c1de6926e9dcaa9abcd16359869a1ac669b0e9cf",
-  "headCaptureSha256": "760f650e8cd09a6402e114c2c1de6926e9dcaa9abcd16359869a1ac669b0e9cf",
+  "baseCaptureSha256": "486bea4a0ab57d759a70fbd81f7543f979afc6d567c59b71f906c923cf6ff74c",
+  "headCaptureSha256": "486bea4a0ab57d759a70fbd81f7543f979afc6d567c59b71f906c923cf6ff74c",
   "statusHistogram": {
    "200": 150,
    "401": 40,
    "403": 20,
    "502": 20
+  },
+  "distinctBodies": 73,
+  "fixtureVariantsPairwiseDistinct": true,
+  "requestKeysByDistinctBodyCount": {
+   "1": 16,
+   "4": 4,
+   "5": 26
   }
  },
  "captureFile": "route-capture-fixtures-2026-10-22.json",
- "limits": "The capture covers the route handlers; the process banner, exit codes and the order of collaborator calls that main.ts owns are covered by the old-vs-new differential. The live Butlers page text is not captured (the daemon accepts only the registered Butlers locator and no repository body may be read)."
+ "limits": "The capture covers the route handlers; the process banner, exit codes and the order of collaborator calls that main owns are covered by the old-vs-new differential, and the invocation forms by invocation-forms-2026-10-22.json. The live Butlers page text is not captured (the daemon accepts only the registered Butlers locator and no repository body may be read)."
 }
