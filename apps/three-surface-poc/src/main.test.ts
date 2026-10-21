@@ -545,12 +545,12 @@ describe('started(): the wait for main to serve', () => {
     const began = Date.now();
     await expect(started(run, fake)).rejects.toThrow('main finished with exit code 0 before it served');
     expect(Date.now() - began).toBeLessThan(WAIT_MS / 2);
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('gives up after its bound on a run that neither serves nor finishes', async () => {
     const fake = fakeIo();
     const h = harness({ createDaemon: () => new Promise(() => undefined) });
     const run = main(['--repo', repoRoot, '--state-dir', join(scratch, 'state'), '--port', '0'], fake.io, h.deps);
     await expect(started(run, fake, 50)).rejects.toThrow('main was not serving within 50 ms');
-  });
+  }, 2_000); // its own bound is 50 ms
 });
