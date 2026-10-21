@@ -1,0 +1,282 @@
+{
+ "schema": "consent-act-family-characterization-on-parent/1",
+ "bead": "syzygy-bpyt.8.4",
+ "text": "Evidence record, not authority: the characterization test committed with the act-family convergence, run unchanged in a clean checkout of the parent commit, whose readers are the ones the convergence replaced.",
+ "testFile": {
+  "path": "packages/polaris-generation-consent/src/act-families.test.ts",
+  "commit": "bc5f0f1624bdc67b7ec35a482e48e91e66257dc0",
+  "sha256": "1c449f3143087e4f27d88b6caf7976130dcfb3a593b59ba29938cc685b284708"
+ },
+ "runOn": {
+  "commit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+  "packageReaderSha256": "ebf5cbf468fd442289e11e390c9a7e3b20c39bdcd02e1a6214d096a52d0e3dc3"
+ },
+ "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/act-families.test.ts",
+ "totals": {
+  "tests": 65,
+  "passed": 65,
+  "failed": 0
+ },
+ "tests": [
+  {
+   "name": "the act families over one world read every family's record in force, with the head fields each parser takes from it",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second Act type line whose value has capitals and a space",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second Act type line of lowercase letters and dashes",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second Act type line naming an admission act type",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser no Owner line",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser the Owner line twice",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser no A1 line",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser the provenance line without its state tail",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser the provenance line naming another state",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second instant labelled Act instant",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second instant labelled Recorded at (UTC)",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser the one instant under the other label",
+   "status": "passed"
+  },
+  {
+   "name": "each family holds its own record to the head lines its reader read before the families shared a parser a second Supersession / revocation field",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one an unrelated file",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying an admission stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the screening-scope stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the class stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the registry stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the registry stem split by backticks",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the policy stem and a withdrawal word",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the policy stem and a revocation word",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying the policy stem alone",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a name carrying a withdrawal word alone",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying an admission stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the screening-scope stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the policy path and the policy stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the class module path",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the class stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the registry artifact path",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one text carrying the registry stem",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one every family named in the aggregate record's prose",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the same prose in a file of that name elsewhere",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one an admission record id on a Record ID line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one an admission stem on a Subject line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class identity on an Act identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line spaced and cased otherwise",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class identity on a Record ID line and its stem on a Subject line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a policy act identity on an Act identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Act identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Artifact identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a policy act identity on an Artifact identity line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the policy path on a Record ID line and a Subject line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the registry stem on a Record ID line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the registry artifact on a Subject line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a bulleted policy field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a quoted policy field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a quoted admission field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a quoted class field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one a quoted registry field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one an admission stem split by backticks in text",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the screening-scope stem split by backticks in text",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class stem split by backticks in text",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks in text",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one an admission stem split by backticks on a field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the policy stem split by backticks on a field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the class stem split by backticks on a field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks on a field line",
+   "status": "passed"
+  },
+  {
+   "name": "each family's pinned files and records are read by name and bytes a pinned file with other bytes refuses its own family only, whether or not the bytes name it",
+   "status": "passed"
+  },
+  {
+   "name": "each family's pinned files and records are read by name and bytes a pinned file's bytes under another name are swept",
+   "status": "passed"
+  },
+  {
+   "name": "each family's pinned files and records are read by name and bytes a family's record copied into a subdirectory is not its record and names it",
+   "status": "passed"
+  },
+  {
+   "name": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Built by scripts/build_public_egress_v2.py.",
+   "status": "passed"
+  },
+  {
+   "name": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Recorded by scripts/record_rfc5_project_documentation_act.py.",
+   "status": "passed"
+  },
+  {
+   "name": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Checked by scripts/check_public_admission_registry_git_source.py.",
+   "status": "passed"
+  },
+  {
+   "name": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did public-source- scripts/a_b.py -scope",
+   "status": "passed"
+  }
+ ]
+}
