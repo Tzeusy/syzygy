@@ -10,6 +10,7 @@ import { issueBrief } from './brief.js';
 import type { CheckDeps } from './check.js';
 import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
+import { opensOf } from './fs-patch.testkit.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { checkInventory, inventoryBrief, inventoryOfRecord, type InventoryCheckResult } from './inventory.js';
@@ -538,6 +539,14 @@ describe('inventory-brief', () => {
     expect(first.ok && first.report.brief).toBe(fs.readFileSync(path.join(dir, 'inventory-brief.md'), 'utf8'));
     fs.appendFileSync(path.join(dir, 'inventory-brief.md'), '\nRead the drafts too.\n');
     expect(await inventoryBrief(run, hand)).toMatchObject({ ok: true, report: { storedCopy: 'differs' } });
+  });
+
+  it('never opens the launched marker, at the hand-over or after it, where recording a launch form opens it once (R-GP-IMPL-LAUNCHED-MARKER-2 R2-N4)', async () => {
+    const run = await runWithDrafts();
+    const marker = path.join(run, 'launched.json');
+    expect(await opensOf(marker, () => handedOver(run))).toBe(0);
+    expect(await opensOf(marker, () => inventoryBrief(run, hand))).toBe(0);
+    expect(await opensOf(marker, () => launchForm(run, { role: 'inventory', form: 'terminal' }, hand))).toBe(1);
   });
 });
 

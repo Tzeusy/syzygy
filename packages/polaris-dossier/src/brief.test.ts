@@ -10,6 +10,7 @@ import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
 import { decideExecutionRule, type ExecutionChoice } from './execution-rule.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
+import { opensOf } from './fs-patch.testkit.js';
 import { GitObjectReadRefusal, type PinnedObjectReader } from './git-object-reader.js';
 import { writeLaunchedMarker } from './launched.js';
 import { parseRunConfig, type RunConfig } from './run-config.js';
@@ -217,6 +218,14 @@ describe('brief: the permitting arm, switched on with fixture ports', () => {
     expect(JSON.parse(read(run, 'brief.json')).executionRule).toMatchObject({ arm: 'sec-3', notPermittedBecause: [reason] });
     expect(read(run, 'brief.md')).not.toContain('You may build and run');
   });
+
+  it('opens the launched marker only to decide the arm: never with the arm off, once with it on (R-GP-IMPL-LAUNCHED-MARKER-2 R2-N4)', async () => {
+    const off = runDirectory(), on = runDirectory();
+    writeLaunchedMarker(off, RUN_ID, NOW);
+    writeLaunchedMarker(on, RUN_ID, NOW);
+    expect(await opensOf(path.join(off, 'launched.json'), () => issueBrief(off, { sources: sources(), openReader: tree(), now: () => NOW }))).toBe(0);
+    expect(await opensOf(path.join(on, 'launched.json'), () => issueBrief(on, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting(CHOICE) }))).toBe(1);
+  });
 });
 
 describe('brief: the permitting arm off, whatever the launched marker', () => {
@@ -224,7 +233,8 @@ describe('brief: the permitting arm off, whatever the launched marker', () => {
     ['no marker', (_run: string) => undefined],
     ['the launched marker', (run: string) => writeLaunchedMarker(run, RUN_ID, NOW)],
     ['an unreadable marker', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), 'null')],
-    // Neither may hang or exhaust issuance: the arm-off brief never opens the marker (R-GP-IMPL-LAUNCHED-MARKER-1 F1).
+    // Neither may hang or exhaust issuance (R-GP-IMPL-LAUNCHED-MARKER-1 F1). These cases show only that issuance returns with the same
+    // reason; that the arm-off brief never opens the marker is the open count in the permitting-arm cases (R-GP-IMPL-LAUNCHED-MARKER-2 R2-N4).
     ['a FIFO at the marker', (run: string) => execFileSync('mkfifo', [path.join(run, 'launched.json')])],
     ['a link to a character device at the marker', (run: string) => fs.symlinkSync('/dev/zero', path.join(run, 'launched.json'))],
   ])('with %s, carries only the arm-off reason', async (_name, plant) => {
