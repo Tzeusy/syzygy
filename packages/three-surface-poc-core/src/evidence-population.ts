@@ -1,8 +1,12 @@
-// Deliberate seam, not dead code: no module in this package calls it, but
-// docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md says any new page-size evidence
-// record carries a `population` block derived with `derivePopulationBlock`, and
-// the retained measurement script (docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json)
-// requires this module's compiled file by path. Keep the path.
+// Deliberate seam, not dead code: no module in this package calls it. Its
+// consumers, by path:line, are ones a census over code cannot see:
+//   docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md:382-383 -- any new page-size
+//     evidence record carries a `population` block derived with
+//     `derivePopulationBlock` from this path;
+//   docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json:8 -- its
+//     measurementScript requires this module's compiled file
+//     (dist/evidence-population.js) by path.
+// Keep the name, the path and the barrel export.
 //
 // The population block every retained page-size evidence record carries
 // (N3 slice 4, bead syzygy-u05.3, dossier "Population block in the M1
