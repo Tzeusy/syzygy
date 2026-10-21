@@ -13,7 +13,7 @@ import type { LaunchedMarkerState } from './launched.js';
  * credential probe (execution-choice.ts, credential-probe.ts) as its ports, but every brief carries SEC-3's rule, with that reason
  * stated, until the flag is switched on. Tests enable it with fixture ports. Syzygy cannot see who typed the choice or whether the owner attends, so both are the operator's declaration, labelled Inferred. */
 
-/** Off until S4 (syzygy-qkea.5) is merged and the flag is switched on. A caller that enables the arm must also supply its ports. */
+/** Off until the owner signs the CC-SEC-3 conforming amendment (syzygy-bpyt.1.6, owner direction GP-Q7); even then it flips only after the implementation is verified to disclose what REQ-polaris-generation-033 requires and a CC-REV-1 class-4 review passes. A caller that enables the arm must also supply its ports. */
 export const PERMITTING_ARM_ENABLED = false;
 export const PERMITTING_ARM_DISABLED_REASON = 'the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution';
 

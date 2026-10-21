@@ -9,10 +9,11 @@ import { RUN_LAYOUT } from './state-directory.js';
  * Before a brief that permits execution, at every later step and at close, Syzygy attempts, as the operator's user, to read every
  * credential its configuration holds for its typed adapters. The attempt is an operating-system open for reading; nothing is read from
  * a file that opens, so the probe never holds a credential. A file that opens is a breach; one the operating system refuses (`EACCES`,
- * `EPERM`) is not readable; one that does not exist is absent. Anything else, a path that is not a regular file, or a list source that
- * is unset, unreadable or malformed, fails closed. An explicitly declared empty list is valid (lead ruling, 2026-10-07): it says Syzygy
- * holds no typed-adapter credential on this host, the probe passes, and the disclosure says the list is operator-declared and Inferred. An
- * agent tool's permission or deny rule is never consulted: it does not change what the operating system lets the user read.
+ * `EPERM`) is not readable; one that does not exist is absent. Anything else, a path that is not a regular file, a list source that is
+ * unset, unreadable or malformed, or a configured typed adapter that declares a credential the repository's list does not hold, fails
+ * closed. An explicitly declared empty list is valid (lead ruling, 2026-10-07): it says Syzygy holds no typed-adapter credential on this
+ * host, the probe passes, and the disclosure says the list is operator-declared and Inferred. An agent tool's permission or deny rule is
+ * never consulted: it does not change what the operating system lets the user read.
  *
  * The list comes from a source the disclosure names, and that source lies within the agent sessions' write reach. The check observes
  * what the operator's user could read at the instant it ran; that nothing the session started could read a credential between checks,
@@ -107,22 +108,44 @@ export interface CredentialProbeResult {
 /** Credential paths that a typed adapter in this repository configures itself, added to every declared list. A sweep of `packages/`
  * and `apps/` on 2026-10-07 found none: no scheduler, version-control, CI or provider adapter here holds a credential path.
  * The cap1 daemon's `machine-credential.token` is deliberately absent: it authenticates clients to Syzygy, so it is not a credential
- * Syzygy holds for a typed adapter, and D9's credential condition does not name it. */
+ * Syzygy holds for a typed adapter, and D9's credential condition does not name it. Every path a configured adapter declares in
+ * `CONFIGURED_ADAPTER_DECLARATIONS` must also be here, or the probe fails closed. */
 export const CONFIGURED_ADAPTER_CREDENTIALS: readonly string[] = Object.freeze([]);
+
+/** A configured typed adapter's own statement of the credential paths it holds. */
+export interface AdapterCredentialDeclaration {
+  readonly adapter: string;
+  readonly credentials: readonly string[];
+}
+
+/** The typed adapters configured in this repository that declare a credential, each with the paths it declares. The probe refuses
+ * when any declared path is missing from `CONFIGURED_ADAPTER_CREDENTIALS`, so that hand-kept list cannot fall silently behind an
+ * adapter (owner direction GP-Q7, 2026-10-21). A sweep on 2026-10-22 found none: neither adapter-registry entry declares a credential,
+ * and no implementation source in `packages/` or `apps/` holds a typed-adapter credential path. */
+export const CONFIGURED_ADAPTER_DECLARATIONS: readonly AdapterCredentialDeclaration[] = Object.freeze([]);
 
 export const NO_ADAPTER_CREDENTIAL_DECLARED = 'no adapter credential declared; list operator-declared, Inferred';
 
-/** The probe `brief` and every later step call. It reads the union of the declared list and `configured`; an explicitly declared
- * empty list with nothing configured passes, with a disclosure that says so. Only an unset, unreadable or malformed source fails. */
-export function createCredentialProbe(source: CredentialListSource, open: OpenForRead = openForRead, configured: readonly string[] = CONFIGURED_ADAPTER_CREDENTIALS): CredentialProbe & { readonly last: () => CredentialProbeResult | null } {
+/** The probe `brief` and every later step call. It refuses first when a configured adapter declares a credential `configured` does
+ * not hold. Otherwise it reads the union of the declared list and `configured`; an explicitly declared empty list with nothing
+ * configured passes, with a disclosure that says so, and an unset, unreadable or malformed source fails. */
+export function createCredentialProbe(
+  source: CredentialListSource, open: OpenForRead = openForRead, configured: readonly string[] = CONFIGURED_ADAPTER_CREDENTIALS,
+  adapters: readonly AdapterCredentialDeclaration[] = CONFIGURED_ADAPTER_DECLARATIONS,
+): CredentialProbe & { readonly last: () => CredentialProbeResult | null } {
   let last: CredentialProbeResult | null = null;
   return {
     last: () => last,
     probe: async () => {
+      const described = `${source.describe}, together with ${configured.length} credential path${configured.length === 1 ? '' : 's'} configured by typed adapters in this repository`;
+      const unlisted = adapters.flatMap(({ adapter, credentials }) => credentials.filter((file) => !configured.includes(file)).map((file) => `${adapter}: ${file}`));
+      if (unlisted.length > 0) {
+        last = { source: described, outcomes: [] };
+        return { passed: false, why: `a configured typed adapter declares a credential the repository's adapter-credential list does not hold: ${unlisted.join(', ')}` };
+      }
       const list = source.list();
       if (!list.ok) { last = { source: source.describe, outcomes: [] }; return { passed: false, why: `${list.why} (source: ${source.describe})` }; }
       const paths = [...new Set([...list.paths, ...configured])];
-      const described = `${source.describe}, together with ${configured.length} credential path${configured.length === 1 ? '' : 's'} configured by typed adapters in this repository`;
       if (paths.length === 0) {
         last = { source: described, outcomes: [] };
         return { passed: true, checked: 0, source: `${NO_ADAPTER_CREDENTIAL_DECLARED} (${described})` };
