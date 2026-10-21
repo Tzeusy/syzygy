@@ -1,5 +1,5 @@
-// Test support: only this package's tests call it (model.test.ts), and the
-// package barrel does not export it. apps/three-surface-poc/src/temporary-directory.ts
+// Test support: only this package's tests call it (model.test.ts and
+// test-cleanup.test.ts), and the package barrel does not export it. apps/three-surface-poc/src/temporary-directory.ts
 // holds a near-duplicate for the app's own use.
 import { rmSync } from 'node:fs';
 

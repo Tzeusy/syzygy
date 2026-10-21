@@ -732,9 +732,6 @@ export function evaluateBodyReadAuthority(inputs: BodyReadAuthorityInputs): Body
 // Evaluation history is append-only: a later evaluation (for example one
 // whose A1 correlation succeeded) is a new entry and never rewrites the
 // state under which an earlier read occurred (PWB-REQ-005).
-// Test seam: no production code calls it; body-read-authority.test.ts pins the
-// append-only rule through it, and it is the pattern the retained-evaluations
-// design (docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md) reuses.
 export function appendEvaluation(
   history: readonly BodyReadAuthorityEvaluation[],
   evaluation: BodyReadAuthorityEvaluation,

@@ -9,10 +9,12 @@ export * from './effect-authority.js';
 export * from './materialization.js';
 export * from './test-artifact-verification.js';
 export * from './owner-act-record.js';
-// Unwired by design: the owner-ruled P-71 Q3 arm (b) drafter, a pure function that
-// writes no file (.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md:58).
-// No command renders its output yet. The note is here, not in owner-act-drafter.ts,
-// because docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json cites that
+// Unwired: the P-71 Q3 arm (b) drafter, pure, writes no file
+// (.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md:58).
+// Arm (b) has an operator command render its output
+// (docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md:115); that command is not built.
+// The note is here, not in owner-act-drafter.ts, because
+// docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json cites that
 // file's digest.
 export * from './owner-act-drafter.js';
 export * from './authority-artifact-fields.js';
