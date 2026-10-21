@@ -209,7 +209,7 @@ None of these is drafted here as an act. Each names what would be asked.
 | # | Decision | Unblocks | Bead |
 |---|---|---|---|
 | D1 | One implementation authorization covering the amendments signed 2026-10-01/02 (machine-view, opening-band, render-mode, item-depth, dismissal-expiry, missing-currency, container-shape profile) and tree-framing v1.0 (PR #220) | tree-form openings, the amendments' code, M8 re-shape | `syzygy-dov.35`, `syzygy-73e.20`, `syzygy-dov.8.2`, `syzygy-dov.8.3` |
-| D2 | The continuation phrase for M2 slice 5 | currency and briefing fields | `syzygy-dov.19` |
+| D2 | The continuation phrase for M2 slice 5 *(Marked 2026-10-21: given and recorded in `.syzygy/governance/decisions/PWB-M2-SLICE-5-IMPLEMENTATION-CONTINUATION-DIRECTION.md`; it unblocks M2 slice 5 and leaves the briefing field gated, see that record)* | currency and briefing fields | `syzygy-dov.19` |
 | D3 | Whether the P-71-Q5 return path (the write into Butlers' tracker) should ever be demonstrated. If yes: three ordered acts — a dated act naming the write, a registry `writeSurface` amendment, a fresh implementation authorization | M4 slice 6 | — |
 | D4 | The owner's cold-open walkthrough at the head step 10 names, then the judgment, then the cycle report | PWB 4.6, 5.3 | `syzygy-1z3.22`, `syzygy-1z3.25` |
 | D5 | Capability 1 on a real project: adopt the trusted-bootstrap consent candidate, a bounded implementation authorization, one project declaration and consent | CAP1 beyond `missing-declaration` | `syzygy-u2a` and children |
