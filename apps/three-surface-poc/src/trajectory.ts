@@ -1,6 +1,7 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   WORK_ITEM_GOVERNING_INTENT_REGION_ID,
+  WORK_ITEM_TITLES_REGION_ID,
   workItemGoverningIntentId,
   workItemVerificationId,
   workerChangeVerificationId,
@@ -161,6 +162,23 @@ function governingIntentRegion(model: PocModel, rendered: readonly TrajectoryLan
       <label class="narrow-label" for="narrow-governing-intent-unknown">Show only items whose governing intent is Unknown</label>`;
 }
 
+/** SEC-5: a card is named by its identifier; its title is never read, and
+ * the card says so under the one withheld-title disclosure. */
+function itemTitleWithheld(model: PocModel): string {
+  const unknown = unknownSubject(model, WORK_ITEM_TITLES_REGION_ID);
+  return `<span class="epistemic ${epistemicClassName(unknown.label)}" data-parity-field="work-item-title"${unknownMarker(WORK_ITEM_TITLES_REGION_ID, unknown)}>Title: withheld (SEC-5). ${unknownRoute(unknown)}</span>`;
+}
+
+/** The board-level statement of the withheld titles, with the reason. */
+function titlesWithheldRegion(model: PocModel): string {
+  if (model.workItems.kind !== 'observed') return '';
+  const unknown = unknownSubject(model, WORK_ITEM_TITLES_REGION_ID);
+  return `<p class="titles-withheld notice" data-parity-field="work-item-titles-withheld"${unknownMarker(WORK_ITEM_TITLES_REGION_ID, unknown)}>
+        Titles: ${escapeHtml(unknown.label)} for every observed work item. ${escapeHtml(unknown.reason)}
+        Reason: <code>${escapeHtml(unknown.closedReason)}</code>. ${unknownRoute(unknown)}
+      </p>`;
+}
+
 function itemCard(
   model: PocModel,
   item: TrajectoryLaneItem,
@@ -173,8 +191,8 @@ function itemCard(
   const governedBy = unknownSubject(model, workItemGoverningIntentId(item.id));
   return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-governed-by="${escapeHtml(governedBy.label)}" data-work-item-id="${escapeHtml(item.id)}">
     ${demonstrated ? '<span class="demo-badge">Demonstrated item</span>' : ''}
-    <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
-    <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
+    <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-id">${escapeHtml(item.id)}</a>
+    ${itemTitleWithheld(model)}
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
     ${itemGoverningIntent(item.id, governedBy)}
     ${itemVerification(model, item.id)}
@@ -204,7 +222,7 @@ const TRAJECTORY_STYLE = `
   .wi-card-demonstrated { border-color: var(--cyan); }
   .demo-badge { color: var(--cyan); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; }
   .demo-callout { max-width: 78ch; }
-  .governing-intent-count { max-width: 78ch; }
+  .governing-intent-count, .titles-withheld { max-width: 78ch; }
   .narrow-label { font-family: var(--font-mono); font-size: .78rem; margin-left: .3rem; }
   .narrow-toggle:focus-visible + .narrow-label { outline: 2px solid var(--cyan); outline-offset: 2px; }
   .narrow-toggle:checked ~ .board .wi-card:not([data-governed-by="Unknown"]) { display: none; }
@@ -266,6 +284,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?:
         <span data-parity-field="trajectory-excluded-count">${trajectory.excludedCount}</span> items are outside this selection and not shown.
       </p>
       ${governingIntentRegion(model, trajectory.rendered)}
+      ${titlesWithheldRegion(model)}
       ${demonstratedCallout}
       <div class="board" role="group" aria-label="Work-item board by status column">${columns}</div>`;
   }
