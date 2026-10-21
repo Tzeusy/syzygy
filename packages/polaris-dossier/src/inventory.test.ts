@@ -451,6 +451,17 @@ describe('the inventory of record', () => {
     expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
   });
 
+  it('stops counting a declared launch once the run\'s launched marker is present but unreadable (syzygy-bpyt.8.8)', async () => {
+    const run = await runWithDrafts();
+    const dir = await handedOver(run);
+    writeInventory(dir, validInventory());
+    passed(await checkInventory(run, {}, deps()));
+    await launchForm(run, { role: 'inventory', form: 'terminal' }, hand);
+    expect(await inventoryOfRecord(run, counting)).toMatchObject({ counts: true });
+    fs.writeFileSync(path.join(run, 'launched.json'), '{"format": "polaris-dossier-launched/2"}');
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a countable launch (the run\'s launched marker is present but unreadable, so none counts) of that session\'s prompt' });
+  });
+
   it('does not count an inventory whose session identifier a later draft revision declares', async () => {
     const run = await runWithDrafts();
     const dir = await handedOver(run);
