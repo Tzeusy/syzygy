@@ -1,0 +1,307 @@
+{
+ "tool": "sweep_waits.py",
+ "file": "main.test.ts",
+ "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+ "fileSha256": "1c9a992991cd200e18659fc0da170aae35b05e3de9eda29e34619e7d2fb382ab",
+ "constants": {
+  "WAIT_MS": 10000,
+  "TEST_TIMEOUT_MS": 30000
+ },
+ "startedDefaultBoundMs": 10000,
+ "itBlocks": 24,
+ "viWaitForCalls": 1,
+ "blocksWithAWait": 11,
+ "blocksWithAnExplicitTestTimeout": 11,
+ "blocksWithAWaitAndAnExplicitTestTimeout": 11,
+ "boundedBlocks": 11,
+ "waitingBlocksNotBounded": [],
+ "blocks": [
+  {
+   "line": 210,
+   "name": "prints the usage on --help and exits 0 without touching a collaborator",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 220,
+   "name": "refuses an unknown argument with the usage on stderr and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 229,
+   "name": "refuses a repository path that cannot be resolved before the gate is consulted",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 239,
+   "name": "a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 256,
+   "name": "the shipped collaborators reject a directory that is not the registered repository",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 265,
+   "name": "names a dirty observer checkout and starts no daemon",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 273,
+   "name": "names a git failure with its exit status, never its message",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 280,
+   "name": "lets a horizon failure at startup reject, as the script it replaced did",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 287,
+   "name": "reports a model failure by its observation kind and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 294,
+   "name": "reports a bare observation error by its kind alone",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 301,
+   "name": "reports an observation error with a detail and no artifact path without a placeholder",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 308,
+   "name": "reports an unexpected failure by its class only",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 315,
+   "name": "reports a daemon that did not start with its named kind and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 325,
+   "name": "prints the banner, registers the three route groups, and closes once on the first signal",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 368,
+   "name": "prints no walkthrough binding while readiness is not evaluated",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 380,
+   "name": "defaults the state directory to a per-repository directory under the OS temp directory",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 391,
+   "name": "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+   "waits": [
+    {
+     "kind": "vi.waitFor",
+     "boundMs": 10000,
+     "explicit": true
+    },
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 20000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 408,
+   "name": "prints no console prompt and ignores Enter without --watch",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 439,
+   "name": "observes, builds, names, materializes and re-evaluates against the bound locator",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 480,
+   "name": "reads the exact requirement text from the bound repository",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 500,
+   "name": "resolves a relative --state-dir for the daemon and for the materialize action alike",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 517,
+   "name": "names the credential provision and the latest named re-evaluation, before and after a materialize",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 542,
+   "name": "reports a run that finished first, at once and by name",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 10000,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 10000,
+   "testTimeoutMs": 30000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  },
+  {
+   "line": 550,
+   "name": "gives up after its bound on a run that neither serves nor finishes",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": 50,
+     "explicit": true
+    }
+   ],
+   "sumOfWaitBoundsMs": 50,
+   "testTimeoutMs": 2000,
+   "testTimeoutExplicit": true,
+   "bounded": true
+  }
+ ]
+}
