@@ -37,6 +37,7 @@ const probe = (passed: boolean): CredentialProbe & { calls: number } => {
 const inputs = (over: Partial<ExecutionInputs> = {}): ExecutionInputs => ({
   role: 'authoring', runDir: `/state/${RUN}`, runId: RUN, pinnedRevision: REV, operatorIsOwner: true, sec3: SEC3, now: NOW,
   d9: async () => ({ state: 'ok', record: 'D9-ACT' }),
+  launched: 'absent',
   permitting: { enabled: true, choices: choices(CHOICE), probe: probe(true) },
   ...over,
 });
