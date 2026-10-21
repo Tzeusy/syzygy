@@ -449,6 +449,11 @@ CAMPAIGNS = (
         "Redis v4 re-measure refusal record",
         r"R-PR491-REDIS-REMEASURE-\d+-RAW\.md",
     ),
+    campaign(
+        "pwb-m2-slice5-continuation",
+        "M2 slice 5 continuation packet",
+        r"R-PWB-M2-SLICE5-CONTINUATION-PACKET(?:-\d+)?-RAW\.md",
+    ),
 )
 
 
