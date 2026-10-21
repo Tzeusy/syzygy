@@ -529,6 +529,31 @@ def p115_exception(failure: BaseException) -> dict:
                         # OSError accepts non-path diagnostic objects too.
                         node[field], evidence = repr(value), {"type": kind, "representation": "repr"}
                 node[field + "Evidence"] = evidence
+        if isinstance(error, subprocess.CalledProcessError):
+            # Native captures are diagnostic evidence, including empty/absent
+            # values and arbitrary bytes. Do not normalize or replacement-decode.
+            def captured(value):
+                field = {"type": type(value).__module__ + "." + type(value).__qualname__}
+                if value is None:
+                    field["value"] = None
+                elif isinstance(value, bytes):
+                    field["bytesHex"] = value.hex()
+                elif isinstance(value, str):
+                    field["text"] = value
+                elif isinstance(value, os.PathLike):
+                    raw = os.fspath(value)
+                    field["path"] = ({"type": "builtins.bytes", "bytesHex": raw.hex()}
+                                     if isinstance(raw, bytes) else {"type": "builtins.str", "text": raw})
+                else:
+                    field["representation"] = repr(value)
+                return field
+            command = error.cmd
+            command_evidence = ({"type": type(command).__module__ + "." + type(command).__qualname__,
+                                 "items": [captured(value) for value in command]}
+                                if isinstance(command, (list, tuple)) else captured(command))
+            node["process"] = {"returncode": error.returncode, "command": command_evidence,
+                               "stdout": captured(error.stdout), "output": captured(error.output),
+                               "stderr": captured(error.stderr)}
         nodes.append(node)
     return {"root": 0, "nodes": nodes, "secondaryExceptions": getattr(failure, "_p115_secondary", []),
             "traceback": "".join(traceback.format_exception(type(failure), failure,

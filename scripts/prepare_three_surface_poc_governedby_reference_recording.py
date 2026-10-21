@@ -132,19 +132,24 @@ def operative_markers(body: str, markers: tuple[str, ...]) -> dict[str, list[int
     containers = {"pre", "code", "listing", "template"}
     raw_tags = {"script", "style", "textarea", "title", "xmp", "iframe", "noembed", "noframes"}
     terminal_tags = {"plaintext", "noscript"}  # No portable later closure proves eligibility.
-    tag_start = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[\s/>]|$)")
-    tag = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[\s/>])(?:[^'\">]|'[^']*'|\"[^\"]*\")*>")
+    tag_start = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[ \t\n\f\r/>]|$)")
+    tag = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[ \t\n\f\r/>])(?:[^'\">]|'[^']*'|\"[^\"]*\")*>")
     special = re.compile(r"<!--|-->|<")
-    script_open = re.compile(r"<script(?=[\s/>]|$)", re.I)
+    script_open = re.compile(r"<script(?=[ \t\n\f\r/>]|$)", re.I)
     fence, contexts = None, []
     comments, offset, consumed = 0, 0, 0
     ambiguous = False
-    for raw in body.splitlines(keepends=True):
+    # CommonMark physical endings are CRLF, lone CR or LF. Other Unicode
+    # whitespace stays in its original slice; no normalization changes offsets.
+    for physical in re.finditer(r"[^\r\n]*(?:\r\n|\r|\n|$)", body):
+        raw = physical[0]
+        if not raw:
+            continue
         line = raw.rstrip("\r\n")
         match = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", line)
         if fence is not None:
             if (match and match[1][0] == fence[0] and len(match[1]) >= fence[1]
-                    and not match[2].strip()):
+                    and not match[2].strip(" \t")):
                 fence = None
             offset += len(raw)
             continue
@@ -323,12 +328,58 @@ def builder_run(root: Path, mode: str) -> tuple[list[str], str]:
     return ([] if done.returncode == 0 else [f"frozen P115 builder {mode} failed: {output.strip()}"]), output
 
 
+
+def governing_inputs(root: Path) -> tuple[tuple[str, str], ...]:
+    """Names and baseline hashes come only from the immutable C4 object."""
+    objects = root if (root / ".git").exists() else ROOT
+    path = CANDIDATE / "evidence/source-return/SOURCE-BINDINGS.json"
+    data = json.loads(git(objects, "show", f"{CORE_COMMIT}:{path.as_posix()}"))
+    rows = tuple((row["path"], row["sha256"]) for row in data["bindings"]
+                 if row.get("path", "").startswith("openspec/changes/"))
+    if (data["baseline"] != BASE or len(rows) != 8 or len({p for p, _sha in rows}) != 8
+            or any(not p.endswith("/spec.md") or ".." in Path(p).parts
+                   or not re.fullmatch(r"[0-9a-f]{64}", sha) for p, sha in rows)):
+        raise ValueError("frozen P115 governing input population differs from eight baseline specifications")
+    return rows
+
+
+def governing_input_findings(root: Path, *, proposed_poc: bool = False) -> list[str]:
+    """Current evidence only; a byte match never establishes owner authority.
+
+    The strict signed leaf separately validates the entire transaction. Only
+    inside that branch may the intended POC spec use its proposed manifest row.
+    Reconciliation snapshots are checked at their own supplied root too.
+    """
+    expected = dict(governing_inputs(root))
+    if proposed_poc:
+        expected[SUBJECTS[-1].as_posix()] = next(
+            sha for sha, path in manifest_rows(root) if path == SUBJECTS[-1].as_posix())
+    findings = []
+    for path, sha in expected.items():
+        target = root / path
+        try:
+            # A symlinked parent must not redirect a newly captured source read.
+            parent = root
+            for part in Path(path).parts[:-1]:
+                parent /= part
+                if not stat.S_ISDIR(parent.lstat().st_mode):
+                    raise ValueError("parent is not a nonsymlink directory")
+            if not stat.S_ISREG(target.lstat().st_mode):
+                raise ValueError("not a regular nonsymlink file")
+            if digest(target.read_bytes()) != sha:
+                findings.append(f"current P115 governing input differs: {path}")
+        except (OSError, ValueError) as error:
+            findings.append(f"current P115 governing input unavailable: {path}: {error}")
+    return findings
+
+
 def candidate_findings(root: Path) -> list[str]:
     state, findings = family_state(root)
     if state != "ABSENT":
         return findings or ["P115 candidate requires an absent transaction family"]
     findings = core_findings(root)
     manifest_rows(root)
+    findings.extend(governing_input_findings(root))
     if not findings:
         problems, _output = builder_run(root, "--check")
         findings.extend(problems)
@@ -360,6 +411,7 @@ def binding_findings(root: Path) -> list[str]:
         if state != "CANONICAL_POPULATION":
             return findings or ["P115 dedicated sign-off record is absent"]
         findings = core_findings(root)
+        findings.extend(governing_input_findings(root, proposed_poc=True))
         count = consumption_unknowns(root)
         if count:
             findings.append(f"signed recognition remains gated by {count} undecidable requirement-consumption entries")
@@ -429,6 +481,7 @@ def validation_inputs(root: Path) -> set[str]:
     if any(row["kind"] != "regular" for row in population["files"].values()):
         raise ValueError("P115 validation snapshot refuses a nonregular reserved-family entry")
     paths = {(RECORD.parent / name).as_posix() for name in population["files"]}
+    paths |= {path for path, _sha in governing_inputs(root)}
     paths |= set(core_paths(root)) | {RECORD.as_posix(), AGGREGATE.as_posix(),
         BASE_RECORD.as_posix(),
         ".syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md",
@@ -1674,7 +1727,62 @@ def marker_context_selftest(root: Path, expect) -> None:
             "vectorCount": len(rows), "vectors": rows, "passed": passed}, sort_keys=True))
 
 
-def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlier: dict) -> None:
+
+    # Literal independent tables: no SUT splitter/scanner computes an oracle.
+    begin, end = "<!-- begin -->", "<!-- end -->"
+    plain = begin + "\n" + end + "\n"
+    finite = {
+        "physical marker CR LF CRLF boundaries": [
+            ("LF", begin + "\n" + end + "\n", {begin: [0], end: [15]}),
+            ("CR", begin + "\r" + end + "\r", {begin: [0], end: [15]}),
+            ("CRLF", begin + "\r\n" + end + "\r\n", {begin: [0], end: [16]}),
+        ],
+        "physical marker nonline prefix suffix exclusions": [],
+        "physical fence trailers and source order": [
+            ("CR-fence", "```\rexample\r```\r" + plain, {begin: [16], end: [31]}),
+            ("CRLF-multiline-pre", '<pre\r\n>example</pre>\r\n' + plain, {begin: [22], end: [37]}),
+            ("ordinary-fenced", "```text\nexample\n" + plain + "```\n", {begin: [], end: []}),
+            ("false-close-LS", "```text\nexample\n```\u2028" + plain + "```\n", {begin: [], end: []}),
+            ("false-close-LS-real-LF", "```text\nexample\n```\u2028\n" + plain + "```\n", {begin: [], end: []}),
+            ("ASCII-space-tab-close", "```text\nexample\n``` \t\n" + plain, {begin: [22], end: [37]}),
+        ],
+        "HTML named close exact ASCII separators": [],
+    }
+    for codepoint in (0x000B, 0x000C, 0x001C, 0x001D, 0x001E, 0x0085, 0x2028, 0x2029):
+        char = chr(codepoint)
+        finite["physical marker nonline prefix suffix exclusions"].extend((
+            (f"{codepoint:04X}-before-begin", "X" + char + begin + "\n" + end + "\n", {begin: [], end: [17]}),
+            (f"{codepoint:04X}-after-begin", begin + char + "X\n" + end + "\n", {begin: [], end: [17]}),
+            (f"{codepoint:04X}-before-end", begin + "\nX" + char + end + "\n", {begin: [0], end: []}),
+            (f"{codepoint:04X}-after-end", begin + "\n" + end + char + "X\n", {begin: [0], end: []}),
+        ))
+    for tag_name, offsets in (("pre", (20, 35)), ("script", (26, 41)), ("textarea", (30, 45))):
+        for codepoint in (0x0009, 0x000A, 0x000C, 0x000D, 0x0020):
+            finite["HTML named close exact ASCII separators"].append((
+                f"{tag_name}-ASCII-{codepoint:04X}",
+                f"<{tag_name}>example</{tag_name}{chr(codepoint)}>\n" + plain,
+                {begin: [offsets[0]], end: [offsets[1]]}))
+        for codepoint in (0x000B, 0x001C, 0x001D, 0x001E, 0x0085, 0x00A0, 0x2028, 0x2029):
+            finite["HTML named close exact ASCII separators"].append((
+                f"{tag_name}-nonseparator-{codepoint:04X}",
+                f"<{tag_name}>example</{tag_name}{chr(codepoint)}>\n" + plain, {begin: [], end: []}))
+    for name, vectors in finite.items():
+        rows = []
+        for label, body, expected in vectors:
+            actual = operative_markers(body, (begin, end))
+            rows.append({"vector": label, "old": plain, "new": body, "expectedOffsets": expected,
+                "actualOffsets": actual, "rawCounts": [body.count(begin), body.count(end)],
+                "passed": actual == expected and body.count(begin) == 1 and body.count(end) == 1})
+        passed = all(row["passed"] for row in rows)
+        expect(name, passed)
+        print("P115-MARKER-CONTEXT-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+            "scope": "pure finite eligibility only; no MAIN/signed result", "ranAt":
+            git(root, "rev-parse", "HEAD").decode().strip(), "toolSHA256": digest(Path(__file__).read_bytes()),
+            "vectorCount": len(rows), "vectors": rows, "passed": passed}, sort_keys=True))
+
+
+def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlier: dict,
+                            *, only: set[str] | None = None) -> None:
     """Finite family vectors exercise real readers and both existing operations.
 
     Every fixture commit/record is synthetic. Native metadata/read faults are
@@ -1725,6 +1833,10 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
         ("POP context pre close reopen", "pre-close-reopen", None),
         ("POP context raw xmp block", "xmp", None),
         ("POP context quoted multiline mixed raw", "mixed-raw", None),
+        ("POP boundary LS prefixed begin", "ls-begin", None),
+        ("POP boundary VT prefixed end", "vt-end", None),
+        ("POP boundary false fence LS", "false-fence-ls", None),
+        ("POP boundary invalid pre close LS", "invalid-pre-close-ls", None),
     )
     def setup(installed):
         for path in (unsupported, alias, extra):
@@ -1764,6 +1876,8 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                    and control_state == control_label and control_preview["state"] == control_label
                    and not control_preview["candidateFindings"])
         for label, mutation, path in vectors:
+            if only is not None and label not in only:
+                continue
             setup(installed)
             start = {p: (tree / p).read_bytes() if (tree / p).exists() else None
                      for p in (AGGREGATE, RECORD, *((path,) if path else ()))}
@@ -1792,6 +1906,10 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                     "prefixed": aggregate + block.replace(MARKER, "Example: " + MARKER),
                     "suffixed": aggregate + block.replace(END_MARKER, END_MARKER + " example"),
                     "pre": aggregate + "<pre>\n" + block + "</pre>\n",
+                    "ls-begin": aggregate + block.replace(MARKER, "Example\u2028" + MARKER),
+                    "vt-end": aggregate + block.replace(END_MARKER, "Example\v" + END_MARKER),
+                    "false-fence-ls": aggregate + "```text\nexample\n```\u2028" + block + "```\n",
+                    "invalid-pre-close-ls": aggregate + "<pre>example</pre\u2028>\n" + block,
                     "pre-reopened": aggregate + "<pre></pre><pre>\n" + block + "</pre>\n",
                     "pre-close-reopen": aggregate + "<pre>\n</pre><pre>\n" + block + "</pre>\n",
                     "xmp": aggregate + "<xmp>\n" + block + "</xmp>\n",
@@ -1830,7 +1948,8 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                         signed=bool(signed_findings(tree)) and not is_signed(tree),
                         chain=bool(chain_findings(tree)), historical=bool(historical_run(tree, "--check")[0]))
                     if mutation in {"backtick", "tilde", "indented", "nested", "prefixed", "suffixed", "pre",
-                                    "pre-reopened", "pre-close-reopen", "xmp", "mixed-raw"}:
+                                    "pre-reopened", "pre-close-reopen", "xmp", "mixed-raw",
+                                    "ls-begin", "vt-end", "false-fence-ls", "invalid-pre-close-ls"}:
                         frontiers["operativeContext"] = any("not an operative standalone line" in f for f in findings)
                     try:
                         inputs = validation_inputs(tree)
@@ -1902,14 +2021,15 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                 "new": mutation, "entry": None if path is None else str(path), "familyState": state,
                 "findings": findings, "checkState": {"state": check_label, "findings": check_findings},
                 "preview": preview_result, "frontiers": frontiers, "codes": codes, "consumerErrors": consumer_errors, "governanceReports": governance_reports, "output": outputs}, sort_keys=True))
-    setup(False)
-    unrelated = f"<!-- versioned-signoff:{KEY}-different:v2.0 -->"
-    saved = (tree / AGGREGATE).read_bytes()
-    (tree / AGGREGATE).write_bytes(saved + unrelated.encode())
-    expect("POP companion extended different package token stays outside family",
-           family_state(tree) == ("ABSENT", []) and not transaction_present(tree))
-    mutation_receipt(tree, "POP companion extended different package token stays outside family",
-                     {AGGREGATE: saved}, {AGGREGATE: saved + unrelated.encode()}, "exact package token boundary")
+    if only is None or "POP companion extended different package token stays outside family" in only:
+        setup(False)
+        unrelated = f"<!-- versioned-signoff:{KEY}-different:v2.0 -->"
+        saved = (tree / AGGREGATE).read_bytes()
+        (tree / AGGREGATE).write_bytes(saved + unrelated.encode())
+        expect("POP companion extended different package token stays outside family",
+               family_state(tree) == ("ABSENT", []) and not transaction_present(tree))
+        mutation_receipt(tree, "POP companion extended different package token stays outside family",
+                         {AGGREGATE: saved}, {AGGREGATE: saved + unrelated.encode()}, "exact package token boundary")
     setup(True)
 
 
@@ -1971,6 +2091,243 @@ def binding_failure_selftest(root: Path, tree: Path, expect) -> None:
         finally:
             for path, body in saved.items():
                 (tree / path).write_bytes(body)
+
+
+
+def governing_source_selftest(root: Path, tree: Path, expect, before: dict, *, only=None) -> None:
+    """Exact independent eight-path population, current bytes and own snapshots."""
+    import record_versioned_signoff as recorder
+    import check_spec_reconciliation as reconciliation
+    specs = tuple(Path("openspec/changes") / rel for rel in (
+        "cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md",
+        "polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+        "polaris-manifesto-generation/specs/polaris-generation/spec.md",
+        "polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+        "polaris-non-governed-narrative-profile/specs/polaris-generation/spec.md",
+        "polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+        "project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+        "three-surface-poc-experience/specs/three-surface-poc-experience/spec.md"))
+    pkg = recorder.real_packages()[KEY]
+    signed = {p: (tree / p).read_bytes() for p in (*SUBJECTS, RECORD, AGGREGATE)}
+    source = {p: (tree / p).read_bytes() for p in specs}
+    fields = recorder.parse_record(signed[RECORD].decode())
+    block = recorder.render_aggregate(pkg, VERSION, fields["Date"], fields["Review"], fields["Review verdict"], None)
+    aggregate = signed[AGGREGATE].decode().replace(block, "").rstrip("\n") + "\n"
+    def setup(installed):
+        for path, body in source.items():
+            target = tree / path
+            if target.is_symlink() or target.is_file(): target.unlink()
+            elif target.exists(): target.rmdir()
+            target.write_bytes(body)
+        for path in SUBJECTS: (tree / path).write_bytes(signed[path] if installed else before[path])
+        (tree / AGGREGATE).write_bytes(signed[AGGREGATE] if installed else aggregate.encode())
+        if installed: (tree / RECORD).write_bytes(signed[RECORD])
+        else: (tree / RECORD).unlink(missing_ok=True)
+    def commit():
+        git(tree, "add", "--all")
+        git(tree, "-c", "user.name=P115 synthetic governing input", "-c", "user.email=fixture@invalid",
+            "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "--allow-empty", "-m",
+            "Synthetic current governing input fixture; no owner action")
+    def entry(operation):
+        saved_root = recorder.ROOT
+        out = io.StringIO()
+        argv = (["--record", KEY, "--version", VERSION, "--date", fields["Date"], "--review", fields["Review"],
+                 "--owner-selection-quote", "Synthetic current governing input fixture; no owner action"]
+                if operation == "record" else ["--check", KEY, "--version", VERSION])
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        try:
+            recorder.ROOT = tree
+            with contextlib.redirect_stdout(out):
+                code = pkg.apply(tree) if operation == "apply" else recorder.main(argv)
+        finally: recorder.ROOT = saved_root
+        return {"operation": operation, "entrypoint": "Package.apply" if operation == "apply" else "recorder.main",
+            "argv": None if operation == "apply" else argv, "cwd": str(tree), "callerPid": __import__("os").getpid(),
+            "startedAt": start, "endedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "exit": code, "stdout": out.getvalue()}
+    for installed in (False, True):
+        for path in specs[:-1] if installed else specs:
+            name = ("governing signed current input " if installed else "governing unsigned current input ") + path.parts[2]
+            if only is not None and name not in only: continue
+            setup(installed)
+            old = (tree / path).read_bytes()
+            changed = (old.replace(b"each have an explicit byte ceiling.", b"each have no byte ceiling.")
+                       if path.parts[2] == "polaris-project-wide-butlers-model" else old + b"\nSynthetic current source drift.\n")
+            assert changed != old
+            (tree / path).write_bytes(changed)
+            commit()
+            physical = {p: recorder.p115_read(tree / p) for p in (*SUBJECTS, RECORD, AGGREGATE)}
+            head, index, tags = git(tree, "rev-parse", "HEAD"), git(tree, "ls-files", "--stage", "-z"), git(tree, "tag", "--list")
+            findings, label = check_state(tree)
+            result = preview(tree, fields["Review"])
+            operations, snapshot_result = [], None
+            if installed:
+                operations.append(entry("check"))
+                with tempfile.TemporaryDirectory(prefix="p115-current-source-snapshot-") as temp:
+                    snapshot = Path(temp) / "snapshot"
+                    reconciliation.scratch(tree, snapshot)
+                    snapshot_result = {"withoutGit": not (snapshot / ".git").exists(),
+                        "findings": binding_findings(snapshot), "signed": is_signed(snapshot)}
+                passed = (bool(binding_findings(tree)) and not is_signed(tree) and operations[0]["exit"] == 1
+                          and snapshot_result["withoutGit"] and snapshot_result["findings"] and not snapshot_result["signed"])
+            else:
+                passed = not is_signed(tree)
+                for operation in ("record", "apply"):
+                    row = entry(operation)
+                    row["noWrites"] = all(recorder.p115_read(tree / p) == value for p, value in physical.items())
+                    passed = passed and row["exit"] == 1 and row["noWrites"]
+                    operations.append(row)
+                    # Only this test's outputs are restored between independent operations.
+                    for p, value in physical.items():
+                        if value is None: (tree / p).unlink(missing_ok=True)
+                        else: (tree / p).write_bytes(value)
+            passed = bool(passed and findings and label == "Unknown; P115 state unverified"
+                and result["state"] == label and not result["recordingReady"]
+                and (tree / path).read_bytes() == changed and git(tree, "rev-parse", "HEAD") == head
+                and git(tree, "ls-files", "--stage", "-z") == index and git(tree, "tag", "--list") == tags)
+            expect(name, passed)
+            mutation_receipt(tree, name, {path: old}, {path: changed}, "exact current governing input; historical object is insufficient")
+            print("P115-GOVERNING-INPUT-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+                "sourceHead": git(root, "rev-parse", "HEAD").decode().strip(), "ranAt": head.decode().strip(),
+                "currentPath": str(path), "findings": findings, "state": label, "preview": result,
+                "operations": operations, "snapshot": snapshot_result, "passed": passed}, sort_keys=True))
+    setup(True)
+    path = specs[0]
+    for kind in ("absent", "directory", "symlink"):
+        name = "governing current input refuses " + kind
+        if only is not None and name not in only: continue
+        target = tree / path
+        target.unlink()
+        if kind == "directory": target.mkdir()
+        elif kind == "symlink":
+            sibling = tree / ".git" / "p115-source-same-bytes"
+            sibling.write_bytes(source[path]); target.symlink_to(sibling)
+        findings = binding_findings(tree)
+        passed = bool(findings and not is_signed(tree) and check_state(tree)[1] == "Unknown; P115 state unverified")
+        expect(name, passed)
+        print("P115-GOVERNING-INPUT-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+            "new": kind, "oldSHA256": digest(source[path]), "findings": findings, "passed": passed}, sort_keys=True))
+        if target.is_dir() and not target.is_symlink(): target.rmdir()
+        else: target.unlink(missing_ok=True)
+        target.write_bytes(source[path])
+    setup(True)
+    name = "governing exact eight snapshot and capture inputs"
+    if only is None or name in only:
+        expected = {str(p) for p in specs}
+        inputs = validation_inputs(tree)
+        passed = expected <= inputs and is_signed(tree)
+        expect(name, passed)
+        print("P115-GOVERNING-INPUT-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+            "expectedPaths": sorted(expected), "capturedPaths": sorted(expected & inputs), "passed": passed}, sort_keys=True))
+
+
+def process_diagnostic_selftest(root: Path, expect, *, only=None) -> None:
+    """Typed native captures plus real MAIN boundaries; no gate-result stubs."""
+    import record_versioned_signoff as recorder
+    from unittest import mock
+    name = "process diagnostic literal capture graph"
+    if only is None or name in only:
+        vectors = (
+            ("bytes", b"\x00\xffOUT\r\n", b"\x80ERR\n", {"type": "builtins.bytes", "bytesHex": "00ff4f55540d0a"}, {"type": "builtins.bytes", "bytesHex": "804552520a"}),
+            ("text", "OUT\u2028", "ERR\u2029", {"type": "builtins.str", "text": "OUT\u2028"}, {"type": "builtins.str", "text": "ERR\u2029"}),
+            ("absent", None, None, {"type": "builtins.NoneType", "value": None}, {"type": "builtins.NoneType", "value": None}),
+            ("empty-bytes", b"", b"", {"type": "builtins.bytes", "bytesHex": ""}, {"type": "builtins.bytes", "bytesHex": ""}),
+            ("empty-text", "", "", {"type": "builtins.str", "text": ""}, {"type": "builtins.str", "text": ""}),
+            ("nested-suppressed", b"OUT", b"ERR", {"type": "builtins.bytes", "bytesHex": "4f5554"}, {"type": "builtins.bytes", "bytesHex": "455252"}),
+        )
+        rows = []
+        for label, stdout, stderr, expected_out, expected_err in vectors:
+            cause = subprocess.CalledProcessError(-7, ["git", "synthetic"], output=stdout, stderr=stderr)
+            failure = cause
+            if label == "nested-suppressed":
+                failure = RuntimeError("Synthetic outer primary")
+                failure.__cause__ = cause; failure.__context__ = cause; failure.__suppress_context__ = True
+            snapshot = recorder.p115_exception(failure)
+            native = snapshot["nodes"][-1]
+            expected = {"returncode": -7, "command": {"type": "builtins.list", "items": [
+                {"type": "builtins.str", "text": "git"}, {"type": "builtins.str", "text": "synthetic"}]},
+                "stdout": expected_out, "output": expected_out, "stderr": expected_err}
+            passed = native.get("process") == expected and json.loads(json.dumps(snapshot)) == snapshot
+            if label == "nested-suppressed":
+                passed = passed and snapshot["nodes"][0]["cause"] == 1 and snapshot["nodes"][0]["context"] == 1 and snapshot["nodes"][0]["suppressContext"] is True
+            rows.append({"vector": label, "expected": expected, "actual": snapshot, "passed": passed})
+        expect(name, all(r["passed"] for r in rows))
+        print("P115-PROCESS-DIAGNOSTIC-EVIDENCE " + json.dumps({"case": name, "scope": "pure exception projection",
+            "vectorCount": len(rows), "vectors": rows, "passed": all(r["passed"] for r in rows)}, sort_keys=True))
+    cases = ("process diagnostic early native index", "process diagnostic late wrapped native error", "governing captured input late drift")
+    if only is not None and not set(cases) & only: return
+    paths = (*SUBJECTS, RECORD, AGGREGATE)
+    raw = "docs/reviews/R-P115-PROCESS-SELFTEST-RAW.md"
+    with tempfile.TemporaryDirectory(prefix="p115-process-fixtures-") as temp:
+        template = Path(temp) / "template"
+        subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(root), str(template)], check=True, capture_output=True)
+        for filename in (Path(__file__).name, "record_versioned_signoff.py"):
+            shutil.copyfile(root / "scripts" / filename, template / "scripts" / filename)
+        (template / raw).write_text(f"# Synthetic process fixture — {KEY}\nReviewed commit: {CORE_COMMIT}\nManifest SHA-256: {MANIFEST_SHA256}\nVerdict: CONFIRM\n\n## Findings\n\nNo findings. Synthetic only; no owner action.\n")
+        git(template, "add", "--all")
+        git(template, "-c", "user.name=P115 synthetic process", "-c", "user.email=fixture@invalid", "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "-m", "Synthetic native diagnostic fixtures; no owner action")
+        for name in cases:
+            if only is not None and name not in only: continue
+            tree = Path(temp) / name.replace(" ", "-")
+            subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(template), str(tree)], check=True, capture_output=True)
+            before = {p: recorder.p115_read(tree / p) for p in paths}
+            head, index, tags = git(tree, "rev-parse", "HEAD"), git(tree, "ls-files", "--stage", "-z"), git(tree, "tag", "--list")
+            index_path = Path(git(tree, "rev-parse", "--path-format=absolute", "--git-path", "index").decode().strip())
+            old_index = index_path.read_bytes()
+            native_argv = (["git", "--no-optional-locks", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignore-submodules=none"]
+                           if name == cases[0] else ["git", "rev-parse", "--verify", "p115-synthetic-missing-object"])
+            if name == cases[0]: index_path.write_bytes(b"DIRC")
+            control = subprocess.run(native_argv, cwd=tree, capture_output=True)
+            assert control.returncode == 128 and control.stdout == b""
+            assert control.stderr == (b"fatal: .git/index: index file smaller than expected\n" if name == cases[0] else b"fatal: Needed a single revision\n")
+            events = []
+            original_link = recorder.os.link
+            foreign_path = Path("openspec/changes/cap1-trusted-bootstrap-consent/specs/project-registration-and-honest-shape-visibility/spec.md")
+            foreign_before = (tree / foreign_path).read_bytes()
+            foreign = foreign_before + b"\nSynthetic foreign governing input after capture.\n"
+            def link(source, destination, *args, **kwargs):
+                if Path(destination) == tree / RECORD:
+                    events.append("native dedicated link barrier reached")
+                    if name == cases[1]:
+                        try:
+                            subprocess.run(native_argv, cwd=tree, capture_output=True, check=True)
+                        except subprocess.CalledProcessError as native:
+                            raise RuntimeError("P115 synthetic native primary") from native
+                    if name == cases[2]: (tree / foreign_path).write_bytes(foreign)
+                return original_link(source, destination, *args, **kwargs)
+            saved_root = recorder.ROOT
+            output = io.StringIO()
+            argv = ["--record", KEY, "--version", VERSION, "--date", "2026-10-21", "--review", raw,
+                    "--owner-selection-quote", "Synthetic native diagnostic fixture; no owner action"]
+            started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            try:
+                recorder.ROOT = tree
+                with mock.patch.object(recorder.os, "link", link), contextlib.redirect_stdout(output):
+                    code = recorder.main(argv)
+            finally: recorder.ROOT = saved_root
+            ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            lines = output.getvalue().splitlines()
+            snapshots = [json.loads(line.split(": ", 1)[1]) for line in lines if line.startswith("P115 original exception: ")]
+            attempts = sorted((tree / ".git" / "p115-recording-recovery").glob("*.ATTEMPT.json"))
+            receipts = [json.loads(p.read_text()) for p in attempts]
+            native_nodes = [n for snap in snapshots for n in snap["nodes"] if n["type"] == "subprocess.CalledProcessError"]
+            expected_process = {"returncode": 128, "command": {"type": "builtins.list", "items": [{"type": "builtins.str", "text": x} for x in native_argv]},
+                "stdout": {"type": "builtins.bytes", "bytesHex": ""}, "output": {"type": "builtins.bytes", "bytesHex": ""},
+                "stderr": {"type": "builtins.bytes", "bytesHex": control.stderr.hex()}}
+            common = code == 1 and len(snapshots) == 1 and all(recorder.p115_read(tree / p) == body for p, body in before.items()) and git(tree, "rev-parse", "HEAD") == head and git(tree, "tag", "--list") == tags and not is_signed(tree) and "P115 completed outcome receipt retained:" not in output.getvalue()
+            if name == cases[0]:
+                passed = common and index_path.read_bytes() == b"DIRC" and not attempts and not events and len(native_nodes) == 1 and native_nodes[0].get("process") == expected_process and "P115 failed-attempt evidence retained:" not in output.getvalue()
+            elif name == cases[1]:
+                passed = common and index_path.read_bytes() == old_index and len(events) == 1 and len(native_nodes) == 1 and native_nodes[0].get("process") == expected_process and len(receipts) == 1 and receipts[0]["state"] == "failed" and receipts[0]["originalException"] == snapshots[0] and snapshots[0]["nodes"][0]["message"] == "P115 synthetic native primary" and snapshots[0]["nodes"][0]["cause"] == 1
+            else:
+                passed = common and index_path.read_bytes() == old_index and len(events) == 1 and (tree / foreign_path).read_bytes() == foreign and len(receipts) == 1 and str(foreign_path) in receipts[0]["validationInputs"] and snapshots[0]["nodes"][0]["message"] == f"P115 transaction input changed: {foreign_path}" and receipts[0]["state"] == "failed" and receipts[0]["originalException"] == snapshots[0]
+            expect(name, bool(passed))
+            mutation_receipt(tree, name, {foreign_path: foreign_before}, {foreign_path: foreign if name == cases[2] else foreign_before}, "real native diagnostic/captured-input boundary and exact state preservation")
+            print("P115-PROCESS-DIAGNOSTIC-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+                "entrypoint": "recorder.main", "argv": argv, "cwd": str(tree), "callerPid": __import__("os").getpid(),
+                "startedAt": started, "endedAt": ended, "exit": code, "events": events,
+                "nativeControl": {"argv": native_argv, "cwd": str(tree), "exit": control.returncode, "stdoutHex": control.stdout.hex(), "stderrHex": control.stderr.hex()},
+                "output": output.getvalue(), "receipts": receipts, "passed": bool(passed)}, sort_keys=True))
+            if name == cases[0]: index_path.write_bytes(old_index)  # Own fixture cleanup after all malformed-index assertions.
 
 
 def recording_render_selftest(root: Path, expect) -> None:
@@ -2330,6 +2687,7 @@ def selftest(root: Path) -> int:
         expect("mutations restore the signed fixture", is_signed(tree))
         binding_failure_selftest(root, tree, expect)
         family_failure_selftest(root, tree, expect, before, earlier)
+        governing_source_selftest(root, tree, expect, before)
         findings, output = historical_run(tree, "--selftest")
         expect("signed replay runs frozen selftest, not current subjects", not findings and "Preparation selftest:" in output)
         # Probe the actual signed/replay path with unavailable frozen objects.
@@ -2349,6 +2707,7 @@ def selftest(root: Path) -> int:
     recording_failure_selftest(root, expect)
     recording_render_selftest(root, expect)
     recovery_native_selftest(root, expect)
+    process_diagnostic_selftest(root, expect)
     for name, passed in cases:
         print(f"P115 selftest: {name}: {'ok' if passed else 'FAILED'}")
     failed = sum(not passed for _name, passed in cases)
