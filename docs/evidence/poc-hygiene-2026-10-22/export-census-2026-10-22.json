@@ -2,6 +2,7 @@
  "subject": {
   "baseCommit": "32c16625e3a14e6db995adff81379cf32baf49c3",
   "headCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
+  "laterChange": "the code commit put one Test seam comment line above applyPredicateMutation in pwb-mutation.ts; a later commit on the branch removed it, because the bead says not to touch the mutation runners beyond un-exports (syzygy-bpyt.4.6 replaces them). A comment changes no census class, so the counts stand for the final tree; the Test seam comment count is one lower there.",
   "note": "counts below are computed by the scripts named in tools from tracked files at each commit; head is the code commit, the evidence commit after it adds only files under docs/evidence/poc-hygiene-2026-10-22"
  },
  "tools": {
@@ -233,8 +234,9 @@
    ]
   },
   "testOnlyAfter": {
-   "own Test seam comment (or documented JSDoc in main.ts)": 93,
+   "own Test seam comment (or documented JSDoc in main.ts)": 92,
    "untouched by constraint (polaris.ts, public-source-screening.ts)": 10,
+   "mutation runner, not edited beyond un-exports (applyPredicateMutation)": 1,
    "test-support module, one module-head comment": 17
   },
   "remainingSelfOnlyOrDead": [
