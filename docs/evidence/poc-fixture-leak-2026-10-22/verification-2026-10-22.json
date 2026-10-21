@@ -1,0 +1,233 @@
+{
+ "subject": {
+  "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+  "codeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
+  "recordedAtHead": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9"
+ },
+ "appsAndPackagesDiffSinceCodeCommit": "",
+ "toolDigests": {
+  "census_tmp.py": "436d1457ea9a455c51096e428b70e3693114bb1aab3c1a6ad007180ca1898e58",
+  "drain_scan.py": "32e801a77568f62efe01c69d89e15ab36daa8cda14752c4fa6c3199e19573741",
+  "interrupt_probe.py": "d8f191cf60519c8718a3407c451b8f3334faeb2c01a8a4de821a8fd0ffc7e688",
+  "leak_by_file.py": "fc7e19608090dcbbab3aea5ba604b449b71a6ecce5bcad4e42929ade8e893554",
+  "mutate_teardown.py": "58c34f56c8e0c4e07aff2b4d71345777f713b4ebffd3087ec237ba31c3b2cfda",
+  "nondraining_probe.py": "e90e5c68e7119159f2d904cb90ae0ba1761ed4b292cccb768ec4734c0d543c8e",
+  "tmpdir_length_probe.py": "afdb831b9056487554aebcd90f20856d0257a2033f35552a02252fd276e34769"
+ },
+ "changedFilesBaseToCode": [
+  "apps/three-surface-poc/src/test-model-fixture.test.ts",
+  "apps/three-surface-poc/src/test-model-fixture.ts"
+ ],
+ "ac2": {
+  "claim": "a full three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
+  "command": "npx vitest run --project @syzygy/three-surface-poc-app",
+  "head": {
+   "summary": [
+    "Test Files  88 passed | 1 skipped (89)",
+    "Tests  1089 passed | 2 skipped (1091)",
+    "Duration  79.61s (transform 3.51s, setup 788ms, collect 21.09s, tests 244.91s, environment 20ms, prepare 7.61s)"
+   ],
+   "left": {
+    "entries": 2,
+    "fixtureCopies": 0,
+    "fixtureTemplates": 0,
+    "byKind": {
+     ".com.google.Chrome.zPeaba": 1,
+     "node-compile-cache": 1
+    }
+   }
+  },
+  "perFileHead": {
+   "treeCommit": "d8532f1a",
+   "testFilesInDirectory": 89,
+   "fixtureUsingTestFiles": 42,
+   "filesWithCopiesLeft": 0,
+   "filesWithTemplatesLeft": 0,
+   "copiesLeftTotal": 0,
+   "templatesLeftTotal": 0,
+   "nonzeroExits": []
+  },
+  "note": "base leaves 0 too in a complete run (diagnosis); this criterion alone cannot tell the change from no change, which is what AC3 and the probe are for"
+ },
+ "ac3": {
+  "claim": "removing the new per-file registration leaks again",
+  "unitMutants": {
+   "treeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
+   "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
+   "mutants": 8,
+   "killed": 8,
+   "control": {
+    "exit": 0,
+    "testsRun": 5,
+    "failing": [],
+    "fixtureDirectoriesLeftInPrivateTmpdir": 0,
+    "holds": true
+   },
+   "ids": [
+    [
+     "copy-not-registered",
+     "killed"
+    ],
+    [
+     "set-not-cleared",
+     "killed"
+    ],
+    [
+     "template-not-reset",
+     "killed"
+    ],
+    [
+     "teardown-per-copy",
+     "killed"
+    ],
+    [
+     "only-first-removed",
+     "killed"
+    ],
+    [
+     "template-kept",
+     "killed"
+    ],
+    [
+     "hook-bypassed",
+     "killed"
+    ],
+    [
+     "exit-branch-dropped",
+     "killed"
+    ]
+   ]
+  },
+  "nonDrainingCallerProbe": {
+   "base": {
+    "exit": 0,
+    "copiesLeft": 3,
+    "templatesLeft": 0
+   },
+   "head": {
+    "exit": 0,
+    "copiesLeft": 0,
+    "templatesLeft": 0
+   },
+   "mutant": {
+    "exit": 0,
+    "copiesLeft": 3,
+    "templatesLeft": 0
+   },
+   "head-2": {
+    "exit": 0,
+    "copiesLeft": 0,
+    "templatesLeft": 0
+   }
+  },
+  "probeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9"
+ },
+ "ac4": {
+  "fullVitest": {
+   "summary": [
+    "Test Files  229 passed | 3 skipped (232)",
+    "Tests  5008 passed | 5 skipped (5013)",
+    "Duration  120.28s (transform 10.71s, setup 1.98s, collect 53.91s, tests 484.65s, environment 57ms, prepare 21.23s)"
+   ],
+   "left": {
+    "entries": 3,
+    "fixtureCopies": 0,
+    "fixtureTemplates": 0,
+    "byKind": {
+     ".com.google.Chrome.BxLsDE": 1,
+     "dossier-signoff-9lqcrt-outside-RAW.md": 1,
+     "node-compile-cache": 1
+    }
+   }
+  },
+  "testNames": {
+   "baseTree": "0d4d5098",
+   "headTree": "d8532f1a",
+   "baseLines": 5013,
+   "headLines": 5015,
+   "added": 2,
+   "removed": 0,
+   "addedByFile": {
+    "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
+   },
+   "testsLine": "Tests: +2 ~0 -0"
+  }
+ },
+ "otherLeakSeen": {
+  "where": "packages/polaris-dossier/src/waiting-sessions.test.ts:276",
+  "what": "writes <tmpdir>/dossier-signoff-XXXXXX-outside-RAW.md beside its temporary directory and never removes it; found in the full-run TMPDIR listing",
+  "left": {
+   ".com.google.Chrome.BxLsDE": 1,
+   "dossier-signoff-9lqcrt-outside-RAW.md": 1,
+   "node-compile-cache": 1
+  }
+ },
+ "oneOffCleanup": {
+  "rule": "only directories directly under /tmp named syzygy-poc-surface-fixture-*, owned by this user, of type directory, with `find -mmin +360` (modified more than 360 minutes before the run)",
+  "before": 251,
+  "removed": 58,
+  "after": 193,
+  "remainingOlderThan360Minutes": 0,
+  "removedNames": [
+   "syzygy-poc-surface-fixture-0Bimsj",
+   "syzygy-poc-surface-fixture-11eyK7",
+   "syzygy-poc-surface-fixture-1KB7FM",
+   "syzygy-poc-surface-fixture-2sRBEp",
+   "syzygy-poc-surface-fixture-3OfRjD",
+   "syzygy-poc-surface-fixture-41Flz1",
+   "syzygy-poc-surface-fixture-5NcfYb",
+   "syzygy-poc-surface-fixture-6RTjRU",
+   "syzygy-poc-surface-fixture-6jF8X6",
+   "syzygy-poc-surface-fixture-8lTncI",
+   "syzygy-poc-surface-fixture-AZGNsv",
+   "syzygy-poc-surface-fixture-CV4pOL",
+   "syzygy-poc-surface-fixture-FKdCkA",
+   "syzygy-poc-surface-fixture-GJQMmm",
+   "syzygy-poc-surface-fixture-HdOJuu",
+   "syzygy-poc-surface-fixture-Hfhr3w",
+   "syzygy-poc-surface-fixture-LA5zU2",
+   "syzygy-poc-surface-fixture-NMF5V5",
+   "syzygy-poc-surface-fixture-Ne4xQ5",
+   "syzygy-poc-surface-fixture-Nwpzqp",
+   "syzygy-poc-surface-fixture-O3ZkVr",
+   "syzygy-poc-surface-fixture-OlMIcC",
+   "syzygy-poc-surface-fixture-Qs7AqN",
+   "syzygy-poc-surface-fixture-U4GhcG",
+   "syzygy-poc-surface-fixture-V984Kn",
+   "syzygy-poc-surface-fixture-Vqd0Id",
+   "syzygy-poc-surface-fixture-X3KC6t",
+   "syzygy-poc-surface-fixture-YIoafa",
+   "syzygy-poc-surface-fixture-YzhCtK",
+   "syzygy-poc-surface-fixture-bFZQJy",
+   "syzygy-poc-surface-fixture-dXvQmV",
+   "syzygy-poc-surface-fixture-dixky9",
+   "syzygy-poc-surface-fixture-fm39m5",
+   "syzygy-poc-surface-fixture-gfbv9z",
+   "syzygy-poc-surface-fixture-kCpfvn",
+   "syzygy-poc-surface-fixture-lRFh7D",
+   "syzygy-poc-surface-fixture-laC184",
+   "syzygy-poc-surface-fixture-lo3m0f",
+   "syzygy-poc-surface-fixture-lxcfGe",
+   "syzygy-poc-surface-fixture-msEwTC",
+   "syzygy-poc-surface-fixture-n8PLe7",
+   "syzygy-poc-surface-fixture-n9bs0x",
+   "syzygy-poc-surface-fixture-oajhuR",
+   "syzygy-poc-surface-fixture-pzN3rZ",
+   "syzygy-poc-surface-fixture-s9C7wG",
+   "syzygy-poc-surface-fixture-t5Ueh9",
+   "syzygy-poc-surface-fixture-template-55g8Be",
+   "syzygy-poc-surface-fixture-template-74aEc4",
+   "syzygy-poc-surface-fixture-template-8RewY5",
+   "syzygy-poc-surface-fixture-template-8gXXAC",
+   "syzygy-poc-surface-fixture-template-NXsHlG",
+   "syzygy-poc-surface-fixture-template-pYxYTs",
+   "syzygy-poc-surface-fixture-template-tytP1J",
+   "syzygy-poc-surface-fixture-uJrWBB",
+   "syzygy-poc-surface-fixture-ueHvT6",
+   "syzygy-poc-surface-fixture-xyK2Rf",
+   "syzygy-poc-surface-fixture-y5s8Ne",
+   "syzygy-poc-surface-fixture-ziamzr"
+  ],
+  "note": "the before and after counts were read from `find ... | wc -l` at the time; the removed list is the scripted `find` output saved before removal"
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "tool": "nondraining_probe.py",
+ "treeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
+ "baseCommit": "0d4d5098",
+ "sha256OfHelperAtCommit": "0ce75f99d2da05a39974e61b3ded296aa0bf2403ad15c5299f2a6e21877556d6",
+ "probeTest": "import { existsSync } from 'node:fs';\nimport { afterAll, describe, expect, it } from 'vitest';\n\nimport { fixtureRepoWithGit } from './test-model-fixture.js';\n\n// A caller that never drains the array it hands over.\nconst ignored: string[] = [];\n\ndescribe('a caller that drains nothing', () => {\n  it('makes three copies', () => {\n    for (let index = 0; index < 3; index += 1) fixtureRepoWithGit(ignored);\n    expect(ignored).toHaveLength(3);\n  });\n  afterAll(() => {\n    expect(ignored.every((directory) => existsSync(directory))).toBe(true);\n  });\n});\n",
+ "mutantFragment": {
+  "old": "  cleanups.push(root);\n  removeAtEndOfFile(root);\n",
+  "new": "  cleanups.push(root);\n"
+ },
+ "results": {
+  "base": {
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  1 passed (1)"
+   ],
+   "copiesLeft": 3,
+   "templatesLeft": 0
+  },
+  "head": {
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  1 passed (1)"
+   ],
+   "copiesLeft": 0,
+   "templatesLeft": 0
+  },
+  "mutant": {
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  1 passed (1)"
+   ],
+   "copiesLeft": 3,
+   "templatesLeft": 0
+  },
+  "head-2": {
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  1 passed (1)"
+   ],
+   "copiesLeft": 0,
+   "templatesLeft": 0
+  }
+ }
+}
