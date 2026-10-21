@@ -1,5 +1,11 @@
 // Surface-route capture over fixtures. Usage:
-//   node route-capture.mjs <tree> <out.json>
+//   node route-capture.mjs <tree> <out.json> <fixture-repo-path>
+// <fixture-repo-path> is created on the first run (fixtureRepoWithGit([]) from
+// the tree's built test-model-fixture, copied there; its revision is written to
+// <fixture-repo-path>.json) and reused afterwards. Two captures are comparable
+// only when they name the same path: the evaluation inputs digest in the page
+// bodies includes the repository root. The output file records the tree's
+// commit and the fixture repository's path, revision and construction.
 // For one built tree, serve the app's route set (pocRoutes, materializeRoutes,
 // reobserveRoutes: the three groups apps/three-surface-poc/src/main.ts
 // registers) on a private daemon (--port 0, scratch state dir) over several
@@ -11,6 +17,7 @@
 // fixtures (test-model-fixture, test-project-shape-fixture).
 import * as http from 'node:http';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
@@ -39,6 +46,7 @@ if (existsSync(fixedRepo)) {
 } else {
   const made = fixtureRepoWithGit([]);
   cpSync(made.repoRoot, fixedRepo, { recursive: true });
+  rmSync(made.repoRoot, { recursive: true, force: true });
   fixtureRepo = { repoRoot: fixedRepo, revision: made.revision };
   writeFileSync(fixedRepo + '.json', JSON.stringify(fixtureRepo));
 }
@@ -116,5 +124,19 @@ for (const [variant, build] of Object.entries(VARIANTS)) {
 
 for (const dir of cleanups) rmSync(dir, { recursive: true, force: true });
 rmSync(scratch, { recursive: true, force: true });
-writeFileSync(outFile, JSON.stringify(result, null, 1) + '\n', 'utf8');
+const git = (...args) => execFileSync('git', args, { cwd: tree, encoding: 'utf8' }).trim();
+const capture = {
+  tool: 'route-capture.mjs',
+  tree: {
+    commit: git('rev-parse', 'HEAD'),
+    changedTrackedFilesUnderPackagesAndApps: git('status', '--porcelain', '--untracked-files=no', '--', 'packages', 'apps').split('\n').filter(Boolean),
+  },
+  fixtureRepository: {
+    path: fixtureRepo.repoRoot,
+    revision: fixtureRepo.revision,
+    creation: 'first run only: fixtureRepoWithGit([]) from apps/three-surface-poc/dist/test-model-fixture.js builds a git repository from fixed files with pinned commit instants (GIT_AUTHOR_DATE and GIT_COMMITTER_DATE 2026-08-24T00:00:00Z) and no global or system git config, so its revision is a function of the files alone; the script copies it to the path above, removes the original, and writes the revision to <path>.json; later runs reuse the path',
+  },
+  variants: result,
+};
+writeFileSync(outFile, JSON.stringify(capture, null, 1) + '\n', 'utf8');
 console.log(`variants=${Object.keys(result).length} routesPerVariant=${Object.values(result).map((r) => r.routeCount).join(',')} responses=${responses} out=${outFile}`);

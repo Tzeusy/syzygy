@@ -25,6 +25,7 @@ def main() -> int:
     git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True, check=True).stdout.strip()
     census, capture, lists = load('export-census-core-2026-10-22.json'), load('route-capture-comparison-2026-10-22.json'), load('test-lists-2026-10-22.json')
     emitted, mutants, sweep_b, sweep_c = load('emitted-code-diff-2026-10-22.json'), load('mutants-export-census-2026-10-22.json'), load('consumer-sweep-base-2026-10-22.json'), load('consumer-sweep-code-2026-10-22.json')
+    comment_only, comment_mutants = load('comment-only-check-2026-10-22.json'), load('mutants-comment-only-check-2026-10-22.json')
     vitest_lines = [l.strip() for l in (logs / 'vitest-full.log').read_text(encoding='utf-8').splitlines() if l.strip().startswith(('Test Files', 'Tests '))]
     gov_b, gov_a = last_lines(logs / 'governance-base.txt')[0], last_lines(logs / 'governance-after.txt')[0]
     quot_same = (logs / 'quotations-base.txt').read_bytes() == (logs / 'quotations-after.txt').read_bytes()
@@ -47,8 +48,13 @@ def main() -> int:
         'emittedCode': {'filesCompared': emitted['filesCompared'], 'filesDiffering': emitted['filesDiffering'], 'filesInOnlyOneTree': emitted['filesInOnlyOneTree'],
                         'differing': [f"{p['project']}/dist/{d['file']}" for p in emitted['projects'] for d in p['differingAfterCommentStrip']]},
         'routeCapture': {k: capture[k] for k in ('responses', 'fixtures', 'fixturesWithDistinctOutput', 'requestKeysPerFixture', 'requestKeysWhoseBodyDiffersAcrossFixtures', 'distinctBodyDigests', 'statuses')}
-                        | {'comparisons': [{k: c[k] for k in ('file', 'fileBytesEqualReference', 'responsesDifferingFromReference')} for c in capture['comparisons']]},
-        'testNames': {k: lists[k] for k in ('baseLines', 'headLines', 'baseDistinctNames', 'headDistinctNames', 'added', 'removed', 'testsLine')},
+                        | {'claim': capture['claim'], 'fixtureRepository': {k: capture['fixtureRepository'][k] for k in ('path', 'revision')},
+                           'reference': {k: capture['reference'][k] for k in ('treeCommit', 'variantsSha256')},
+                           'comparisons': [{k: c[k] for k in ('file', 'treeCommit', 'variantsSha256', 'variantsBytesEqualReference', 'responsesDifferingFromReference')} for c in capture['comparisons']]},
+        'commentOnlyCheck': {k: comment_only[k] for k in ('oldCommit', 'mergedWith', 'treeCommit', 'trackedChangesUnderPackagesAndApps', 'filesChanged', 'allIdenticalAfterCommentStrip', 'retainedExport')}
+                            | {'files': [f['file'] for f in comment_only['files']],
+                               'mutants': {'controls': [c['holds'] for c in comment_mutants['controls']], 'ran': comment_mutants['mutants'], 'killed': comment_mutants['killed'], 'survivors': comment_mutants['survivors'], 'ranAtCommit': comment_mutants['ranAtCommit']}},
+        'testNames': {k: lists[k] for k in ('baseTree', 'headTree', 'baseLines', 'headLines', 'baseDistinctNames', 'headDistinctNames', 'added', 'removed', 'testsLine')},
         'fullVitestRun': {'command': 'npx vitest run', 'lines': vitest_lines, 'ranAt': 'the code commit tree (packages/ and apps/ identical to the recording head)'},
         'checkGovernance': {'base': gov_b, 'after': gov_a, 'differenceFromBase': 'file counts only (the new evidence directory)'},
         'checkQuotations': {'baseVsAfterOutputIdentical': quot_same},

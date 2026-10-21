@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Disposition table for syzygy-bpyt.7.6, with the sweep counts read from the records.
 
-Usage: assemble_dispositions.py <consumer-sweep-base.json> <consumer-sweep-code.json> <export-census.json> <out.json>
+Usage: assemble_dispositions.py <consumer-sweep-base.json> <consumer-sweep-code.json> <export-census.json> <tree> <base-commit> <out.json>
 
 The decisions and their reasons are written here; every count (files hit, by
 category, denominator) is read from the sweep and census records, never typed.
+<tree> is the checkout the record describes; the gate and evaluator bytes are
+hashed in it and at <base-commit>, and the retained records that name the base
+digests are found by `git grep -l -F` in it.
 """
+import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -38,7 +43,8 @@ TABLE = {
     'JUDGMENT_INVALID_CASE_IDS': (
         'deleted', 'deleted with its comment, and with the import of COMMON_INVALID_CASES only it used',
         'Declared with the PWB-REQ-022 evaluator and never read: the test asserts the 84-case population from its own hand-typed table. '
-        'The component arrays and the JudgmentInvalidCase type stay.',
+        'The component arrays and the JudgmentInvalidCase type stay. The deletion and the removed COMMON_INVALID_CASES import specifier lie outside every '
+        'predicate of the evaluator, so the retained bpyt.6.2 judgment-invalid-cases sweep still applies (see bpyt62MutationRecords).',
         []),
     'ClassificationOutcome': ('deleted', 'deleted', 'A type alias nothing names.', []),
     'FactFamilyKind': (
@@ -46,8 +52,9 @@ TABLE = {
         'A type alias nothing names. Its only reader was FACT_FAMILIES, which now has no code reader and stays (see cascades).',
         []),
     'appendEvaluation': (
-        'test-only', 'kept; Test seam comment',
-        'Pins the PWB-REQ-005 append-only history rule; no production code calls it yet. The retained-evaluations design reuses the pattern.',
+        'test-only', 'kept unchanged; no comment added (body-read-authority.ts stays byte-identical to the base)',
+        'Pins the PWB-REQ-005 append-only history rule; no production code calls it yet. The retained-evaluations design reuses the pattern. '
+        'The file is the P1 gate: the retained bpyt.6.2 mutation records name its bytes, so this bead leaves them as they are (see bpyt62MutationRecords).',
         ['docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md (candidate design material, binds nothing)']),
     'appendJudgmentEvaluation': (
         'test-only', 'kept; Test seam comment',
@@ -95,9 +102,27 @@ def sweep_view(sweep: dict, kind: str, subject: str, token: str | None) -> dict:
     raise SystemExit(f'no sweep record for {kind} {subject}')
 
 
+GATE = 'packages/three-surface-poc-core/src/body-read-authority.ts'
+EVALUATOR = 'packages/three-surface-poc-core/src/walkthrough-judgment.ts'
+
+
+def mutation_record_view(tree: Path, base_commit: str) -> dict:
+    """Digests of the two PWB files at the base and in the tree, and the retained records that name the base digests."""
+    git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, check=True).stdout
+    view = {}
+    for role, rel in (('gate', GATE), ('evaluator', EVALUATOR)):
+        at_base = hashlib.sha256(git('show', f'{base_commit}:{rel}')).hexdigest()
+        at_tree = hashlib.sha256((tree / rel).read_bytes()).hexdigest()
+        named_by = sorted(
+            line for line in git('grep', '-l', '-F', at_base, '--', '.', ':!docs/evidence/poc-core-hygiene-2026-10-22').decode().splitlines() if line
+        ) if subprocess.run(['git', 'grep', '-q', '-F', at_base, '--', '.', ':!docs/evidence/poc-core-hygiene-2026-10-22'], cwd=tree).returncode == 0 else []
+        view[role] = {'file': rel, 'sha256AtBase': at_base, 'sha256InTree': at_tree, 'byteIdenticalToBase': at_base == at_tree, 'retainedRecordsNamingTheBaseDigest': named_by}
+    return view
+
+
 def main() -> int:
     base, code, census = (json.loads(Path(p).read_text()) for p in sys.argv[1:4])
-    out = Path(sys.argv[4])
+    tree, base_commit, out = Path(sys.argv[4]), sys.argv[5], Path(sys.argv[6])
     entries = []
     for subject, (kind, disposition, reason, cites) in TABLE.items():
         sweep_kind = {'orphan': 'orphan-path' if subject.endswith('.ts') else 'orphan-name', 'deleted': 'deleted-name', 'test-only': 'test-only-name'}[kind]
@@ -112,6 +137,16 @@ def main() -> int:
             'sweepAtCodeCommit': sweep_view(code, sweep_kind, subject, token),
         })
     totals = census['totals']
+    entry_functions = sorted(r['id'] for r in base['subjects'] if r['kind'] == 'orphan-name')
+    self_zero = census['testOnlyAtBase']['selfZero']
+    self_zero_names = {x.split(':', 1)[1] for x in self_zero}
+    remaining = sorted(self_zero_names - set(entry_functions))
+    table_test_only = sorted(k for k, v in TABLE.items() if v[0] == 'test-only')
+    if remaining != table_test_only:
+        raise SystemExit(f'selection predicate does not reproduce the disposition subjects: {remaining} vs {table_test_only}')
+    mutation = mutation_record_view(tree, base_commit)
+    if not mutation['gate']['byteIdenticalToBase']:
+        raise SystemExit('body-read-authority.ts differs from the base; the bpyt.6.2 records would no longer name its bytes')
     record = {
         'bead': 'syzygy-bpyt.7.6',
         'denominator': {'trackedFilesAtBase': base['trackedFiles'], 'baseCommit': base['treeCommit'], 'trackedFilesAtCodeCommit': code['trackedFiles'], 'codeCommit': code['treeCommit']},
@@ -121,6 +156,21 @@ def main() -> int:
             {'subject': 'FACT_FAMILIES', 'change': census['baseToAfterLexer']['classChanged'], 'disposition': 'kept; note added; the registry-currency amendment packet and its builder script cite it by name'},
             {'subject': 'COMMON_INVALID_CASES', 'disposition': 'kept; now used only inside body-read-authority.ts, left to the un-export sweep'},
         ],
+        'selection': {
+            'text': "AC2's test-only subjects are not 'the 88 test-only exports' (that class includes exports their own file also calls). Predicate: base census rows, lexer mode, class test-only with self == 0, minus the entry functions of the three orphan modules.",
+            'testOnlyAtBase': census['testOnlyAtBase']['total'],
+            'testOnlyAndSelfZeroAtBase': {'count': len(self_zero), 'names': self_zero},
+            'orphanModuleEntryFunctionsRemoved': entry_functions,
+            'remaining': {'count': len(remaining), 'names': remaining},
+            'equalToTheDispositionTestOnlySubjects': remaining == table_test_only,
+            'derivedFrom': 'export-census-core-2026-10-22.json testOnlyAtBase, and the orphan-name subjects of consumer-sweep-base-2026-10-22.json',
+        },
+        'bpyt62MutationRecords': {
+            'text': "The retained bpyt.6.2 mutation records name the base bytes of the P1 gate and of the PWB-REQ-022 evaluator. The gate is byte-identical to the base (no edit from this bead), so those records still name its current bytes. "
+                    "The evaluator's code change is the deleted export JUDGMENT_INVALID_CASE_IDS and the COMMON_INVALID_CASES import specifier, outside every predicate (the constant had no reader); "
+                    "a comment above appendJudgmentEvaluation is the only other change. The retained judgment-invalid-cases sweep therefore still applies to its predicates.",
+            **mutation,
+        },
         'notInScope': {
             'selfOnlyExportsAfter': totals['after-lexer']['classes']['self-only'],
             'text': 'Exports used only inside their own file are a public-surface un-export sweep, not dead code: filed as a follow-up in the Worker Report.',

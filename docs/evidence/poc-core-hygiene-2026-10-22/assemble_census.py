@@ -9,6 +9,7 @@ class totals, the exports removed, added and re-classed between the two trees in
 lexer mode, and the full rows of the subject names. Each tree is a git checkout;
 the record names the commit of each.
 """
+import hashlib
 import json
 import subprocess
 import sys
@@ -52,6 +53,8 @@ def main() -> int:
     braw = {key(r): r['class'] for r in runs[('base', 'raw')]}
     record = {
         'tool': 'assemble_census.py (export_census.census)',
+        'exportCensusSha256': hashlib.sha256((Path(__file__).resolve().parent / 'export_census.py').read_bytes()).hexdigest(),
+        'trackedFilesModified': {label: bool(subprocess.run(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=tree, capture_output=True, text=True, check=True).stdout.strip()) for label, tree in (('base', base), ('after', after))},
         'prefix': PREFIX,
         'barrels': sorted(BARRELS),
         'baseCommit': commit(base),
@@ -64,6 +67,11 @@ def main() -> int:
             'removed': sorted(f'{k[0].split("/")[-1]}:{k[1]}' for k in set(b) - set(a)),
             'added': sorted(f'{k[0].split("/")[-1]}:{k[1]}' for k in set(a) - set(b)),
             'classChanged': sorted(f'{k[0].split("/")[-1]}:{k[1]} {b[k]["class"]} -> {a[k]["class"]}' for k in set(b) & set(a) if b[k]['class'] != a[k]['class']),
+        },
+        'testOnlyAtBase': {
+            'predicate': "census rows of the base tree in lexer mode with class == 'test-only'; the selfZero subset also has self == 0 (no use inside the declaring file)",
+            'total': sum(1 for r in runs[('base', 'lexer')] if r['class'] == 'test-only'),
+            'selfZero': sorted(f'{r["file"].split("/")[-1]}:{r["name"]}' for r in runs[('base', 'lexer')] if r['class'] == 'test-only' and r['self'] == 0),
         },
         'subjectRows': {
             label: [r for r in runs[(label, 'lexer')] if r['name'] in SUBJECT_NAMES]

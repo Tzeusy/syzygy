@@ -25,6 +25,16 @@ test-only (a test uses it, no other non-test file does), internal (other
 non-test files under the prefix use it, none outside), public (a non-test file
 outside the prefix uses it). --raw skips comment stripping (comments then count
 as uses), the cross-check for the lexer.
+
+Known limits of the lexer. Both under-count uses, so an export in use could be
+classed `dead`:
+  - a regex literal after the `)` of a control header, as in
+    `if (a) /\\/*/.test(s); X /* c */`, is read as division, so the `/*` inside it
+    opens a comment that swallows code up to a later `*/`;
+  - a regex literal after `export default` is read as division the same way.
+Before trusting a `dead` or `self-only` class on a corpus that may contain
+either form, cross-check the identifier counts against TypeScript's
+createSourceFile printed with removeComments.
 """
 import json
 import re
@@ -141,6 +151,11 @@ def selftest() -> int:
         ('regex after return', "function f() { return /\\/*/.test(s); }\nX", 'X', 1),
         ('url in string is not a comment', "const u = 'http://h/x'; X", 'X', 1),
         ('escaped quote does not end the string', "const s = 'a\\'/*'; X /* */", 'X', 1),
+        ('comment inside a template expression is a comment', "const s = `${/* X */ 1}`; X", 'X', 1),
+        ('comment inside a nested template expression is a comment', "const s = `a ${`b ${/* X */ 1}`} c`; X", 'X', 1),
+        ('comment after braces inside a template expression is a comment', "const s = `${ {a: 1}.a /* X */ } tail`; X", 'X', 1),
+        ('slash inside a regex character class does not end the regex', "const r = /[/]\\/*x/; X /* c */", 'X', 1),
+        ('division after a parenthesis is not a regex', "const q = (a) / b; // X\nX", 'X', 1),
     ]
     failed = 0
     for label, src, name, expected in cases:
