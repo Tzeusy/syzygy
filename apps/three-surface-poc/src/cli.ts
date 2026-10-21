@@ -6,7 +6,7 @@ export interface PocCliConfig {
   readonly watch: boolean;
 }
 
-export type PocCliParse =
+type PocCliParse =
   | { readonly kind: 'run'; readonly config: PocCliConfig }
   | { readonly kind: 'help' }
   | { readonly kind: 'invalid'; readonly detail: string };

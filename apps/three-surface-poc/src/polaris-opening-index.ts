@@ -25,9 +25,9 @@ import { sourceRouteHref } from './polaris-source.js';
 export const OPENING_INDEX_PLACEHOLDER = '<!--polaris-opening-index-->';
 
 /** Id given to the first exact-source link when it carries none. */
-export const FIRST_EXACT_REQUIREMENT_ID = 'polaris-first-exact-requirement';
+const FIRST_EXACT_REQUIREMENT_ID = 'polaris-first-exact-requirement';
 
-export type OpeningIndexIdentity =
+type OpeningIndexIdentity =
   | 'why'
   | 'promises'
   | 'refusals-and-rule'
@@ -40,9 +40,9 @@ export type OpeningIndexIdentity =
 
 /** Where a row's target begins: a fixed element id, or the first link in
  * document order to the exact-source route. */
-export type OpeningIndexTarget = { readonly kind: 'id'; readonly id: string } | { readonly kind: 'first-exact-source' };
+type OpeningIndexTarget = { readonly kind: 'id'; readonly id: string } | { readonly kind: 'first-exact-source' };
 
-export interface OpeningIndexRow {
+interface OpeningIndexRow {
   readonly identity: OpeningIndexIdentity;
   readonly name: PolarisCopyId;
   readonly target: OpeningIndexTarget;
@@ -56,7 +56,7 @@ const id = (value: string): OpeningIndexTarget => ({ kind: 'id', id: value });
  * catalog ("Declared capabilities"), the opening Unknown aggregate, the
  * claim-state legend's heading, and the V1 scope statement, which is the
  * first of the V1 scope and success-criteria statements. */
-export const OPENING_INDEX_ROWS: readonly OpeningIndexRow[] = [
+const OPENING_INDEX_ROWS: readonly OpeningIndexRow[] = [
   { identity: 'why', name: 'index.why', target: id('polaris-account-purpose') },
   { identity: 'promises', name: 'index.promises', target: id('polaris-account-promises') },
   { identity: 'refusals-and-rule', name: 'index.refusals-and-rule', target: id('polaris-account-refusals') },
@@ -136,7 +136,7 @@ export function substituteOpeningIndex(html: string, mountPrefix: string): strin
  * counted. A row's offset is the number of counted words in text nodes that
  * precede its target's first element.
  */
-export const OPENING_INDEX_SCRIPT = `<script>
+const OPENING_INDEX_SCRIPT = `<script>
 addEventListener('load', () => {
   const index = document.querySelector('[data-polaris-opening-index]');
   if (!index) return;

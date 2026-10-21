@@ -9,7 +9,7 @@ import {
 import { renderDiagramSvg } from './diagram-layout.js';
 import { assertInertSvg } from './svg-inert.js';
 
-export interface DraftPreviewOptions {
+interface DraftPreviewOptions {
   /** The inert-SVG boundary. Injectable for tests only; defaults to `assertInertSvg`. */
   readonly assertSvg?: (svg: string) => void;
 }

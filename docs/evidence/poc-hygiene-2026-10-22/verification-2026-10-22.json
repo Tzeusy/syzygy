@@ -1,0 +1,194 @@
+{
+ "subject": {
+  "baseCommit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+  "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+  "note": "every run named here ran on the ranAtCommit tree; the pushed head differs from it only by files under docs/evidence/poc-hygiene-2026-10-22/ (this record set)"
+ },
+ "roundOneRepairs": [
+  {
+   "finding": "F1",
+   "repair": "the entry-script guard is removed: main, serveBoundRepository, PocIo, PocMainDeps and REAL_DEPS live in poc-main.ts (no import-time effect) and main.ts is the unconditional entry",
+   "shownBy": [
+    "invocation-forms-2026-10-22.json",
+    "invocation-forms-control-reviewed-commit-2026-10-22.json",
+    "main-differential-2026-10-22.json"
+   ]
+  },
+  {
+   "finding": "F2(a)",
+   "repair": "the PR body states classes 1 (P1 repository-binding composition) and 3 (PocRuntimeCapture composition), citing R-GP-IMPL-POC-APP-HYGIENE-1",
+   "shownBy": [
+    "PR body"
+   ]
+  },
+  {
+   "finding": "F2(b)",
+   "repair": "main.test.ts throws a bare PocObservationError and one with a detail and no artifact path, with literal expected stderr",
+   "shownBy": [
+    "main-test-mutants-2026-10-22.json: suffix-filter-dropped"
+   ]
+  },
+  {
+   "finding": "F2(c)",
+   "repair": "the suffix-filter predicate has a recorded mutant, killed with its first error lines",
+   "shownBy": [
+    "main-test-mutants-2026-10-22.json: suffix-filter-dropped"
+   ]
+  },
+  {
+   "finding": "F2(d)",
+   "repair": "alteredProseLimb below maps the limb to the emitted-JS identity of the record-reading modules",
+   "shownBy": [
+    "dist-compare-2026-10-22.json"
+   ]
+  },
+  {
+   "finding": "F2(e)",
+   "repair": "the owner notice is posted by the coordinator at landing",
+   "shownBy": []
+  },
+  {
+   "finding": "N1",
+   "repair": "the two governance-inputs comments are parse anchors naming the scripts; the census counts .py consumers and found none for the 162 un-exported or deleted names",
+   "shownBy": [
+    "export-census-2026-10-22.json: dispositions.unexportedSelfOnly.pyConsumerSweep"
+   ]
+  },
+  {
+   "finding": "N2",
+   "repair": "the fake daemon creates its state directory and refuses to start, so a bypassed gate fails fast and the existsSync limb can fail",
+   "shownBy": [
+    "limb-isolation-2026-10-22.json"
+   ]
+  },
+  {
+   "finding": "N3",
+   "repair": "the census diff cites reachable commits, the route-capture record names the fixture repository path, revision and creation, the denominators are defined, every record names ranAtCommit",
+   "shownBy": [
+    "export-census-2026-10-22.json",
+    "route-capture-2026-10-22.json"
+   ]
+  },
+  {
+   "finding": "N4",
+   "repair": "the census method states the policy: types named in an exported signature stay private by design and are re-exported when the first caller needs one",
+   "shownBy": [
+    "export-census-2026-10-22.json: method"
+   ]
+  },
+  {
+   "finding": "N5",
+   "repair": "the --watch test waits with vi.waitFor, the no-watch test waits two event-loop turns and asserts the call log, and each exported type carries one seam note",
+   "shownBy": [
+    "main.test.ts",
+    "main-test-mutants-2026-10-22.json: console-attached-without-watch"
+   ]
+  }
+ ],
+ "testNames": {
+  "method": "npx vitest list (all projects) at the base commit (a separate worktree with its own npm ci) and at the ranAtCommit; the two lists are compared as multisets of the full \"[project] file > describe > test\" line",
+  "baseLines": 4919,
+  "headLines": 4929,
+  "baseDistinctNames": 4910,
+  "headDistinctNames": 4920,
+  "added": 19,
+  "removed": 9,
+  "addedByFile": {
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/main.test.ts": 18,
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/watch-mode.test.ts": 1
+  },
+  "removedByFile": {
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts": 9
+  },
+  "testsLine": "Tests: +19 ~0 -9"
+ },
+ "filesChangedBaseToHead": 84,
+ "fullVitestRun": {
+  "command": "npx vitest run",
+  "testFiles": "Test Files  229 passed | 3 skipped (232)",
+  "tests": "Tests  4922 passed | 5 skipped (4927)",
+  "exitLine": "exit=0"
+ },
+ "checkGovernance": {
+  "baseLastLine": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+  "headLastLine": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted"
+ },
+ "checkQuotations": {
+  "baseVsHeadOutputIdentical": true
+ },
+ "typecheck": {
+  "command": "npm run typecheck",
+  "exitLine": "exit=0"
+ },
+ "authoritySweep": {
+  "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+  "testsLine": "Tests  5 passed (5)"
+ },
+ "invocationForms": {
+  "pairs": 30,
+  "identicalPairs": 30,
+  "distinctOutputs": 5,
+  "controlAtReviewedCommit": {
+   "pairs": 30,
+   "identicalPairs": 10,
+   "reviewedCommit": "4f3c3ebf249c70dc3f22af843b336edd90c5ed4e"
+  }
+ },
+ "gpq0ExtraChecks": {
+  "oldVersusNewDifferential": "42 of 42 scenarios identical three ways (39 distinct transcripts); 24 of 27 differential mutants killed, the other 3 equivalent by construction and killed by main.test.ts",
+  "ruleSixMutantPerPredicate": "main.test.ts: 27 of 27 mutants of poc-main.ts killed; the four predicates that survived at the reviewed commit are the entry guard's (removed with the guard) and the suffix filter (suffix-filter-dropped, killed)",
+  "alteredProseLimb": {
+   "limb": "an old-versus-new differential over a mutated-record corpus that includes records with altered prose (GP-Q0 review rule)",
+   "mapping": "the limb asks that records, altered or not, are judged the same before and after. The modules that can read a record or observed text are the record-reading modules (predicate and list in dist-compare-2026-10-22.json), and every one of them emits identical JavaScript base against head once comments and export are removed, so the same code judges any record. The emitted modules that differ are listed under differing (main.js, the rewritten entry, and polaris-narrative.js, a deleted dead constant) and poc-main.js is new: they hold the composition root, which reads no record content itself and passes the P1 gate result through, and they are the subject of the old-versus-new differential (gate position, refusal strings, exit codes, collaborator order).",
+   "method": "dist-compare.mjs: each non-test .js file under apps/three-surface-poc/dist in a clean base build and a clean head build is parsed with the TypeScript compiler API (version 5.9.3), export modifiers and local export lists are dropped, and the result is printed without comments",
+   "commonModules": 90,
+   "recordReadingModules": 29,
+   "recordReadingTally": {
+    "byte-identical": 14,
+    "identical after normalisation": 15,
+    "differs": 0
+   },
+   "recordReadingDiffering": [],
+   "allModulesTally": {
+    "byte-identical": 41,
+    "identical after normalisation": 47,
+    "differs": 2
+   },
+   "differing": [
+    "main.js",
+    "polaris-narrative.js"
+   ],
+   "addedInHead": [
+    "poc-main.js"
+   ],
+   "removedInHead": [
+    "polaris-generation/source-adapter.js"
+   ]
+  },
+  "ownerNotice": "left to the coordinator, posted in the cycle report at landing"
+ },
+ "limbIsolation": {
+  "cells": [
+   {
+    "cell": "limb-only / unmutated",
+    "exit": 0
+   },
+   {
+    "cell": "limb-only / gate bypassed",
+    "exit": 1
+   },
+   {
+    "cell": "limb-only / state directory written before the gate",
+    "exit": 1
+   },
+   {
+    "cell": "limb-only, fake daemon creates nothing / gate bypassed",
+    "exit": 0
+   },
+   {
+    "cell": "full test / gate bypassed",
+    "exit": 1
+   }
+  ]
+ }
+}

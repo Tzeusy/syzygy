@@ -98,13 +98,14 @@ const HEADING_SCRIPT = `(() => {
 // ---------------------------------------------------------------------------
 // Shapes.
 
-export interface InteractiveTarget {
+interface InteractiveTarget {
   /** `href` — a link's resolved `href`; `details` — a summary's `details`
    * element; `controls` — the `aria-controls` ids; `self` — the control. */
   readonly kind: 'href' | 'details' | 'controls' | 'self';
   readonly value: string;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface InteractiveElement {
   readonly index: number;
   readonly tag: string;
@@ -115,6 +116,7 @@ export interface InteractiveElement {
   readonly name: string;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface HeadingElement {
   readonly index: number;
   readonly tag: string;
@@ -122,7 +124,7 @@ export interface HeadingElement {
   readonly text: string;
 }
 
-export type NameHeadingViolationKind =
+type NameHeadingViolationKind =
   | 'shared-name-different-targets'
   | 'shared-label-name-does-not-begin-with-label'
   | 'shared-label-exact-source-name-omits-path'
@@ -138,6 +140,7 @@ export interface NameHeadingViolation {
   readonly detail: string;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface PageNameHeadingReport {
   readonly page: string;
   readonly url: string;
@@ -160,6 +163,7 @@ function describeElement(element: InteractiveElement): string {
   return `${element.tag}[${element.index}] "${element.label.slice(0, 60)}"`;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The identity an exact-source route href names, or undefined when the
  * href is not that route. The route is matched by pathname under any mount
  * (`…/polaris/source`). */
@@ -170,6 +174,7 @@ export function exactSourceIdentity(href: string): string | undefined {
   return url.searchParams.get(SOURCE_IDENTITY_PARAM) ?? '';
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /**
  * The distinct-name rules over one page's interactive population.
  * `sourcePaths` maps each source identity the machine answer lists to the
@@ -212,6 +217,7 @@ export function distinctNameViolations(elements: readonly InteractiveElement[], 
   return { violations, sharedLabelGroups, exactSourceTargets };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The heading-order rules over one page's heading population. */
 export function headingOrderViolations(headings: readonly HeadingElement[]): readonly NameHeadingViolation[] {
   const violations: NameHeadingViolation[] = [];
@@ -237,13 +243,14 @@ export interface MachineAnswerSources {
   readonly projectShape: { readonly kind: string; readonly sources?: readonly { readonly identity: string; readonly path: string }[] };
 }
 
-export interface PolarisPage {
+interface PolarisPage {
   /** `entry`, or the source identity the exact-source route response serves. */
   readonly page: string;
   /** The path and query to request, relative to the daemon (and its mount). */
   readonly path: string;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The entry page and one exact-source route response per source the
  * machine answer lists — never the links the renderer emits. */
 export function polarisPagesFromMachineAnswer(answer: MachineAnswerSources, entryPath: string, sourcePath: string): { readonly pages: readonly PolarisPage[]; readonly sourcePaths: ReadonlyMap<string, string> } {
@@ -253,6 +260,7 @@ export function polarisPagesFromMachineAnswer(answer: MachineAnswerSources, entr
   return { pages, sourcePaths: new Map(sources.map((source) => [source.identity, source.path])) };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Whole-surface coverage: every listed page swept, none extra. */
 export function coverageViolations(listed: readonly PolarisPage[], swept: readonly string[]): readonly NameHeadingViolation[] {
   const violations: NameHeadingViolation[] = [];
@@ -266,6 +274,7 @@ export function coverageViolations(listed: readonly PolarisPage[], swept: readon
 // ---------------------------------------------------------------------------
 // The browser-driven sweep of one page.
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Both populations of the page at `url`, each interactive element with
  * its browser-computed name. */
 export async function measurePage(page: BrowserPage, url: string): Promise<{ readonly elements: readonly InteractiveElement[]; readonly headings: readonly HeadingElement[] }> {
@@ -279,6 +288,7 @@ export async function measurePage(page: BrowserPage, url: string): Promise<{ rea
   return { elements: described.map((element, position) => ({ ...element, name: names[position] as string })), headings };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Measures one page and reports the violations of both checks beside
  * their denominators. */
 export async function checkNamesAndHeadings(page: BrowserPage, url: string, label: string, sourcePaths: ReadonlyMap<string, string>): Promise<PageNameHeadingReport> {

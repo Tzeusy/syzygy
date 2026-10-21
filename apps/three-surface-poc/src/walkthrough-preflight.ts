@@ -26,6 +26,7 @@ import { currentIntentLeaf } from './capability-detail.js';
 import { copyText } from './polaris-copy.js';
 import { sourceRouteIdentities } from './polaris-source.js';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const PREFLIGHT_LIMBS = [
   'account-statement-unbacked',
   'population-empty',
@@ -38,11 +39,12 @@ export const PREFLIGHT_LIMBS = [
   'discovery-undisclosed',
   'browser-check-not-current',
 ] as const;
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export type PreflightLimb = (typeof PREFLIGHT_LIMBS)[number];
 
 /** The classes the six prompts ask the reader to reconcile against
  * (RFC7-30: principles, success criteria, the catalog, the topology). */
-export const RECONCILED_CLASSES = ['principle', 'success-criterion', 'catalog-entry', 'topology-component'] as const satisfies readonly ExtractionClass[];
+const RECONCILED_CLASSES = ['principle', 'success-criterion', 'catalog-entry', 'topology-component'] as const satisfies readonly ExtractionClass[];
 
 export type SourceRouteOutcome =
   | { readonly state: 'rendered'; readonly requirements: number }
@@ -53,6 +55,7 @@ export type BrowserCheckInput =
   | { readonly kind: 'performed'; readonly commit: string; readonly variants: number; readonly violations: number }
   | { readonly kind: 'not-performed'; readonly detail: string };
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface WalkthroughPreflightInputs {
   readonly model: PocModel;
   /** The rendered Polaris page, exactly as served. */
@@ -62,12 +65,12 @@ export interface WalkthroughPreflightInputs {
   readonly browserCheck: BrowserCheckInput;
 }
 
-export interface PreflightFinding {
+interface PreflightFinding {
   readonly limb: PreflightLimb;
   readonly detail: string;
 }
 
-export interface WalkthroughPreflight {
+interface WalkthroughPreflight {
   readonly ready: boolean;
   readonly findings: readonly PreflightFinding[];
   /** Counts the evidence record carries; never a score. */

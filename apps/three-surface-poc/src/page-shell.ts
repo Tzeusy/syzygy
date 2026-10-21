@@ -4,7 +4,7 @@ import { doltClockText, observatoryLimbText, projectLimbText } from './reevaluat
 import { resourceHeadroomLine } from './resource-headroom-line.js';
 import { withMountPrefix } from './tailnet.js';
 
-export type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
+type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
 
 const STATE_PURPOSE: Readonly<Record<PocSurface['state'], string>> = {
   desired: 'what this project is meant to be',
@@ -12,7 +12,7 @@ const STATE_PURPOSE: Readonly<Record<PocSurface['state'], string>> = {
   observed: 'what code and evidence show',
 };
 
-export function surfacePlanePhrase(surface: PocSurface): string {
+function surfacePlanePhrase(surface: PocSurface): string {
   return `${surface.title} · ${surface.state} state · ${STATE_PURPOSE[surface.state]}`;
 }
 
@@ -42,7 +42,7 @@ export interface HumanOperabilityStatus {
 
 /** One compact, non-verdict summary. Prefixes are labeled as prefixes; full
  * identities remain on the existing detailed surface. */
-export function humanStatusLine(status: HumanOperabilityStatus | undefined, escapeHtml: (value: string) => string): string {
+function humanStatusLine(status: HumanOperabilityStatus | undefined, escapeHtml: (value: string) => string): string {
   const evaluation = status?.evaluationDigest === undefined || status.evaluationDigest === null ? 'Unknown (absent)' : `sha256:${status.evaluationDigest.slice(0, 12)}…`;
   const project = status?.projectRevision === undefined || status.projectRevision === null ? 'Unknown (no project rev)' : `${status.projectRevision.slice(0, 12)}…`;
   const observer = status?.observerRevision === undefined || status.observerRevision === null ? 'Unknown (no observer rev)' : `${status.observerRevision.slice(0, 12)}…`;
@@ -77,7 +77,7 @@ function siteNav(
   return `<nav class="site-nav" aria-label="Three-surface POC sections"><ul>${items}</ul></nav>`;
 }
 
-export interface PageShellInput {
+interface PageShellInput {
   readonly title: string;
   readonly current: SurfaceRouteId;
   readonly eyebrow: string;

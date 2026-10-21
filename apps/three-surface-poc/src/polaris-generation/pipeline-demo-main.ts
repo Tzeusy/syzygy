@@ -5,7 +5,7 @@ import type { ProviderDraft } from '@syzygy/polaris-generation-core';
 import { renderDraftPreview } from './draft-preview.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
 
-export async function writeSyntheticPipelineDemo(destination: string): Promise<void> {
+async function writeSyntheticPipelineDemo(destination: string): Promise<void> {
   await mkdir(destination, { recursive: true });
   const reports: unknown[] = [];
   const first = syntheticProjects[0]!;
