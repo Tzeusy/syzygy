@@ -85,6 +85,7 @@ export class DossierRenderError extends Error {
 
 const digest = (value: string): string => createHash('sha256').update(value).digest('hex');
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The page a quotable source's exact text lives on, from its anchor alone. */
 export function sourceRoute(source: Pick<GenerationSource, 'spans' | 'redaction'>): string {
   if (source.spans.length === 0 || (source.redaction === undefined && source.spans.length !== 1)) throw new DossierRenderError('ambiguous-source-anchor');
@@ -125,7 +126,7 @@ export interface DossierView {
 }
 
 /** What every run's pages share: the source population, and the owner topics by draft id. */
-export interface DossierSiteInput {
+interface DossierSiteInput {
   readonly sources: readonly GenerationSource[];
   /** Owner topics a section or deep dive answers, by draft id. Absent: each
    * produced item's asset ids that are owner topics. */
@@ -133,7 +134,7 @@ export interface DossierSiteInput {
 }
 
 /** What `renderLocalDossier` takes: an operator-agent run's inputs, which `packages/polaris-dossier` derives at its render step. */
-export interface LocalDossierRenderInput extends DossierSiteInput {
+interface LocalDossierRenderInput extends DossierSiteInput {
   readonly local: LocalRenderInput;
 }
 

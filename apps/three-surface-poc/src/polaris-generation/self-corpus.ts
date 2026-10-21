@@ -22,7 +22,7 @@ function inProfile(path: string): boolean {
     || /^\.syzygy\/governance\/contracts\/rfcs\/RFC-[^/]+\/[^/]+\.md$/u.test(path);
 }
 
-export interface SelfCorpus {
+interface SelfCorpus {
   readonly profile: typeof profile;
   readonly revision: string;
   readonly sources: readonly GenerationSource[];
@@ -35,6 +35,7 @@ export interface SelfCorpus {
   readonly identityDigest: string;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Only the named blobs at the pinned commit are read: never the working
  * tree, untracked files, another project, or a provider. */
 export function readSelfCorpus(repoRoot: string, revision: string, readBlobs: ReadGitBlobs = readGitBlobsBatch): SelfCorpus {
@@ -106,7 +107,7 @@ function scriptedResponse(stage: ScriptedStage, encoded: string): unknown {
       blockId: block.id, verdict: 'supported', sourceIds: block.sourceIds, reason: 'Scripted reference match only.' })), findings: [] };
 }
 
-export interface SelfCorpusRun {
+interface SelfCorpusRun {
   readonly status: PipelineResult['status'];
   readonly reason?: string;
   readonly stageInputs: readonly { readonly stage: string; readonly inputBytes: number; readonly route: string }[];

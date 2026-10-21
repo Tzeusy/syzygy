@@ -11,12 +11,13 @@ import {
 // `capture-test-artifact-main.ts` binds `child_process` for `git rev-parse`
 // alone. `main.ts`, the running POC server, never imports either file.
 
-export interface FocusedTestCommandInput {
+interface FocusedTestCommandInput {
   readonly repoRoot: string;
   readonly scope: string;
   readonly python: string;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The command recorded with the artifact: the focused pytest run, without
  * the JUnit output flag, whose path is the operator's choice. */
 export function focusedTestCommand(input: FocusedTestCommandInput): readonly string[] {
@@ -30,7 +31,7 @@ export function shellQuote(word: string): string {
   return SHELL_SAFE.test(word) ? word : `'${word.replaceAll("'", `'\\''`)}'`;
 }
 
-export interface OperatorInstructionsInput extends FocusedTestCommandInput {
+interface OperatorInstructionsInput extends FocusedTestCommandInput {
   readonly junitPath: string;
   readonly stateDir: string;
 }
@@ -66,7 +67,7 @@ export function operatorInstructions(input: OperatorInstructionsInput): string {
   ].join('\n');
 }
 
-export interface IngestTestArtifactInput extends FocusedTestCommandInput {
+interface IngestTestArtifactInput extends FocusedTestCommandInput {
   readonly junitPath: string;
   readonly reportedCommit: string;
   readonly reportedExitCode: string;
@@ -76,7 +77,7 @@ export interface IngestTestArtifactInput extends FocusedTestCommandInput {
   readonly now: () => string;
 }
 
-export type IngestTestArtifactResult =
+type IngestTestArtifactResult =
   | { readonly kind: 'captured'; readonly record: OperatorReportedTestArtifactRecord }
   | { readonly kind: 'failed'; readonly reason: string };
 

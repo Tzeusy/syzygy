@@ -16,7 +16,7 @@ import { join } from 'node:path';
 
 import { removeTemporaryDirectory, type TemporaryDirectoryCleanupOptions } from './temporary-directory.js';
 
-export interface AxNode {
+interface AxNode {
   readonly nodeId: string;
   readonly ignored: boolean;
   readonly role: string;
@@ -25,7 +25,7 @@ export interface AxNode {
   readonly childIds: readonly string[];
 }
 
-export type KeyName = 'Tab' | 'Enter' | 'Space';
+type KeyName = 'Tab' | 'Enter' | 'Space';
 
 export interface BrowserPage {
   navigate(url: string): Promise<void>;
@@ -44,6 +44,7 @@ export interface BrowserPage {
   close(): Promise<void>;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface Browser {
   readonly executable: string;
   readonly version: string;
@@ -261,6 +262,7 @@ function waitForDevToolsUrl(child: ChildProcess): Promise<string> {
   });
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Removes the throwaway profile after Chrome has released its files. */
 export function removeBrowserProfile(
   profile: string,
@@ -354,6 +356,7 @@ function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
   return live;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Stops every live member of the private group at once. A leader killed
  * alone orphans its helpers (the network service, renderers, and the `cat`
  * pipes the google-chrome wrapper forks), which then exit on their own
@@ -383,6 +386,7 @@ interface BrowserCleanupOptions {
   readonly now?: () => number;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Browser.close may never acknowledge a protocol request. The browser is a
  * disposable local fixture, so a bounded graceful request is followed by a
  * hard stop when needed. Once the leader has exited, any member still alive
@@ -500,6 +504,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
   };
 }
 
+// Test seam: exported for the tests; no production code uses it.
 /** Own the complete page lifetime once Chrome has launched. A failed target
  * creation still closes the browser; a failed target close cannot skip the
  * private child/session drain in browser.close(). */

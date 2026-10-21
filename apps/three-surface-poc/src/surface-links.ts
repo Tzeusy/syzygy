@@ -5,7 +5,7 @@ import { sourceSlug } from './polaris-source.js';
 import { withMountPrefix } from './tailnet.js';
 
 type SurfaceId = PocSurface['id'];
-export type CrossSurfaceClass = 'work-count' | 'code-count' | 'reality-entity' | 'governing-intent' | 'mapped-capability' | 'action-route';
+type CrossSurfaceClass = 'work-count' | 'code-count' | 'reality-entity' | 'governing-intent' | 'mapped-capability' | 'action-route';
 
 const ROUTES: Readonly<Record<SurfaceId, string>> = {
   polaris: '/polaris', trajectory: '/trajectory', orrery: '/orrery',

@@ -1,3 +1,5 @@
+// Test support: exports with no non-test importer are consumed by tests only, by design.
+
 import * as http from 'node:http';
 
 /**

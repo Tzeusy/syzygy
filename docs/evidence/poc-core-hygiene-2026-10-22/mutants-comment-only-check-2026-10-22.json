@@ -1,0 +1,111 @@
+{
+ "subject": "comment_only_check.py",
+ "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "oldCommit": "e81883f3d44d033425280e8b57f338b6acf29bc2",
+ "checkArguments": [
+  "--merge-with",
+  "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6"
+ ],
+ "controls": [
+  {
+   "control": "unperturbed, with --merge-with",
+   "arguments": [
+    "--merge-with",
+    "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6"
+   ],
+   "expectedAllIdenticalAfterCommentStrip": true,
+   "allIdenticalAfterCommentStrip": true,
+   "holds": true,
+   "filesChanged": 4,
+   "files": [
+    "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "packages/three-surface-poc-core/src/evidence-population.ts",
+    "packages/three-surface-poc-core/src/index.ts",
+    "packages/three-surface-poc-core/src/test-cleanup.ts"
+   ],
+   "firstOutputLine": "changed=4 allCommentOnly=True retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  },
+  {
+   "control": "unperturbed, without --merge-with",
+   "arguments": [],
+   "expectedAllIdenticalAfterCommentStrip": false,
+   "allIdenticalAfterCommentStrip": false,
+   "holds": true,
+   "filesChanged": 6,
+   "files": [
+    "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+    "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "packages/three-surface-poc-core/src/evidence-population.ts",
+    "packages/three-surface-poc-core/src/index.ts",
+    "packages/three-surface-poc-core/src/test-cleanup.ts",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+   ],
+   "firstOutputLine": "changed=6 allCommentOnly=False retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  }
+ ],
+ "mutants": 6,
+ "killed": 6,
+ "survivors": [],
+ "records": [
+  {
+   "id": "source-code-token-added",
+   "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+   "old": "// Keep the name, the path and the barrel export.\n",
+   "new": "// Keep the name, the path and the barrel export.\nexport const ZZ_MUTANT = 1;\n",
+   "deletesTheFile": false,
+   "expectedFailure": "comment-only-false",
+   "killed": true,
+   "firstOutputLine": "changed=4 allCommentOnly=False retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  },
+  {
+   "id": "source-comment-edit-is-not-a-failure",
+   "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+   "old": "// Keep the name, the path and the barrel export.\n",
+   "new": "// Keep the name, the path and the barrel export. (edited)\n",
+   "deletesTheFile": false,
+   "expectedFailure": "comment-only-true",
+   "killed": true,
+   "firstOutputLine": "changed=4 allCommentOnly=True retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  },
+  {
+   "id": "source-file-deleted",
+   "file": "packages/three-surface-poc-core/src/test-cleanup.ts",
+   "old": null,
+   "new": null,
+   "deletesTheFile": true,
+   "expectedFailure": "comment-only-false",
+   "killed": true,
+   "firstOutputLine": "changed=4 allCommentOnly=False retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  },
+  {
+   "id": "dist-module-export-removed",
+   "file": "packages/three-surface-poc-core/dist/evidence-population.js",
+   "old": "export function derivePopulationBlock",
+   "new": "function derivePopulationBlock",
+   "deletesTheFile": false,
+   "expectedFailure": "module-export-false",
+   "killed": true,
+   "firstOutputLine": "changed=4 allCommentOnly=True retainedExport={'moduleExportsFunction': False, 'barrelReexportsSameFunction': False}"
+  },
+  {
+   "id": "dist-barrel-reexport-removed",
+   "file": "packages/three-surface-poc-core/dist/index.js",
+   "old": "export * from './evidence-population.js';",
+   "new": "",
+   "deletesTheFile": false,
+   "expectedFailure": "barrel-false",
+   "killed": true,
+   "firstOutputLine": "changed=4 allCommentOnly=True retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': False}"
+  },
+  {
+   "id": "code-token-added-to-a-file-main-changed",
+   "file": "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+   "old": "import { describe",
+   "new": "const ZZ_MUTANT = 1;\nimport { describe",
+   "deletesTheFile": false,
+   "expectedFailure": "comment-only-false-with-merge",
+   "killed": true,
+   "firstOutputLine": "changed=5 allCommentOnly=False retainedExport={'moduleExportsFunction': True, 'barrelReexportsSameFunction': True}"
+  }
+ ]
+}

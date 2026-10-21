@@ -105,20 +105,22 @@ describe('launchedMarkerState', () => {
       if (!rewritten) { rewritten = true; fs.writeFileSync(marker(dir), after); }
       return result;
     }) as never));
-    expect(launchedMarkerState(dir)).toBe('unreadable');
+    // The race is asserted staged before the state is judged, so a reader that never makes the patched call fails here, not on the state.
+    const state = launchedMarkerState(dir);
     expect(rewritten).toBe(true);
+    expect(state).toBe('unreadable');
     expect(fs.statSync(marker(dir)).size).toBe(Buffer.byteLength(after));
   });
 });
 
 describe('launch forms in a run whose marker is unreadable', () => {
   it.each(PRESENT_BUT_NOT_THE_MARKER)('count neither a declared form nor a syzygy-launched one: %s', (_name, plant) => {
-    const dir = runDir();
-    plant(dir);
+    // Each form is asked of a run planted afresh, so a reader that drains a FIFO on one form cannot leave the next an empty pipe.
+    const planted = (): string => { const dir = runDir(); plant(dir); return dir; };
     const refusal = 'the run\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';
-    expect(launchFormRefusal(dir, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
-    expect(launchFormRefusal(dir, { value: 'bang', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
-    expect(launchFormRefusal(dir, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBe(refusal);
+    expect(launchFormRefusal(planted(), { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
+    expect(launchFormRefusal(planted(), { value: 'bang', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
+    expect(launchFormRefusal(planted(), { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBe(refusal);
   });
 
   it('name what a counted record must carry, by marker state', () => {

@@ -15,8 +15,8 @@ const STAGES: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit
 /** The trusted decision to look at one repository revision. The reader asks
  * before it touches the repository in any way, and only `allowed: true`
  * proceeds. A later lane backs this with real consent records. */
-export interface CorpusAdmissionRequest { readonly repositoryId: string; readonly revision: string; readonly include: readonly string[]; readonly exclude: readonly string[] }
-export type CorpusAdmissionDecision =
+interface CorpusAdmissionRequest { readonly repositoryId: string; readonly revision: string; readonly include: readonly string[]; readonly exclude: readonly string[] }
+type CorpusAdmissionDecision =
   | { readonly allowed: true; readonly permissionIdentity: string }
   | { readonly allowed: false; readonly reason: string };
 export interface CorpusAdmissionPort { readonly decide: (request: CorpusAdmissionRequest) => Promise<CorpusAdmissionDecision> }
@@ -93,6 +93,7 @@ function representablePath(path: string): boolean {
     && !path.split('/').some(part => part === '' || part === '.' || part === '..');
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** `**` crosses directories, `**` + `/` may match none, `*` and `?` stay in one segment. */
 export function globToRegExp(glob: string): RegExp {
   let out = '';
@@ -108,7 +109,7 @@ export function globToRegExp(glob: string): RegExp {
   return new RegExp(`^${out}$`, 'su');
 }
 
-export interface RepoCorpusCount {
+interface RepoCorpusCount {
   readonly listed: number;
   readonly notBlob: number;
   readonly outsideInclude: number;
@@ -150,7 +151,7 @@ export interface RepoCorpus {
  * before any splitting. With a screen in force every excluded row, whatever
  * its reason, carries `opaqueId(identity)` and a placeholder path naming that
  * id, never the repository path, object id or body. */
-export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content' | 'unknown-extraction-class'>;
+type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content' | 'unknown-extraction-class'>;
 export interface CorpusScreen {
   readonly screenPath: (path: string) => Exclude<CorpusScreenReason, 'active-content'> | undefined;
   /** With the blob's path, a body the scope's code-content exemption names may skip the active-content scan. */

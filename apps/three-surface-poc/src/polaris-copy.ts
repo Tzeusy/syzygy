@@ -9,19 +9,20 @@
  */
 import { claimRoleAttrs, type NarrativeClaimRole } from './polaris-narrative.js';
 
-export const COPY_ROLES = ['project-fact', 'epistemic-disclosure', 'action-label', 'scope-instruction'] as const;
-export type CopyRole = (typeof COPY_ROLES)[number];
+const COPY_ROLES = ['project-fact', 'epistemic-disclosure', 'action-label', 'scope-instruction'] as const;
+type CopyRole = (typeof COPY_ROLES)[number];
 
-export const COPY_KINDS = ['heading', 'lede', 'notice', 'sentence', 'label'] as const;
-export type CopyKind = (typeof COPY_KINDS)[number];
+const COPY_KINDS = ['heading', 'lede', 'notice', 'sentence', 'label'] as const;
+type CopyKind = (typeof COPY_KINDS)[number];
 
-export interface PolarisCopyRow {
+interface PolarisCopyRow {
   readonly id: string;
   readonly role: CopyRole;
   readonly kind: CopyKind;
   readonly text: string;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const POLARIS_COPY = [
   { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers' },
   { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Less to remember. More room to live.' },
@@ -283,7 +284,7 @@ export type PolarisCopyId = (typeof POLARIS_COPY)[number]['id'];
 
 const BY_ID: ReadonlyMap<string, PolarisCopyRow> = new Map(POLARIS_COPY.map((row) => [row.id, row]));
 
-export function copyRow(id: PolarisCopyId): PolarisCopyRow {
+function copyRow(id: PolarisCopyId): PolarisCopyRow {
   const row = BY_ID.get(id);
   if (row === undefined) throw new Error(`no Polaris copy row ${id}`);
   return row;
@@ -301,7 +302,7 @@ export function copyText(id: PolarisCopyId): string {
 /** Default claim role per copy role (PWB-REQ-014): disclosures are
  * epistemic claims; everything else is non-normative framing unless a
  * renderer marks the unit as an anchored project fact. */
-export const DEFAULT_CLAIM_ROLE: Readonly<Record<CopyRole, NarrativeClaimRole>> = {
+const DEFAULT_CLAIM_ROLE: Readonly<Record<CopyRole, NarrativeClaimRole>> = {
   'project-fact': 'non-normative-framing',
   'epistemic-disclosure': 'epistemic-claim',
   'action-label': 'non-normative-framing',

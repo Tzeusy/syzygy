@@ -1,0 +1,362 @@
+// THROWAWAY (never committed): old script vs new main(), same fakes.
+// `zz-main-old.ts` is the base main.ts (blob 5f873660fe95974eb8adaf67d554d3d46d886a5f).
+// Each scenario runs the old script (top-level, reading process.* and the
+// mocked modules), the new exported main in poc-main.ts (default deps, fake
+// io over the same mocked modules) and the new entry main.ts (a module that
+// reads process.* like the old script and calls main), and the three
+// transcripts must be equal.
+import { createHash } from 'node:crypto';
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { PassThrough, Writable } from 'node:stream';
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
+
+import type { PocModel } from '@syzygy/three-surface-poc-core';
+
+import { buildFixtureModel } from './test-model-fixture.js';
+
+interface Scenario {
+  name: string;
+  argv: string[];
+  cwd?: string;
+  binding?: (locator: string) => { kind: 'bound'; locator: string } | { kind: 'rejected'; reason: string };
+  repo?: (root: string, n: number) => unknown;
+  clean?: (observation: unknown, n: number) => boolean;
+  horizon?: (root: string, pinned: string, n: number) => unknown;
+  model?: (input: unknown, n: number) => PocModel;
+  daemon?: (options: unknown) => unknown;
+  /** Actions run after the daemon started, before the signal. */
+  after?: (ctx: { routes: Route[]; stdin: PassThrough }) => Promise<string[]>;
+  signals?: ('SIGINT' | 'SIGTERM')[];
+  repoPath?: string;
+}
+interface Route { method: string; path: string; credentialClass: string; handle: (ctx: unknown) => Promise<{ status: number; contentType: string; body: string }> | { status: number; contentType: string; body: string } }
+
+const fx = vi.hoisted(() => ({
+  calls: [] as string[],
+  scenario: null as unknown as Scenario,
+  repoN: 0,
+  cleanN: 0,
+  horizonN: 0,
+  modelN: 0,
+  daemonOptions: null as unknown as { stateDir: string; port: number; routes: Route[] } | null,
+  emit: (_signal: 'SIGINT' | 'SIGTERM') => {},
+  afterDone: [] as string[],
+  closed: 0,
+  stdin: null as unknown as import('node:stream').PassThrough,
+  PocError: null as unknown as typeof import('@syzygy/three-surface-poc-core').PocObservationError,
+}));
+
+vi.mock('./git-observation.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./git-observation.js')>();
+  return {
+    ...actual,
+    resolvePwbRepositoryBinding: (locator: string) => { fx.calls.push(`resolve ${locator}`); return fx.scenario.binding!(locator); },
+    observeGitRepository: (root: string) => { fx.calls.push(`repo ${root}`); fx.repoN += 1; return fx.scenario.repo!(root, fx.repoN); },
+    pocObserverInputsAreClean: (observation: unknown) => { fx.calls.push('clean?'); fx.cleanN += 1; return fx.scenario.clean!(observation, fx.cleanN); },
+    observeGitHorizon: (root: string, pinned: string) => { fx.calls.push(`horizon ${root} ${pinned}`); fx.horizonN += 1; return fx.scenario.horizon!(root, pinned, fx.horizonN); },
+    observeRevisionChange: (root: string, from: string, to: string) => { fx.calls.push(`change ${root} ${from} ${to}`); return { changedSources: 2, addedSources: 1 }; },
+    observeObservatoryDrift: (root: string, build: string) => { fx.calls.push(`observatory ${root} ${build}`); return { buildRevision: build, currentRevision: build, commitsSinceBuild: 3 }; },
+  };
+});
+
+vi.mock('./production-reobserve.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./production-reobserve.js')>();
+  return {
+    ...actual,
+    buildProductionPocModel: (input: { capture: unknown; repoRoot: string; stateDir: string; observerRoot: string }) => {
+      fx.modelN += 1;
+      fx.calls.push(`model ${JSON.stringify({ capture: input.capture, repoRoot: input.repoRoot, stateDir: input.stateDir, observerRoot: input.observerRoot })}`);
+      return fx.scenario.model!(input, fx.modelN);
+    },
+  };
+});
+
+vi.mock('@syzygy/cap1-daemon', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@syzygy/cap1-daemon')>();
+  return {
+    ...actual,
+    createDaemon: async (options: { stateDir: string; port: number; routes: Route[] }) => {
+      fx.daemonOptions = options;
+      fx.calls.push(`daemon ${JSON.stringify({ stateDir: options.stateDir, port: options.port, routes: options.routes.map((r) => `${r.method} ${r.path} ${r.credentialClass}`) })}`);
+      const made = fx.scenario.daemon!(options) as { started: boolean };
+      if (made.started) {
+        // Run the post-start actions, then signal, once main is waiting.
+        setTimeout(() => {
+          void (async () => {
+            if (fx.scenario.after) fx.afterDone.push(...await fx.scenario.after({ routes: options.routes, stdin: fx.stdin }));
+            for (const signal of fx.scenario.signals ?? ['SIGINT']) fx.emit(signal);
+          })();
+        }, 0);
+      }
+      return made;
+    },
+  };
+});
+
+const REPO = realpathSync(mkdtempSync(join(tmpdir(), 'zz-main-repo-')));
+const FIXED_NOW = '2026-10-22T09:00:00.000Z';
+const cleanups: string[] = [];
+let model: PocModel;
+
+function observation(revision: string, extra: Record<string, unknown> = {}): unknown {
+  return { revision, committerInstant: '2026-10-20T00:00:00+00:00', worktreeMetadataDigest: `sha256:${revision.padEnd(64, '0')}`, clean: true, changedPaths: [], ...extra };
+}
+
+function okDaemon(provision: 'minted' | 'reused' = 'minted') {
+  return () => ({
+    started: true,
+    daemon: {
+      host: '127.0.0.1',
+      port: 7478,
+      credentialPath: '/scratch/state/machine-credential.token',
+      credentialProvision: provision,
+      close: async () => { fx.closed += 1; },
+    },
+  });
+}
+
+const HOME = { headers: { host: '127.0.0.1:7478', origin: 'http://127.0.0.1:7478' } };
+const reqCtx = (method: string, path: string) => ({ request: { method, path, query: new URLSearchParams(), headers: HOME.headers }, admission: undefined });
+
+async function hit(routes: Route[], method: string, path: string): Promise<string> {
+  const route = routes.find((r) => r.method === method && r.path === path);
+  if (route === undefined) return `${method} ${path}: no route`;
+  const response = await route.handle(reqCtx(method, path));
+  return `${method} ${path}: ${response.status} ${response.contentType} len=${response.body.length} sha=${createHash('sha256').update(response.body).digest('hex')}`;
+}
+
+function happy(overrides: Partial<Scenario> = {}): Scenario {
+  return {
+    name: 'happy',
+    argv: ['--repo', REPO, '--state-dir', '/scratch/state', '--port', '0'],
+    binding: (locator) => ({ kind: 'bound', locator }),
+    repo: (root, n) => observation(root === REPO ? `rev-butlers-${n >= 3 ? 'b' : 'a'}` : 'rev-observer'),
+    clean: () => true,
+    horizon: (_root, pinned) => ({ pinnedRevision: pinned, currentRevision: pinned, currentCommitterInstant: '2026-10-20T00:00:00+00:00', changedSources: 0, addedSources: 0 }),
+    model: () => model,
+    daemon: okDaemon(),
+    ...overrides,
+  };
+}
+
+interface Transcript { stdout: string; stderr: string; exitCode: number; calls: string[]; thrown: string | null; after: string[]; closed: number }
+
+function normalize(t: Transcript): Transcript { return t; }
+
+async function runScript(scenario: Scenario, load: () => Promise<unknown>): Promise<Transcript> {
+  fx.calls = []; fx.scenario = scenario; fx.repoN = 0; fx.cleanN = 0; fx.horizonN = 0; fx.modelN = 0; fx.daemonOptions = null; fx.afterDone = []; fx.closed = 0;
+  let stdout = ''; let stderr = '';
+  fx.stdin = new PassThrough();
+  const stdinDescriptor = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+  Object.defineProperty(process, 'stdin', { value: fx.stdin, configurable: true });
+  const savedArgv = process.argv;
+  process.argv = ['node', '/x/dist/main.js', ...scenario.argv];
+  process.exitCode = undefined;
+  const out = vi.spyOn(process.stdout, 'write').mockImplementation(((chunk: unknown) => { stdout += String(chunk); return true; }) as never);
+  const err = vi.spyOn(process.stderr, 'write').mockImplementation(((chunk: unknown) => { stderr += String(chunk); return true; }) as never);
+  const cwd = vi.spyOn(process, 'cwd').mockReturnValue(scenario.cwd ?? '/observer/syzygy');
+  const before = { SIGINT: process.listeners('SIGINT'), SIGTERM: process.listeners('SIGTERM') };
+  fx.emit = (signal) => { process.emit(signal, signal); };
+  vi.resetModules();
+  // The error class identity belongs to the module registry under test.
+  fx.PocError = (await import('@syzygy/three-surface-poc-core')).PocObservationError;
+  let thrown: string | null = null;
+  try {
+    await load();
+  } catch (cause) {
+    thrown = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
+  } finally {
+    for (const signal of ['SIGINT', 'SIGTERM'] as const) for (const listener of process.listeners(signal)) if (!before[signal].includes(listener)) process.removeListener(signal, listener);
+    out.mockRestore(); err.mockRestore(); cwd.mockRestore();
+    Object.defineProperty(process, 'stdin', stdinDescriptor);
+  }
+  const exitCode = typeof process.exitCode === 'number' ? process.exitCode : 0;
+  process.exitCode = undefined;
+  process.argv = savedArgv;
+  return normalize({ stdout, stderr, exitCode, calls: fx.calls, thrown, after: fx.afterDone, closed: fx.closed });
+}
+
+const runOld = (scenario: Scenario) => runScript(scenario, () => import('./zz-main-old.js'));
+const runEntry = (scenario: Scenario) => runScript(scenario, () => import('./main.js'));
+
+async function runNew(scenario: Scenario): Promise<Transcript> {
+  fx.calls = []; fx.scenario = scenario; fx.repoN = 0; fx.cleanN = 0; fx.horizonN = 0; fx.modelN = 0; fx.daemonOptions = null; fx.afterDone = []; fx.closed = 0;
+  fx.stdin = new PassThrough();
+  let stdout = ''; let stderr = '';
+  const collect = (sink: (text: string) => void) => new Writable({ write(chunk, _encoding, callback) { sink(String(chunk)); callback(); } });
+  const listeners: { signal: 'SIGINT' | 'SIGTERM'; listener: () => void }[] = [];
+  fx.emit = (signal) => { for (const l of listeners.filter((entry) => entry.signal === signal)) l.listener(); };
+  const cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(scenario.cwd ?? '/observer/syzygy');
+  const { main } = await import('./poc-main.js');
+  let thrown: string | null = null;
+  let exitCode = -1;
+  try {
+    exitCode = await main(scenario.argv, {
+      stdout: collect((t) => { stdout += t; }),
+      stderr: collect((t) => { stderr += t; }),
+      stdin: fx.stdin,
+      cwd: () => scenario.cwd ?? '/observer/syzygy',
+      now: () => new Date().toISOString(),
+      onSignal: (signal, listener) => { listeners.push({ signal, listener }); },
+    });
+  } catch (cause) {
+    thrown = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
+    exitCode = 0;
+  }
+  cwdSpy.mockRestore();
+  return normalize({ stdout, stderr, exitCode, calls: fx.calls, thrown, after: fx.afterDone, closed: fx.closed });
+}
+
+afterEach(() => { vi.restoreAllMocks(); });
+afterAll(() => { rmSync(REPO, { recursive: true, force: true }); });
+
+const SCENARIOS: Scenario[] = [];
+function add(s: Scenario) { SCENARIOS.push(s); }
+
+describe('old script vs new main(): identical transcripts', () => {
+  it('builds the fixture model once', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(FIXED_NOW));
+    model = buildFixtureModel(cleanups);
+    expect(model).toBeDefined();
+  });
+
+  add({ ...happy(), name: 'help', argv: ['--help'] });
+  add({ ...happy(), name: 'help-short', argv: ['-h', '--bogus'] });
+  add({ ...happy(), name: 'invalid-unknown-arg', argv: ['--bogus'] });
+  add({ ...happy(), name: 'invalid-missing-repo', argv: ['--port', '0'] });
+  add({ ...happy(), name: 'invalid-port', argv: ['--repo', '/r', '--port', '99999'] });
+  add({ ...happy(), name: 'invalid-twice', argv: ['--repo', '/r', '--repo', '/s'] });
+  add({ ...happy(), name: 'repo-unreadable', argv: ['--repo', '/no/such/repo/anywhere-zz'] });
+  add({ ...happy(), name: 'binding-rejected', binding: () => ({ kind: 'rejected', reason: 'locator-mismatched' }) });
+  add({ ...happy(), name: 'binding-rejected-other', argv: ['--repo', '/tmp'], binding: () => ({ kind: 'rejected', reason: 'locator-unreadable' }) });
+  add({ ...happy(), name: 'repo-git-fails', repo: (root) => { if (root === REPO) throw Object.assign(new Error('git failed'), { status: 128 }); return observation('o'); } });
+  add({ ...happy(), name: 'repo-git-fails-no-status', repo: () => { throw new Error('boom'); } });
+  add({ ...happy(), name: 'repo-git-status-out-of-range', repo: () => { throw Object.assign(new Error('x'), { status: 300 }); } });
+  add({ ...happy(), name: 'observer-git-fails', repo: (root) => { if (root !== REPO) throw Object.assign(new Error('git failed'), { status: 1 }); return observation('r'); } });
+  add({ ...happy(), name: 'observer-dirty', clean: () => false });
+  add({ ...happy(), name: 'horizon-throws-at-start', horizon: () => { throw new Error('horizon exploded'); } });
+  add({ ...happy(), name: 'model-throws-poc-observation-error', model: () => { throw new fx.PocError('required-artifact-missing', 'path/to/artifact', 'detail text'); } });
+  add({ ...happy(), name: 'model-throws-poc-observation-error-bare', model: () => { throw new fx.PocError('invalid-seed-graph'); } });
+  add({ ...happy(), name: 'model-throws-type-error', model: () => { throw new TypeError('bad'); } });
+  add({ ...happy(), name: 'model-throws-custom-error', model: () => { throw Object.assign(new Error('x'), { name: 'WeirdError' }); } });
+  add({ ...happy(), name: 'model-throws-string', model: () => { throw 'a string'; } });
+  add({ ...happy(), name: 'daemon-bind-failed', daemon: () => ({ started: false, failure: { kind: 'bind-failed', detail: 'listen EADDRINUSE: address already in use' } }) });
+  add({ ...happy(), name: 'daemon-bind-failed-nocode', daemon: () => ({ started: false, failure: { kind: 'bind-failed', detail: 'something else' } }) });
+  add({ ...happy(), name: 'daemon-credential', daemon: () => ({ started: false, failure: { kind: 'credential-unprovisionable', detail: 'credential could not be persisted: /secret/path' } }) });
+  add({ ...happy(), name: 'daemon-duplicate-route', daemon: () => ({ started: false, failure: { kind: 'duplicate-route', detail: 'two routes registered for `GET /polaris`' } }) });
+  add({ ...happy(), name: 'daemon-duplicate-route-odd', daemon: () => ({ started: false, failure: { kind: 'duplicate-route', detail: 'weird /path' } }) });
+  add({ ...happy(), name: 'daemon-throws', daemon: () => { throw new RangeError('daemon constructor blew up'); } });
+  add({ ...happy(), name: 'happy-default-state-dir', argv: ['--repo', REPO, '--port', '0'] });
+  add({ ...happy(), name: 'happy-relative-state-dir', argv: ['--repo', REPO, '--state-dir', 'rel/state', '--port', '7000'] });
+  add({ ...happy(), name: 'happy-sigterm', signals: ['SIGTERM'] });
+  add({ ...happy(), name: 'happy-double-signal', signals: ['SIGINT', 'SIGTERM', 'SIGINT'] });
+  add({ ...happy(), name: 'happy-reused', daemon: okDaemon('reused') });
+  add({
+    ...happy(),
+    name: 'happy-pages',
+    after: async ({ routes }) => [
+      await hit(routes, 'GET', '/polaris'),
+      await hit(routes, 'GET', '/trajectory'),
+      await hit(routes, 'GET', '/orrery'),
+      await hit(routes, 'GET', '/api/poc'),
+    ],
+  });
+  add({
+    ...happy(),
+    name: 'reobserve-ok',
+    after: async ({ routes }) => [await hit(routes, 'POST', '/polaris/reobserve'), await hit(routes, 'GET', '/polaris')],
+  });
+  add({
+    ...happy(),
+    name: 'reobserve-dirty',
+    clean: (_o, n) => n === 1,
+    after: async ({ routes }) => [await hit(routes, 'POST', '/polaris/reobserve'), await hit(routes, 'GET', '/polaris')],
+  });
+  add({
+    ...happy(),
+    name: 'reobserve-git-fails',
+    repo: (root, n) => { if (n > 2) throw new Error('re-observe git failed: secret detail'); return observation(root === REPO ? 'rev-a' : 'rev-o'); },
+    after: async ({ routes }) => [await hit(routes, 'POST', '/polaris/reobserve')],
+  });
+  add({
+    ...happy(),
+    name: 'reobserve-horizon-fails',
+    horizon: (_r, pinned, n) => { if (n > 1) throw new Error('horizon later failed'); return { pinnedRevision: pinned, currentRevision: pinned, currentCommitterInstant: '2026-10-20T00:00:00+00:00', changedSources: 0, addedSources: 0 }; },
+    after: async ({ routes }) => [await hit(routes, 'POST', '/polaris/reobserve')],
+  });
+  add({
+    ...happy(),
+    name: 'reobserve-model-fails',
+    model: (_i, n) => { if (n > 1) throw new Error('model rebuild failed'); return model; },
+    after: async ({ routes }) => [await hit(routes, 'POST', '/polaris/reobserve')],
+  });
+  add({ ...happy(), name: 'cwd-differs', cwd: '/some/other/observer' });
+  const EVALUATED = { kind: 'evaluated', readiness: { expected: { surfaceVersion: 'surface-version-literal', evaluationIdentity: 'evaluation-identity-literal' } } };
+  add({ ...happy(), name: 'happy-evaluated-readiness', model: () => ({ ...model, walkthroughReadiness: EVALUATED }) as unknown as PocModel });
+  const watchArgv = ['--repo', REPO, '--state-dir', '/scratch/state', '--port', '0', '--watch'];
+  const enter = async (stdin: PassThrough) => { stdin.write('\n'); await new Promise((r) => setTimeout(r, 120)); };
+  add({ ...happy(), name: 'watch-enter-reobserves', argv: watchArgv, after: async ({ stdin }) => { await enter(stdin); return ['entered']; } });
+  add({ ...happy(), name: 'watch-enter-dirty', argv: watchArgv, clean: (_o, n) => n === 1, after: async ({ stdin }) => { await enter(stdin); return ['entered']; } });
+  add({ ...happy(), name: 'watch-no-enter', argv: watchArgv });
+
+  // Non-vacuity: the old transcript must reach the named stage, so equality
+  // is about the path the scenario is named for, not an early refusal.
+  const EXPECT: Record<string, { exit: number; out?: string; err?: string; thrown?: string }> = {
+    'help': { exit: 0, out: 'Usage: npm run poc' },
+    'invalid-unknown-arg': { exit: 1, err: 'syzygy POC: ' },
+    'repo-unreadable': { exit: 1, err: 'configured repository is not readable' },
+    'binding-rejected': { exit: 1, err: 'configured repository authority rejected (locator-mismatched)' },
+    'repo-git-fails': { exit: 1, err: 'syzygy POC: ' },
+    'observer-git-fails': { exit: 1, err: 'syzygy POC: ' },
+    'observer-dirty': { exit: 1, err: 'syzygy POC: ' },
+    'horizon-throws-at-start': { exit: 0, thrown: 'horizon exploded' },
+    'model-throws-poc-observation-error': { exit: 1, err: 'observation failed (required-artifact-missing): path/to/artifact: detail text' },
+    'model-throws-poc-observation-error-bare': { exit: 1, err: 'observation failed (invalid-seed-graph)\n' },
+    'model-throws-type-error': { exit: 1, err: 'observation failed (' },
+    'daemon-bind-failed': { exit: 1, err: 'daemon did not start (bind-failed' },
+    'daemon-credential': { exit: 1, err: 'daemon did not start (credential-unprovisionable' },
+    'daemon-duplicate-route': { exit: 1, err: 'daemon did not start (duplicate-route' },
+    'daemon-throws': { exit: 1, err: 'observation failed (' },
+    'happy-default-state-dir': { exit: 0, out: 'Machine endpoint: http://127.0.0.1:7478/api/poc' },
+    'happy-sigterm': { exit: 0, out: 'SIGTERM received, shutting down' },
+    'happy-double-signal': { exit: 0, out: 'SIGINT received, shutting down' },
+    'happy-pages': { exit: 0, out: 'Observed repository: ' },
+    'reobserve-ok': { exit: 0, out: 'Observed revision: ' },
+    'watch-enter-reobserves': { exit: 0, out: 'Re-observing' },
+    'watch-enter-dirty': { exit: 0, out: 'Re-observation unavailable: Unknown' },
+    'watch-no-enter': { exit: 0, out: 'Machine endpoint' },
+    'happy-evaluated-readiness': { exit: 0, out: 'Walkthrough evaluation identity: evaluation-identity-literal' },
+  };
+
+  for (const scenario of SCENARIOS) {
+    it(`scenario ${scenario.name}`, async () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(FIXED_NOW));
+      const oldRun = await runOld(scenario);
+      const newRun = await runNew(scenario);
+      expect(newRun).toEqual(oldRun);
+      const entryRun = await runEntry(scenario);
+      expect(entryRun).toEqual(oldRun);
+      const want = EXPECT[scenario.name];
+      if (want !== undefined) {
+        expect(oldRun.exitCode).toBe(want.exit);
+        if (want.out !== undefined) expect(oldRun.stdout).toContain(want.out);
+        if (want.err !== undefined) expect(oldRun.stderr).toContain(want.err);
+        if (want.thrown !== undefined) expect(oldRun.thrown).toContain(want.thrown);
+      }
+      // The comparison must be about something: record that a path was exercised.
+      ((globalThis as { __zzTranscripts?: unknown[] }).__zzTranscripts ??= []).push({ name: scenario.name, old: oldRun, new: newRun, entryEqualsOld: true });
+      (globalThis as { __zzScenarioSummary?: string[] }).__zzScenarioSummary ??= [];
+      (globalThis as { __zzScenarioSummary?: string[] }).__zzScenarioSummary!.push(`${scenario.name}: exit=${oldRun.exitCode} calls=${oldRun.calls.length} stdout=${oldRun.stdout.length} stderr=${oldRun.stderr.length} thrown=${oldRun.thrown ?? '-'} after=${oldRun.after.length}`);
+    });
+  }
+
+  it('summary', () => {
+    console.log((globalThis as { __zzScenarioSummary?: string[] }).__zzScenarioSummary?.join('\n'));
+    const out = process.env.ZZ_TRANSCRIPT_OUT;
+    if (out !== undefined) writeFileSync(out, JSON.stringify((globalThis as { __zzTranscripts?: unknown[] }).__zzTranscripts, null, 1).replaceAll(REPO, '<REPO>'));
+  });
+});

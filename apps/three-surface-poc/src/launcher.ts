@@ -1,6 +1,6 @@
 import type { PwbRepositoryBinding } from './git-observation.js';
 
-export type LauncherBindingResult<T> =
+type LauncherBindingResult<T> =
   | { readonly kind: 'rejected'; readonly reason: Extract<PwbRepositoryBinding, { readonly kind: 'rejected' }>['reason'] }
   | { readonly kind: 'launched'; readonly result: T };
 

@@ -18,16 +18,12 @@ import type {
 
 import type { DeepDiveMachineForm } from './capability-detail.js';
 
-export const NARRATIVE_CLAIM_ROLES = ['anchored-project-fact', 'non-normative-framing', 'epistemic-claim'] as const;
+const NARRATIVE_CLAIM_ROLES = ['anchored-project-fact', 'non-normative-framing', 'epistemic-claim'] as const;
 export type NarrativeClaimRole = (typeof NARRATIVE_CLAIM_ROLES)[number];
 
 /** Closed anchor target classes (PWB-REQ-014). */
-export const ANCHOR_TARGET_CLASSES = ['doctrine', 'contract', 'requirement', 'decision', 'evidence', 'work'] as const;
+const ANCHOR_TARGET_CLASSES = ['doctrine', 'contract', 'requirement', 'decision', 'evidence', 'work'] as const;
 export type AnchorTargetClass = (typeof ANCHOR_TARGET_CLASSES)[number];
-
-/** A reader must be able to tell which anchor supports which claim; beyond
- * this many anchors a block is ambiguous by construction. */
-export const MAX_ANCHORS_PER_BLOCK = 6;
 
 export interface CapturedTargetState {
   readonly label: string;
@@ -50,7 +46,7 @@ export interface NarrativeAnchor {
   readonly locator: string;
 }
 
-export interface NarrativeBlock {
+interface NarrativeBlock {
   readonly kind: 'narrative-block';
   readonly blockId: string;
   readonly role: NarrativeClaimRole;
@@ -60,6 +56,7 @@ export interface NarrativeBlock {
   readonly anchors: readonly NarrativeAnchor[];
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface PolarisNarrative {
   readonly kind: 'polaris-narrative';
   readonly presentation: 'presentation-artifact';

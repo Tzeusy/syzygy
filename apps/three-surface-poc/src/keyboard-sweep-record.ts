@@ -15,7 +15,7 @@ export const KEYBOARD_SWEEP_USAGE =
 /** A bead id: `syzygy-1z3.30`, `syzygy-buzg`. */
 const TASK_ID = /^[a-z][a-z0-9]*-[a-z0-9]+(?:\.[a-z0-9]+)*$/;
 
-export interface KeyboardSweepArguments {
+interface KeyboardSweepArguments {
   readonly task: string;
   readonly baseUrl: string | undefined;
   readonly files: readonly string[];
@@ -44,7 +44,7 @@ export function keyboardSweepOutput(parsed: Pick<KeyboardSweepArguments, 'date' 
   return { file, directory: dirname(file) };
 }
 
-export interface ServedEvaluationBinding {
+interface ServedEvaluationBinding {
   /** The Butlers revision the page says it was evaluated at (the currency probe's pinned revision). */
   readonly butlersRevision: string;
   /** `<snapshot>|observed:<asOf>`, the form `evaluationIdentity(model)` gives, from the page footer. */
@@ -63,6 +63,7 @@ function unescapeHtml(text: string): string {
   return text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The evaluation one served Polaris page renders, read from its own bytes; refused unless each part appears exactly once. */
 export function servedEvaluationBinding(html: string): ServedEvaluationBinding | { readonly refused: string } {
   const pinned = [...html.matchAll(PINNED_REVISION)];

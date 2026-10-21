@@ -8,7 +8,8 @@ import {
   evaluateDossier, generationAnchorId, generationSourcesForBody, gitBlobObjectId, parseDossierManifest, scanDossierPage,
   type GenerationSource, type PipelineResult,
 } from '@syzygy/polaris-generation-core';
-import { renderDossier, sourceRoute } from './dossier-render.js';
+import { renderDossier } from './dossier-render.js';
+import { sourceRoute } from './dossier-site.js';
 import { writeDossierRun } from './dossier-render-main.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
 import { syntheticGenerationSource } from './synthetic-source.js';

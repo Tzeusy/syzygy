@@ -1,8 +1,8 @@
-export type ReobserveStateResult<M> =
+type ReobserveStateResult<M> =
   | { readonly kind: 'reobserved'; readonly model: M }
   | { readonly kind: 'failed'; readonly reason: string };
 
-export interface ReobserveStateOptions<C, M> {
+interface ReobserveStateOptions<C, M> {
   readonly capture: C;
   readonly model: M;
   readonly observe: () => Promise<C>;
