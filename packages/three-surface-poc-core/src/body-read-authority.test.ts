@@ -616,6 +616,45 @@ describe('PWB-REQ-005 invalid cases (195)', () => {
   }
 });
 
+// One non-human-principal rule (syzygy-bpyt.6.2): this gate and the
+// PWB-REQ-022 judgment evaluator classify an owner name the same way. Each
+// principal names one arm of the two former rules; the "flipped" ones
+// were human to this gate before, and refused only as owner-another-human.
+const NON_HUMAN_OWNERS: readonly [string, string][] = [
+  ['agent: Claude Code', 'role prefix agent'],
+  ['machine', 'role prefix machine'],
+  ['Anthropic Claude', 'model name claude as a word'],
+  ['codex', 'model name codex'],
+  ['gpt-5', 'model name gpt'],
+  ['GitHub Copilot', 'model name copilot'],
+  ['an llm', 'model name llm'],
+  ['daemon', 'role prefix daemon (flipped)'],
+  ['automation: nightly', 'role prefix automation (flipped)'],
+  ['syzygy', 'role prefix syzygy (flipped)'],
+  ['ci/release', 'role prefix ci with a slash (flipped)'],
+  ['renovate[bot]', 'suffix [bot] (flipped)'],
+  ['deploy-bot', 'suffix -bot (flipped)'],
+  ['review-agent', 'suffix -agent (flipped)'],
+];
+
+describe('PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator', () => {
+  for (const kind of ['consent', 'policy', 'registry'] as const) {
+    it.each(NON_HUMAN_OWNERS)(`${kind}: owner %j (%s) → owner-non-human`, (owner) => {
+      const state = evaluateBodyReadAuthority(inputs({ [kind]: { record: { set: { 'Owner:': owner } } } }))[kind];
+      expect(state.kind).toBe('invalid');
+      if (state.kind === 'invalid') expect(state.caseId).toBe(`${kind}:owner-non-human`);
+    });
+  }
+
+  // Each human name sits one anchor away from an arm: a word boundary, a
+  // separator after a role prefix, a line start, a line end.
+  it.each(['Somebody Else', 'Claudette', 'Botha', 'Agentha Smith', 'Anna Model', 'Anna Daemon', 'Jean-Botha'])('a human name %j stays owner-another-human', (owner) => {
+    const state = evaluateBodyReadAuthority(inputs({ consent: { record: { set: { 'Owner:': owner } } } })).consent;
+    expect(state.kind).toBe('invalid');
+    if (state.kind === 'invalid') expect(state.caseId).toBe('consent:owner-another-human');
+  });
+});
+
 // ---------------------------------------------------------------------
 // Absence, no-fallback, history, freezing.
 // ---------------------------------------------------------------------

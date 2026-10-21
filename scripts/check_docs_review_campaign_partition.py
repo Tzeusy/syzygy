@@ -439,6 +439,11 @@ CAMPAIGNS = (
         "Greenfield-parity owner packet",
         r"R-GREENFIELD-PARITY-PACKET-\d+-RAW\.md",
     ),
+    campaign(
+        "greenfield-parity-implementation",
+        "Greenfield-parity implementation",
+        r"R-GP-IMPL-.*-RAW\.md",
+    ),
 )
 
 
