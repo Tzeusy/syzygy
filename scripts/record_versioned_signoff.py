@@ -535,6 +535,17 @@ def p115_exception(failure: BaseException) -> dict:
                                                             failure.__traceback__, chain=True))}
 
 
+def p115_cleanup_stage(staged: pathlib.Path, identity: tuple[int, int]) -> None:
+    """Only the regular inode created for this stage may be removed."""
+    try:
+        info = staged.lstat()
+    except FileNotFoundError:
+        return  # Replacement consumed the stage; no unlink is necessary.
+    if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino) != identity:
+        raise ValueError(f"P115 stage cleanup ownership unproven: {staged}")
+    staged.unlink()
+
+
 def p115_stage(path: pathlib.Path, body: bytes, *, on_stage=lambda path, identity: None) -> pathlib.Path:
     """Close complete bytes on the target filesystem before publication."""
     fd, name = tempfile.mkstemp(prefix=".p115-", dir=path.parent)
@@ -543,15 +554,15 @@ def p115_stage(path: pathlib.Path, body: bytes, *, on_stage=lambda path, identit
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(body)
+            if path.exists():
+                os.fchmod(stream.fileno(), path.stat().st_mode & 0o777)
             stream.flush()
             os.fsync(stream.fileno())
-        if path.exists():
-            staged.chmod(path.stat().st_mode & 0o777)
         on_stage(staged, identity)
         return staged
     except BaseException as failure:
         try:
-            staged.unlink(missing_ok=True)
+            p115_cleanup_stage(staged, identity)
         except BaseException as cleanup_error:
             failure._p115_secondary = [*getattr(failure, "_p115_secondary", []), p115_exception(cleanup_error)]
         raise
@@ -568,7 +579,9 @@ def p115_publish(path: pathlib.Path, body: bytes, *, expected: bytes | None,
         if p115_identity(staged) != token["identity"] or p115_read(staged) != body:
             raise ValueError(f"P115 owned stage changed: {staged}")
         guard(staged, token["identity"], body)
-        if p115_read(path) != expected or p115_identity(path) != expected_identity:
+        if p115_observe(staged) != (body, token["identity"]):
+            raise ValueError(f"P115 owned stage changed: {staged}")
+        if p115_observe(path) != (expected, expected_identity):
             raise ValueError(f"P115 publication destination changed: {path}")
         if expected is None:
             os.link(staged, path)  # EEXIST refuses even a same-byte foreign creator.
@@ -581,11 +594,11 @@ def p115_publish(path: pathlib.Path, body: bytes, *, expected: bytes | None,
         raise
     finally:
         try:
-            staged.unlink(missing_ok=True)
+            p115_cleanup_stage(staged, token["identity"])
         except BaseException as cleanup_error:
             # Retain the first native-unlink error even when a retry cleans up.
             try:
-                staged.unlink(missing_ok=True)
+                p115_cleanup_stage(staged, token["identity"])
             except BaseException as retry_error:
                 cleanup_error._p115_secondary = [p115_exception(retry_error)]
             if operation_error is None:
@@ -614,12 +627,67 @@ def p115_publications(publications: dict) -> dict:
             for rel, token in publications.items()}
 
 
+def p115_observe(path: pathlib.Path) -> tuple[bytes | None, tuple[int, int] | None]:
+    """One bounded regular-file/absence observation; reader errors are not absence."""
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return None, None
+    if not stat.S_ISREG(info.st_mode):
+        raise ValueError(f"P115 recovery path is not a regular file: {path}")
+    identity = info.st_dev, info.st_ino
+    body = p115_read(path)
+    after = path.lstat()
+    if body is None or not stat.S_ISREG(after.st_mode) or (after.st_dev, after.st_ino) != identity:
+        raise ValueError(f"P115 recovery path changed during observation: {path}")
+    return body, identity
+
+
+def p115_recovery_observation(root: pathlib.Path, before: dict, before_identity: dict,
+                               owned_order: list[pathlib.Path], restored: dict, blocked: set,
+                               conflicts: list[str], errors: list[dict], identity: str) -> dict:
+    """Observe every captured target; known conflicts remain negative without duplication."""
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+    rows = []
+    for rel, original in before.items():
+        try:
+            body, actual_identity = p115_observe(root / rel)
+            row = {"path": str(rel), "sha256": None if body is None else hashlib.sha256(body).hexdigest(),
+                   "identity": actual_identity, "kind": "absent" if body is None else "regular"}
+            if rel not in blocked:
+                witnessed = rel not in owned_order or rel in restored
+                expected_identity = restored.get(rel) if rel in owned_order else before_identity[rel]
+                if not witnessed or body != original or actual_identity != expected_identity:
+                    reason = ("restored preimage/identity unverified" if rel in owned_order else
+                              "independent change retained; no owned write")
+                    conflicts.append(f"{rel}: {reason}")
+                    blocked.add(rel)
+            row["verified"] = rel not in blocked
+        except BaseException as error:
+            snapshot = p115_exception(error)
+            node = snapshot["nodes"][0]
+            row = {"path": str(rel), "verified": False, "kind": "unverified",
+                   "error": {k: node[k] for k in ("type", "message", "errno") if k in node}}
+            if rel not in blocked:
+                conflicts.append(f"{rel}: recovery inspection failed: {error}")
+                errors.append(snapshot)
+                blocked.add(rel)
+        rows.append(row)
+    return {"observationId": identity, "startedAt": started,
+            "endedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+            "scope": "exclusive-checkout sequential read-only observation; no atomic/CAS/beyond-window guarantee",
+            "targetCount": len(before), "targets": rows,
+            "complete": not conflicts and not errors and all(r["verified"] for r in rows)}
+
+
 def p115_recover(root: pathlib.Path, before: dict, outputs: dict, before_identity: dict,
-                  owned_order: list[pathlib.Path], publications: dict) -> tuple[list[str], list[dict]]:
+                  owned_order: list[pathlib.Path], publications: dict, *,
+                  restored: dict | None = None, blocked: set | None = None) -> tuple[list[str], list[dict]]:
     """Every governed output needs the same successful-native-publication token."""
     conflicts, errors = [], []
+    restored = {} if restored is None else restored
+    blocked = set() if blocked is None else blocked
     for rel in reversed(owned_order):
-        staged = None
         try:
             path, token = root / rel, publications[rel]
             def owned():
@@ -628,35 +696,29 @@ def p115_recover(root: pathlib.Path, before: dict, outputs: dict, before_identit
                         and p115_identity(path) == token.identity)
             if not owned():
                 conflicts.append(f"{rel}: independently changed or deleted; publication ownership unproven")
+                blocked.add(rel)
                 continue
             if before[rel] is None:
                 if not owned():
                     conflicts.append(f"{rel}: recovery ownership changed")
+                    blocked.add(rel)
                     continue
                 path.unlink()
+                restored[rel] = None  # Only a successful native return witnesses absence.
             else:
-                staged = p115_stage(path, before[rel])
-                if not owned():
-                    conflicts.append(f"{rel}: recovery ownership changed")
-                    continue
-                os.replace(staged, path)
+                def guard(_staged, _identity, _body):
+                    if not owned():
+                        raise ValueError(f"{rel}: recovery ownership changed")
+                p115_publish(path, before[rel], expected=outputs[rel], expected_identity=token.identity,
+                    guard=guard, published=lambda identity: restored.update({rel: identity}))
+            if p115_observe(path) != (before[rel], restored[rel]):
+                raise ValueError(f"{rel}: recovery native result differs from captured preimage/identity")
         except BaseException as error:
             conflicts.append(f"{rel}: restoration failed: {type(error).__name__}: {error}")
             errors.append(p115_exception(error))
-        finally:
-            if staged is not None:
-                try:
-                    staged.unlink(missing_ok=True)
-                except BaseException as error:
-                    conflicts.append(f"{rel}: restoration stage cleanup failed: {error}")
-                    errors.append(p115_exception(error))
-    for rel in before.keys() - set(owned_order):
-        try:
-            if p115_read(root / rel) != before[rel] or p115_identity(root / rel) != before_identity[rel]:
-                conflicts.append(f"{rel}: independent change retained; no owned write")
-        except BaseException as error:
-            conflicts.append(f"{rel}: recovery inspection failed: {error}")
-            errors.append(p115_exception(error))
+            blocked.add(rel)
+    p115_recovery_observation(root, before, before_identity, owned_order, restored, blocked,
+                              conflicts, errors, "recovery-loop-observation")
     return conflicts, errors
 
 
@@ -683,7 +745,7 @@ def p115_private_inventory(journal: pathlib.Path) -> list[dict]:
     return rows
 
 
-def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool) -> None:
+def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool) -> dict:
     """A pathname is not retention evidence; observe a confirmed publication."""
     try:
         body = p115_read(path)
@@ -693,7 +755,8 @@ def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool)
               or body != published["body"] or p115_identity(path) != published["identity"]):
             state = "unverified"
         else:
-            phase = json.loads(body)["state"]
+            record = json.loads(body)
+            phase = record["state"]
             labels = {"failed": "updated failed", "prepared": "older prepared", "completed": "completed"}
             if phase not in labels or completed and phase != "completed":
                 state = "unverified"
@@ -702,11 +765,19 @@ def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool)
                 prefix = ("P115 completed outcome receipt retained: " if completed else
                           "P115 failed-attempt evidence retained: ")
                 print(prefix + str(path))
-                return
+                if not completed and "recoveryObservation" in record:
+                    print("P115 retained receipt recovery observation: "
+                          + record["recoveryObservation"]["observationId"]
+                          + "; historical observation only; final recovery reported separately")
+                return {"verified": True, "phase": phase}
     except BaseException as verification_error:
-        print("P115 secondary receipt verification error: " + json.dumps(p115_exception(verification_error)))
+        snapshot = p115_exception(verification_error)
+        print("P115 secondary receipt verification error: " + json.dumps(snapshot))
         state = "unverified/read-error"
+        print(f"P115 receipt verification: {state}; no retained receipt claimed: {path}")
+        return {"verified": False, "state": state, "exception": snapshot}
     print(f"P115 receipt verification: {state}; no retained receipt claimed: {path}")
+    return {"verified": False, "state": state}
 
 
 def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
@@ -889,12 +960,52 @@ def p115_attempt(root: pathlib.Path, *, operation: str, pkg: Package | None = No
     except BaseException as failure:
         original = p115_exception(failure)  # Freeze BEFORE any recovery operation.
         message = f"{type(failure).__name__}: {failure}"
-        print("P115 original exception: " + json.dumps(original))
-        conflicts, recovery_errors = p115_recover(root, before, outputs, before_identity, owned_order, publications)
-        if outcome is not None:
+        diagnostic_errors = []
+        try:
+            print("P115 original exception: " + json.dumps(original))
+        except BaseException as diagnostic_error:
+            diagnostic_errors.append(p115_exception(diagnostic_error))
+        restored, blocked = {}, set()
+        conflicts, recovery_errors = p115_recover(root, before, outputs, before_identity,
+            owned_order, publications, restored=restored, blocked=blocked)
+        observation_prefix = (journal.name if journal is not None else
+            "unstarted-" + datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+
+        def observe(label):
+            return p115_recovery_observation(root, before, before_identity, owned_order,
+                restored, blocked, conflicts, recovery_errors, observation_prefix + ":" + label)
+
+        def emit(text):
+            try:
+                print(text)
+            except BaseException as diagnostic_error:
+                diagnostic_errors.append(p115_exception(diagnostic_error))
+                if "failure diagnostic output unavailable" not in conflicts:
+                    conflicts.append("failure diagnostic output unavailable")
+
+        def failure_receipt(observation):
             receipt.update(state="failed", originalError=message, originalException=original,
-                           recoveryConflicts=conflicts, recoveryExceptions=recovery_errors,
-                           publications=p115_publications(publications))
+                recoveryConflicts=list(conflicts), recoveryExceptions=list(recovery_errors),
+                diagnosticExceptions=list(diagnostic_errors), recoveryObservation=observation,
+                recoveryPublications={str(rel): identity for rel, identity in restored.items()},
+                publications=p115_publications(publications))
+
+        def report_receipt():
+            try:
+                verified = p115_report_receipt(outcome, receipt_state, completed=False)
+                if not verified["verified"] and not any("failure receipt" in c for c in conflicts):
+                    conflicts.append("failure receipt verification unavailable; no final recovery proof")
+                if verified.get("exception") is not None:
+                    diagnostic_errors.append(verified["exception"])
+            except BaseException as diagnostic_error:
+                diagnostic_errors.append(p115_exception(diagnostic_error))
+                conflicts.append("failure receipt diagnostic unavailable")
+
+        if diagnostic_errors:
+            conflicts.append("original failure diagnostic output unavailable")
+        initial_observation = observe("after-recovery")
+        if outcome is not None:
+            failure_receipt(initial_observation)
             try:
                 receipt["privatePayloadOnFailure"] = p115_private_inventory(journal)
             except BaseException as inventory_error:
@@ -905,15 +1016,43 @@ def p115_attempt(root: pathlib.Path, *, operation: str, pkg: Package | None = No
             except BaseException as evidence_error:
                 evidence = p115_exception(evidence_error)
                 conflicts.append("failure receipt persistence failed; durable failure update unavailable")
-                print("P115 secondary evidence error: " + json.dumps(evidence))
-                print("P115 diagnostic fallback: original exception snapshot printed above; "
-                      "no durable failure update is claimed")
+                diagnostic_errors.append(evidence)
+                emit("P115 secondary evidence error: " + json.dumps(evidence))
+                emit("P115 diagnostic fallback: original exception snapshot printed above; "
+                     "no durable failure update is claimed")
         for error in recovery_errors:
-            print("P115 secondary recovery error: " + json.dumps(error))
-        print("FAILED P115: " + message)
-        print("P115 recovery " + ("incomplete: " + " | ".join(conflicts) if conflicts else "complete; captured preimages preserved"))
+            emit("P115 secondary recovery error: " + json.dumps(error))
+        emit("FAILED P115: " + message)
         if outcome is not None:
-            p115_report_receipt(outcome, receipt_state, completed=False)
+            report_receipt()
+        # Receipt verification and its output are not preservation evidence.
+        # This final read-only observation follows all their effects.
+        final_observation = observe("after-receipt-and-diagnostics")
+        corrected = False
+        if outcome is not None and final_observation["targets"] != initial_observation["targets"]:
+            corrected = True
+            failure_receipt(final_observation)
+            try:
+                persist()  # One corrective update, never a persistence retry loop.
+            except BaseException as evidence_error:
+                diagnostic_errors.append(p115_exception(evidence_error))
+                conflicts.append("corrective failure receipt unavailable; retained observation is historical")
+                emit("P115 secondary corrective evidence error: " + json.dumps(diagnostic_errors[-1]))
+            report_receipt()
+            final_observation = observe("after-one-corrective-receipt")
+        if final_observation["complete"] and not diagnostic_errors:
+            terminal = ("P115 recovery complete; captured preimages preserved at observation "
+                + final_observation["observationId"] + " [" + final_observation["startedAt"]
+                + " .. " + final_observation["endedAt"] + "]; targets=" + str(len(before))
+                + "; exclusive-checkout sequential read-only scope; no atomic/CAS/beyond-window guarantee")
+        else:
+            emit("P115 final recovery observation: " + json.dumps(final_observation))
+            if corrected:
+                emit("P115 retained receipt recovery scope: historical observation; "
+                     "no current preservation claim beyond the final observation window")
+            terminal = "P115 recovery incomplete: " + " | ".join(conflicts)
+        # No receipt, inventory or diagnostic read follows a positive line.
+        emit(terminal)
         if not isinstance(failure, Exception):
             raise
         return 1
