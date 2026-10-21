@@ -10,7 +10,8 @@ counts as a use and the sweep errs toward keeping an export) in:
            and .py) anywhere in the repository (packages, apps, scripts,
            .github); a .py file is a consumer because the governance scripts
            parse TypeScript declarations by their literal text, and its
-           comments are kept (a `#` line counts as a use)
+           comments are kept (a `#` line counts as a use); .py files under
+           docs/evidence/ are measurement tooling and are not consumers
   test   - every tracked *.test.ts / *.test.mjs file anywhere
   self   - uses inside the declaring file beyond its own declaration
 Classes: dead (prod=0, test=0, self=0), self-only (prod=0, test=0, self>0),
@@ -27,7 +28,9 @@ root = Path(sys.argv[1])
 out = sys.argv[sys.argv.index('--json') + 1] if '--json' in sys.argv else None
 files = subprocess.run(['git', 'ls-files', '-z'], cwd=root, capture_output=True, check=True).stdout.decode().split('\0')
 code_ext = ('.ts', '.mts', '.mjs', '.js', '.cjs', '.py')
-code = [f for f in files if f.endswith(code_ext) and not f.startswith(('node_modules/',))]
+# Measurement tooling under docs/evidence/ names the exports it measures and is
+# not a consumer of them, so its .py files are left out of the consumer set.
+code = [f for f in files if f.endswith(code_ext) and not f.startswith(('node_modules/',)) and not (f.endswith('.py') and f.startswith('docs/evidence/'))]
 is_test = lambda f: bool(re.search(r'\.test\.(ts|mjs|js)$', f))
 text = {f: (root / f).read_text(encoding='utf-8', errors='replace') for f in code}
 

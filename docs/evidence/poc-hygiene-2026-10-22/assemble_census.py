@@ -88,7 +88,7 @@ keyword_removals = sum(1 for ln in removed_lines if ln.startswith('export ') and
 list_edits = sum(1 for ln in removed_lines if re.match(r'export (type )?\{', ln))
 
 # .py consumers of the un-exported names: two methods.
-py_files = [f for f in git(HEAD, 'ls-files', '-z').split('\0') if f.endswith('.py')]
+py_files = [f for f in git(HEAD, 'ls-files', '-z').split('\0') if f.endswith('.py') and not f.startswith('docs/evidence/')]
 names = sorted({k[1] for k in unexported} | {k[1] for k in DELETED_NAMES})
 token = re.compile(r'[A-Za-z_$][\w$]*')
 token_hits = []
@@ -97,11 +97,11 @@ for f in py_files:
     token_hits += [(f, n) for n in names if n in present]
 names_file = scratch / 'names.txt'
 names_file.write_text('\n'.join(names) + '\n')
-grep = subprocess.run(['git', '-C', str(HEAD), 'grep', '-n', '-w', '-F', '-f', str(names_file), '--', '*.py'], capture_output=True, text=True)
+grep = subprocess.run(['git', '-C', str(HEAD), 'grep', '-n', '-w', '-F', '-f', str(names_file), '--', '*.py', ':(exclude)docs/evidence'], capture_output=True, text=True)
 assert grep.returncode in (0, 1)
 grep_hits = grep.stdout.splitlines()
 py_sweep = {
-    'population': f'{len(py_files)} tracked .py files (git ls-files) at {head_commit[:8]}',
+    'population': f'{len(py_files)} tracked .py files (git ls-files) at {head_commit[:8]}, less the .py files under docs/evidence/ (measurement tooling that names the exports it measures)',
     'names': len(names),
     'methodTokens': 'Python re [A-Za-z_$][\\w$]* tokens of each file, name in token set',
     'methodGitGrep': "git grep -n -w -F -f <names> -- '*.py'",
@@ -171,7 +171,7 @@ record = {
     'method': (
         'export_census.py: enumerate tracked non-test .ts files under apps/three-surface-poc/src, parse top-level export declarations and export lists with Python re, '
         'then count identifier-token matches of each exported name in (prod) every other tracked non-test code file anywhere in the repository (.ts .mts .mjs .js .cjs and .py; '
-        'a .py file counts as a consumer because three governance scripts parse TypeScript declarations by their literal text, and its comments are kept), '
+        'a .py file counts as a consumer because three governance scripts parse TypeScript declarations by their literal text, and its comments are kept; .py files under docs/evidence/ are measurement tooling and are not consumers), '
         '(test) every tracked *.test.* file, (self) the declaring file beyond the declaration. Classes: dead (no use anywhere), self-only, test-only, prod. '
         'Default mode strips C-style comments first (not from .py files) and keeps string text; --raw skips comment stripping. '
         'Policy for types: a type named in an exported signature stays private by design when no other file names it, and is re-exported when the first caller needs to name one; '
