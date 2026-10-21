@@ -372,9 +372,9 @@ async function measure(options) {
       gate: { call: 'openRun', ...refusalOf(opened) },
       measured: false,
       bodiesRead: 0,
-      result: '[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful re-measure needs the cited spans read inside an unexpired run\'s limits, which no act or direction in force provides for this run.',
+      result: '[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful measurement needs the cited spans read inside an unexpired run\'s limits: the next Redis run under screening version 4 provides that, and no act or direction in force provides for a step on this run.',
       freshRunRoute: '[Inferred] Not available without the owner: buildFidelityPacket needs an inventory of record, which needs an inventory session\'s prompt record and an operator-recorded launch form (packages/polaris-dossier/src/inventory.ts:428-437), so a fresh run of the pinned revision needs a model session or a launch-form declaration no session backs; and a fresh run\'s configuration is the operator\'s own declaration (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23)',
-      authorizationNeeded: `An owner direction permitting one screening-only, no-egress step on ${runId} after its deadline (an exception to the deadline refusal of openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23): openRun's read gate re-run, then buildFidelityPacket over the retained draft revisions' cited spans at ${subjectCommit(runRecord)} under the version-3 and version-4 screens, recording counts and digests only.`,
+      authorizationNeeded: `No act or direction provides for a step on ${runId} after its deadline, and the lead ruled no exception on 2026-10-21: the signed deadline refusal (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23) stands. The measurement stays Unknown until the next Redis run under screening version 4 produces it inside its own limits; a general post-deadline re-measurement route would need a CC-REV-2 amendment of that spec line and owner sign-off.`,
     } };
   }
   const subject = opened.subject;
