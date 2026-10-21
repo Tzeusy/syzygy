@@ -1,0 +1,353 @@
+{
+  "subject": [
+    "packages/polaris-dossier/src/brief.ts",
+    "packages/polaris-dossier/src/cli.ts",
+    "packages/polaris-dossier/src/execution-rule.ts",
+    "packages/polaris-dossier/src/inventory.ts",
+    "packages/polaris-dossier/src/launched.ts",
+    "packages/polaris-dossier/src/session-handover.ts"
+  ],
+  "subjectSha256": {
+    "packages/polaris-dossier/src/brief.ts": "9a78a4a299c7614fff78b7a927b970dc955a64acb67d8947dcf7e71b8757db17",
+    "packages/polaris-dossier/src/cli.ts": "a55dca5f7b4f8fac6a9d274889426e13953ad7e4723f117395a4b8aa77f76a4f",
+    "packages/polaris-dossier/src/execution-rule.ts": "86e03a62e834c45d9017cf0906fd58adabbc1c10f9acebc74a5c89d0e5015f0d",
+    "packages/polaris-dossier/src/inventory.ts": "3dbec2698ae12f4aff0f3d0326c11463f029e5fd0333f44d80abd64c5c9204cd",
+    "packages/polaris-dossier/src/launched.ts": "37fc8429d35dc350321c562646d9b79a56cea79a1f74d9bf1e06b72e543150ee",
+    "packages/polaris-dossier/src/session-handover.ts": "b4e7ffd33180f50e29284e24448b09cc6e63dda5b6d0179c87dba25ce10ba1a9"
+  },
+  "bead": "syzygy-bpyt.8.8",
+  "commit": "1f3da8ccf98d68a453097b50bccc7f5b454b14c5",
+  "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/launched.test.ts packages/polaris-dossier/src/execution-choice.test.ts packages/polaris-dossier/src/brief.test.ts packages/polaris-dossier/src/inventory.test.ts packages/polaris-dossier/src/review.test.ts packages/polaris-dossier/src/session-view.test.ts packages/polaris-dossier/src/execution-rule.test.ts",
+  "timeoutSeconds": 240,
+  "trackedTreeCleanBefore": true,
+  "unmutated": {
+    "exitCode": 0,
+    "testsLine": "Tests  229 passed (229)",
+    "failedTests": []
+  },
+  "mutants": [
+    {
+      "id": "open-error-absent",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "    return (error as NodeJS.ErrnoException).code === 'ENOENT' ? 'absent' : 'unreadable';",
+      "new": "    return 'absent';",
+      "exitCode": 1,
+      "testsLine": "Tests  9 failed | 220 passed (229)",
+      "failedTests": [
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 2ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 10ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to a character device 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 1ms",
+        "launchedMarkerState > is unreadable for a dangling symbolic link 15ms",
+        "launchedMarkerState > is unreadable for a file its reader may not read 1ms",
+        "launchedMarkerState > is unreadable for a symbolic link to a character device 2ms",
+        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 4ms",
+        "launchedMarkerState > is unreadable when the run directory is a file 2ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "parse-failure-absent",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "  } catch {\n    return 'unreadable';\n  } finally {",
+      "new": "  } catch {\n    return 'absent';\n  } finally {",
+      "exitCode": 1,
+      "testsLine": "Tests  11 failed | 218 passed (229)",
+      "failedTests": [
+        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 31ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 2ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 1ms",
+        "launch-form > refuses a declared form in a run with an empty marker and writes no record 180ms",
+        "launchedMarkerState > is unreadable for a byte-order mark before the marker 1ms",
+        "launchedMarkerState > is unreadable for an empty file 18ms",
+        "launchedMarkerState > is unreadable for invalid JSON 6ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 221ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 22ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 10ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "foreign-shape-absent",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "=== LAUNCHED_FORMAT ? 'launched' : 'unreadable';",
+      "new": "=== LAUNCHED_FORMAT ? 'launched' : 'absent';",
+      "exitCode": 1,
+      "testsLine": "Tests  15 failed | 214 passed (229)",
+      "failedTests": [
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 19ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 2ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 9ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 1ms",
+        "launchedMarkerState > is unreadable for JSON null 25ms",
+        "launchedMarkerState > is unreadable for a JSON array 21ms",
+        "launchedMarkerState > is unreadable for a JSON string 14ms",
+        "launchedMarkerState > is unreadable for a format that is not a string 6ms",
+        "launchedMarkerState > is unreadable for another format 15ms",
+        "launchedMarkerState > is unreadable for no format 6ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 10ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 187ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "open-follows-links",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK",
+      "new": "fs.constants.O_RDONLY | fs.constants.O_NONBLOCK",
+      "exitCode": 1,
+      "testsLine": "Tests  4 failed | 225 passed (229)",
+      "failedTests": [
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 2ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 9ms",
+        "launchedMarkerState > is unreadable for a dangling symbolic link 33ms",
+        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 3ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "open-blocks",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK",
+      "new": "fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW",
+      "exitCode": null,
+      "testsLine": null,
+      "failedTests": [],
+      "blocked": true,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "any-file-type",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+      "new": "    if (stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+      "exitCode": 0,
+      "testsLine": "Tests  229 passed (229)",
+      "failedTests": [],
+      "blocked": false,
+      "outcome": "survived",
+      "restored": true
+    },
+    {
+      "id": "no-size-bound",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+      "new": "    if (!stat.isFile()) return 'unreadable';",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 227 passed (229)",
+      "failedTests": [
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a marker padded past 4096 bytes 2ms",
+        "launchedMarkerState > is unreadable for a marker padded past 4096 bytes 9ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "form-refusal-unreadable-line-off",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "  if (state === 'unreadable') return 'the run\\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';\n",
+      "new": "",
+      "exitCode": 1,
+      "testsLine": "Tests  18 failed | 211 passed (229)",
+      "failedTests": [
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a FIFO 7ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a directory 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a marker padded past 4096 bytes 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to a character device 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 7ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 0ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 61ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 79ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "expected-launch-unreadable-as-operator",
+      "file": "packages/polaris-dossier/src/launched.ts",
+      "old": "  return 'a countable launch (the run\\'s launched marker is present but unreadable, so none counts)';",
+      "new": "  return 'a terminal or bang launch';",
+      "exitCode": 1,
+      "testsLine": "Tests  3 failed | 226 passed (229)",
+      "failedTests": [
+        "launch forms in a run whose marker is unreadable > name what a counted record must carry, by marker state 8ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 63ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 38ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "allow-execution-unreadable-admitted",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "    if (marker === 'unreadable') {",
+      "new": "    if (String(marker) === 'never') {",
+      "exitCode": 1,
+      "testsLine": "Tests  4 failed | 225 passed (229)",
+      "failedTests": [
+        "syzygy dossier allow-execution > refuses a run whose launched marker is a directory, as a launched run, and records nothing 1ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 9ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 2ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 7ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "allow-execution-launched-admitted",
+      "file": "packages/polaris-dossier/src/cli.ts",
+      "old": "    if (marker === 'launched') {",
+      "new": "    if (String(marker) === 'never') {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 228 passed (229)",
+      "failedTests": [
+        "syzygy dossier allow-execution > refuses a launched run and records nothing 13ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "launch-form-unreadable-admitted",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "  if (marker === 'unreadable') return refuse('form',",
+      "new": "  if (String(marker) === 'never') return refuse('form',",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 227 passed (229)",
+      "failedTests": [
+        "launch-form > refuses a declared form in a run with a marker that is a directory and writes no record 21ms",
+        "launch-form > refuses a declared form in a run with an empty marker and writes no record 31ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "rule-launched-reason-off",
+      "file": "packages/polaris-dossier/src/execution-rule.ts",
+      "old": "  if (launched === 'launched') reasons.push(",
+      "new": "  if (String(launched) === 'never') reasons.push(",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 228 passed (229)",
+      "failedTests": [
+        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 13ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "rule-unreadable-reason-off",
+      "file": "packages/polaris-dossier/src/execution-rule.ts",
+      "old": "  if (launched === 'unreadable') reasons.push(",
+      "new": "  if (String(launched) === 'never') reasons.push(",
+      "exitCode": 1,
+      "testsLine": "Tests  3 failed | 226 passed (229)",
+      "failedTests": [
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 4ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 4ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 15ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "rule-reads-marker-eagerly",
+      "file": "packages/polaris-dossier/src/execution-rule.ts",
+      "old": "  if (inputs.role !== 'authoring') return sec3(",
+      "new": "  inputs.launched();\n  if (inputs.role !== 'authoring') return sec3(",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 228 passed (229)",
+      "failedTests": [
+        "the permitting arm is off in this build > never reads the launched marker when the arm is off or the brief is not the authoring brief 7ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "brief-marker-not-read",
+      "file": "packages/polaris-dossier/src/brief.ts",
+      "old": "launched: () => launchedMarkerState(run),",
+      "new": "launched: () => 'absent' as const,",
+      "exitCode": 1,
+      "testsLine": "Tests  4 failed | 225 passed (229)",
+      "failedTests": [
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 3ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 7ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 4ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 16ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "inventory-brief-marker-not-read",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "launched: () => launchedMarkerState(opened.run),",
+      "new": "launched: () => 'absent' as const,",
+      "exitCode": 0,
+      "testsLine": "Tests  229 passed (229)",
+      "failedTests": [],
+      "blocked": false,
+      "outcome": "survived",
+      "restored": true
+    },
+    {
+      "id": "inventory-of-record-wording-reverted",
+      "file": "packages/polaris-dossier/src/inventory.ts",
+      "old": "is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt",
+      "new": "is not ${launchedMarkerState(run) === 'launched' ? 'a syzygy-launched launch' : 'a terminal or bang launch'} of that session's prompt",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 227 passed (229)",
+      "failedTests": [
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 59ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 49ms"
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "summary": {
+    "planned": 18,
+    "killed": 16
+  },
+  "round": 2,
+  "supersedes": "docs/evidence/launched-marker-fail-closed-mutants-2026-10-21.json (round 1; retained unchanged)",
+  "harnessText": "\"\"\"Round-2 rule-6 mutants for syzygy-bpyt.8.8, at the repaired head.\n\nEach mutant replaces one exact fragment (it must occur exactly once), runs the subject suites in their own process group, restores the\nbytes and verifies their digest. Killed: at least one test failed, or the suite did not finish within the timeout (a reader that blocks).\nUsage: python3 mutants.py <worktree> <out.json>\n\"\"\"\nimport hashlib, json, os, re, signal, subprocess, sys\nfrom pathlib import Path\n\nROOT, OUT = Path(sys.argv[1]), Path(sys.argv[2])\nTIMEOUT = 240\nSRC = 'packages/polaris-dossier/src/'\nTESTS = [SRC + f for f in ['launched.test.ts', 'execution-choice.test.ts', 'brief.test.ts', 'inventory.test.ts', 'review.test.ts',\n                           'session-view.test.ts', 'execution-rule.test.ts']]\nCOMMAND = ['npx', 'vitest', 'run', '--project', '@syzygy/polaris-dossier', *TESTS]\nL, CLI, H, R, B, I = (SRC + f for f in ['launched.ts', 'cli.ts', 'session-handover.ts', 'execution-rule.ts', 'brief.ts', 'inventory.ts'])\nOPEN_FLAGS = 'fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK'\n\nMUTANTS = [\n    ('open-error-absent', L, \"    return (error as NodeJS.ErrnoException).code === 'ENOENT' ? 'absent' : 'unreadable';\", \"    return 'absent';\"),\n    ('parse-failure-absent', L, \"  } catch {\\n    return 'unreadable';\\n  } finally {\", \"  } catch {\\n    return 'absent';\\n  } finally {\"),\n    ('foreign-shape-absent', L, \"=== LAUNCHED_FORMAT ? 'launched' : 'unreadable';\", \"=== LAUNCHED_FORMAT ? 'launched' : 'absent';\"),\n    ('open-follows-links', L, OPEN_FLAGS, 'fs.constants.O_RDONLY | fs.constants.O_NONBLOCK'),\n    ('open-blocks', L, OPEN_FLAGS, 'fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW'),\n    ('any-file-type', L, \"    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';\", \"    if (stat.size > MARKER_BYTES_MAX) return 'unreadable';\"),\n    ('no-size-bound', L, \"    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';\", \"    if (!stat.isFile()) return 'unreadable';\"),\n    ('form-refusal-unreadable-line-off', L,\n     \"  if (state === 'unreadable') return 'the run\\\\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';\\n\", ''),\n    ('expected-launch-unreadable-as-operator', L,\n     \"  return 'a countable launch (the run\\\\'s launched marker is present but unreadable, so none counts)';\", \"  return 'a terminal or bang launch';\"),\n    ('allow-execution-unreadable-admitted', CLI, \"    if (marker === 'unreadable') {\", \"    if (String(marker) === 'never') {\"),\n    ('allow-execution-launched-admitted', CLI, \"    if (marker === 'launched') {\", \"    if (String(marker) === 'never') {\"),\n    ('launch-form-unreadable-admitted', H, \"  if (marker === 'unreadable') return refuse('form',\", \"  if (String(marker) === 'never') return refuse('form',\"),\n    ('rule-launched-reason-off', R, \"  if (launched === 'launched') reasons.push(\", \"  if (String(launched) === 'never') reasons.push(\"),\n    ('rule-unreadable-reason-off', R, \"  if (launched === 'unreadable') reasons.push(\", \"  if (String(launched) === 'never') reasons.push(\"),\n    ('rule-reads-marker-eagerly', R, \"  if (inputs.role !== 'authoring') return sec3(\", \"  inputs.launched();\\n  if (inputs.role !== 'authoring') return sec3(\"),\n    ('brief-marker-not-read', B, 'launched: () => launchedMarkerState(run),', \"launched: () => 'absent' as const,\"),\n    ('inventory-brief-marker-not-read', I, 'launched: () => launchedMarkerState(opened.run),', \"launched: () => 'absent' as const,\"),\n    ('inventory-of-record-wording-reverted', I, \"is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt\",\n     \"is not ${launchedMarkerState(run) === 'launched' ? 'a syzygy-launched launch' : 'a terminal or bang launch'} of that session's prompt\"),\n]\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\ndef run_suite():\n    proc = subprocess.Popen(COMMAND, cwd=ROOT, env={**os.environ, 'CI': '1'}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)\n    try:\n        log, _ = proc.communicate(timeout=TIMEOUT)\n    except subprocess.TimeoutExpired:\n        os.killpg(proc.pid, signal.SIGKILL)\n        proc.communicate()\n        return None, None, []\n    text = re.sub(r'\\x1b\\[[0-9;]*m', '', log.decode('utf8', 'replace'))\n    tests = next((line.strip() for line in text.splitlines() if line.strip().startswith('Tests ')), None)\n    failed = sorted({line.strip()[2:].strip() for line in text.splitlines() if line.strip().startswith('\u00d7 ')})\n    return proc.returncode, tests, failed\n\ndef main():\n    subjects = sorted({m[1] for m in MUTANTS})\n    originals = {f: (ROOT / f).read_bytes() for f in subjects}\n    clean_before = git('status', '--porcelain', '--untracked-files=no') == ''\n    base_exit, base_tests, base_failed = run_suite()\n    results = []\n    try:\n        for mutant_id, path, old, new in MUTANTS:\n            text = originals[path].decode('utf8')\n            assert text.count(old) == 1, (mutant_id, old)\n            (ROOT / path).write_bytes(text.replace(old, new).encode('utf8'))\n            try:\n                code, tests, failed = run_suite()\n            finally:\n                (ROOT / path).write_bytes(originals[path])\n            blocked = code is None\n            results.append({'id': mutant_id, 'file': path, 'old': old, 'new': new, 'exitCode': code, 'testsLine': tests, 'failedTests': failed,\n                            'blocked': blocked, 'outcome': 'killed' if blocked or (code != 0 and failed) else 'survived',\n                            'restored': sha((ROOT / path).read_bytes()) == sha(originals[path])})\n            print(mutant_id, results[-1]['outcome'], tests or ('blocked' if blocked else ''), flush=True)\n    finally:\n        for path in subjects:\n            (ROOT / path).write_bytes(originals[path])\n    record = {\n        'subject': subjects, 'subjectSha256': {f: sha(originals[f]) for f in subjects}, 'bead': 'syzygy-bpyt.8.8',\n        'commit': git('rev-parse', 'HEAD').strip(), 'command': ' '.join(COMMAND), 'timeoutSeconds': TIMEOUT,\n        'trackedTreeCleanBefore': clean_before, 'unmutated': {'exitCode': base_exit, 'testsLine': base_tests, 'failedTests': base_failed},\n        'mutants': results, 'trackedTreeCleanAfter': git('status', '--porcelain', '--untracked-files=no') == '',\n        'summary': {'planned': len(MUTANTS), 'killed': sum(r['outcome'] == 'killed' for r in results)},\n        'harnessSource': Path(__file__).read_text(),\n    }\n    OUT.write_text(json.dumps(record, indent=2) + '\\n')\n    print('summary', record['summary'])\n\nmain()\n",
+  "equivalentSurvivors": {
+    "any-file-type": "Equivalent at every fixture an unprivileged test can build: with O_NOFOLLOW a link never opens, with O_NONBLOCK a FIFO opens and reads end-of-file (invalid JSON, unreadable), a directory read fails with EISDIR (unreadable), and a socket fails to open (unreadable). Only a character or block device at the name itself, which needs mknod, would reach the read; the isFile check is kept for that case.",
+    "inventory-brief-marker-not-read": "Equivalent by design (R-GP-IMPL-LAUNCHED-MARKER-1 N4): the inventory brief is not the authoring brief, so the execution rule returns before it calls the launched reader. The thunk exists only because ExecutionInputs requires one."
+  }
+}
