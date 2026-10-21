@@ -129,7 +129,9 @@ describe('code-structure observer', () => {
     // A gitlink at a path the parser cannot read is skipped from an injected runner too.
     expect(observe(`${blob('a.ts')}160000 commit ${'2'.repeat(40)}       -\t"sub\x00160000 commit ${'2'.repeat(40)}       -\tsu\nb\0`))
       .toMatchObject({ kind: 'observed', files: [{ path: 'a.ts' }] });
-    const unknown = { kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' };
+    // Only blobs are files: a tree record, which `ls-tree -r -t` would emit, is skipped, not refused for its missing size.
+    expect(observe(`${blob('a.ts')}040000 tree ${'5'.repeat(40)}       -\tdir\0`)).toMatchObject({ kind: 'observed', files: [{ path: 'a.ts' }] });
+    const unknown ={ kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' };
     expect(observe(`${blob('a.ts')}not a tree record\0`)).toEqual(unknown);
     expect(observe(`${blob('a.ts')}100644 blob ${'1'.repeat(40)} 12\t"\\303\\261.md"\0`)).toEqual(unknown);
     expect(observe(blob('a.ts', '4'.repeat(64)))).toEqual(unknown);
