@@ -1,0 +1,264 @@
+{
+ "subject": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+ "subjectSha256": "18da035efc2cdbfda9691b3fe22423fb29e0ea345d43d42a0f78dc1575675c2e",
+ "bead": "syzygy-bpyt.4.1",
+ "commit": "8d297d6e82d797df5e637df3fbceb29a34d4b307",
+ "note": "Expected 'pass' rows are controls: repro-on-old-guard replays the bead's steps against the guard as it stood on main (blind, the defect); exemption-check-off blinds the offender filter itself and survives by construction, its predicate being exercised by the input mutants.",
+ "date": "2026-10-21",
+ "command": "npx vitest run apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+ "mutants": [
+  {
+   "id": "repro-on-old-guard",
+   "expected": "pass",
+   "observed": "pass",
+   "exitCode": 0,
+   "testsLine": "Tests  5 passed (5)",
+   "failedTests": [],
+   "outcome": "blind, as expected",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "replacedWith": "origin/main:apps/three-surface-poc/src/sync-child-process-guard.test.ts"
+    },
+    {
+     "file": "packages/polaris-dossier/src/session-view.test.ts",
+     "old": "import { exited } from './child-process.testkit.js';\n",
+     "new": "import { exited } from './child-process.testkit.js';\nimport { execFileSync } from 'node:child_process';\nexport const block = () => execFileSync('sleep', ['70']);\n"
+    }
+   ]
+  },
+  {
+   "id": "sleep-in-dossier-test",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 203ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "packages/polaris-dossier/src/session-view.test.ts",
+     "old": "import { exited } from './child-process.testkit.js';\n",
+     "new": "import { exited } from './child-process.testkit.js';\nimport { execFileSync } from 'node:child_process';\nexport const block = () => execFileSync('sleep', ['70']);\n"
+    }
+   ]
+  },
+  {
+   "id": "python3-in-consent-test",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 194ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+     "old": "import { renderRecorderAct, renderRegistryAct } from './recorder-fixtures.testkit.js';\n",
+     "new": "import { renderRecorderAct, renderRegistryAct } from './recorder-fixtures.testkit.js';\nimport { spawnSync } from 'node:child_process';\nexport const block = () => spawnSync('python3', ['-c', 'pass']);\n"
+    }
+   ]
+  },
+  {
+   "id": "roots-drop-dossier",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 160ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "  return { roots, entries:",
+     "new": "  return { roots: roots.filter((root) => !root.includes('polaris-dossier')), entries:"
+    }
+   ]
+  },
+  {
+   "id": "roots-unchecked-count",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > reads every project root and alias from the vitest config, and fails closed on a shape it does not recognize 20ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "  if (includes.length !== (config.match(INCLUDE_KEY)?.length ?? 0) || includes.length !== projects) {",
+     "new": "  if (false) {"
+    }
+   ]
+  },
+  {
+   "id": "include-shape-unchecked",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > reads every project root and alias from the vitest config, and fails closed on a shape it does not recognize 13ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "    if (root === undefined) throw new Error(`${VITEST_CONFIG}: unrecognized project include ${glob}`);\n    return root;",
+     "new": "    return root ?? glob;"
+    }
+   ]
+  },
+  {
+   "id": "alias-count-unchecked",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > reads every project root and alias from the vitest config, and fails closed on a shape it does not recognize 15ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "  if (aliases.length !== (config.match(ALIAS_KEY)?.length ?? 0)) throw",
+     "new": "  if (false) throw"
+    }
+   ]
+  },
+  {
+   "id": "stale-exemption-kept",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 216ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "  \"packages/polaris-dossier/src/session-view.ts 'bwrap'\":",
+     "new": "  \"packages/polaris-dossier/src/absent.ts 'x'\": 'stale',\n  \"packages/polaris-dossier/src/session-view.ts 'bwrap'\":"
+    }
+   ]
+  },
+  {
+   "id": "exemption-check-off",
+   "expected": "pass",
+   "observed": "pass",
+   "exitCode": 0,
+   "testsLine": "Tests  6 passed (6)",
+   "failedTests": [],
+   "outcome": "blind, as expected",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "    expect(found.filter(({ key }) => !Object.hasOwn(EXEMPT, key)).map(({ at }) => at)).toEqual([]);",
+     "new": "    expect(found.filter(({ key }) => !Object.hasOwn(EXEMPT, key) && false).map(({ at }) => at)).toEqual([]);"
+    },
+    {
+     "file": "packages/polaris-dossier/src/session-view.test.ts",
+     "old": "import { exited } from './child-process.testkit.js';\n",
+     "new": "import { exited } from './child-process.testkit.js';\nimport { execFileSync } from 'node:child_process';\nexport const block = () => execFileSync('sleep', ['70']);\n"
+    }
+   ]
+  },
+  {
+   "id": "config-include-double-quoted",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 148ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "vitest.config.ts",
+     "old": "include: ['packages/polaris-dossier/src/**/*.test.ts'],",
+     "new": "include: [\"packages/polaris-dossier/src/**/*.test.ts\"],"
+    }
+   ]
+  },
+  {
+   "id": "config-include-two-globs",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 109ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "vitest.config.ts",
+     "old": "include: ['packages/polaris-dossier/src/**/*.test.ts'],",
+     "new": "include: ['packages/polaris-dossier/src/**/*.test.ts', 'packages/polaris-dossier/src/**/*.spec.ts'],"
+    }
+   ]
+  },
+  {
+   "id": "config-alias-other-form",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 162ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "vitest.config.ts",
+     "old": "'@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),",
+     "new": "'@syzygy/polaris-dossier': new URL('./packages/polaris-dossier/src/index.ts', import.meta.url).pathname,"
+    }
+   ]
+  },
+  {
+   "id": "drop-polaris-exemption",
+   "expected": "fail",
+   "observed": "fail",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 5 passed (6)",
+   "failedTests": [
+    "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 227ms"
+   ],
+   "outcome": "killed",
+   "asExpected": true,
+   "edits": [
+    {
+     "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+     "old": "  \"packages/polaris-dossier/src/polaris.ts 'tmux'\": LAUNCHER,\n",
+     "new": ""
+    }
+   ]
+  }
+ ],
+ "trackedTreeCleanAfter": true
+}

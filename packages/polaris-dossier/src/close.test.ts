@@ -1,14 +1,18 @@
-import { spawnSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { FIXTURE_SCREEN, LATER, NOW, PLANTED_SECRET, REAL_ROOT, fixtureSources, fullFixtureRun, makeClone } from './full-run.testkit.js';
 import type { DossierRenderer } from './render.js';
 import { closeRun, parseUsageFigure } from './close.js';
 import { runStatus } from './status.js';
+
+// Asynchronous, so a slow command cannot starve the vitest worker's RPC (syzygy-w90k).
+const execFileAsync = promisify(execFile);
 
 let renderer: DossierRenderer;
 beforeAll(async () => {
@@ -181,7 +185,7 @@ describe('close (S10)', () => {
     const needles = [...Object.values(sentinels), 'SENTINEL-adapter-credential-bytes', 'SENTINEL'];
     const hits = files.filter((file) => { const bytes = fs.readFileSync(file, 'latin1'); return needles.some((needle) => bytes.includes(needle)); });
     // The denominator: every regular file under the state root, run directory and sessions root alike, counted by a second method.
-    const counted = spawnSync('find', [stateRoot, '-type', 'f'], { encoding: 'utf8' }).stdout.split('\n').filter((line) => line !== '').length;
+    const counted = (await execFileAsync('find', [stateRoot, '-type', 'f'])).stdout.split('\n').filter((line) => line !== '').length;
     expect(files.length).toBe(counted);
     expect(files.length).toBeGreaterThan(40);
     expect(hits).toEqual([]);

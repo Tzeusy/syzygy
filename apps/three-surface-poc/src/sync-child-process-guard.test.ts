@@ -6,33 +6,36 @@ import { describe, expect, it } from 'vitest';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 
-// The root suite's test roots (vitest.config.ts `test.projects` include
-// globs). A vitest worker answers its parent over an RPC with a fixed 60s
+// The root suite's test roots are the vitest.config.ts `test.projects` include
+// globs, read from the config so that a project added there is scanned here
+// (syzygy-bpyt.4.1: a hand list had missed two of seven). A vitest worker
+// answers its parent over an RPC with a fixed 60s
 // timeout; a test that blocks the worker's event loop longer than that makes
 // the pending `onTaskUpdate` call time out, and the run exits 1 with every
 // test passed (syzygy-w90k). An install, a build or a documented command can
 // run past 60s under load, so only short local tools may run synchronously,
 // in a test file or in any module a test file imports (syzygy-3f5c).
-const SUITE_ROOTS = [
-  'apps/three-surface-poc/src/',
-  'packages/polaris-generation-core/src/',
-  'packages/cap1-conformance/src/',
-  'packages/cap1-daemon/src/',
-  'packages/three-surface-poc-core/src/',
-];
-// The vitest.config.ts aliases: a test that imports a workspace package runs its source.
-const PACKAGE_ENTRIES: Readonly<Record<string, string>> = {
-  '@syzygy/polaris-generation-core': 'packages/polaris-generation-core/src/index.ts',
-  '@syzygy/cap1-core': 'packages/cap1-core/src/index.ts',
-  '@syzygy/cap1-daemon': 'packages/cap1-daemon/src/index.ts',
-  '@syzygy/three-surface-poc-core': 'packages/three-surface-poc-core/src/index.ts',
-};
+const VITEST_CONFIG = 'vitest.config.ts';
+const PROJECT_INCLUDE = /\binclude:\s*\[\s*'([^']+)'\s*\]/g;
+const INCLUDE_KEY = /\binclude:/g;
+const PROJECT_NAME = /\bname:\s*'/g;
+// The config's aliases (a test that imports a workspace package runs its source).
+const ALIAS = /'(@syzygy\/[^']+)':\s*fileURLToPath\(\s*new URL\('\.\/([^']+)'/g;
+const ALIAS_KEY = /'@syzygy\/[^']+':/g;
 const SHORT_COMMANDS = new Set(['git', 'mkfifo', 'bd', 'which', 'ss']);
-// Empty since syzygy-hjuz: the one exemption was the live test's spawn of
-// Butlers' pytest, and that test now reads a JUnit file the operator
-// produced instead (SEC-3, RFC5-18). Syzygy runs no observed test suite, so
-// no entry here may name one.
-const EXEMPT = new Set<string>();
+// The long synchronous calls the scan finds and keeps, by module and
+// command, each with why it cannot hold a worker near the 60s bound. An entry
+// that matches no call fails, so none outlives its call. Syzygy runs no
+// observed test suite (syzygy-hjuz: SEC-3, RFC5-18), so no entry may name one.
+const LAUNCHER = 'the `syzygy polaris` launcher at run time; suite tests import only its pure helpers (blockingWhy, toolPathsFor), and no suite test calls runPolarisCli';
+const EXEMPT: Readonly<Record<string, string>> = {
+  "packages/polaris-dossier/src/polaris.ts 'tmux'": LAUNCHER,
+  "packages/polaris-dossier/src/polaris.ts 'sh'": LAUNCHER,
+  "packages/polaris-dossier/src/polaris.ts claudeExecutable(": LAUNCHER,
+  "packages/polaris-dossier/src/session-view.ts 'bwrap'": 'viewProbeRefusal, called only by the launcher at run time; suite tests import only the pure view builders',
+  "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts 'python3'":
+    'renders an act through a repository recorder, cached per process. Measured 2026-10-21 over the dossier and consent projects at load 27 on 12 cores: 192 calls, p50 508 ms, max 2.5 s, at most 7.8 s summed within one test and 14.5 s outside tests in one file (docs/evidence/recorder-testkit-sync-render-timing-2026-10-21.json)',
+};
 const SELF = 'apps/three-surface-poc/src/sync-child-process-guard.test.ts';
 const SYNC_FUNCTIONS = ['execFileSync', 'execSync', 'spawnSync'];
 const MODULE_SPECIFIER = /(?:\bfrom|\bimport)\s*\(?\s*['"]([^'"]+)['"]/g;
@@ -50,6 +53,24 @@ const CHILD_PROCESS_NON_BINDINGS = [
 ];
 
 interface SyncCall { readonly line: number; readonly command: string }
+interface SuiteConfig { readonly roots: readonly string[]; readonly entries: Readonly<Record<string, string>> }
+
+/** The test roots and workspace aliases of the root vitest config; any shape it does not recognize throws. */
+function suiteConfig(config: string): SuiteConfig {
+  const includes = [...config.matchAll(PROJECT_INCLUDE)].map((match) => match[1]!);
+  const projects = config.match(PROJECT_NAME)?.length ?? 0;
+  if (includes.length !== (config.match(INCLUDE_KEY)?.length ?? 0) || includes.length !== projects) {
+    throw new Error(`${VITEST_CONFIG}: ${projects} projects but ${includes.length} recognized single-glob includes`);
+  }
+  const roots = includes.map((glob) => {
+    const root = /^((?:apps|packages)\/[\w.-]+\/src\/)\*\*\/\*\.test\.ts$/.exec(glob)?.[1];
+    if (root === undefined) throw new Error(`${VITEST_CONFIG}: unrecognized project include ${glob}`);
+    return root;
+  });
+  const aliases = [...config.matchAll(ALIAS)];
+  if (aliases.length !== (config.match(ALIAS_KEY)?.length ?? 0)) throw new Error(`${VITEST_CONFIG}: unrecognized @syzygy alias`);
+  return { roots, entries: Object.fromEntries(aliases.map((match) => [match[1]!, match[2]!])) };
+}
 
 const lineOf = (source: string, index: number): number => source.slice(0, index).split('\n').length;
 const escape = (name: string): string => name.replace(/[$]/g, '\\$');
@@ -118,7 +139,7 @@ function longSyncCalls(source: string): SyncCall[] {
 }
 
 /** Every module a vitest worker loads for `tests`: the tests and their relative and workspace imports, transitively. */
-function importClosure(tests: readonly string[], read: (path: string) => string | undefined): string[] {
+function importClosure(tests: readonly string[], read: (path: string) => string | undefined, entries: SuiteConfig['entries']): string[] {
   const seen = new Set(tests);
   const pending = [...tests];
   while (pending.length > 0) {
@@ -127,7 +148,7 @@ function importClosure(tests: readonly string[], read: (path: string) => string 
       const specifier = match[1]!;
       const target = specifier.startsWith('.')
         ? normalize(join(dirname(path), specifier)).replace(/\.js$/, '.ts')
-        : PACKAGE_ENTRIES[specifier];
+        : entries[specifier];
       for (const candidate of target === undefined ? [] : [target, `${target}.ts`, join(target, 'index.ts')]) {
         if (!seen.has(candidate) && read(candidate) !== undefined) {
           seen.add(candidate);
@@ -152,18 +173,24 @@ function trackedTypeScript(): Map<string, string> {
 describe('suite child processes and the vitest worker RPC', () => {
   it('runs only short local tools synchronously in a suite test file or any module it imports', () => {
     const sources = trackedTypeScript();
-    const tests = [...sources.keys()].filter((path) => path.endsWith('.test.ts') && SUITE_ROOTS.some((root) => path.startsWith(root)));
-    const modules = importClosure(tests, (path) => sources.get(path));
+    const { roots, entries } = suiteConfig(readFileSync(join(REPO_ROOT, VITEST_CONFIG), 'utf8'));
+    const tests = [...sources.keys()].filter((path) => path.endsWith('.test.ts') && roots.some((root) => path.startsWith(root)));
+    const modules = importClosure(tests, (path) => sources.get(path), entries);
+    // Every project the config runs is scanned, and every alias resolves.
+    expect(roots.length).toBeGreaterThanOrEqual(7);
+    expect(roots).toEqual(expect.arrayContaining(['packages/polaris-dossier/src/', 'packages/polaris-generation-consent/src/']));
+    for (const root of roots) expect(tests.some((path) => path.startsWith(root)), root).toBe(true);
+    for (const entry of Object.values(entries)) expect(sources.has(entry), entry).toBe(true);
     expect(tests.length).toBeGreaterThan(100);
     expect(tests).toContain(SELF);
     expect(modules.length).toBeGreaterThan(tests.length + 100);
     expect(modules).toContain('apps/three-surface-poc/src/test-model-fixture.ts');
     expect(modules).toContain('packages/three-surface-poc-core/src/work-items.ts');
-    const offenders = modules
+    const found = modules
       .filter((path) => path !== SELF)
-      .flatMap((path) => longSyncCalls(sources.get(path)!).map(({ line, command }) => `${path}:${line} ${command}`))
-      .filter((offender) => !EXEMPT.has(offender.split(' ')[0]!));
-    expect(offenders).toEqual([]);
+      .flatMap((path) => longSyncCalls(sources.get(path)!).map(({ line, command }) => ({ at: `${path}:${line} ${command}`, key: `${path} ${command}` })));
+    expect(found.filter(({ key }) => !Object.hasOwn(EXEMPT, key)).map(({ at }) => at)).toEqual([]);
+    expect(Object.keys(EXEMPT).filter((key) => !found.some((call) => call.key === key))).toEqual([]);
   });
 
   it('flags an install, a build or a computed command and leaves async and short tools alone', () => {
@@ -210,6 +237,20 @@ describe('suite child processes and the vitest worker RPC', () => {
     expect(commands(`${named}execFileSync('git', ['status']);\nactual.execFileSync(file, args);\nconst passed = actual.execFileSync;\nconst o = { execFileSyncLike: 1 };`)).toEqual([]);
   });
 
+  it('reads every project root and alias from the vitest config, and fails closed on a shape it does not recognize', () => {
+    const project = (include: string): string => `{ extends: true, test: { name: 'p', include: [${include}] } },`;
+    const alias = "'@syzygy/a': fileURLToPath(\n  new URL('./packages/a/src/index.ts', import.meta.url),\n),";
+    expect(suiteConfig(`${alias}\n${project("'packages/a/src/**/*.test.ts'")}\n${project("'apps/b/src/**/*.test.ts'")}`)).toEqual({
+      roots: ['packages/a/src/', 'apps/b/src/'],
+      entries: { '@syzygy/a': 'packages/a/src/index.ts' },
+    });
+    expect(() => suiteConfig(project('"packages/a/src/**/*.test.ts"'))).toThrow(/recognized single-glob includes/);
+    expect(() => suiteConfig(project("'packages/a/src/**/*.test.ts', 'packages/b/src/**/*.test.ts'"))).toThrow(/recognized single-glob includes/);
+    expect(() => suiteConfig(project("'packages/a/**/*.spec.ts'"))).toThrow(/unrecognized project include/);
+    expect(() => suiteConfig("{ name: 'p', include: ['packages/a/src/**/*.test.ts'] }, { name: 'q' }")).toThrow(/2 projects/);
+    expect(() => suiteConfig("'@syzygy/a': path.join(root, 'a'),")).toThrow(/unrecognized @syzygy alias/);
+  });
+
   it('scans a helper module a test imports, through relative and workspace imports', () => {
     const files: Record<string, string> = {
       'apps/x/src/a.test.ts': "import { helper } from './helpers/build.js';\nimport { core } from '@syzygy/three-surface-poc-core';",
@@ -218,7 +259,7 @@ describe('suite child processes and the vitest worker RPC', () => {
       'packages/three-surface-poc-core/src/deep.ts': "import * as cp from 'node:child_process';\nexport const core = () => cp.execSync('npm ci');",
       'apps/x/src/unused.ts': "import { execFileSync } from 'node:child_process';\nexecFileSync('npm', []);",
     };
-    const modules = importClosure(['apps/x/src/a.test.ts'], (path) => files[path]);
+    const modules = importClosure(['apps/x/src/a.test.ts'], (path) => files[path], { '@syzygy/three-surface-poc-core': 'packages/three-surface-poc-core/src/index.ts' });
     expect(modules).toEqual(['apps/x/src/a.test.ts', 'apps/x/src/helpers/build.ts', 'packages/three-surface-poc-core/src/deep.ts', 'packages/three-surface-poc-core/src/index.ts']);
     expect(modules.flatMap((path) => longSyncCalls(files[path]!).map(({ line, command }) => `${path}:${line} ${command}`))).toEqual([
       "apps/x/src/helpers/build.ts:2 'npm'",
