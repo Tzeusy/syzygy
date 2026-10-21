@@ -12,6 +12,23 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-10-21 (P-79 follow-ups, and P-108's implementation)
+
+The owner answered an adversarially-reviewed questionnaire on 2026-10-21
+through its token-gated local web form, with an explicit instruction to apply
+the answers now. Three of its four items rule on rows resolved earlier. No row
+is open in `PENDING-OWNER-DECISIONS.md` for any of them: P-79 and P-108 left
+the register when they were ruled and signed, so these entries are added here
+and no row is added there. The fourth item confirmed
+`OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-20.md`, through the
+confirmation line in that record.
+
+| # | What happened |
+|---|---|
+| P-79 (retained record layout) | **Ruled — A**: the retained evaluation record may carry one added top-level key, `claimStates`, holding only claim identity, epistemic tuple and challenge state; the six keys and four `evaluation` members stay. Record: [`POLARIS-RETAINED-EVALUATIONS-CLAIM-STATES-RULING-2026-10-21.md`](POLARIS-RETAINED-EVALUATIONS-CLAIM-STATES-RULING-2026-10-21.md). Bead `syzygy-dov.12.1` |
+| P-79 (dismissal Q2 and Q7) | **Ruled — A**: no home for dismissal records for now; keeping a dismissal readable from a retained evaluation is a retention change, and none is made now, so the retained re-read limb stays unbuilt. Record: [`PWB-DISMISSAL-RECORDS-AND-RETENTION-RULING-2026-10-21.md`](PWB-DISMISSAL-RECORDS-AND-RETENTION-RULING-2026-10-21.md). Bead `syzygy-dov.12.3` |
+| P-108 (implementation) | **Authorized — A**: exactly the signed text through M9 slices 4a, 4b and 8, with one acceptance condition on the marker populations; slices 5, 6b and 7 excluded. Record: [`OWNER-DIRECTION-P108-IMPLEMENTATION-2026-10-21.md`](OWNER-DIRECTION-P108-IMPLEMENTATION-2026-10-21.md) |
+
 ## Resolved on 2026-10-15 (P-108 signed v1.0; P-109 adopted v1.0, with implementation authorized)
 
 The owner answered one multi-select structured question in the lead Claude

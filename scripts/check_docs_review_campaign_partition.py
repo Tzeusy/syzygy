@@ -454,6 +454,12 @@ CAMPAIGNS = (
         "M2 slice 5 continuation packet",
         r"R-PWB-M2-SLICE5-CONTINUATION-PACKET(?:-\d+)?-RAW\.md",
     ),
+    campaign(
+        "pr489-signed-amendments-direction",
+        "Signed-amendment implementation direction (PR #489)",
+        r"R-PR489-SIGNED-AMENDMENTS-DIRECTION-\d+-RAW\.md",
+        r"R-PR489-OWNER-ANSWERS-RECORDING-\d+-RAW\.md",
+    ),
 )
 
 
