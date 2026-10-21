@@ -461,6 +461,11 @@ CAMPAIGNS = (
         r"R-PR489-OWNER-ANSWERS-RECORDING-\d+-RAW\.md",
     ),
     campaign(
+        "pr493-bead-title-withholding",
+        "Bead-title withholding",
+        r"R-PR493-BEAD-TITLE-WITHHOLDING-.*\.md",
+    ),
+    campaign(
         "p115-governedby-reference",
         "P-115 governedBy reference amendment",
         r"R-P115-GOVERNEDBY-REFERENCE-[1-3]-RAW\.md",

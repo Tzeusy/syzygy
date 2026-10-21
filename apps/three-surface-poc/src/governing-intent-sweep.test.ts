@@ -31,6 +31,7 @@ const UNKNOWN_CLASS = 'epistemic-unknown';
 const OTHER_STATE_CLASSES = ['epistemic-observed'];
 const TITLE_IDENTIFIER = 'POC-REQ-010';
 const TITLED_ITEM = 'bu-titled';
+const FIXTURE_TITLES: ReadonlyMap<string, string> = new Map([[TITLED_ITEM, `Implement ${TITLE_IDENTIFIER}`]]);
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type Obj = { [key: string]: Json };
@@ -95,7 +96,9 @@ function violations(answer: Obj, html: string): string[] {
     if (governedBy.label !== 'Unknown') found.push(`${id}: governedBy is ${String(governedBy.label)}, not Unknown`);
     if (governedBy.closedReason !== REASON) found.push(`${id}: reason ${String(governedBy.closedReason)}`);
     if (routes.length !== 1 || routes[0]?.reason !== REASON || routes[0]?.route !== ROUTE) found.push(`${id}: route is not RFC2-24's for ${REASON}`);
-    const title = typeof item.title === 'string' ? item.title : '';
+    // The title is the checker's own fixture row's: the answer serves none
+    // (SEC-5, syzygy-jytt).
+    const title = FIXTURE_TITLES.get(id) ?? '';
     for (const identifier of title.match(/\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+\b/g) ?? []) {
       if (JSON.stringify(governedBy).includes(identifier)) found.push(`${id}: governedBy names ${identifier} from its title`);
     }
@@ -103,8 +106,9 @@ function violations(answer: Obj, html: string): string[] {
   }
   if (unknowns !== items.length) found.push(`machine: ${unknowns} of ${items.length} served items carry the Unknown`);
   if (work.governedByUnknownCount !== unknowns) found.push(`machine count ${String(work.governedByUnknownCount)} differs from the enumerated ${unknowns}`);
+  // No title is served, so no served field may hold the title's identifier.
   const titleHolders = leaves(answer).filter(([, value]) => typeof value === 'string' && value.includes(TITLE_IDENTIFIER)).map(([path]) => path);
-  for (const path of titleHolders) if (!/\.title$/.test(path)) found.push(`${path} names ${TITLE_IDENTIFIER} outside a title`);
+  for (const path of titleHolders) found.push(`${path} names ${TITLE_IDENTIFIER}`);
 
   const rendered = cards(html);
   const regionHtml = region(html);
@@ -142,7 +146,7 @@ function violations(answer: Obj, html: string): string[] {
 // the selection keeps the 50 most recently closed, so two fall outside it.
 function rows(): Record<string, unknown>[] {
   const out: Record<string, unknown>[] = [
-    { ...fixtureWorkItemRow(TITLED_ITEM, 'open', '2026-08-01T00:00:00Z', '2026-08-02T00:00:00Z', null), title: `Implement ${TITLE_IDENTIFIER}` },
+    { ...fixtureWorkItemRow(TITLED_ITEM, 'open', '2026-08-01T00:00:00Z', '2026-08-02T00:00:00Z', null), title: FIXTURE_TITLES.get(TITLED_ITEM) },
     fixtureWorkItemRow('bu-open2', 'in_progress', '2026-08-03T00:00:00Z', '2026-08-04T00:00:00Z', null),
   ];
   for (let day = 1; day <= 52; day += 1) {
@@ -201,14 +205,18 @@ describe('POC-REQ-014: every work item\'s governing intent renders as a counted 
     }
   });
 
-  it('a title naming POC-REQ-010 yields the same Unknown, and nothing served names it outside a title', () => {
+  // SEC-5 (syzygy-jytt): the read row carries the title, the observation
+  // never selects or serves it, so the counterexample now shows nothing
+  // served naming the identifier at all, on either channel.
+  it('a read row titled "Implement POC-REQ-010" yields the same Unknown, and nothing served names POC-REQ-010', () => {
     const titled = items(answer).find((item) => item.id === TITLED_ITEM);
-    expect(titled?.title).toBe('Implement POC-REQ-010');
+    expect(titled).toBeDefined();
+    expect(titled).not.toHaveProperty('title');
     expect(titled?.governedBy).toEqual(items(answer).find((item) => item.id === 'bu-open2')?.governedBy);
-    expect(JSON.stringify(titled?.governedBy)).not.toContain('POC-REQ-010');
+    expect(JSON.stringify(answer)).not.toContain('POC-REQ-010');
     const card = cards(html).find((entry) => entry.id === TITLED_ITEM);
-    expect(card?.body.split('POC-REQ-010')).toHaveLength(2);
-    expect(card?.body).toContain('data-parity-field="work-item-title">Implement POC-REQ-010<');
+    expect(card?.body).toBeDefined();
+    expect(html).not.toContain('POC-REQ-010');
   });
 
   it('the count region reads, as text alone, the reason, the route and the warrant statement', () => {
@@ -259,11 +267,12 @@ describe('POC-REQ-014: every work item\'s governing intent renders as a counted 
     const cases: readonly [string, (target: Obj) => Obj, RegExp][] = [
       ['a served item with no governedBy', (t) => { delete items(t)[0]!.governedBy; return t; }, /: no governedBy$/],
       ['a governedBy that is not Unknown (green)', (t) => { (items(t)[0]!.governedBy as Obj).label = 'Observed'; return t; }, /governedBy is Observed, not Unknown/],
-      ['an identifier from the title', (t) => { const g = items(t)[0]!.governedBy as Obj; g.reason = 'Governed by POC-REQ-010'; return t; }, /governedBy names POC-REQ-010 from its title/],
+      ['an identifier from the title', (t) => { const g = items(t).find((item) => item.id === TITLED_ITEM)!.governedBy as Obj; g.reason = 'Governed by POC-REQ-010'; return t; }, /governedBy names POC-REQ-010 from its title/],
       ['another reason', (t) => { (items(t)[1]!.governedBy as Obj).closedReason = 'missing-declaration'; return t; }, /reason missing-declaration/],
       ['another route', (t) => { (((items(t)[1]!.governedBy as Obj).resolutionRoutes as Obj[])[0]!).route = 'Repair the observer or source; new snapshot'; return t; }, /route is not RFC2-24's/],
       ['a machine miscount', (t) => { (t.workItems as Obj).governedByUnknownCount = 53; return t; }, /machine count 53 differs/],
-      ['a served identifier outside a title', (t) => { (t.workItems as Obj).governingIntent = 'POC-REQ-010'; return t; }, /workItems.governingIntent names POC-REQ-010 outside a title/],
+      ['a served identifier from the title', (t) => { (t.workItems as Obj).governingIntent = 'POC-REQ-010'; return t; }, /workItems.governingIntent names POC-REQ-010$/],
+      ['a served title', (t) => { items(t).find((item) => item.id === TITLED_ITEM)!.title = 'Implement POC-REQ-010'; return t; }, /workItems.items\[\d+\].title names POC-REQ-010$/],
     ];
     for (const [name, mutate, expected] of cases) {
       it(name, () => {

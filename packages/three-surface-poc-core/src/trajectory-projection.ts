@@ -14,7 +14,6 @@ export type TrajectoryColumn = (typeof STATUS_TO_COLUMN)[WorkItemStatus];
 
 export interface TrajectoryLaneItem {
   readonly id: string;
-  readonly title: string;
   readonly status: WorkItemStatus;
   readonly column: TrajectoryColumn;
   readonly createdAt: string;
@@ -83,7 +82,6 @@ function newestFirst(a: string | null, b: string | null): number {
 function laneItem(item: WorkItemFact): TrajectoryLaneItem {
   return {
     id: item.id,
-    title: item.title,
     status: item.status,
     column: STATUS_TO_COLUMN[item.status],
     createdAt: item.createdAt,

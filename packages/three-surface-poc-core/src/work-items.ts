@@ -17,9 +17,11 @@ export const WORK_ITEM_STATUSES = [
 
 export type WorkItemStatus = (typeof WORK_ITEM_STATUSES)[number];
 
+/** No title: a work-item title is free text no declared secret policy
+ * covers, so the observation never reads it (SEC-5; owner answer of
+ * 2026-10-20, `syzygy-jytt`). The observation's `titles` discloses that. */
 export interface WorkItemFact {
   readonly id: string;
-  readonly title: string;
   readonly status: WorkItemStatus;
   readonly issueType: string;
   readonly priority: number;
@@ -64,6 +66,34 @@ export function governingIntentDisclosure(governedBy: GoverningIntentUnknown): P
   return { label: governedBy.label, reason: GOVERNING_INTENT_UNKNOWN_BASIS, closedReason: governedBy.closedReason, resolutionRoutes: governedBy.resolutionRoutes };
 }
 
+/** Every served item's title, stated once on the observation rather than on
+ * each item: `Unknown`, primary reason `excluded-content`, and that reason's
+ * RFC2-24 route. SEC-5 excludes anything not classifiable under the declared
+ * secret policy, and the only declared policy covers
+ * `declared-project-shape-text`, so the title column is never selected. */
+export interface WorkItemTitlesWithheld {
+  readonly label: 'Unknown';
+  readonly closedReason: 'excluded-content';
+  readonly resolutionRoutes: ResolutionRoutes;
+}
+
+/** The basis sentence of the withheld-title Unknown. */
+export const WORK_ITEM_TITLES_WITHHELD_BASIS =
+  'Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.';
+
+export function workItemTitlesWithheld(): WorkItemTitlesWithheld {
+  return {
+    label: 'Unknown',
+    closedReason: 'excluded-content',
+    resolutionRoutes: [resolutionRoute('excluded-content')],
+  };
+}
+
+/** The disclosure twin of the observation's `titles`, with its basis. */
+export function workItemTitlesDisclosure(titles: WorkItemTitlesWithheld): PocUnknown {
+  return { label: titles.label, reason: WORK_ITEM_TITLES_WITHHELD_BASIS, closedReason: titles.closedReason, resolutionRoutes: titles.resolutionRoutes };
+}
+
 /** How many items carry the governing-intent Unknown, counted over the
  * served item set (POC-REQ-014), never assumed equal to its length. */
 export function countGoverningIntentUnknown(items: readonly WorkItemFact[]): number {
@@ -87,6 +117,8 @@ export interface WorkItemsObserved {
   readonly items: readonly WorkItemFact[];
   /** POC-REQ-014: the served items whose `governedBy` is the Unknown. */
   readonly governedByUnknownCount: number;
+  /** SEC-5: every item's title is withheld, never read. */
+  readonly titles: WorkItemTitlesWithheld;
 }
 
 export interface WorkItemsUnknown {
@@ -120,7 +152,6 @@ function isWorkItemStatus(value: unknown): value is WorkItemStatus {
 interface RawRow {
   readonly revision?: unknown;
   readonly id?: unknown;
-  readonly title?: unknown;
   readonly status?: unknown;
   readonly issue_type?: unknown;
   readonly priority?: unknown;
@@ -133,7 +164,9 @@ interface RawRow {
  * Reads work items exclusively through `bd sql` against the live Dolt
  * database (POC-REQ-010/012). This module never opens the passive JSONL
  * export or any file derived from it — it shells a single read-only SQL
- * statement and parses its stdout.
+ * statement and parses its stdout. The statement names every column it
+ * reads, and `title` is not among them; a row that carries one anyway is
+ * never copied from.
  */
 export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult {
   if (!PREFIX_PATTERN.test(input.beadPrefix)) {
@@ -141,7 +174,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
   }
   const runQuery = input.runQuery ?? defaultRunQuery;
   const sql =
-    `SELECT dolt_hashof('HEAD') AS revision, id, title, status, issue_type, priority, ` +
+    `SELECT dolt_hashof('HEAD') AS revision, id, status, issue_type, priority, ` +
     `created_at, updated_at, closed_at FROM issues WHERE id LIKE '${input.beadPrefix}-%' ORDER BY id`;
 
   let stdout: string;
@@ -195,6 +228,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
       capturedAt: input.capturedAt,
       items: [],
       governedByUnknownCount: 0,
+      titles: workItemTitlesWithheld(),
     };
   }
 
@@ -204,7 +238,6 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
     if (
       typeof raw.revision !== 'string' ||
       typeof raw.id !== 'string' ||
-      typeof raw.title !== 'string' ||
       !isWorkItemStatus(raw.status) ||
       typeof raw.issue_type !== 'string' ||
       typeof raw.priority !== 'number' ||
@@ -222,7 +255,6 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
     }
     items.push({
       id: raw.id,
-      title: raw.title,
       status: raw.status,
       issueType: raw.issue_type,
       priority: raw.priority,
@@ -240,6 +272,7 @@ export function observeWorkItems(input: ObserveWorkItemsInput): WorkItemsResult 
     capturedAt: input.capturedAt,
     items,
     governedByUnknownCount: countGoverningIntentUnknown(items),
+    titles: workItemTitlesWithheld(),
   };
 }
 
