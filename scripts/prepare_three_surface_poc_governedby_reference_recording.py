@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 KEY = "three-surface-poc-governedby-reference-amendment"
 VERSION = "1.0"
-CORE_COMMIT = "9ef5d35836e722abbd4041900fa27bd02f82e277"
+CORE_COMMIT = "da9fde040ec188612310549782fccc0227869c79"
 BASE = "4504514c019ca0ee0cb4a89ed97445a0bad21915"
 CANDIDATE = Path(".syzygy/governance/contracts/candidates") / KEY
 BUILDER = Path("scripts/build_three_surface_poc_governedby_reference_amendment.py")
@@ -2381,7 +2381,7 @@ Owner selection: Synthetic structured selection; no owner action
 
 Review: docs/reviews/R-P115-RENDER-SELFTEST-RAW.md
 
-Reviewed commit: 9ef5d35836e722abbd4041900fa27bd02f82e277
+Reviewed commit: da9fde040ec188612310549782fccc0227869c79
 
 Review verdict: CONFIRM
 
