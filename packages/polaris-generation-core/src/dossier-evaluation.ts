@@ -4,6 +4,7 @@ import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { generationSourceTextAt, validateGenerationSources, type GenerationSource } from './generation-source.js';
 import { inspectBlockQuotes, sourceTextById } from './quote-fidelity.js';
+import { OWNER_TOPICS, READER_QUESTIONS_FORMAT, type OwnerTopic, type ReaderQuestion } from './topics.js';
 
 /**
  * Evaluation harness for a generated static Polaris dossier (TRACKER G5,
@@ -26,9 +27,7 @@ import { inspectBlockQuotes, sourceTextById } from './quote-fidelity.js';
  */
 
 export const DOSSIER_FORMAT = 'polaris-dossier-v1';
-export const READER_QUESTIONS_FORMAT = 'polaris-reader-questions-v1';
-export const OWNER_TOPICS = ['core-ideas', 'end-to-end-workflows', 'mechanisms', 'maintainer-stated-advantages', 'trade-offs'] as const;
-export type OwnerTopic = typeof OWNER_TOPICS[number];
+export { OWNER_TOPICS, READER_QUESTIONS_FORMAT, type OwnerTopic, type ReaderQuestion } from './topics.js';
 const EPISTEMIC = ['observed', 'inferred', 'unknown'] as const;
 type Epistemic = typeof EPISTEMIC[number];
 
@@ -47,8 +46,6 @@ export interface DossierManifest {
   readonly entryPage: string;
   readonly pages: readonly { readonly path: string; readonly depth: number }[];
 }
-
-export interface ReaderQuestion { readonly id: string; readonly topics: readonly OwnerTopic[]; readonly text: string }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const onlyKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).every(key => keys.includes(key));

@@ -7,9 +7,9 @@
 
 import { createHash } from 'node:crypto';
 
+import type { RequestedAsset } from './draft-model.js';
 import type { GenerationSource } from './generation-source.js';
-import type { RequestedAsset } from './provider-draft.js';
-import { READER_QUESTIONS_FORMAT, type ReaderQuestion } from './dossier-evaluation.js';
+import { READER_QUESTIONS_FORMAT, type ReaderQuestion } from './topics.js';
 
 export const DOSSIER_PROFILE_ID = 'dossier-v1';
 
