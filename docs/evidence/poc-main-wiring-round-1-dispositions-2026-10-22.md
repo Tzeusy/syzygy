@@ -9,9 +9,23 @@
 | Round | Raw | Verdict (line 2) | Reviewed commit (line 3) | Subject (line 4) |
 |---|---|---|---|---|
 | 1 | `docs/reviews/R-GP-IMPL-POC-MAIN-WIRING-1-RAW.md` | `CONFIRM WITH EXCEPTIONS` | `fe46265d` | `r1-review.diff` sha256 `fedee71fede54ca972abc2b52a53c69e0d6a9fe6abc361277563d5b2e936c861` |
+| 1 (re-issue) | `docs/reviews/R-GP-IMPL-POC-MAIN-WIRING-1-REISSUE-RAW.md` | `CONFIRM WITH EXCEPTIONS` | `fe46265d` | `r1-review.diff` sha256 `fedee71fede54ca972abc2b52a53c69e0d6a9fe6abc361277563d5b2e936c861` |
 
 The subject equals `git diff 0d4d5098 fe46265d`, which is the diff between
 main and this pull request. Main had not moved when this record was written.
+
+The same reviewer issued the second raw for the same round, over the same
+bytes, after the coordinator corrected the brief's TMPDIR advice. Chrome-driven
+tests need a short private TMPDIR. The first raw is unchanged, and both are
+retained (CC-REV-6).
+
+The re-issue changes no verdict, finding or figure. It adds rows 20d and 20e:
+the three-surface-poc app project passes at head (`Tests  1093 passed | 2
+skipped (1095)`) and at base (`1087 passed | 2 skipped (1089)`) under a short
+TMPDIR. That replaces the first raw's Unknown for that project. The re-issue
+also corrects the first raw's attribution of leftover Chrome directories: they
+come from the passing Chrome-driven test files, not from row 20's crashes. That
+gap predates this change, and the reviewer raised no finding on it.
 
 The reviewer found "No blocking (F) findings. Five notes." (section 4).
 Under the owner's notes-only stopping rule
