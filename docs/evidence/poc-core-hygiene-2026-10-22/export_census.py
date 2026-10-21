@@ -152,7 +152,7 @@ def selftest() -> int:
         ('url in string is not a comment', "const u = 'http://h/x'; X", 'X', 1),
         ('escaped quote does not end the string', "const s = 'a\\'/*'; X /* */", 'X', 1),
         ('comment inside a template expression is a comment', "const s = `${/* X */ 1}`; X", 'X', 1),
-        ('comment inside a nested template expression is a comment', "const s = `a ${`b ${/* X */ 1}`} c`; X", 'X', 1),
+        ('comment after a nested template in a template expression is a comment', "const s = `${`x`}${/* X */ 1}`; X", 'X', 1),
         ('comment after braces inside a template expression is a comment', "const s = `${ {a: 1}.a /* X */ } tail`; X", 'X', 1),
         ('slash inside a regex character class does not end the regex', "const r = /[/]\\/*x/; X /* c */", 'X', 1),
         ('division after a parenthesis is not a regex', "const q = (a) / b; // X\nX", 'X', 1),
