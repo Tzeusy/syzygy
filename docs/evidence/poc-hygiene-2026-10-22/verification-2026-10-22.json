@@ -1,0 +1,51 @@
+{
+ "subject": {
+  "baseCommit": "32c16625e3a14e6db995adff81379cf32baf49c3",
+  "codeCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
+  "note": "run on the code commit tree plus the files of this evidence directory"
+ },
+ "testNames": {
+  "method": "npx vitest list (all projects) at the base commit (a detached worktree with the main checkout node_modules linked) and at the code commit; the two lists are compared as multisets of the full \"[project] file > describe > test\" line",
+  "base": 4924,
+  "head": 4931,
+  "added": 16,
+  "removed": 9,
+  "changed": 0,
+  "addedByFile": {
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/main.test.ts": 16
+  },
+  "removedByFile": {
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts": 9
+  },
+  "testsLine": "Tests: +16 ~0 -9"
+ },
+ "fullVitestRun": {
+  "command": "npx vitest run",
+  "testFiles": "230 passed | 3 skipped (233)",
+  "tests": "4924 passed | 5 skipped (4929)",
+  "exit": 0
+ },
+ "checkGovernance": {
+  "base": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+  "final": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+  "differenceFromSamePlaceBeforeDeletion": "only file counts; the deletion of source-adapter.ts and its test changed no check result"
+ },
+ "checkQuotations": {
+  "baseVsFinalOutputIdentical": true,
+  "lastLines": [
+   "note  QC-1  1 recorded findings, printed every run and never failed (`RECORDED`)",
+   "        .syzygy/governance/contracts/candidates/policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md:24 \u2014 quotes doctrine/v1.md:53 (\"endpoints in real **actuator** use *and* the three-axis propagation sl\u2026\"), in no revision of .syzygy/governance/doctrine/v1.md \u2014 recorded: the quotation ends \"slice\"; doctrine/v1.md:53 at 9bdfe98a, the one revision carrying the sentence, ends \"proof-of-concept\", and no revision carries \"propagation slice\". Drafting text of the P-25(c) packet, applied within doctrine amendment D5, whose head banner says the text below it is unchanged; found by this check, 2026-10-03",
+   "note  QC-1  5 of 33 are in an earlier revision of their source only: amended since quoted, reported, never failed",
+   "note  QC-1  7 of 33 found outside their cited lines (\u00b12): locator drift, reported, never failed",
+   "note  QC-1  82 locators name no tracked file (CG-1 owns dangling paths); not examined"
+  ]
+ },
+ "typecheck": {
+  "command": "npm run typecheck",
+  "exit": 0
+ },
+ "authoritySweep": {
+  "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+  "result": "5 passed"
+ }
+}

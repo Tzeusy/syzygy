@@ -1,0 +1,971 @@
+{
+ "subject": {
+  "oldMain": {
+   "commit": "32c16625e3a14e6db995adff81379cf32baf49c3",
+   "path": "apps/three-surface-poc/src/main.ts",
+   "gitBlob": "5f873660fe95974eb8adaf67d554d3d46d886a5f",
+   "sha256": "470ff646cec7a94d3f9bcb0029e082549a7c5769577e4a549d225f6de09e6da2"
+  },
+  "newMain": {
+   "commit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
+   "path": "apps/three-surface-poc/src/main.ts",
+   "sha256": "5fc4e3648ff19a46e4270d8730a8bd9f5558c8b7de51e5de7bd83c92dca1e59c"
+  }
+ },
+ "harness": {
+  "file": "docs/evidence/poc-hygiene-2026-10-22/main-old-vs-new-differential.test.ts.txt",
+  "sha256": "7117e3a4a6578289d0e9c3210082c19b2b8d8d5f9c318b74566555f412722c03",
+  "reproduce": "copy the harness to apps/three-surface-poc/src/zz-main-differential.test.ts, write the old main (git show of the blob above) to apps/three-surface-poc/src/zz-main-old.ts, run npx vitest run on the harness; delete both afterwards. They are never committed.",
+  "method": "Per scenario the old script runs as a module (top level, process.argv, process.stdout, process.cwd, process.stdin, signals) and the new exported main runs with a fake PocIo, against the same mocked collaborators (git observation, production model builder, daemon). The two transcripts (stdout, stderr, exit code, ordered collaborator calls, daemon options and route list, post-start route responses, close count, thrown error) must be deeply equal.",
+  "scenarios": 42,
+  "identical": 42,
+  "tests": 44
+ },
+ "scenarios": [
+  {
+   "name": "help",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 490,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "14fd1294e7ab9bd94e0dd5eeee0fc777ca242382ed97100d767531dbec9225d9",
+   "newTranscriptSha256": "14fd1294e7ab9bd94e0dd5eeee0fc777ca242382ed97100d767531dbec9225d9"
+  },
+  {
+   "name": "help-short",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 490,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "14fd1294e7ab9bd94e0dd5eeee0fc777ca242382ed97100d767531dbec9225d9",
+   "newTranscriptSha256": "14fd1294e7ab9bd94e0dd5eeee0fc777ca242382ed97100d767531dbec9225d9"
+  },
+  {
+   "name": "invalid-unknown-arg",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 529,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "d7afb808af3413dfb8973b899c70a9334bb2a03e12717a8a022d5c472b517537",
+   "newTranscriptSha256": "d7afb808af3413dfb8973b899c70a9334bb2a03e12717a8a022d5c472b517537"
+  },
+  {
+   "name": "invalid-missing-repo",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 573,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "ac3de09a2acb670ef245fc9946a9dcc88863a7adbbe1281ef082ecf0a75fe4eb",
+   "newTranscriptSha256": "ac3de09a2acb670ef245fc9946a9dcc88863a7adbbe1281ef082ecf0a75fe4eb"
+  },
+  {
+   "name": "invalid-port",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 554,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "c53da58f8c90a579555636128928884be47f6ac8ffe02b26ebbe994675f1b2e3",
+   "newTranscriptSha256": "c53da58f8c90a579555636128928884be47f6ac8ffe02b26ebbe994675f1b2e3"
+  },
+  {
+   "name": "invalid-twice",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 539,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "a4d743058f8afa7266aeed78723d0f1dad3c692da7e2c7f8b4a1e1b053d70f90",
+   "newTranscriptSha256": "a4d743058f8afa7266aeed78723d0f1dad3c692da7e2c7f8b4a1e1b053d70f90"
+  },
+  {
+   "name": "repo-unreadable",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 50,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "27f8fd346b6254547437cd3948578623d9655430bc8cf9f1249b2a7126149919",
+   "newTranscriptSha256": "27f8fd346b6254547437cd3948578623d9655430bc8cf9f1249b2a7126149919"
+  },
+  {
+   "name": "binding-rejected",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 1,
+   "stdoutBytes": 0,
+   "stderrBytes": 74,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "03e5f1190b199ba71d3e43aa1c30cc36da69f25e2f8adcbca0f559141d198215",
+   "newTranscriptSha256": "03e5f1190b199ba71d3e43aa1c30cc36da69f25e2f8adcbca0f559141d198215"
+  },
+  {
+   "name": "binding-rejected-other",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 1,
+   "stdoutBytes": 0,
+   "stderrBytes": 74,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8c094b41e70337f59e0e5a804c5c444ab59207cf14cea4de09f3e02fb37b508f",
+   "newTranscriptSha256": "8c094b41e70337f59e0e5a804c5c444ab59207cf14cea4de09f3e02fb37b508f"
+  },
+  {
+   "name": "repo-git-fails",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 73,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "e7b729d93074837b17b962a34d741b80784ca9c374ac93084dd406d9f1569575",
+   "newTranscriptSha256": "e7b729d93074837b17b962a34d741b80784ca9c374ac93084dd406d9f1569575"
+  },
+  {
+   "name": "repo-git-fails-no-status",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 78,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8dbd4425025acb3e6fbbf124e5bc8d6db6b15f49333c7663f800d11181f47fab",
+   "newTranscriptSha256": "8dbd4425025acb3e6fbbf124e5bc8d6db6b15f49333c7663f800d11181f47fab"
+  },
+  {
+   "name": "repo-git-status-out-of-range",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 78,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8dbd4425025acb3e6fbbf124e5bc8d6db6b15f49333c7663f800d11181f47fab",
+   "newTranscriptSha256": "8dbd4425025acb3e6fbbf124e5bc8d6db6b15f49333c7663f800d11181f47fab"
+  },
+  {
+   "name": "observer-git-fails",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 3,
+   "stdoutBytes": 0,
+   "stderrBytes": 71,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "1debfd12be17603593c0150edde1664cbe08030b0761b01bdd8fbccaa411d13f",
+   "newTranscriptSha256": "1debfd12be17603593c0150edde1664cbe08030b0761b01bdd8fbccaa411d13f"
+  },
+  {
+   "name": "observer-dirty",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 4,
+   "stdoutBytes": 0,
+   "stderrBytes": 56,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "627d5d3e1361c476a9fceb6887bc2b95e6f599f3dc3e1d9ca732360c133d7905",
+   "newTranscriptSha256": "627d5d3e1361c476a9fceb6887bc2b95e6f599f3dc3e1d9ca732360c133d7905"
+  },
+  {
+   "name": "horizon-throws-at-start",
+   "exitCode": 0,
+   "thrown": "Error: horizon exploded",
+   "collaboratorCalls": 5,
+   "stdoutBytes": 0,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "4a4b8a6f193368c199a65d1fb4997b12f76a023c46ae3135297dcf1bd7e06fc8",
+   "newTranscriptSha256": "4a4b8a6f193368c199a65d1fb4997b12f76a023c46ae3135297dcf1bd7e06fc8"
+  },
+  {
+   "name": "model-throws-poc-observation-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 90,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "1cb5017b166c551276676e8360cfbdec9b5290d2e42014174fce77478fb7fc6a",
+   "newTranscriptSha256": "1cb5017b166c551276676e8360cfbdec9b5290d2e42014174fce77478fb7fc6a"
+  },
+  {
+   "name": "model-throws-poc-observation-error-bare",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 52,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "2e0db4200cb4a0cf10f24b01a583af22075aae01016c302daabd48d1d77c508c",
+   "newTranscriptSha256": "2e0db4200cb4a0cf10f24b01a583af22075aae01016c302daabd48d1d77c508c"
+  },
+  {
+   "name": "model-throws-type-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 76,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "a8ae2d6b5beb6788c45c1851f8b118560773f0d018193f20a005660b6668b71f",
+   "newTranscriptSha256": "a8ae2d6b5beb6788c45c1851f8b118560773f0d018193f20a005660b6668b71f"
+  },
+  {
+   "name": "model-throws-custom-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 85,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f191ceddb12c1382c8dd24e617310f249f93c7c67454ab7de46c206d648c25bf",
+   "newTranscriptSha256": "f191ceddb12c1382c8dd24e617310f249f93c7c67454ab7de46c206d648c25bf"
+  },
+  {
+   "name": "model-throws-string",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 85,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f191ceddb12c1382c8dd24e617310f249f93c7c67454ab7de46c206d648c25bf",
+   "newTranscriptSha256": "f191ceddb12c1382c8dd24e617310f249f93c7c67454ab7de46c206d648c25bf"
+  },
+  {
+   "name": "daemon-bind-failed",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 73,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "d74703cc8457d44fbbf7ed39edcff24cccb7a0c49258a35462f480377f1cc426",
+   "newTranscriptSha256": "d74703cc8457d44fbbf7ed39edcff24cccb7a0c49258a35462f480377f1cc426"
+  },
+  {
+   "name": "daemon-bind-failed-nocode",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 81,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8ac4768ec661826eead8d9e821b7360db60605f708bbd2119fbe0eaf7796cc28",
+   "newTranscriptSha256": "8ac4768ec661826eead8d9e821b7360db60605f708bbd2119fbe0eaf7796cc28"
+  },
+  {
+   "name": "daemon-credential",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 97,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "35905b3cb897a33077d8c6fa026f2794d43bbeaee00712ab8dbbbf8058ee7ed5",
+   "newTranscriptSha256": "35905b3cb897a33077d8c6fa026f2794d43bbeaee00712ab8dbbbf8058ee7ed5"
+  },
+  {
+   "name": "daemon-duplicate-route",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 93,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "217938cdd9c2e73347ebf5b57c8911a82127e7a1630430aafa4e148205e3a15a",
+   "newTranscriptSha256": "217938cdd9c2e73347ebf5b57c8911a82127e7a1630430aafa4e148205e3a15a"
+  },
+  {
+   "name": "daemon-duplicate-route-odd",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 100,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f248d8f5c724b017f8710499c53140f3fa661fb69bc51aebb631c9ddf940b485",
+   "newTranscriptSha256": "f248d8f5c724b017f8710499c53140f3fa661fb69bc51aebb631c9ddf940b485"
+  },
+  {
+   "name": "daemon-throws",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 77,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "c04de1f5f1db2dbcdab183fc03fe70ef19c2c1f341f5811b8712d411cb3facc9",
+   "newTranscriptSha256": "c04de1f5f1db2dbcdab183fc03fe70ef19c2c1f341f5811b8712d411cb3facc9"
+  },
+  {
+   "name": "happy-default-state-dir",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "0961f4c1113f279a874a556843d0fda215a35d89aa00e87f1e345f1e29dd484b",
+   "newTranscriptSha256": "0961f4c1113f279a874a556843d0fda215a35d89aa00e87f1e345f1e29dd484b"
+  },
+  {
+   "name": "happy-relative-state-dir",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "735fe1bbdb300099cad93db3d977d04047577b90ea9463fb1e69f5ed4a415f78",
+   "newTranscriptSha256": "735fe1bbdb300099cad93db3d977d04047577b90ea9463fb1e69f5ed4a415f78"
+  },
+  {
+   "name": "happy-sigterm",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 354,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "a0c771a20fe7e9507bbed992b4e1cdd65e3bac80fe1714d6561ac3cec85268dd",
+   "newTranscriptSha256": "a0c771a20fe7e9507bbed992b4e1cdd65e3bac80fe1714d6561ac3cec85268dd"
+  },
+  {
+   "name": "happy-double-signal",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "790433c9748e9a28f7b2ddb051992d0b114e1ad5b2ce3ea7a75790ada625260f",
+   "newTranscriptSha256": "790433c9748e9a28f7b2ddb051992d0b114e1ad5b2ce3ea7a75790ada625260f"
+  },
+  {
+   "name": "happy-reused",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "565d8611725e4e5454a387ae0d0b62c5e57d557318d0327ccdce12036b12af8c",
+   "newTranscriptSha256": "565d8611725e4e5454a387ae0d0b62c5e57d557318d0327ccdce12036b12af8c"
+  },
+  {
+   "name": "happy-pages",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 4,
+   "oldTranscriptSha256": "d6f24029c5f9b5707f58836caa7226d6d217d633f71a782f64c2856008ef007b",
+   "newTranscriptSha256": "d6f24029c5f9b5707f58836caa7226d6d217d633f71a782f64c2856008ef007b"
+  },
+  {
+   "name": "reobserve-ok",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 15,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 2,
+   "oldTranscriptSha256": "a7064051f0f599b8804e43c27b2a7091331b2ad3bbdc2af6d1c94fceafbd523c",
+   "newTranscriptSha256": "a7064051f0f599b8804e43c27b2a7091331b2ad3bbdc2af6d1c94fceafbd523c"
+  },
+  {
+   "name": "reobserve-dirty",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 11,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 2,
+   "oldTranscriptSha256": "4556ea02d03cda36f42107031342943f7fd8b9bfb0c773130a078634437d2f5d",
+   "newTranscriptSha256": "4556ea02d03cda36f42107031342943f7fd8b9bfb0c773130a078634437d2f5d"
+  },
+  {
+   "name": "reobserve-git-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 9,
+   "stdoutBytes": 345,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "0a9a45032c5ec6df17c2955503e80971138c59d7fe8ba0d6b31ebf972d615cd3",
+   "newTranscriptSha256": "0a9a45032c5ec6df17c2955503e80971138c59d7fe8ba0d6b31ebf972d615cd3"
+  },
+  {
+   "name": "reobserve-horizon-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 12,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "d7827458cbcf945d1af4f83e5ac45e61aad153f1b4f6f6230da0a4387e561ac3",
+   "newTranscriptSha256": "d7827458cbcf945d1af4f83e5ac45e61aad153f1b4f6f6230da0a4387e561ac3"
+  },
+  {
+   "name": "reobserve-model-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 13,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "389bdc522858574fe57f7aac477f5bc4e59a26415f308121e15dfdc449cc39d8",
+   "newTranscriptSha256": "389bdc522858574fe57f7aac477f5bc4e59a26415f308121e15dfdc449cc39d8"
+  },
+  {
+   "name": "cwd-differs",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "fede3d0cf441ab8e8fd105af852ce3a09873114772997525a48dfa987909f206",
+   "newTranscriptSha256": "fede3d0cf441ab8e8fd105af852ce3a09873114772997525a48dfa987909f206"
+  },
+  {
+   "name": "happy-evaluated-readiness",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 467,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "286230e706f39c690b77a481ca61bfba33bcc9d5930c1a78fa1f8862183dd1d7",
+   "newTranscriptSha256": "286230e706f39c690b77a481ca61bfba33bcc9d5930c1a78fa1f8862183dd1d7"
+  },
+  {
+   "name": "watch-enter-reobserves",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 15,
+   "stdoutBytes": 864,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "d52ef86e70b78fa46e0f8acfd7cc1c9e8e30569f113b58d0aec205ea885e7f5f",
+   "newTranscriptSha256": "d52ef86e70b78fa46e0f8acfd7cc1c9e8e30569f113b58d0aec205ea885e7f5f"
+  },
+  {
+   "name": "watch-enter-dirty",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 11,
+   "stdoutBytes": 711,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "b0325aeab288be84ca4bd03aed0734203414ddfb495a31e35e3f3717f2491670",
+   "newTranscriptSha256": "b0325aeab288be84ca4bd03aed0734203414ddfb495a31e35e3f3717f2491670"
+  },
+  {
+   "name": "watch-no-enter",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 454,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8482170df01990613a4d2f86eea54fbf5a77de8d515116e8370fbe1c5fb8fdc6",
+   "newTranscriptSha256": "8482170df01990613a4d2f86eea54fbf5a77de8d515116e8370fbe1c5fb8fdc6"
+  }
+ ],
+ "rule6": {
+  "ranAtCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
+  "command": "npx vitest run apps/three-surface-poc/src/zz-main-differential.test.ts",
+  "mutants": 24,
+  "killed": 21,
+  "results": [
+   {
+    "id": "launcher-gate-bypassed",
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario binding-rejected",
+     "old script vs new main(): identical transcripts > scenario binding-rejected-other",
+     "old script vs new main(): identical transcripts > scenario cwd-differs",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed-nocode",
+     "old script vs new main(): identical transcripts > scenario daemon-credential",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route-odd",
+     "old script vs new main(): identical transcripts > scenario daemon-throws",
+     "old script vs new main(): identical transcripts > scenario happy-default-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-double-signal",
+     "old script vs new main(): identical transcripts > scenario happy-evaluated-readiness",
+     "old script vs new main(): identical transcripts > scenario happy-pages",
+     "old script vs new main(): identical transcripts > scenario happy-relative-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-reused",
+     "old script vs new main(): identical transcripts > scenario happy-sigterm",
+     "old script vs new main(): identical transcripts > scenario horizon-throws-at-start",
+     "old script vs new main(): identical transcripts > scenario model-throws-custom-error",
+     "old script vs new main(): identical transcripts > scenario model-throws-poc-observation-error",
+     "old script vs new main(): identical transcripts > scenario model-throws-poc-observation-error-bare",
+     "old script vs new main(): identical transcripts > scenario model-throws-string",
+     "old script vs new main(): identical transcripts > scenario model-throws-type-error",
+     "old script vs new main(): identical transcripts > scenario observer-dirty",
+     "old script vs new main(): identical transcripts > scenario observer-git-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-dirty",
+     "old script vs new main(): identical transcripts > scenario reobserve-git-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-horizon-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-model-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-ok",
+     "old script vs new main(): identical transcripts > scenario repo-git-fails",
+     "old script vs new main(): identical transcripts > scenario repo-git-fails-no-status",
+     "old script vs new main(): identical transcripts > scenario repo-git-status-out-of-range",
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-reobserves",
+     "old script vs new main(): identical transcripts > scenario watch-no-enter",
+     "scenario binding-rejected 77ms",
+     "scenario binding-rejected-other 41ms",
+     "scenario cwd-differs 45ms",
+     "scenario daemon-bind-failed 50ms",
+     "scenario daemon-bind-failed-nocode 49ms",
+     "scenario daemon-credential 50ms",
+     "scenario daemon-duplicate-route 54ms",
+     "scenario daemon-duplicate-route-odd 40ms",
+     "scenario daemon-throws 41ms",
+     "scenario happy-default-state-dir 47ms",
+     "scenario happy-double-signal 42ms",
+     "scenario happy-evaluated-readiness 46ms",
+     "scenario happy-pages 77ms",
+     "scenario happy-relative-state-dir 44ms",
+     "scenario happy-reused 40ms",
+     "scenario happy-sigterm 50ms",
+     "scenario horizon-throws-at-start 59ms",
+     "scenario model-throws-custom-error 60ms",
+     "scenario model-throws-poc-observation-error 42ms",
+     "scenario model-throws-poc-observation-error-bare 46ms",
+     "scenario model-throws-string 48ms",
+     "scenario model-throws-type-error 53ms",
+     "scenario observer-dirty 39ms",
+     "scenario observer-git-fails 38ms",
+     "scenario reobserve-dirty 46ms",
+     "scenario reobserve-git-fails 43ms",
+     "scenario reobserve-horizon-fails 40ms",
+     "scenario reobserve-model-fails 56ms",
+     "scenario reobserve-ok 57ms",
+     "scenario repo-git-fails 48ms",
+     "scenario repo-git-fails-no-status 42ms",
+     "scenario repo-git-status-out-of-range 57ms",
+     "scenario watch-enter-dirty 332ms",
+     "scenario watch-enter-reobserves 287ms",
+     "scenario watch-no-enter 53ms"
+    ]
+   },
+   {
+    "id": "help-exit-code",
+    "old": "    io.stdout.write(USAGE);\n    return 0;",
+    "new": "    io.stdout.write(USAGE);\n    return 1;",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario help",
+     "old script vs new main(): identical transcripts > scenario help-short",
+     "scenario help 253ms",
+     "scenario help-short 57ms"
+    ]
+   },
+   {
+    "id": "invalid-exit-code",
+    "old": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 1;",
+    "new": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 2;",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario invalid-missing-repo",
+     "old script vs new main(): identical transcripts > scenario invalid-port",
+     "old script vs new main(): identical transcripts > scenario invalid-twice",
+     "old script vs new main(): identical transcripts > scenario invalid-unknown-arg",
+     "scenario invalid-missing-repo 51ms",
+     "scenario invalid-port 47ms",
+     "scenario invalid-twice 45ms",
+     "scenario invalid-unknown-arg 93ms"
+    ]
+   },
+   {
+    "id": "unreadable-repo-message",
+    "old": "configured repository is not readable",
+    "new": "configured repository is unreadable",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario repo-unreadable",
+     "scenario repo-unreadable 60ms"
+    ]
+   },
+   {
+    "id": "rejected-binding-exit-code",
+    "old": "authority rejected (${launch.reason})\\n`);\n    return 1;",
+    "new": "authority rejected (${launch.reason})\\n`);\n    return 2;",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario binding-rejected",
+     "old script vs new main(): identical transcripts > scenario binding-rejected-other",
+     "scenario binding-rejected 61ms",
+     "scenario binding-rejected-other 34ms"
+    ]
+   },
+   {
+    "id": "rejected-binding-reason-dropped",
+    "old": "authority rejected (${launch.reason})",
+    "new": "authority rejected",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario binding-rejected",
+     "old script vs new main(): identical transcripts > scenario binding-rejected-other",
+     "scenario binding-rejected 82ms",
+     "scenario binding-rejected-other 39ms"
+    ]
+   },
+   {
+    "id": "initial-dirty-refusal-name",
+    "old": "observeCheckouts('observer-checkout-dirty')",
+    "new": "observeCheckouts('observer-dirty')",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario observer-dirty",
+     "scenario observer-dirty 55ms"
+    ]
+   },
+   {
+    "id": "horizon-inside-startup-try",
+    "old": "  const capture = observeCapture(observed);\n",
+    "new": "  let capture: PocRuntimeCapture;\n  try { capture = observeCapture(observed); } catch (cause) { io.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\\n`); return 1; }\n",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario horizon-throws-at-start",
+     "scenario horizon-throws-at-start 59ms"
+    ]
+   },
+   {
+    "id": "observer-read-at-process-cwd",
+    "old": "const observer = deps.observeGitRepository(io.cwd());",
+    "new": "const observer = deps.observeGitRepository(process.cwd());",
+    "exit": 0,
+    "outcome": "SURVIVED",
+    "failingTests": []
+   },
+   {
+    "id": "model-observer-root-process-cwd",
+    "old": "    observerRoot: io.cwd(),",
+    "new": "    observerRoot: process.cwd(),",
+    "exit": 0,
+    "outcome": "SURVIVED",
+    "failingTests": []
+   },
+   {
+    "id": "observation-instant-from-clock",
+    "old": "buildPocEvaluationEvidence(io.now(),",
+    "new": "buildPocEvaluationEvidence(new Date().toISOString(),",
+    "exit": 0,
+    "outcome": "SURVIVED",
+    "failingTests": []
+   },
+   {
+    "id": "observatory-root",
+    "old": "deps.observeObservatoryDrift(io.cwd(), buildRevision)",
+    "new": "deps.observeObservatoryDrift(repoRoot, buildRevision)",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario cwd-differs",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed-nocode",
+     "old script vs new main(): identical transcripts > scenario daemon-credential",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route-odd",
+     "old script vs new main(): identical transcripts > scenario daemon-throws",
+     "old script vs new main(): identical transcripts > scenario happy-default-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-double-signal",
+     "old script vs new main(): identical transcripts > scenario happy-evaluated-readiness",
+     "old script vs new main(): identical transcripts > scenario happy-pages",
+     "old script vs new main(): identical transcripts > scenario happy-relative-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-reused",
+     "old script vs new main(): identical transcripts > scenario happy-sigterm",
+     "old script vs new main(): identical transcripts > scenario reobserve-dirty",
+     "old script vs new main(): identical transcripts > scenario reobserve-git-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-horizon-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-model-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-ok",
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-reobserves",
+     "old script vs new main(): identical transcripts > scenario watch-no-enter",
+     "scenario cwd-differs 53ms",
+     "scenario daemon-bind-failed 72ms",
+     "scenario daemon-bind-failed-nocode 69ms",
+     "scenario daemon-credential 60ms",
+     "scenario daemon-duplicate-route 53ms",
+     "scenario daemon-duplicate-route-odd 53ms",
+     "scenario daemon-throws 58ms",
+     "scenario happy-default-state-dir 73ms",
+     "scenario happy-double-signal 51ms",
+     "scenario happy-evaluated-readiness 58ms",
+     "scenario happy-pages 82ms",
+     "scenario happy-relative-state-dir 57ms",
+     "scenario happy-reused 67ms",
+     "scenario happy-sigterm 53ms",
+     "scenario reobserve-dirty 69ms",
+     "scenario reobserve-git-fails 70ms",
+     "scenario reobserve-horizon-fails 53ms",
+     "scenario reobserve-model-fails 58ms",
+     "scenario reobserve-ok 90ms",
+     "scenario watch-enter-dirty 329ms",
+     "scenario watch-enter-reobserves 310ms",
+     "scenario watch-no-enter 65ms"
+    ]
+   },
+   {
+    "id": "state-dir-digest-width",
+    "old": "slice(0, 16)",
+    "new": "slice(0, 15)",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario happy-default-state-dir",
+     "scenario happy-default-state-dir 99ms"
+    ]
+   },
+   {
+    "id": "daemon-start-failure-exit",
+    "old": "      return 1;\n    }\n    const daemon = start.daemon;",
+    "new": "      return 0;\n    }\n    const daemon = start.daemon;",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed-nocode",
+     "old script vs new main(): identical transcripts > scenario daemon-credential",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route-odd",
+     "scenario daemon-bind-failed 84ms",
+     "scenario daemon-bind-failed-nocode 50ms",
+     "scenario daemon-credential 48ms",
+     "scenario daemon-duplicate-route 54ms",
+     "scenario daemon-duplicate-route-odd 53ms"
+    ]
+   },
+   {
+    "id": "daemon-start-failure-kind-dropped",
+    "old": "daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})",
+    "new": "daemon did not start (${daemonStartDetail(start.failure)})",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed",
+     "old script vs new main(): identical transcripts > scenario daemon-bind-failed-nocode",
+     "old script vs new main(): identical transcripts > scenario daemon-credential",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route",
+     "old script vs new main(): identical transcripts > scenario daemon-duplicate-route-odd",
+     "scenario daemon-bind-failed 54ms",
+     "scenario daemon-bind-failed-nocode 56ms",
+     "scenario daemon-credential 51ms",
+     "scenario daemon-duplicate-route 48ms",
+     "scenario daemon-duplicate-route-odd 40ms"
+    ]
+   },
+   {
+    "id": "walkthrough-binding-lines-dropped",
+    "old": "        ...walkthroughBindingLines(session.model()),\n",
+    "new": "",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario happy-evaluated-readiness",
+     "scenario happy-evaluated-readiness 52ms"
+    ]
+   },
+   {
+    "id": "credential-line-dropped",
+    "old": "        `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,\n",
+    "new": "",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario cwd-differs",
+     "old script vs new main(): identical transcripts > scenario happy-default-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-double-signal",
+     "old script vs new main(): identical transcripts > scenario happy-evaluated-readiness",
+     "old script vs new main(): identical transcripts > scenario happy-pages",
+     "old script vs new main(): identical transcripts > scenario happy-relative-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-reused",
+     "old script vs new main(): identical transcripts > scenario happy-sigterm",
+     "old script vs new main(): identical transcripts > scenario reobserve-dirty",
+     "old script vs new main(): identical transcripts > scenario reobserve-git-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-horizon-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-model-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-ok",
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-reobserves",
+     "old script vs new main(): identical transcripts > scenario watch-no-enter",
+     "scenario cwd-differs 40ms",
+     "scenario happy-default-state-dir 64ms",
+     "scenario happy-double-signal 44ms",
+     "scenario happy-evaluated-readiness 47ms",
+     "scenario happy-pages 80ms",
+     "scenario happy-relative-state-dir 66ms",
+     "scenario happy-reused 46ms",
+     "scenario happy-sigterm 41ms",
+     "scenario reobserve-dirty 52ms",
+     "scenario reobserve-git-fails 41ms",
+     "scenario reobserve-horizon-fails 49ms",
+     "scenario reobserve-model-fails 46ms",
+     "scenario reobserve-ok 50ms",
+     "scenario watch-enter-dirty 288ms",
+     "scenario watch-enter-reobserves 291ms",
+     "scenario watch-no-enter 40ms"
+    ]
+   },
+   {
+    "id": "console-output-stream",
+    "old": "{ input: io.stdin, output: io.stdout }",
+    "new": "{ input: io.stdin, output: io.stderr }",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-reobserves",
+     "old script vs new main(): identical transcripts > scenario watch-no-enter",
+     "scenario watch-enter-dirty 282ms",
+     "scenario watch-enter-reobserves 291ms",
+     "scenario watch-no-enter 46ms"
+    ]
+   },
+   {
+    "id": "re-observation-refusal-message",
+    "old": "'POC runtime inputs are dirty; re-observation was refused'",
+    "new": "'POC runtime inputs are dirty'",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario reobserve-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "scenario reobserve-dirty 76ms",
+     "scenario watch-enter-dirty 283ms"
+    ]
+   },
+   {
+    "id": "shutdown-message",
+    "old": "`syzygy POC: ${signal} received, shutting down\\n`",
+    "new": "`syzygy POC: ${signal} received\\n`",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario cwd-differs",
+     "old script vs new main(): identical transcripts > scenario happy-default-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-double-signal",
+     "old script vs new main(): identical transcripts > scenario happy-evaluated-readiness",
+     "old script vs new main(): identical transcripts > scenario happy-pages",
+     "old script vs new main(): identical transcripts > scenario happy-relative-state-dir",
+     "old script vs new main(): identical transcripts > scenario happy-reused",
+     "old script vs new main(): identical transcripts > scenario happy-sigterm",
+     "old script vs new main(): identical transcripts > scenario reobserve-dirty",
+     "old script vs new main(): identical transcripts > scenario reobserve-git-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-horizon-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-model-fails",
+     "old script vs new main(): identical transcripts > scenario reobserve-ok",
+     "old script vs new main(): identical transcripts > scenario watch-enter-dirty",
+     "old script vs new main(): identical transcripts > scenario watch-enter-reobserves",
+     "old script vs new main(): identical transcripts > scenario watch-no-enter",
+     "scenario cwd-differs 43ms",
+     "scenario happy-default-state-dir 47ms",
+     "scenario happy-double-signal 38ms",
+     "scenario happy-evaluated-readiness 39ms",
+     "scenario happy-pages 73ms",
+     "scenario happy-relative-state-dir 47ms",
+     "scenario happy-reused 40ms",
+     "scenario happy-sigterm 45ms",
+     "scenario reobserve-dirty 56ms",
+     "scenario reobserve-git-fails 45ms",
+     "scenario reobserve-horizon-fails 49ms",
+     "scenario reobserve-model-fails 42ms",
+     "scenario reobserve-ok 65ms",
+     "scenario watch-enter-dirty 290ms",
+     "scenario watch-enter-reobserves 281ms",
+     "scenario watch-no-enter 46ms"
+    ]
+   },
+   {
+    "id": "shutdown-guard-removed",
+    "old": "        if (closing) return;\n",
+    "new": "",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario happy-double-signal",
+     "scenario happy-double-signal 56ms"
+    ]
+   },
+   {
+    "id": "sigterm-not-handled",
+    "old": "      io.onSignal('SIGTERM', () => shutdown('SIGTERM'));\n",
+    "new": "",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario happy-sigterm",
+     "scenario happy-sigterm 5009ms"
+    ]
+   },
+   {
+    "id": "model-failure-exit-code",
+    "old": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 1;",
+    "new": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 2;",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario daemon-throws",
+     "old script vs new main(): identical transcripts > scenario model-throws-custom-error",
+     "old script vs new main(): identical transcripts > scenario model-throws-poc-observation-error",
+     "old script vs new main(): identical transcripts > scenario model-throws-poc-observation-error-bare",
+     "old script vs new main(): identical transcripts > scenario model-throws-string",
+     "old script vs new main(): identical transcripts > scenario model-throws-type-error",
+     "scenario daemon-throws 56ms",
+     "scenario model-throws-custom-error 63ms",
+     "scenario model-throws-poc-observation-error 71ms",
+     "scenario model-throws-poc-observation-error-bare 56ms",
+     "scenario model-throws-string 62ms",
+     "scenario model-throws-type-error 54ms"
+    ]
+   },
+   {
+    "id": "observation-error-path-dropped",
+    "old": ".filter((part): part is string => part !== undefined)",
+    "new": ".filter((part): part is string => part !== undefined && part !== cause.artifactPath)",
+    "exit": 1,
+    "outcome": "killed",
+    "failingTests": [
+     "old script vs new main(): identical transcripts > scenario model-throws-poc-observation-error",
+     "scenario model-throws-poc-observation-error 74ms"
+    ]
+   }
+  ],
+  "survivorsExplained": {
+   "observer-read-at-process-cwd": "equivalent under the harness: it fixes process.cwd and io.cwd to the same value because the composition root defines io.cwd as process.cwd(); killed by main.test.ts, which gives the two different values",
+   "model-observer-root-process-cwd": "same reason; killed by main.test.ts",
+   "observation-instant-from-clock": "equivalent under the harness: Date is faked to the instant io.now returns, and the composition root defines io.now as new Date().toISOString(); killed by main.test.ts, which injects a distinct clock"
+  }
+ },
+ "transcriptsFile": "main-differential-transcripts-2026-10-22.json"
+}

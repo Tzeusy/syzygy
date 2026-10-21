@@ -1,0 +1,305 @@
+{
+ "mutatedFile": "apps/three-surface-poc/src/main.ts",
+ "testFile": "apps/three-surface-poc/src/main.test.ts",
+ "command": "npx vitest run apps/three-surface-poc/src/main.test.ts",
+ "ranAtCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789",
+ "mainTsSha256AtCommit": "5fc4e3648ff19a46e4270d8730a8bd9f5558c8b7de51e5de7bd83c92dca1e59c",
+ "mutants": 24,
+ "killed": 24,
+ "results": [
+  {
+   "id": "launcher-gate-bypassed",
+   "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+   "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 5008ms",
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
+    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
+    "names a dirty observer checkout and starts no daemon 4ms",
+    "prints the banner, registers the three route groups, and closes once on the first signal 8ms",
+    "the shipped collaborators reject a directory that is not the registered repository 10ms"
+   ]
+  },
+  {
+   "id": "help-exit-code",
+   "old": "    io.stdout.write(USAGE);\n    return 0;",
+   "new": "    io.stdout.write(USAGE);\n    return 1;",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): early exits > prints the usage on --help and exits 0 without touching a collaborator",
+    "prints the usage on --help and exits 0 without touching a collaborator 11ms"
+   ]
+  },
+  {
+   "id": "invalid-exit-code",
+   "old": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 1;",
+   "new": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 2;",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): early exits > refuses an unknown argument with the usage on stderr and exits 1",
+    "refuses an unknown argument with the usage on stderr and exits 1 10ms"
+   ]
+  },
+  {
+   "id": "unreadable-repo-message",
+   "old": "configured repository is not readable",
+   "new": "configured repository is unreadable",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): early exits > refuses a repository path that cannot be resolved before the gate is consulted",
+    "refuses a repository path that cannot be resolved before the gate is consulted 9ms"
+   ]
+  },
+  {
+   "id": "rejected-binding-exit-code",
+   "old": "authority rejected (${launch.reason})\\n`);\n    return 1;",
+   "new": "authority rejected (${launch.reason})\\n`);\n    return 2;",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 10ms",
+    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
+    "the shipped collaborators reject a directory that is not the registered repository 5ms"
+   ]
+  },
+  {
+   "id": "rejected-binding-reason-dropped",
+   "old": "authority rejected (${launch.reason})",
+   "new": "authority rejected",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "a rejected binding exits 1 and reaches no observation, model, daemon or state directory 8ms",
+    "main(argv, io): the P1 authority gate > a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+    "main(argv, io): the P1 authority gate > the shipped collaborators reject a directory that is not the registered repository",
+    "the shipped collaborators reject a directory that is not the registered repository 2ms"
+   ]
+  },
+  {
+   "id": "initial-dirty-refusal-name",
+   "old": "observeCheckouts('observer-checkout-dirty')",
+   "new": "observeCheckouts('observer-dirty')",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
+    "names a dirty observer checkout and starts no daemon 19ms"
+   ]
+  },
+  {
+   "id": "horizon-inside-startup-try",
+   "old": "  const capture = observeCapture(observed);\n",
+   "new": "  let capture: PocRuntimeCapture;\n  try { capture = observeCapture(observed); } catch (cause) { io.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\\n`); return 1; }\n",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "lets a horizon failure at startup reject, as the script it replaced did 8ms",
+    "main(argv, io): startup refusals after the gate > lets a horizon failure at startup reject, as the script it replaced did"
+   ]
+  },
+  {
+   "id": "observer-read-at-process-cwd",
+   "old": "const observer = deps.observeGitRepository(io.cwd());",
+   "new": "const observer = deps.observeGitRepository(process.cwd());",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 115ms",
+    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "main(argv, io): startup refusals after the gate > names a dirty observer checkout and starts no daemon",
+    "names a dirty observer checkout and starts no daemon 5008ms",
+    "prints the banner, registers the three route groups, and closes once on the first signal 11ms"
+   ]
+  },
+  {
+   "id": "model-observer-root-process-cwd",
+   "old": "    observerRoot: io.cwd(),",
+   "new": "    observerRoot: process.cwd(),",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 19ms"
+   ]
+  },
+  {
+   "id": "observation-instant-from-clock",
+   "old": "buildPocEvaluationEvidence(io.now(),",
+   "new": "buildPocEvaluationEvidence(new Date().toISOString(),",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 17ms"
+   ]
+  },
+  {
+   "id": "observatory-root",
+   "old": "deps.observeObservatoryDrift(io.cwd(), buildRevision)",
+   "new": "deps.observeObservatoryDrift(repoRoot, buildRevision)",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   ]
+  },
+  {
+   "id": "state-dir-digest-width",
+   "old": "slice(0, 16)",
+   "new": "slice(0, 15)",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "defaults the state directory to a per-repository directory under the OS temp directory 12ms",
+    "main(argv, io): serving > defaults the state directory to a per-repository directory under the OS temp directory"
+   ]
+  },
+  {
+   "id": "daemon-start-failure-exit",
+   "old": "      return 1;\n    }\n    const daemon = start.daemon;",
+   "new": "      return 0;\n    }\n    const daemon = start.daemon;",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): startup refusals after the gate > reports a daemon that did not start with its named kind and exits 1",
+    "reports a daemon that did not start with its named kind and exits 1 7ms"
+   ]
+  },
+  {
+   "id": "daemon-start-failure-kind-dropped",
+   "old": "daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})",
+   "new": "daemon did not start (${daemonStartDetail(start.failure)})",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): startup refusals after the gate > reports a daemon that did not start with its named kind and exits 1",
+    "reports a daemon that did not start with its named kind and exits 1 7ms"
+   ]
+  },
+  {
+   "id": "walkthrough-binding-lines-dropped",
+   "old": "        ...walkthroughBindingLines(session.model()),\n",
+   "new": "",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 12ms"
+   ]
+  },
+  {
+   "id": "credential-line-dropped",
+   "old": "        `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,\n",
+   "new": "",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   ]
+  },
+  {
+   "id": "console-output-stream",
+   "old": "{ input: io.stdin, output: io.stdout }",
+   "new": "{ input: io.stdin, output: io.stderr }",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 16ms",
+    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation"
+   ]
+  },
+  {
+   "id": "re-observation-refusal-message",
+   "old": "'POC runtime inputs are dirty; re-observation was refused'",
+   "new": "'POC runtime inputs are dirty'",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 115ms",
+    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation"
+   ]
+  },
+  {
+   "id": "shutdown-message",
+   "old": "`syzygy POC: ${signal} received, shutting down\\n`",
+   "new": "`syzygy POC: ${signal} received\\n`",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints no walkthrough binding while readiness is not evaluated",
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints no walkthrough binding while readiness is not evaluated 7ms",
+    "prints the banner, registers the three route groups, and closes once on the first signal 12ms"
+   ]
+  },
+  {
+   "id": "shutdown-guard-removed",
+   "old": "        if (closing) return;\n",
+   "new": "",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints the banner, registers the three route groups, and closes once on the first signal 13ms"
+   ]
+  },
+  {
+   "id": "sigterm-not-handled",
+   "old": "      io.onSignal('SIGTERM', () => shutdown('SIGTERM'));\n",
+   "new": "",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation 5001ms",
+    "defaults the state directory to a per-repository directory under the OS temp directory 5001ms",
+    "main(argv, io): serving > attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+    "main(argv, io): serving > defaults the state directory to a per-repository directory under the OS temp directory",
+    "main(argv, io): serving > prints no console prompt and ignores Enter without --watch",
+    "main(argv, io): serving > prints no walkthrough binding while readiness is not evaluated",
+    "main(argv, io): serving > prints the banner, registers the three route groups, and closes once on the first signal",
+    "prints no console prompt and ignores Enter without --watch 5002ms",
+    "prints no walkthrough binding while readiness is not evaluated 5002ms",
+    "prints the banner, registers the three route groups, and closes once on the first signal 5009ms"
+   ]
+  },
+  {
+   "id": "model-failure-exit-code",
+   "old": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 1;",
+   "new": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 2;",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): startup refusals after the gate > reports a model failure by its observation kind and exits 1",
+    "main(argv, io): startup refusals after the gate > reports an unexpected failure by its class only",
+    "reports a model failure by its observation kind and exits 1 7ms",
+    "reports an unexpected failure by its class only 1ms"
+   ]
+  },
+  {
+   "id": "observation-error-path-dropped",
+   "old": ".filter((part): part is string => part !== undefined)",
+   "new": ".filter((part): part is string => part !== undefined && part !== cause.artifactPath)",
+   "exit": 1,
+   "outcome": "killed",
+   "failingTests": [
+    "main(argv, io): startup refusals after the gate > reports a model failure by its observation kind and exits 1",
+    "reports a model failure by its observation kind and exits 1 9ms"
+   ]
+  }
+ ],
+ "subject": {
+  "testFile": "apps/three-surface-poc/src/main.test.ts",
+  "testFileSha256AtCommit": "5021684596d0ba24609cbcf577cd0aa2180772dad8938cf3354f2b9edf4f6bd9"
+ }
+}

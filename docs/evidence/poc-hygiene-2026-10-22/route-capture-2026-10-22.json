@@ -1,0 +1,33 @@
+{
+ "subject": {
+  "baseCommit": "32c16625e3a14e6db995adff81379cf32baf49c3",
+  "headCommit": "b6aa5eee04f1b3e27c8a3a7f79da2a2393c89789"
+ },
+ "tool": {
+  "path": "docs/evidence/poc-hygiene-2026-10-22/route-capture.mjs",
+  "sha256": "349c982a8dab151b6f2240bb5da4b35f869a64bb678cf8347f2cb6d33808817d"
+ },
+ "method": "For each of five fixture models (shape not evaluated, admitted, rejected, with a secret, with a baseline spec) the app route set main.ts registers (pocRoutes, materializeRoutes, reobserveRoutes) is served on a private daemon (--port 0, scratch state directory, never port 7478) and every route is requested in its direct and tailnet Host forms, with and without the machine bearer for machine-credentialed routes, recording status, content type, body length and body sha256 (scratch paths and the port masked). Credentialed POSTs are not sent. No observed repository is read: every model comes from the app fixtures, on one fixed fixture repository path so the evaluation inputs digest is stable.",
+ "denominator": {
+  "variants": 5,
+  "routesPerVariant": [
+   19
+  ],
+  "responsesCompared": 230
+ },
+ "result": {
+  "baseRunsByteIdentical": true,
+  "headEqualsBaseByteForByte": true,
+  "responsesDiffering": 0,
+  "baseCaptureSha256": "760f650e8cd09a6402e114c2c1de6926e9dcaa9abcd16359869a1ac669b0e9cf",
+  "headCaptureSha256": "760f650e8cd09a6402e114c2c1de6926e9dcaa9abcd16359869a1ac669b0e9cf",
+  "statusHistogram": {
+   "200": 150,
+   "401": 40,
+   "403": 20,
+   "502": 20
+  }
+ },
+ "captureFile": "route-capture-fixtures-2026-10-22.json",
+ "limits": "The capture covers the route handlers; the process banner, exit codes and the order of collaborator calls that main.ts owns are covered by the old-vs-new differential. The live Butlers page text is not captured (the daemon accepts only the registered Butlers locator and no repository body may be read)."
+}
