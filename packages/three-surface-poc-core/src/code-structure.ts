@@ -88,12 +88,21 @@ export interface ObserveCodeStructureInput {
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
 }
 
+/** Git's output is not valid UTF-8: a path a JS string cannot carry exactly. */
+class NonUtf8GitOutput extends Error {}
+
+const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
+
 function defaultRunGit(repoRoot: string, args: readonly string[]): string {
-  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
-    encoding: 'utf8',
+  const bytes = execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
     maxBuffer: 256 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'ignore'],
   });
+  try {
+    return STRICT_UTF8.decode(bytes);
+  } catch {
+    throw new NonUtf8GitOutput();
+  }
 }
 
 const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
@@ -101,28 +110,38 @@ const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
 /**
  * `git ls-tree` reads only tree/blob metadata for the named revision; it
  * never opens blob contents, so this observer structurally cannot leak
- * file bytes (POC-REQ-002). `-z` keeps every path byte-exact: without it
- * git C-quotes a path holding a special or non-ASCII byte, and the quoted
- * form was recorded as the path (syzygy-bpyt.6.1). A record the shared
- * parser cannot read makes the whole inventory Unknown, never a skip.
+ * file bytes (POC-REQ-002). `-z` makes git emit each path unquoted: without
+ * it git C-quotes a path holding a special or non-ASCII byte, and the quoted
+ * form was recorded as the path (syzygy-bpyt.6.1). The bytes are decoded as
+ * strict UTF-8, so a path that is not valid UTF-8 makes the inventory
+ * Unknown instead of a replacement-character path that can collide with
+ * another. A record the shared parser cannot read, or a listing that is not
+ * NUL-terminated, makes the whole inventory Unknown, never a skip.
  */
 export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStructureResult {
   const runGit = input.runGit ?? defaultRunGit;
   let raw: string;
   try {
     raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);
-  } catch {
+  } catch (error) {
+    if (error instanceof NonUtf8GitOutput) {
+      return { kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' };
+    }
     return {
       kind: 'unknown',
       reason: 'repository or revision was unreadable during code-structure observation',
     };
   }
 
-  const parsed = parseGitLsTree(raw);
   const malformed: CodeStructureUnknown = {
     kind: 'unknown',
     reason: 'code-structure observation produced a malformed inventory entry',
   };
+  // `-z` ends every record with NUL; a listing that does not is not the format asked for.
+  if (raw !== '' && !raw.endsWith('\0')) {
+    return malformed;
+  }
+  const parsed = parseGitLsTree(raw);
   if (parsed.kind === 'malformed') {
     return malformed;
   }

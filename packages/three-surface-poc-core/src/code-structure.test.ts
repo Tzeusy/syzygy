@@ -94,7 +94,7 @@ describe('code-structure observer', () => {
     expect(() => expect(result.reason.length).toBeGreaterThan(0)).toThrow();
   });
 
-  it('records a path with a space, a tab, a double quote or a non-ASCII byte exactly as committed (syzygy-bpyt.6.1)', () => {
+  it('records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1)', () => {
     const { root } = fixtureRepo('sentinel-paths');
     // Unicode escapes keep the fixture bytes exact (AGENTS.md: the Write tool has emitted mixed NFC/NFD).
     const names = ['with space.md', 'tab\there.md', 'a "b".txt', '\u00f1.md', 'dir \u00e9/x.ts'];
@@ -132,6 +132,24 @@ describe('code-structure observer', () => {
     expect(observe(`${blob('a.ts')}100644 blob ${'1'.repeat(40)} 12\t"\\303\\261.md"\0`)).toEqual(unknown);
     expect(observe(blob('a.ts', '4'.repeat(64)))).toEqual(unknown);
     expect(observe(blob('a.ts', '1'.repeat(40), '-'))).toEqual(unknown);
+    // A listing in the newline format, or one whose last record lacks its NUL, is not what `-z` returns.
+    expect(observe(`100644 blob ${'1'.repeat(40)} 12\ta.ts\n`)).toEqual(unknown);
+    expect(observe(`${blob('a.ts')}100644 blob ${'3'.repeat(40)} 7\tb.md`)).toEqual(unknown);
+    expect(observe('')).toMatchObject({ kind: 'observed', files: [] });
+  });
+
+  it('makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path', () => {
+    const { root } = fixtureRepo('sentinel-non-utf8');
+    writeFileSync(join(root, 'blob.txt'), 'x\n', 'utf8');
+    const blob = git(root, ['hash-object', '-w', 'blob.txt']);
+    // Two Latin-1 names that a replacing decoder would turn into one path; mktree takes the raw bytes.
+    const tree = execFileSync('git', ['-C', root, 'mktree', '-z'], {
+      input: Buffer.concat([0xf1, 0xf2].map((byte) => Buffer.concat([Buffer.from(`100644 blob ${blob}\t`), Buffer.from([byte]), Buffer.from('.md\0')]))),
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).toString('utf8').trim();
+    const revision = git(root, ['commit-tree', tree, '-m', 'non-UTF-8 names']);
+    expect(observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' }))
+      .toEqual({ kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' });
   });
 
   it('produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004)', () => {
