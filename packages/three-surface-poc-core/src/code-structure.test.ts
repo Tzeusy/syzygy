@@ -83,9 +83,8 @@ describe('code-structure observer', () => {
       revision: 'deadbeef',
       capturedAt: '2026-08-30T00:00:00Z',
     });
-    expect(result.kind).toBe('unknown');
-    if (result.kind !== 'unknown') throw new Error('unreachable');
-    expect(result.reason.length).toBeGreaterThan(0);
+    // The exact reason names the failure class, apart from the not-UTF-8 reason (R-GP-IMPL-CODE-STRUCTURE-2 N4).
+    expect(result).toEqual({ kind: 'unknown', reason: 'repository or revision was unreadable during code-structure observation' });
   });
 
   it('mutation check: a falsifier (empty reason) would fail this assertion', () => {
@@ -150,6 +149,47 @@ describe('code-structure observer', () => {
     const revision = git(root, ['commit-tree', tree, '-m', 'non-UTF-8 names']);
     expect(observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' }))
       .toEqual({ kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' });
+  });
+
+  it('keeps an unterminated tail from git for the NUL check to refuse, never dropping it as a record', () => {
+    // A `git` on PATH that answers with one record and no final NUL, which real git never emits.
+    const bin = mkdtempSync(join(tmpdir(), 'syzygy-poc-fake-git-'));
+    cleanups.push(bin);
+    writeFileSync(join(bin, 'git'), `#!/bin/sh\nprintf '100644 blob ${'1'.repeat(40)}      12\\tok.ts'\n`, { mode: 0o755 });
+    const path = process.env['PATH'];
+    process.env['PATH'] = `${bin}:${path ?? ''}`;
+    try {
+      expect(observeCodeStructure({ repoRoot: '/unused', revision: 'r', capturedAt: '2026-10-21T00:00:00Z' }))
+        .toEqual({ kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' });
+    } finally {
+      process.env['PATH'] = path;
+    }
+  });
+
+  it('skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2)', () => {
+    const { root } = fixtureRepo('sentinel-gitlinks');
+    writeFileSync(join(root, 'blob.txt'), 'x\n', 'utf8');
+    const blob = git(root, ['hash-object', '-w', 'blob.txt']);
+    const commit = '1'.repeat(40);
+    const mktree = (records: readonly Buffer[]): string => execFileSync('git', ['-C', root, 'mktree', '-z', '--missing'], {
+      input: Buffer.concat(records),
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).toString('utf8').trim();
+    const record = (head: string, name: Buffer): Buffer => Buffer.concat([Buffer.from(`${head}\t`), name, Buffer.from('\0')]);
+    // Gitlinks at a Latin-1 name, a name git would quote and a name holding LF, beside files, at the top and one level down.
+    const vendor = mktree([record(`100644 blob ${blob}`, Buffer.from('ok.ts')), record(`160000 commit ${commit}`, Buffer.from([0xe9]))]);
+    const tree = mktree([
+      record(`100644 blob ${blob}`, Buffer.from('ok.ts')),
+      record(`040000 tree ${vendor}`, Buffer.from('vendor')),
+      record(`160000 commit ${commit}`, Buffer.concat([Buffer.from([0xe9]), Buffer.from('sub')])),
+      record(`160000 commit ${commit}`, Buffer.from('"sub')),
+      record(`160000 commit ${commit}`, Buffer.from('su\nb')),
+    ]);
+    const revision = git(root, ['commit-tree', tree, '-m', 'gitlinks']);
+    const result = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' });
+    expect(result.kind).toBe('observed');
+    if (result.kind !== 'observed') throw new Error('unreachable');
+    expect(result.files.map((file) => file.path)).toEqual(['ok.ts', 'vendor/ok.ts']);
   });
 
   it('produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004)', () => {

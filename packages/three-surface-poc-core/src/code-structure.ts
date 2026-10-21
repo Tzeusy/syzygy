@@ -85,6 +85,7 @@ export interface ObserveCodeStructureInput {
   readonly capturedAt: string;
   /** The provenance record's `source`; the model passes its git provenance source. */
   readonly provenanceSource?: string;
+  /** Returns git's stdout decoded as strict UTF-8, or throws; a replacing decoder would record a lossy path as Observed. */
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
 }
 
@@ -92,6 +93,24 @@ export interface ObserveCodeStructureInput {
 class NonUtf8GitOutput extends Error {}
 
 const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
+const GITLINK_RECORD = Buffer.from('160000 ');
+
+/**
+ * Drops each NUL-terminated gitlink (mode 160000) record. A gitlink is a commit of another repository, not a file of this revision,
+ * and its path is never recorded, so a submodule path that is not UTF-8, or that the parser cannot read, must not fail the listing.
+ * An unterminated tail is kept, for the NUL-termination check to refuse.
+ */
+function withoutGitlinkRecords(bytes: Buffer): Buffer {
+  const kept: Buffer[] = [];
+  let start = 0;
+  for (let end = bytes.indexOf(0, start); end !== -1; end = bytes.indexOf(0, start)) {
+    const record = bytes.subarray(start, end + 1);
+    if (!record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);
+    start = end + 1;
+  }
+  if (start < bytes.length) kept.push(bytes.subarray(start));
+  return Buffer.concat(kept);
+}
 
 function defaultRunGit(repoRoot: string, args: readonly string[]): string {
   const bytes = execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
@@ -99,7 +118,7 @@ function defaultRunGit(repoRoot: string, args: readonly string[]): string {
     stdio: ['ignore', 'pipe', 'ignore'],
   });
   try {
-    return STRICT_UTF8.decode(bytes);
+    return STRICT_UTF8.decode(withoutGitlinkRecords(bytes));
   } catch {
     throw new NonUtf8GitOutput();
   }
@@ -115,8 +134,10 @@ const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
  * form was recorded as the path (syzygy-bpyt.6.1). The bytes are decoded as
  * strict UTF-8, so a path that is not valid UTF-8 makes the inventory
  * Unknown instead of a replacement-character path that can collide with
- * another. A record the shared parser cannot read, or a listing that is not
- * NUL-terminated, makes the whole inventory Unknown, never a skip.
+ * another; the default runner drops submodule gitlink records first, since
+ * their paths are never recorded. A record the shared parser cannot read, or
+ * a listing that is not NUL-terminated, makes the whole inventory Unknown,
+ * never a skip.
  */
 export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStructureResult {
   const runGit = input.runGit ?? defaultRunGit;
