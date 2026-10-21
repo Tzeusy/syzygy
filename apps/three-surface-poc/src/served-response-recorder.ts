@@ -1,8 +1,8 @@
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
-export type ServedEvaluation = PocModel['evaluation'];
+type ServedEvaluation = PocModel['evaluation'];
 
-export interface ServedResponseBreach {
+interface ServedResponseBreach {
   readonly sequence: number;
   readonly evaluation: { readonly inputsDigest: string; readonly asOf: string };
   readonly limit: 'maxHumanResponseBytes' | 'maxMachineResponseBytes';
@@ -13,7 +13,7 @@ export interface ServedResponseBreach {
     | { readonly kind: 'unknown'; readonly reason: string };
 }
 
-export interface ServedResponseSnapshot {
+interface ServedResponseSnapshot {
   readonly count: number;
   readonly latest: ServedResponseBreach | null;
 }

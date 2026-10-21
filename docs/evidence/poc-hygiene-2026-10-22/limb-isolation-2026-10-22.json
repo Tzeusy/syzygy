@@ -1,0 +1,80 @@
+{
+ "tool": "limb_isolation.py",
+ "toolSha256": "79b734eb4588ae0f7ba5de53eb6390c152e54292d99afa95efe8aaea0027e720",
+ "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+ "mutatedFile": "apps/three-surface-poc/src/poc-main.ts",
+ "mutatedFileSha256AtCommit": "c5e5dc78cd9107d0e99dc39e32a6d7e4bfa493d527f76bdb26e17f94fe9337c1",
+ "testFile": "apps/three-surface-poc/src/main.test.ts",
+ "testFileSha256AtCommit": "55bc26ce4643d35ed8c1f7f5c378f1ca4054953f6a93d726df0ce313c0472e8b",
+ "question": "does the existsSync(stateDir) limb of the rejected-binding test fail on its own when the gate is bypassed",
+ "answer": "yes when the fake daemon creates its state directory; no when it creates nothing (the reviewed state of the test)",
+ "cells": [
+  {
+   "cell": "limb-only / unmutated",
+   "testFile": "apps/three-surface-poc/src/main-limb-isolation.test.ts",
+   "mutant": null,
+   "exit": 0,
+   "passed": 1,
+   "failing": []
+  },
+  {
+   "cell": "limb-only / gate bypassed",
+   "testFile": "apps/three-surface-poc/src/main-limb-isolation.test.ts",
+   "mutant": {
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };"
+   },
+   "exit": 1,
+   "passed": 0,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+    }
+   ]
+  },
+  {
+   "cell": "limb-only / state directory written before the gate",
+   "testFile": "apps/three-surface-poc/src/main-limb-isolation.test.ts",
+   "mutant": {
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(",
+    "new": "  if (parsed.config.stateDir !== undefined) (await import('node:fs')).mkdirSync(parsed.config.stateDir, { recursive: true });\n  const launch = await launchAfterPwbRepositoryBinding("
+   },
+   "exit": 1,
+   "passed": 0,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+    }
+   ]
+  },
+  {
+   "cell": "limb-only, fake daemon creates nothing / gate bypassed",
+   "testFile": "apps/three-surface-poc/src/main-limb-isolation.test.ts",
+   "mutant": {
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };"
+   },
+   "exit": 0,
+   "passed": 1,
+   "failing": []
+  },
+  {
+   "cell": "full test / gate bypassed",
+   "testFile": "apps/three-surface-poc/src/main.test.ts",
+   "mutant": {
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };"
+   },
+   "exit": 1,
+   "passed": 0,
+   "failing": [
+    {
+     "test": "main(argv, io): the P1 authority gate a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+     "firstErrorLine": "AssertionError: expected 'syzygy POC: daemon did not start (dup\u2026' to be 'syzygy POC: configured repository aut\u2026' // Object.is equality"
+    }
+   ]
+  }
+ ]
+}

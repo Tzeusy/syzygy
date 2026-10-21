@@ -1,0 +1,469 @@
+{
+ "tool": "invocation_forms.py",
+ "toolSha256": "bb3201fac9ecb72507b1d4281cde9b3dd995c3c0c645ff84d5f1bf86770a3d5e",
+ "trees": {
+  "base": {
+   "commit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c"
+  },
+  "head": {
+   "commit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5"
+  }
+ },
+ "node": "v24.6.0",
+ "entry": "apps/three-surface-poc/dist/main.js",
+ "pairs": 30,
+ "identicalPairs": 30,
+ "distinctHeadOutputs": 5,
+ "rows": [
+  {
+   "form": "js",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "js",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "js",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "js",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "js",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "bare",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "bare",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "bare",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "bare",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "bare",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "package",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "package",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "package",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "package",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "package",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "symlink",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "symlink",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "symlink",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "symlink",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "symlink",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "import",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "import",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "import",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "import",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "import",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "root",
+   "arguments": "help",
+   "base": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "head": {
+    "exit": 0,
+    "stdout": "syzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n",
+    "stderr": ""
+   },
+   "identical": true
+  },
+  {
+   "form": "root",
+   "arguments": "no-arguments",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: --repo is required; this POC observes exactly one explicit repository\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "root",
+   "arguments": "unknown-argument",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: unknown argument: --bogus\n\nsyzygy three-surface POC (local, non-release)\n\nUsage: npm run poc -- --repo <absolute-path-to-butlers> [options]\n\nOptions:\n  --repo <path>       one explicit Butlers repository (required)\n  --state-dir <path>  credential/state directory (default: OS temp directory)\n  --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)\n  --watch             re-observe each time Enter is pressed on this console, and only then\n  --help              print this usage and exit\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "root",
+   "arguments": "unreadable-repo",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository is not readable\n"
+   },
+   "identical": true
+  },
+  {
+   "form": "root",
+   "arguments": "rejected-binding",
+   "base": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "head": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "syzygy POC: configured repository authority rejected (locator-mismatched)\n"
+   },
+   "identical": true
+  }
+ ]
+}

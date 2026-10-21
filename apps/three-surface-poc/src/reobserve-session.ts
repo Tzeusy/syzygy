@@ -22,6 +22,7 @@ import { attachWatchMode } from './watch-mode.js';
 // named re-evaluation that supersedes the one before. Every trigger is a
 // human act (P-69); nothing here schedules, polls or watches.
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface ReobserveSessionOptions {
   readonly capture: PocRuntimeCapture;
   readonly build: (capture: PocRuntimeCapture) => PocModel;
@@ -35,7 +36,7 @@ export interface ReobserveSessionOptions {
   readonly now: () => string;
 }
 
-export interface ReobserveSession {
+interface ReobserveSession {
   readonly model: () => PocModel;
   readonly latest: () => Reevaluation;
   /** One owner request at a time, from the browser or the console. */

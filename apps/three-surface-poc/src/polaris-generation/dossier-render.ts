@@ -78,6 +78,7 @@ import { assertInertSvg } from './svg-inert.js';
  * (`dossier-render-provider-golden.test.ts`).
  */
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface DossierRenderInput {
   /** The pipeline's final output, complete or stopped. Present exactly when `local` is absent. */
   readonly result?: PipelineResult;
@@ -91,7 +92,7 @@ export interface DossierRenderInput {
   readonly local?: LocalRenderInput;
 }
 
-export interface RenderedDossier {
+interface RenderedDossier {
   /** Every file of the run directory by relative path, `dossier.json` and the size report included. */
   readonly files: ReadonlyMap<string, string>;
   readonly manifest: DossierManifest;
@@ -106,6 +107,7 @@ export class DossierRenderError extends Error {
 
 const digest = (value: string): string => createHash('sha256').update(value).digest('hex');
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The page a quotable source's exact text lives on, from its anchor alone. */
 export function sourceRoute(source: Pick<GenerationSource, 'spans' | 'redaction'>): string {
   if (source.spans.length === 0 || (source.redaction === undefined && source.spans.length !== 1)) throw new DossierRenderError('ambiguous-source-anchor');
@@ -139,7 +141,7 @@ const everyStopReasonListed: [Exclude<StopReason, (typeof STOP_REASONS)[number]>
 void everyStopReasonListed;
 
 /** What a stopped run shows for an asset it never produced. A reason outside the pipeline's set is refused. */
-export function stopReasonLabel(reason: string): string {
+function stopReasonLabel(reason: string): string {
   // Deliberate throw: the reason is a closed union, so only untyped input (a hand-edited run record) can reach this branch, and it must not render.
   if (!(STOP_REASONS as readonly string[]).includes(reason)) throw new DossierRenderError('unknown-stop-reason');
   return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;

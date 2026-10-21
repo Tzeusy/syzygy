@@ -37,6 +37,7 @@ import {
 
 import type { VerbatimLeafReader, VerbatimRefusal } from './capability-detail.js';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 /** Reads one blob by exact object id, or `undefined` when Git cannot. */
 export type GitBlobReader = (objectId: string) => Uint8Array | undefined;
 

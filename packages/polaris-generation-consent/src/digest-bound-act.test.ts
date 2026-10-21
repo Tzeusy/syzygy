@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { renderRecorderAct, renderRegistryAct } from './recorder-fixtures.testkit.js';
+import { HEAD_FIELD_ALTERATION, PROSE_ALTERATIONS, renderRecorderAct, renderRegistryAct } from './recorder-fixtures.testkit.js';
 import {
   DECISIONS_DIR, INSTANCES_DIR, REGISTRY_GIT_SOURCE_ACT_FORM, createAdmissionRecordsPort, createPackageAdmissionReader, readDigestBoundActState,
   type DigestBoundActForm, type PackageReaderFs,
@@ -176,6 +176,15 @@ describe('digest-bound act cross-check (RFC3-16(a))', () => {
     const mutated = mutate(act());
     expect(mutated).not.toBe(act());
     expect((await read(world({ [ACT_FILE]: mutated }))).state).toBe('refused');
+  });
+  // syzygy-bpyt.8.10, characterization: a form with no template reads the head fields and the recorder's RFC3-16(b) lines only, so the
+  // recorder's record still counts with its prose altered. The literal pins today's verdict; changing it is an owner decision (GP-Q0).
+  it.each(PROSE_ALTERATIONS)('still counts the recorder\'s record with %s (characterization, syzygy-bpyt.8.10)', async (_name, alter) => {
+    expect(alter(act())).not.toBe(act());
+    expect(await read(world({ [ACT_FILE]: alter(act()) }))).toMatchObject({ state: 'ok', act: { identity: 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-2026-10-07' } });
+  });
+  it('refuses the recorder\'s record with a head field altered (the control, syzygy-bpyt.8.10)', async () => {
+    expect((await read(world({ [ACT_FILE]: HEAD_FIELD_ALTERATION(act()) }))).state).toBe('refused');
   });
   it.each([
     ['a file named for the act', 'PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-WITHDRAWAL.md', 'The owner withdraws it.\n'],

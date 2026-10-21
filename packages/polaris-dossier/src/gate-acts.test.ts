@@ -3,8 +3,8 @@ import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, type DigestBoundActForm } from '@syzygy/polaris-generation-consent';
-import { recorderRecordPaths, renderDossierLocalAgentAct, renderLocalAgentSignoff, renderProviderV2Act, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
+import { DECISIONS_DIR, LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM, readDigestBoundActState, type DigestBoundActForm } from '@syzygy/polaris-generation-consent';
+import { HEAD_FIELD_ALTERATION, PROSE_ALTERATIONS, recorderRecordPaths, renderDossierLocalAgentAct, renderLocalAgentSignoff, renderProviderV2Act, type DossierLocalAgentActKey } from '@syzygy/polaris-generation-consent/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import { preflight } from './preflight.js';
 import { D9_ACT_FORM, DRAWER_FORMS, PROVIDER_V2_FORM, RFC7_20_RULING_ACT_FORM, STATEMENT_FORMS, createPackageGateSources, providerStatementGate } from './gate-sources.js';
@@ -624,5 +624,52 @@ describe('the gate forms against the recorders', () => {
       const heading = /^# (.+)$/m.exec(real(ACTS[key].record))![1]!;
       expect(FORMS[key].stems, key).toContain(heading);
     }
+  });
+});
+
+// syzygy-bpyt.8.10, characterization: the byte-exact families against the alterations the field-parsed readers accept
+// (package-reader.test.ts). A literal line altered, removed or added refuses; a slot is free text within its pattern, so other owner words
+// in a slot still count (the residual of byte-exact recognition). These literals pin today's verdicts; changing one is an owner decision (GP-Q0).
+describe('altered prose in a byte-exact act record (characterization, syzygy-bpyt.8.10)', () => {
+  const REFUSED = { state: 'refused', why: 'invalid-records' };
+  /** The verdict each `PROSE_ALTERATIONS` entry gets, by name: the slot-held owner selection is the one that still counts. */
+  const EXPECTED = (ok: object): Record<string, object> => ({ 'effect-widened': REFUSED, 'limits-removed': REFUSED, 'selection-replaced': ok, 'withdrawal-appended': REFUSED });
+  it('a sitting act (D9): refused once its Effect or limits change or a withdrawal is appended; its selection label is a slot, so other words count', async () => {
+    const root = world(['d9-in-force']), record = path.join(root, ACTS['d9-in-force'].file), text = fs.readFileSync(record, 'utf8');
+    const ok = { state: 'ok', record: 'D9-IN-FORCE-OPERATOR-AGENT-2026-10-07' };
+    expect(await sources(root).d9()).toEqual(ok);
+    for (const [name, alter] of PROSE_ALTERATIONS) {
+      expect(alter(text), name).not.toBe(text);
+      fs.writeFileSync(record, alter(text));
+      expect(await sources(root).d9(), name).toEqual(EXPECTED(ok)[name]);
+    }
+    fs.writeFileSync(record, HEAD_FIELD_ALTERATION(text));
+    expect(await sources(root).d9()).toEqual(REFUSED);
+  });
+  it('version 2 of the statement: the same verdicts, read by its own form', async () => {
+    const root = world(['redis-agent-anthropic'], false, true), record = path.join(root, V2_ACT), text = fs.readFileSync(record, 'utf8');
+    const read = async () => {
+      const state = await readDigestBoundActState({ root, now: NOW, form: PROVIDER_V2_FORM });
+      return state.state === 'ok' ? { state: 'ok', record: state.act.identity } : state;
+    };
+    const ok = { state: 'ok', record: 'AGENT-PROVIDER-V2-REDIS-ANTHROPIC-2026-10-07' };
+    expect(await read()).toEqual(ok);
+    for (const [name, alter] of PROSE_ALTERATIONS) {
+      expect(alter(text), name).not.toBe(text);
+      fs.writeFileSync(record, alter(text));
+      expect(await read(), name).toEqual(EXPECTED(ok)[name]);
+    }
+  });
+  it('the registry sign-off: refused once its What-this-records paragraph or its limits change, a withdrawal is appended or its selection drops the Scope A words; other words that keep them count', async () => {
+    const root = world([], true), text = fs.readFileSync(path.join(root, SIGNOFF), 'utf8');
+    const ok = { state: 'ok', record: 'public-git-source-acquisition-local-agent-v1.0' };
+    expect(await sources(root).registryEntry()).toEqual(ok);
+    for (const [name, alter] of PROSE_ALTERATIONS) {
+      expect(alter(text), name).not.toBe(text);
+      write(root, SIGNOFF, alter(text));
+      expect(await sources(root).registryEntry(), name).toEqual(REFUSED);
+    }
+    write(root, SIGNOFF, text.replace(/^Owner selection: .+$/m, 'Owner selection: Extend Scope A and sign off every entry at every version'));
+    expect(await sources(root).registryEntry()).toEqual(ok);
   });
 });

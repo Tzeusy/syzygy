@@ -13,6 +13,7 @@ import { ServedResponseRecorder } from './served-response-recorder.js';
 
 export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const POC_HUMAN_PATH = '/' as const;
 export const POC_MACHINE_PATH = '/api/poc' as const;
 /** The authenticated machine presentation envelope (PWB-REQ-014/020): the
@@ -20,8 +21,10 @@ export const POC_MACHINE_PATH = '/api/poc' as const;
  * under the machine credential, derived from the same capture as the page.
  * It is a presentation artifact, never citable, and never part of `/api/poc`. */
 export const POLARIS_PRESENTATION_PATH = '/api/poc/polaris' as const;
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const POLARIS_PRESENTATION_KIND = 'polaris-presentation' as const;
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface PolarisPresentationEnvelope {
   readonly kind: typeof POLARIS_PRESENTATION_KIND;
   readonly version: 1;
@@ -102,6 +105,7 @@ const HOME_STYLE = `
   @media (max-width: 800px) { .surface-polaris, .surface-trajectory, .surface-orrery { grid-column: 1 / -1; margin-top: 0; } }
 `;
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function renderPocPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const surfaces = model.surfaces.map((surface) => surfacePanel(surface, model)).join('');
   const body = `
@@ -135,11 +139,12 @@ export function renderPocPage(model: PocModel, mountPrefix = '', status?: HumanO
 // values and the population counts. Nothing is truncated and no
 // success-shaped model is served; readiness (PWB-REQ-021) is false.
 
-export const RESPONSE_LIMIT_FAILURE = 'response-limit-breached' as const;
-export const RESPONSE_LIMIT_STATUS = 503 as const;
+const RESPONSE_LIMIT_FAILURE = 'response-limit-breached' as const;
+const RESPONSE_LIMIT_STATUS = 503 as const;
 
-export type ResponseLimitIdentity = 'maxHumanResponseBytes' | 'maxMachineResponseBytes';
+type ResponseLimitIdentity = 'maxHumanResponseBytes' | 'maxMachineResponseBytes';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface ResponseLimitFailure {
   readonly served: 'nothing';
   readonly failure: typeof RESPONSE_LIMIT_FAILURE;
@@ -159,7 +164,7 @@ function populationOf(model: PocModel): ResponseLimitFailure['population'] {
   return { kind: 'counted', sources: shape.counts.sources, items: shape.counts.items, facts: shape.counts.facts, exclusions: shape.counts.exclusions };
 }
 
-export function responseLimitFailure(model: PocModel, limit: ResponseLimitIdentity, declared: number, observed: number): ResponseLimitFailure {
+function responseLimitFailure(model: PocModel, limit: ResponseLimitIdentity, declared: number, observed: number): ResponseLimitFailure {
   return { served: 'nothing', failure: RESPONSE_LIMIT_FAILURE, evaluation: model.evaluation, limit, declared, observed, population: populationOf(model), readiness: false };
 }
 
@@ -178,6 +183,7 @@ export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limi
   };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The served-side projection changes only presentation/readiness. Observation
  * evidence and the PWB-REQ-022 judgment stay on their captured model. */
 export function withServedReadiness(model: PocModel, recorder: ServedResponseRecorder): PocModel {
@@ -194,7 +200,7 @@ export function withServedReadiness(model: PocModel, recorder: ServedResponseRec
  * route): derived per request from the model being rendered, never stored.
  * Absent → Polaris renders with no verbatim reader, so requirement text is
  * disclosed as outside the consented class. */
-export type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
+type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
 
 export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor, recorder = new ServedResponseRecorder(), credentialProvision?: () => 'minted' | 'reused' | undefined, reevaluation?: () => Reevaluation | null): readonly Route[] {
   const linksFor = (request: Parameters<Route['handle']>[0]['request']): NonNullable<PocModel['links']> => {
