@@ -3,7 +3,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { observeCodeStructure, type CodeStructureResult } from './code-structure.js';
-import { GOVERNING_INTENT_UNKNOWN_BASIS, governingIntentDisclosure, observeWorkItems, type WorkItemsResult } from './work-items.js';
+import { GOVERNING_INTENT_UNKNOWN_BASIS, governingIntentDisclosure, observeWorkItems, workItemTitlesDisclosure, type WorkItemsResult } from './work-items.js';
 import { observeWorkerChange, type WorkerChangeResult } from './worker-change-observation.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
@@ -540,6 +540,11 @@ export function workItemGoverningIntentId(itemId: string): string {
 
 export const WORK_ITEM_GOVERNING_INTENT_REGION_ID = 'region:work-item-governing-intent' as const;
 
+/** SEC-5: the one disclosure every rendered card's withheld title, and the
+ * board's notice, render under. One id, since one policy gap withholds
+ * every title. */
+export const WORK_ITEM_TITLES_REGION_ID = 'region:work-item-titles' as const;
+
 export function workerChangeVerificationId(beadId: string): string {
   return `worker-change:${beadId}/verification`;
 }
@@ -584,6 +589,9 @@ function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknown
         if (governedBy !== undefined) subjects.push({ id: workItemGoverningIntentId(item.id), epistemic: governingIntentDisclosure(governedBy) });
       }
       add(WORK_ITEM_GOVERNING_INTENT_REGION_ID, GOVERNING_INTENT_UNKNOWN_BASIS, 'source-uncaptured-or-unreachable');
+      // SEC-5: the machine twin of the board's withheld-title disclosure is
+      // the observation's own `titles` with its basis sentence.
+      subjects.push({ id: WORK_ITEM_TITLES_REGION_ID, epistemic: workItemTitlesDisclosure(input.workItems.titles) });
     }
     const change = input.workerChange;
     if (change.kind === 'observed' && input.trajectory.rendered.some((item) => item.id === change.beadId)) {

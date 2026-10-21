@@ -1,0 +1,800 @@
+{
+ "record": "syzygy-jytt: Butlers bead titles withheld from the Three-Surface POC work-item projection (SEC-5)",
+ "epistemic": "Observed",
+ "recordedAtUtc": "2026-10-21T09:01:32.379933+00:00",
+ "subject": {
+  "commit": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+  "tree": "6f3e8dedc837b7afff4ca254ebd202ac10124a65",
+  "baseCommit": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
+  "patchSha256": "110567553b8186a205a5859b1823f552d13957a3d939be038bd55ef4143df4e2",
+  "files": {
+   "apps/three-surface-poc/src/block-provenance-sweep.test.ts": {
+    "gitBlob": "a25e890b53eb524a49cc7aeda7e25676d289142f",
+    "sha256": "16f1b58c30df9daa9431ceb6b735b738b1702de6d23e356a75f68062daacd3db"
+   },
+   "apps/three-surface-poc/src/governing-intent-sweep.test.ts": {
+    "gitBlob": "33c5405f650287ef0f1ae0772d4cb775cdaa2087",
+    "sha256": "7e653fa37d6b5e4163fce6a055d6c9fa9d5acb1851fdd84b1d4e7604e6e264ec"
+   },
+   "apps/three-surface-poc/src/trajectory.test.ts": {
+    "gitBlob": "03c9e7589431634468675f790f53b45316170920",
+    "sha256": "419673bd72be4c00bc79eed4a7d05aff1a05adf0b6287a45d0a51b7e73ebc274"
+   },
+   "apps/three-surface-poc/src/trajectory.ts": {
+    "gitBlob": "97e9da7c3357914806bfcf6577bbebd35a0c45c9",
+    "sha256": "54c6ddfd205d30ad7812fa8d86649cde22db30fedaa9894ee9dfc83e32fbb812"
+   },
+   "apps/three-surface-poc/src/unknown-route-sweep.test.ts": {
+    "gitBlob": "b3ac40a49e3587de463933ecc106af3757713750",
+    "sha256": "1dcfc331dcfca8eaccb6bafa50526d88bb6216b6a525c21285f7d8fd12d11f1e"
+   },
+   "packages/three-surface-poc-core/src/model.ts": {
+    "gitBlob": "f7b4fd39f84befb6aab28cb635bd2e17ac766576",
+    "sha256": "09dfcffad8be198949bf168d81b64fbf7ba24928494b0e6f68c6b9306e55ca07"
+   },
+   "packages/three-surface-poc-core/src/trajectory-projection.test.ts": {
+    "gitBlob": "db874106cd2889e8a43bc05e30e05eb3ed113978",
+    "sha256": "5cd754141c30eb410aa5ce5d67c9b7b5ad792572c1bc7bcee21a65a62b34249e"
+   },
+   "packages/three-surface-poc-core/src/trajectory-projection.ts": {
+    "gitBlob": "c89a40372abc0e3d8b8acab7e6750d645fb6e7e7",
+    "sha256": "e8a8643b8789da4836e11618e3fbedfc915c279ece107e126dd378bd7e62df26"
+   },
+   "packages/three-surface-poc-core/src/work-items.test.ts": {
+    "gitBlob": "80831bda85f0ea0715b1d25714e09b032390ff58",
+    "sha256": "632caa16f97ec7472fd07b95720f5fed792f1ab6110e6cf16c51eba0f800300a"
+   },
+   "packages/three-surface-poc-core/src/work-items.ts": {
+    "gitBlob": "cd9fa1f56db3cfaca3b1417a64eb05c1f1a5b4c0",
+    "sha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347"
+   }
+  }
+ },
+ "authority": {
+  "ownerAnswer": "owner questionnaire 2026-10-20, item jytt-bead-title-admission, choice A: titles excluded (local, untracked file .syzygy/local/owner-questionnaire-2026-10-20.md; also recorded as a 2026-10-20 comment on bead syzygy-jytt)",
+  "doctrine": "SEC-5: anything not classifiable under the declared secret-detection policy is excluded",
+  "declaredPolicyScope": "the only declared secret-classification policy is scoped to contentClass declared-project-shape-text; none covers work-item titles",
+  "boundary": "titles only; other free-text bead fields and other Butlers tables are outside this answer"
+ },
+ "premiseCheck": {
+  "result": "holds: no signed requirement or scenario obliges the POC to serve, show or use a work-item title",
+  "population": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md (POC-REQ-010 to POC-REQ-014, POC-REQ-040 to POC-REQ-043), proposal.md, CONTRACT-COVERAGE.md; sweep for title/titles/name/names/label and for work-item/bead near title across openspec/ and decisions/",
+  "clauses": [
+   {
+    "id": "POC-REQ-040",
+    "quote": "with every rendered item placed by its observed status and carrying its identifier",
+    "reading": "the card carries its identifier, never a title"
+   },
+   {
+    "id": "POC-REQ-010",
+    "quote": "a sampled item's served status and timestamps match the database",
+    "reading": "the sampled fields are status and timestamps; no title"
+   },
+   {
+    "id": "POC-REQ-014",
+    "quote": "No served item's `governedBy` SHALL name an identifier taken from its title.",
+    "reading": "a prohibition; withholding the title satisfies it a fortiori"
+   },
+   {
+    "id": "POC-REQ-014",
+    "quote": "This requirement admits no work-item column and no other input",
+    "reading": "admits nothing; does not require the title column"
+   },
+   {
+    "id": "POC-REQ-014 scenario",
+    "quote": "WHEN a served item's title reads \"Implement POC-REQ-010\"",
+    "reading": "conditional on a served title; the Case's injected read still holds a titled row, and the oracle (\"The fixture item's `governedBy` is that same Unknown, naming no identifier\") still decides"
+   }
+  ],
+  "staleSignedSentence": {
+   "file": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md",
+   "row": "RFC4-15",
+   "quote": "the work-item title, the only free text the POC reads",
+   "status": "descriptive, not an obligation; false after this change; signed bytes, not edited here"
+  }
+ },
+ "rule6Replay": {
+  "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+  "where": "a scratch clone of the worktree at ranAt, after npm ci; each mutant restored byte-for-byte before the next",
+  "tests": [
+   "packages/three-surface-poc-core/src/work-items.test.ts",
+   "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+   "apps/three-surface-poc/src/trajectory.test.ts",
+   "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+   "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+   "apps/three-surface-poc/src/block-provenance-sweep.test.ts"
+  ],
+  "mutantPopulation": 11,
+  "killed": 11,
+  "baselineSurvived": true,
+  "results": [
+   {
+    "id": "M00",
+    "limb": "baseline: no mutation (must survive)",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "export function workItemTitlesWithheld",
+    "new": "export function workItemTitlesWithheld",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:14.737511+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:20.503333+00:00",
+    "exit": 0,
+    "testsRun": 99,
+    "testsFailed": 0,
+    "outcome": "survived",
+    "killedBy": [],
+    "killedByCount": 0
+   },
+   {
+    "id": "M01",
+    "limb": "the SELECT re-adds the title column",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "`SELECT dolt_hashof('HEAD') AS revision, id, status, ",
+    "new": "`SELECT dolt_hashof('HEAD') AS revision, id, title, status, ",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "07862df20917c5d784ecbb0fde4d4e5e060fb8b33ac69cf99de707ff1d7eacec",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:20.504338+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:26.504482+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 1,
+    "outcome": "killed",
+    "killedBy": [
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) selects exactly the eight non-free-text columns, and never the title"
+    ],
+    "killedByCount": 1
+   },
+   {
+    "id": "M02",
+    "limb": "a served item copies the row's title again",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "      id: raw.id,\n      status: raw.status,",
+    "new": "      id: raw.id,\n      title: (raw as { title?: unknown }).title,\n      status: raw.status,",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "e7a3a18f12eb9c327f042b20489edae7bfc580472ee8e939457982cca20e7675",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:26.505468+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:32.780185+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 4,
+    "outcome": "killed",
+    "killedBy": [
+     "block-provenance-sweep.test.ts :: POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+     "governing-intent-sweep.test.ts :: POC-REQ-014: every work item's governing intent renders as a counted Unknown a read row titled \"Implement POC-REQ-010\" yields the same Unknown, and nothing served names POC-REQ-010",
+     "governing-intent-sweep.test.ts :: POC-REQ-014: every work item's governing intent renders as a counted Unknown serves 54 of 54 with the Unknown on both channels; Trajectory shows 52 inside and 2 outside",
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) admits a row with no title, and copies no title from a row that carries one"
+    ],
+    "killedByCount": 4
+   },
+   {
+    "id": "M03",
+    "limb": "the non-string-title refusal is restored",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "      typeof raw.id !== 'string' ||\n      !isWorkItemStatus(raw.status) ||",
+    "new": "      typeof raw.id !== 'string' ||\n      typeof (raw as { title?: unknown }).title !== 'string' ||\n      !isWorkItemStatus(raw.status) ||",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "7e7d82398db82b54da0afd9ff41442050ffddac9b7700755af754ea83b21a96d",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:32.781030+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:38.607127+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 2,
+    "outcome": "killed",
+    "killedBy": [
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) admits a row with no title, and copies no title from a row that carries one",
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) states the withheld title once on the observation, as excluded-content with its route"
+    ],
+    "killedByCount": 2
+   },
+   {
+    "id": "M04",
+    "limb": "the observed observation drops its titles disclosure",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "    governedByUnknownCount: countGoverningIntentUnknown(items),\n    titles: workItemTitlesWithheld(),\n",
+    "new": "    governedByUnknownCount: countGoverningIntentUnknown(items),\n",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "948563c0baadf6abb3b59ca461cbe6bc549f976061f972012f180fcd5fdc1d38",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:38.608132+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:44.193923+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 31,
+    "outcome": "killed",
+    "killedBy": [
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once a sampled entry's size and digest match stat and an independent digest at that commit",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from HEAD",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the capture instant",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb an entry carrying the revision",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb another observation field holding the revision",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb no provenance record",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once falsifier: the oracle names each limb the record in another shape (a list, or a field outside the shared shape)",
+     "block-provenance-sweep.test.ts :: POC-REQ-001: the code-structure observation states its provenance once names git HEAD in one shared-shape record, and no other field holds the revision or the capture instant",
+     "block-provenance-sweep.test.ts :: POC-REQ-010: the work-item observation states its provenance once a sampled item matches the database read",
+     "block-provenance-sweep.test.ts :: POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a provenance revision that differs from the Dolt head",
+     "block-provenance-sweep.test.ts :: POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the Dolt revision",
+     "block-provenance-sweep.test.ts :: POC-REQ-010: the work-item observation states its provenance once falsifier: the oracle names each limb a work-item fact carrying the capture instant outside a database time"
+    ],
+    "killedByCount": 31
+   },
+   {
+    "id": "M05",
+    "limb": "the observed-empty observation drops its titles disclosure",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "      governedByUnknownCount: 0,\n      titles: workItemTitlesWithheld(),\n",
+    "new": "      governedByUnknownCount: 0,\n",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "cad85f7041abb057573e450ce022811dd29e5ed902cefcd9ae7b7748bbb44c4a",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:44.195475+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:50.613743+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 2,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory renders the Unknown state distinctly from an empty-but-observed board (POC-REQ-013 rendering)",
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) states the withheld title once on the observation, as excluded-content with its route"
+    ],
+    "killedByCount": 2
+   },
+   {
+    "id": "M06",
+    "limb": "the withheld title's reason is not excluded-content",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "    closedReason: 'excluded-content',\n    resolutionRoutes: [resolutionRoute('excluded-content')],",
+    "new": "    closedReason: 'missing-evidence',\n    resolutionRoutes: [resolutionRoute('missing-evidence')],",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "b99fbcda30fbc6c0911467b2d27330f50bcec6f05716c5f572fefde80631d291",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:50.614585+00:00",
+    "finishedAtUtc": "2026-10-21T08:44:56.808649+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 2,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)",
+     "work-items.test.ts :: work-items observer SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt) states the withheld title once on the observation, as excluded-content with its route"
+    ],
+    "killedByCount": 2
+   },
+   {
+    "id": "M07",
+    "limb": "the basis sentence stops naming SEC-5 and the missing policy",
+    "file": "packages/three-surface-poc-core/src/work-items.ts",
+    "old": "withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation",
+    "new": "withheld, so the observation",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "mutatedSha256": "2939b1b2eaf30edca9ea8065004db8a5d55af75266c099fd91daa96301973f09",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:44:56.809627+00:00",
+    "finishedAtUtc": "2026-10-21T08:45:03.762822+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 1,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)"
+    ],
+    "killedByCount": 1
+   },
+   {
+    "id": "M08",
+    "limb": "the machine twin of the withheld-title disclosure is dropped",
+    "file": "packages/three-surface-poc-core/src/model.ts",
+    "old": "      subjects.push({ id: WORK_ITEM_TITLES_REGION_ID, epistemic: workItemTitlesDisclosure(input.workItems.titles) });\n",
+    "new": "",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "09dfcffad8be198949bf168d81b64fbf7ba24928494b0e6f68c6b9306e55ca07",
+    "mutatedSha256": "f876b382cba1e668497c49b59638ae890385d787ff9da364cf70235d7dda4f39",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:45:03.763834+00:00",
+    "finishedAtUtc": "2026-10-21T08:45:12.412348+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 21,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)",
+     "trajectory.test.ts :: Trajectory discloses a demonstrated closed item excluded by its population limit (N-1)",
+     "trajectory.test.ts :: Trajectory discloses a demonstrated open item excluded by its population limit (N-1)",
+     "trajectory.test.ts :: Trajectory footer: composite evaluation identity and substrate revision (N4) prints the same composite evaluation identity Polaris renders, plus what this surface's revision is a revision of",
+     "trajectory.test.ts :: Trajectory footer: composite evaluation identity and substrate revision (N4) renders an explicit Skew line when the work-item capture instant answers at a different evaluation (mutation check)",
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)",
+     "trajectory.test.ts :: Trajectory never renders closure/activity as verification satisfaction (POC-REQ-043)",
+     "trajectory.test.ts :: Trajectory places every rendered item in the column its declared status mapping assigns (POC-REQ-040)",
+     "trajectory.test.ts :: Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-007 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+     "trajectory.test.ts :: Trajectory renders a matching operator-reported run as report-fact and an unmarked record as Not verified, never Verified, for governing intent REQ-alternate-governing-intent-008 (AC3/AC4, syzygy-0r9, syzygy-4mbu)",
+     "trajectory.test.ts :: Trajectory renders the Unknown state distinctly from an empty-but-observed board (POC-REQ-013 rendering)",
+     "trajectory.test.ts :: Trajectory renders the observed worker-change lifecycle state on the matching card, never as verified (AC3/AC4)"
+    ],
+    "killedByCount": 21
+   },
+   {
+    "id": "M09",
+    "limb": "a card drops its withheld-title disclosure",
+    "file": "apps/three-surface-poc/src/trajectory.ts",
+    "old": "    ${itemTitleWithheld(model)}\n",
+    "new": "",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "54c6ddfd205d30ad7812fa8d86649cde22db30fedaa9894ee9dfc83e32fbb812",
+    "mutatedSha256": "ce10e4148ad0fb60ac8cbf61bd83efe3f6538ceda0072690f681f784c81adbb0",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:45:12.424983+00:00",
+    "finishedAtUtc": "2026-10-21T08:45:20.426875+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 4,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) observed-shape: per-surface denominators, zero exceptions on each",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) plain: per-surface denominators, zero exceptions on each",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) worker-change: per-surface denominators, zero exceptions on each"
+    ],
+    "killedByCount": 4
+   },
+   {
+    "id": "M10",
+    "limb": "the board drops its withheld-title notice",
+    "file": "apps/three-surface-poc/src/trajectory.ts",
+    "old": "      ${titlesWithheldRegion(model)}\n",
+    "new": "",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "54c6ddfd205d30ad7812fa8d86649cde22db30fedaa9894ee9dfc83e32fbb812",
+    "mutatedSha256": "bc35140f8e8e5edf4bc15a09ef311a7a526847a1b2ecee0fc943055a7e57cad6",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:45:20.427967+00:00",
+    "finishedAtUtc": "2026-10-21T08:45:29.931934+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 4,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) observed-shape: per-surface denominators, zero exceptions on each",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) plain: per-surface denominators, zero exceptions on each",
+     "unknown-route-sweep.test.ts :: every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060) worker-change: per-surface denominators, zero exceptions on each"
+    ],
+    "killedByCount": 4
+   },
+   {
+    "id": "M11",
+    "limb": "a card is not named by its identifier",
+    "file": "apps/three-surface-poc/src/trajectory.ts",
+    "old": "data-parity-field=\"work-item-id\">${escapeHtml(item.id)}</a>",
+    "new": "data-parity-field=\"work-item-id\">Work item</a>",
+    "ranAt": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+    "sourceBeforeSha256": "54c6ddfd205d30ad7812fa8d86649cde22db30fedaa9894ee9dfc83e32fbb812",
+    "mutatedSha256": "a25cafda46e89e4a6a7e30c332b3170256c9c8559180bae5ce9ccee0cbe802bc",
+    "occurrencesBefore": 1,
+    "command": [
+     "npx",
+     "vitest",
+     "run",
+     "--maxWorkers=1",
+     "packages/three-surface-poc-core/src/work-items.test.ts",
+     "packages/three-surface-poc-core/src/trajectory-projection.test.ts",
+     "apps/three-surface-poc/src/trajectory.test.ts",
+     "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+     "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+     "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
+     "--reporter=default"
+    ],
+    "startedAtUtc": "2026-10-21T08:45:29.933060+00:00",
+    "finishedAtUtc": "2026-10-21T08:45:36.677617+00:00",
+    "exit": 1,
+    "testsRun": 99,
+    "testsFailed": 1,
+    "outcome": "killed",
+    "killedBy": [
+     "trajectory.test.ts :: Trajectory names every card by its identifier and discloses its withheld title (SEC-5)"
+    ],
+    "killedByCount": 1
+   }
+  ]
+ },
+ "differential": {
+  "what": "server-rendered Trajectory, Polaris and Orrery pages and the /api/poc body (JSON.stringify(model)) on three fixture models: plain (five default rows), titled (a row titled Implement POC-REQ-010 plus one), synthetic252 (201 non-closed and 51 closed rows; 250 cards)",
+  "before": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
+  "after": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+  "normalization": "fixture temp paths, the evaluation inputs digest and the content key, which differ run to run, are replaced before comparison; HTML split at tag boundaries, JSON pretty-printed with sorted keys",
+  "perCapture": {
+   "plain-api-poc.json": {
+    "bytesBefore": 31951,
+    "bytesAfter": 32346,
+    "byteDelta": 395,
+    "normalizedIdentical": false,
+    "linesRemoved": 10,
+    "linesAdded": 30,
+    "removed": [
+     "    \"title\": \"fixture item bu-blocked1\",",
+     "    \"title\": \"fixture item bu-closed-old\",",
+     "    \"title\": \"fixture item bu-closed-recent\",",
+     "    \"title\": \"fixture item bu-open1\",",
+     "    \"title\": \"fixture item bu-progress1\",",
+     "    \"title\": \"fixture item bu-open1\",",
+     "    \"title\": \"fixture item bu-progress1\",",
+     "    \"title\": \"fixture item bu-blocked1\",",
+     "    \"title\": \"fixture item bu-closed-recent\",",
+     "    \"title\": \"fixture item bu-closed-old\","
+    ],
+    "added": [
+     "  },",
+     "  {",
+     "   \"epistemic\": {",
+     "    \"closedReason\": \"excluded-content\",",
+     "    \"label\": \"Unknown\",",
+     "    \"reason\": \"Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.\",",
+     "    \"resolutionRoutes\": [",
+     "     {",
+     "      \"actor\": \"owner\",",
+     "      \"reason\": \"excluded-content\",",
+     "      \"route\": \"Policy change by the owner, or accept the exclusion\",",
+     "      \"target\": \"policy\",",
+     "      \"verb\": \"decide\"",
+     "     }",
+     "    ]",
+     "   },",
+     "   \"id\": \"region:work-item-titles\"",
+     "  },",
+     "  \"titles\": {",
+     "   \"closedReason\": \"excluded-content\",",
+     "   \"label\": \"Unknown\",",
+     "   \"resolutionRoutes\": [",
+     "    {",
+     "     \"actor\": \"owner\",",
+     "     \"reason\": \"excluded-content\",",
+     "     \"route\": \"Policy change by the owner, or accept the exclusion\",",
+     "     \"target\": \"policy\",",
+     "     \"verb\": \"decide\"",
+     "    }",
+     "   ]"
+    ]
+   },
+   "plain-orrery.html": {
+    "bytesBefore": 45137,
+    "bytesAfter": 45137,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "plain-polaris.html": {
+    "bytesBefore": 106540,
+    "bytesAfter": 106540,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "plain-trajectory.html": {
+    "bytesBefore": 28707,
+    "bytesAfter": 30947,
+    "byteDelta": 2240,
+    "normalizedIdentical": false,
+    "linesRemoved": 11,
+    "linesAdded": 15,
+    "removed": [
+     "  .governing-intent-count { max-width: 78ch; }",
+     "<a class=\"wi-title\" href=\"#workitem-bu-open1\" data-parity-field=\"work-item-title\">fixture item bu-open1</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-open1</code>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-progress1\" data-parity-field=\"work-item-title\">fixture item bu-progress1</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-progress1</code>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-blocked1\" data-parity-field=\"work-item-title\">fixture item bu-blocked1</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-blocked1</code>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-closed-old\" data-parity-field=\"work-item-title\">fixture item bu-closed-old</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-closed-old</code>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-closed-recent\" data-parity-field=\"work-item-title\">fixture item bu-closed-recent</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-closed-recent</code>"
+    ],
+    "added": [
+     "  .governing-intent-count, .titles-withheld { max-width: 78ch; }",
+     "<p class=\"titles-withheld notice\" data-parity-field=\"work-item-titles-withheld\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">",
+     "        Titles: Unknown for every observed work item. Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.",
+     "        Reason: <code>excluded-content</code>. Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.",
+     "      </p>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-open1\" data-parity-field=\"work-item-id\">bu-open1</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-progress1\" data-parity-field=\"work-item-id\">bu-progress1</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-blocked1\" data-parity-field=\"work-item-id\">bu-blocked1</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-closed-old\" data-parity-field=\"work-item-id\">bu-closed-old</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-closed-recent\" data-parity-field=\"work-item-id\">bu-closed-recent</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>"
+    ]
+   },
+   "synthetic252-api-poc.json": {
+    "bytesBefore": 400508,
+    "bytesAfter": 382288,
+    "byteDelta": -18220,
+    "normalizedIdentical": false,
+    "linesRemoved": 502,
+    "linesAdded": 30
+   },
+   "synthetic252-orrery.html": {
+    "bytesBefore": 45137,
+    "bytesAfter": 45137,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "synthetic252-polaris.html": {
+    "bytesBefore": 106544,
+    "bytesAfter": 106544,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "synthetic252-trajectory.html": {
+    "bytesBefore": 435827,
+    "bytesAfter": 510627,
+    "byteDelta": 74800,
+    "normalizedIdentical": false,
+    "linesRemoved": 501,
+    "linesAdded": 505
+   },
+   "titled-api-poc.json": {
+    "bytesBefore": 27396,
+    "bytesAfter": 28023,
+    "byteDelta": 627,
+    "normalizedIdentical": false,
+    "linesRemoved": 4,
+    "linesAdded": 30,
+    "removed": [
+     "    \"title\": \"fixture item bu-open2\",",
+     "    \"title\": \"Implement POC-REQ-010\",",
+     "    \"title\": \"Implement POC-REQ-010\",",
+     "    \"title\": \"fixture item bu-open2\","
+    ],
+    "added": [
+     "  },",
+     "  {",
+     "   \"epistemic\": {",
+     "    \"closedReason\": \"excluded-content\",",
+     "    \"label\": \"Unknown\",",
+     "    \"reason\": \"Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.\",",
+     "    \"resolutionRoutes\": [",
+     "     {",
+     "      \"actor\": \"owner\",",
+     "      \"reason\": \"excluded-content\",",
+     "      \"route\": \"Policy change by the owner, or accept the exclusion\",",
+     "      \"target\": \"policy\",",
+     "      \"verb\": \"decide\"",
+     "     }",
+     "    ]",
+     "   },",
+     "   \"id\": \"region:work-item-titles\"",
+     "  },",
+     "  \"titles\": {",
+     "   \"closedReason\": \"excluded-content\",",
+     "   \"label\": \"Unknown\",",
+     "   \"resolutionRoutes\": [",
+     "    {",
+     "     \"actor\": \"owner\",",
+     "     \"reason\": \"excluded-content\",",
+     "     \"route\": \"Policy change by the owner, or accept the exclusion\",",
+     "     \"target\": \"policy\",",
+     "     \"verb\": \"decide\"",
+     "    }",
+     "   ]"
+    ]
+   },
+   "titled-orrery.html": {
+    "bytesBefore": 45137,
+    "bytesAfter": 45137,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "titled-polaris.html": {
+    "bytesBefore": 106540,
+    "bytesAfter": 106540,
+    "byteDelta": 0,
+    "normalizedIdentical": true,
+    "linesRemoved": 0,
+    "linesAdded": 0
+   },
+   "titled-trajectory.html": {
+    "bytesBefore": 23711,
+    "bytesAfter": 25065,
+    "byteDelta": 1354,
+    "normalizedIdentical": false,
+    "linesRemoved": 5,
+    "linesAdded": 9,
+    "removed": [
+     "  .governing-intent-count { max-width: 78ch; }",
+     "<a class=\"wi-title\" href=\"#workitem-bu-titled\" data-parity-field=\"work-item-title\">Implement POC-REQ-010</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-titled</code>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-open2\" data-parity-field=\"work-item-title\">fixture item bu-open2</a>",
+     "<code class=\"wi-id\" data-parity-field=\"work-item-id\">bu-open2</code>"
+    ],
+    "added": [
+     "  .governing-intent-count, .titles-withheld { max-width: 78ch; }",
+     "<p class=\"titles-withheld notice\" data-parity-field=\"work-item-titles-withheld\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">",
+     "        Titles: Unknown for every observed work item. Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.",
+     "        Reason: <code>excluded-content</code>. Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.",
+     "      </p>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-titled\" data-parity-field=\"work-item-id\">bu-titled</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>",
+     "<a class=\"wi-title\" href=\"#workitem-bu-open2\" data-parity-field=\"work-item-id\">bu-open2</a>",
+     "<span class=\"epistemic epistemic-unknown\" data-parity-field=\"work-item-title\" data-unknown-disclosure=\"region:work-item-titles\" data-unknown-reason=\"excluded-content\">Title: withheld (SEC-5). Route: <span data-unknown-route=\"excluded-content\" data-route-actor=\"owner\" data-route-verb=\"decide\" data-route-target=\"policy\">Policy change by the owner, or accept the exclusion</span>.</span>"
+    ]
+   }
+  },
+  "humanCeilingBytes": 2097152,
+  "note": "Polaris and Orrery output is byte-identical on all three fixtures, so no live /polaris measurement was taken; no Butlers read or live run was made"
+ },
+ "battery": {
+  "commit": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+  "where": "a fresh clone at the subject commit, PROJECT-STATUS.md 'How to verify this page' block read from the file and run in one shell",
+  "commandsRun": 110,
+  "commandsNote": "109 checks plus the orientation-only `git tag --list 'doctrine-*'` line; the log was kept in scratch space, not retained",
+  "commandsNonzero": 0,
+  "checkGovernanceSummaries": [
+   "32 OK, 21 WARN, 0 FAIL (53 checks) — counts derived, not asserted"
+  ],
+  "batteryLogSha256": "678834ce855f2d0fcae648ad7277138b1b3a02dc4c10ef0473214d097ac69b36"
+ }
+}

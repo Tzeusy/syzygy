@@ -1,0 +1,72 @@
+{
+ "record": "syzygy-jytt: rebase of the bead-title withholding change onto a moved main; the original record is unchanged",
+ "epistemic": "Observed",
+ "measuredOn": {
+  "recordPath": "docs/evidence/jytt-bead-title-exclusion-2026-10-21.json",
+  "recordSha256": "de25675d6b80aa7d45967301585d2dbc7ef859fa750596a0429808ff1f91bbf3",
+  "recordedCommit": "fdb71f712b69fbae31a9bd2b73bfd5b24864d498",
+  "recordedBaseCommit": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
+  "recordedPatchSha256": "110567553b8186a205a5859b1823f552d13957a3d939be038bd55ef4143df4e2"
+ },
+ "rebasedSubject": {
+  "commit": "33cfbee7ba18d96244f0f0d1a3aeb325621eb757",
+  "baseCommit": "e26a615d95524c1d14d1f35aa05547920c895fd3",
+  "patchSha256": "4d422c3766cdeb68baa873c05f323cb2561916e85ff8f9482aa1eaef5c45eb19",
+  "patchCommand": "git diff <baseCommit> <commit>",
+  "files": {
+   "apps/three-surface-poc/src/block-provenance-sweep.test.ts": {
+    "gitBlob": "a25e890b53eb524a49cc7aeda7e25676d289142f",
+    "sha256": "16f1b58c30df9daa9431ceb6b735b738b1702de6d23e356a75f68062daacd3db",
+    "matchesRecordedFile": true
+   },
+   "apps/three-surface-poc/src/governing-intent-sweep.test.ts": {
+    "gitBlob": "33c5405f650287ef0f1ae0772d4cb775cdaa2087",
+    "sha256": "7e653fa37d6b5e4163fce6a055d6c9fa9d5acb1851fdd84b1d4e7604e6e264ec",
+    "matchesRecordedFile": true
+   },
+   "apps/three-surface-poc/src/trajectory.test.ts": {
+    "gitBlob": "03c9e7589431634468675f790f53b45316170920",
+    "sha256": "419673bd72be4c00bc79eed4a7d05aff1a05adf0b6287a45d0a51b7e73ebc274",
+    "matchesRecordedFile": true
+   },
+   "apps/three-surface-poc/src/trajectory.ts": {
+    "gitBlob": "97e9da7c3357914806bfcf6577bbebd35a0c45c9",
+    "sha256": "54c6ddfd205d30ad7812fa8d86649cde22db30fedaa9894ee9dfc83e32fbb812",
+    "matchesRecordedFile": true
+   },
+   "apps/three-surface-poc/src/unknown-route-sweep.test.ts": {
+    "gitBlob": "b3ac40a49e3587de463933ecc106af3757713750",
+    "sha256": "1dcfc331dcfca8eaccb6bafa50526d88bb6216b6a525c21285f7d8fd12d11f1e",
+    "matchesRecordedFile": true
+   },
+   "packages/three-surface-poc-core/src/model.ts": {
+    "gitBlob": "c46c38e4730ac8e69e441563eb2cb13176910ec9",
+    "sha256": "7d752be94be204f917a679f05d99ea133536fdac4c0d0071688d78ef242499d4",
+    "matchesRecordedFile": false,
+    "addedAndRemovedLinesEqualRecordedPatch": true,
+    "addedAndRemovedLineCount": 10
+   },
+   "packages/three-surface-poc-core/src/trajectory-projection.test.ts": {
+    "gitBlob": "db874106cd2889e8a43bc05e30e05eb3ed113978",
+    "sha256": "5cd754141c30eb410aa5ce5d67c9b7b5ad792572c1bc7bcee21a65a62b34249e",
+    "matchesRecordedFile": true
+   },
+   "packages/three-surface-poc-core/src/trajectory-projection.ts": {
+    "gitBlob": "c89a40372abc0e3d8b8acab7e6750d645fb6e7e7",
+    "sha256": "e8a8643b8789da4836e11618e3fbedfc915c279ece107e126dd378bd7e62df26",
+    "matchesRecordedFile": true
+   },
+   "packages/three-surface-poc-core/src/work-items.test.ts": {
+    "gitBlob": "80831bda85f0ea0715b1d25714e09b032390ff58",
+    "sha256": "632caa16f97ec7472fd07b95720f5fed792f1ab6110e6cf16c51eba0f800300a",
+    "matchesRecordedFile": true
+   },
+   "packages/three-surface-poc-core/src/work-items.ts": {
+    "gitBlob": "cd9fa1f56db3cfaca3b1417a64eb05c1f1a5b4c0",
+    "sha256": "5c995c5e8a6705b10af97eed86d19151439b0871f15788b0eebba8c212207347",
+    "matchesRecordedFile": true
+   }
+  }
+ },
+ "reading": "Nine of the ten files are byte-identical to the recorded blobs. The tenth, packages/three-surface-poc-core/src/model.ts, differs only because main gained two lines in that file; its added and removed lines are equal to the recorded patch's, so the patch digest differs in hunk offsets and index lines only. The recorded digests are not edited and still describe the recorded commit."
+}

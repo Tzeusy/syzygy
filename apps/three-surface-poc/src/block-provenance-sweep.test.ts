@@ -201,7 +201,7 @@ describe('POC-REQ-010: the work-item observation states its provenance once', ()
     const { answer } = servedAnswer();
     const items = rowsOf(answer, 'workItems');
     expect(items.map((item) => item.id)).toEqual(['bu-open1', 'bu-closed1']);
-    expect(Object.keys(block(answer, 'workItems')).sort()).toEqual(['beadPrefix', 'capturedAt', 'governedByUnknownCount', 'items', 'kind', 'provenance']);
+    expect(Object.keys(block(answer, 'workItems')).sort()).toEqual(['beadPrefix', 'capturedAt', 'governedByUnknownCount', 'items', 'kind', 'provenance', 'titles']);
     expect(Object.keys(block(answer, 'workItems').provenance as Obj).sort()).toEqual(['kind', 'revision', 'source']);
     expect(violations(answer, WORK)).toEqual([]);
   });
@@ -209,8 +209,8 @@ describe('POC-REQ-010: the work-item observation states its provenance once', ()
   it('a sampled item matches the database read', () => {
     const { answer } = servedAnswer();
     expect(rowsOf(answer, 'workItems').find((item) => item.id === 'bu-open1')).toEqual({
+      // SEC-5 (syzygy-jytt): the read row's title is never served.
       id: 'bu-open1',
-      title: 'fixture item bu-open1',
       status: 'open',
       issueType: 'task',
       priority: 1,

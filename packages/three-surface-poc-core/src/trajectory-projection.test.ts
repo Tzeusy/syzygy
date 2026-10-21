@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { projectTrajectory, STATUS_TO_COLUMN } from './trajectory-projection.js';
-import { governingIntentUnknown, type WorkItemsObserved } from './work-items.js';
+import { governingIntentUnknown, workItemTitlesWithheld, type WorkItemsObserved } from './work-items.js';
 
 function itemsFixture(): WorkItemsObserved {
   return {
@@ -10,12 +10,13 @@ function itemsFixture(): WorkItemsObserved {
     provenance: { kind: 'dolt-revision', source: 'Beads Dolt database (bu)', revision: 'rev-1' },
     capturedAt: '2026-08-30T00:00:00Z',
     items: [
-      { id: 'bu-1', title: 'open one', status: 'open', issueType: 'task', priority: 1, createdAt: '2026-08-01T00:00:00Z', updatedAt: '2026-08-02T00:00:00Z', closedAt: null, governedBy: governingIntentUnknown() },
-      { id: 'bu-2', title: 'in progress one', status: 'in_progress', issueType: 'task', priority: 1, createdAt: '2026-08-03T00:00:00Z', updatedAt: '2026-08-04T00:00:00Z', closedAt: null, governedBy: governingIntentUnknown() },
-      { id: 'bu-3', title: 'closed recent', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-08-05T00:00:00Z', updatedAt: '2026-08-06T00:00:00Z', closedAt: '2026-08-06T00:00:00Z', governedBy: governingIntentUnknown() },
-      { id: 'bu-4', title: 'closed older', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-07-01T00:00:00Z', updatedAt: '2026-07-02T00:00:00Z', closedAt: '2026-07-02T00:00:00Z', governedBy: governingIntentUnknown() },
+      { id: 'bu-1', status: 'open', issueType: 'task', priority: 1, createdAt: '2026-08-01T00:00:00Z', updatedAt: '2026-08-02T00:00:00Z', closedAt: null, governedBy: governingIntentUnknown() },
+      { id: 'bu-2', status: 'in_progress', issueType: 'task', priority: 1, createdAt: '2026-08-03T00:00:00Z', updatedAt: '2026-08-04T00:00:00Z', closedAt: null, governedBy: governingIntentUnknown() },
+      { id: 'bu-3', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-08-05T00:00:00Z', updatedAt: '2026-08-06T00:00:00Z', closedAt: '2026-08-06T00:00:00Z', governedBy: governingIntentUnknown() },
+      { id: 'bu-4', status: 'closed', issueType: 'task', priority: 1, createdAt: '2026-07-01T00:00:00Z', updatedAt: '2026-07-02T00:00:00Z', closedAt: '2026-07-02T00:00:00Z', governedBy: governingIntentUnknown() },
     ],
     governedByUnknownCount: 4,
+    titles: workItemTitlesWithheld(),
   };
 }
 
