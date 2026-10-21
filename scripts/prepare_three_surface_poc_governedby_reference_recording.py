@@ -122,35 +122,83 @@ def operative_markers(body: str, markers: tuple[str, ...]) -> dict[str, list[int
     """Conservative standalone marker eligibility, retaining raw offsets.
 
     Exact whole-line markers exclude indentation, prefix and suffix text.
-    Up-to-three-space backtick/tilde fences, nested comments, and raw HTML
-    pre/script/style/textarea code contexts are conservatively excluded.
-    This is not a general Markdown grammar. Raw family tokens never disappear.
+    Up-to-three-space fences and nested comments retain their exact grammar.
+    Finite HTML example/raw contexts are excluded in source order, including
+    quoted/multiline tags and successive close/reopen transitions. Ambiguous
+    contexts refuse later markers. This is not a general HTML/Markdown parser;
+    raw family tokens never disappear from the independent occurrence census.
     """
     positions = {marker: [] for marker in markers}
-    fence = code_tag = None
-    comments, offset = 0, 0
+    containers = {"pre", "code", "listing", "template"}
+    raw_tags = {"script", "style", "textarea", "title", "xmp", "iframe", "noembed", "noframes"}
+    terminal_tags = {"plaintext", "noscript"}  # No portable later closure proves eligibility.
+    tag_start = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[\s/>]|$)")
+    tag = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)(?=[\s/>])(?:[^'\">]|'[^']*'|\"[^\"]*\")*>")
+    special = re.compile(r"<!--|-->|<")
+    script_open = re.compile(r"<script(?=[\s/>]|$)", re.I)
+    fence, contexts = None, []
+    comments, offset, consumed = 0, 0, 0
+    ambiguous = False
     for raw in body.splitlines(keepends=True):
         line = raw.rstrip("\r\n")
         match = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", line)
-        if code_tag is not None:
-            if re.search(r"</" + code_tag + r"\s*>", line, re.I):
-                code_tag = None
-        elif fence is not None:
+        if fence is not None:
             if (match and match[1][0] == fence[0] and len(match[1]) >= fence[1]
                     and not match[2].strip()):
                 fence = None
-        elif comments == 0 and match:
+            offset += len(raw)
+            continue
+        if not contexts and comments == 0 and consumed <= offset and match:
             fence = (match[1][0], len(match[1]))
-        else:
-            opening = re.search(r"<(pre|script|style|textarea)(?=[\s/>]|$)", line, re.I) if comments == 0 else None
-            if opening:
-                tag = opening[1].lower()
-                if not re.search(r"</" + tag + r"\s*>", line[opening.end():], re.I):
-                    code_tag = tag
-            if comments == 0 and code_tag is None and not opening and line in positions:
-                positions[line].append(offset)
-            for token in re.finditer(r"<!--|-->", line):
-                comments = comments + 1 if token.group() == "<!--" else max(0, comments - 1)
+            offset += len(raw)
+            continue
+        if not ambiguous and not contexts and comments == 0 and consumed <= offset and line in positions:
+            positions[line].append(offset)
+        cursor, end = max(offset, consumed), offset + len(raw)
+        while cursor < end and not ambiguous:
+            token_start = special.search(body, cursor, end)
+            if token_start is None:
+                break
+            cursor = token_start.start()
+            active_raw = contexts[-1] if contexts and contexts[-1] in raw_tags else None
+            if active_raw is None:
+                if body.startswith("<!--", cursor):
+                    comments += 1
+                    cursor += 4
+                    continue
+                if body.startswith("-->", cursor):
+                    comments = max(0, comments - 1)
+                    cursor += 3
+                    continue
+                if comments:
+                    cursor += 1
+                    continue
+            elif active_raw == "script" and (body.startswith("<!--", cursor)
+                    or script_open.match(body, cursor)):
+                # Script escaped/double-escaped tokenizer states are outside
+                # this finite grammar; never guess that a later close escapes.
+                ambiguous = True
+                continue
+            opening = tag_start.match(body, cursor)
+            if opening is None or (active_raw is not None and not (
+                    body.startswith("</", cursor) and opening[1].lower() == active_raw)):
+                cursor += 1
+                continue
+            token = tag.match(body, cursor)
+            if token is None:
+                ambiguous = True  # Incomplete/quoted tag text cannot admit later markers.
+                continue
+            name, closing = token[1].lower(), body.startswith("</", cursor)
+            if name in terminal_tags:
+                ambiguous = True
+            elif name in containers | raw_tags:
+                if not closing:
+                    contexts.append(name)  # Non-void <pre/> etc. are not proven closed.
+                elif contexts and contexts[-1] == name:
+                    contexts.pop()
+                else:
+                    ambiguous = True
+            consumed = cursor = token.end()
         offset += len(raw)
     return positions
 
@@ -1570,6 +1618,62 @@ def recovery_native_selftest(root: Path, expect) -> None:
                 "conflicts": conflicts, "helperExceptions": errors}, sort_keys=True))
 
 
+def marker_context_selftest(root: Path, expect) -> None:
+    """Fast literal context vectors; no signed/MAIN/native-operation claim."""
+    excluded = ("pre", "code", "listing", "template", "script", "style", "textarea", "title",
+                "xmp", "iframe", "noembed", "noframes", "plaintext", "noscript")
+    block = MARKER + "\n" + END_MARKER + "\n"
+    example = MARKER + "\nsynthetic example only\n" + END_MARKER + "\n"
+    groups = {
+        "HTML context finite example exclusions": [
+            (name, f"<{name}>\n" + block + f"</{name}>\n", None) for name in excluded],
+        "HTML context ordered transitions and ambiguity refuse": [
+            ("pre-reopened-same-line", "<pre></pre><pre>\n" + block + "</pre>\n", None),
+            ("pre-close-reopen", "<pre>\n</pre><pre>\n" + block + "</pre>\n", None),
+            ("mixed-case-reopen", "<PrE></pRe><XmP>\n" + block + "</xMp>\n", None),
+            ("pre-commented-close", "<pre>\n<!-- </pre> -->\n" + example + "</pre>\n", None),
+            ("pre-attribute-close", '<pre><div title="</pre>">\n' + example + "</div></pre>\n", None),
+            ("pre-opening-attribute-close", '<pre title="</pre>">\n' + example + "</pre>\n", None),
+            ("multiline-quoted-tag", '<pre data-example="\n</pre>\n">\n' + block + "</pre>\n", None),
+            ("comment-then-reopen", "<!-- <pre> --> <pre></pre><pre>\n" + block + "</pre>\n", None),
+            ("raw-inner-close-is-text", "<xmp></pre>\n" + block + "</xmp>\n", None),
+            ("raw-comment-is-text", "<textarea><!--\n" + block + "</textarea>\n", None),
+            ("nonvoid-self-closing", "<pre/>\n" + block + "</pre>\n", None),
+            ("script-escaped-ambiguity", "<script><!--<script></script>\n" + block, None),
+            ("plaintext-never-closes", "<plaintext></plaintext>\n" + block, None),
+            ("noscript-environment-ambiguity", "<noscript></noscript>\n" + block, None),
+            ("unclosed-quoted-tag", '<pre data-example="\n' + block, None),
+            ("mismatched-container-close", "<pre><code></pre>\n" + block + "</code>\n", None),
+        ],
+        "HTML context unambiguous closure preserves genuine markers": [
+            (name, f"<{name}>\nexample\n</{name}>\n" + block,
+             len(f"<{name}>\nexample\n</{name}>\n")) for name in excluded[:-2]] + [
+            ("raw-inner-open-is-text", "<xmp><pre></xmp>\n" + block, len("<xmp><pre></xmp>\n")),
+            ("nested-containers-close", "<pre><code>example</code></pre>\n" + block,
+             len("<pre><code>example</code></pre>\n")),
+            ("quoted-attribute-is-not-a-tag", '<div title="<pre>"></div>\n' + block,
+             len('<div title="<pre>"></div>\n')),
+            ("different-tag-name", "<prelude></prelude>\n" + block, len("<prelude></prelude>\n")),
+            ("fence-keeps-example-tag-inert", "```text\n<pre>\n```\n" + block,
+             len("```text\n<pre>\n```\n")),
+        ],
+    }
+    for name, vectors in groups.items():
+        rows = []
+        for label, body, begin in vectors:
+            expected = {MARKER: [] if begin is None else [begin],
+                        END_MARKER: [] if begin is None else [begin + len(MARKER) + 1]}
+            actual = operative_markers(body, (MARKER, END_MARKER))
+            rows.append({"vector": label, "old": block, "new": body, "expectedOffsets": expected,
+                         "actualOffsets": actual, "passed": actual == expected})
+        passed = all(row["passed"] for row in rows)
+        expect(name, passed)
+        print("P115-MARKER-CONTEXT-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+            "scope": "pure finite eligibility only; no MAIN/signed result", "ranAt":
+            git(root, "rev-parse", "HEAD").decode().strip(), "toolSHA256": digest(Path(__file__).read_bytes()),
+            "vectorCount": len(rows), "vectors": rows, "passed": passed}, sort_keys=True))
+
+
 def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlier: dict) -> None:
     """Finite family vectors exercise real readers and both existing operations.
 
@@ -1617,6 +1721,10 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
         ("POP context prefixed begin marker", "prefixed", None),
         ("POP context suffixed end marker", "suffixed", None),
         ("POP context raw pre block", "pre", None),
+        ("POP context pre reopened same line", "pre-reopened", None),
+        ("POP context pre close reopen", "pre-close-reopen", None),
+        ("POP context raw xmp block", "xmp", None),
+        ("POP context quoted multiline mixed raw", "mixed-raw", None),
     )
     def setup(installed):
         for path in (unsupported, alias, extra):
@@ -1684,6 +1792,11 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                     "prefixed": aggregate + block.replace(MARKER, "Example: " + MARKER),
                     "suffixed": aggregate + block.replace(END_MARKER, END_MARKER + " example"),
                     "pre": aggregate + "<pre>\n" + block + "</pre>\n",
+                    "pre-reopened": aggregate + "<pre></pre><pre>\n" + block + "</pre>\n",
+                    "pre-close-reopen": aggregate + "<pre>\n</pre><pre>\n" + block + "</pre>\n",
+                    "xmp": aggregate + "<xmp>\n" + block + "</xmp>\n",
+                    "mixed-raw": aggregate + '<PrE data-example="\n</pre>\n">example</pRe><xMp>\n'
+                                 + block + "</XmP>\n",
                 }
                 (tree / AGGREGATE).write_text(prefixes[mutation])
             # Whole-clean admission is real, so malformed family must be its
@@ -1716,7 +1829,8 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                         previewLabel=preview_result["state"] == "Unknown; P115 state unverified",
                         signed=bool(signed_findings(tree)) and not is_signed(tree),
                         chain=bool(chain_findings(tree)), historical=bool(historical_run(tree, "--check")[0]))
-                    if mutation in {"backtick", "tilde", "indented", "nested", "prefixed", "suffixed", "pre"}:
+                    if mutation in {"backtick", "tilde", "indented", "nested", "prefixed", "suffixed", "pre",
+                                    "pre-reopened", "pre-close-reopen", "xmp", "mixed-raw"}:
                         frontiers["operativeContext"] = any("not an operative standalone line" in f for f in findings)
                     try:
                         inputs = validation_inputs(tree)
@@ -2231,6 +2345,7 @@ def selftest(root: Path) -> int:
                 expect("missing frozen history refuses replay", False)
         finally:
             CORE_COMMIT = saved_commit
+    marker_context_selftest(root, expect)
     recording_failure_selftest(root, expect)
     recording_render_selftest(root, expect)
     recovery_native_selftest(root, expect)
