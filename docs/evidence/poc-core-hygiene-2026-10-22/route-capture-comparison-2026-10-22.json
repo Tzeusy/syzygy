@@ -1,0 +1,42 @@
+{
+ "tool": "compare_captures.py",
+ "reference": {
+  "file": "route-capture-2026-10-22.json",
+  "fileSha256": "f2d667c426508c620bb02692d466c6ff8c95465e97fe8a23f8ce5284605e68e2"
+ },
+ "fixtures": 5,
+ "fixturesWithDistinctOutput": 5,
+ "routesPerFixture": [
+  19,
+  19,
+  19,
+  19,
+  19
+ ],
+ "responses": 230,
+ "requestKeysPerFixture": 46,
+ "requestKeysWhoseBodyDiffersAcrossFixtures": 30,
+ "distinctBodyDigests": 73,
+ "statuses": {
+  "200": 150,
+  "401": 40,
+  "403": 20,
+  "502": 20
+ },
+ "comparisons": [
+  {
+   "file": "cap-base-2.json",
+   "fileSha256": "f2d667c426508c620bb02692d466c6ff8c95465e97fe8a23f8ce5284605e68e2",
+   "fileBytesEqualReference": true,
+   "sameRequestKeys": true,
+   "responsesDifferingFromReference": 0
+  },
+  {
+   "file": "cap-head-final.json",
+   "fileSha256": "f2d667c426508c620bb02692d466c6ff8c95465e97fe8a23f8ce5284605e68e2",
+   "fileBytesEqualReference": true,
+   "sameRequestKeys": true,
+   "responsesDifferingFromReference": 0
+  }
+ ]
+}

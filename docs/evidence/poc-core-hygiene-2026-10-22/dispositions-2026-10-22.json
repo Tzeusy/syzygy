@@ -1,0 +1,390 @@
+{
+ "bead": "syzygy-bpyt.7.6",
+ "denominator": {
+  "trackedFilesAtBase": 3024,
+  "baseCommit": "26ff52ce260e925b191d03ee78b052383328b65c",
+  "trackedFilesAtCodeCommit": 3024,
+  "codeCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c"
+ },
+ "methods": "consumer_sweep.py: git grep -I -n -w -F (names) or -F (paths and stems), and an independent Python regex over every tracked file; both must agree on the file list. Stems are also searched with whitespace removed to catch a citation wrapped across a line.",
+ "dispositions": [
+  {
+   "subject": "evidence-population.ts",
+   "class": "orphan",
+   "disposition": "kept; head comment added; barrel export unchanged",
+   "reason": "Not unconsumed: the M1 page-size design note requires new page-size evidence records to carry a population block derived with derivePopulationBlock in this path, and a retained measurement script embeds a require of this module's compiled file. Moving or deleting it breaks the path that script and note name; the package barrel is not the consumer.",
+   "citations": [
+    "docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md:380-384 (candidate design material, binds nothing)",
+    "docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json (measurementScript requires dist/evidence-population.js)"
+   ],
+   "sweepAtBase": {
+    "token": "evidence-population",
+    "files": 9,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 1,
+     "docs-evidence": 4,
+     "docs-reviews": 2,
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "evidence-population",
+    "files": 9,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 1,
+     "docs-evidence": 4,
+     "docs-reviews": 2,
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "owner-act-drafter.ts",
+   "class": "orphan",
+   "disposition": "kept unchanged; note added in the barrel, not in the file",
+   "reason": "Consumed by owner ruling, not dead: P-71 Q3 arm (b) is \"a pure drafter that writes no file\", and the operator command that would render its output was never built. The note sits in the barrel because docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json cites the file's digest; the file's bytes stay as that record has them.",
+   "citations": [
+    ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md:58 (P-71, ruled A, 2026-09-21)",
+    ".syzygy/governance/contracts/candidates/doctrine-amendment-held-derived-computation-d7/OWNER-DECISION-PACKET.md:341",
+    "docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json"
+   ],
+   "sweepAtBase": {
+    "token": "owner-act-drafter",
+    "files": 4,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 2,
+     "core-src": 1,
+     "core-test": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "owner-act-drafter",
+    "files": 4,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 2,
+     "core-src": 1,
+     "core-test": 1
+    }
+   }
+  },
+  {
+   "subject": "test-cleanup.ts",
+   "class": "orphan",
+   "disposition": "kept in place; test-support head comment added",
+   "reason": "Already outside the barrel and package exports; the only importers are model.test.ts and its own test. A test-support entry would add a package entry point for one same-package caller, so none was added. A near-duplicate, removeTemporaryDirectory, lives in apps/three-surface-poc/src/temporary-directory.ts for the app (follow-up, not folded here: it would change the app).",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "test-cleanup",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 1,
+     "core-test": 2
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "test-cleanup",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 1,
+     "core-test": 2
+    }
+   }
+  },
+  {
+   "subject": "JUDGMENT_INVALID_CASE_IDS",
+   "class": "deleted",
+   "disposition": "deleted with its comment, and with the import of COMMON_INVALID_CASES only it used",
+   "reason": "Declared with the PWB-REQ-022 evaluator and never read: the test asserts the 84-case population from its own hand-typed table. The component arrays and the JudgmentInvalidCase type stay.",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "JUDGMENT_INVALID_CASE_IDS",
+    "files": 1,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "JUDGMENT_INVALID_CASE_IDS",
+    "files": 0,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {}
+   }
+  },
+  {
+   "subject": "ClassificationOutcome",
+   "class": "deleted",
+   "disposition": "deleted",
+   "reason": "A type alias nothing names.",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "ClassificationOutcome",
+    "files": 1,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "ClassificationOutcome",
+    "files": 0,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {}
+   }
+  },
+  {
+   "subject": "FactFamilyKind",
+   "class": "deleted",
+   "disposition": "deleted",
+   "reason": "A type alias nothing names. Its only reader was FACT_FAMILIES, which now has no code reader and stays (see cascades).",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "FactFamilyKind",
+    "files": 1,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "FactFamilyKind",
+    "files": 0,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {}
+   }
+  },
+  {
+   "subject": "appendEvaluation",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "Pins the PWB-REQ-005 append-only history rule; no production code calls it yet. The retained-evaluations design reuses the pattern.",
+   "citations": [
+    "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md (candidate design material, binds nothing)"
+   ],
+   "sweepAtBase": {
+    "token": "appendEvaluation",
+    "files": 7,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 3,
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "appendEvaluation",
+    "files": 7,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 3,
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "appendJudgmentEvaluation",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "Pins the PWB-REQ-022 append-only judgment history; the mutation sweep's history-append-only site is in its body (apps/three-surface-poc/src/pwb-mutation-sweep.ts and its test count exactly one such site), so deleting it would retire a sweep site.",
+   "citations": [
+    "docs/PWB-IMPLEMENTATION-PLAN.md",
+    "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md"
+   ],
+   "sweepAtBase": {
+    "token": "appendJudgmentEvaluation",
+    "files": 6,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 2,
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "appendJudgmentEvaluation",
+    "files": 6,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 2,
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "rollbackMaterializedWorkItem",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "The inverse of the materialize action: it closes the recorded work item and clears the local record. No route or command calls it, and it acts on the observed repository's tracker, so removing or wiring it is an authority question, not hygiene.",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "rollbackMaterializedWorkItem",
+    "files": 2,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "rollbackMaterializedWorkItem",
+    "files": 2,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "ownerActProvenance",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "Builds the plan's owner-act provenance entries per authority; pinned by project-shape-model.test.ts.",
+   "citations": [
+    "docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md (candidate design material, binds nothing)"
+   ],
+   "sweepAtBase": {
+    "token": "ownerActProvenance",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "ownerActProvenance",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-other": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "clearTestArtifactRecordFile",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "The test cleanup counterpart of writeTestArtifactRecordFile; the package test is its only caller.",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "clearTestArtifactRecordFile",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "clearTestArtifactRecordFile",
+    "files": 3,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-reviews": 1,
+     "core-test": 1,
+     "core-src": 1
+    }
+   }
+  },
+  {
+   "subject": "liveTestOperatorInstructions",
+   "class": "test-only",
+   "disposition": "kept; Test seam comment",
+   "reason": "The message the live verification test prints when the operator's result is missing; test-artifact-verification.live.test.ts calls it and test-artifact-verification-live-source.test.ts asserts the call in that file's source.",
+   "citations": [],
+   "sweepAtBase": {
+    "token": "liveTestOperatorInstructions",
+    "files": 6,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 3,
+     "core-src": 1
+    }
+   },
+   "sweepAtCodeCommit": {
+    "token": "liveTestOperatorInstructions",
+    "files": 6,
+    "methodsAgreeOnFiles": true,
+    "filesByCategory": {
+     "docs-evidence": 1,
+     "docs-reviews": 1,
+     "core-test": 3,
+     "core-src": 1
+    }
+   }
+  }
+ ],
+ "cascades": [
+  {
+   "subject": "FACT_FAMILIES",
+   "change": [
+    "body-read-authority.ts:COMMON_INVALID_CASES internal -> self-only",
+    "project-shape-coverage.ts:FACT_FAMILIES self-only -> dead"
+   ],
+   "disposition": "kept; note added; the registry-currency amendment packet and its builder script cite it by name"
+  },
+  {
+   "subject": "COMMON_INVALID_CASES",
+   "disposition": "kept; now used only inside body-read-authority.ts, left to the un-export sweep"
+  }
+ ],
+ "notInScope": {
+  "selfOnlyExportsAfter": 233,
+  "text": "Exports used only inside their own file are a public-surface un-export sweep, not dead code: filed as a follow-up in the Worker Report."
+ },
+ "censusClassTotals": {
+  "base-lexer": {
+   "dead": 3,
+   "internal": 134,
+   "public": 131,
+   "self-only": 233,
+   "test-only": 88
+  },
+  "base-raw": {
+   "dead": 3,
+   "internal": 137,
+   "public": 132,
+   "self-only": 229,
+   "test-only": 88
+  },
+  "after-lexer": {
+   "dead": 1,
+   "internal": 133,
+   "public": 131,
+   "self-only": 233,
+   "test-only": 88
+  },
+  "after-raw": {
+   "dead": 1,
+   "internal": 136,
+   "public": 132,
+   "self-only": 229,
+   "test-only": 88
+  }
+ }
+}

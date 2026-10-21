@@ -1,0 +1,372 @@
+{
+ "tool": "assemble_census.py (export_census.census)",
+ "prefix": "packages/three-surface-poc-core/src/",
+ "barrels": [
+  "packages/three-surface-poc-core/src/index.ts"
+ ],
+ "baseCommit": "26ff52ce260e925b191d03ee78b052383328b65c",
+ "afterCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c",
+ "totals": {
+  "base-lexer": {
+   "exports": 589,
+   "classes": {
+    "dead": 3,
+    "internal": 134,
+    "public": 131,
+    "self-only": 233,
+    "test-only": 88
+   }
+  },
+  "base-raw": {
+   "exports": 589,
+   "classes": {
+    "dead": 3,
+    "internal": 137,
+    "public": 132,
+    "self-only": 229,
+    "test-only": 88
+   }
+  },
+  "after-lexer": {
+   "exports": 586,
+   "classes": {
+    "dead": 1,
+    "internal": 133,
+    "public": 131,
+    "self-only": 233,
+    "test-only": 88
+   }
+  },
+  "after-raw": {
+   "exports": 586,
+   "classes": {
+    "dead": 1,
+    "internal": 136,
+    "public": 132,
+    "self-only": 229,
+    "test-only": 88
+   }
+  }
+ },
+ "lexerVersusRawOnBase": {
+  "exportsWhoseClassDiffers": [
+   "act-fields.ts:SHA256 lexer=internal raw=public",
+   "project-shape-extraction.ts:extractCraftPolicies lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractPrinciples lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractRosterIdentity lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractSuccessCriteria lexer=self-only raw=internal"
+  ]
+ },
+ "baseToAfterLexer": {
+  "removed": [
+   "content-classification.ts:ClassificationOutcome",
+   "project-shape-coverage.ts:FactFamilyKind",
+   "walkthrough-judgment.ts:JUDGMENT_INVALID_CASE_IDS"
+  ],
+  "added": [],
+  "classChanged": [
+   "body-read-authority.ts:COMMON_INVALID_CASES internal -> self-only",
+   "project-shape-coverage.ts:FACT_FAMILIES self-only -> dead"
+  ]
+ },
+ "subjectRows": {
+  "base": [
+   {
+    "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "name": "COMMON_INVALID_CASES",
+    "line": 73,
+    "class": "internal",
+    "self": 2,
+    "prodInside": [
+     "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+    ],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "name": "appendEvaluation",
+    "line": 735,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/body-read-authority.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/content-classification.ts",
+    "name": "ClassificationOutcome",
+    "line": 282,
+    "class": "dead",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+    "name": "derivePopulationBlock",
+    "line": 74,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/evidence-population.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/materialization.ts",
+    "name": "rollbackMaterializedWorkItem",
+    "line": 462,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/materialization.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+    "name": "draftOwnerAct",
+    "line": 82,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+    "name": "FACT_FAMILIES",
+    "line": 78,
+    "class": "self-only",
+    "self": 1,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+    "name": "FactFamilyKind",
+    "line": 79,
+    "class": "dead",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+    "name": "ownerActProvenance",
+    "line": 711,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+    "name": "clearTestArtifactRecordFile",
+    "line": 126,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+    "name": "liveTestOperatorInstructions",
+    "line": 400,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts",
+     "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+     "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-cleanup.ts",
+    "name": "removeFixtureDirectory",
+    "line": 14,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/model.test.ts",
+     "packages/three-surface-poc-core/src/test-cleanup.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+    "name": "JUDGMENT_INVALID_CASE_IDS",
+    "line": 131,
+    "class": "dead",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+    "name": "appendJudgmentEvaluation",
+    "line": 792,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+    ]
+   }
+  ],
+  "after": [
+   {
+    "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "name": "COMMON_INVALID_CASES",
+    "line": 73,
+    "class": "self-only",
+    "self": 2,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "name": "appendEvaluation",
+    "line": 738,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/body-read-authority.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+    "name": "derivePopulationBlock",
+    "line": 80,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/evidence-population.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/materialization.ts",
+    "name": "rollbackMaterializedWorkItem",
+    "line": 464,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/materialization.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+    "name": "draftOwnerAct",
+    "line": 82,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+    "name": "FACT_FAMILIES",
+    "line": 80,
+    "class": "dead",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": []
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+    "name": "ownerActProvenance",
+    "line": 713,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+    "name": "clearTestArtifactRecordFile",
+    "line": 127,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+    "name": "liveTestOperatorInstructions",
+    "line": 403,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts",
+     "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+     "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/test-cleanup.ts",
+    "name": "removeFixtureDirectory",
+    "line": 17,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/model.test.ts",
+     "packages/three-surface-poc-core/src/test-cleanup.test.ts"
+    ]
+   },
+   {
+    "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+    "name": "appendJudgmentEvaluation",
+    "line": 786,
+    "class": "test-only",
+    "self": 0,
+    "prodInside": [],
+    "prodOutside": [],
+    "tests": [
+     "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+    ]
+   }
+  ]
+ }
+}

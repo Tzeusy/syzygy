@@ -1,0 +1,117 @@
+{
+ "tool": "dist_code_diff.py",
+ "baseTree": {
+  "commit": "26ff52ce260e925b191d03ee78b052383328b65c",
+  "trackedFilesModified": false
+ },
+ "headTree": {
+  "commit": "5197990a4214805d940c3009b50058a30055bbfe",
+  "trackedFilesModified": false
+ },
+ "projects": [
+  {
+   "project": "packages/cap1-core",
+   "filesCompared": 46,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/cap1-daemon",
+   "filesCompared": 32,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/cap1-conformance",
+   "filesCompared": 92,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/three-surface-poc-core",
+   "filesCompared": 146,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": [
+    {
+     "file": "content-classification.d.ts",
+     "removedOrAddedLines": [
+      "-export type ClassificationOutcome = ClassificationRecord['outcome'];"
+     ]
+    },
+    {
+     "file": "project-shape-coverage.d.ts",
+     "removedOrAddedLines": [
+      "-export type FactFamilyKind = (typeof FACT_FAMILIES)[number];"
+     ]
+    },
+    {
+     "file": "walkthrough-judgment.d.ts",
+     "removedOrAddedLines": [
+      "-export declare const JUDGMENT_INVALID_CASE_IDS: readonly JudgmentInvalidCase[];"
+     ]
+    },
+    {
+     "file": "walkthrough-judgment.js",
+     "removedOrAddedLines": [
+      "-import { COMMON_INVALID_CASES, } from './body-read-authority.js';",
+      "-];",
+      "-export const JUDGMENT_INVALID_CASE_IDS = [",
+      "-    ...GOVERNANCE_HOME_INVALID_CASES,",
+      "-    ...RUN_RECORD_INVALID_CASES,",
+      "-    ...JUDGMENT_FIELD_INVALID_CASES,",
+      "-    ...COMMON_INVALID_CASES,"
+     ]
+    }
+   ]
+  },
+  {
+   "project": "apps/syzygy",
+   "filesCompared": 2,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "apps/three-surface-poc",
+   "filesCompared": 360,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/cap1-system",
+   "filesCompared": 22,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/polaris-generation-core",
+   "filesCompared": 82,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/polaris-generation-consent",
+   "filesCompared": 26,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  },
+  {
+   "project": "packages/polaris-dossier",
+   "filesCompared": 140,
+   "onlyInBase": [],
+   "onlyInHead": [],
+   "differingAfterCommentStrip": []
+  }
+ ],
+ "filesCompared": 948,
+ "filesDiffering": 4,
+ "filesInOnlyOneTree": 0
+}
