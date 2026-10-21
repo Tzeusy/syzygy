@@ -185,12 +185,15 @@ function model(name: string): PocModel {
 // The per-surface denominators measured at this slice, one row per model.
 // A disclosure that disappears, or a new one that arrives unrouted, moves
 // a figure or fails the sweep.
+// SEC-5 (syzygy-jytt) added one withheld-title mark per rendered card and
+// the board's notice: plain and observed-shape 11 → 17 (five cards, one
+// notice), worker-change 4 → 6 (one card, one notice).
 const DENOMINATORS: Readonly<Record<string, Readonly<Record<Surface, number>>>> = {
-  plain: { polaris: 21, trajectory: 11, orrery: 9 },
-  'observed-shape': { polaris: 13, trajectory: 11, orrery: 9 },
+  plain: { polaris: 21, trajectory: 17, orrery: 9 },
+  'observed-shape': { polaris: 13, trajectory: 17, orrery: 9 },
   unreachable: { polaris: 24, trajectory: 1, orrery: 10 },
   'no-seeds': { polaris: 8, trajectory: 2, orrery: 1 },
-  'worker-change': { polaris: 19, trajectory: 4, orrery: 7 },
+  'worker-change': { polaris: 19, trajectory: 6, orrery: 7 },
 };
 
 describe('every surface Unknown carries a closed reason and a route (M4 slice 1, POC-REQ-060)', () => {
@@ -214,7 +217,7 @@ describe('every surface Unknown carries a closed reason and a route (M4 slice 1,
         for (const disclosure of disclosures(RENDER[surface](model(name)))) ids.add(disclosure.id.replace(/^(work-item|worker-change):[^/]+/, '$1:*'));
       }
     }
-    for (const id of ['worker-change:*/verification', 'work-item:*/verification', 'materialization', 'region:code-structure', 'region:work-items', 'relationship:intent-to-work', 'region:unmapped-code']) {
+    for (const id of ['worker-change:*/verification', 'work-item:*/verification', 'materialization', 'region:code-structure', 'region:work-items', 'region:work-item-titles', 'relationship:intent-to-work', 'region:unmapped-code']) {
       expect(ids, id).toContain(id);
     }
     expect([...ids].some((id) => id.endsWith('/lifecycle')), 'a proposal lifecycle disclosure').toBe(true);

@@ -162,6 +162,57 @@ describe('work-items observer', () => {
     expect(runQuery).not.toHaveBeenCalled();
   });
 
+  describe('SEC-5: work-item titles are withheld, never read (owner answer 2026-10-20, syzygy-jytt)', () => {
+    // Literals, typed here: RFC2-24's `excluded-content` route, and the
+    // columns the observation may read.
+    const WITHHELD = {
+      label: 'Unknown',
+      closedReason: 'excluded-content',
+      resolutionRoutes: [{ reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion', actor: 'owner', verb: 'decide', target: 'policy' }],
+    };
+    const ITEM_ROW = {
+      revision: 'rev-t', id: 'bu-t1', status: 'open', issue_type: 'task', priority: 2,
+      created_at: '2026-08-30T00:00:00Z', updated_at: '2026-08-30T01:00:00Z', closed_at: null,
+    };
+
+    function observe(rows: readonly Record<string, unknown>[], calls: string[] = []) {
+      return observeWorkItems({
+        repoRoot: '/repo',
+        beadPrefix: 'bu',
+        capturedAt: '2026-08-30T02:00:00Z',
+        runQuery: (_root, sql) => {
+          calls.push(sql);
+          return sql.includes('WHERE id LIKE') ? rowsResponse(rows) : rowsResponse([{ revision: 'rev-empty' }]);
+        },
+      });
+    }
+
+    it('selects exactly the eight non-free-text columns, and never the title', () => {
+      const calls: string[] = [];
+      observe([ITEM_ROW], calls);
+      const columns = /^SELECT (.*) FROM issues /.exec(calls[0] ?? '')?.[1]?.split(', ');
+      expect(columns).toEqual(["dolt_hashof('HEAD') AS revision", 'id', 'status', 'issue_type', 'priority', 'created_at', 'updated_at', 'closed_at']);
+      expect(calls[0]).not.toMatch(/\btitle\b/i);
+    });
+
+    it('admits a row with no title, and copies no title from a row that carries one', () => {
+      const untitled = observe([ITEM_ROW]);
+      expect(untitled.kind).toBe('observed');
+      const titled = observe([{ ...ITEM_ROW, title: 'Unclassified free text qz7k' }]);
+      if (titled.kind !== 'observed') throw new Error('unreachable');
+      expect(Object.keys(titled.items[0] ?? {}).sort()).toEqual(['closedAt', 'createdAt', 'governedBy', 'id', 'issueType', 'priority', 'status', 'updatedAt']);
+      expect(JSON.stringify(titled)).not.toContain('qz7k');
+    });
+
+    it('states the withheld title once on the observation, as excluded-content with its route', () => {
+      const observed = observe([ITEM_ROW]);
+      const empty = observe([]);
+      if (observed.kind !== 'observed' || empty.kind !== 'observed') throw new Error('unreachable');
+      expect(observed.titles).toEqual(WITHHELD);
+      expect(empty.titles).toEqual(WITHHELD);
+    });
+  });
+
   it('exercises the real subprocess path against a repository with no Beads database', () => {
     const result = observeWorkItems({
       repoRoot: '/tmp',
