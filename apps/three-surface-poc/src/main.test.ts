@@ -1,17 +1,20 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import type { DaemonOptions, DaemonStart } from '@syzygy/cap1-daemon';
+import type { DaemonOptions, DaemonStart, Route } from '@syzygy/cap1-daemon';
 import { PocObservationError, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import type { GitObservation } from './git-observation.js';
 import { pocObserverInputsAreClean } from './git-observation.js';
+import { materializeRoutes } from './materialize-action.js';
 import { main, type PocIo, type PocMainDeps } from './poc-main.js';
+import { buildFixtureModel } from './test-model-fixture.js';
+import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
 // syzygy-bpyt.5.5: `main(argv, io)` is the entry point; `main.ts`, which
 // `npm run poc` starts, only supplies the real process as `io`. This is the
@@ -19,24 +22,49 @@ import { main, type PocIo, type PocMainDeps } from './poc-main.js';
 // (no repository is read, no socket is opened) and pins what the operator
 // sees, the exit code, and the order in which the gate, the observation and
 // the daemon are reached. Expected strings are literals.
+//
+// syzygy-bpyt.5.8: it also pins where each repository-rooted argument comes
+// from: the locator the P1 gate bound, never the path the operator typed and
+// never the observer checkout.
+
+// The one collaborator `main` reaches by import rather than through its deps
+// is the Polaris blob reader; this records the root it is built for and the
+// objects it is asked for, and reads nothing.
+const blobReader = vi.hoisted(() => ({ roots: [] as string[], objectIds: [] as string[] }));
+vi.mock('./verbatim-route.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./verbatim-route.js')>()),
+  gitBlobReaderFor: (root: string) => {
+    blobReader.roots.push(root);
+    return (objectId: string) => { blobReader.objectIds.push(objectId); return undefined; };
+  },
+}));
 
 const NOW = '2026-10-22T09:00:00.000Z';
 const OBSERVER_ROOT = '/observer/syzygy';
+// Every wait in this file is bounded by WAIT_MS, and every test that waits
+// has a timeout above two of them, so a slow host fails on the unmet
+// expectation instead of on "Test timed out" (vitest's default is 5000 ms).
+const WAIT_MS = 10_000;
+const TEST_TIMEOUT_MS = 30_000;
 
 let repoRoot: string;
 let scratch: string;
+const fixtureDirectories: string[] = [];
 
 beforeAll(() => {
   scratch = realpathSync(mkdtempSync(join(tmpdir(), 'poc-main-test-')));
   repoRoot = scratch;
 });
-afterAll(() => { rmSync(scratch, { recursive: true, force: true }); });
+afterAll(() => {
+  rmSync(scratch, { recursive: true, force: true });
+  for (const directory of fixtureDirectories) rmSync(directory, { recursive: true, force: true });
+});
 
 function sink(onText: (text: string) => void): Writable {
   return new Writable({ write(chunk, _encoding, callback) { onText(String(chunk)); callback(); } });
 }
 
-function fakeIo() {
+function fakeIo(now: () => string = () => NOW) {
   let stdout = '';
   let stderr = '';
   const listeners = new Map<string, () => void>();
@@ -46,7 +74,7 @@ function fakeIo() {
     stderr: sink((text) => { stderr += text; }),
     stdin,
     cwd: () => OBSERVER_ROOT,
-    now: () => NOW,
+    now,
     onSignal: (signal, listener) => { listeners.set(signal, listener); },
   };
   return {
@@ -81,19 +109,25 @@ function lightModel(revision: string, readiness: unknown): PocModel {
 const NOT_EVALUATED = { kind: 'not-evaluated' };
 const EVALUATED = { kind: 'evaluated', readiness: { expected: { surfaceVersion: 'surface-version-literal', evaluationIdentity: 'evaluation-identity-literal' } } };
 
+type MaterializeOptions = Parameters<typeof materializeRoutes>[0];
+
 interface Harness {
   readonly deps: PocMainDeps;
   readonly calls: string[];
   readonly daemonOptions: () => DaemonOptions | undefined;
+  /** What `main` handed `materializeRoutes`; the routes themselves are the real ones. */
+  readonly materializeOptions: () => MaterializeOptions | undefined;
   readonly closes: () => number;
   /** Replaces what the observer checkout reports from the next read on. */
   readonly setObserver: (next: GitObservation) => void;
 }
 
-/** `daemonMakesStateDir` has the fake daemon create its state directory the way the real one does, so a test can tell whether the daemon was reached. */
-function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: GitObservation; readiness?: unknown; start?: DaemonStart; daemonMakesStateDir?: boolean } = {}): Harness {
+/** `daemonMakesStateDir` has the fake daemon create its state directory the way the real one does, so a test can tell whether the daemon was reached.
+ * `model` replaces the light stand-in with a real model for the pages that render one; it gets the 1-based build count. */
+function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: GitObservation; readiness?: unknown; start?: DaemonStart; daemonMakesStateDir?: boolean; model?: (build: number) => PocModel } = {}): Harness {
   const calls: string[] = [];
   let daemonOptions: DaemonOptions | undefined;
+  let materializeOptions: MaterializeOptions | undefined;
   let closes = 0;
   let builds = 0;
   let observer = options.observer ?? observation('observer-rev');
@@ -107,7 +141,10 @@ function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: Git
       calls.push(`horizon ${root} ${pinned}`);
       return { pinnedRevision: pinned, currentRevision: pinned, currentCommitterInstant: '2026-10-20T00:00:00+00:00', changedSources: 0, addedSources: 0 };
     },
-    observeRevisionChange: () => ({ changedSources: 1, addedSources: 0 }),
+    observeRevisionChange: (root, from, to) => {
+      calls.push(`change ${root} ${from} ${to}`);
+      return { changedSources: 1, addedSources: 0 };
+    },
     observeObservatoryDrift: (root, build) => {
       calls.push(`observatory ${root} ${build}`);
       return { buildRevision: build, currentRevision: build, commitsSinceBuild: 0 };
@@ -116,7 +153,11 @@ function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: Git
     buildProductionPocModel: (input) => {
       builds += 1;
       calls.push(`model ${builds} ${input.capture.repositoryRevision} ${input.repoRoot} ${input.observerRoot} ${input.capture.evidence.observationInstant}`);
-      return lightModel(`${input.capture.repositoryRevision}-build-${builds}`, options.readiness ?? NOT_EVALUATED);
+      return options.model?.(builds) ?? lightModel(`${input.capture.repositoryRevision}-build-${builds}`, options.readiness ?? NOT_EVALUATED);
+    },
+    materializeRoutes: (materializeRouteOptions) => {
+      materializeOptions = materializeRouteOptions;
+      return materializeRoutes(materializeRouteOptions);
     },
     createDaemon: async (daemonStartOptions) => {
       daemonOptions = daemonStartOptions;
@@ -135,12 +176,34 @@ function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: Git
     },
     ...overrides,
   };
-  return { deps, calls, daemonOptions: () => daemonOptions, closes: () => closes, setObserver: (next) => { observer = next; } };
+  return { deps, calls, daemonOptions: () => daemonOptions, materializeOptions: () => materializeOptions, closes: () => closes, setObserver: (next) => { observer = next; } };
 }
 
-async function started(run: Promise<number>, fake: ReturnType<typeof fakeIo>): Promise<void> {
-  const first = await Promise.race([run.then(() => 'finished' as const), (async () => { while (fake.registered() < 2) await new Promise((resolve) => setTimeout(resolve, 5)); return 'serving' as const; })()]);
-  expect(first).toBe('serving');
+/** Resolves once `main` has registered both signal listeners, which it does
+ * only after the daemon started. It throws, naming which, when `main`
+ * finishes first or does not get there within `boundMs`; the poll stops on
+ * either, so a failed run leaves no timer behind. */
+async function started(run: Promise<number>, fake: ReturnType<typeof fakeIo>, boundMs: number = WAIT_MS): Promise<void> {
+  let exitCode: number | undefined;
+  void run.then((code) => { exitCode = code; }, () => { exitCode = -1; });
+  const deadline = Date.now() + boundMs;
+  while (fake.registered() < 2 && exitCode === undefined && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 5));
+  if (fake.registered() >= 2) return;
+  if (exitCode !== undefined) throw new Error(`main finished with exit code ${exitCode} before it served`);
+  throw new Error(`main was not serving within ${boundMs} ms`);
+}
+
+/** The route `main` registered for a method and path, called as the daemon would. */
+function routeOf(h: Harness, method: Route['method'], path: string): Route {
+  const route = (h.daemonOptions()?.routes ?? []).find((candidate) => candidate.method === method && candidate.path === path);
+  if (route === undefined) throw new Error(`no route ${method} ${path}`);
+  return route;
+}
+
+const LOCAL_BROWSER = { host: '127.0.0.1:7478', origin: 'http://127.0.0.1:7478' };
+
+async function get(route: Route): Promise<{ readonly status: number; readonly body: string }> {
+  return route.handle({ request: { method: route.method, path: route.path, query: new URLSearchParams(), headers: LOCAL_BROWSER } });
 }
 
 describe('main(argv, io): early exits', () => {
@@ -300,7 +363,7 @@ describe('main(argv, io): serving', () => {
     expect(fake.out().endsWith('syzygy POC: SIGINT received, shutting down\n')).toBe(true);
     expect(fake.out().split('received, shutting down').length - 1).toBe(1);
     expect(fake.err()).toBe('');
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('prints no walkthrough binding while readiness is not evaluated', async () => {
     const fake = fakeIo();
@@ -312,7 +375,7 @@ describe('main(argv, io): serving', () => {
     fake.signal('SIGTERM');
     expect(await run).toBe(0);
     expect(fake.out().endsWith('syzygy POC: SIGTERM received, shutting down\n')).toBe(true);
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('defaults the state directory to a per-repository directory under the OS temp directory', async () => {
     const fake = fakeIo();
@@ -323,7 +386,7 @@ describe('main(argv, io): serving', () => {
     expect(h.daemonOptions()?.stateDir).toBe(join(tmpdir(), 'syzygy-three-surface-poc', digest));
     fake.signal('SIGINT');
     await run;
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation', async () => {
     const fake = fakeIo();
@@ -336,11 +399,11 @@ describe('main(argv, io): serving', () => {
     h.setObserver(observation('observer-rev', ['packages/cap1-daemon/src/server.ts']));
     fake.stdin.write('\n');
     const refusal = 'Re-observation unavailable: Unknown — POC runtime inputs are dirty; re-observation was refused. The prior complete evaluation remains served.\n';
-    await vi.waitFor(() => expect(fake.out().slice(before)).toContain(refusal), { timeout: 5000 });
+    await vi.waitFor(() => expect(fake.out().slice(before)).toContain(refusal), { timeout: WAIT_MS });
     expect(fake.out().slice(before)).toContain('Re-observing…\n');
     fake.signal('SIGINT');
     expect(await run).toBe(0);
-  });
+  }, TEST_TIMEOUT_MS);
 
   it('prints no console prompt and ignores Enter without --watch', async () => {
     const fake = fakeIo();
@@ -358,5 +421,136 @@ describe('main(argv, io): serving', () => {
     expect(h.calls).toHaveLength(7);
     fake.signal('SIGINT');
     await run;
+  }, TEST_TIMEOUT_MS);
+});
+
+// The gate returns the locator it bound, and PWB-REQ-001's binding holds only
+// while everything after it reads that locator. These cases bind a locator
+// that is not the configured --repo and not the observer checkout, so an
+// argument taken from either is a different string.
+describe('main(argv, io): the bound locator reaches every repository-rooted argument', () => {
+  const BOUND = '/bound/butlers-checkout';
+  const bindTo = (h: () => Harness) => (locator: string) => {
+    h().calls.push(`bind ${locator}`);
+    return { kind: 'bound' as const, locator: BOUND, gitCommonDirectory: join(BOUND, '.git') };
+  };
+  const digest16 = (path: string) => createHash('sha256').update(path).digest('hex').slice(0, 16);
+
+  it('observes, builds, names, materializes and re-evaluates against the bound locator', async () => {
+    let tick = 0;
+    const fake = fakeIo(() => `2026-10-22T09:0${tick++}:00.000Z`);
+    const h: Harness = harness({ resolveBinding: bindTo(() => h) });
+    const run = main(['--repo', repoRoot, '--port', '0'], fake.io, h.deps);
+    await started(run, fake);
+
+    const stateDir = join(tmpdir(), 'syzygy-three-surface-poc', digest16(BOUND));
+    expect(digest16(BOUND)).not.toBe(digest16(repoRoot));
+    expect(fake.out()).toContain(`Observed repository: ${BOUND}\n`);
+    expect(h.daemonOptions()?.stateDir).toBe(stateDir);
+    expect(h.calls).toEqual([
+      `bind ${repoRoot}`,
+      `observe ${BOUND}`,
+      `observe ${OBSERVER_ROOT}`,
+      `horizon ${BOUND} butlers-rev`,
+      `model 1 butlers-rev ${BOUND} ${OBSERVER_ROOT} 2026-10-22T09:00:00.000Z`,
+      `observatory ${OBSERVER_ROOT} observer-rev`,
+      'daemon',
+    ]);
+
+    // The materialize action writes to, and is told about, the bound repository.
+    const materialize = h.materializeOptions();
+    expect(materialize?.targetRepoRoot).toBe(BOUND);
+    expect(materialize?.stateDir()).toBe(stateDir);
+
+    // A materialize rebuilds the model at the bound repository's horizon, on
+    // the injected clock, and names the change against that repository.
+    const before = h.calls.length;
+    materialize?.onMaterialized();
+    expect(h.calls.slice(before)).toEqual([
+      `horizon ${BOUND} butlers-rev`,
+      `model 2 butlers-rev ${BOUND} ${OBSERVER_ROOT} 2026-10-22T09:01:00.000Z`,
+      `change ${BOUND} butlers-rev-build-1 butlers-rev-build-2`,
+      `observatory ${OBSERVER_ROOT} observer-rev`,
+    ]);
+
+    fake.signal('SIGINT');
+    expect(await run).toBe(0);
+  }, TEST_TIMEOUT_MS);
+
+  it('reads the exact requirement text from the bound repository', async () => {
+    const fake = fakeIo();
+    const model = buildFixtureModel(fixtureDirectories, {
+      projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) },
+    });
+    const h: Harness = harness({ resolveBinding: bindTo(() => h) }, { model: () => model });
+    blobReader.roots.length = 0;
+    blobReader.objectIds.length = 0;
+    const run = main(['--repo', repoRoot, '--state-dir', join(scratch, 'state'), '--port', '0'], fake.io, h.deps);
+    await started(run, fake);
+
+    const response = await get(routeOf(h, 'GET', '/api/poc/polaris'));
+    expect(response.status).toBe(200);
+    expect(blobReader.roots).toEqual([BOUND]);
+    expect(blobReader.objectIds.length).toBeGreaterThan(0);
+
+    fake.signal('SIGINT');
+    expect(await run).toBe(0);
+  }, TEST_TIMEOUT_MS);
+
+  it('resolves a relative --state-dir for the daemon and for the materialize action alike', async () => {
+    const fake = fakeIo();
+    const h = harness();
+    const run = main(['--repo', repoRoot, '--state-dir', join('relative', 'poc-state'), '--port', '0'], fake.io, h.deps);
+    await started(run, fake);
+
+    const stateDir = h.daemonOptions()?.stateDir ?? '';
+    expect(isAbsolute(stateDir)).toBe(true);
+    expect(stateDir).toBe(join(process.cwd(), 'relative', 'poc-state'));
+    expect(h.materializeOptions()?.stateDir()).toBe(stateDir);
+
+    fake.signal('SIGINT');
+    expect(await run).toBe(0);
+  }, TEST_TIMEOUT_MS);
+});
+
+describe('main(argv, io): the human pages carry what the daemon and the session know', () => {
+  it('names the credential provision and the latest named re-evaluation, before and after a materialize', async () => {
+    const fake = fakeIo();
+    const base = buildFixtureModel(fixtureDirectories);
+    // A rebuild must mint a new evaluation identity, as the real one does.
+    const rebuilt = { ...base, evaluation: { ...base.evaluation, snapshot: `${base.evaluation.snapshot}-rebuilt` } };
+    const h = harness({}, { model: (build) => (build === 1 ? base : rebuilt) });
+    const run = main(['--repo', repoRoot, '--state-dir', join(scratch, 'state'), '--port', '0'], fake.io, h.deps);
+    await started(run, fake);
+
+    const page = routeOf(h, 'GET', '/');
+    const first = (await get(page)).body;
+    expect(first).toContain('credential minted;');
+    expect(first).toContain('Observed-project limb: no prior evaluation this run; observatory limb: 0 Syzygy commits since build observer-rev;');
+
+    h.materializeOptions()?.onMaterialized();
+    const second = (await get(page)).body;
+    expect(second).toContain('credential minted;');
+    expect(second).toContain('Observed-project limb: 1 changed, 0 added since the superseded evaluation; observatory limb: 0 Syzygy commits since build observer-rev;');
+
+    fake.signal('SIGINT');
+    expect(await run).toBe(0);
+  }, TEST_TIMEOUT_MS);
+});
+
+describe('started(): the wait for main to serve', () => {
+  it('reports a run that finished first, at once and by name', async () => {
+    const fake = fakeIo();
+    const run = main(['--help'], fake.io, harness().deps);
+    const began = Date.now();
+    await expect(started(run, fake)).rejects.toThrow('main finished with exit code 0 before it served');
+    expect(Date.now() - began).toBeLessThan(WAIT_MS / 2);
+  });
+
+  it('gives up after its bound on a run that neither serves nor finishes', async () => {
+    const fake = fakeIo();
+    const h = harness({ createDaemon: () => new Promise(() => undefined) });
+    const run = main(['--repo', repoRoot, '--state-dir', join(scratch, 'state'), '--port', '0'], fake.io, h.deps);
+    await expect(started(run, fake, 50)).rejects.toThrow('main was not serving within 50 ms');
   });
 });
