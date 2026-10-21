@@ -118,6 +118,43 @@ def family_snapshot(root: Path) -> dict:
     return {"files": files, "aggregate": path.read_bytes()}
 
 
+def operative_markers(body: str, markers: tuple[str, ...]) -> dict[str, list[int]]:
+    """Conservative standalone marker eligibility, retaining raw offsets.
+
+    Exact whole-line markers exclude indentation, prefix and suffix text.
+    Up-to-three-space backtick/tilde fences, nested comments, and raw HTML
+    pre/script/style/textarea code contexts are conservatively excluded.
+    This is not a general Markdown grammar. Raw family tokens never disappear.
+    """
+    positions = {marker: [] for marker in markers}
+    fence = code_tag = None
+    comments, offset = 0, 0
+    for raw in body.splitlines(keepends=True):
+        line = raw.rstrip("\r\n")
+        match = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", line)
+        if code_tag is not None:
+            if re.search(r"</" + code_tag + r"\s*>", line, re.I):
+                code_tag = None
+        elif fence is not None:
+            if (match and match[1][0] == fence[0] and len(match[1]) >= fence[1]
+                    and not match[2].strip()):
+                fence = None
+        elif comments == 0 and match:
+            fence = (match[1][0], len(match[1]))
+        else:
+            opening = re.search(r"<(pre|script|style|textarea)(?=[\s/>]|$)", line, re.I) if comments == 0 else None
+            if opening:
+                tag = opening[1].lower()
+                if not re.search(r"</" + tag + r"\s*>", line[opening.end():], re.I):
+                    code_tag = tag
+            if comments == 0 and code_tag is None and not opening and line in positions:
+                positions[line].append(offset)
+            for token in re.finditer(r"<!--|-->", line):
+                comments = comments + 1 if token.group() == "<!--" else max(0, comments - 1)
+        offset += len(raw)
+    return positions
+
+
 def family_state(root: Path) -> tuple[str, list[str]]:
     """ABSENT, PRESENT_INVALID/Unknown, or canonical population; no authority."""
     try:
@@ -131,12 +168,15 @@ def family_state(root: Path) -> tuple[str, list[str]]:
         if set(files) != {RECORD.name} or any(row["kind"] != "regular" for row in files.values()):
             findings.append("P115 family supports only one regular canonical v1.0 dedicated filename")
         comments = list(re.finditer(r"<!--.*?-->", body, re.S))
+        operative = operative_markers(body, (MARKER, END_MARKER))
         delimiters = []
         for occurrence in occurrences:
             enclosing = [comment for comment in comments
                          if comment.start() <= occurrence.start() < occurrence.end() <= comment.end()]
             if len(enclosing) != 1 or enclosing[0].group() not in (MARKER, END_MARKER):
                 findings.append("P115 family contains an unsupported, alias, naked or malformed delimiter")
+            elif enclosing[0].start() not in operative[enclosing[0].group()]:
+                findings.append("P115 family marker is not an operative standalone line outside code and nested comments")
             else:
                 delimiters.append(enclosing[0].group())
         if delimiters != [MARKER, END_MARKER] or len(occurrences) != 2:
@@ -182,6 +222,9 @@ def chain_findings(root: Path, prospective_date: str | None = None, *,
         if aggregate.count(start) != 1 or aggregate.count(end) != 1:
             fail("each begin/end delimiter must occur exactly once")
         begin, finish = aggregate.index(start), aggregate.index(end) + len(end)
+        operative = operative_markers(aggregate, (start, end))
+        if operative[start] != [begin] or operative[end] != [finish - len(end)]:
+            fail("each begin/end delimiter must be an operative standalone line outside code and nested comments")
         if finish <= begin or aggregate[begin:finish] != block.rstrip("\n"):
             fail("delimiters must enclose the complete regenerated block")
         return begin, finish
@@ -258,46 +301,64 @@ def recording_findings(root: Path) -> list[str]:
     return findings
 
 
-def signed_findings(root: Path) -> list[str]:
+def binding_findings(root: Path) -> list[str]:
     """Canonical record checks plus frozen review binding and exact current rows.
 
-    This is a leaf with respect to later-row readers: P115's Package.applied
-    uses only applied_rows_match, never _later_rows or this function.
+    This nonrecursive leaf calls neither recorder.check nor signed_findings.
+    P115's Package.applied uses only applied_rows_match, never later readers.
     """
-    state, findings = family_state(root)
-    if state != "CANONICAL_POPULATION":
-        return findings or ["P115 dedicated sign-off record is absent"]
-    findings = core_findings(root)
-    count = consumption_unknowns(root)
-    if count:
-        findings.append(f"signed recognition remains gated by {count} undecidable requirement-consumption entries")
-    if not (root / RECORD).is_file():
-        return findings + ["P115 dedicated sign-off record is absent"]
-    if not applied_rows_match(root):
-        findings.append("P115 signed six current subjects do not match the frozen manifest")
-    if findings:
-        return findings
-    findings.extend(chain_findings(root))
+    try:
+        state, findings = family_state(root)
+        if state != "CANONICAL_POPULATION":
+            return findings or ["P115 dedicated sign-off record is absent"]
+        findings = core_findings(root)
+        count = consumption_unknowns(root)
+        if count:
+            findings.append(f"signed recognition remains gated by {count} undecidable requirement-consumption entries")
+        if not (root / RECORD).is_file():
+            return findings + ["P115 dedicated sign-off record is absent"]
+        if not applied_rows_match(root):
+            findings.append("P115 signed six current subjects do not match the frozen manifest")
+        if findings:
+            return findings
+        findings.extend(chain_findings(root))
+        if findings:
+            return findings
+        import record_versioned_signoff as recorder
+        pkg = recorder.real_packages()[KEY]
+        fields = recorder.parse_record((root / RECORD).read_text())
+        disposition = None if fields["Disposition"] == "none" else fields["Disposition"]
+        for value in (fields["Review"], disposition):
+            if value is not None and (Path(value).is_absolute() or ".." in Path(value).parts):
+                return ["P115 evidence path must stay inside the repository"]
+        reviewed, _verdict = recorder.validate_review(root, fields["Review"], disposition)
+        recorder.review_binds(root, pkg, fields["Review"])
+        # Reconciliation snapshots carry no .git. Their object source is this
+        # tool's repository, but every compared file remains the snapshot's own.
+        objects = root if (root / ".git").exists() else ROOT
+        for path in core_paths(root):
+            try:
+                reviewed_body = git(objects, "show", f"{reviewed}:{path}")
+            except subprocess.CalledProcessError:
+                findings.append(f"reviewed commit does not carry the frozen P115 core: {path}")
+                continue
+            if reviewed_body != (root / path).read_bytes():
+                findings.append(f"reviewed commit does not carry the frozen P115 core: {path}")
+        if findings:
+            return findings
+        recorder.extension_present(root, pkg)
+        return []
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        return [str(exc)]
+
+
+def signed_findings(root: Path) -> list[str]:
+    """Shared strict bindings plus the existing exact record regeneration."""
+    findings = binding_findings(root)
     if findings:
         return findings
     import record_versioned_signoff as recorder
     pkg = recorder.real_packages()[KEY]
-    fields = recorder.parse_record((root / RECORD).read_text())
-    disposition = None if fields["Disposition"] == "none" else fields["Disposition"]
-    for value in (fields["Review"], disposition):
-        if value is not None and (Path(value).is_absolute() or ".." in Path(value).parts):
-            return ["P115 evidence path must stay inside the repository"]
-    reviewed, _verdict = recorder.validate_review(root, fields["Review"], disposition)
-    recorder.review_binds(root, pkg, fields["Review"])
-    # Reconciliation snapshots carry no .git. Their object source is this
-    # tool's repository, but every compared file remains the snapshot's own.
-    objects = root if (root / ".git").exists() else ROOT
-    for path in core_paths(root):
-        if git(objects, "show", f"{reviewed}:{path}") != (root / path).read_bytes():
-            findings.append(f"reviewed commit does not carry the frozen P115 core: {path}")
-    if findings:
-        return findings
-    recorder.extension_present(root, pkg)
     output = io.StringIO()
     with contextlib.redirect_stdout(output):
         code = recorder.check(root, pkg, VERSION)
@@ -436,6 +497,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
     fingerprint = "P115 synthetic injected errno-5"
     cases = (
         "control", "dirty-staged", "dirty-unstaged", "dirty-untracked",
+        "dirty-assume-unchanged", "dirty-skip-worktree", "dirty-stat-cache", "dirty-mode-hidden",
+        "guard-assume-unchanged", "guard-stat-cache", "ignored-output-control",
         "construction-drift", "preflight-bad-patch", "apply-after-write-failure", "postcondition-drift",
         "dedicated-before-write", "dedicated-stage-prefix-failure", "dedicated-after-write",
         "aggregate-before-write", "aggregate-stage-prefix-failure", "aggregate-after-write",
@@ -469,7 +532,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(template), str(tree)],
                                check=True, capture_output=True)
             cleanup_case = name in {"T09", "T10", "T11", "T22"}
-            positive = name in {"control", "linked-worktree-control"} or cleanup_case
+            positive = name in {"control", "linked-worktree-control", "ignored-output-control"} or cleanup_case
             before = {p: recorder.p115_read(tree / p) for p in paths}
             expected = dict(before)
             events, foreign, foreign_identities = [], {}, {}
@@ -477,6 +540,30 @@ def recording_failure_selftest(root: Path, expect) -> None:
             initial_tags = git(tree, "tag", "--list")
             receipt_link_attempts = []
             dirty = tree / "README.md"
+            if name in {"dirty-stat-cache", "guard-stat-cache"}:
+                git(tree, "config", "core.trustctime", "false")
+                recorder.os.utime(dirty, ns=(1000000000000000000, 1000000000000000000))
+                git(tree, "update-index", "--refresh")  # Own fixture setup only; never the recorder.
+            cached_stat = dirty.stat()
+            if name in {"dirty-assume-unchanged", "dirty-skip-worktree"}:
+                dirty.write_bytes(dirty.read_bytes() + b"\nSynthetic hidden tracked dirt.\n")
+                git(tree, "update-index", "--assume-unchanged" if name == "dirty-assume-unchanged"
+                    else "--skip-worktree", "--", "README.md")
+                events.append("real hidden tracked flag admission fixture")
+            if name == "dirty-stat-cache":
+                body = dirty.read_bytes()
+                dirty.write_bytes(bytes([body[0] ^ 1]) + body[1:])
+                recorder.os.utime(dirty, ns=(cached_stat.st_atime_ns, cached_stat.st_mtime_ns))
+                events.append("real same-size restored-mtime tracked admission fixture")
+            if name == "dirty-mode-hidden":
+                git(tree, "config", "core.filemode", "false")
+                dirty.chmod(cached_stat.st_mode | 0o111)
+                events.append("real filemode-hidden executable admission fixture")
+            if name == "ignored-output-control":
+                ignored = tree / "node_modules/p115-ignored-output.txt"
+                ignored.parent.mkdir()
+                ignored.write_text("Synthetic ignored build output.\n")
+                assert git(tree, "check-ignore", "node_modules/p115-ignored-output.txt")
             if name in {"dirty-staged", "dirty-unstaged"}:
                 dirty.write_bytes(dirty.read_bytes() + b"\nSynthetic unrelated dirt.\n")
                 if name == "dirty-staged":
@@ -485,6 +572,11 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 dirty = tree / "p115-unrelated-untracked.txt"
                 dirty.write_text("Synthetic unrelated untracked file.\n")
             dirty_body = dirty.read_bytes() if name.startswith("dirty-") else None
+            tracked_before = {"flags": git(tree, "ls-files", "-v", "-z", "--", "README.md").decode(),
+                "status": git(tree, "--no-optional-locks", "status", "--porcelain=v1", "-z").decode(),
+                "headBlob": git(tree, "rev-parse", "HEAD:README.md").decode().strip(),
+                "workingBlob": git(tree, "hash-object", "--no-filters", "--", "README.md").decode().strip(),
+                "workingGitMode": "100755" if dirty.stat().st_mode & 0o111 else "100644"}
             initial_index = git(tree, "ls-files", "--stage", "-z")
             original_run, original_write = recorder.subprocess.run, recorder.p115_write
             original_stage, original_replace = recorder.p115_stage, recorder.os.replace
@@ -556,6 +648,16 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         path = Path(kwargs["cwd"]) / SUBJECTS[-1]
                         path.write_bytes(path.read_bytes() + b"\nForeign private output drift.\n")
                         events.append("real private batch then physical output mutation")
+                    if name == "guard-assume-unchanged":
+                        git(tree, "update-index", "--assume-unchanged", "--", "README.md")
+                        events.append("real private batch then unrelated unsupported index flag")
+                    if name == "guard-stat-cache":
+                        target = Path("README.md")
+                        value = (tree / target).read_bytes()
+                        foreign[target] = bytes([value[0] ^ 1]) + value[1:]
+                        (tree / target).write_bytes(foreign[target])
+                        recorder.os.utime(tree / target, ns=(cached_stat.st_atime_ns, cached_stat.st_mtime_ns))
+                        events.append("real private batch then stat-cache-hidden unrelated bytes")
                 return result
 
             def render(*args, **kwargs):
@@ -805,6 +907,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 recorder.p115_read(tree / rel) == body for rel, body in foreign.items())
             reached = ("real five-patch apply" in events) == (name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch",
+                "dirty-assume-unchanged", "dirty-skip-worktree", "dirty-stat-cache", "dirty-mode-hidden",
                 "T20", "T21"})
             originals = [json.loads(line.removeprefix("P115 original exception: "))
                          for line in lines.splitlines() if line.startswith("P115 original exception: ")]
@@ -928,6 +1031,12 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         "real cleanup receipt readback", "diagnostic receipt native read denied"],
             }.get(name, [])
             required += {
+                "dirty-assume-unchanged": ["real hidden tracked flag admission fixture"],
+                "dirty-skip-worktree": ["real hidden tracked flag admission fixture"],
+                "dirty-stat-cache": ["real same-size restored-mtime tracked admission fixture"],
+                "dirty-mode-hidden": ["real filemode-hidden executable admission fixture"],
+                "guard-assume-unchanged": ["real private batch then unrelated unsupported index flag"],
+                "guard-stat-cache": ["real private batch then stat-cache-hidden unrelated bytes"],
                 "OWN-1": ["real dedicated publication then foreign same-byte subject inode"],
                 "OWN-2": ["after real aggregate write before recovery fault",
                           "real restoration stage then foreign same-byte subject inode"],
@@ -943,6 +1052,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
             reached = reached and all(event in events for event in required)
             injected = not positive and not name.startswith("T") and name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked",
+                "dirty-assume-unchanged", "dirty-skip-worktree", "dirty-stat-cache", "dirty-mode-hidden",
+                "guard-assume-unchanged", "guard-stat-cache",
                 "construction-drift", "preflight-bad-patch", "postcondition-drift",
                 "OWN-1", "OWN-2", "OWN-3", "OWN-4", "BATCH-2", "BATCH-3", "BATCH-4", "DIRECT-1", "POP-6"}
             cause_ok = not injected or fingerprint in lines
@@ -1016,6 +1127,36 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 cause_ok = "P115 transaction input changed:" in lines
             if name == "POP-6":
                 cause_ok = "P115 transaction reserved family changed" in lines
+            tracked_ok = True
+            tracked_after = {"flags": git(tree, "ls-files", "-v", "-z", "--", "README.md").decode(),
+                "workingBlob": git(tree, "hash-object", "--no-filters", "--", "README.md").decode().strip(),
+                "workingGitMode": "100755" if (tree / "README.md").stat().st_mode & 0o111 else "100644"}
+            if name in {"dirty-assume-unchanged", "dirty-skip-worktree", "dirty-stat-cache", "dirty-mode-hidden"}:
+                expected_flag = {"dirty-assume-unchanged": "h", "dirty-skip-worktree": "S"}.get(name, "H")
+                tracked_ok = (tracked_before["status"] == "" and tracked_before["flags"] == expected_flag + " README.md\0"
+                    and tracked_after["flags"] == tracked_before["flags"]
+                    and tracked_after["workingBlob"] == tracked_before["workingBlob"]
+                    and tracked_after["workingGitMode"] == tracked_before["workingGitMode"])
+                if name == "dirty-mode-hidden":
+                    tracked_ok = tracked_ok and tracked_before["workingGitMode"] == "100755"
+                    cause_ok = "P115 tracked working mode differs from the admitted object: README.md" in lines
+                else:
+                    tracked_ok = tracked_ok and tracked_before["headBlob"] != tracked_before["workingBlob"]
+                    cause_ok = ("P115 tracked checkout has unsupported index flags" in lines if expected_flag != "H"
+                                else "P115 tracked working bytes differ from the admitted object: README.md" in lines)
+            if name in {"guard-assume-unchanged", "guard-stat-cache"}:
+                tracked_ok = (tracked_before["flags"] == "H README.md\0" and tracked_before["status"] == ""
+                    and tracked_before["headBlob"] == tracked_before["workingBlob"]
+                    and all(not j["publications"] for j in journals))
+                if name == "guard-assume-unchanged":
+                    tracked_ok = tracked_ok and tracked_after["flags"] == "h README.md\0"
+                    cause_ok = "P115 tracked checkout has unsupported index flags" in lines
+                else:
+                    tracked_ok = (tracked_ok and tracked_after["flags"] == "H README.md\0"
+                        and tracked_before["headBlob"] != tracked_after["workingBlob"])
+                    cause_ok = "P115 tracked working bytes differ from the admitted object: README.md" in lines
+            if name == "ignored-output-control":
+                tracked_ok = ignored.read_text() == "Synthetic ignored build output.\n"
             ownership_ok = all(recorder.p115_identity(tree / rel) == identity
                                for rel, identity in foreign_identities.items())
             if name in {"T03", "T04", "T05", "T12", "T13", "T14"}:
@@ -1052,7 +1193,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
             stages_clean = not any(any(parent.glob(".p115-*")) for parent in
                                    {(tree / rel).parent for rel in paths})
             expect("entrypoint " + name, state_ok and gate_ok and index_ok and dirt_ok and reached
-                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok and private_ok)
+                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok and private_ok and tracked_ok)
             mutation_receipt(tree, "entrypoint " + name, before, actual,
                              "exact scoped preimages/foreign states; no failed transaction signed")
             print("P115-TRANSACTION-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
@@ -1065,7 +1206,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "actualStates": {str(p): None if b is None else digest(b) for p,b in actual.items()},
                 "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
                                "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok, "privateBatch": bool(private_ok),
-                               "ownership": ownership_ok, "retentionVerified": retention_ok},
+                               "ownership": ownership_ok, "retentionVerified": retention_ok, "trackedCheckout": tracked_ok},
+                "trackedBefore": tracked_before, "trackedAfter": tracked_after,
                 "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
                 "receiptIdentityAndCaptureTime": receipt_identity_ok,
                 "requiredEvents": required, "stageFilesRemoved": stages_clean,
@@ -1116,6 +1258,13 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
         ("POP companion reserved stem extension", "file", extra),
         ("POP companion missing aggregate", "missing", None),
         ("POP companion unreadable aggregate", "unreadable", None),
+        ("POP context backtick fence", "backtick", None),
+        ("POP context tilde fence", "tilde", None),
+        ("POP context indented code", "indented", None),
+        ("POP context nested comment", "nested", None),
+        ("POP context prefixed begin marker", "prefixed", None),
+        ("POP context suffixed end marker", "suffixed", None),
+        ("POP context raw pre block", "pre", None),
     )
     def setup(installed):
         for path in (unsupported, alias, extra):
@@ -1176,6 +1325,13 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                     "naked": (tree / AGGREGATE).read_text() + f"versioned-signoff:{KEY}:v1.0",
                     "unclosed": (tree / AGGREGATE).read_text() + f"<!-- versioned-signoff:{KEY}:v1.0",
                     "whitespace": (tree / AGGREGATE).read_text() + f"<!-- versioned-signoff : {KEY}:v1.0 -->",
+                    "backtick": aggregate + "```text\n" + block + "```\n",
+                    "tilde": aggregate + "~~~text\n" + block + "~~~\n",
+                    "indented": aggregate + "".join("    " + line for line in block.splitlines(keepends=True)),
+                    "nested": aggregate + "<!-- outer synthetic example\n" + block + "-->\n",
+                    "prefixed": aggregate + block.replace(MARKER, "Example: " + MARKER),
+                    "suffixed": aggregate + block.replace(END_MARKER, END_MARKER + " example"),
+                    "pre": aggregate + "<pre>\n" + block + "</pre>\n",
                 }
                 (tree / AGGREGATE).write_text(prefixes[mutation])
             # Whole-clean admission is real, so malformed family must be its
@@ -1208,6 +1364,8 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                         previewLabel=preview_result["state"] == "Unknown; P115 state unverified",
                         signed=bool(signed_findings(tree)) and not is_signed(tree),
                         chain=bool(chain_findings(tree)), historical=bool(historical_run(tree, "--check")[0]))
+                    if mutation in {"backtick", "tilde", "indented", "nested", "prefixed", "suffixed", "pre"}:
+                        frontiers["operativeContext"] = any("not an operative standalone line" in f for f in findings)
                     try:
                         inputs = validation_inputs(tree)
                         frontiers["snapshotClosure"] = path is None or path.as_posix() in inputs
@@ -1287,6 +1445,66 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
     mutation_receipt(tree, "POP companion extended different package token stays outside family",
                      {AGGREGATE: saved}, {AGGREGATE: saved + unrelated.encode()}, "exact package token boundary")
     setup(True)
+
+
+def binding_failure_selftest(root: Path, tree: Path, expect) -> None:
+    """Four shared-binding companions through actual CLIs and own snapshots."""
+    import record_versioned_signoff as recorder
+    import check_spec_reconciliation as reconciliation
+    fields = recorder.parse_record((tree / RECORD).read_text())
+    raw = Path(fields["Review"])
+    original_raw, original_record = (tree / raw).read_bytes(), (tree / RECORD).read_bytes()
+
+    def assess(target):
+        findings = binding_findings(target)
+        signed = signed_findings(target)
+        return {"bindingFindings": findings, "signedFindings": signed, "isSigned": is_signed(target)}
+
+    def public_checks():
+        commands = []
+        for argv in ([sys.executable, "-B", str(tree / "scripts/record_versioned_signoff.py"),
+                      "--check", KEY, "--version", VERSION],
+                     [sys.executable, "-B", str(tree / "scripts" / Path(__file__).name), "--check"]):
+            done = subprocess.run(argv, cwd=tree, capture_output=True, text=True)
+            commands.append({"argv": argv, "exit": done.returncode, "stdout": done.stdout, "stderr": done.stderr})
+        return commands
+
+    control, control_cli = assess(tree), public_checks()
+    positive = (control == {"bindingFindings": [], "signedFindings": [], "isSigned": True}
+                and all(row["exit"] == 0 for row in control_cli))
+    vectors = (
+        ("binding public wrong raw manifest", {raw: original_raw.replace(MANIFEST_SHA256.encode(), b"0" * 64)}),
+        ("binding public wrong package name", {raw: original_raw.replace(KEY.encode(), b"unrelated-package")}),
+        ("binding public unsuitable reviewed core", {
+            raw: original_raw.replace(CORE_COMMIT.encode(), BASE.encode()),
+            RECORD: original_record.replace(CORE_COMMIT.encode(), BASE.encode())}),
+        ("binding public frozen core drift", {BUILDER: (tree / BUILDER).read_bytes() + b"\n# Synthetic frozen core drift.\n"}),
+    )
+    for name, changes in vectors:
+        saved = {path: (tree / path).read_bytes() for path in changes}
+        try:
+            for path, body in changes.items():
+                (tree / path).write_bytes(body)
+            result, commands = assess(tree), public_checks()
+            with tempfile.TemporaryDirectory(prefix="p115-binding-snapshot-") as temp:
+                snapshot = Path(temp) / "snapshot"
+                reconciliation.scratch(tree, snapshot)
+                snapshot_result = assess(snapshot)
+                snapshot_without_git = not (snapshot / ".git").exists()
+            passed = (positive and result["bindingFindings"] and result["signedFindings"] and not result["isSigned"]
+                and all(row["exit"] == 1 for row in commands) and snapshot_without_git
+                and snapshot_result["bindingFindings"] and snapshot_result["signedFindings"] and not snapshot_result["isSigned"])
+            expect(name, bool(passed))
+            mutation_receipt(tree, name, saved, changes, "shared strict P115 core/review/manifest binding across both public checks and snapshot readers")
+            print("P115-BINDING-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
+                "ranAt": git(tree, "rev-parse", "HEAD").decode().strip(),
+                "sourceHead": git(root, "rev-parse", "HEAD").decode().strip(),
+                "control": control, "controlCLI": control_cli, "result": result,
+                "CLI": commands, "snapshotWithoutGit": snapshot_without_git, "snapshotResult": snapshot_result,
+                "passed": bool(passed)}, sort_keys=True))
+        finally:
+            for path, body in saved.items():
+                (tree / path).write_bytes(body)
 
 
 def recording_render_selftest(root: Path, expect) -> None:
@@ -1625,16 +1843,26 @@ def selftest(root: Path) -> int:
         pred_record = recorder.record_rel(predecessor, VERSION)
         chain_mutations.append(("predecessor duplicate date", {pred_record:
             (tree / pred_record).read_bytes() + b"\nDate: 2026-10-15\n"}))
+        predecessor_fields = recorder.parse_record((tree / pred_record).read_text())
+        predecessor_block = recorder.render_aggregate(predecessor, VERSION,
+            predecessor_fields["Date"], predecessor_fields["Review"], predecessor_fields["Review verdict"],
+            None if predecessor_fields["Disposition"] == "none" else predecessor_fields["Disposition"])
+        chain_mutations.append(("predecessor block in fenced example", {AGGREGATE:
+            signed_aggregate.replace(predecessor_block.encode(),
+                ("```text\n" + predecessor_block + "```\n").encode())}))
         for name, changes in chain_mutations:
             saved = {path: (tree / path).read_bytes() for path in changes}
             for path, body in changes.items():
                 (tree / path).unlink() if body is None else (tree / path).write_bytes(body)
             findings = signed_findings(tree)
-            expect(name, transaction_present(tree) and not is_signed(tree) and bool(findings))
+            expect(name, transaction_present(tree) and not is_signed(tree) and bool(findings)
+                   and (name != "predecessor block in fenced example"
+                        or any("operative standalone line" in finding for finding in findings)))
             mutation_receipt(tree, name, saved, changes, "leaf complete-chain dates/order/unique balanced delimiters")
             for path, body in saved.items():
                 (tree / path).write_bytes(body)
         expect("mutations restore the signed fixture", is_signed(tree))
+        binding_failure_selftest(root, tree, expect)
         family_failure_selftest(root, tree, expect, before, earlier)
         findings, output = historical_run(tree, "--selftest")
         expect("signed replay runs frozen selftest, not current subjects", not findings and "Preparation selftest:" in output)

@@ -338,6 +338,72 @@ def p115_package_apply(root: pathlib.Path) -> int:
     return p115_attempt(root, operation="apply")
 
 
+def p115_tracked(root: pathlib.Path, head: bytes, index: bytes,
+                  exempt: frozenset[pathlib.Path] = frozenset()) -> None:
+    """Read actual Git blob bytes/modes, independent of the index stat cache.
+
+    Only the separately checked intended target bodies may be exempted during
+    publication. Their tracked modes and every index flag are still checked.
+    No index refresh, normalization or optional-lock write is performed.
+    """
+    entries = {}
+    for row in index.split(b"\0"):
+        if not row:
+            continue
+        metadata, path = row.split(b"\t", 1)
+        mode, oid, stage = metadata.split()
+        if stage != b"0" or mode not in {b"100644", b"100755", b"120000"} or path in entries:
+            raise ValueError("P115 tracked checkout has an unsupported index stage, kind or duplicate path")
+        entries[path] = mode, oid
+    tree = {}
+    data = subprocess.run(["git", "ls-tree", "-r", "-z", head.decode().strip()], cwd=root,
+                          capture_output=True, check=True).stdout
+    for row in data.split(b"\0"):
+        if row:
+            metadata, path = row.split(b"\t", 1)
+            mode, kind, oid = metadata.split()
+            if kind != b"blob" or path in tree:
+                raise ValueError("P115 tracked checkout has an unsupported HEAD kind or duplicate path")
+            tree[path] = mode, oid
+    if entries != tree:
+        raise ValueError("P115 tracked index bytes/modes do not match the admitted HEAD")
+    for option in ("-v", "-f"):
+        flags = subprocess.run(["git", "--no-optional-locks", "ls-files", option, "-z"],
+                               cwd=root, capture_output=True, check=True).stdout.split(b"\0")
+        flags = [row for row in flags if row]
+        if (len(flags) != len(entries) or any(row[:2] != b"H " for row in flags)
+                or {row[2:] for row in flags} != set(entries)):
+            raise ValueError("P115 tracked checkout has unsupported index flags")
+    algorithm = subprocess.run(["git", "rev-parse", "--show-object-format"], cwd=root,
+                               capture_output=True, text=True, check=True).stdout.strip()
+    if algorithm not in {"sha1", "sha256"}:
+        raise ValueError("P115 tracked checkout has an unsupported Git object format")
+    for raw_path, (mode, oid) in entries.items():
+        rel = pathlib.Path(os.fsdecode(raw_path))
+        if rel.is_absolute() or ".." in rel.parts:
+            raise ValueError("P115 tracked path escapes the checkout")
+        path = root / rel
+        info = path.lstat()
+        if stat.S_ISLNK(info.st_mode):
+            actual_mode, body = b"120000", os.fsencode(os.readlink(path))
+        elif stat.S_ISREG(info.st_mode):
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(fd, "rb") as stream:
+                info = os.fstat(stream.fileno())
+                if not stat.S_ISREG(info.st_mode):
+                    raise ValueError(f"P115 tracked path is not a regular file: {rel}")
+                actual_mode = b"100755" if info.st_mode & 0o111 else b"100644"
+                body = stream.read() if rel not in exempt else None
+        else:
+            raise ValueError(f"P115 tracked path has an unsupported working kind: {rel}")
+        if actual_mode != mode:
+            raise ValueError(f"P115 tracked working mode differs from the admitted object: {rel}")
+        if rel not in exempt:
+            actual = hashlib.new(algorithm, b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest().encode()
+            if actual != oid:
+                raise ValueError(f"P115 tracked working bytes differ from the admitted object: {rel}")
+
+
 def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
     """Whole checkout boundary; ignored build outputs are outside this gate."""
     state = subprocess.run(["git", "--no-optional-locks", "status", "--porcelain=v1", "-z",
@@ -345,10 +411,12 @@ def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
                            cwd=root, capture_output=True, check=True).stdout
     if state:
         raise ValueError("refusing P115 recording: index, worktree and untracked-not-ignored files must be clean")
-    return (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
-                           capture_output=True, check=True).stdout,
-            subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
-                           capture_output=True, check=True).stdout)
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                          capture_output=True, check=True).stdout
+    index = subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
+                           capture_output=True, check=True).stdout
+    p115_tracked(root, head, index)
+    return head, index
 
 
 def p115_apply_batch(root: pathlib.Path, journal: pathlib.Path, before: dict,
@@ -736,7 +804,8 @@ def p115_attempt(root: pathlib.Path, *, operation: str, pkg: Package | None = No
                     or subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
                                       capture_output=True, check=True).stdout != index):
                 raise ValueError("P115 transaction HEAD or index changed")
-            changed = subprocess.run(["git", "diff", "--name-only", "-z"], cwd=root,
+            p115_tracked(root, head, index, frozenset(paths))
+            changed = subprocess.run(["git", "--no-optional-locks", "diff", "--name-only", "-z"], cwd=root,
                                      capture_output=True, check=True).stdout.split(b"\0")
             changed += subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "-z"],
                                       cwd=root, capture_output=True, check=True).stdout.split(b"\0")
@@ -1974,7 +2043,10 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         if version != reference.VERSION:
             findings.append("P115 checker supports only exact canonical v1.0")
         if not findings and state != "ABSENT":
-            findings = reference.chain_findings(root)
+            try:
+                findings = reference.binding_findings(root)
+            except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as exc:
+                findings = [str(exc)]
         if findings:
             print("FAILED: " + " | ".join(findings))
             return 1
