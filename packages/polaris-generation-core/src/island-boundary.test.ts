@@ -38,12 +38,14 @@ const ISLAND = [
 ];
 // Reached, and its imports not followed. consent-ports.ts is parked egress
 // code (owner packet Q8): it takes pipeline types and `digestCanonicalJson`
-// from this package's root, which re-exports the island. The consent barrel
-// re-exports it and package-reader.ts imports two of its helpers, and the
-// screen and the gate sources reach both. Neither file is this bead's to
-// change (package-reader.ts is syzygy-bpyt.8.4's), so the edge stands as a
-// named residual until syzygy-bpyt.8.19 removes it; the last test fails once
-// it no longer reaches the island.
+// from this package's root, which re-exports the island. Two importers reach
+// it: the consent barrel (`polaris-generation-consent/src/index.ts`)
+// re-exports it, and `package-reader.ts` imports two of its helpers; the
+// screen and the gate sources reach both. Stopping at this one file covers
+// both edges. Neither importer is this bead's to change (package-reader.ts is
+// syzygy-bpyt.8.4's), so the edge stands as a named residual until
+// syzygy-bpyt.8.19 removes it; the last test fails once it no longer reaches
+// the island.
 const UNFOLLOWED = ['packages/polaris-generation-consent/src/consent-ports.ts'];
 
 interface Edge { readonly from: string; readonly specifier: string; readonly to: string }
