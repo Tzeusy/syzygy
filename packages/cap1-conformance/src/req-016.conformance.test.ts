@@ -10,6 +10,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-016 — No source is inspected through authority the project
 // did not grant.
@@ -27,37 +28,25 @@ const PROJECT_B = 'prj-beta-g7' as ProjectId;
 const REPO_R = 'repo-shared-r' as RepositoryId;
 
 // R carries an in-force consent record for project A — and for A only.
-const CONSENT_A_FOR_R: ConsentRecord = {
+const CONSENT_A_FOR_R = consent({
   id: 'consent-a-r',
   projectId: PROJECT_A,
   repositoryId: REPO_R,
-  scope: 'observe',
-  attribution: 'owner',
-  grantState: 'in-force',
-};
+});
 
 const ALL_CONSENTS: ConsentRecord[] = [CONSENT_A_FOR_R];
 
 // Both projects declare R; each project's own declaration is its own
 // governance artifact (RFC3-30: dual roles are lawful and per-pair).
 function declarationFor(projectId: string, name: string): ProjectDeclaration {
-  const source = `
-schema_version: "1"
-project:
-  id: ${projectId}
-  name: ${name}
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-shared-r
-    role: observed-source
-    consent: consent-a-r
-consents:
-  - consent-a-r
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+  const source = projectYaml({
+    id: projectId,
+    name,
+    repositories: [
+      { id: 'repo-shared-r', role: 'observed-source', consent: 'consent-a-r' },
+    ],
+    consents: ['consent-a-r'],
+  });
   const read = readDeclaration(source);
   if (!read.ok) throw new Error('fixture must be valid');
   return read.declaration;
@@ -117,14 +106,11 @@ describe('CAP1-REQ-016 — no source is inspected through authority the project 
   });
 
   it('per-repository authorization: a consent resolved for repository A never authorizes observation of repository B', () => {
-    const siblingConsent: ConsentRecord = {
+    const siblingConsent = consent({
       id: 'consent-a-s',
       projectId: PROJECT_A,
       repositoryId: 'repo-sibling' as RepositoryId,
-      scope: 'observe',
-      attribution: 'owner',
-      grantState: 'in-force',
-    };
+    });
     const resolution = resolveConsent([siblingConsent], PROJECT_A, 'repo-sibling' as RepositoryId);
     expect(resolution.consented).toBe(true);
     // Presenting that resolution with a request for a DIFFERENT

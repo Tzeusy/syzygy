@@ -6,11 +6,8 @@ import {
   computeShapeAnswers,
   serveMachine,
   renderHuman,
-  compareRenderings,
-  disclosureOf,
   computeDiscoverability,
   serveEntryRoute,
-  authorizeWrite,
   isInsideGovernedPlane,
   extractDistinctions,
   extractProposalDistinctions,
@@ -25,13 +22,14 @@ import {
   type ObservationOutcome,
   type ProjectId,
   type RepositoryId,
-  type EvaluationIdentity,
   type FactModel,
   type ServedFact,
   type GovernanceArtifactRef,
   type OwnerActRecord,
   type Proposal,
 } from '@syzygy/cap1-core';
+import { authorizeWrite, compareRenderings, disclosureOf } from '@syzygy/cap1-core/testing';
+import { evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-integration — End-to-end integration test.
 //
@@ -49,36 +47,19 @@ const GOVERNANCE_REPO = 'repo-governance-root' as RepositoryId;
 const OBSERVED_REPO = 'repo-observed-source' as RepositoryId;
 const UNCONSENTED_REPO = 'repo-unconsented' as RepositoryId;
 
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-integration-001',
-  asOf: '2026-08-22T10:00:00Z',
-};
+const EVALUATION = evaluation('snap-integration-001', '2026-08-22T10:00:00Z');
 
-const DECLARATION_SOURCE = `
-schema_version: "1"
-project:
-  id: ${PROJECT_ID}
-  name: Integration Test Project
-owner: test-owner@example.com
-repositories:
-  - id: ${GOVERNANCE_REPO}
-    role: governance-root
-    consent: consent-gov-root
-  - id: ${OBSERVED_REPO}
-    role: observed-source
-    consent: consent-observed
-  - id: ${UNCONSENTED_REPO}
-    role: observed-source
-    consent: consent-unconsented
-consents:
-  - consent-gov-root
-  - consent-observed
-  - consent-unconsented
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const DECLARATION_SOURCE = projectYaml({
+  id: PROJECT_ID,
+  name: 'Integration Test Project',
+  owner: 'test-owner@example.com',
+  repositories: [
+    { id: GOVERNANCE_REPO, role: 'governance-root', consent: 'consent-gov-root' },
+    { id: OBSERVED_REPO, role: 'observed-source', consent: 'consent-observed' },
+    { id: UNCONSENTED_REPO, role: 'observed-source', consent: 'consent-unconsented' },
+  ],
+  consents: ['consent-gov-root', 'consent-observed', 'consent-unconsented'],
+});
 
 const CONSENT_RECORDS: ConsentRecord[] = [
   {

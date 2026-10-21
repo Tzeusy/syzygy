@@ -3,10 +3,10 @@ import {
   computeShapeAnswers,
   readDeclaration,
   registerProject,
-  type EvaluationIdentity,
   type ProjectId,
   type ShapeAnswerInputs,
 } from '@syzygy/cap1-core';
+import { evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-038 — A negative or Unknown answer never erases the others
 // (state projection/query).
@@ -20,25 +20,16 @@ import {
 // omitted or blanked because a sibling is negative or Unknown.
 
 const PROJECT = 'prj-shape-038' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-038', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-038');
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-shape-038
-  name: Mixed Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-main
-    role: governance-root
-    consent: consent-1
-consents:
-  - consent-1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Mixed Fixture',
+  repositories: [
+    { id: 'repo-main', role: 'governance-root', consent: 'consent-1' },
+  ],
+  consents: ['consent-1'],
+});
 
 // The mixed fixture: Registered satisfied; Traceable Gap; Shape
 // present, Human-understandable, Observable, Reconciled Unknown;

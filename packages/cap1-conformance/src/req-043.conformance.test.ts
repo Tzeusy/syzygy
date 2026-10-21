@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import {
-  compareRenderings,
-  type ChannelDisclosure,
-  type EvaluationIdentity,
-  type ServedFact,
-} from '@syzygy/cap1-core';
+import type { ServedFact } from '@syzygy/cap1-core';
+import { compareRenderings, type ChannelDisclosure } from '@syzygy/cap1-core/testing';
+import { evaluation } from './fixtures/index.js';
 
 // CAP1-REQ-043 — A parity disagreement is visible and fails;
 // presentation precedence never resolves it (prohibition).
@@ -18,10 +15,7 @@ import {
 // two conforming-looking renderings disagreeing on one fact while the
 // system treats one as authoritative presentation.
 
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-2026-08-21-x',
-  asOf: '2026-08-21T00:00:00Z',
-};
+const EVALUATION = evaluation('snap-2026-08-21-x');
 
 function disclosure(facts: readonly ServedFact[]): ChannelDisclosure {
   return {

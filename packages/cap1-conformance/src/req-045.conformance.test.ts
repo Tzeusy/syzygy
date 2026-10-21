@@ -2,18 +2,16 @@ import { describe, expect, it } from 'vitest';
 import {
   EPISTEMIC_LABELS,
   RENDERING_TIERS,
-  canonicalTupleMultiset,
   citeBasis,
-  compareRenderings,
   deterministicLayer,
-  disclosureOf,
   epistemicMarking,
   renderHuman,
   serveMachine,
-  type EvaluationIdentity,
   type FactModel,
   type ServedFact,
 } from '@syzygy/cap1-core';
+import { canonicalTupleMultiset, compareRenderings, disclosureOf } from '@syzygy/cap1-core/testing';
+import { evaluation } from './fixtures/index.js';
 
 // CAP1-REQ-045 — Inferred is distinguishable from observed; generated
 // presentation is never the source (invariant).
@@ -28,10 +26,7 @@ import {
 // served without an Inferred marking, or a status answer whose
 // provenance names a generated page.
 
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-2026-08-21-e',
-  asOf: '2026-08-21T00:00:00Z',
-};
+const EVALUATION = evaluation('snap-2026-08-21-e');
 
 const OBSERVED_FACT: ServedFact = {
   name: 'repository-count',

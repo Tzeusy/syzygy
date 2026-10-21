@@ -19,6 +19,7 @@ import {
   type QueryEnvelope,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-042 — Equivalent queries at one revision expose equivalent
 // facts (invariant).
@@ -34,23 +35,14 @@ import {
 const PROJECT = 'prj-query-eq-11' as ProjectId;
 const REPO = 'repo-query-eq-01' as RepositoryId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-query-eq-11
-  name: Query Equivalence Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-query-eq-01
-    role: governance-root
-    consent: consent-q1
-consents:
-  - consent-q1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Query Equivalence Fixture',
+  repositories: [
+    { id: 'repo-query-eq-01', role: 'governance-root', consent: 'consent-q1' },
+  ],
+  consents: ['consent-q1'],
+});
 
 const CONSENTS: readonly ConsentRecord[] = [
   {
@@ -64,10 +56,7 @@ const CONSENTS: readonly ConsentRecord[] = [
 ];
 
 // The pinned evaluation identity: (source snapshot, as-of instant).
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-2026-08-21-a',
-  asOf: '2026-08-21T00:00:00Z',
-};
+const EVALUATION = evaluation('snap-2026-08-21-a');
 
 function declaration() {
   const read = readDeclaration(SOURCE);

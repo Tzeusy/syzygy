@@ -1,15 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
-  compareRenderings,
   computeCoverage,
   computeShapeAnswers,
-  disclosureOf,
   readDeclaration,
   registerProject,
   renderHuman,
   serveMachine,
   type ConsentRecord,
-  type EvaluationIdentity,
   type FacetAnswer,
   type FactModel,
   type HumanPresentation,
@@ -17,6 +14,8 @@ import {
   type RepositoryId,
   type ServedFact,
 } from '@syzygy/cap1-core';
+import { compareRenderings, disclosureOf } from '@syzygy/cap1-core/testing';
+import { evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-041 — Humans and machines receive the same facts
 // (invariant).
@@ -34,27 +33,15 @@ const PROJECT = 'prj-parity-41' as ProjectId;
 const REPO_A = 'repo-parity-01' as RepositoryId;
 const REPO_B = 'repo-parity-02' as RepositoryId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-parity-41
-  name: Parity Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-parity-01
-    role: governance-root
-    consent: consent-p1
-  - id: repo-parity-02
-    role: observed-source
-    consent: consent-p2
-consents:
-  - consent-p1
-  - consent-p2
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Parity Fixture',
+  repositories: [
+    { id: 'repo-parity-01', role: 'governance-root', consent: 'consent-p1' },
+    { id: 'repo-parity-02', role: 'observed-source', consent: 'consent-p2' },
+  ],
+  consents: ['consent-p1', 'consent-p2'],
+});
 
 const CONSENTS: readonly ConsentRecord[] = [
   {
@@ -69,10 +56,7 @@ const CONSENTS: readonly ConsentRecord[] = [
   // Unknown, so the sweep covers an Unknown-bearing answer.
 ];
 
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-2026-08-21-p',
-  asOf: '2026-08-21T00:00:00Z',
-};
+const EVALUATION = evaluation('snap-2026-08-21-p');
 
 // Adapter: one shape answer -> the served facts of its fact model. The
 // constituent facts are observed record contents; the answer-value fact

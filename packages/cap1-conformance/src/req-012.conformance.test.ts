@@ -8,6 +8,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-012 — Unconsented renders Unknown as a policy state, never as
 // error or absence.
@@ -23,26 +24,15 @@ import {
 
 const PROJECT = 'prj-policy-c3' as ProjectId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-policy-c3
-  name: Policy State Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-consented
-    role: governance-root
-    consent: consent-ok
-  - id: repo-withheld
-    role: observed-source
-    consent: consent-withheld
-consents:
-  - consent-ok
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Policy State Fixture',
+  repositories: [
+    { id: 'repo-consented', role: 'governance-root', consent: 'consent-ok' },
+    { id: 'repo-withheld', role: 'observed-source', consent: 'consent-withheld' },
+  ],
+  consents: ['consent-ok'],
+});
 
 function declaration(): ProjectDeclaration {
   const read = readDeclaration(SOURCE);
@@ -51,14 +41,11 @@ function declaration(): ProjectDeclaration {
 }
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-ok',
     projectId: PROJECT,
     repositoryId: 'repo-consented' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
   // repo-withheld: consent record deliberately withheld.
 ];
 
