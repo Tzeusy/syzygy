@@ -7,6 +7,7 @@ import { readSec3 } from './doctrine-quote.js';
 import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, SESSION_ID_RULE, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
+import { launchedMarkerState } from './launched.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
@@ -222,7 +223,7 @@ export async function issueBrief(runDir: string, deps: BriefDeps): Promise<Brief
   const issuedAt = deps.now();
   const executionRule = await decideExecutionRule({
     role: 'authoring', runDir: run, runId, pinnedRevision: subject.pinnedRevision.commit, operatorIsOwner: declared.operatorIsOwner,
-    sec3: doctrine.sec3, now: issuedAt, d9: deps.sources.d9, permitting: deps.permitting ?? { enabled: PERMITTING_ARM_ENABLED },
+    sec3: doctrine.sec3, now: issuedAt, d9: deps.sources.d9, launched: () => launchedMarkerState(run), permitting: deps.permitting ?? { enabled: PERMITTING_ARM_ENABLED },
   });
   const schemaText = `${JSON.stringify(draftSchemaDocument({ pinnedRevision: subject.pinnedRevision.commit, maxQuestions: declared.maxQuestions }), null, 2)}\n`;
   const schemaSha256 = sha256(schemaText);

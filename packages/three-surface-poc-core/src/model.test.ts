@@ -734,7 +734,7 @@ describe('three-surface Butlers POC model', () => {
     const runGit = (_root: string, args: readonly string[]): string => {
       gitCalls.push([...args]);
       if (args[0] === 'ls-tree') {
-        return `100644 blob ${'1'.repeat(40)} 1\tREADME.md\n`;
+        return `100644 blob ${'1'.repeat(40)} 1\tREADME.md\0`;
       }
       throw new Error(`unexpected non-structure read: ${args.join(' ')}`);
     };
@@ -762,7 +762,7 @@ describe('three-surface Butlers POC model', () => {
       unmappedFileCount: 1,
       totalFileCount: 1,
     });
-    expect(gitCalls).toEqual([['ls-tree', '-r', '-l', 'empty-seed-revision']]);
+    expect(gitCalls).toEqual([['ls-tree', '-r', '-z', '-l', 'empty-seed-revision']]);
   });
 
   it('keeps an unobserved empty-seed Orrery denominator Unknown instead of inventing zero', () => {

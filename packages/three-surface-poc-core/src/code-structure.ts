@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 
+import { parseGitLsTree } from './git-tree.js';
 import type { PocProvenance } from './model.js';
 
 export const CODE_LANGUAGE_CLASSIFICATIONS = [
@@ -84,58 +85,101 @@ export interface ObserveCodeStructureInput {
   readonly capturedAt: string;
   /** The provenance record's `source`; the model passes its git provenance source. */
   readonly provenanceSource?: string;
+  /** Returns git's stdout decoded as strict UTF-8, or throws; a replacing decoder would record a lossy path as Observed. */
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
 }
 
+/** Git's output is not valid UTF-8: a path a JS string cannot carry exactly. */
+class NonUtf8GitOutput extends Error {}
+
+const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
+const GITLINK_RECORD = Buffer.from('160000 ');
+
+/**
+ * Drops each NUL-terminated gitlink (mode 160000) record. A gitlink is a commit of another repository, not a file of this revision,
+ * and its path is never recorded, so a submodule path that is not UTF-8, or that the parser cannot read, must not fail the listing.
+ * An unterminated tail is kept, for the NUL-termination check to refuse.
+ */
+function withoutGitlinkRecords(bytes: Buffer): Buffer {
+  const kept: Buffer[] = [];
+  let start = 0;
+  for (let end = bytes.indexOf(0, start); end !== -1; end = bytes.indexOf(0, start)) {
+    const record = bytes.subarray(start, end + 1);
+    if (!record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);
+    start = end + 1;
+  }
+  if (start < bytes.length) kept.push(bytes.subarray(start));
+  return Buffer.concat(kept);
+}
+
 function defaultRunGit(repoRoot: string, args: readonly string[]): string {
-  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
-    encoding: 'utf8',
+  const bytes = execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
     maxBuffer: 256 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'ignore'],
   });
+  try {
+    return STRICT_UTF8.decode(withoutGitlinkRecords(bytes));
+  } catch {
+    throw new NonUtf8GitOutput();
+  }
 }
 
-const LS_TREE_LINE = /^([0-7]{6}) (blob|tree|commit) ([0-9a-f]{40})\s+(\d+|-)\t(.+)$/;
+const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
 
 /**
  * `git ls-tree` reads only tree/blob metadata for the named revision; it
  * never opens blob contents, so this observer structurally cannot leak
- * file bytes (POC-REQ-002).
+ * file bytes (POC-REQ-002). `-z` makes git emit each path unquoted: without
+ * it git C-quotes a path holding a special or non-ASCII byte, and the quoted
+ * form was recorded as the path (syzygy-bpyt.6.1). The bytes are decoded as
+ * strict UTF-8, so a path that is not valid UTF-8 makes the inventory
+ * Unknown instead of a replacement-character path that can collide with
+ * another. Submodule gitlink records are dropped first, before decoding and
+ * before parsing, since their paths are never recorded. A record the shared
+ * parser cannot read, or a listing that is not NUL-terminated, makes the
+ * whole inventory Unknown, never a skip.
  */
 export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStructureResult {
   const runGit = input.runGit ?? defaultRunGit;
   let raw: string;
   try {
-    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-l', input.revision]);
-  } catch {
+    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);
+  } catch (error) {
+    if (error instanceof NonUtf8GitOutput) {
+      return { kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' };
+    }
     return {
       kind: 'unknown',
       reason: 'repository or revision was unreadable during code-structure observation',
     };
   }
 
+  const malformed: CodeStructureUnknown = {
+    kind: 'unknown',
+    reason: 'code-structure observation produced a malformed inventory entry',
+  };
+  // `-z` ends every record with NUL; a listing that does not is not the format asked for.
+  if (raw !== '' && !raw.endsWith('\0')) {
+    return malformed;
+  }
+  // A submodule gitlink (mode 160000) is not a file of this revision and its path is never recorded, so its record is dropped before
+  // parsing, whichever runner answered; the default runner already dropped it from git's bytes, before decoding.
+  const parsed = parseGitLsTree(raw.split('\0').filter((record) => !record.startsWith('160000 ')).join('\0'));
+  if (parsed.kind === 'malformed') {
+    return malformed;
+  }
   const files: CodeStructureFileEntry[] = [];
-  for (const line of raw.split('\n')) {
-    if (line.trim() === '') {
-      continue;
-    }
-    const match = LS_TREE_LINE.exec(line);
-    if (match === null || match[2] !== 'blob') {
-      continue;
-    }
-    const sizeText = match[4] ?? '-';
-    const path = match[5] ?? '';
-    if (sizeText === '-' || path === '') {
-      return {
-        kind: 'unknown',
-        reason: 'code-structure observation produced a malformed inventory entry',
-      };
+  // Only blobs are files of this revision.
+  for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {
+    // The digest names its scheme; an id of another object format would make it false.
+    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {
+      return malformed;
     }
     files.push({
-      path,
-      sizeBytes: Number(sizeText),
-      digest: `git-blob-sha1:${match[3]}`,
-      language: classifyLanguage(path),
+      path: entry.path,
+      sizeBytes: entry.sizeBytes,
+      digest: `git-blob-sha1:${entry.objectId}`,
+      language: classifyLanguage(entry.path),
     });
   }
 

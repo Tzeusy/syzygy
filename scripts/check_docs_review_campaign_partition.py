@@ -435,6 +435,32 @@ CAMPAIGNS = (
         r"R-P114-.*-RAW\.md",
     ),
     campaign(
+        "greenfield-parity-packet",
+        "Greenfield-parity owner packet",
+        r"R-GREENFIELD-PARITY-PACKET-\d+-RAW\.md",
+    ),
+    campaign(
+        "greenfield-parity-implementation",
+        "Greenfield-parity implementation",
+        r"R-GP-IMPL-.*-RAW\.md",
+    ),
+    campaign(
+        "pr491-redis-remeasure",
+        "Redis v4 re-measure refusal record",
+        r"R-PR491-REDIS-REMEASURE-\d+-RAW\.md",
+    ),
+    campaign(
+        "pwb-m2-slice5-continuation",
+        "M2 slice 5 continuation packet",
+        r"R-PWB-M2-SLICE5-CONTINUATION-PACKET(?:-\d+)?-RAW\.md",
+    ),
+    campaign(
+        "pr489-signed-amendments-direction",
+        "Signed-amendment implementation direction (PR #489)",
+        r"R-PR489-SIGNED-AMENDMENTS-DIRECTION-\d+-RAW\.md",
+        r"R-PR489-OWNER-ANSWERS-RECORDING-\d+-RAW\.md",
+    ),
+    campaign(
         "p115-governedby-reference",
         "P-115 governedBy reference amendment",
         r"R-P115-GOVERNEDBY-REFERENCE-[1-3]-RAW\.md",

@@ -9,6 +9,7 @@ import { runDossierCli } from './cli.js';
 import { allowExecution, readExecutionChoice, RUN_DIRECTORY_CHOICES } from './execution-choice.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import type { PinnedObjectReader } from './git-object-reader.js';
+import { writeLaunchedMarker } from './launched.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 
@@ -245,6 +246,32 @@ describe('syzygy dossier allow-execution', () => {
     expect((await cli(['allow-execution', run, '--declare', ALL.join(',')])).code).toBe(2);
     expect((await cli(['allow-execution', run, '--revision', REV])).code).toBe(2);
     expect((await cli(['allow-execution', '--revision', REV, '--declare', ALL.join(',')])).code).toBe(2);
+    expect(fs.existsSync(path.join(run, 'execution-choice.json'))).toBe(false);
+  });
+
+  // syzygy-bpyt.8.8: a launched run takes no choice, and neither does a run whose marker is present but not the one Syzygy writes.
+  const choose = (run: string) => cli(['allow-execution', run, '--revision', REV, '--declare', ALL.join(','), '--json']);
+
+  it('refuses a launched run and records nothing', async () => {
+    const run = runDirectory();
+    writeLaunchedMarker(run, RUN_ID, NOW);
+    const result = await choose(run);
+    expect(result.code).toBe(1);
+    expect(JSON.parse(result.stdout)).toEqual({ command: 'allow-execution', outcome: 'refused', stage: 'launched', reason: 'this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9); a launched run executes nothing' });
+    expect(fs.existsSync(path.join(run, 'execution-choice.json'))).toBe(false);
+  });
+
+  it.each([
+    ['an empty file', (marker: string) => fs.writeFileSync(marker, '')],
+    ['invalid JSON', (marker: string) => fs.writeFileSync(marker, '{"format": "polaris-dossier-launched/1"')],
+    ['another format', (marker: string) => fs.writeFileSync(marker, '{"format": "polaris-dossier-launched/2"}')],
+    ['a directory', (marker: string) => fs.mkdirSync(marker)],
+  ])('refuses a run whose launched marker is %s, as a launched run, and records nothing', async (_name, plant) => {
+    const run = runDirectory();
+    plant(path.join(run, 'launched.json'));
+    const result = await choose(run);
+    expect(result.code).toBe(1);
+    expect(JSON.parse(result.stdout)).toEqual({ command: 'allow-execution', outcome: 'refused', stage: 'launched', reason: 'this run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched: Syzygy never gives the execution instruction to a session it started (SEC-3, as amended by D9)' });
     expect(fs.existsSync(path.join(run, 'execution-choice.json'))).toBe(false);
   });
 });

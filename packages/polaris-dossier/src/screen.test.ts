@@ -1,13 +1,17 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { DECISIONS_DIR, POLICY_PATH } from '@syzygy/polaris-generation-consent';
 import { renderClassAct, renderPolicyAct } from '@syzygy/polaris-generation-consent/testing';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { buildDossierScreen, loadDossierScreen } from './screen.js';
+
+// Asynchronous, so a slow command cannot starve the vitest worker's RPC (syzygy-w90k).
+const execFileAsync = promisify(execFile);
 
 // syzygy-qkea.7 (S6): the screen every blob a check reads passes (REQ-polaris-generation-033, 025). The records root is a temporary
 // Syzygy checkout whose policy act is rendered by the real recorder; the policy carries this checkout's detectors and denied paths.
@@ -247,14 +251,14 @@ describe('parity with the any-repo reader\'s screen (syzygy-qkea.17)', () => {
 // version 4's base (the version-3 row `all`) with version 3's own `all` patch reversed.
 describe('the code-content exemption of screening scope version 3', () => {
   let V3: Record<string, Record<string, unknown>> = {};
-  beforeAll(() => {
+  beforeAll(async () => {
     const py = `import json, sys; sys.path.insert(0, 'scripts')
 import build_public_source_screening_scope_v2 as b2, build_public_source_screening_scope_v3 as b, build_public_source_screening_scope_v4 as b4
 v3_all, _mode = b4.base_bytes()
 base = b2.reverse_patch((b.ROOT / b.patch_path('all')).read_text(), v3_all)
 assert b.sha(base) != b.sha(v3_all) and b.propose(base, 'all') == v3_all
 sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for v in b.VARIANTS}))`;
-    V3 = JSON.parse(execFileSync('python3', ['-c', py], { cwd: REAL_ROOT, encoding: 'utf8' })) as Record<string, Record<string, unknown>>;
+    V3 = JSON.parse((await execFileAsync('python3', ['-c', py], { cwd: REAL_ROOT })).stdout) as Record<string, Record<string, unknown>>;
   });
   const both = async (variant: string, classAct = true) => {
     const policy = policyOf(V3[variant]);
@@ -332,13 +336,13 @@ sys.stdout.write(json.dumps({v: json.loads(b.propose(base, v))[b.SCOPE_KEY] for 
 describe('the secret redaction of screening scope version 4', () => {
   type TargetScreen = { screenTargetBody: (b: string, p: string) => { kind: string; withheld?: readonly number[]; retained?: string }; screenBody: (b: string, p?: string) => string | undefined; secretRedaction: boolean };
   let fixtures: { body: { name: string; body: string; oracle: number[] | null }[]; whole: { name: string; path: string; body: string; oracle: number[] | null }[] } = { body: [], whole: [] };
-  beforeAll(() => {
+  beforeAll(async () => {
     const py = `import json, sys; sys.path.insert(0, 'scripts'); import build_public_source_screening_scope_v4 as b
 policy = open(str(b.ROOT / b.POLICY)).read()
 srt = lambda s: None if s is None else sorted(s)
 sys.stdout.write(json.dumps({'body': [{'name': n, 'body': body, 'oracle': srt(b.withheld_lines(body, policy))} for n, body, _w in b.BODY_FIXTURES],
   'whole': [{'name': n, 'path': p, 'body': body, 'oracle': srt(b.withheld_lines(body, policy, p))} for n, p, body in b.WHOLE_FIXTURES]}))`;
-    fixtures = JSON.parse(execFileSync('python3', ['-c', py], { cwd: REAL_ROOT, encoding: 'utf8' })) as typeof fixtures;
+    fixtures = JSON.parse((await execFileAsync('python3', ['-c', py], { cwd: REAL_ROOT })).stdout) as typeof fixtures;
   });
   const both = async (): Promise<readonly [TargetScreen, TargetScreen]> => {
     const policy = policyOf(LIVE.publicSourceScope);

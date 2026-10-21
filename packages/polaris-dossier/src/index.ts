@@ -101,7 +101,7 @@ export {
   type AgentUsage, type CloseDeps, type CloseReport, type CloseRequest, type CloseResult, type CloseStage,
 } from './close.js';
 export {
-  LAUNCHED_FORMAT, LAUNCH_RECORD_FORMAT, SYZYGY_LAUNCHED, isLaunchedRun, launchFormRefusal, launchedForm, writeLaunchRecord, writeLaunchedMarker,
-  type LaunchObservation,
+  LAUNCHED_FORMAT, LAUNCH_RECORD_FORMAT, SYZYGY_LAUNCHED, expectedLaunch, launchFormRefusal, launchedForm, launchedMarkerState, writeLaunchRecord, writeLaunchedMarker,
+  type LaunchObservation, type LaunchedMarkerState,
 } from './launched.js';
 export { POLARIS_USAGE, runPolarisCli } from './polaris.js';

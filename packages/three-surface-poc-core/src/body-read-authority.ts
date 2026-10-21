@@ -34,8 +34,23 @@
 // correlator; a failed, unavailable or indeterminate correlation is
 // invalid and never falls back to state (1).
 
-import { createHash } from 'node:crypto';
-
+import {
+  ACT_IDENTITY,
+  ISO_DATE,
+  NON_HUMAN_PRINCIPAL,
+  PHRASE,
+  PROJECT_IDENTITY,
+  SHA256,
+  SLUG,
+  TAG,
+  deepFreeze,
+  isGovernancePath,
+  isHumanName,
+  isIsoDate,
+  provenanceFromLabel,
+  sha256,
+  type ProvenanceLabel,
+} from './act-fields.js';
 import {
   parseConsentArtifact,
   parsePolicyArtifact,
@@ -47,10 +62,9 @@ import { parseOwnerActRecord, type ParsedOwnerActRecord } from './owner-act-reco
 export const AUTHORITY_KINDS = ['consent', 'policy', 'registry'] as const;
 export type AuthorityKind = (typeof AUTHORITY_KINDS)[number];
 
-// RFC3-16(c)'s two provenance states, by the labels the act records use.
-export const STATE_1_LABEL = 'owner-adopted (bootstrap, uncorrelated)' as const;
-export const STATE_2_LABEL = 'Syzygy-verified' as const;
-export type ProvenanceLabel = 'state-1' | 'state-2';
+// RFC3-16(c)'s two provenance states, defined with the shared owner-act
+// field rules and re-exported here, where their callers import them.
+export { STATE_1_LABEL, STATE_2_LABEL, type ProvenanceLabel } from './act-fields.js';
 
 // ---------------------------------------------------------------------
 // Closed invalid-case vocabulary (195).
@@ -327,42 +341,16 @@ export interface BodyReadAuthorityEvaluation {
 // Shape predicates.
 // ---------------------------------------------------------------------
 
-const PROJECT_IDENTITY = /^project:[a-z0-9][a-z0-9-]*$/;
+// The owner-act field rules both owner-act evaluators share live in
+// `act-fields.ts`; these two are this gate's own.
 const REPOSITORY_IDENTITY = /^repository:[a-z0-9][a-z0-9-]*$/;
-const SHA256 = /^[0-9a-f]{64}$/;
-const SLUG = /^[a-z][a-z0-9-]*$/;
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const ACT_IDENTITY = /^[A-Z0-9][A-Z0-9-]*$/;
-const PHRASE = /^([A-Z][A-Z -]*[A-Z]): ([0-9a-f]{64})$/;
-const TAG = /^[a-z0-9][a-z0-9.-]*$/;
 const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
-// Closed shapes of a non-human principal in an owner-attribution field.
-const NON_HUMAN_PRINCIPAL = /^(agent|bot|machine|service|system|ci|pipeline|model)([:\s-]|$)|\b(claude|codex|gpt|copilot|llm)\b/i;
 
 function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
-function isGovernancePath(value: string): boolean {
-  if (!value.startsWith('.syzygy/governance/')) return false;
-  if (value.includes('\0') || value.includes('\\')) return false;
-  return value.split('/').every((segment) => segment !== '' && segment !== '.' && segment !== '..');
-}
-function isIsoDate(value: string): boolean {
-  return ISO_DATE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
-}
-function isHumanName(value: string): boolean {
-  return value.length > 0 && value.length <= 200 && !/[`*\n]/.test(value);
-}
 function isEmptyArray(value: unknown): boolean {
   return Array.isArray(value) && value.length === 0;
-}
-function sha256(bytes: Uint8Array): string {
-  return createHash('sha256').update(bytes).digest('hex');
-}
-function provenanceFromLabel(label: string): ProvenanceLabel | undefined {
-  if (label === STATE_1_LABEL) return 'state-1';
-  if (label === STATE_2_LABEL) return 'state-2';
-  return undefined;
 }
 
 // ---------------------------------------------------------------------
@@ -712,16 +700,6 @@ function contradictionFor(
       `No effective act is in force for: ${failing.map((entry) => `${entry.authority} (${entry.state})`).join('; ')}. No body read is admitted.`,
     failing,
   };
-}
-
-function deepFreeze<T>(value: T): T {
-  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    for (const key of Object.keys(value as object)) {
-      deepFreeze((value as Record<string, unknown>)[key]);
-    }
-  }
-  return value;
 }
 
 export function evaluateBodyReadAuthority(inputs: BodyReadAuthorityInputs): BodyReadAuthorityEvaluation {

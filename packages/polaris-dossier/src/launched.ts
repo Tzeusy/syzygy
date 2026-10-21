@@ -27,14 +27,43 @@ export interface LaunchedMarker {
   readonly direction: 'POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14';
 }
 
-/** Whether the run directory carries the launched marker. */
-export function isLaunchedRun(runDir: string): boolean {
+/** What the run directory's launched marker says, read fail-closed (syzygy-bpyt.8.8): `absent` when no file of that name exists, a run
+ * the operator started; `launched` when it is the marker Syzygy writes; `unreadable` when something is there that cannot be read as that
+ * marker (unreadable bytes, invalid JSON, another format, a directory, a link of any kind, a FIFO, a device, a file larger than any marker).
+ * No caller may treat `unreadable` more leniently than `launched`: whether Syzygy started the run's sessions cannot be told, so SEC-3's
+ * instruction is never given and no launch form counts. */
+export type LaunchedMarkerState = 'absent' | 'launched' | 'unreadable';
+
+// `writeLaunchedMarker` writes a few hundred bytes; anything past this bound is not its marker.
+const MARKER_BYTES_MAX = 4096;
+
+export function launchedMarkerState(runDir: string): LaunchedMarkerState {
+  const file = path.join(runDir, RUN_LAYOUT.launched);
+  // Opened without following a link and without blocking, then judged by the open descriptor, so a FIFO or a device at the name can
+  // neither hang nor exhaust the reader, and nothing can swap the file between the check and the read.
+  let fd: number;
   try {
-    const marker = JSON.parse(fs.readFileSync(path.join(runDir, RUN_LAYOUT.launched), 'utf8')) as Record<string, unknown>;
-    return marker['format'] === LAUNCHED_FORMAT;
-  } catch {
-    return false;
+    fd = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === 'ENOENT' ? 'absent' : 'unreadable';
   }
+  try {
+    const stat = fs.fstatSync(fd);
+    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';
+    const marker = JSON.parse(fs.readFileSync(fd, 'utf8')) as unknown;
+    return typeof marker === 'object' && marker !== null && (marker as Record<string, unknown>)['format'] === LAUNCHED_FORMAT ? 'launched' : 'unreadable';
+  } catch {
+    return 'unreadable';
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
+/** The kind of launch a session record must carry to count, by marker state, for a refusal's wording. */
+export function expectedLaunch(state: LaunchedMarkerState): string {
+  if (state === 'launched') return 'a syzygy-launched launch';
+  if (state === 'absent') return 'a terminal or bang launch';
+  return 'a countable launch (the run\'s launched marker is present but unreadable, so none counts)';
 }
 
 export function writeLaunchedMarker(runDir: string, runId: string, now: number): void {
@@ -87,8 +116,9 @@ export function writeLaunchRecord(
 /** Whether a recorded launch form is acceptable for this run: `terminal` or `bang`, operator-declared and Inferred, in a run Syzygy did not
  * launch; `syzygy-launched`, recorded by Syzygy and Observed, in a run it did. Null when acceptable; the reason otherwise. */
 export function launchFormRefusal(runDir: string, form: Readonly<Record<string, unknown>>): string | null {
-  const launched = isLaunchedRun(runDir);
-  if (launched) {
+  const state = launchedMarkerState(runDir);
+  if (state === 'unreadable') return 'the run\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';
+  if (state === 'launched') {
     if (form['value'] === SYZYGY_LAUNCHED && form['declaredBy'] === 'syzygy' && form['label'] === 'Observed') return null;
     return 'a launched run counts only sessions Syzygy launched (syzygy-launched, Observed)';
   }

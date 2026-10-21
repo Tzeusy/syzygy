@@ -1,0 +1,183 @@
+{
+ "subject": "packages/three-surface-poc-core/src/code-structure.ts",
+ "bead": "syzygy-bpyt.6.1",
+ "old": {
+  "commit": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
+  "sha256": "126a454de2d8645cb91cdf643ef5a9de5ae1c32714cbaaf18e0e0a7eed6eb1be"
+ },
+ "new": {
+  "commit": "2dfa12b7b84a963bae1f54eccb5cce4a05362878",
+  "sha256": "d006cfd87a73f053959919eec2ab8f9a3ad396eec6dc18347ce0ef222588fab9"
+ },
+ "differential": {
+  "method": "Each case is one revision's listing in both formats: what git prints without -z (the old observer asks for it) and with -z (the new one); both observers run on it through an injected runGit that refuses the other format. The first nine cases come from a real repository committing eight awkward names; the rest are hand-mutated records.",
+  "harness": "import { execFileSync } from 'node:child_process';\nimport { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';\nimport { tmpdir } from 'node:os';\nimport { dirname, join } from 'node:path';\nimport { it } from 'vitest';\nimport { observeCodeStructure as observeNew } from './code-structure.js';\nimport { observeCodeStructure as observeOld } from './zz-code-structure-old.js';\n\n// Each case is one revision's listing in both formats: what git prints without -z (old asks for it) and with -z (new).\ninterface Case { readonly id: string; readonly plain: string; readonly z: string }\nconst id40 = 'a'.repeat(40);\nconst rec = (path: string, id = id40, size = '12', type = 'blob', mode = '100644'): string => `${mode} ${type} ${id} ${size.padStart(7)}\\t${path}`;\nconst both = (id: string, records: readonly string[], plainPaths?: readonly string[]): Case => ({\n  id, plain: records.map((r, i) => (plainPaths?.[i] === undefined ? r : r.replace(/\\t.*$/s, `\\t${plainPaths[i]}`))).join('\\n') + '\\n', z: records.join('\\0') + '\\0',\n});\n\nit('old versus new over a mutated ls-tree corpus', () => {\n  const root = mkdtempSync(join(tmpdir(), 'bpyt61-diff-'));\n  const names = ['plain.ts', 'with space.md', 'tab\\there.md', 'a \"b\".txt', '\u00f1.md', 'line\\nbreak.md', '\"lead-quote.md', 'back\\\\slash.ts'];\n  for (const name of names) { mkdirSync(dirname(join(root, name)), { recursive: true }); writeFileSync(join(root, name), 'x\\n'); }\n  const g = (...args: string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' });\n  g('init', '-q'); g('-c', 'user.email=t@e.invalid', '-c', 'user.name=t', 'add', '-A'); g('-c', 'user.email=t@e.invalid', '-c', 'user.name=t', 'commit', '-qm', 'x');\n  const realPlain = g('ls-tree', '-r', '-l', 'HEAD'), realZ = g('ls-tree', '-r', '-z', '-l', 'HEAD');\n  const realPlainLines = realPlain.split('\\n').filter(Boolean), realZRecords = realZ.split('\\0').filter(Boolean);\n  const cases: Case[] = [\n    { id: 'real repo: all eight awkward names', plain: realPlain, z: realZ },\n    ...realZRecords.map((record, i) => ({ id: `real repo: only ${JSON.stringify(record.slice(record.indexOf('\\t') + 1))}`, plain: realPlainLines[i]! + '\\n', z: record + '\\0' })),\n    both('one plain blob', [rec('a.ts')]),\n    both('submodule gitlink beside a blob', [rec('a.ts'), rec('vendor/sub', 'b'.repeat(40), '-', 'commit', '160000')]),\n    both('blob without a size', [rec('a.ts', id40, '-')]),\n    both('SHA-256 object id', [rec('a.ts', 'c'.repeat(64))]),\n    both('39-hex object id', [rec('a.ts', 'c'.repeat(39))]),\n    both('garbage record after a blob', [rec('a.ts'), 'not a tree record']),\n    both('mode corrupted', [rec('a.ts', id40, '12', 'blob', '10064x')]),\n    both('type corrupted', [rec('a.ts', id40, '12', 'blbo')]),\n    both('tab separator missing', [rec('a.ts').replace('\\t', ' ')]),\n    both('empty path', [rec('')]),\n    both('size non-numeric', [rec('a.ts', id40, '1e3')]),\n    both('uppercase hex id', [rec('a.ts', 'A'.repeat(40))]),\n    both('symlink blob', [rec('link', id40, '4', 'blob', '120000')]),\n    both('executable blob', [rec('run.sh', id40, '4', 'blob', '100755')]),\n    { id: 'empty tree', plain: '', z: '' },\n  ];\n  const outcome = (r: ReturnType<typeof observeNew>): string => r.kind === 'unknown' ? `Unknown (${r.reason})` : `Observed ${r.files.length}: ${JSON.stringify(r.files.map((f) => [f.path, f.sizeBytes, f.digest.slice(0, 18), f.language]))}`;\n  const run = (observe: typeof observeNew, listing: string, want: boolean) => observe({ repoRoot: '/unused', revision: 'r', capturedAt: 't', runGit: (_root, args) => { if (args.includes('-z') !== want) throw new Error(`asked ${args.join(' ')}`); return listing; } });\n  const rows = cases.map((c) => { const o = outcome(run(observeOld, c.plain, false)); const n = outcome(run(observeNew, c.z, true)); return { case: c.id, old: o, new: n, changed: o !== n }; });\n  writeFileSync(process.env['B61_DIFF']!, JSON.stringify(rows, null, 1));\n});\n",
+  "harnessPlacement": "packages/three-surface-poc-core/src/, beside a copy of the old module as zz-code-structure-old.ts; both removed after the run",
+  "cases": [
+   {
+    "case": "real repo: all eight awkward names",
+    "old": "Observed 8: [[\"\\\"\\\\\\\"lead-quote.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"\\\\303\\\\261.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"a \\\\\\\"b\\\\\\\".txt\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"back\\\\\\\\slash.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"line\\\\nbreak.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"tab\\\\there.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"],[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"\\\"lead-quote.md\"",
+    "old": "Observed 1: [[\"\\\"\\\\\\\"lead-quote.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"a \\\"b\\\".txt\"",
+    "old": "Observed 1: [[\"\\\"a \\\\\\\"b\\\\\\\".txt\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Observed 1: [[\"a \\\"b\\\".txt\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"back\\\\slash.ts\"",
+    "old": "Observed 1: [[\"\\\"back\\\\\\\\slash.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Observed 1: [[\"back\\\\slash.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"line\\nbreak.md\"",
+    "old": "Observed 1: [[\"\\\"line\\\\nbreak.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"plain.ts\"",
+    "old": "Observed 1: [[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+    "new": "Observed 1: [[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+    "changed": false
+   },
+   {
+    "case": "real repo: only \"tab\\there.md\"",
+    "old": "Observed 1: [[\"\\\"tab\\\\there.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Observed 1: [[\"tab\\there.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+    "changed": true
+   },
+   {
+    "case": "real repo: only \"with space.md\"",
+    "old": "Observed 1: [[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+    "new": "Observed 1: [[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+    "changed": false
+   },
+   {
+    "case": "real repo: only \"\u00f1.md\"",
+    "old": "Observed 1: [[\"\\\"\\\\303\\\\261.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+    "new": "Observed 1: [[\"\u00f1.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+    "changed": true
+   },
+   {
+    "case": "one plain blob",
+    "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+    "new": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+    "changed": false
+   },
+   {
+    "case": "submodule gitlink beside a blob",
+    "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+    "new": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+    "changed": false
+   },
+   {
+    "case": "blob without a size",
+    "old": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": false
+   },
+   {
+    "case": "SHA-256 object id",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "39-hex object id",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "garbage record after a blob",
+    "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "mode corrupted",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "type corrupted",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "tab separator missing",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "empty path",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "size non-numeric",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "uppercase hex id",
+    "old": "Observed 0: []",
+    "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+    "changed": true
+   },
+   {
+    "case": "symlink blob",
+    "old": "Observed 1: [[\"link\",4,\"git-blob-sha1:aaaa\",\"other\"]]",
+    "new": "Observed 1: [[\"link\",4,\"git-blob-sha1:aaaa\",\"other\"]]",
+    "changed": false
+   },
+   {
+    "case": "executable blob",
+    "old": "Observed 1: [[\"run.sh\",4,\"git-blob-sha1:aaaa\",\"shell\"]]",
+    "new": "Observed 1: [[\"run.sh\",4,\"git-blob-sha1:aaaa\",\"shell\"]]",
+    "changed": false
+   },
+   {
+    "case": "empty tree",
+    "old": "Observed 0: []",
+    "new": "Observed 0: []",
+    "changed": false
+   }
+  ],
+  "changed": 16,
+  "total": 24
+ },
+ "fixtureByteIdentity": {
+  "method": "buildFixtureModel and observeCodeStructure over the app's committed fixture repository (test-model-fixture.ts, pinned commit instants), copied once to one fixed path so the repoRoot hashed into inputsDigest is the same for both runs; the model JSON, renderOrreryPage HTML and code-structure result serialized to one file per code version",
+  "oldSha256": "2db14fcb02912d16e81def44e6813a24fce457a80a9b5f4dc0e3bfddd77295bf",
+  "newSha256": "2db14fcb02912d16e81def44e6813a24fce457a80a9b5f4dc0e3bfddd77295bf",
+  "fixtureFiles": 8,
+  "identical": true
+ },
+ "newTestsOnOldCode": {
+  "testsLine": "Tests  2 failed | 5 passed (7)",
+  "failed": [
+   "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 2ms",
+   "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII byte exactly as committed (syzygy-bpyt.6.1) 137ms"
+  ],
+  "assertions": [
+   "AssertionError: expected [ '\"\\303\\261.md\"', \u2026(8) ] to deeply equal [ 'README.md', 'a \"b\".txt', \u2026(7) ]",
+   "AssertionError: expected [ [ 'ls-tree', '-r', '-l', 'r' ] ] to deeply equal [ Array(1) ]"
+  ]
+ }
+}

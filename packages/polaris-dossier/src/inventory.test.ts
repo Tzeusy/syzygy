@@ -1,8 +1,10 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
 import type { CheckDeps } from './check.js';
@@ -11,10 +13,14 @@ import { readSec3 } from './doctrine-quote.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import type { PinnedObjectReader, PinnedObjectReaderOptions } from './git-object-reader.js';
 import { checkInventory, inventoryBrief, inventoryOfRecord, type InventoryCheckResult } from './inventory.js';
+import { writeLaunchedMarker } from './launched.js';
 import { parseRunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { buildDossierScreen } from './screen.js';
 import { launchForm, sessionPrompt, shellQuote } from './session-handover.js';
+
+// Asynchronous, so a slow command cannot starve the vitest worker's RPC (syzygy-w90k).
+const execFileAsync = promisify(execFile);
 
 // syzygy-qkea.8 (S7): the session hand-over and the inventory (REQ-polaris-generation-035). The clone is a real Git repository built
 // here with the git CLI; the code under test runs no process. Expected paths, kinds, stages and texts are literals written before the
@@ -212,8 +218,8 @@ describe('session-prompt inventory', () => {
     expect(prompt).not.toContain("'");
     expect(commands.terminal).toBe(`cd '${directory}' && claude '${prompt}'`);
     expect(commands.bang).toBe(`! cd '${directory}' && claude '${prompt}'`);
-    expect(execFileSync('sh', ['-c', `printf %s ${commands.terminal.slice(commands.terminal.indexOf("claude '") + 'claude '.length)}`], { encoding: 'utf8' })).toBe(prompt);
-    expect(promptSha256).toBe(execFileSync('sha256sum', { input: prompt, encoding: 'utf8' }).split(' ')[0]);
+    expect((await execFileAsync('sh', ['-c', `printf %s ${commands.terminal.slice(commands.terminal.indexOf("claude '") + 'claude '.length)}`])).stdout).toBe(prompt);
+    expect(promptSha256).toBe(createHash('sha256').update(prompt, 'utf8').digest('hex'));
   });
 
   it('carries SEC-3\'s rule in the brief and the prompt, never the permission, though the operator is the owner', async () => {
@@ -286,9 +292,9 @@ describe('session-prompt inventory', () => {
     expect(result).toMatchObject({ ok: false, refusal: { stage: 'deadline' } });
   });
 
-  it('quotes any text as one shell word', () => {
+  it('quotes any text as one shell word', async () => {
     for (const text of ["it's", "''", 'a b $HOME `x` "y" \\ ; && |', '']) {
-      expect(execFileSync('sh', ['-c', `printf %s ${shellQuote(text)}`], { encoding: 'utf8' })).toBe(text);
+      expect((await execFileAsync('sh', ['-c', `printf %s ${shellQuote(text)}`])).stdout).toBe(text);
     }
   });
 });
@@ -318,6 +324,19 @@ describe('launch-form', () => {
     expect(await launchForm(run, { role: 'inventory', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'session' } });
     expect(await launchForm(run, { role: 'review', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'session' } });
     expect(await launchForm(run, { role: 'author', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'role' } });
+  });
+
+  // syzygy-bpyt.8.8: no launch form is declared in a launched run, nor in one whose launched marker is present but unreadable.
+  it.each([
+    ['the launched marker', (run: string) => writeLaunchedMarker(run, RUN_ID, NOW), 'this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it'],
+    ['an empty marker', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), ''), 'this run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it'],
+    ['a marker that is a directory', (run: string) => fs.mkdirSync(path.join(run, 'launched.json')), 'this run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it'],
+  ])('refuses a declared form in a run with %s and writes no record', async (_name, plant, reason) => {
+    const run = await runWithDrafts();
+    await handedOver(run);
+    plant(run);
+    expect(await launchForm(run, { role: 'inventory', form: 'terminal' }, hand)).toMatchObject({ ok: false, refusal: { stage: 'form', reason } });
+    expect(fs.existsSync(path.join(run, 'inventory', 'session-1.launch.json'))).toBe(false);
   });
 
   it('writes nothing into a directory that is not a run', async () => {
@@ -430,6 +449,17 @@ describe('the inventory of record', () => {
     expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
     fs.writeFileSync(launch, JSON.stringify({ ...recorded, form: { ...recorded.form, label: 'Observed' } }));
     expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a terminal or bang launch of that session\'s prompt' });
+  });
+
+  it('stops counting a declared launch once the run\'s launched marker is present but unreadable (syzygy-bpyt.8.8)', async () => {
+    const run = await runWithDrafts();
+    const dir = await handedOver(run);
+    writeInventory(dir, validInventory());
+    passed(await checkInventory(run, {}, deps()));
+    await launchForm(run, { role: 'inventory', form: 'terminal' }, hand);
+    expect(await inventoryOfRecord(run, counting)).toMatchObject({ counts: true });
+    fs.writeFileSync(path.join(run, 'launched.json'), '{"format": "polaris-dossier-launched/2"}');
+    expect(await inventoryOfRecord(run, counting)).toEqual({ counts: false, why: 'the launch-form record of inventory session 1 is not a countable launch (the run\'s launched marker is present but unreadable, so none counts) of that session\'s prompt' });
   });
 
   it('does not count an inventory whose session identifier a later draft revision declares', async () => {

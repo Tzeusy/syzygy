@@ -281,6 +281,8 @@ export interface BuildPocModelInput {
   readonly evidence?: PocEvaluationEvidence;
   /** Explicit implementation-plane seeds. Omitted means no seeded graph. */
   readonly seeds?: PocSeedInput;
+  /** Replaces the code-structure and worker-change observers' git runner: it returns git's stdout decoded as strict UTF-8, or throws,
+   * since a replacing decoder would record a lossy path as Observed (syzygy-bpyt.6.1). */
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
   readonly runWorkItemQuery?: (repoRoot: string, sql: string) => string;
   readonly materializationRecord?: MaterializationRecord | null;

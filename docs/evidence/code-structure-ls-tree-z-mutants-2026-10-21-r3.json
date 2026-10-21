@@ -1,0 +1,276 @@
+{
+  "format": "mutation-evidence/1",
+  "subject": [
+    "packages/three-surface-poc-core/src/code-structure.ts",
+    "packages/three-surface-poc-core/src/model.test.ts"
+  ],
+  "subjectSha256": {
+    "packages/three-surface-poc-core/src/code-structure.ts": "ef137dafdd666104b9249d5516b0567e8daf9db7a5814c68c29e362f87ca56c1",
+    "packages/three-surface-poc-core/src/model.test.ts": "b9a5d094a19d2a947675f232d0a41e3f25f83837e90db0953e23d7b8811d56d7"
+  },
+  "bead": "syzygy-bpyt.6.1",
+  "round": 3,
+  "commit": "eddf967724af00092c7ad899c7a9e4459e4606fc",
+  "command": "npx vitest run packages/three-surface-poc-core/src/code-structure.test.ts packages/three-surface-poc-core/src/model.test.ts",
+  "trackedTreeCleanBefore": true,
+  "unmutated": {
+    "exitCode": 0,
+    "testsLine": "Tests  27 passed (27)",
+    "failedTests": []
+  },
+  "mutants": [
+    {
+      "id": "drop-z",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);",
+      "new": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-l', input.revision]);",
+      "exitCode": 1,
+      "testsLine": "Tests  8 failed | 19 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 9ms",
+        "code-structure observer > binds every inventory entry to the exact revision observed (POC-REQ-001) 127ms",
+        "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 219ms",
+        "code-structure observer > produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004) 142ms",
+        "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1) 184ms",
+        "code-structure observer > skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2) 176ms",
+        "three-surface Butlers POC model > builds an explicit Unknown model with no seeds and performs no seeded reads 12ms",
+        "three-surface Butlers POC model > rejects a seeded Orrery mapping that is absent from the observed inventory 22ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "malformed-listing-observed-empty",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "  if (parsed.kind === 'malformed') {\n    return malformed;\n  }",
+      "new": "  if (parsed.kind === 'malformed') {\n    return { kind: 'observed', provenance: { kind: 'git-revision', source: input.provenanceSource ?? 'Observed repository', revision: input.revision }, capturedAt: input.capturedAt, files: [] };\n  }",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 22ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "bad-entry-skipped",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      return malformed;\n    }",
+      "new": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      continue;\n    }",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 29ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "sha1-check-off",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+      "new": "    if (entry.sizeBytes === undefined) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 36ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "size-check-off",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+      "new": "    if (!SHA1_OBJECT_ID.test(entry.objectId)) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 24ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "gitlinks-admitted",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "  for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {",
+      "new": "  for (const entry of parsed.entries) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 44ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "path-unescaped-lost",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "      path: entry.path,\n",
+      "new": "      path: JSON.stringify(entry.path).slice(1, -1),\n",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1) 262ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "strict-decoder-off",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });",
+      "new": "const STRICT_UTF8 = new TextDecoder('utf-8');",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 233ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "non-utf8-reason-merged",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "    if (error instanceof NonUtf8GitOutput) {",
+      "new": "    if (String(error) === 'never') {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 389ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "nul-format-check-off",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "  if (raw !== '' && !raw.endsWith('\\0')) {",
+      "new": "  if (String(raw) === 'never') {",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 25 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 19ms",
+        "code-structure observer > keeps an unterminated tail from git for the NUL check to refuse, never dropping it as a record 22ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "empty-listing-malformed",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "  if (raw !== '' && !raw.endsWith('\\0')) {",
+      "new": "  if (!raw.endsWith('\\0')) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 41ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "model-stub-newline-format",
+      "file": "packages/three-surface-poc-core/src/model.test.ts",
+      "old": "        return `100644 blob ${'1'.repeat(40)} 1\\tREADME.md\\0`;",
+      "new": "        return `100644 blob ${'1'.repeat(40)} 1\\tREADME.md\\n`;",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "three-surface Butlers POC model > builds an explicit Unknown model with no seeds and performs no seeded reads 66ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "gitlink-filter-off",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "return STRICT_UTF8.decode(withoutGitlinkRecords(bytes));",
+      "new": "return STRICT_UTF8.decode(bytes);",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2) 122ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "gitlink-filter-keeps-every-record",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "if (!record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);",
+      "new": "kept.push(record);",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2) 106ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "gitlink-filter-inverted",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "if (!record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);",
+      "new": "if (record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);",
+      "exitCode": 1,
+      "testsLine": "Tests  5 failed | 22 passed (27)",
+      "failedTests": [
+        "code-structure observer > binds every inventory entry to the exact revision observed (POC-REQ-001) 94ms",
+        "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 78ms",
+        "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1) 93ms",
+        "code-structure observer > skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2) 78ms",
+        "three-surface Butlers POC model > rejects a seeded Orrery mapping that is absent from the observed inventory 33ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "unterminated-tail-dropped",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "  if (start < bytes.length) kept.push(bytes.subarray(start));\n",
+      "new": "",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > keeps an unterminated tail from git for the NUL check to refuse, never dropping it as a record 23ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "parse-gitlinks-from-any-runner",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "parseGitLsTree(raw.split('\\0').filter((record) => !record.startsWith('160000 ')).join('\\0'))",
+      "new": "parseGitLsTree(raw)",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 20ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "every-throw-is-non-utf8",
+      "file": "packages/three-surface-poc-core/src/code-structure.ts",
+      "old": "if (error instanceof NonUtf8GitOutput) {",
+      "new": "if (error instanceof Error) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 26 passed (27)",
+      "failedTests": [
+        "code-structure observer > renders Unknown with a named reason when the repository is unreadable (POC-REQ-003) 24ms"
+      ],
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "summary": {
+    "planned": 18,
+    "killed": 18
+  },
+  "harnessText": "\"\"\"Round-3 rule-6 mutants for syzygy-bpyt.6.1: round 2's twelve, read from its record, plus six for the round-3 repair.\n\nEach mutant replaces one exact fragment (it must occur exactly once), runs the recorded command, restores the bytes and verifies their\ndigest. Killed: at least one test failed. Usage: python3 mutants.py <worktree> <out.json>\n\"\"\"\nimport hashlib, json, os, re, subprocess, sys\nfrom pathlib import Path\n\nROOT, OUT = Path(sys.argv[1]), Path(sys.argv[2])\nSUBJECT = 'packages/three-surface-poc-core/src/code-structure.ts'\nCOMMAND = ['npx', 'vitest', 'run', 'packages/three-surface-poc-core/src/code-structure.test.ts', 'packages/three-surface-poc-core/src/model.test.ts']\nROUND2 = json.loads((ROOT / 'docs/evidence/code-structure-ls-tree-z-mutants-2026-10-21-r2.json').read_text())\nKEEP_IF_NOT_GITLINK = 'if (!record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);'\nMUTANTS = [(m['id'], m['file'], m['old'], m['new']) for m in ROUND2['mutants']] + [\n    ('gitlink-filter-off', SUBJECT, 'return STRICT_UTF8.decode(withoutGitlinkRecords(bytes));', 'return STRICT_UTF8.decode(bytes);'),\n    ('gitlink-filter-keeps-every-record', SUBJECT, KEEP_IF_NOT_GITLINK, 'kept.push(record);'),\n    ('gitlink-filter-inverted', SUBJECT, KEEP_IF_NOT_GITLINK, 'if (record.subarray(0, GITLINK_RECORD.length).equals(GITLINK_RECORD)) kept.push(record);'),\n    ('unterminated-tail-dropped', SUBJECT, '  if (start < bytes.length) kept.push(bytes.subarray(start));\\n', ''),\n    ('parse-gitlinks-from-any-runner', SUBJECT, \"parseGitLsTree(raw.split('\\\\0').filter((record) => !record.startsWith('160000 ')).join('\\\\0'))\", 'parseGitLsTree(raw)'),\n    ('every-throw-is-non-utf8', SUBJECT, 'if (error instanceof NonUtf8GitOutput) {', 'if (error instanceof Error) {'),\n]\n\nsha = lambda data: hashlib.sha256(data).hexdigest()\ngit = lambda *args: subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\ndef run_suite():\n    proc = subprocess.run(COMMAND, cwd=ROOT, env={**os.environ, 'CI': '1'}, capture_output=True)\n    text = re.sub(r'\\x1b\\[[0-9;]*m', '', (proc.stdout + proc.stderr).decode('utf8', 'replace'))\n    tests = next((line.strip() for line in text.splitlines() if line.strip().startswith('Tests ')), None)\n    failed = sorted({line.strip()[2:].strip() for line in text.splitlines() if line.strip().startswith('× ')})\n    return proc.returncode, tests, failed\n\nfiles = sorted({m[1] for m in MUTANTS})\noriginals = {f: (ROOT / f).read_bytes() for f in files}\nclean_before = git('status', '--porcelain', '--untracked-files=no') == ''\nbase_exit, base_tests, base_failed = run_suite()\nresults = []\ntry:\n    for mutant_id, path, old, new in MUTANTS:\n        text = originals[path].decode('utf8')\n        assert text.count(old) == 1, (mutant_id, old)\n        (ROOT / path).write_bytes(text.replace(old, new).encode('utf8'))\n        try:\n            code, tests, failed = run_suite()\n        finally:\n            (ROOT / path).write_bytes(originals[path])\n        results.append({'id': mutant_id, 'file': path, 'old': old, 'new': new, 'exitCode': code, 'testsLine': tests, 'failedTests': failed,\n                        'outcome': 'killed' if code != 0 and failed else 'survived', 'restored': sha((ROOT / path).read_bytes()) == sha(originals[path])})\n        print(mutant_id, results[-1]['outcome'], tests, flush=True)\nfinally:\n    for path in files:\n        (ROOT / path).write_bytes(originals[path])\nrecord = {\n    'subject': files, 'subjectSha256': {f: sha(originals[f]) for f in files}, 'bead': 'syzygy-bpyt.6.1', 'round': 3,\n    'commit': git('rev-parse', 'HEAD').strip(), 'command': ' '.join(COMMAND), 'trackedTreeCleanBefore': clean_before,\n    'unmutated': {'exitCode': base_exit, 'testsLine': base_tests, 'failedTests': base_failed},\n    'mutants': results, 'trackedTreeCleanAfter': git('status', '--porcelain', '--untracked-files=no') == '',\n    'summary': {'planned': len(MUTANTS), 'killed': sum(r['outcome'] == 'killed' for r in results)},\n    'harnessText': Path(__file__).read_text(),\n}\nOUT.write_text(json.dumps(record, indent=2) + '\\n')\nprint('summary', record['summary'])\n",
+  "reading": "round 2's twelve mutants, read from its record, plus six for the round-3 repair, all at one commit. A first run at 41225e4a left gitlinks-admitted (drop the blob filter) surviving, because no test fed a non-blob record that reaches the filter once gitlinks are dropped before parsing; eddf9677 adds a tree-record check and this run kills all eighteen."
+}

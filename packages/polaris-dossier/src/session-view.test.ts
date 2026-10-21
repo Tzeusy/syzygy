@@ -1,17 +1,17 @@
-import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { authorRule, awaitRule } from './broker.js';
-import { isLaunchedRun, launchFormRefusal, writeLaunchedMarker } from './launched.js';
+import { exited } from './child-process.testkit.js';
+import { launchFormRefusal, launchedMarkerState, writeLaunchedMarker } from './launched.js';
 import { blockingWhy, toolPathsFor } from './polaris.js';
 import { bwrapArgs, viewFor, viewSha256, type ViewRole } from './session-view.js';
 
 // Candidate REQ-polaris-generation-041/042 (prototype under POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): each launched session reaches
 // only what its role needs; the broker admits only the session's own commands; launch forms follow the run's kind.
 
-const hasBwrap = spawnSync('bwrap', ['--ro-bind', '/', '/', '--', '/bin/true']).status === 0;
+const hasBwrap = (await exited('bwrap', ['--ro-bind', '/', '/', '--', '/bin/true'])).status === 0;
 
 describe('session views', () => {
   let base: string;
@@ -34,25 +34,25 @@ describe('session views', () => {
   });
 
   /** Run a probe script in the role's view: one line per path, `r` readable, `w` writable, `-` absent. */
-  const probe = (role: ViewRole, paths: readonly string[]): string[] => {
+  const probe = async (role: ViewRole, paths: readonly string[]): Promise<string[]> => {
     const script = paths.map((p) => `if [ -e '${p}' ]; then if touch '${p}/.w' 2>/dev/null || { [ -f '${p}' ] && [ -w '${p}' ] && echo >> '${p}' 2>/dev/null; }; then echo w; else echo r; fi; else echo -; fi`).join('; ');
-    const result = spawnSync('bwrap', [...bwrapArgs(viewFor(inputs(role))), '/bin/sh', '-c', script], { encoding: 'utf8' });
+    const result = await exited('bwrap', [...bwrapArgs(viewFor(inputs(role))), '/bin/sh', '-c', script]);
     expect(result.status, result.stderr).toBe(0);
     return result.stdout.trim().split('\n');
   };
 
-  it.skipIf(!hasBwrap)('the inventory session sees the clone read-only and its own directory, never the run or another session', () => {
-    expect(probe('inventory', [dirs['clone']!, dirs['run.sessions/session-1']!, dirs['run']!, path.join(dirs['run']!, 'brief.md'), dirs['run.sessions/fidelity-1']!, dirs['checkout']!]))
+  it.skipIf(!hasBwrap)('the inventory session sees the clone read-only and its own directory, never the run or another session', async () => {
+    expect(await probe('inventory', [dirs['clone']!, dirs['run.sessions/session-1']!, dirs['run']!, path.join(dirs['run']!, 'brief.md'), dirs['run.sessions/fidelity-1']!, dirs['checkout']!]))
       .toEqual(['r', 'w', '-', '-', '-', 'r']);
   });
 
-  it.skipIf(!hasBwrap)('a review session sees only its own directory and the checkout read-only', () => {
-    expect(probe('fidelity', [dirs['run.sessions/fidelity-1']!, dirs['clone']!, dirs['run']!, dirs['run.sessions/session-1']!, dirs['run.sessions/design-1']!, dirs['checkout']!]))
+  it.skipIf(!hasBwrap)('a review session sees only its own directory and the checkout read-only', async () => {
+    expect(await probe('fidelity', [dirs['run.sessions/fidelity-1']!, dirs['clone']!, dirs['run']!, dirs['run.sessions/session-1']!, dirs['run.sessions/design-1']!, dirs['checkout']!]))
       .toEqual(['w', '-', '-', '-', '-', 'r']);
   });
 
-  it.skipIf(!hasBwrap)('the author writes only drafts/ and sees no helper session', () => {
-    expect(probe('author', [dirs['run/drafts']!, dirs['run']!, dirs['clone']!, dirs['run.sessions/session-1']!, dirs['run.sessions/fidelity-1']!, dirs['checkout']!]))
+  it.skipIf(!hasBwrap)('the author writes only drafts/ and sees no helper session', async () => {
+    expect(await probe('author', [dirs['run/drafts']!, dirs['run']!, dirs['clone']!, dirs['run.sessions/session-1']!, dirs['run.sessions/fidelity-1']!, dirs['checkout']!]))
       .toEqual(['w', 'r', 'r', '-', '-', 'r']);
   });
 
@@ -100,14 +100,14 @@ describe('launch forms by kind of run', () => {
   afterAll(() => fs.rmSync(run, { recursive: true, force: true }));
 
   it('an operator-started run counts terminal and bang, never syzygy-launched', () => {
-    expect(isLaunchedRun(run)).toBe(false);
+    expect(launchedMarkerState(run)).toBe('absent');
     expect(launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBeNull();
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).not.toBeNull();
   });
 
   it('a launched run counts syzygy-launched, never a declared form', () => {
     writeLaunchedMarker(run, 'run-x', Date.now());
-    expect(isLaunchedRun(run)).toBe(true);
+    expect(launchedMarkerState(run)).toBe('launched');
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBeNull();
     expect(launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();

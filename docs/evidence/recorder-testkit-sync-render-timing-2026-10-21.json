@@ -1,0 +1,55 @@
+{
+ "subject": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+ "subjectSha256": "33484526837e7fa889db498b4167248f1b778429622f2d9bb2137502055ccb16",
+ "bead": "syzygy-bpyt.4.1",
+ "measuredAt": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
+ "purpose": "The measured bound behind the sync-child-process guard's exemption for this module's python3 renders: how long each synchronous render blocks a vitest worker, against the worker RPC's fixed 60 s timeout (syzygy-w90k).",
+ "command": "SPAWN_LOG=<log> npx vitest run --project @syzygy/polaris-dossier --project @syzygy/polaris-generation-consent",
+ "instrumentation": {
+  "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+  "old": "import { spawnSync } from 'node:child_process';\n",
+  "new": "import { spawnSync as realSpawnSync } from 'node:child_process';\nimport { appendFileSync } from 'node:fs';\nimport { expect } from 'vitest';\nconst spawnSync = ((...a: any[]) => { const t = performance.now(); const r = (realSpawnSync as any)(...a); appendFileSync(process.env['SPAWN_LOG']!, JSON.stringify({ file: expect.getState().testPath, test: expect.getState().currentTestName ?? null, ms: performance.now() - t }) + '\\n'); return r; }) as typeof realSpawnSync;\n",
+  "restored": true
+ },
+ "host": {
+  "cores": 12,
+  "loadAverage1mAfterRun": 27.35,
+  "date": "2026-10-21"
+ },
+ "suiteResult": "Test Files 33 passed (33); Tests 1520 passed | 1 skipped (1521)",
+ "calls": 192,
+ "perCallMs": {
+  "p50": 508,
+  "p95": 1502,
+  "max": 2535
+ },
+ "worstWithinOneTest": [
+  {
+   "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+   "test": "the sitting's acts as gate sources, with no act recorded > follow the tree in either state: no records, every record, and each act alone",
+   "calls": 9,
+   "summedMs": 7798
+  },
+  {
+   "file": "packages/polaris-generation-consent/src/package-reader.test.ts",
+   "test": "strict act reads > policy chain: absent without acts; refused for a missing version 1, equal or earlier instants, equal arguments, a supersession that does not name version 1, or other policy bytes",
+   "calls": 4,
+   "summedMs": 4430
+  },
+  {
+   "file": "packages/polaris-dossier/src/start-gates.test.ts",
+   "test": "init: a run that passes every start gate > pins the consented HEAD, records the subject and writes only run.json under the state root",
+   "calls": 3,
+   "summedMs": 3962
+  }
+ ],
+ "worstOutsideTestsPerFile": [
+  {
+   "file": "packages/polaris-generation-consent/src/package-reader.test.ts",
+   "calls": 10,
+   "summedMs": 14545
+  }
+ ],
+ "reading": "A summed figure bounds any single uninterrupted block from above: calls within one test or hook may be separated by awaits. The worst sum, 14.5 s outside tests in one file, is under a quarter of the 60 s timeout at this load.",
+ "measuredAtNote": "origin/main at measurement; this module and every caller's render calls are unchanged by the bead's commit"
+}

@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmodSync, closeSync, constants as fsConstants, cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, closeSync, constants as fsConstants, cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -62,7 +62,7 @@ async function refusal(p: Promise<unknown>): Promise<{ reason: string; objectId:
 let L = '', OFS = '', REF = '', S = '', SP = '';
 /** Offsets of pack entries by object id, and how many are deltas, from `git verify-pack -v` (fixture inspection only). */
 const packEntries = (repo: string): { offsets: Map<string, number>; deltas: number } => {
-  const dir = path.join(repo, '.git/objects/pack'), idx = execFileSync('ls', [dir], { encoding: 'utf8' }).split('\n').find(n => n.endsWith('.idx'))!;
+  const dir = path.join(repo, '.git/objects/pack'), idx = readdirSync(dir).find(n => n.endsWith('.idx'))!;
   const out = git(repo, ['verify-pack', '-v', path.join(dir, idx)]), offsets = new Map<string, number>();
   let deltas = 0;
   for (const line of out.split('\n')) {
@@ -75,7 +75,7 @@ const packEntries = (repo: string): { offsets: Map<string, number>; deltas: numb
 };
 const packFile = (repo: string): string => {
   const dir = path.join(repo, '.git/objects/pack');
-  return path.join(dir, execFileSync('ls', [dir], { encoding: 'utf8' }).split('\n').find(n => n.endsWith('.pack'))!);
+  return path.join(dir, readdirSync(dir).find(n => n.endsWith('.pack'))!);
 };
 let ofsEntries: { offsets: Map<string, number>; deltas: number }, refEntries: { offsets: Map<string, number>; deltas: number };
 beforeAll(() => {

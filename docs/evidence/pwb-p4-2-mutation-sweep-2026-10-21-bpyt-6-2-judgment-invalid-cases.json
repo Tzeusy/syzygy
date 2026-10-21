@@ -1,0 +1,2176 @@
+{
+  "subject": "PWB mutation sweep — task 4.2 (docs/PWB-IMPLEMENTATION-PLAN.md; PWB-REQ-001/002/003/004/005/010/012/020/022)",
+  "date": "2026-10-21-bpyt-6-2",
+  "commit": "88c79070db6ed64bd820e47f1c41fb10b6376f1b",
+  "uncommittedChanges": [],
+  "method": "For each group: run its test files green as the baseline; for each mutation write exactly one predicate disabling or exact-fragment replacement into the subject, run the same test files with the vitest JSON reporter, restore the original bytes and verify sha256 equality. Killed = at least one test failed and every named must-fail test is among the failures.",
+  "sourceDigestsBefore": {
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "c33d0140539525175a267382d2f61f9ca891abbf4abed91bafa0ad33e1a716e6"
+  },
+  "sourceDigestsAfter": {
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "c33d0140539525175a267382d2f61f9ca891abbf4abed91bafa0ad33e1a716e6"
+  },
+  "classes": {
+    "source-denominator": {
+      "planned": 0,
+      "killed": 0
+    },
+    "coverage-partition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "precedence-guard": {
+      "planned": 0,
+      "killed": 0
+    },
+    "secret-sentinel": {
+      "planned": 0,
+      "killed": 0
+    },
+    "capability-first-regression": {
+      "planned": 0,
+      "killed": 0
+    },
+    "meta-copy-prohibition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "admission-invalid-cases": {
+      "planned": 0,
+      "killed": 0
+    },
+    "judgment-invalid-cases": {
+      "planned": 98,
+      "killed": 98
+    },
+    "parity-markers": {
+      "planned": 0,
+      "killed": 0
+    }
+  },
+  "groups": [
+    {
+      "id": "judgment-invalid-cases",
+      "sweepClass": "judgment-invalid-cases",
+      "requirement": "PWB-REQ-022",
+      "description": "a judgment predicate is disabled, or state, disclosure, fallback, absence or history is falsified",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+      ],
+      "baseline": {
+        "total": 123,
+        "passed": 123,
+        "failed": 0
+      },
+      "predicateSites": 85,
+      "literalMutations": 13,
+      "planned": 98,
+      "killed": 98,
+      "survived": 0,
+      "mutations": [
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-outside-records-home",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-outside-records-home",
+          "line": 518,
+          "mustFail": [
+            " run-record-outside-records-home"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-outside-records-home"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#judgment-outside-decisions-home",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "judgment-outside-decisions-home",
+          "line": 520,
+          "mustFail": [
+            " judgment-outside-decisions-home"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judgment-outside-decisions-home"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-identity-missing",
+          "line": 525,
+          "mustFail": [
+            " run-record-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-identity-malformed",
+          "line": 527,
+          "mustFail": [
+            " run-record-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-identity-wrong",
+          "line": 529,
+          "mustFail": [
+            " run-record-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#surface-version-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "surface-version-missing",
+          "line": 533,
+          "mustFail": [
+            " surface-version-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#surface-version-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "surface-version-malformed",
+          "line": 535,
+          "mustFail": [
+            " surface-version-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#surface-version-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "surface-version-wrong",
+          "line": 537,
+          "mustFail": [
+            " surface-version-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#evaluation-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "evaluation-identity-missing",
+          "line": 540,
+          "mustFail": [
+            " evaluation-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met evaluation-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#evaluation-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "evaluation-identity-malformed",
+          "line": 542,
+          "mustFail": [
+            " evaluation-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met evaluation-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#evaluation-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "evaluation-identity-wrong",
+          "line": 544,
+          "mustFail": [
+            " evaluation-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met evaluation-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#nonvisual-mode-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "nonvisual-mode-missing",
+          "line": 547,
+          "mustFail": [
+            " nonvisual-mode-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met nonvisual-mode-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#nonvisual-mode-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "nonvisual-mode-malformed",
+          "line": 549,
+          "mustFail": [
+            " nonvisual-mode-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met nonvisual-mode-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#nonvisual-mode-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "nonvisual-mode-wrong",
+          "line": 551,
+          "mustFail": [
+            " nonvisual-mode-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met nonvisual-mode-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#traversed-paths-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "traversed-paths-missing",
+          "line": 555,
+          "mustFail": [
+            " traversed-paths-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met traversed-paths-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#traversed-paths-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "traversed-paths-malformed",
+          "line": 557,
+          "mustFail": [
+            " traversed-paths-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met traversed-paths-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#traversed-paths-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "traversed-paths-wrong",
+          "line": 559,
+          "mustFail": [
+            " traversed-paths-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met traversed-paths-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#verdict-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "verdict-missing",
+          "line": 564,
+          "mustFail": [
+            " verdict-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met verdict-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#verdict-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "verdict-malformed",
+          "line": 567,
+          "mustFail": [
+            " verdict-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met verdict-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#verdict-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "verdict-wrong",
+          "line": 569,
+          "mustFail": [
+            " verdict-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met verdict-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#rationale-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "rationale-missing",
+          "line": 572,
+          "mustFail": [
+            " rationale-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met rationale-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#rationale-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "rationale-malformed",
+          "line": 574,
+          "mustFail": [
+            " rationale-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met rationale-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#rationale-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "rationale-wrong",
+          "line": 578,
+          "mustFail": [
+            " rationale-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met rationale-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#judging-party-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "judging-party-missing",
+          "line": 581,
+          "mustFail": [
+            " judging-party-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judging-party-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#judging-party-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "judging-party-malformed",
+          "line": 583,
+          "mustFail": [
+            " judging-party-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judging-party-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#judging-party-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "judging-party-wrong",
+          "line": 585,
+          "mustFail": [
+            " judging-party-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judging-party-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-reference-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-reference-missing",
+          "line": 588,
+          "mustFail": [
+            " run-record-reference-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-reference-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-reference-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-reference-malformed",
+          "line": 591,
+          "mustFail": [
+            " run-record-reference-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-reference-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#run-record-reference-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "run-record-reference-wrong",
+          "line": 593,
+          "mustFail": [
+            " run-record-reference-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-reference-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#tree-attribution-only",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "tree-attribution-only",
+          "line": 599,
+          "mustFail": [
+            " tree-attribution-only"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met tree-attribution-only"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#git-ref-only",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "git-ref-only",
+          "line": 601,
+          "mustFail": [
+            " git-ref-only"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met git-ref-only"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#specification-signoff-only",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "specification-signoff-only",
+          "line": 603,
+          "mustFail": [
+            " specification-signoff-only"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met specification-signoff-only"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#machine-submission",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "machine-submission",
+          "line": 605,
+          "mustFail": [
+            " machine-submission"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met machine-submission"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#agent-assertion",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "agent-assertion",
+          "line": 607,
+          "mustFail": [
+            " agent-assertion"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met agent-assertion"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#project-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "project-identity-missing",
+          "line": 616,
+          "mustFail": [
+            " project-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met project-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#project-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "project-identity-malformed",
+          "line": 618,
+          "mustFail": [
+            " project-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met project-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#project-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "project-identity-wrong",
+          "line": 620,
+          "mustFail": [
+            " project-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met project-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#artifact-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "artifact-identity-missing",
+          "line": 624,
+          "mustFail": [
+            " artifact-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met artifact-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#artifact-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "artifact-identity-malformed",
+          "line": 626,
+          "mustFail": [
+            " artifact-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met artifact-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#artifact-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "artifact-identity-wrong",
+          "line": 628,
+          "mustFail": [
+            " artifact-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met artifact-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#exact-digest-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "exact-digest-missing",
+          "line": 632,
+          "mustFail": [
+            " exact-digest-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met exact-digest-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#exact-digest-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "exact-digest-malformed",
+          "line": 634,
+          "mustFail": [
+            " exact-digest-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met exact-digest-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#exact-digest-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "exact-digest-wrong",
+          "line": 636,
+          "mustFail": [
+            " exact-digest-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met exact-digest-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-type-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-type-missing",
+          "line": 640,
+          "mustFail": [
+            " act-type-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-type-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-type-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-type-malformed",
+          "line": 642,
+          "mustFail": [
+            " act-type-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-type-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-type-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-type-wrong",
+          "line": 644,
+          "mustFail": [
+            " act-type-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-type-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-instant-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-instant-missing",
+          "line": 648,
+          "mustFail": [
+            " act-instant-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-instant-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-instant-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-instant-malformed",
+          "line": 650,
+          "mustFail": [
+            " act-instant-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-instant-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-instant-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-instant-wrong",
+          "line": 652,
+          "mustFail": [
+            " act-instant-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-instant-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#owner-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "owner-missing",
+          "line": 656,
+          "mustFail": [
+            " owner-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met owner-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#owner-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "owner-malformed",
+          "line": 658,
+          "mustFail": [
+            " owner-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met owner-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#owner-non-human",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "owner-non-human",
+          "line": 660,
+          "mustFail": [
+            " owner-non-human"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 108,
+            "failed": 15
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"agent: Claude Code\" (role prefix agent) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"daemon\" (role prefix daemon) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"automation: nightly\" (role prefix automation) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"syzygy\" (role prefix syzygy) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"ci/release\" (role prefix ci with a slash) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"renovate[bot]\" (suffix [bot]) → owner-non-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"deploy-bot\" (suffix -bot) → owner-non-human"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#owner-another-human",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "owner-another-human",
+          "line": 662,
+          "mustFail": [
+            " owner-another-human"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 115,
+            "failed": 8
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Somebody Else\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Claudette\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Botha\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Agentha Smith\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Anna Model\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Anna Daemon\" stays owner-another-human",
+            "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Jean-Botha\" stays owner-another-human"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#scope-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "scope-missing",
+          "line": 666,
+          "mustFail": [
+            " scope-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met scope-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#scope-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "scope-malformed",
+          "line": 668,
+          "mustFail": [
+            " scope-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met scope-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#scope-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "scope-wrong",
+          "line": 670,
+          "mustFail": [
+            " scope-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met scope-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#supersession-target-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "supersession-target-missing",
+          "line": 674,
+          "mustFail": [
+            " supersession-target-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met supersession-target-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#supersession-target-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "supersession-target-malformed",
+          "line": 676,
+          "mustFail": [
+            " supersession-target-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met supersession-target-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#supersession-target-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "supersession-target-wrong",
+          "line": 678,
+          "mustFail": [
+            " supersession-target-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met supersession-target-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#a1-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "a1-identity-missing",
+          "line": 682,
+          "mustFail": [
+            " a1-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met a1-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#a1-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "a1-identity-malformed",
+          "line": 684,
+          "mustFail": [
+            " a1-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met a1-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#a1-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "a1-identity-wrong",
+          "line": 686,
+          "mustFail": [
+            " a1-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met a1-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-identity-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-identity-missing",
+          "line": 691,
+          "mustFail": [
+            " act-identity-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-identity-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-identity-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-identity-malformed",
+          "line": 693,
+          "mustFail": [
+            " act-identity-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-identity-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#act-identity-wrong",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "act-identity-wrong",
+          "line": 695,
+          "mustFail": [
+            " act-identity-wrong"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met act-identity-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#paired-to-different-authority",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "paired-to-different-authority",
+          "line": 697,
+          "mustFail": [
+            " paired-to-different-authority"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met paired-to-different-authority"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#provenance-state-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "provenance-state-missing",
+          "line": 702,
+          "mustFail": [
+            " provenance-state-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met provenance-state-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#provenance-state-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "provenance-state-malformed",
+          "line": 704,
+          "mustFail": [
+            " provenance-state-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met provenance-state-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#provenance-state-outside-vocabulary",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "provenance-state-outside-vocabulary",
+          "line": 707,
+          "mustFail": [
+            " provenance-state-outside-vocabulary"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met provenance-state-outside-vocabulary"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#stale",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "stale",
+          "line": 711,
+          "mustFail": [
+            " stale"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met stale"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#expired",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "expired",
+          "line": 713,
+          "mustFail": [
+            " expired"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met expired"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#superseded",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "superseded",
+          "line": 715,
+          "mustFail": [
+            " superseded"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met superseded"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#revoked",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "revoked",
+          "line": 717,
+          "mustFail": [
+            " revoked"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met revoked"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#state-1-not-explicitly-selected",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "state-1-not-explicitly-selected",
+          "line": 721,
+          "mustFail": [
+            " state-1-not-explicitly-selected"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-1-not-explicitly-selected"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#state-1-a1-present",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "state-1-a1-present",
+          "line": 723,
+          "mustFail": [
+            " state-1-a1-present"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-1-a1-present"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#state-2-correlation-failed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "state-2-correlation-failed",
+          "line": 731,
+          "mustFail": [
+            " state-2-correlation-failed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-2-correlation-failed",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only a failed state-(2) correlation is unlawful with the claimed state retained, not a state-(1) judgment"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#state-2-correlation-unavailable",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "state-2-correlation-unavailable",
+          "line": 733,
+          "mustFail": [
+            " state-2-correlation-unavailable"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-2-correlation-unavailable",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only the production correlator is unavailable, so a state-(2) claim is unlawful here today"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#state-2-correlation-indeterminate",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "state-2-correlation-indeterminate",
+          "line": 735,
+          "mustFail": [
+            " state-2-correlation-indeterminate"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-2-correlation-indeterminate"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#phrase-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "phrase-missing",
+          "line": 740,
+          "mustFail": [
+            " phrase-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met phrase-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#phrase-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "phrase-malformed",
+          "line": 742,
+          "mustFail": [
+            " phrase-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met phrase-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#phrase-mismatched",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "phrase-mismatched",
+          "line": 745,
+          "mustFail": [
+            " phrase-mismatched"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met phrase-mismatched"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#recording-tag-missing",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "recording-tag-missing",
+          "line": 749,
+          "mustFail": [
+            " recording-tag-missing"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met recording-tag-missing"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#recording-tag-malformed",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "recording-tag-malformed",
+          "line": 751,
+          "mustFail": [
+            " recording-tag-malformed"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met recording-tag-malformed"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#recording-tag-mismatched",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "recording-tag-mismatched",
+          "line": 753,
+          "mustFail": [
+            " recording-tag-mismatched"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met recording-tag-mismatched"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "packages/three-surface-poc-core/src/walkthrough-judgment.ts#history-append-only",
+          "kind": "disable-predicate",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "caseName": "history-append-only",
+          "line": 798,
+          "mustFail": [
+            "re-recording an evaluation identity throws instead of rewriting"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only re-recording an evaluation identity throws instead of rewriting"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-exact-state-inflated",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "a valid state-(1) judgment is labelled Syzygy-verified",
+          "mustFail": [
+            "valid state (1): owner-adopted"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state valid state (1): owner-adopted, not independently verified, exact disclosure",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only later correlation is a new entry; the earlier state-(1) entry keeps its provenance"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-exact-state-collapsed",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "a valid state-(2) judgment is labelled owner-adopted",
+          "mustFail": [
+            "valid state (2): Syzygy-verified"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state valid state (2): Syzygy-verified, independently verified, no state-(1) sentence",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only later correlation is a new entry; the earlier state-(1) entry keeps its provenance"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-independently-verified-always",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "every lawful judgment claims independent verification",
+          "mustFail": [
+            "valid state (1): owner-adopted"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state valid state (1): owner-adopted, not independently verified, exact disclosure"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-disclosure-hidden",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "the state-(1) disclosure sentence is replaced by the state-(2) one",
+          "mustFail": [
+            "valid state (1): owner-adopted"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state valid state (1): owner-adopted, not independently verified, exact disclosure",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only later correlation is a new entry; the earlier state-(1) entry keeps its provenance"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-failed-correlation-downgrades",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "a failed state-(2) correlation falls back to state (1)",
+          "mustFail": [
+            "a failed state-(2) correlation is unlawful"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met state-2-correlation-failed",
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only a failed state-(2) correlation is unlawful with the claimed state retained, not a state-(1) judgment"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-absent-fabricates-verdict",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "an absent pair carries a fabricated met verdict",
+          "mustFail": [
+            "no-run-record"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 118,
+            "failed": 5
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-run-record — run record missing",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-run-record — run record unreadable",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment missing",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment unreadable",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment without an owner act"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-absent-renders-success",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "an absent pair renders the success criterion",
+          "mustFail": [
+            "no-run-record"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 118,
+            "failed": 5
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-run-record — run record missing",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-run-record — run record unreadable",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment missing",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment unreadable",
+            "PWB-REQ-022 — either absent case renders Unknown, never met, without a verdict no-judgment — judgment without an owner act"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-unlawful-carries-verdict",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "an unlawful pair still carries a verdict",
+          "mustFail": [
+            "run-record-outside-records-home"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 39,
+            "failed": 84
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-outside-records-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judgment-outside-decisions-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-wrong",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-unlawful-renders-success",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "an unlawful pair renders the success criterion",
+          "mustFail": [
+            "run-record-outside-records-home"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 39,
+            "failed": 84
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-outside-records-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judgment-outside-decisions-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-wrong",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-verdict-unlawful-literal",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "the recorded literal is not verdict-unlawful",
+          "mustFail": [
+            "run-record-outside-records-home"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 39,
+            "failed": 84
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-outside-records-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met judgment-outside-decisions-home",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met run-record-identity-wrong",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-missing",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-malformed",
+            "PWB-REQ-022 — each present-invalid case records verdict-unlawful and Unknown-never-met surface-version-wrong"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-history-rewritten",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "re-recording an evaluation identity replaces the earlier entry",
+          "mustFail": [
+            "re-recording an evaluation identity throws instead of rewriting"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only re-recording an evaluation identity throws instead of rewriting"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-history-not-frozen",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "the appended history is mutable",
+          "mustFail": [
+            "later correlation is a new entry"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 122,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — failed state (2) never downgrades; history is append-only later correlation is a new entry; the earlier state-(1) entry keeps its provenance"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "judgment-lawful-called-observed",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "description": "a lawful judgment is presented as Observed evidence",
+          "mustFail": [
+            "a lawful outcome is recorded human judgment"
+          ],
+          "observed": {
+            "total": 123,
+            "passed": 121,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state valid state (1): owner-adopted, not independently verified, exact disclosure",
+            "PWB-REQ-022 — valid judgment states carry the owner verdict with the exact state a lawful outcome is recorded human judgment: never Observed, never a score"
+          ],
+          "killed": true,
+          "restored": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "groups": 1,
+    "planned": 98,
+    "killed": 98,
+    "survived": 0,
+    "restoreFailures": 0
+  }
+}

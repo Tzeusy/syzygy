@@ -6,7 +6,7 @@ import {
   INVENTORY_BRIEF_FILE, LAUNCH_FORMS, buildInventoryBrief, errno, latestInventorySession, launchRecordName, logStep, openRun, promptRecordName,
   readRecord, sessionDirectory, sessionsRoot, sessionsRootViolation, type Declared, type LaunchForm, type OpenedRun,
 } from './inventory.js';
-import { SYZYGY_LAUNCHED, isLaunchedRun } from './launched.js';
+import { SYZYGY_LAUNCHED, launchedMarkerState } from './launched.js';
 import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
 import {
   PACKET_DIGEST_FILE, PACKET_FILE, buildFidelityPacket, buildStoredDesignPacket, isReviewKind, latestReviewSession, reviewLaunchRecordName, reviewPromptRecordName,
@@ -552,7 +552,9 @@ export async function launchForm(runDir: string, request: LaunchFormRequest, dep
     return refuse('form', `the launch form ${JSON.stringify(request.form)} is neither terminal (a new terminal) nor bang (the shell-escape prefix in the authoring session's terminal); a session started any other way, including one the authoring session starts, does not count`);
   }
   if (request.form === SYZYGY_LAUNCHED) return refuse('form', 'syzygy-launched is recorded by Syzygy itself when it starts a session in a launched run; it is never declared');
-  if (isRun && isLaunchedRun(target)) return refuse('form', 'this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it');
+  const marker = isRun ? launchedMarkerState(target) : 'absent';
+  if (marker === 'launched') return refuse('form', 'this run was launched by `syzygy polaris`: Syzygy started its sessions and recorded each launch, so no launch form is declared for it');
+  if (marker === 'unreadable') return refuse('form', 'this run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so whether Syzygy started its sessions cannot be told, and no launch form is declared for it');
   const opened = await openRun(runDir, deps.sources, now, 'no launch form is recorded', deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const { run } = opened;

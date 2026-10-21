@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { issueBrief } from './brief.js';
 import { checkDraft, type CheckDeps } from './check.js';
@@ -19,6 +20,9 @@ import { buildDossierScreen, type ScreenLoad } from './screen.js';
 import { launchForm, sessionPrompt } from './session-handover.js';
 import { recheckSessionStatement } from './session-statement.js';
 import { RUN_LAYOUT } from './state-directory.js';
+
+// Asynchronous, so a slow command cannot starve the vitest worker's RPC (syzygy-w90k).
+const execFileAsync = promisify(execFile);
 
 // syzygy-qkea.9 (S8): review packets and review-check (REQ-polaris-generation-035, 006). The clone is a real Git repository built
 // here with the git CLI; the code under test runs no process. The expected packet is assembled here from the fixture files, the
@@ -274,7 +278,7 @@ describe('review-packet --kind fidelity', () => {
     expect(result.report.directory).toBe(dir);
     expect(fs.readFileSync(path.join(dir, 'packet.json'), 'utf8')).toBe(expected);
     expect(fs.readFileSync(path.join(dir, 'packet.sha256'), 'utf8')).toBe(`${digest}  packet.json\n`);
-    expect(execFileSync('sha256sum', ['-c', 'packet.sha256'], { cwd: dir, encoding: 'utf8' })).toBe('packet.json: OK\n');
+    expect((await execFileAsync('sha256sum', ['-c', 'packet.sha256'], { cwd: dir })).stdout).toBe('packet.json: OK\n');
   });
 
   it('carries no authoring exchange, read account or excluded byte', async () => {
@@ -471,6 +475,17 @@ describe('review-check', () => {
       fs.writeFileSync(file, JSON.stringify({ ...JSON.parse(fs.readFileSync(file, 'utf8')), ...change }));
       expect(await reviewOfRecord(await opened(run), deps())).toEqual({ counts: false, why: 'the launch-form record of fidelity session 1 is not a terminal or bang launch of that session\'s prompt' });
     }
+  });
+
+  it('stops counting a declared launch once the run\'s launched marker is present but unreadable (syzygy-bpyt.8.8)', async () => {
+    const run = await prepared();
+    const dir = await reviewSessionOf(run);
+    writeVerdict(dir, verdict(sha256(expectedPacket(run))));
+    await reviewCheck(run, {}, deps());
+    await launchForm(run, { role: 'review', form: 'terminal' }, { sources: sources(), now: () => LATER });
+    fs.writeFileSync(path.join(run, 'launched.json'), '');
+    // The inventory of record is read first and stops counting too, so the packet the verdict names cannot be rebuilt.
+    expect(await reviewOfRecord(await opened(run), deps())).toEqual({ counts: false, why: 'the packet cannot be rebuilt now: no inventory counts, so no fidelity packet is built: the launch-form record of inventory session 1 is not a countable launch (the run\'s launched marker is present but unreadable, so none counts) of that session\'s prompt' });
   });
 
   it('refuses before any review session is handed over, and after the deadline', async () => {
