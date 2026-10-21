@@ -121,7 +121,7 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
           }
           if (args[0] === 'merge-base') return '';
           if (args[0] === 'for-each-ref') return 'main\n';
-          return execFileSync('git', ['--no-optional-locks', '-C', root, ...args], { encoding: 'utf8' });
+          return new TextDecoder('utf-8', { fatal: true }).decode(execFileSync('git', ['--no-optional-locks', '-C', root, ...args]));
         },
         testArtifactRecord: built.record,
       });
