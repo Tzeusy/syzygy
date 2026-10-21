@@ -871,6 +871,13 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 ("P115 recovery complete;" in lines))
             if name == "T20":
                 recovery_ok = "P115 recovery incomplete: failure receipt persistence failed;" in lines
+            if name == "foreign-record-delete":
+                # Absence equals this preimage but does not prove ownership of
+                # an independently deleted, previously published record.
+                conflict = (str(RECORD) + ": independently changed or deleted; publication ownership unproven")
+                recovery_ok = ("P115 recovery incomplete: " + conflict + "\n" in lines
+                    and "P115 recovery complete;" not in lines
+                    and len(journals) == 1 and journals[0]["recoveryConflicts"] == [conflict])
             if name.startswith("linked-worktree-"):
                 preimages_ok = preimages_ok and (tree / ".git").is_file() and git_dir != template / ".git"
             required = {
