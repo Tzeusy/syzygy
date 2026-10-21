@@ -1,7 +1,10 @@
-// syzygy-bpyt.8.1 AC3: what the `syzygy` CLI reaches in one committed tree, over every import edge TypeScript's preprocessor
-// reports (static, type-only, re-export, dynamic with a literal specifier); `@syzygy/*` resolves through each package's `exports`,
-// `./dist/X.js` read as `src/X.ts`. Independent of island-boundary.test.ts, which computes the same closure in its own code.
-// Usage: node reach_sweep.mjs <tree>   (prints JSON; the tree must be a clean git checkout, and its commit is recorded)
+// syzygy-bpyt.8.1 AC3: what the `syzygy` CLI reaches in one committed tree, as two graphs. The source graph takes every import edge
+// TypeScript's preprocessor reports in each `src/*.ts` (static, type-only, re-export, dynamic with a literal specifier). The runtime
+// graph takes the same edges from each file's compiled `dist/*.js`, so it holds exactly the imports node loads: tsc has dropped every
+// type-only one. `@syzygy/*` resolves through each package's `exports`, `./dist/X.js` read as `src/X.ts`; files are named by their
+// source path in both. Independent of island-boundary.test.ts, which computes the source closure in its own code.
+// Usage: node reach_sweep.mjs <tree>   (prints JSON; the tree must be a clean git checkout built with `tsc -b apps/syzygy`, and its
+// commit is recorded)
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
@@ -51,7 +54,9 @@ function resolve(from, spec) {
   return isFile(file) ? file : { unresolved: spec };
 }
 
-function closure(unfollowed) {
+/** The compiled file a source file builds to: `<package>/src/X.ts` becomes `<package>/dist/X.js`. */
+const compiled = (file) => file.replace(/^((?:apps|packages)\/[^/]+)\/src\//u, '$1/dist/').replace(/\.ts$/u, '.js');
+function closure(unfollowed, graph) {
   const edges = new Map();
   const unresolved = [];
   const seen = new Set([ENTRY]);
@@ -59,8 +64,10 @@ function closure(unfollowed) {
   while (queue.length) {
     const file = queue.shift();
     if (unfollowed.includes(file)) { edges.set(file, []); continue; }
+    const read = graph === 'runtime' ? compiled(file) : file;
+    if (!isFile(read)) throw new Error(`${read} is missing: build the tree with \`tsc -b apps/syzygy\` first`);
     const out = [];
-    for (const { fileName } of ts.preProcessFile(fs.readFileSync(path.join(ROOT, file), 'utf8'), true, true).importedFiles) {
+    for (const { fileName } of ts.preProcessFile(fs.readFileSync(path.join(ROOT, read), 'utf8'), true, true).importedFiles) {
       const r = resolve(file, fileName);
       if (r === null) continue;
       if (typeof r === 'object') { unresolved.push({ file, specifier: r.unresolved }); continue; }
@@ -79,21 +86,25 @@ function closure(unfollowed) {
       if (e.to === CORE_ROOT && !coreRootImporters.includes(file)) coreRootImporters.push(file);
     }
   }
+  const edgeList = [...edges].flatMap(([from, out]) => out.map((e) => ({ from, specifier: e.specifier, to: e.to })))
+    .sort((a, b) => `${a.from}\0${a.to}\0${a.specifier}`.localeCompare(`${b.from}\0${b.to}\0${b.specifier}`));
   return {
-    unfollowed, reachableCount: reachable.length, reachable,
+    graph, unfollowed, reachableCount: reachable.length, edgeCount: edgeList.length, reachable,
     reachableIsland: reachable.filter((f) => island.has(f)),
     coreRootImporters: coreRootImporters.sort(),
-    edgesIntoIsland, unresolved,
+    edgesIntoIsland, unresolved, edges: edgeList,
   };
 }
 
 const clean = git('status', '--porcelain', '--untracked-files=no') === '';
 const self = fs.readFileSync(new URL(import.meta.url), 'utf8');
 console.log(JSON.stringify({
-  format: 'syzygy-bpyt-8-1-reach/1',
+  format: 'syzygy-bpyt-8-1-reach/2',
   commit: git('rev-parse', 'HEAD'), trackedTreeClean: clean,
   sweepSha256: createHash('sha256').update(self, 'utf8').digest('hex'),
   entry: ENTRY, island: ISLAND, islandCount: ISLAND.length,
-  everyEdge: closure([]),
-  consentPortsUnfollowed: closure([CONSENT_PORTS]),
+  everyEdge: closure([], 'source'),
+  consentPortsUnfollowed: closure([CONSENT_PORTS], 'source'),
+  runtimeEveryEdge: closure([], 'runtime'),
+  runtimeConsentPortsUnfollowed: closure([CONSENT_PORTS], 'runtime'),
 }, null, 2));

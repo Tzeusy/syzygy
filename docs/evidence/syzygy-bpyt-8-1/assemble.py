@@ -11,26 +11,27 @@ git = lambda *args: subprocess.run(['git', '-C', str(tree), *args], capture_outp
 
 reach_before, reach_after = load('reach-before.json'), load('reach-after.json')
 diff, mutants, regen, citers, tests = load('differential.json'), load('mutants.json'), load('regen-check.json'), load('digest-citers.json'), load('tests-delta.json')
-surface = load('export-surface.json')
+surface, locators, consent = load('export-surface.json'), load('locators.json'), load('consent-differential.json')
 subject = mutants['commit']
 for name, commit in [('reach-after.json', reach_after['commit']), ('differential.json', diff['new']['commit']), ('regen-check.json', regen['commit']),
-                     ('digest-citers.json', citers['new']), ('tests-delta.json', tests['new'])]:
+                     ('digest-citers.json', citers['new']), ('tests-delta.json', tests['new']), ('export-surface.json', surface['after']['commit']),
+                     ('locators.json', locators['new']), ('consent-differential.json', consent['new']['commit'])]:
     assert commit == subject, f'{name} ran at {commit}, not the subject {subject}'
-assert reach_before['commit'] == diff['old']['commit'] == citers['old'] == tests['old'] == surface['before']['commit'], 'the records disagree on the commit before'
-# export-surface.json ran at the commit that added this directory; it differs from the subject only inside this directory.
-moved = [f for f in git('diff', '--name-only', subject, surface['after']['commit']).decode().split('\n') if f]
-assert all(f.startswith('docs/evidence/syzygy-bpyt-8-1/') for f in moved), moved
+before = {reach_before['commit'], diff['old']['commit'], citers['old'], tests['old'], surface['before']['commit'], locators['old'], consent['old']['commit']}
+assert len(before) == 1, f'the records disagree on the commit before: {before}'
+for name in ('consent-census-before.json', 'consent-census-after.json'):
+    assert sha((here / name).read_bytes()) == consent['old' if name.endswith('before.json') else 'new']['censusSha256'], f'{name} is not the census compared'
 
 def reach(record):
-    return {k: {'reachableModules': record[k]['reachableCount'], 'reachableIslandModules': len(record[k]['reachableIsland']),
+    return {k: {'reachableModules': record[k]['reachableCount'], 'edges': record[k]['edgeCount'], 'reachableIslandModules': len(record[k]['reachableIsland']),
                 'coreRootImporters': record[k]['coreRootImporters'], 'edgesIntoIsland': len(record[k]['edgesIntoIsland']), 'unresolved': len(record[k]['unresolved'])}
-            for k in ('everyEdge', 'consentPortsUnfollowed')}
+            for k in ('everyEdge', 'consentPortsUnfollowed', 'runtimeEveryEdge', 'runtimeConsentPortsUnfollowed')}
 
 outcomes = {}
 for m in mutants['mutants']: outcomes.setdefault(m['outcome'], []).append(m['id'])
 changed = [r['file'] for r in citers['rows']] + citers['addedFiles']
 print(json.dumps({
-    'format': 'syzygy-bpyt-8-1-index/1', 'bead': 'syzygy-bpyt.8.1',
+    'format': 'syzygy-bpyt-8-1-index/2', 'bead': 'syzygy-bpyt.8.1',
     'subjectCommit': subject, 'commitBefore': reach_before['commit'], 'beadBaseCommit': '3000698f3706a7e583a21be37dfdc30e3ffef551',
     'subjectFileSha256': {f: (sha(git('show', f'{subject}:{f}')) if f in {p.decode() for p in git('ls-tree', '-r', '--name-only', '-z', subject).split(b'\0') if p} else None) for f in sorted(changed)},
     'records': {name: sha((here / name).read_bytes()) for name in sorted(p.name for p in here.glob('*.json') if p.name != 'evidence.json')},
@@ -43,8 +44,13 @@ print(json.dumps({
     'mutants': {'total': len(mutants['mutants']), **{k: len(v) for k, v in outcomes.items()}, 'survivors': outcomes.get('survived', [])},
     'regeneratedSplitIdentical': regen['allIdentical'],
     'digestCiters': {'changedFiles': citers['changedFiles'], 'citedFiles': citers['citedFiles'], 'citerClasses': citers['citerClasses'], 'governedPlaneCiters': citers['governedPlaneCiters']},
-    'exportSurface': {'ranAt': surface['after']['commit'], 'differsFromSubjectOnlyIn': 'docs/evidence/syzygy-bpyt-8-1/',
-                      'delta': {f: {k: (v[k] if k in ('before', 'after') else len(v[k])) for k in ('before', 'after', 'added', 'removed')} for f, v in surface['delta'].items()},
-                      'removed': {f: v['removed'] for f, v in surface['delta'].items() if v['removed']}, 'packageExports': surface['after']['packageExports']},
+    'exportSurface': {'delta': {f: {k: (v[k] if k in ('before', 'after') else len(v[k])) for k in ('before', 'after', 'added', 'removed')} for f, v in surface['delta'].items()},
+                      'removed': {f: v['removed'] for f, v in surface['delta'].items() if v['removed']}, 'packageExports': surface['after']['packageExports'],
+                      'consentCensus': surface['consentCensus']},
+    'locators': {k: locators[k] for k in ('changedFiles', 'existingAtOld', 'locators', 'ambiguousSkipped', 'staleAtOld', 'shifted')}
+                | {'shiftedByCiter': {c: sum(1 for r in locators['shiftedRows'] if r['citer'] == c) for c in sorted({r['citer'] for r in locators['shiftedRows']})},
+                   'shiftedInGovernedPlane': sum(1 for r in locators['shiftedRows'] if r['citerBound'] == 'governed plane')},
+    'consentDifferential': {k: consent[k] for k in ('records', 'recordsIdentical', 'fixtureCount', 'distinctAnswers', 'checkLinesIdentical',
+                                                     'supersededRegenerationIdentical', 'wholeDocumentIdentical')},
     'tests': tests['summary'],
 }, indent=2))
