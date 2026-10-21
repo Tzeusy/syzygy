@@ -116,7 +116,9 @@ happen.
 
 ### N7: the route-capture fixture path
 
-[Observed by the reviewer] The recorded capture digest `486bea4a…`
+[Observed by the reviewer] The recorded capture digest (`baseCaptureSha256`
+and `headCaptureSha256` in
+`docs/evidence/poc-hygiene-2026-10-22/route-capture-2026-10-22.json`)
 reproduces only with the fixture at `/tmp/zz-route-capture-fixture-repo`. The
 base-versus-head equality reproduces at any path.
 
