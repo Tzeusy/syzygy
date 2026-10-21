@@ -1,0 +1,889 @@
+{
+  "title": "syzygy-bpyt.8.3 premise check: no scenario in the v1.2 local-agent-mode change requires a refusal while v1.2 is unsigned",
+  "bead": "syzygy-bpyt.8.3",
+  "tree": "d6ad4ef2615b20e46e7636438d96de6f6744c455",
+  "subject": {
+    "openspec/changes/polaris-dossier-local-agent-mode/GOVERNING-DEPENDENCIES.md": {
+      "gitBlob": "af66eb61a173ca5a2e808b359c1acea02f64e749"
+    },
+    "openspec/changes/polaris-dossier-local-agent-mode/design.md": {
+      "gitBlob": "9a77069547b89574ccd6307b599d2911ba6c127a"
+    },
+    "openspec/changes/polaris-dossier-local-agent-mode/proposal.md": {
+      "gitBlob": "86f79103b2ec4bb7b2d40e1790d7ed3bd68d5e97"
+    },
+    "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md": {
+      "gitBlob": "ae5b4237ab4f9d27cac9e46033f0bef55fd365d0"
+    },
+    "openspec/changes/polaris-dossier-local-agent-mode/tasks.md": {
+      "gitBlob": "124ffeed0aa016a5caab6a4c515b188dc9b9e5b9"
+    }
+  },
+  "command": "python3 premise_check.py <tree> <out.json>",
+  "predicates": {
+    "signoffVocabulary": "\\b(?:un)?signed\\b|\\bsign-?offs?\\b|\\bsignoff\\b|until the owner|version-tagged (re.I), over every line of every file in subject",
+    "refusalVocabulary": "refus|\\bSHALL NOT\\b|\\bnot started\\b|\\bstops?\\b|\\bfails?\\b (re.I), over every scenario block of openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+    "versionOrSignoffVocabulary": "\\b1\\.[012]\\b|\\bversion\\b|\\bv1\\b|\\bsign (re.I), over every scenario block of openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+    "scenarioBlock": "from a line starting '#### Scenario: ' to the line before the next line starting '#', 'Form: ' or a fence; a requirement's last scenario is followed by its Form, verification block and warrants, which are not scenario text"
+  },
+  "selftest": [
+    {
+      "mutant": "a planted unsigned-refusal scenario",
+      "caught": true,
+      "by": "the hit-set assertion",
+      "firstError": "unclassified [('spec.md', 382), ('spec.md', 384), ('spec.md', 419)]; no longer hit [('spec.md', 414)]"
+    },
+    {
+      "mutant": "the planted scenario with its hit lines classified",
+      "caught": true,
+      "summary": {
+        "scenariosWithSignoffVocabulary": 1,
+        "hitsInsideAScenario": 2,
+        "ofThoseNamingAVersionOrSignoff": 1,
+        "refusalScenariosNamingAVersionOrSignoff": [
+          "Waiting session before the owner has signed version 1.2"
+        ]
+      }
+    },
+    {
+      "mutant": "every sign-off token removed from spec.md line 3",
+      "caught": true,
+      "by": "the hit-set assertion",
+      "firstError": "unclassified []; no longer hit [('spec.md', 3)]"
+    }
+  ],
+  "summary": {
+    "files": 5,
+    "requirements": 4,
+    "scenarios": 54,
+    "signoffHits": 29,
+    "signoffHitLines": 29,
+    "byClass": {
+      "owner-direction or decision identifier (the token is part of a name, not a condition)": 9,
+      "binding or history banner: which versions were signed, and that these bytes bind only by sign-off": 7,
+      "sequencing: what is installed, implemented or put to the owner at or after the sign-off": 13
+    },
+    "hitsInsideAScenario": 0,
+    "scenariosWithSignoffVocabulary": 0,
+    "scenariosWithRefusalVocabulary": 19,
+    "ofThoseNamingAVersionOrSignoff": 0,
+    "refusalScenariosNamingAVersionOrSignoff": [],
+    "scenariosRequiringARefusalWhileV12IsUnsigned": 0
+  },
+  "signoffHits": [
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/GOVERNING-DEPENDENCIES.md",
+      "line": 25,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 4,
+      "tokens": [
+        "signed"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 6,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 8,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 67,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 222,
+      "tokens": [
+        "signed"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 305,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/design.md",
+      "line": 416,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 9,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 10,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 15,
+      "tokens": [
+        "signed"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 21,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 120,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 151,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 159,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/proposal.md",
+      "line": 185,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "line": 3,
+      "tokens": [
+        "signed",
+        "SIGNOFF",
+        "SIGNOFF",
+        "sign-off",
+        "signed",
+        "until the owner"
+      ],
+      "class": "binding or history banner: which versions were signed, and that these bytes bind only by sign-off",
+      "inScenario": null
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "line": 11,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)",
+      "inScenario": null
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "line": 223,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)",
+      "inScenario": null
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "line": 320,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)",
+      "inScenario": null
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md",
+      "line": 414,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)",
+      "inScenario": null
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 14,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 19,
+      "tokens": [
+        "Sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 25,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 26,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 27,
+      "tokens": [
+        "SIGNOFF"
+      ],
+      "class": "owner-direction or decision identifier (the token is part of a name, not a condition)"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 30,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 32,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    },
+    {
+      "file": "openspec/changes/polaris-dossier-local-agent-mode/tasks.md",
+      "line": 99,
+      "tokens": [
+        "sign-off"
+      ],
+      "class": "sequencing: what is installed, implemented or put to the owner at or after the sign-off"
+    }
+  ],
+  "requirements": [
+    {
+      "line": 7,
+      "title": "Operator-agent authoring mode"
+    },
+    {
+      "line": 228,
+      "title": "Agent brief and mechanically checked draft"
+    },
+    {
+      "line": 318,
+      "title": "Fresh-context review in the operator-agent mode"
+    },
+    {
+      "line": 419,
+      "title": "Self-reported discovery and in-session clarification"
+    }
+  ],
+  "scenarios": [
+    {
+      "line": 35,
+      "lastLine": 40,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Clone pinned to a consented revision",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 41,
+      "lastLine": 46,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Clone at an unconsented revision",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 47,
+      "lastLine": 52,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Recorded revision altered",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus",
+        "stops"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 53,
+      "lastLine": 58,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Object store altered after pinning",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 59,
+      "lastLine": 64,
+      "requirement": "Operator-agent authoring mode",
+      "title": "No provider call and no egress record",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 65,
+      "lastLine": 70,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Limits declared by the operator",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 71,
+      "lastLine": 76,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Zero repair and question limits accepted",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails",
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 77,
+      "lastLine": 82,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Agent usage is not observed",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 83,
+      "lastLine": 88,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Syzygy's own limits enforced",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 89,
+      "lastLine": 94,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Stored record altered within the agent's reach",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 95,
+      "lastLine": 100,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Governed subject without a per-project provider statement",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 101,
+      "lastLine": 106,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Governed subject with a per-project provider statement",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 107,
+      "lastLine": 112,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Per-project statement withdrawn mid-run",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 113,
+      "lastLine": 118,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Non-governed subject needs no statement",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 119,
+      "lastLine": 124,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Execution rule follows SEC-3",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 125,
+      "lastLine": 130,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Execution permission stays with the authoring session",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "stops"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 131,
+      "lastLine": 136,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Adapter credential readable",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 137,
+      "lastLine": 144,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Execution permitted under the amendment",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 145,
+      "lastLine": 150,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Permitting brief without the host and attendance declaration",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 151,
+      "lastLine": 156,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Consent or policy record without its owner act",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 157,
+      "lastLine": 161,
+      "requirement": "Operator-agent authoring mode",
+      "title": "D9 record without its owner act",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 162,
+      "lastLine": 166,
+      "requirement": "Operator-agent authoring mode",
+      "title": "RFC7-20 reading record without its owner act",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 167,
+      "lastLine": 172,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Every reported command disclosed",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 173,
+      "lastLine": 178,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Reported command outside the named scope",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 179,
+      "lastLine": 184,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Mode disclosed on every page",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": [
+        "version"
+      ]
+    },
+    {
+      "line": 185,
+      "lastLine": 190,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Operator-computed draft admitted under the owner's reading",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 191,
+      "lastLine": 196,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Provider-mode draft keeps the adopted rule",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 197,
+      "lastLine": 202,
+      "requirement": "Operator-agent authoring mode",
+      "title": "A condition of the owner's reading fails",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 203,
+      "lastLine": 208,
+      "requirement": "Operator-agent authoring mode",
+      "title": "Agent reports running the observed project",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 251,
+      "lastLine": 256,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Brief carries topics, rules and schema",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": [
+        "version"
+      ]
+    },
+    {
+      "line": 257,
+      "lastLine": 262,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Understanding record self-reported",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 263,
+      "lastLine": 268,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Quotation verified against the pinned blob",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 269,
+      "lastLine": 274,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Quotation altered, elided or outside its range",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 275,
+      "lastLine": 280,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Cited path absent at the pinned revision",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 281,
+      "lastLine": 286,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Quotation from an excluded file",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 287,
+      "lastLine": 292,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Agent labels its own claim Observed",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 293,
+      "lastLine": 298,
+      "requirement": "Agent brief and mechanically checked draft",
+      "title": "Repair loop counted",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 334,
+      "lastLine": 339,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Review packet without the authoring exchange",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 340,
+      "lastLine": 345,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Verdict bound to a stale packet",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 346,
+      "lastLine": 351,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Reviewer or inventory declared as the author",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 352,
+      "lastLine": 357,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Verdict incomplete or inconsistent",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 358,
+      "lastLine": 363,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Independence and completeness disclosed as Inferred",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 364,
+      "lastLine": 369,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Design review survives its status region",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 370,
+      "lastLine": 375,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Inventory omission blocks readiness",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 376,
+      "lastLine": 381,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Waiting session started before its packet",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": [
+        "sign"
+      ]
+    },
+    {
+      "line": 382,
+      "lastLine": 387,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Packet delivered to a waiting session",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "refus"
+      ],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 388,
+      "lastLine": 393,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Printed pre-approval for a waiting session",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 394,
+      "lastLine": 399,
+      "requirement": "Fresh-context review in the operator-agent mode",
+      "title": "Continuing reviewer disclosed",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 431,
+      "lastLine": 436,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "Two read populations shown apart",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 437,
+      "lastLine": 442,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "Self-reported path absent at the pinned revision",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 443,
+      "lastLine": 448,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "No Observed not-read claim",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 449,
+      "lastLine": 454,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "Syzygy's reads wait for its start gates",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 455,
+      "lastLine": 460,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "Consequential question asked in-session",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [],
+      "versionOrSignoffVocabulary": []
+    },
+    {
+      "line": 461,
+      "lastLine": 466,
+      "requirement": "Self-reported discovery and in-session clarification",
+      "title": "Question limit reached",
+      "signoffVocabulary": [],
+      "refusalVocabulary": [
+        "fails"
+      ],
+      "versionOrSignoffVocabulary": []
+    }
+  ],
+  "mergeRule": {
+    "file": ".syzygy/governance/decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md",
+    "lines": [
+      89,
+      91
+    ],
+    "text": "   The code may merge only once version 1.2 is signed off: until then the\n   signed version 1.1 says each session is handed its packet when the\n   operator starts it.\n",
+    "reading": "a rule on when the code may merge, discharged by the v1.2 sign-off below; it states no runtime refusal"
+  },
+  "v12SignoffRecordHead": {
+    "file": ".syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md",
+    "Date": "2026-10-14",
+    "Package": "polaris-dossier-local-agent-mode",
+    "Version": "1.2",
+    "Tag": "polaris-dossier-local-agent-mode-v1.2",
+    "Kind": "specification delta",
+    "Review": "docs/reviews/R-PR408-WAITING-SESSIONS-4-RAW.md",
+    "Reviewed commit": "a3cdb3e644258561e1630eae0436905819e0ddb8"
+  },
+  "scriptSource": "\"\"\"syzygy-bpyt.8.3 premise check: does the v1.2 local-agent-mode change, as signed, carry a scenario that requires a refusal while\nv1.2 is unsigned? Sweeps every tracked file of the change in the tree given, classifies every sign-off hit by file and line, and tests\nevery scenario block of the spec delta with three predicates. Fails (AssertionError) when the hit set drifts from the classified set.\nBefore the real sweep it runs each predicate against a mutated copy of the same texts and records that the mutant is caught.\nUsage: python3 premise_check.py <tree> <out.json>\"\"\"\nimport json, re, subprocess, sys\nfrom pathlib import Path\n\nTREE, OUT = Path(sys.argv[1]).resolve(), Path(sys.argv[2])\nCHANGE = 'openspec/changes/polaris-dossier-local-agent-mode/'\nSPEC = CHANGE + 'specs/polaris-generation/spec.md'\nDIRECTION = '.syzygy/governance/decisions/POLARIS-DOSSIER-WAITING-SESSIONS-DIRECTION.md'\nRECORD = '.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md'\n\n# Sign-off vocabulary: case folded, word-bounded so \"assigned\" and \"designed\" do not match.\nSIGNOFF = re.compile(r'\\b(?:un)?signed\\b|\\bsign-?offs?\\b|\\bsignoff\\b|until the owner|version-tagged', re.I)\n# Refusal vocabulary, for the second scenario predicate.\nREFUSAL = re.compile(r'refus|\\bSHALL NOT\\b|\\bnot started\\b|\\bstops?\\b|\\bfails?\\b', re.I)\n# A scenario that conditions on the change's own version or its sign-off would name one of these.\nVERSIONED = re.compile(r'\\b1\\.[012]\\b|\\bversion\\b|\\bv1\\b|\\bsign', re.I)\n\nID = 'owner-direction or decision identifier (the token is part of a name, not a condition)'\nBANNER = 'binding or history banner: which versions were signed, and that these bytes bind only by sign-off'\nSEQUENCE = 'sequencing: what is installed, implemented or put to the owner at or after the sign-off'\nCLASSIFIED = {\n    ('GOVERNING-DEPENDENCIES.md', 25): ID,\n    ('design.md', 4): BANNER, ('design.md', 6): BANNER, ('design.md', 8): SEQUENCE, ('design.md', 67): ID,\n    ('design.md', 222): BANNER, ('design.md', 305): SEQUENCE, ('design.md', 416): SEQUENCE,\n    ('proposal.md', 9): ID, ('proposal.md', 10): ID, ('proposal.md', 15): BANNER, ('proposal.md', 21): BANNER,\n    ('proposal.md', 120): BANNER, ('proposal.md', 151): SEQUENCE, ('proposal.md', 159): SEQUENCE, ('proposal.md', 185): SEQUENCE,\n    ('spec.md', 3): BANNER, ('spec.md', 11): ID, ('spec.md', 223): ID, ('spec.md', 320): ID, ('spec.md', 414): ID,\n    ('tasks.md', 14): SEQUENCE, ('tasks.md', 19): SEQUENCE, ('tasks.md', 25): SEQUENCE, ('tasks.md', 26): SEQUENCE,\n    ('tasks.md', 27): ID, ('tasks.md', 30): SEQUENCE, ('tasks.md', 32): SEQUENCE, ('tasks.md', 99): SEQUENCE,\n}\nDIRECTION_LINES = (89, 91)\nDIRECTION_TEXT = ('   The code may merge only once version 1.2 is signed off: until then the\\n'\n                  '   signed version 1.1 says each session is handed its packet when the\\n'\n                  '   operator starts it.\\n')\n# The selftest's planted scenario, placed after the waiting-session scenario at the head of REQ-035's waiting block.\nPLANTED = ['', '#### Scenario: Waiting session before the owner has signed version 1.2', '',\n           '- **WHEN** the operator runs `session-prompt <run> all` while version 1.2 is unsigned',\n           '- **THEN** the command is refused and each session is handed its packet as in version 1.1']\n\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(TREE), *args], capture_output=True, text=True, check=True).stdout\n\n\ndef sweep(texts):\n    \"\"\"texts: {tracked path: text}. Returns the classified hits, the spec's requirements and scenarios, and the summary.\"\"\"\n    hits = []\n    for f, text in texts.items():\n        for n, line in enumerate(text.splitlines(), 1):\n            tokens = [m.group() for m in SIGNOFF.finditer(line)]\n            if tokens:\n                hits.append({'file': f, 'line': n, 'tokens': tokens, 'class': CLASSIFIED.get((Path(f).name, n))})\n    found = {(Path(h['file']).name, h['line']) for h in hits}\n    assert found == set(CLASSIFIED), f'unclassified {sorted(found - set(CLASSIFIED))}; no longer hit {sorted(set(CLASSIFIED) - found)}'\n    spec = texts[SPEC].splitlines()\n    requirements = [(n, l[len('### Requirement: '):]) for n, l in enumerate(spec, 1) if l.startswith('### Requirement: ')]\n    scenarios = []\n    for n, line in enumerate(spec, 1):\n        if line.startswith('#### Scenario: '):\n            end = next((m for m in range(n, len(spec)) if spec[m].startswith(('#', 'Form: ', '```'))), len(spec))\n            body = spec[n - 1:end]\n            scenarios.append({\n                'line': n, 'lastLine': end, 'requirement': [r for r in requirements if r[0] < n][-1][1], 'title': line[len('#### Scenario: '):],\n                'signoffVocabulary': [m.group() for l in body for m in SIGNOFF.finditer(l)],\n                'refusalVocabulary': sorted({m.group() for l in body for m in REFUSAL.finditer(l)}),\n                'versionOrSignoffVocabulary': [m.group() for l in body for m in VERSIONED.finditer(l)],\n            })\n    for h in hits:\n        if h['file'] == SPEC:\n            h['inScenario'] = next((s['title'] for s in scenarios if s['line'] <= h['line'] <= s['lastLine']), None)\n    refusing = [s for s in scenarios if s['refusalVocabulary']]\n    flagged = [s['title'] for s in refusing if s['signoffVocabulary'] or s['versionOrSignoffVocabulary']]\n    summary = {\n        'files': len(texts), 'requirements': len(requirements), 'scenarios': len(scenarios),\n        'signoffHits': len(hits), 'signoffHitLines': len(found),\n        'byClass': {c: sum(h['class'] == c for h in hits) for c in (ID, BANNER, SEQUENCE)},\n        'hitsInsideAScenario': sum(h.get('inScenario') is not None for h in hits),\n        'scenariosWithSignoffVocabulary': sum(bool(s['signoffVocabulary']) for s in scenarios),\n        'scenariosWithRefusalVocabulary': len(refusing),\n        'ofThoseNamingAVersionOrSignoff': len(flagged),\n        'refusalScenariosNamingAVersionOrSignoff': flagged,\n    }\n    return hits, requirements, scenarios, summary\n\n\ndef selftest(texts):\n    \"\"\"Rule 6: each predicate, mutated in its input, must change the outcome.\"\"\"\n    results = []\n    spec = texts[SPEC].splitlines()\n    at = next(n for n, l in enumerate(spec) if l == '#### Scenario: Packet delivered to a waiting session') - 1\n    planted = {**texts, SPEC: '\\n'.join(spec[:at] + PLANTED + spec[at:]) + '\\n'}\n    try:\n        sweep(planted)\n        results.append({'mutant': 'a planted unsigned-refusal scenario', 'caught': False})\n    except AssertionError as error:\n        results.append({'mutant': 'a planted unsigned-refusal scenario', 'caught': True, 'by': 'the hit-set assertion', 'firstError': str(error).splitlines()[0]})\n    # The same plant with the classification widened to accept it: the scenario predicates must catch it on their own.\n    added = {(Path(SPEC).name, at + 1 + i): 'planted' for i, l in enumerate(PLANTED) if SIGNOFF.search(l)}\n    shifted = {(k[0], k[1] + (len(PLANTED) if k[0] == Path(SPEC).name and k[1] > at else 0)): v for k, v in CLASSIFIED.items()}\n    saved = dict(CLASSIFIED)\n    CLASSIFIED.clear(); CLASSIFIED.update({**shifted, **added})\n    try:\n        summary = sweep(planted)[3]\n    finally:\n        CLASSIFIED.clear(); CLASSIFIED.update(saved)\n    results.append({'mutant': 'the planted scenario with its hit lines classified', 'caught': summary['ofThoseNamingAVersionOrSignoff'] == 1\n                    and summary['scenariosWithSignoffVocabulary'] == 1 and summary['hitsInsideAScenario'] == len(added),\n                    'summary': {k: summary[k] for k in ('scenariosWithSignoffVocabulary', 'hitsInsideAScenario', 'ofThoseNamingAVersionOrSignoff',\n                                                        'refusalScenariosNamingAVersionOrSignoff')}})\n    # A hit removed from a classified line: the assertion must name it as no longer hit.\n    first = texts[SPEC].splitlines()\n    first[2] = SIGNOFF.sub('X', first[2])\n    try:\n        sweep({**texts, SPEC: '\\n'.join(first) + '\\n'})\n        results.append({'mutant': 'every sign-off token removed from spec.md line 3', 'caught': False})\n    except AssertionError as error:\n        results.append({'mutant': 'every sign-off token removed from spec.md line 3', 'caught': True, 'by': 'the hit-set assertion', 'firstError': str(error).splitlines()[0]})\n    return results\n\n\nfiles = [f for f in git('ls-files', '-z', '--', CHANGE).split('\\0') if f]\nassert git('status', '--porcelain', '--', CHANGE, DIRECTION, RECORD) == '', 'the swept files differ from the commit'\ntexts = {f: (TREE / f).read_text(encoding='utf8') for f in files}\nmutants = selftest(texts)\nassert all(m['caught'] for m in mutants), mutants\nhits, requirements, scenarios, summary = sweep(texts)\nsummary['scenariosRequiringARefusalWhileV12IsUnsigned'] = 0 if summary['ofThoseNamingAVersionOrSignoff'] == 0 and summary['hitsInsideAScenario'] == 0 else None\n\ndirection = (TREE / DIRECTION).read_text(encoding='utf8').splitlines(keepends=True)\nquoted = ''.join(direction[DIRECTION_LINES[0] - 1:DIRECTION_LINES[1]])\nassert quoted == DIRECTION_TEXT, quoted\nrecord = (TREE / RECORD).read_text(encoding='utf8').splitlines()\nhead = {k: next(l.split(': ', 1)[1] for l in record if l.startswith(k + ': ')) for k in ('Date', 'Package', 'Version', 'Tag', 'Kind', 'Review', 'Reviewed commit')}\n\nout = {\n    'title': 'syzygy-bpyt.8.3 premise check: no scenario in the v1.2 local-agent-mode change requires a refusal while v1.2 is unsigned',\n    'bead': 'syzygy-bpyt.8.3',\n    'tree': git('rev-parse', 'HEAD').strip(),\n    'subject': {f: {'gitBlob': git('hash-object', '--', f).strip()} for f in files},\n    'command': 'python3 premise_check.py <tree> <out.json>',\n    'predicates': {\n        'signoffVocabulary': SIGNOFF.pattern + ' (re.I), over every line of every file in subject',\n        'refusalVocabulary': REFUSAL.pattern + ' (re.I), over every scenario block of ' + SPEC,\n        'versionOrSignoffVocabulary': VERSIONED.pattern + ' (re.I), over every scenario block of ' + SPEC,\n        'scenarioBlock': \"from a line starting '#### Scenario: ' to the line before the next line starting '#', 'Form: ' or a fence; \"\n                         \"a requirement's last scenario is followed by its Form, verification block and warrants, which are not scenario text\",\n    },\n    'selftest': mutants,\n    'summary': summary,\n    'signoffHits': hits,\n    'requirements': [{'line': n, 'title': t} for n, t in requirements],\n    'scenarios': scenarios,\n    'mergeRule': {'file': DIRECTION, 'lines': list(DIRECTION_LINES), 'text': DIRECTION_TEXT,\n                  'reading': 'a rule on when the code may merge, discharged by the v1.2 sign-off below; it states no runtime refusal'},\n    'v12SignoffRecordHead': {'file': RECORD, **head},\n    'scriptSource': Path(__file__).read_text(),\n}\nOUT.write_text(json.dumps(out, indent=2) + '\\n')\nprint(json.dumps({'selftest': mutants, 'summary': summary}, indent=1))\n"
+}

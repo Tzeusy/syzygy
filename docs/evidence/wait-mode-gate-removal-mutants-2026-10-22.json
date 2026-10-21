@@ -1,0 +1,854 @@
+{
+  "title": "syzygy-bpyt.8.3 rule-6 mutants: a refusal put back at each site the wait-mode sign-off gate held",
+  "bead": "syzygy-bpyt.8.3",
+  "subject": [
+    "packages/polaris-dossier/src/session-handover.ts",
+    "packages/polaris-dossier/src/waiting-sessions.ts"
+  ],
+  "subjectSha256": {
+    "packages/polaris-dossier/src/session-handover.ts": "23d46131c6b24b04ad72988d9a5e37a8022796dc0c0ebb2d7f606aff3109ba47",
+    "packages/polaris-dossier/src/waiting-sessions.ts": "2e77fe44f0eb55b377b97b1e59b15c5e41daf507aee6babb6feb44504ed8f554"
+  },
+  "commit": "9a3ae8ff2346a67f3f85e7c574480b8fbc262324",
+  "command": "npx vitest run --project @syzygy/polaris-dossier --reporter=json --outputFile=<scratch>/mutant-vitest.json packages/polaris-dossier/src/waiting-sessions.test.ts packages/polaris-dossier/src/session-view.test.ts packages/polaris-dossier/src/agent-texts.test.ts",
+  "timeoutSeconds": 600,
+  "trackedTreeCleanBefore": true,
+  "unmutated": {
+    "exitCode": 0,
+    "counts": {
+      "numTotalTests": 110,
+      "numPassedTests": 110,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numTodoTests": 0
+    },
+    "failedTests": []
+  },
+  "mutants": [
+    {
+      "id": "G1-await-refuses",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "disclosures: AWAIT_DISCLOSURES } });\n  // The directory: absolute",
+      "new": "disclosures: AWAIT_DISCLOSURES } });\n  return refuse('unsigned', 'mutant G1');\n  // The directory: absolute",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 110,
+        "numPassedTests": 34,
+        "numFailedTests": 76,
+        "numPendingTests": 0,
+        "numTodoTests": 0
+      },
+      "failedTests": [
+        {
+          "test": "waiting-sessions.test.ts > the wait-mode argument grammar (review-408 round 2, finding 6) takes --fresh once only: given twice it is a usage error, exit 2 (mutant: allow --fresh twice)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await re-hashes the inventory brief and refuses a changed one (mutant: skip the brief digest)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await waits a bounded slice, on the local file system, and says to run it again (mutant: no slice bound)",
+          "firstErrorLine": "AssertionError: expected 1 to be 3 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await never waits past the run's deadline (mutant: bound the slice by its minutes alone)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'waiting', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await ends once the run is closed (mutant: ignore the Execution Record)",
+          "firstErrorLine": "AssertionError: expected { exit: 1, doc: { \u2026(5) }, \u2026(1) } to match object { exit: +0, doc: { \u2026(2) } }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given without its trailing slash (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given with a doubled slash (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given through a parent segment (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given relative (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given outside a sessions root (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given under a sessions root named for no run (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session directory given naming no session (mutant: drop that directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await refuses a session handed over at once, which does not wait (mutant: drop the waiting-mode check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await checks only a file inside the session directory (mutant: drop the containment check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await checks nothing from a session a newer one replaced (mutant: drop the latest-session check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await exits 1 when a submitted file has findings, and says to repair it (mutant: exit 0 on any submission)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', \u2026(2) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes the inventory from standard input into the session directory, byte for byte, and checks it (mutant: check without writing)",
+          "firstErrorLine": "AssertionError: expected { exit: 1, doc: { \u2026(5) }, \u2026(1) } to match object { exit: +0, doc: { \u2026(3) } }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file replaces an earlier submission when the session resubmits after a repair (mutant: create the file only once)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, any name but inventory.json (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, a path out of its directory (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a verdict outside a round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round not delivered (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, another file in a delivered round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round whose delivery note is missing (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is empty, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'submit' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is over the draft size bound, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'submit' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file never follows a link left at the pending name (mutant: write the pending file without removing it first)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, lstat '/tmp/dossier-waiting-wh0dCN/state/run-57c4fa954a78f04ef94bde4bc3e4d579.sessions/session-1/inventory.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file takes --stdin only with --submit (mutant: ignore a stray --stdin)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session delivers the packet as round 1, which await re-hashes and names (mutant: deliver into the session root)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the packet no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the run's delivery record no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the digest file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the session's delivery file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session takes no new tool, version or model for a waiting session (mutant: let --tool through)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session checks the waiting session's own provider statement at delivery (mutant: check the run's pair instead)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a delivery when a successor replaced the statement the waiting session was started under (mutant: drop the citation recheck)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session says no packet is delivered when the waiting session's record cites no statement (mutant: string-replace the counting phrase)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session with --fresh hands the packet to a new session instead (mutant: ignore --fresh)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a first-round reviewer as such on the review page (mutant: omit the continuity item)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions delivers the repaired subject to the same session as round 2 and discloses it on the review page and in the machine view (mutant: never mark continuing)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a fresh session that declares an earlier verdict's session identifier as continuing (mutant: read delivery records only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions does not mark a fresh session with a new identifier as continuing (mutant: mark every later verdict continuing)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region says a first-round design reviewer had no earlier packet (mutant: disclose a continuing design reviewer only)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region discloses a design reviewer that continued to round 2 (mutant: drop the design continuity sentence)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) refuses to write an inventory through a session directory replaced by a link (mutant: skip the directory check in await)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) refuses a session directory that is not a directory of its own (mutant: drop the lstat check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing into a review session directory replaced by a link (mutant: skip the directory check in delivery)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing to a prompt record naming a directory outside the sessions root, even one that resolves into it (mutant: drop the lexical sessions-root check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) writes no verdict into a round directory that links to another session's round (mutant: drop the round containment check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a link-safe sessions root (review-408 round 2, finding 1) writes no inventory through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a link-safe sessions root (review-408 round 2, finding 1) delivers no packet through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing to a prompt record that names no directory (mutant: drop the directory-type check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named hands a packet over at once when the latest session of its kind was not started to wait (mutant: drop the waiting-mode check on delivery)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with a round that disagrees with its name (mutant: drop that record check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with no packet digest (mutant: drop that record check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --round 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --round two (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --wait-minutes 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --wait-minutes 61, past the cap (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --submit with --round (mutant: let --submit take it)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --submit with --wait-minutes (mutant: let --submit take it)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named gives an inventory session one round only (mutant: drop the inventory round check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record whose prompt no longer matches its digest (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record with no prompt (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record that is missing (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another round, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another kind, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another session, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing when the waiting session's record names no agent tool (mutant: drop the recorded-tool check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record that names another directory (mutant: drop the record's directory check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named verifies the gates again when a packet arrives, and reads nothing past the deadline (mutant: drop the re-check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses await once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: fixture inventory: command: await"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not JSON (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not UTF-8 (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is deeper than the bound (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "G2-session-prompt-all-refuses",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "disclosures: START_DISCLOSURES } });\n  const opened = await openRun(runDir",
+      "new": "disclosures: START_DISCLOSURES } });\n  return refuse('unsigned', 'mutant G2');\n  const opened = await openRun(runDir",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 110,
+        "numPassedTests": 34,
+        "numFailedTests": 76,
+        "numPendingTests": 0,
+        "numTodoTests": 0
+      },
+      "failedTests": [
+        {
+          "test": "waiting-sessions.test.ts > session-prompt <run> all makes the three session directories, writes only the inventory brief, and records each prompt as waiting",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > session-prompt <run> all prints each command with only its role's permission rules and SEC-3's rule, never a permission (mutant: drop a rule or widen one)",
+          "firstErrorLine": "TypeError: undefined is not iterable (cannot read property Symbol(Symbol.iterator))"
+        },
+        {
+          "test": "waiting-sessions.test.ts > session-prompt <run> all prints no pre-approval for Codex, and says so (mutant: print the Claude rules for Codex)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > session-prompt <run> all refuses a sessions root a permission rule cannot carry unquoted (mutant: drop the plain-path check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > session-prompt <run> all keeps the session pair's provider-statement check from PR #406 (mutant: skip sessionStatementRefusal for all)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the wait-mode argument grammar (review-408 round 2, finding 6) takes --fresh once only: given twice it is a usage error, exit 2 (mutant: allow --fresh twice)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > launch-form for a waiting session (review-408 round 2, finding 2) records no bang form for a session started to wait, only the terminal form printed for it (mutant: drop the waiting-mode check)",
+          "firstErrorLine": "AssertionError: expected { command: 'launch-form', \u2026(4) } to match object { outcome: 'refused', stage: 'form' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await re-hashes the inventory brief and refuses a changed one (mutant: skip the brief digest)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await waits a bounded slice, on the local file system, and says to run it again (mutant: no slice bound)",
+          "firstErrorLine": "AssertionError: expected 1 to be 3 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await never waits past the run's deadline (mutant: bound the slice by its minutes alone)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'waiting', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await ends once the run is closed (mutant: ignore the Execution Record)",
+          "firstErrorLine": "AssertionError: expected { exit: 1, doc: { \u2026(5) }, \u2026(1) } to match object { exit: +0, doc: { \u2026(2) } }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await checks only a file inside the session directory (mutant: drop the containment check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await checks nothing from a session a newer one replaced (mutant: drop the latest-session check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await exits 1 when a submitted file has findings, and says to repair it (mutant: exit 0 on any submission)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', \u2026(2) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes the inventory from standard input into the session directory, byte for byte, and checks it (mutant: check without writing)",
+          "firstErrorLine": "AssertionError: expected { exit: 1, doc: { \u2026(5) }, \u2026(1) } to match object { exit: +0, doc: { \u2026(3) } }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file replaces an earlier submission when the session resubmits after a repair (mutant: create the file only once)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, any name but inventory.json (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, a path out of its directory (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a verdict outside a round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round not delivered (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, another file in a delivered round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round whose delivery note is missing (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is empty, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'submit' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is over the draft size bound, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'submit' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file never follows a link left at the pending name (mutant: write the pending file without removing it first)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, symlink '/tmp/dossier-waiting-MIC5Qt/state/outside.json' -> '/tmp/dossier-waiting-MIC5Qt/state/run-eb4adaa670a29be625917569e63c7da1.sessions/session-1/.inventory.json.stdin'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file takes --stdin only with --submit (mutant: ignore a stray --stdin)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session delivers the packet as round 1, which await re-hashes and names (mutant: deliver into the session root)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the packet no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the run's delivery record no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the digest file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the session's delivery file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session takes no new tool, version or model for a waiting session (mutant: let --tool through)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session checks the waiting session's own provider statement at delivery (mutant: check the run's pair instead)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a delivery when a successor replaced the statement the waiting session was started under (mutant: drop the citation recheck)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session says no packet is delivered when the waiting session's record cites no statement (mutant: string-replace the counting phrase)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session with --fresh hands the packet to a new session instead (mutant: ignore --fresh)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a first-round reviewer as such on the review page (mutant: omit the continuity item)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions delivers the repaired subject to the same session as round 2 and discloses it on the review page and in the machine view (mutant: never mark continuing)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a fresh session that declares an earlier verdict's session identifier as continuing (mutant: read delivery records only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions does not mark a fresh session with a new identifier as continuing (mutant: mark every later verdict continuing)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region says a first-round design reviewer had no earlier packet (mutant: disclose a continuing design reviewer only)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region discloses a design reviewer that continued to round 2 (mutant: drop the design continuity sentence)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) refuses to write an inventory through a session directory replaced by a link (mutant: skip the directory check in await)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, rename '/tmp/dossier-waiting-AexDRf/state/run-be0bc34e6e8197c36d2edfde21c4f7f0.sessions/session-1' -> '/tmp/dossier-waiting-AexDRf/elsewhere'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) refuses a session directory that is not a directory of its own (mutant: drop the lstat check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, lstat '/tmp/dossier-waiting-uvrYQH/state/run-6cf25c88d5406802e17718d9ddb76500.sessions/session-1'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing into a review session directory replaced by a link (mutant: skip the directory check in delivery)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing to a prompt record naming a directory outside the sessions root, even one that resolves into it (mutant: drop the lexical sessions-root check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) writes no verdict into a round directory that links to another session's round (mutant: drop the round containment check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a link-safe sessions root (review-408 round 2, finding 1) writes no inventory through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, rename '/tmp/dossier-waiting-zDRUaF/state/run-c6bcfadb6a51a0f174d06b99a69ebd2b.sessions' -> '/tmp/dossier-waiting-zDRUaF/root-elsewhere'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a link-safe sessions root (review-408 round 2, finding 1) delivers no packet through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing to a prompt record that names no directory (mutant: drop the directory-type check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named hands a packet over at once when the latest session of its kind was not started to wait (mutant: drop the waiting-mode check on delivery)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with a round that disagrees with its name (mutant: drop that record check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with no packet digest (mutant: drop that record check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --round 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --round two (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --wait-minutes 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --wait-minutes 61, past the cap (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --submit with --round (mutant: let --submit take it)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses --submit with --wait-minutes (mutant: let --submit take it)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named gives an inventory session one round only (mutant: drop the inventory round check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'refused', stage: 'usage' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record whose prompt no longer matches its digest (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-86vDZT/state/run-2b2db7e79fda236c51a77a24949412d2/inventory/session-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record with no prompt (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-fXmqeu/state/run-4bf787c9f5e1c77a3955448d529a4f25/inventory/session-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record that is missing (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, lstat '/tmp/dossier-waiting-He1Efc/state/run-290d3170b466a6d4a871a79c15afb97a/inventory/session-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another round, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another kind, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another session, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing when the waiting session's record names no agent tool (mutant: drop the recorded-tool check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a prompt record that names another directory (mutant: drop the record's directory check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-6hJhA8/state/run-5d3eeb25f3a2a4b8d4ebbc2226975031/inventory/session-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named verifies the gates again when a packet arrives, and reads nothing past the deadline (mutant: drop the re-check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses session-prompt all once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses await once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: fixture start: command: session-prompt"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a sessions root that resolves into the clone (mutant: drop the sessions-root check of session-prompt all)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not JSON (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not UTF-8 (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is deeper than the bound (mutant: drop that check)",
+          "firstErrorLine": "AssertionError: expected { command: 'await', \u2026(4) } to match object { outcome: 'submitted', passed: true }"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "G3-delivery-refuses",
+      "file": "packages/polaris-dossier/src/session-handover.ts",
+      "old": "disclosures: DELIVERY_DISCLOSURES } });\n  if (request.tool !== undefined",
+      "new": "disclosures: DELIVERY_DISCLOSURES } });\n  return refuse('unsigned', 'mutant G3');\n  if (request.tool !== undefined",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 110,
+        "numPassedTests": 77,
+        "numFailedTests": 33,
+        "numPendingTests": 0,
+        "numTodoTests": 0
+      },
+      "failedTests": [
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, any name but inventory.json (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-wf6gMs/state/run-83647ba3ba774a1ed1d052e8a23bb446.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, a path out of its directory (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-vLWfc7/state/run-fb3837ca96d35ff717a0c803d116ec98.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a verdict outside a round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-Uf6J8r/state/run-8fd8f5d09f3b32997ad0b46ab132867a.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round not delivered (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-rzs70o/state/run-715406c5a684f7c72d498da7f5ab5466.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, another file in a delivered round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-q7RraO/state/run-9b3523213c15484f96ca88c06c1d9cc0.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round whose delivery note is missing (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, lstat '/tmp/dossier-waiting-sG2hCW/state/run-494ebdd26f90d013881b58a4ab07eebd.sessions/fidelity-1/round-1/delivery.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session delivers the packet as round 1, which await re-hashes and names (mutant: deliver into the session root)",
+          "firstErrorLine": "AssertionError: expected 1 to be +0 // Object.is equality"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the packet no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-1UIIgy/state/run-b58fcb970b6f0641a943b5081a99acd2.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the run's delivery record no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-CrKbKd/state/run-3cc4be8ea3fe222568c8a59e67218c3d/reviews/fidelity-session-1.delivery-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the digest file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-g13E5G/state/run-57c8f5fe92a23fd65ae2174f146c924d.sessions/fidelity-1/round-1/packet.sha256'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a round whose the session's delivery file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-8Ze3AI/state/run-6e86d0e68306be6e91b46c88fb716129.sessions/fidelity-1/round-1/delivery.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session takes no new tool, version or model for a waiting session (mutant: let --tool through)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session checks the waiting session's own provider statement at delivery (mutant: check the run's pair instead)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session refuses a delivery when a successor replaced the statement the waiting session was started under (mutant: drop the citation recheck)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > delivery to a waiting review session says no packet is delivered when the waiting session's record cites no statement (mutant: string-replace the counting phrase)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a first-round reviewer as such on the review page (mutant: omit the continuity item)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-voCUiE/state/run-e704eae7f8714a7dfe963400ef1014c4.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions delivers the repaired subject to the same session as round 2 and discloses it on the review page and in the machine view (mutant: never mark continuing)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-OG2hHv/state/run-9667adaca847ef321a8fedd63403a81c.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions discloses a fresh session that declares an earlier verdict's session identifier as continuing (mutant: read delivery records only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-mDafdl/state/run-b97797b2b9c43af7126623a146313e8e.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a reviewer that continues across revisions does not mark a fresh session with a new identifier as continuing (mutant: mark every later verdict continuing)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-3obK2u/state/run-6399481ef40b9dbec9ce0bd4c808a9b0.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region says a first-round design reviewer had no earlier packet (mutant: disclose a continuing design reviewer only)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-df1kXC/state/run-c08d0b74b8ae8705146df5848a24938f.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a rendered-design reviewer's continuity, disclosed in the review-status region discloses a design reviewer that continued to round 2 (mutant: drop the design continuity sentence)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-lJ8stK/state/run-65e66603dee97ca9a8b4df4943077634.sessions/fidelity-1/round-1/packet.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing into a review session directory replaced by a link (mutant: skip the directory check in delivery)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', stage: 'write' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > link-safe session directories (review-408 F1) delivers nothing to a prompt record naming a directory outside the sessions root, even one that resolves into it (mutant: drop the lexical sessions-root check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', stage: 'write' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > a link-safe sessions root (review-408 round 2, finding 1) delivers no packet through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', stage: 'write' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing to a prompt record that names no directory (mutant: drop the directory-type check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', stage: 'write' }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with a round that disagrees with its name (mutant: drop that record check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-5KxswR/state/run-b9d2cfe84ae7103dc527d1cb98a96625/reviews/fidelity-session-1.delivery-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named counts no delivery record with no packet digest (mutant: drop that record check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-hTOoKk/state/run-e5448fc872c94e56a079196a0404b006/reviews/fidelity-session-1.delivery-1.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another round, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-CUqju3/state/run-93b1646d024943071cd784fbb844ab89.sessions/fidelity-1/round-1/delivery.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another kind, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-GWj66N/state/run-64eb3fe4ea6335038b2b35746a946c41.sessions/fidelity-1/round-1/delivery.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery note that names another session, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, open '/tmp/dossier-waiting-LX0ywL/state/run-cf8c7d2a46bbb513c0c8117d4d45bb73.sessions/fidelity-1/round-1/delivery.json'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named delivers nothing when the waiting session's record names no agent tool (mutant: drop the recorded-tool check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { Object (outcome, stage) }"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named verifies the gates again when a packet arrives, and reads nothing past the deadline (mutant: drop the re-check)",
+          "firstErrorLine": "Error: ENOENT: no such file or directory, rename '/tmp/dossier-waiting-vI9I9N/state/run-86b07851a52ee967a11ef284103ee8ed.sessions/fidelity-1/round-1' -> '/tmp/dossier-waiting-vI9I9N/state/run-86b07851a52ee967a11ef284103ee8ed.sessions/fidelity-1/hidden'"
+        },
+        {
+          "test": "waiting-sessions.test.ts > the predicates review-408 F4 named refuses a delivery once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "AssertionError: expected { command: 'session-prompt', \u2026(4) } to match object { outcome: 'refused', \u2026(1) }"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "G4-await-refuses-without-the-v1.2-record",
+      "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+      "old": "disclosures: AWAIT_DISCLOSURES } });\n  // The directory: absolute",
+      "new": "disclosures: AWAIT_DISCLOSURES } });\n  if (!fs.existsSync(path.join(deps.sources.recordsRoot, '.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md'))) return refuse('unsigned', 'mutant G4');\n  // The directory: absolute",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 110,
+        "numPassedTests": 110,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0
+      },
+      "failedTests": [],
+      "blocked": false,
+      "outcome": "survived",
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "summary": {
+    "planned": 4,
+    "killed": 3,
+    "survived": [
+      "G4-await-refuses-without-the-v1.2-record"
+    ],
+    "allRestored": true
+  },
+  "harnessSource": "\"\"\"Rule-6 mutants for syzygy-bpyt.8.3. The change removes the wait-mode sign-off gate and adds no check, so each mutant puts a refusal\nback at one of the three sites the gate held (await, session-prompt all, delivery to a waiting reviewer) and asks whether the\nwait-mode suites still notice a refusal there. G1-G3 refuse unconditionally; G4 refuses only when the v1.2 sign-off record is absent\nfrom the records root, as the removed gate would have for that one input.\n\nEach mutant replaces one exact fragment (it must occur exactly once), runs the suites in their own process group with vitest's JSON\nreporter, restores the bytes and verifies their digest. Killed: at least one test failed, or the run did not finish within the\ntimeout. Each failed test is stored with the first line of its first failure message.\nUsage: python3 mutants.py <worktree> <scratch> <out.json>\n\"\"\"\nimport hashlib, json, os, signal, subprocess, sys\nfrom pathlib import Path\n\nROOT, SCRATCH, OUT = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve(), Path(sys.argv[3])\nTIMEOUT = 600\nWAIT = 'packages/polaris-dossier/src/waiting-sessions.ts'\nHANDOVER = 'packages/polaris-dossier/src/session-handover.ts'\nTESTS = ['packages/polaris-dossier/src/waiting-sessions.test.ts', 'packages/polaris-dossier/src/session-view.test.ts',\n         'packages/polaris-dossier/src/agent-texts.test.ts']\nREPORT = SCRATCH / 'mutant-vitest.json'\nCOMMAND = ['npx', 'vitest', 'run', '--project', '@syzygy/polaris-dossier', '--reporter=json', f'--outputFile={REPORT}', *TESTS]\n\nAWAIT_AT = 'disclosures: AWAIT_DISCLOSURES } });\\n  // The directory: absolute'\nSTART_AT = 'disclosures: START_DISCLOSURES } });\\n  const opened = await openRun(runDir'\nDELIVER_AT = 'disclosures: DELIVERY_DISCLOSURES } });\\n  if (request.tool !== undefined'\nRECORD = \"'.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md'\"\n\n\ndef plant(at, line):\n    head, tail = at.split('\\n', 1)\n    return head + '\\n' + line + '\\n' + tail\n\n\nMUTANTS = [\n    ('G1-await-refuses', WAIT, AWAIT_AT, plant(AWAIT_AT, \"  return refuse('unsigned', 'mutant G1');\")),\n    ('G2-session-prompt-all-refuses', HANDOVER, START_AT, plant(START_AT, \"  return refuse('unsigned', 'mutant G2');\")),\n    ('G3-delivery-refuses', HANDOVER, DELIVER_AT, plant(DELIVER_AT, \"  return refuse('unsigned', 'mutant G3');\")),\n    ('G4-await-refuses-without-the-v1.2-record', WAIT, AWAIT_AT,\n     plant(AWAIT_AT, f\"  if (!fs.existsSync(path.join(deps.sources.recordsRoot, {RECORD}))) return refuse('unsigned', 'mutant G4');\")),\n]\n\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\n\ndef run_suite():\n    REPORT.unlink(missing_ok=True)\n    proc = subprocess.Popen(COMMAND, cwd=ROOT, env={**os.environ, 'CI': '1'}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)\n    try:\n        proc.communicate(timeout=TIMEOUT)\n    except subprocess.TimeoutExpired:\n        os.killpg(proc.pid, signal.SIGKILL)\n        proc.communicate()\n        return None, None, []\n    if not REPORT.exists():\n        return proc.returncode, None, []\n    report = json.loads(REPORT.read_text())\n    failed = [{'test': f\"{Path(file['name']).name} > {test['fullName']}\",\n               'firstErrorLine': next((line for message in test['failureMessages'] for line in message.splitlines() if line.strip()), None)}\n              for file in report['testResults'] for test in file['assertionResults'] if test['status'] == 'failed']\n    counts = {k: report[k] for k in ('numTotalTests', 'numPassedTests', 'numFailedTests', 'numPendingTests', 'numTodoTests')}\n    return proc.returncode, counts, failed\n\n\ndef main():\n    subjects = sorted({m[1] for m in MUTANTS})\n    originals = {f: (ROOT / f).read_bytes() for f in subjects}\n    for f in subjects:\n        text = originals[f].decode('utf8')\n        assert \"import * as fs from 'node:fs';\" in text or f != WAIT, 'G4 needs fs in waiting-sessions.ts'\n    clean_before = git('status', '--porcelain', '--untracked-files=no') == ''\n    base_exit, base_counts, base_failed = run_suite()\n    results = []\n    try:\n        for mutant_id, file, old, new in MUTANTS:\n            text = originals[file].decode('utf8')\n            assert text.count(old) == 1, (mutant_id, old)\n            (ROOT / file).write_bytes(text.replace(old, new).encode('utf8'))\n            try:\n                code, counts, failed = run_suite()\n            finally:\n                (ROOT / file).write_bytes(originals[file])\n            blocked = code is None\n            results.append({'id': mutant_id, 'file': file, 'old': old, 'new': new, 'exitCode': code, 'counts': counts,\n                            'failedTests': failed, 'blocked': blocked,\n                            'outcome': 'killed' if blocked or (code != 0 and failed) else 'survived',\n                            'restored': sha((ROOT / file).read_bytes()) == sha(originals[file])})\n            print(mutant_id, results[-1]['outcome'], counts, flush=True)\n    finally:\n        for file in subjects:\n            (ROOT / file).write_bytes(originals[file])\n    record = {\n        'title': 'syzygy-bpyt.8.3 rule-6 mutants: a refusal put back at each site the wait-mode sign-off gate held',\n        'bead': 'syzygy-bpyt.8.3', 'subject': subjects, 'subjectSha256': {f: sha(originals[f]) for f in subjects},\n        'commit': git('rev-parse', 'HEAD').strip(), 'command': ' '.join(COMMAND).replace(str(REPORT), '<scratch>/mutant-vitest.json'),\n        'timeoutSeconds': TIMEOUT, 'trackedTreeCleanBefore': clean_before,\n        'unmutated': {'exitCode': base_exit, 'counts': base_counts, 'failedTests': base_failed},\n        'mutants': results, 'trackedTreeCleanAfter': git('status', '--porcelain', '--untracked-files=no') == '',\n        'summary': {'planned': len(MUTANTS), 'killed': sum(r['outcome'] == 'killed' for r in results),\n                    'survived': [r['id'] for r in results if r['outcome'] == 'survived'], 'allRestored': all(r['restored'] for r in results)},\n        'harnessSource': Path(__file__).read_text(),\n    }\n    OUT.write_text(json.dumps(record, indent=2) + '\\n')\n    print('summary', record['summary'])\n\n\nmain()\n"
+}
