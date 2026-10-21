@@ -134,10 +134,10 @@ const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
  * form was recorded as the path (syzygy-bpyt.6.1). The bytes are decoded as
  * strict UTF-8, so a path that is not valid UTF-8 makes the inventory
  * Unknown instead of a replacement-character path that can collide with
- * another; the default runner drops submodule gitlink records first, since
- * their paths are never recorded. A record the shared parser cannot read, or
- * a listing that is not NUL-terminated, makes the whole inventory Unknown,
- * never a skip.
+ * another. Submodule gitlink records are dropped first, before decoding and
+ * before parsing, since their paths are never recorded. A record the shared
+ * parser cannot read, or a listing that is not NUL-terminated, makes the
+ * whole inventory Unknown, never a skip.
  */
 export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStructureResult {
   const runGit = input.runGit ?? defaultRunGit;
@@ -162,12 +162,14 @@ export function observeCodeStructure(input: ObserveCodeStructureInput): CodeStru
   if (raw !== '' && !raw.endsWith('\0')) {
     return malformed;
   }
-  const parsed = parseGitLsTree(raw);
+  // A submodule gitlink (mode 160000) is not a file of this revision and its path is never recorded, so its record is dropped before
+  // parsing, whichever runner answered; the default runner already dropped it from git's bytes, before decoding.
+  const parsed = parseGitLsTree(raw.split('\0').filter((record) => !record.startsWith('160000 ')).join('\0'));
   if (parsed.kind === 'malformed') {
     return malformed;
   }
   const files: CodeStructureFileEntry[] = [];
-  // Submodule gitlinks (`commit`) are not files of this revision.
+  // Only blobs are files of this revision.
   for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {
     // The digest names its scheme; an id of another object format would make it false.
     if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {

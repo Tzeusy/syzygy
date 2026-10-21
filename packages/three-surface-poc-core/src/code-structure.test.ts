@@ -126,6 +126,9 @@ describe('code-structure observer', () => {
       { path: 'a.ts', sizeBytes: 12, digest: `git-blob-sha1:${'1'.repeat(40)}`, language: 'typescript' },
       { path: 'b.md', sizeBytes: 7, digest: `git-blob-sha1:${'3'.repeat(40)}`, language: 'markdown' },
     ] });
+    // A gitlink at a path the parser cannot read is skipped from an injected runner too.
+    expect(observe(`${blob('a.ts')}160000 commit ${'2'.repeat(40)}       -\t"sub\x00160000 commit ${'2'.repeat(40)}       -\tsu\nb\0`))
+      .toMatchObject({ kind: 'observed', files: [{ path: 'a.ts' }] });
     const unknown = { kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' };
     expect(observe(`${blob('a.ts')}not a tree record\0`)).toEqual(unknown);
     expect(observe(`${blob('a.ts')}100644 blob ${'1'.repeat(40)} 12\t"\\303\\261.md"\0`)).toEqual(unknown);
