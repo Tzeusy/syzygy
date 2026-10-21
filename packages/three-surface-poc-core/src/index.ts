@@ -9,6 +9,8 @@ export * from './effect-authority.js';
 export * from './materialization.js';
 export * from './test-artifact-verification.js';
 export * from './owner-act-record.js';
+// Unwired by design: the P-71 Q3 arm (b) drafter, a pure function that writes no
+// file. No command renders its output yet; see owner-act-drafter.ts.
 export * from './owner-act-drafter.js';
 export * from './authority-artifact-fields.js';
 export * from './body-read-authority.js';
