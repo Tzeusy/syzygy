@@ -87,6 +87,37 @@ describe('Trajectory', () => {
     expect(html).toContain('data-parity-field="trajectory-excluded-count">2</span> items are outside this selection');
   });
 
+  // SEC-5 (owner answer 2026-10-20, syzygy-jytt): a card is named by its
+  // identifier and says its title is withheld; the board says why, once,
+  // and the machine twin carries the same reason and route. Literals typed
+  // here; the fixture rows carry titles (`fixture item <id>`) to prove none
+  // is served.
+  it('names every card by its identifier and discloses its withheld title (SEC-5)', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderTrajectoryPage(model);
+    if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
+    const route = 'Route: <span data-unknown-route="excluded-content" data-route-actor="owner" data-route-verb="decide" data-route-target="policy">Policy change by the owner, or accept the exclusion</span>.';
+    const ids = model.trajectory.rendered.map((item) => item.id);
+    expect(ids).toHaveLength(5);
+    for (const id of ids) {
+      const card = cardBody(html, id);
+      expect(card).toContain(`<a class="wi-title" href="#workitem-${id}" data-parity-field="work-item-id">${id}</a>`);
+      const marks = card.split('data-parity-field="work-item-title"').length - 1;
+      expect(marks, id).toBe(1);
+      expect(card).toContain(`<span class="epistemic epistemic-unknown" data-parity-field="work-item-title" data-unknown-disclosure="region:work-item-titles" data-unknown-reason="excluded-content">Title: withheld (SEC-5). ${route}</span>`);
+    }
+    const notice = /<p class="titles-withheld notice" data-parity-field="work-item-titles-withheld" data-unknown-disclosure="region:work-item-titles" data-unknown-reason="excluded-content">([\s\S]*?)<\/p>/.exec(html)?.[1] ?? '';
+    const words = notice.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    expect(words).toBe('Titles: Unknown for every observed work item. Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier. Reason: excluded-content. Route: Policy change by the owner, or accept the exclusion.');
+    expect(html).not.toContain('fixture item');
+    expect(model.unknownSubjects.find((subject) => subject.id === 'region:work-item-titles')?.epistemic).toEqual({
+      label: 'Unknown',
+      reason: 'Work-item titles are withheld under SEC-5: a title is free text, the only declared secret-classification policy covers declared-project-shape-text and none covers work-item titles, so the observation never reads them. Each item is named by its identifier.',
+      closedReason: 'excluded-content',
+      resolutionRoutes: [{ reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion', actor: 'owner', verb: 'decide', target: 'policy' }],
+    });
+  });
+
   it('never renders closure/activity as verification satisfaction (POC-REQ-043)', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderTrajectoryPage(model);
