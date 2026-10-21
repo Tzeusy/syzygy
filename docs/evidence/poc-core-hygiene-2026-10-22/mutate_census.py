@@ -21,7 +21,7 @@ MUTANTS = [
     ('lexer-line-comment-kept', "if c == '/' and i + 1 < n and src[i + 1] == '/':", "if False and i + 1 < n and src[i + 1] == '/':"),
     ('lexer-string-dropped', "out.append(src[i:j + 1]); i = j + 1; last_sig = c; continue", "i = j + 1; last_sig = c; continue"),
     ('lexer-regex-literals-off', "regex_ok = last_sig == '' or last_sig in REGEX_PRECEDERS or last_word in REGEX_KEYWORDS", "regex_ok = False"),
-    ('lexer-template-text-dropped', "                out.append(c); i += 1; continue\n        # code mode", "                i += 1; continue\n        # code mode"),
+    ('lexer-template-text-dropped', "            out.append(c); i += 1; continue\n        # code mode", "            i += 1; continue\n        # code mode"),
     ('lexer-return-not-a-regex-keyword', "REGEX_KEYWORDS = {'return', ", "REGEX_KEYWORDS = {'xreturn', "),
     ('lexer-escape-in-string-ignored', "j += 2 if src[j] == '\\\\' else 1", "j += 1"),
     ('class-public-off', "            if prod_outside:\n                cls = 'public'", "            if False:\n                cls = 'public'"),
