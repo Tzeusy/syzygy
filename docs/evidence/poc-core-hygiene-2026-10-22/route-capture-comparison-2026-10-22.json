@@ -1,0 +1,57 @@
+{
+ "tool": "compare_captures.py",
+ "claim": "equality between the compared trees only; the digests depend on the fixture repository path and are not a reference for any other run",
+ "reference": {
+  "file": "route-capture-base-2026-10-22.json",
+  "fileSha256": "7fb56d643284d28cfb493d27b96b508f28732c2c9398d9900bad4a1824bc00ba",
+  "treeCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+  "changedTrackedFilesUnderPackagesAndApps": [],
+  "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2"
+ },
+ "fixtureRepository": {
+  "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p503/fixture-repo",
+  "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+  "creation": "first run only: fixtureRepoWithGit([]) from apps/three-surface-poc/dist/test-model-fixture.js builds a git repository from fixed files with pinned commit instants (GIT_AUTHOR_DATE and GIT_COMMITTER_DATE 2026-08-24T00:00:00Z) and no global or system git config, so its revision is a function of the files alone; the script copies it to the path above, removes the original, and writes the revision to <path>.json; later runs reuse the path"
+ },
+ "fixtures": 5,
+ "fixturesWithDistinctOutput": 5,
+ "routesPerFixture": [
+  19,
+  19,
+  19,
+  19,
+  19
+ ],
+ "responses": 230,
+ "requestKeysPerFixture": 46,
+ "requestKeysWhoseBodyDiffersAcrossFixtures": 30,
+ "distinctBodyDigests": 73,
+ "statuses": {
+  "200": 150,
+  "401": 40,
+  "403": 20,
+  "502": 20
+ },
+ "comparisons": [
+  {
+   "file": "route-capture-base-run2-2026-10-22.json",
+   "fileSha256": "7fb56d643284d28cfb493d27b96b508f28732c2c9398d9900bad4a1824bc00ba",
+   "treeCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+   "changedTrackedFilesUnderPackagesAndApps": [],
+   "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2",
+   "variantsBytesEqualReference": true,
+   "sameRequestKeys": true,
+   "responsesDifferingFromReference": 0
+  },
+  {
+   "file": "route-capture-head-2026-10-22.json",
+   "fileSha256": "94358350c80d73c8b18b267ec33be94c352e838a410127009dc91349ed9c9d1c",
+   "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+   "changedTrackedFilesUnderPackagesAndApps": [],
+   "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2",
+   "variantsBytesEqualReference": true,
+   "sameRequestKeys": true,
+   "responsesDifferingFromReference": 0
+  }
+ ]
+}

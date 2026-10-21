@@ -1,0 +1,79 @@
+{
+ "subject": "compare_captures.py",
+ "subjectSha256": "7bc7d982b22a763425908abbe309a923227360c32b6248612029974b2c9066b7",
+ "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "reference": {
+  "file": "route-capture-base-2026-10-22.json",
+  "sha256": "7fb56d643284d28cfb493d27b96b508f28732c2c9398d9900bad4a1824bc00ba"
+ },
+ "other": {
+  "file": "route-capture-head-2026-10-22.json",
+  "sha256": "94358350c80d73c8b18b267ec33be94c352e838a410127009dc91349ed9c9d1c"
+ },
+ "control": {
+  "exit": 0,
+  "responsesDifferingFromReference": 0,
+  "variantsBytesEqualReference": true,
+  "sameRequestKeys": true,
+  "holds": true
+ },
+ "mutants": 5,
+ "killed": 5,
+ "survivors": [],
+ "records": [
+  {
+   "id": "response-digest-altered",
+   "expected": "one-differing-response",
+   "killed": true,
+   "seen": {
+    "exit": 0,
+    "responsesDifferingFromReference": 1,
+    "variantsBytesEqualReference": false,
+    "sameRequestKeys": true
+   },
+   "firstOutputLine": "responses=230 fixtures=5 distinct=5 keysVarying=30/46"
+  },
+  {
+   "id": "response-status-altered",
+   "expected": "one-differing-response",
+   "killed": true,
+   "seen": {
+    "exit": 0,
+    "responsesDifferingFromReference": 1,
+    "variantsBytesEqualReference": false,
+    "sameRequestKeys": true
+   },
+   "firstOutputLine": "responses=230 fixtures=5 distinct=5 keysVarying=30/46"
+  },
+  {
+   "id": "request-key-dropped",
+   "expected": "key-set-differs",
+   "killed": true,
+   "seen": {
+    "exit": 0,
+    "responsesDifferingFromReference": 1,
+    "variantsBytesEqualReference": false,
+    "sameRequestKeys": false
+   },
+   "firstOutputLine": "responses=230 fixtures=5 distinct=5 keysVarying=30/46"
+  },
+  {
+   "id": "fixture-revision-altered",
+   "expected": "refused",
+   "killed": true,
+   "seen": {
+    "exit": 1
+   },
+   "firstOutputLine": "captures name different fixture repositories; they are not comparable"
+  },
+  {
+   "id": "fixture-path-altered",
+   "expected": "refused",
+   "killed": true,
+   "seen": {
+    "exit": 1
+   },
+   "firstOutputLine": "captures name different fixture repositories; they are not comparable"
+  }
+ ]
+}

@@ -1,0 +1,453 @@
+{
+ "tool": "consumer_sweep.py",
+ "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "trackedChangesInTree": false,
+ "excludedPrefix": "docs/evidence/poc-core-hygiene-2026-10-22/",
+ "trackedFilesExcluded": 28,
+ "trackedFiles": 3039,
+ "textFilesRead": 3039,
+ "subjects": [
+  {
+   "kind": "orphan-path",
+   "id": "evidence-population.ts",
+   "tokens": [
+    {
+     "token": "packages/three-surface-poc-core/src/evidence-population.ts",
+     "gitGrepFiles": 5,
+     "gitGrepLines": 8,
+     "pyRegexFiles": 5,
+     "pyRegexHits": 8,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {
+      "docs-other": [
+       "docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md"
+      ],
+      "docs-evidence": [
+       "docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json",
+       "docs/evidence/pwb-polaris-population-backfill-2026-09-23.json"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-PWB-N3-SLICE4-CONFIRMATION-RAW.md",
+       "docs/reviews/R-PWB-N3-SLICE4-REVIEW-RAW.md"
+      ]
+     }
+    },
+    {
+     "token": "evidence-population",
+     "gitGrepFiles": 10,
+     "gitGrepLines": 24,
+     "pyRegexFiles": 10,
+     "pyRegexHits": 25,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {
+      "docs-other": [
+       "docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md"
+      ],
+      "docs-evidence": [
+       "docs/evidence/pwb-m1-polaris-lane-a-measurement-u05-3-2026-10-04.json",
+       "docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json",
+       "docs/evidence/pwb-polaris-population-backfill-2026-09-23.json",
+       "docs/evidence/syzygy-bpyt-7-2/vitest-full.files.txt"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-PWB-N3-SLICE4-CONFIRMATION-RAW.md",
+       "docs/reviews/R-PWB-N3-SLICE4-REVIEW-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/evidence-population.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/evidence-population.ts",
+       "packages/three-surface-poc-core/src/index.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "orphan-name",
+   "id": "derivePopulationBlock",
+   "tokens": [
+    {
+     "token": "derivePopulationBlock",
+     "gitGrepFiles": 7,
+     "gitGrepLines": 15,
+     "pyRegexFiles": 7,
+     "pyRegexHits": 17,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-other": [
+       "docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md"
+      ],
+      "docs-evidence": [
+       "docs/evidence/pwb-m1-polaris-lane-a-measurement-u05-3-2026-10-04.json",
+       "docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json",
+       "docs/evidence/pwb-polaris-population-backfill-2026-09-23.json"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-PWB-N3-SLICE4-REVIEW-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/evidence-population.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/evidence-population.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "orphan-path",
+   "id": "owner-act-drafter.ts",
+   "tokens": [
+    {
+     "token": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+     "gitGrepFiles": 1,
+     "gitGrepLines": 11,
+     "pyRegexFiles": 1,
+     "pyRegexHits": 11,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {
+      "docs-evidence": [
+       "docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json"
+      ]
+     }
+    },
+    {
+     "token": "owner-act-drafter",
+     "gitGrepFiles": 4,
+     "gitGrepLines": 27,
+     "pyRegexFiles": 4,
+     "pyRegexHits": 27,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {
+      "docs-evidence": [
+       "docs/evidence/syzygy-bpyt-7-2/vitest-full.files.txt",
+       "docs/evidence/syzygy-dov41-unknown-routes-rule6-2026-10-03.json"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/index.ts"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "orphan-name",
+   "id": "draftOwnerAct",
+   "tokens": [
+    {
+     "token": "draftOwnerAct",
+     "gitGrepFiles": 2,
+     "gitGrepLines": 8,
+     "pyRegexFiles": 2,
+     "pyRegexHits": 8,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "core-test": [
+       "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/owner-act-drafter.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "orphan-path",
+   "id": "test-cleanup.ts",
+   "tokens": [
+    {
+     "token": "packages/three-surface-poc-core/src/test-cleanup.ts",
+     "gitGrepFiles": 0,
+     "gitGrepLines": 0,
+     "pyRegexFiles": 0,
+     "pyRegexHits": 0,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {}
+    },
+    {
+     "token": "test-cleanup",
+     "gitGrepFiles": 4,
+     "gitGrepLines": 4,
+     "pyRegexFiles": 4,
+     "pyRegexHits": 4,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": [],
+     "filesByCategory": {
+      "docs-evidence": [
+       "docs/evidence/syzygy-bpyt-7-2/vitest-full.files.txt"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/model.test.ts",
+       "packages/three-surface-poc-core/src/test-cleanup.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/test-cleanup.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "orphan-name",
+   "id": "removeFixtureDirectory",
+   "tokens": [
+    {
+     "token": "removeFixtureDirectory",
+     "gitGrepFiles": 4,
+     "gitGrepLines": 9,
+     "pyRegexFiles": 4,
+     "pyRegexHits": 9,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-evidence": [
+       "docs/evidence/vitest-load-process-churn-jsyi-2026-10-04.json"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/model.test.ts",
+       "packages/three-surface-poc-core/src/test-cleanup.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/test-cleanup.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "deleted-name",
+   "id": "JUDGMENT_INVALID_CASE_IDS",
+   "tokens": [
+    {
+     "token": "JUDGMENT_INVALID_CASE_IDS",
+     "gitGrepFiles": 0,
+     "gitGrepLines": 0,
+     "pyRegexFiles": 0,
+     "pyRegexHits": 0,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {}
+    }
+   ]
+  },
+  {
+   "kind": "deleted-name",
+   "id": "ClassificationOutcome",
+   "tokens": [
+    {
+     "token": "ClassificationOutcome",
+     "gitGrepFiles": 0,
+     "gitGrepLines": 0,
+     "pyRegexFiles": 0,
+     "pyRegexHits": 0,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {}
+    }
+   ]
+  },
+  {
+   "kind": "deleted-name",
+   "id": "FactFamilyKind",
+   "tokens": [
+    {
+     "token": "FactFamilyKind",
+     "gitGrepFiles": 0,
+     "gitGrepLines": 0,
+     "pyRegexFiles": 0,
+     "pyRegexHits": 0,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {}
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "appendEvaluation",
+   "tokens": [
+    {
+     "token": "appendEvaluation",
+     "gitGrepFiles": 7,
+     "gitGrepLines": 18,
+     "pyRegexFiles": 7,
+     "pyRegexHits": 18,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-other": [
+       "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md",
+       "docs/pursuits/2026-09-13-vision-pursuit-data.json",
+       "docs/pursuits/2026-09-13-vision-pursuit-harvest.json"
+      ],
+      "docs-evidence": [
+       "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/body-read-authority.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/body-read-authority.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "appendJudgmentEvaluation",
+   "tokens": [
+    {
+     "token": "appendJudgmentEvaluation",
+     "gitGrepFiles": 6,
+     "gitGrepLines": 14,
+     "pyRegexFiles": 6,
+     "pyRegexHits": 14,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-other": [
+       "docs/PWB-IMPLEMENTATION-PLAN.md",
+       "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md"
+      ],
+      "docs-evidence": [
+       "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "rollbackMaterializedWorkItem",
+   "tokens": [
+    {
+     "token": "rollbackMaterializedWorkItem",
+     "gitGrepFiles": 2,
+     "gitGrepLines": 6,
+     "pyRegexFiles": 2,
+     "pyRegexHits": 6,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "core-test": [
+       "packages/three-surface-poc-core/src/materialization.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/materialization.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "ownerActProvenance",
+   "tokens": [
+    {
+     "token": "ownerActProvenance",
+     "gitGrepFiles": 3,
+     "gitGrepLines": 4,
+     "pyRegexFiles": 3,
+     "pyRegexHits": 4,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-other": [
+       "docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/project-shape-model.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "clearTestArtifactRecordFile",
+   "tokens": [
+    {
+     "token": "clearTestArtifactRecordFile",
+     "gitGrepFiles": 3,
+     "gitGrepLines": 4,
+     "pyRegexFiles": 3,
+     "pyRegexHits": 4,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-reviews": [
+       "docs/reviews/R-CAPTURE-TEST-ARTIFACT-NO-SPAWN-2-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/test-artifact-verification.ts"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "kind": "test-only-name",
+   "id": "liveTestOperatorInstructions",
+   "tokens": [
+    {
+     "token": "liveTestOperatorInstructions",
+     "gitGrepFiles": 6,
+     "gitGrepLines": 10,
+     "pyRegexFiles": 6,
+     "pyRegexHits": 12,
+     "methodsAgreeOnFiles": true,
+     "wrappedCitationOnlyFiles": null,
+     "filesByCategory": {
+      "docs-evidence": [
+       "docs/evidence/live-verification-test-no-spawn-mutants-round3-repairs-2026-10-07.json"
+      ],
+      "docs-reviews": [
+       "docs/reviews/R-LIVE-TEST-NO-SPAWN-2-RAW.md"
+      ],
+      "core-test": [
+       "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts",
+       "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+       "packages/three-surface-poc-core/src/test-artifact-verification.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/test-artifact-verification.ts"
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

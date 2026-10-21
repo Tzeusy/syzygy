@@ -1,0 +1,1419 @@
+{
+ "tool": "route-capture.mjs",
+ "tree": {
+  "commit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+  "changedTrackedFilesUnderPackagesAndApps": []
+ },
+ "fixtureRepository": {
+  "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p503/fixture-repo",
+  "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+  "creation": "first run only: fixtureRepoWithGit([]) from apps/three-surface-poc/dist/test-model-fixture.js builds a git repository from fixed files with pinned commit instants (GIT_AUTHOR_DATE and GIT_COMMITTER_DATE 2026-08-24T00:00:00Z) and no global or system git config, so its revision is a function of the files alone; the script copies it to the path above, removes the original, and writes the revision to <path>.json; later runs reuse the path"
+ },
+ "variants": {
+  "shape-not-evaluated": {
+   "routeCount": 19,
+   "routes": {
+    "direct anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48103,
+     "bodySha256": "232f428d92c33f8e77074053754a50189e868f11ecb11cc6b08633dd4db49a7f"
+    },
+    "tailnet anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48178,
+     "bodySha256": "db6c4fff0f439045adb80e7bead4a6a413ed1f4ae497455f593056133e2e595f"
+    },
+    "direct anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48103,
+     "bodySha256": "232f428d92c33f8e77074053754a50189e868f11ecb11cc6b08633dd4db49a7f"
+    },
+    "tailnet anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48178,
+     "bodySha256": "db6c4fff0f439045adb80e7bead4a6a413ed1f4ae497455f593056133e2e595f"
+    },
+    "direct anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48103,
+     "bodySha256": "232f428d92c33f8e77074053754a50189e868f11ecb11cc6b08633dd4db49a7f"
+    },
+    "tailnet anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48178,
+     "bodySha256": "db6c4fff0f439045adb80e7bead4a6a413ed1f4ae497455f593056133e2e595f"
+    },
+    "direct anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 108010,
+     "bodySha256": "bb7d493bbe9c092c405c7ccc178727d2c3b0e1539dbeb72708dccdeaee0385e9"
+    },
+    "tailnet anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 108250,
+     "bodySha256": "7ffa787eb2dbd0173346f48b4d913945010cb79aa38c66959d4aad34860eabf2"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 108010,
+     "bodySha256": "bb7d493bbe9c092c405c7ccc178727d2c3b0e1539dbeb72708dccdeaee0385e9"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 108250,
+     "bodySha256": "7ffa787eb2dbd0173346f48b4d913945010cb79aa38c66959d4aad34860eabf2"
+    },
+    "direct anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13849,
+     "bodySha256": "e3df195364d031f406083c25ccc7e6413d95c7617faf5a1cc5a4a944390b112d"
+    },
+    "tailnet anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13924,
+     "bodySha256": "18ae7c15542e33a90756361e9d9c8c56c45f6777c5ca28414f64ad104a6af18e"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13849,
+     "bodySha256": "e3df195364d031f406083c25ccc7e6413d95c7617faf5a1cc5a4a944390b112d"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13924,
+     "bodySha256": "18ae7c15542e33a90756361e9d9c8c56c45f6777c5ca28414f64ad104a6af18e"
+    },
+    "direct anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32393,
+     "bodySha256": "ebb697aa624f7b9ac8c5384f5a845aa823c423ac15b91ac0a1a79f835e02ceec"
+    },
+    "tailnet anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32483,
+     "bodySha256": "e9c97aa1b22d48de0787842bfb7b22aae8b8b91bf15bcb3d4a25517c4e9f21fc"
+    },
+    "direct anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32393,
+     "bodySha256": "ebb697aa624f7b9ac8c5384f5a845aa823c423ac15b91ac0a1a79f835e02ceec"
+    },
+    "tailnet anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32483,
+     "bodySha256": "e9c97aa1b22d48de0787842bfb7b22aae8b8b91bf15bcb3d4a25517c4e9f21fc"
+    },
+    "direct anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46607,
+     "bodySha256": "9209abef9f93eb60d0475cea08d2616a2f6b9aa8cd763dfac4c08ffd99ec8c56"
+    },
+    "tailnet anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46697,
+     "bodySha256": "673204a1fb98e0460a478cb8b3db97ce2b1f116bcce5b37b4d028e31124a52ed"
+    },
+    "direct anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46607,
+     "bodySha256": "9209abef9f93eb60d0475cea08d2616a2f6b9aa8cd763dfac4c08ffd99ec8c56"
+    },
+    "tailnet anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46697,
+     "bodySha256": "673204a1fb98e0460a478cb8b3db97ce2b1f116bcce5b37b4d028e31124a52ed"
+    },
+    "direct bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 33664,
+     "bodySha256": "91958ac1fcbc614526f521d863c65e3f364e01de2b33634dfaab361f61c132a5"
+    },
+    "direct anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 33664,
+     "bodySha256": "906b5de6689d588ad6b317f868d2b5df94077303f67d21f432d997f76ab1455c"
+    },
+    "tailnet anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 33664,
+     "bodySha256": "906b5de6689d588ad6b317f868d2b5df94077303f67d21f432d997f76ab1455c"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 33664,
+     "bodySha256": "906b5de6689d588ad6b317f868d2b5df94077303f67d21f432d997f76ab1455c"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "eb3e9a02786f9750440889098d997654f6a5c3cc1990dc9f1161f03856c729cf"
+    },
+    "direct anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "tailnet anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    },
+    "direct anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    }
+   }
+  },
+  "shape-admitted": {
+   "routeCount": 19,
+   "routes": {
+    "direct anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "09706ad3b7e17e5b31c096b8acd1882b90d69265d61983a432c53389ebc14386"
+    },
+    "tailnet anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "81fa35ab0c9d794ccb347d11f63cd6f376e3caebb89136000d4745b42650ae09"
+    },
+    "direct anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "09706ad3b7e17e5b31c096b8acd1882b90d69265d61983a432c53389ebc14386"
+    },
+    "tailnet anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "81fa35ab0c9d794ccb347d11f63cd6f376e3caebb89136000d4745b42650ae09"
+    },
+    "direct anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "09706ad3b7e17e5b31c096b8acd1882b90d69265d61983a432c53389ebc14386"
+    },
+    "tailnet anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "81fa35ab0c9d794ccb347d11f63cd6f376e3caebb89136000d4745b42650ae09"
+    },
+    "direct anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 209711,
+     "bodySha256": "ce3687c9454efde16d4b1c14fe7a53e5b31a86e79463654b3651586bf4a2ba6d"
+    },
+    "tailnet anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 209981,
+     "bodySha256": "76c37810f7d2881c7d8de1fe49d68d7f86d64cf118bdb85db3a84ed1adb8bf7f"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 209711,
+     "bodySha256": "ce3687c9454efde16d4b1c14fe7a53e5b31a86e79463654b3651586bf4a2ba6d"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 209981,
+     "bodySha256": "76c37810f7d2881c7d8de1fe49d68d7f86d64cf118bdb85db3a84ed1adb8bf7f"
+    },
+    "direct anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "90e0d5b9c9e7a950802a27aaabc9123591bbd061d28e808975adbc9ebba74d5a"
+    },
+    "tailnet anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "91588ab8336c9ec7523edebe201dc972e96c23a62caf30bc8815034c2412610c"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "90e0d5b9c9e7a950802a27aaabc9123591bbd061d28e808975adbc9ebba74d5a"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "91588ab8336c9ec7523edebe201dc972e96c23a62caf30bc8815034c2412610c"
+    },
+    "direct anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "d6d92236356dfc0795f813507b21e429a1ea9a0476e1dd111ce9894f666730d6"
+    },
+    "tailnet anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "2881c0bb53d8312f9b75f5aec79078bf7b6755697c15af14c1d01d7b9e505022"
+    },
+    "direct anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "d6d92236356dfc0795f813507b21e429a1ea9a0476e1dd111ce9894f666730d6"
+    },
+    "tailnet anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "2881c0bb53d8312f9b75f5aec79078bf7b6755697c15af14c1d01d7b9e505022"
+    },
+    "direct anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "f9497d0c9e4a264d31a01cdf67847a4c937c311db6fd176ef42c41cd98949f87"
+    },
+    "tailnet anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "c725ade732e6c071b1947918cf1b704cee50324948c00466b4e91b447084f0dd"
+    },
+    "direct anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "f9497d0c9e4a264d31a01cdf67847a4c937c311db6fd176ef42c41cd98949f87"
+    },
+    "tailnet anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "c725ade732e6c071b1947918cf1b704cee50324948c00466b4e91b447084f0dd"
+    },
+    "direct bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 150033,
+     "bodySha256": "b9011a37add2773ae9d94bbc6ac19fc073e1b956140aef9eb97bf4842cf0f6dd"
+    },
+    "direct anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 150033,
+     "bodySha256": "5107877534bae28814921df048255a3a82c44b1adbb29ff71809073741c77262"
+    },
+    "tailnet anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 150033,
+     "bodySha256": "5107877534bae28814921df048255a3a82c44b1adbb29ff71809073741c77262"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 150033,
+     "bodySha256": "5107877534bae28814921df048255a3a82c44b1adbb29ff71809073741c77262"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 48810,
+     "bodySha256": "f5648805e3b9bcde952cd98274b2b27e26e48bfc93d563557910d487f9f86ce7"
+    },
+    "direct anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 48810,
+     "bodySha256": "9d90d54134dae7c265a5cc51864f9e4dae4865c5da7773c283f9369cb305d2b8"
+    },
+    "tailnet anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 48810,
+     "bodySha256": "9d90d54134dae7c265a5cc51864f9e4dae4865c5da7773c283f9369cb305d2b8"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 48810,
+     "bodySha256": "9d90d54134dae7c265a5cc51864f9e4dae4865c5da7773c283f9369cb305d2b8"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    },
+    "direct anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    }
+   }
+  },
+  "shape-rejected": {
+   "routeCount": 19,
+   "routes": {
+    "direct anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48102,
+     "bodySha256": "b21f010aa37c06fdb1ed31499165b49c0a59ffd53c5f74d8771d4a38a1a6a7aa"
+    },
+    "tailnet anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48177,
+     "bodySha256": "235d0030b6e851d37519d0c7ef5d1cc6d58808392ec7882d5ebeb149b00905ef"
+    },
+    "direct anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48102,
+     "bodySha256": "b21f010aa37c06fdb1ed31499165b49c0a59ffd53c5f74d8771d4a38a1a6a7aa"
+    },
+    "tailnet anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48177,
+     "bodySha256": "235d0030b6e851d37519d0c7ef5d1cc6d58808392ec7882d5ebeb149b00905ef"
+    },
+    "direct anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48102,
+     "bodySha256": "b21f010aa37c06fdb1ed31499165b49c0a59ffd53c5f74d8771d4a38a1a6a7aa"
+    },
+    "tailnet anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48177,
+     "bodySha256": "235d0030b6e851d37519d0c7ef5d1cc6d58808392ec7882d5ebeb149b00905ef"
+    },
+    "direct anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 115540,
+     "bodySha256": "9a063d9389c865c72e645a5463ac6705c4c9c7920b0bbe4f03c17766ac1db4ea"
+    },
+    "tailnet anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 115780,
+     "bodySha256": "96b11c01dd0d87d90edf33e58d8c8e90ffb8b4854e7ae4cccb3eecddd1cc6b4c"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 115540,
+     "bodySha256": "9a063d9389c865c72e645a5463ac6705c4c9c7920b0bbe4f03c17766ac1db4ea"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 115780,
+     "bodySha256": "96b11c01dd0d87d90edf33e58d8c8e90ffb8b4854e7ae4cccb3eecddd1cc6b4c"
+    },
+    "direct anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13847,
+     "bodySha256": "3d29ab8955c2405bdf11937fed593b4f97c1feaa7cf4a392e8dcba3dc7d122a8"
+    },
+    "tailnet anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13922,
+     "bodySha256": "dac8880db16f02a64cf27f6e833fba4d7ca833caf06c49a797028fbba8508c05"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13847,
+     "bodySha256": "3d29ab8955c2405bdf11937fed593b4f97c1feaa7cf4a392e8dcba3dc7d122a8"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13922,
+     "bodySha256": "dac8880db16f02a64cf27f6e833fba4d7ca833caf06c49a797028fbba8508c05"
+    },
+    "direct anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32392,
+     "bodySha256": "8dfdcd6166305f42d6a67f4f96d82859ed30c4ec9269c32a6861b5d355a1e5ba"
+    },
+    "tailnet anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32482,
+     "bodySha256": "6c22dbacb52367d07500619afe3f2620a2d76341af77d188d2e98bffb5628376"
+    },
+    "direct anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32392,
+     "bodySha256": "8dfdcd6166305f42d6a67f4f96d82859ed30c4ec9269c32a6861b5d355a1e5ba"
+    },
+    "tailnet anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32482,
+     "bodySha256": "6c22dbacb52367d07500619afe3f2620a2d76341af77d188d2e98bffb5628376"
+    },
+    "direct anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46606,
+     "bodySha256": "2387db6c8bc1b3a0ad64bca6f03962e55cb8b3d31c72b6560169592b99cbb755"
+    },
+    "tailnet anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46696,
+     "bodySha256": "89564c38465e4a3aff7e1183cc9845c0fa074b9e26bfcc4042cec1de2fde0bdc"
+    },
+    "direct anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46606,
+     "bodySha256": "2387db6c8bc1b3a0ad64bca6f03962e55cb8b3d31c72b6560169592b99cbb755"
+    },
+    "tailnet anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46696,
+     "bodySha256": "89564c38465e4a3aff7e1183cc9845c0fa074b9e26bfcc4042cec1de2fde0bdc"
+    },
+    "direct bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 37479,
+     "bodySha256": "7534fc43d84ad727e35c55a22322aa92b23731c4e300c28297ec91b3f6fefbb3"
+    },
+    "direct anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 37479,
+     "bodySha256": "ebe773fb865bd60b179f66c3b68ad4a92ae4e2d0a034caf7ff1965b4e55c9dd2"
+    },
+    "tailnet anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 37479,
+     "bodySha256": "ebe773fb865bd60b179f66c3b68ad4a92ae4e2d0a034caf7ff1965b4e55c9dd2"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 37479,
+     "bodySha256": "ebe773fb865bd60b179f66c3b68ad4a92ae4e2d0a034caf7ff1965b4e55c9dd2"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "eb3e9a02786f9750440889098d997654f6a5c3cc1990dc9f1161f03856c729cf"
+    },
+    "direct anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "tailnet anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 14913,
+     "bodySha256": "1555faf34e32952006bc9fa062d1532ce2a9df2f3baa9c762250b70a6748255e"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    },
+    "direct anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    }
+   }
+  },
+  "shape-with-secret": {
+   "routeCount": 19,
+   "routes": {
+    "direct anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "464d32f9c3523a8584f6b8e43a9fac651951f7509af7604db0732c832fc8484f"
+    },
+    "tailnet anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "4a98d192c411ab085005050632ac09f7632e6331e37022ffcc5beee9b0debbac"
+    },
+    "direct anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "464d32f9c3523a8584f6b8e43a9fac651951f7509af7604db0732c832fc8484f"
+    },
+    "tailnet anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "4a98d192c411ab085005050632ac09f7632e6331e37022ffcc5beee9b0debbac"
+    },
+    "direct anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "464d32f9c3523a8584f6b8e43a9fac651951f7509af7604db0732c832fc8484f"
+    },
+    "tailnet anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "4a98d192c411ab085005050632ac09f7632e6331e37022ffcc5beee9b0debbac"
+    },
+    "direct anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 213774,
+     "bodySha256": "b6273be1fec25e9145f68abdcd46ba054d0aad0b19f87baba1f9984bc80ac26c"
+    },
+    "tailnet anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 214044,
+     "bodySha256": "a4dac27e05e423854fdfca67748b579edf5640498cfc8701b20107d3ff48966b"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 213774,
+     "bodySha256": "b6273be1fec25e9145f68abdcd46ba054d0aad0b19f87baba1f9984bc80ac26c"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 214044,
+     "bodySha256": "a4dac27e05e423854fdfca67748b579edf5640498cfc8701b20107d3ff48966b"
+    },
+    "direct anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "800494cb09603f54725cee67bf62483cbe01d125d6ce5fea65279ffd49772332"
+    },
+    "tailnet anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "701dc4571ef3af3bfbc27fd819d403280c4d630d669e46fd16c57b2c6f781a5b"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "800494cb09603f54725cee67bf62483cbe01d125d6ce5fea65279ffd49772332"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "701dc4571ef3af3bfbc27fd819d403280c4d630d669e46fd16c57b2c6f781a5b"
+    },
+    "direct anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "b4bc93e070595ce9228b5ba6ab5fcb40c31375e1a18f1b5c97825b997eb88640"
+    },
+    "tailnet anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "5f748a0af2294ec37b7c61d435dabbf9a74e40ddd036edfdd0759cc4b7a634d1"
+    },
+    "direct anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "b4bc93e070595ce9228b5ba6ab5fcb40c31375e1a18f1b5c97825b997eb88640"
+    },
+    "tailnet anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "5f748a0af2294ec37b7c61d435dabbf9a74e40ddd036edfdd0759cc4b7a634d1"
+    },
+    "direct anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "7e477396d5683f93bbb4d131f40e743671490e0a85afab9592c8b58c59a7b6fb"
+    },
+    "tailnet anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "c783423f8dda121e1cd633b04713cd1babc5ca9b5e7ce9d8879287895969e292"
+    },
+    "direct anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "7e477396d5683f93bbb4d131f40e743671490e0a85afab9592c8b58c59a7b6fb"
+    },
+    "tailnet anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "c783423f8dda121e1cd633b04713cd1babc5ca9b5e7ce9d8879287895969e292"
+    },
+    "direct bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 147479,
+     "bodySha256": "709d8412f625dbdf33975a99a8a09ac5b0ed3bb2ddff68b7d0a69dcfb7c93e5c"
+    },
+    "direct anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 147479,
+     "bodySha256": "baa9c2450c3783125c783e644300f97038c537110bb1d7100e2b8ed33ffc9172"
+    },
+    "tailnet anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 147479,
+     "bodySha256": "baa9c2450c3783125c783e644300f97038c537110bb1d7100e2b8ed33ffc9172"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 147479,
+     "bodySha256": "baa9c2450c3783125c783e644300f97038c537110bb1d7100e2b8ed33ffc9172"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 45462,
+     "bodySha256": "f1f9e7a8c772ffd3ce595a05374754cfa9aa7912611d6cf5b21c155db7d78b2b"
+    },
+    "direct anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 45462,
+     "bodySha256": "3172e30981f7b50cced7bf0274ae1e9ffa4972daeddf7a6cc50ddfe57e314021"
+    },
+    "tailnet anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 45462,
+     "bodySha256": "3172e30981f7b50cced7bf0274ae1e9ffa4972daeddf7a6cc50ddfe57e314021"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 45462,
+     "bodySha256": "3172e30981f7b50cced7bf0274ae1e9ffa4972daeddf7a6cc50ddfe57e314021"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    },
+    "direct anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    }
+   }
+  },
+  "shape-with-baseline-spec": {
+   "routeCount": 19,
+   "routes": {
+    "direct anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "ea002b4810cf838c98b3dbf5d87d60bab72a132e43872d2000635c977c2e2026"
+    },
+    "tailnet anonymous GET /": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "a668cdc76c16c470e7ae63039fbb584714164a85e6def45025b13cd190846cf6"
+    },
+    "direct anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "ea002b4810cf838c98b3dbf5d87d60bab72a132e43872d2000635c977c2e2026"
+    },
+    "tailnet anonymous GET /butlers-syzygy": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "a668cdc76c16c470e7ae63039fbb584714164a85e6def45025b13cd190846cf6"
+    },
+    "direct anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48180,
+     "bodySha256": "ea002b4810cf838c98b3dbf5d87d60bab72a132e43872d2000635c977c2e2026"
+    },
+    "tailnet anonymous GET /butlers-syzygy/": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 48255,
+     "bodySha256": "a668cdc76c16c470e7ae63039fbb584714164a85e6def45025b13cd190846cf6"
+    },
+    "direct anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 215528,
+     "bodySha256": "6457914c75839e23e886c3d09782792d9fd1b461a94a0a8edfb423029265ebd1"
+    },
+    "tailnet anonymous GET /polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 215858,
+     "bodySha256": "c5046d3c66af0811e2ad06736d7511f3e217064c9242eb702c48752c56a114de"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 215528,
+     "bodySha256": "6457914c75839e23e886c3d09782792d9fd1b461a94a0a8edfb423029265ebd1"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 215858,
+     "bodySha256": "c5046d3c66af0811e2ad06736d7511f3e217064c9242eb702c48752c56a114de"
+    },
+    "direct anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "185be9e027e44a56147628a516f359ef819675282c145b211ea461e9b9460e43"
+    },
+    "tailnet anonymous GET /polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "389160ee1587b240f17343f1567baf1618a8236cdc41b2bf30e0f40b5d579855"
+    },
+    "direct anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13892,
+     "bodySha256": "185be9e027e44a56147628a516f359ef819675282c145b211ea461e9b9460e43"
+    },
+    "tailnet anonymous GET /butlers-syzygy/polaris/source": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 13967,
+     "bodySha256": "389160ee1587b240f17343f1567baf1618a8236cdc41b2bf30e0f40b5d579855"
+    },
+    "direct anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "c63df7f78cc8a02f97abd712be09b758043b0f43d7f9862ceba5f5118b45da24"
+    },
+    "tailnet anonymous GET /trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "8816dc6ddce1c47d95a69e14eb3dc484704cd852faadf206970f4340008aa418"
+    },
+    "direct anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32470,
+     "bodySha256": "c63df7f78cc8a02f97abd712be09b758043b0f43d7f9862ceba5f5118b45da24"
+    },
+    "tailnet anonymous GET /butlers-syzygy/trajectory": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 32560,
+     "bodySha256": "8816dc6ddce1c47d95a69e14eb3dc484704cd852faadf206970f4340008aa418"
+    },
+    "direct anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "f6cbc48559864c39a759b15ef1ffde87e26196af2d0f1264d165aafc327023f3"
+    },
+    "tailnet anonymous GET /orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "61db47d29a7924c3e5d91b57a6dca7d0d65b18e8fd6826e6de64e04b7fa01c32"
+    },
+    "direct anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46684,
+     "bodySha256": "f6cbc48559864c39a759b15ef1ffde87e26196af2d0f1264d165aafc327023f3"
+    },
+    "tailnet anonymous GET /butlers-syzygy/orrery": {
+     "status": 200,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 46774,
+     "bodySha256": "61db47d29a7924c3e5d91b57a6dca7d0d65b18e8fd6826e6de64e04b7fa01c32"
+    },
+    "direct bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 154275,
+     "bodySha256": "b9635ec20b3182a6bdf25c2a2cbbc34a9873754def7b8f9b907b4312c4cfeb58"
+    },
+    "direct anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 154275,
+     "bodySha256": "78d408814ee4cd6908a8883874c209f704b60362320e815776b6cf3a5577c03e"
+    },
+    "tailnet anonymous GET /api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 154275,
+     "bodySha256": "78d408814ee4cd6908a8883874c209f704b60362320e815776b6cf3a5577c03e"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 154275,
+     "bodySha256": "78d408814ee4cd6908a8883874c209f704b60362320e815776b6cf3a5577c03e"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 51952,
+     "bodySha256": "822253896df2c43aff22ea8d49f151ea5861bca087d287f1f33f0d69aaed1e57"
+    },
+    "direct anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 51952,
+     "bodySha256": "b217c53fc17cf5740c74abcc1d4b1bce421056834d408c4b25f23e216b75ec8f"
+    },
+    "tailnet anonymous GET /api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 51952,
+     "bodySha256": "b217c53fc17cf5740c74abcc1d4b1bce421056834d408c4b25f23e216b75ec8f"
+    },
+    "direct anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "tailnet bearer GET /butlers-syzygy/api/poc/polaris": {
+     "status": 200,
+     "contentType": "application/json",
+     "bodyLength": 51952,
+     "bodySha256": "b217c53fc17cf5740c74abcc1d4b1bce421056834d408c4b25f23e216b75ec8f"
+    },
+    "tailnet anonymous GET /butlers-syzygy/api/poc/polaris": {
+     "status": 401,
+     "contentType": "application/json",
+     "bodyLength": 37,
+     "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+    },
+    "direct anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1880,
+     "bodySha256": "fdc5f2054ffaaf7358c4a53266d6fbf5f127a6cefce5f32f6287d42539ab8b4b"
+    },
+    "tailnet anonymous POST /butlers-syzygy/trajectory/materialize": {
+     "status": 403,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 1895,
+     "bodySha256": "efd2d54a39b10d39baf39cf4636c047ed60cab46c20342754fe5d9d29006f224"
+    },
+    "direct anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    },
+    "direct anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 344,
+     "bodySha256": "f69c0b7534718dae95c9bb661d06f7b10223c0930fb805d33ce7b7d6f52c6ba2"
+    },
+    "tailnet anonymous POST /butlers-syzygy/polaris/reobserve": {
+     "status": 502,
+     "contentType": "text/html; charset=utf-8",
+     "bodyLength": 359,
+     "bodySha256": "037f396032571f5d1f6715819bf9efc5ed30f8cff3a97ea7aa949c531c113ba4"
+    }
+   }
+  }
+ }
+}

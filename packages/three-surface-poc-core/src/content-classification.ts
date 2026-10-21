@@ -279,8 +279,6 @@ export type ClassificationRecord =
       readonly unknown: FixedUnknown;
     };
 
-export type ClassificationOutcome = ClassificationRecord['outcome'];
-
 export type SourceClassification =
   | { readonly kind: 'classified'; readonly text: string; readonly record: ClassificationRecord & { readonly outcome: 'classified' } }
   | { readonly kind: 'withheld'; readonly record: ClassificationRecord & { readonly outcome: 'excluded' | 'unavailable' } };
