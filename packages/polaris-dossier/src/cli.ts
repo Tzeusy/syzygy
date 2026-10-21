@@ -168,8 +168,6 @@ export interface CliPorts {
   readonly loadScreen?: () => Promise<ScreenLoad>;
   /** The multi-page dossier renderer `render` draws through; the `syzygy` composition root injects it. Without it `render` refuses. */
   readonly renderer?: DossierRenderer;
-  /** Whether version 1.2 of the local-agent mode, which specifies waiting sessions, is signed off; by default read from the records root. */
-  readonly waitModeSigned?: () => boolean;
   /** The pause between an `await` slice's looks at its session directory; a timer by default. */
   readonly sleep?: (ms: number) => Promise<void>;
   /** Standard input, read whole as bytes, for `await --submit --stdin`; null past `maxBytes`. The process's own by default. */
@@ -258,7 +256,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
     const result = await handOver(run, {
       role, ...(fresh === 1 ? { fresh: true } : {}), ...(v.has('--kind') ? { kind: v.get('--kind')! } : {}), ...(v.has('--tool') ? { tool: v.get('--tool')! } : {}),
       ...(v.has('--tool-version') ? { toolVersion: v.get('--tool-version')! } : {}), ...(v.has('--model') ? { model: v.get('--model')! } : {}),
-    }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}), ...(ports.waitModeSigned ? { waitModeSigned: ports.waitModeSigned } : {}) });
+    }, { sources: sources(), now, ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}) });
     return result.ok ? report(result.report, EXIT.clean) : refused(result.refusal);
   }
   if (command === 'await') {
@@ -274,7 +272,7 @@ export async function runDossierCli(argv: readonly string[], io: CliIo, ports: C
       ...(v.has('--wait-minutes') ? { waitMinutes: v.get('--wait-minutes')! } : {}), ...(stdin === 1 ? { stdin: true } : {}),
     }, {
       sources: sources(), now, probe: createCredentialProbe(credentialListFromEnv(env)), ...openReader, ...(ports.loadScreen ? { loadScreen: ports.loadScreen } : {}),
-      ...(ports.waitModeSigned ? { waitModeSigned: ports.waitModeSigned } : {}), ...(ports.sleep ? { sleep: ports.sleep } : {}),
+      ...(ports.sleep ? { sleep: ports.sleep } : {}),
       ...(ports.readStdin ? { readStdin: ports.readStdin } : {}),
     });
     if (!result.ok) return refused(result.refusal);

@@ -16,7 +16,7 @@ import { AGENT_TOOLS, type AgentTool } from './run-config.js';
 import { recheckSessionStatement, type SessionStatementCitation } from './session-statement.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 import {
-  DELIVERY_DISCLOSURES, PLAIN_PATH, WAITING_MODE, WAIT_MODE_DIRECTION, WAIT_MODE_UNSIGNED, WAIT_TIMEOUT_ADVICE, deliverToWaiting, stdinHandOver, waitModeSignedIn, waitingReviewSession,
+  DELIVERY_DISCLOSURES, PLAIN_PATH, WAITING_MODE, WAIT_MODE_DIRECTION, WAIT_TIMEOUT_ADVICE, deliverToWaiting, stdinHandOver, waitingReviewSession,
   type DeliveryReport,
 } from './waiting-sessions.js';
 
@@ -133,8 +133,6 @@ export interface HandoverDeps {
   /** The object reader the step guard lists the pinned tree with, and a review packet reads with; by default the re-hashing in-process
    * reader. */
   readonly openReader?: ReverifyOptions['openReader'];
-  /** Whether version 1.2, which specifies waiting sessions, is signed off; by default `waitModeSignedIn` over the records root. */
-  readonly waitModeSigned?: () => boolean;
 }
 
 export interface HandoverRefusal {
@@ -394,7 +392,6 @@ export async function startSessions(runDir: string, request: Omit<SessionPromptR
   const now = deps.now();
   const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]) =>
     ({ ok: false as const, refusal: { command: 'session-prompt' as const, outcome: 'refused' as const, stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: START_DISCLOSURES } });
-  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);
   const opened = await openRun(runDir, deps.sources, now, 'no session is started', deps.openReader ? { openReader: deps.openReader } : {});
   if (!opened.ok) return refuse(opened.stage, opened.reason, opened.reasons, opened.refusals);
   const { run, runId } = opened;
@@ -473,7 +470,6 @@ async function deliverReview(
   const now = deps.now();
   const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]) =>
     ({ ok: false as const, refusal: { command: 'session-prompt' as const, outcome: 'refused' as const, stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: DELIVERY_DISCLOSURES } });
-  if (!(deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot)))()) return refuse('unsigned', WAIT_MODE_UNSIGNED);
   if (request.tool !== undefined || request.toolVersion !== undefined || request.model !== undefined) {
     return refuse('context', `a ${kind} session is waiting, and its tool, version and model were declared when it was started; deliver without --tool, --tool-version or --model, or add --fresh to hand the packet to a new session`);
   }

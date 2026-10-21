@@ -16,8 +16,8 @@ import {
 import type { ScreenLoad } from './screen.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 
-/** Pre-started waiting sessions (owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`; the candidate v1.2 of
- * `polaris-dossier-local-agent-mode`, REQ-polaris-generation-035 as amended there).
+/** Pre-started waiting sessions (owner direction `POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08`; v1.2 of
+ * `polaris-dossier-local-agent-mode`, signed off 2026-10-14, REQ-polaris-generation-035 as amended there).
  *
  * At the start of a run the authoring session runs `syzygy dossier session-prompt <run> all`: Syzygy makes the inventory, fidelity-review
  * and design-review session directories under the sessions root, writes the inventory brief into the inventory one, and prints a command
@@ -33,9 +33,7 @@ import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
  * A review session that has submitted its verdict may wait for round N+1: the next packet of the same kind, delivered after a repair, is
  * delivered to it rather than to a new session (the owner's sub-answer: one reviewer may continue across revisions). Every delivery is
  * recorded in the run directory; `continuationOf` reads those records, and the declared session identifiers of earlier verdicts, so the
- * review page can disclose a continuing reviewer. Every record lies within the agent sessions' write reach, so all of it is Inferred.
- *
- * Gated: until the owner signs off version 1.2 of the specification, `waitModeSigned` is false and every wait-mode step refuses. */
+ * review page can disclose a continuing reviewer. Every record lies within the agent sessions' write reach, so all of it is Inferred. */
 
 export const WAIT_MODE_DIRECTION = 'POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08';
 export const WAIT_MODE_SPEC = 'polaris-dossier-local-agent-mode v1.2';
@@ -62,73 +60,11 @@ export const deliveryRecordName = (kind: ReviewKind, session: number, round: num
 const DELIVERY_RECORD = (kind: ReviewKind, session: number): RegExp => new RegExp(`^${kind}-session-${session}\\.delivery-([1-9][0-9]*)\\.json$`, 'u');
 /** A path a printed permission rule can carry as one shell word without quoting, so the rule matches the command the session types. */
 export const PLAIN_PATH = /^\/[A-Za-z0-9._/-]+$/u;
-const SIGNOFF_RECORD = /^POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v([0-9]+)\.([0-9]+)\.md$/u;
-const DECISIONS = path.join('.syzygy', 'governance', 'decisions');
 const DELIVERY_JSON_LIMITS = Object.freeze({ maxBytes: 65_536, maxNodes: 256, maxDepth: 4 });
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
-
-const SIGNOFF_PACKAGE = 'polaris-dossier-local-agent-mode';
-const AGGREGATE = 'ACCEPTANCE-ACT-RECORD.md';
-
-/** Whether a sign-off record of `version` is one `record_versioned_signoff.py` wrote: its head as the recorder renders it (title, package,
- * version, tag, a reviewed commit and a confirming verdict), and exactly one marked block for the version in the aggregate record, as
- * the recorder's `--check` requires. A file that only carries the name opens nothing. */
-export function signoffRecordHolds(decisions: string, name: string, version: string): boolean {
-  let text: string, aggregate: string;
-  try {
-    text = fs.readFileSync(path.join(decisions, name), 'utf8');
-    aggregate = fs.readFileSync(path.join(decisions, AGGREGATE), 'utf8');
-  } catch { return false; }
-  const head = text.split('\n').filter((line) => line.trim() !== '').slice(0, 12);
-  const field = (key: string): string | undefined => head.find((line) => line.startsWith(`${key}: `))?.slice(key.length + 2);
-  const headHolds = head[0] === `# Polaris dossier local-agent mode — version-tagged sign-off v${version}`
-    && field('Package') === SIGNOFF_PACKAGE && field('Version') === version && field('Tag') === `${SIGNOFF_PACKAGE}-v${version}`
-    && /^[0-9a-f]{40}$/u.test(field('Reviewed commit') ?? '') && (field('Review verdict') === 'CONFIRM' || field('Review verdict') === 'CONFIRM WITH EXCEPTIONS');
-  const start = `<!-- versioned-signoff:${SIGNOFF_PACKAGE}:v${version} -->`, end = `<!-- /versioned-signoff:${SIGNOFF_PACKAGE}:v${version} -->`;
-  const blockHolds = aggregate.split(start).length === 2 && aggregate.split(end).length === 2 && aggregate.indexOf(start) < aggregate.indexOf(end);
-  return headHolds && blockHolds;
-}
-
-const INSTALLED_SPEC = path.join('openspec', 'changes', SIGNOFF_PACKAGE, 'specs', 'polaris-generation', 'spec.md');
-const MANIFEST_LINE = /^Manifest SHA-256: ([0-9a-f]{64})$/u;
-
-/** Whether the records root carries the applied, signed bytes of `version`, as the v1.2 builder's signed check reads them: the review the
- * record names (a path inside the records root) carries exactly one `Manifest SHA-256` in its head, its first four non-blank lines; the
- * installed spec hashes to it; and the spec's head names the version. A record written by hand, with no review and no applied patch,
- * opens nothing. */
-export function appliedSubjectHolds(recordsRoot: string, recordFile: string, version: string): boolean {
-  let record: string, spec: Buffer;
-  try {
-    record = fs.readFileSync(recordFile, 'utf8');
-    spec = fs.readFileSync(path.join(recordsRoot, INSTALLED_SPEC));
-  } catch { return false; }
-  const review = /^Review: (.+)$/mu.exec(record)?.[1];
-  // path.join keeps even an absolute review path inside the records root; only a '..' segment could leave it.
-  if (review === undefined || review.split('/').includes('..')) return false;
-  let reviewText: string;
-  try { reviewText = fs.readFileSync(path.join(recordsRoot, review), 'utf8'); } catch { return false; }
-  const digests = reviewText.split(/\r?\n/u).filter((line) => line.trim() !== '').slice(0, 4)
-    .flatMap((line) => { const match = MANIFEST_LINE.exec(line); return match === null ? [] : [match[1]]; });
-  return digests.length === 1 && sha256(spec) === digests[0] && spec.toString('utf8').includes(`Exact behavioral delta, version ${version}.`);
-}
-
-/** Whether the owner has signed off a version of the local-agent mode at or after 1.2: a sign-off record for it in the records root's
- * decisions that `signoffRecordHolds`, over a tree that carries its applied subject (`appliedSubjectHolds`). The record lies in the Syzygy
- * checkout, not the run's state directory. */
-export function waitModeSignedIn(recordsRoot: string): boolean {
-  const decisions = path.join(recordsRoot, DECISIONS);
-  let names: string[];
-  try { names = fs.readdirSync(decisions); } catch { return false; }
-  return names.some((name) => {
-    const match = SIGNOFF_RECORD.exec(name);
-    const version = match === null ? '' : `${match[1]}.${match[2]}`;
-    return match !== null && (Number(match[1]) > 1 || (Number(match[1]) === 1 && Number(match[2]) >= 2))
-      && signoffRecordHolds(decisions, name, version) && appliedSubjectHolds(recordsRoot, path.join(decisions, name), version);
-  });
-}
 
 /** Why a session directory may not be written into or delivered to, or null. The sessions root and the session directory must each be
  * a directory itself, never a link (lstat), and each real path must be its real parent's entry of its own name: a linked root would move
@@ -149,8 +85,6 @@ export function sessionDirectoryRefusal(root: string, directory: string): string
   if (real !== path.join(realRoot, path.basename(directory))) return `${directory} resolves to ${real}, not to the sessions root's ${path.basename(directory)}, so Syzygy writes nothing there`;
   return null;
 }
-
-export const WAIT_MODE_UNSIGNED = `wait mode is specified only by ${WAIT_MODE_SPEC}, which the owner has not signed off; until the version-tagged sign-off is recorded, hand each session over with session-prompt as signed in v1.1`;
 
 /** The prompt record of a waiting session: written by `session-prompt <run> all`. */
 export interface WaitingSession { readonly session: number; readonly record: Readonly<Record<string, unknown>> }
@@ -297,8 +231,6 @@ export interface AwaitDeps {
   readonly sleep?: (ms: number) => Promise<void>;
   /** Standard input, read whole as bytes; null when it holds more than `maxBytes`. Only `--stdin` reads it. */
   readonly readStdin?: (maxBytes: number) => Promise<Uint8Array | null>;
-  /** Whether version 1.2 is signed off; by default `waitModeSignedIn` over the records root. */
-  readonly waitModeSigned?: () => boolean;
   readonly probe: CheckDeps['probe'];
   readonly loadScreen?: () => Promise<ScreenLoad>;
   readonly openReader?: ReverifyOptions['openReader'];
@@ -403,9 +335,6 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
   const startedAt = deps.now();
   const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]): AwaitResult =>
     ({ ok: false, refusal: { command: 'await', outcome: 'refused', stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: AWAIT_DISCLOSURES } });
-  const signed = deps.waitModeSigned ?? (() => waitModeSignedIn(deps.sources.recordsRoot));
-  if (!signed()) return refuse('unsigned', WAIT_MODE_UNSIGNED);
-
   // The directory: absolute, normalised, ending in one slash, so the printed permission rule's prefix names exactly this session.
   if (!PLAIN_PATH.test(directoryArg) || !directoryArg.endsWith('/') || path.normalize(directoryArg) !== directoryArg || directoryArg.split('/').some((part) => part === '.' || part === '..')) {
     return refuse('directory', `the session directory must be given as its absolute, normalised path ending in one slash, exactly as the printed command gives it; got ${JSON.stringify(directoryArg)}`);

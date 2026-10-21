@@ -9,9 +9,9 @@ import { runDossierCli, type CliPorts } from './cli.js';
 import { FIXTURE_SCREEN, FIXTURE_URL, LATER, NOW, REAL_ROOT, designVerdict, draft, fidelityVerdict, fixtureSources, inventory, makeClone, type Doc } from './full-run.testkit.js';
 import type { GateSources, ProviderStatementRecord } from './gate-sources.js';
 import type { DossierRenderer } from './render.js';
-import { readStdinBytes, sessionDirectoryRefusal, signoffRecordHolds, waitModeSignedIn } from './waiting-sessions.js';
+import { readStdinBytes, sessionDirectoryRefusal } from './waiting-sessions.js';
 
-// Pre-started waiting sessions (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; candidate v1.2 of the local-agent mode,
+// Pre-started waiting sessions (owner direction POLARIS-DOSSIER-WAITING-SESSIONS-2026-10-08; v1.2 of the local-agent mode, signed 2026-10-14,
 // REQ-polaris-generation-035 as amended there). Every step runs through the CLI as a session would. Expected prompts, permission rules,
 // file names, outcomes, exit codes and disclosure texts are literals written here, never read from the module under test; digests are
 // computed here from the bytes on disk. One test per predicate; each names the mutant of the module that it kills.
@@ -48,7 +48,7 @@ interface Harness {
   readonly run: string; readonly commit: string; readonly clone: string; readonly sessions: string;
   readonly cli: (argv: readonly string[]) => Promise<{ readonly exit: number; readonly doc: Doc; readonly stderr: string }>;
   readonly clock: { now: number };
-  readonly world: { signed: boolean; statements: ProviderStatementRecord[]; stdin: string | Uint8Array; onSleep?: () => void };
+  readonly world: { statements: ProviderStatementRecord[]; stdin: string | Uint8Array; onSleep?: () => void };
 }
 
 /** A briefed fixture run, through the CLI. `governed` makes the subject governed, relying on the statements in `world`. */
@@ -58,7 +58,7 @@ async function harness(options: { readonly governed?: boolean; readonly stateDir
   const stateRoot = path.join(dir, options.stateDirName ?? 'state');
   fs.mkdirSync(stateRoot, { recursive: true });
   const clock = { now: NOW };
-  const world: Harness['world'] = { signed: true, statements: options.governed ? [statement('claude-code'), statement('codex')] : [], stdin: '' };
+  const world: Harness['world'] = { statements: options.governed ? [statement('claude-code'), statement('codex')] : [], stdin: '' };
   const base = fixtureSources(commit);
   const sources: GateSources = options.governed ? {
     ...base,
@@ -67,7 +67,7 @@ async function harness(options: { readonly governed?: boolean; readonly stateDir
   } : base;
   const ports: CliPorts = {
     env: {}, now: () => clock.now, sources, loadScreen: async () => FIXTURE_SCREEN, renderer,
-    waitModeSigned: () => world.signed, sleep: async (ms) => { clock.now += ms; world.onSleep?.(); },
+    sleep: async (ms) => { clock.now += ms; world.onSleep?.(); },
     readStdin: async (maxBytes) => {
       const bytes = typeof world.stdin === 'string' ? new Uint8Array(Buffer.from(world.stdin, 'utf8')) : world.stdin;
       return bytes.length > maxBytes ? null : bytes;
@@ -118,174 +118,6 @@ async function reviewRound(h: Harness, round: number, sessionId = 'reviewer-1'):
   const submitted = await h.cli(['await', `${dir}/`, '--submit', `round-${round}/verdict.json`, '--stdin']);
   return { delivered: delivered.doc, awaited: awaited.doc, submitted: submitted.doc };
 }
-
-describe('the v1.2 gate', () => {
-  it('refuses session-prompt all, await and a delivery while v1.2 is not signed off (mutant: drop the signed check)', async () => {
-    const h = await harness();
-    await readyForReview(h);
-    h.world.signed = false;
-    for (const argv of [['session-prompt', h.run, 'all'], ['await', `${h.sessions}/session-1/`]]) {
-      const result = await h.cli(argv);
-      expect(result.exit).toBe(1);
-      expect(result.doc).toMatchObject({ outcome: 'refused', stage: 'unsigned' });
-    }
-    // A delivery to the waiting session is refused, and no fresh session is made in its place.
-    const delivery = await h.cli(['session-prompt', h.run, 'review', '--kind', 'fidelity']);
-    expect(delivery.doc).toMatchObject({ outcome: 'refused', stage: 'unsigned' });
-    expect(fs.existsSync(path.join(h.sessions, 'fidelity-2'))).toBe(false);
-  });
-
-  // A record as record_versioned_signoff.py renders it, and its marked block in the aggregate record; with the tree it leaves: the
-  // installed spec carrying the version, and the named review whose head carries that spec's digest.
-  const SPEC_REL = 'openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md';
-  const rootOf = (decisions: string): string => path.dirname(path.dirname(path.dirname(decisions)));
-  const reviewHead = (digest: string, extra = ''): string => `# Review — fixture\nVerdict: CONFIRM\n${extra}Manifest SHA-256: ${digest}\nReviewer: fixture\n`;
-  const signoff = (decisions: string, version: string, verdict = 'CONFIRM WITH EXCEPTIONS', block = true): void => {
-    const root = rootOf(decisions);
-    const spec = `## Purpose\n\nExact behavioral delta, version ${version}. Fixture.\n`;
-    fs.mkdirSync(path.dirname(path.join(root, SPEC_REL)), { recursive: true });
-    fs.writeFileSync(path.join(root, SPEC_REL), spec);
-    fs.mkdirSync(path.join(root, 'docs', 'reviews'), { recursive: true });
-    fs.writeFileSync(path.join(root, 'docs', 'reviews', `FIXTURE-v${version}-RAW.md`), reviewHead(createHash('sha256').update(spec).digest('hex')));
-    fs.writeFileSync(path.join(decisions, `POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v${version}.md`), [
-      `# Polaris dossier local-agent mode — version-tagged sign-off v${version}`, '', 'Date: 2026-10-09', '', 'Owner: Tzeusy', '',
-      'Package: polaris-dossier-local-agent-mode', '', `Version: ${version}`, '', `Tag: polaris-dossier-local-agent-mode-v${version}`, '',
-      'Kind: specification delta', '', 'Owner selection: fixture', '', `Review: docs/reviews/FIXTURE-v${version}-RAW.md`, '', `Reviewed commit: ${'e'.repeat(40)}`, '',
-      `Review verdict: ${verdict}`, '',
-    ].join('\n'));
-    if (block) {
-      fs.appendFileSync(path.join(decisions, 'ACCEPTANCE-ACT-RECORD.md'),
-        `<!-- versioned-signoff:polaris-dossier-local-agent-mode:v${version} -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v${version} -->\n`);
-    }
-  };
-  const decisionsIn = (root: string): string => {
-    const decisions = path.join(root, '.syzygy', 'governance', 'decisions');
-    fs.mkdirSync(decisions, { recursive: true });
-    fs.writeFileSync(path.join(decisions, 'ACCEPTANCE-ACT-RECORD.md'), '# Acceptance act record\n');
-    return decisions;
-  };
-
-  it('reads the sign-off from the decisions directory: 1.1 is not enough, 1.2 and later are (mutant: compare the minor only)', () => {
-    const root = tempDir('dossier-signoff-');
-    expect(waitModeSignedIn(root)).toBe(false);
-    const decisions = decisionsIn(root);
-    expect(waitModeSignedIn(root)).toBe(false);
-    signoff(decisions, '1.1');
-    expect(waitModeSignedIn(root)).toBe(false);
-    signoff(decisions, '2.0');
-    expect(waitModeSignedIn(root)).toBe(true);
-    fs.rmSync(path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v2.0.md'));
-    expect(waitModeSignedIn(root)).toBe(false);
-    signoff(decisions, '1.2');
-    expect(waitModeSignedIn(root)).toBe(true);
-    // The real checkout: v1.2 is not signed at the commit these tests run on.
-    expect(waitModeSignedIn(REAL_ROOT)).toBe(fs.existsSync(path.join(REAL_ROOT, '.syzygy/governance/decisions/POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md')));
-  });
-
-  it('opens on no file that only carries the name (mutant: drop the head check)', () => {
-    const root = tempDir('dossier-signoff-');
-    const decisions = decisionsIn(root);
-    fs.writeFileSync(path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md'), 'x');
-    fs.appendFileSync(path.join(decisions, 'ACCEPTANCE-ACT-RECORD.md'),
-      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n');
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-
-  it('opens on no record whose review did not confirm (mutant: drop the verdict check)', () => {
-    const root = tempDir('dossier-signoff-');
-    signoff(decisionsIn(root), '1.2', 'REVISE');
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-
-  it.each<[string, string, string]>([
-    ['its title', '# Polaris dossier local-agent mode — version-tagged sign-off v1.2', '# Some other sign-off v1.2'],
-    ['its package', 'Package: polaris-dossier-local-agent-mode', 'Package: another-package'],
-    ['its version', 'Version: 1.2', 'Version: 1.3'],
-    ['its tag', 'Tag: polaris-dossier-local-agent-mode-v1.2', 'Tag: polaris-dossier-local-agent-mode-v1.3'],
-    ['its reviewed commit', `Reviewed commit: ${'e'.repeat(40)}`, 'Reviewed commit: eeee'],
-  ])('opens on no record whose head misstates %s (mutant: drop that head field)', (_name, line, replaced) => {
-    const root = tempDir('dossier-signoff-');
-    const decisions = decisionsIn(root);
-    signoff(decisions, '1.2', 'CONFIRM');
-    const file = path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md');
-    expect(waitModeSignedIn(root)).toBe(true);
-    fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(line, replaced));
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-
-  it.each<[string, (aggregate: string) => void]>([
-    ['no aggregate record at all', (aggregate) => fs.rmSync(aggregate)],
-    ['only the opening marker', (aggregate) => fs.appendFileSync(aggregate, '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
-    ['the closing marker before the opening one', (aggregate) => fs.appendFileSync(aggregate,
-      '<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
-    ['two opening markers and one closing marker', (aggregate) => fs.appendFileSync(aggregate,
-      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
-    ['one opening marker and two closing markers', (aggregate) => fs.appendFileSync(aggregate,
-      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n')],
-    ['no marked block', () => undefined],
-    ['two marked blocks', (aggregate) => {
-      const block = '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\nfixture\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n';
-      fs.appendFileSync(aggregate, block + block);
-    }],
-  ])('opens on no record whose aggregate holds %s (mutant: drop the aggregate check)', (_name, plant) => {
-    const root = tempDir('dossier-signoff-');
-    const decisions = decisionsIn(root);
-    signoff(decisions, '1.2', 'CONFIRM', false);
-    plant(path.join(decisions, 'ACCEPTANCE-ACT-RECORD.md'));
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-
-  it('reads the recorder\'s real v1.1 record as one it wrote (the head predicate matches the recorder\'s output)', () => {
-    expect(signoffRecordHolds(path.join(REAL_ROOT, '.syzygy/governance/decisions'), 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.1.md', '1.1')).toBe(true);
-  });
-
-  // Review-408 round 2, finding 4: the head and the markers alone are a format; the gate also needs the applied, reviewed subject.
-  it('opens on no hand-written head and bare markers, with no review and no applied patch (mutant: drop the applied-subject check)', () => {
-    const root = tempDir('dossier-signoff-');
-    const decisions = decisionsIn(root);
-    fs.writeFileSync(path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md'), [
-      '# Polaris dossier local-agent mode — version-tagged sign-off v1.2', 'Package: polaris-dossier-local-agent-mode', 'Version: 1.2',
-      'Tag: polaris-dossier-local-agent-mode-v1.2', `Reviewed commit: ${'0'.repeat(40)}`, 'Review verdict: CONFIRM', '',
-    ].join('\n'));
-    fs.appendFileSync(path.join(decisions, 'ACCEPTANCE-ACT-RECORD.md'),
-      '<!-- versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n<!-- /versioned-signoff:polaris-dossier-local-agent-mode:v1.2 -->\n');
-    expect(signoffRecordHolds(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md', '1.2')).toBe(true);
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-
-  it.each<[string, (root: string, decisions: string) => void]>([
-    ['the installed spec was edited after its review (mutant: drop the digest comparison)', (root) => {
-      fs.appendFileSync(path.join(root, SPEC_REL), 'edited\n');
-    }],
-    ['the spec\'s head names another version (mutant: drop the version check)', (root) => {
-      const spec = '## Purpose\n\nExact behavioral delta, version 1.1. Fixture.\n';
-      fs.writeFileSync(path.join(root, SPEC_REL), spec);
-      fs.writeFileSync(path.join(root, 'docs', 'reviews', 'FIXTURE-v1.2-RAW.md'), reviewHead(createHash('sha256').update(spec).digest('hex')));
-    }],
-    ['the review\'s head carries two digests (mutant: take the first digest of several)', (root) => {
-      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');
-      // The matching digest first, so taking the first of several would open the gate.
-      fs.writeFileSync(path.join(root, 'docs', 'reviews', 'FIXTURE-v1.2-RAW.md'), `# Review\nManifest SHA-256: ${digest}\nManifest SHA-256: ${'a'.repeat(64)}\nVerdict: CONFIRM\n`);
-    }],
-    ['the digest lies past the review\'s head (mutant: read the whole review)', (root) => {
-      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');
-      fs.writeFileSync(path.join(root, 'docs', 'reviews', 'FIXTURE-v1.2-RAW.md'), `# Review\nVerdict: CONFIRM\nReviewed commit: x\nReviewer: y\nManifest SHA-256: ${digest}\n`);
-    }],
-    ['the record names a review outside the records root (mutant: drop the review-path check)', (root, decisions) => {
-      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');
-      fs.writeFileSync(path.join(path.dirname(root), `${path.basename(root)}-outside-RAW.md`), reviewHead(digest));
-      const file = path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md');
-      fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Review: docs/reviews/FIXTURE-v1.2-RAW.md', `Review: ../${path.basename(root)}-outside-RAW.md`));
-    }],
-  ])('opens on no record when %s', (_name, mutate) => {
-    const root = tempDir('dossier-signoff-');
-    const decisions = decisionsIn(root);
-    signoff(decisions, '1.2', 'CONFIRM');
-    expect(waitModeSignedIn(root)).toBe(true);
-    mutate(root, decisions);
-    expect(waitModeSignedIn(root)).toBe(false);
-  });
-});
 
 describe('session-prompt <run> all', () => {
   it('makes the three session directories, writes only the inventory brief, and records each prompt as waiting', async () => {
