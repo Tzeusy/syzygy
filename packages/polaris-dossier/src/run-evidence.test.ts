@@ -1,10 +1,11 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { exited, type Exited } from './child-process.testkit.js';
 import { FIXTURE_URL, PLANTED_SECRET, REAL_ROOT, fullFixtureRun, makeClone } from './full-run.testkit.js';
 import type { DossierRenderer } from './render.js';
 
@@ -36,10 +37,7 @@ function regularFiles(root: string): string[] {
     .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
-function evidence(...args: string[]): { status: number | null; stdout: string; stderr: string } {
-  const result = spawnSync(process.execPath, [SCRIPT, ...args], { encoding: 'utf8' });
-  return { status: result.status, stdout: result.stdout, stderr: result.stderr };
-}
+const evidence = (...args: string[]): Promise<Exited> => exited(process.execPath, [SCRIPT, ...args]);
 
 async function closedRun(): Promise<{ run: string; commit: string; dir: string }> {
   const dir = tempDir('dossier-evidence-');
@@ -51,7 +49,7 @@ async function closedRun(): Promise<{ run: string; commit: string; dir: string }
 describe('dossier run evidence record (S12)', () => {
   it('names the subject, the Syzygy commit and the digest of every file the run and its sessions left', async () => {
     const { run, commit } = await closedRun();
-    const result = evidence(run);
+    const result = await evidence(run);
     expect(result.status).toBe(0);
     const record = JSON.parse(result.stdout) as Doc;
     expect(record.format).toBe('polaris-dossier-run-evidence/1');
@@ -86,7 +84,7 @@ describe('dossier run evidence record (S12)', () => {
   it('copies no file body: a credential-shaped token the draft carries never reaches the record', async () => {
     const { run } = await closedRun();
     expect(fs.readFileSync(path.join(run, 'drafts', 'next.json'), 'utf8')).toContain(PLANTED_SECRET);
-    const result = evidence(run);
+    const result = await evidence(run);
     expect(result.status).toBe(0);
     expect(result.stdout).not.toContain(PLANTED_SECRET);
     expect(result.stdout).not.toContain(fs.readFileSync(path.join(run, 'brief.md'), 'utf8').slice(0, 200));
@@ -97,24 +95,24 @@ describe('dossier run evidence record (S12)', () => {
     const outside = path.join(dir, 'outside.txt');
     fs.writeFileSync(outside, 'outside the run directory\n');
     fs.symlinkSync(outside, path.join(run, 'drafts', 'link.json'));
-    const record = JSON.parse(evidence(run).stdout) as Doc;
+    const record = JSON.parse((await evidence(run)).stdout) as Doc;
     expect(record.runDirectory.others).toEqual([{ path: path.join('drafts', 'link.json'), kind: 'symbolic link, not followed' }]);
     expect(record.runDirectory.files.map((file: Doc) => file.sha256)).not.toContain(sha256(outside));
   });
 
   it('reports an open run as not closed, and refuses anything but one run directory', async () => {
     const { run, dir } = await closedRun();
-    expect(evidence().status).toBe(2);
-    const twice = evidence(run, run);
+    expect((await evidence()).status).toBe(2);
+    const twice = await evidence(run, run);
     expect(twice.status).toBe(2);
     expect(twice.stderr).toContain('usage:');
-    expect(evidence(path.join(dir, 'absent')).status).toBe(2);
-    const noRecord = evidence(dir);
+    expect((await evidence(path.join(dir, 'absent'))).status).toBe(2);
+    const noRecord = await evidence(dir);
     expect(noRecord.status).toBe(2);
     expect(noRecord.stderr).toContain('holds no readable run.json');
 
     fs.rmSync(path.join(run, 'record.json'));
-    const open = JSON.parse(evidence(run).stdout) as Doc;
+    const open = JSON.parse((await evidence(run)).stdout) as Doc;
     expect(open.outcome.closed).toBe(false);
     expect(open.outcome.executionRecordSha256).toBeNull();
   });

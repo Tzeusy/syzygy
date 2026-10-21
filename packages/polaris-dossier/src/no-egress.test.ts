@@ -1,9 +1,9 @@
-import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { build } from 'esbuild';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { exited } from './child-process.testkit.js';
 import { FULL_RUN_ROOT_ENV, REAL_ROOT, makeClone } from './full-run.testkit.js';
 
 /** The no-egress proof (REQ-polaris-generation-033, scenario "No provider call and no egress record"; tasks "Prove no provider call and no
@@ -14,7 +14,7 @@ import { FULL_RUN_ROOT_ENV, REAL_ROOT, makeClone } from './full-run.testkit.js';
  * shows the capture sees a transmission when one is made. Without strace, or where the host forbids tracing, the proof is skipped and
  * says so: it is never reported as passed. */
 
-const STRACE = spawnSync('strace', ['-V'], { encoding: 'utf8' });
+const STRACE = await exited('strace', ['-V']);
 const HAVE_STRACE = STRACE.status === 0;
 const INTERNET_FAMILY = /\bAF_INET6?\b/u;
 
@@ -47,11 +47,11 @@ afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force:
 interface Capture { readonly status: number | null; readonly stdout: string; readonly stderr: string; readonly calls: readonly string[]; readonly tasks: number }
 
 /** Run the driver under strace; every network-class call of the process tree, one per line, and how many tasks (processes and threads) made one. */
-function captured(name: string, canary: boolean): Capture {
+async function captured(name: string, canary: boolean): Promise<Capture> {
   const log = path.join(dir, `${name}.strace`);
   const stateRoot = path.join(dir, `${name}-state`);
-  const result = spawnSync('strace', ['-f', '-qq', '-e', 'trace=%network,execve,clone,clone3,fork,vfork', '-e', 'signal=none', '-o', log, process.execPath, bundle, clone, commit, stateRoot, ...(canary ? ['canary'] : [])], {
-    encoding: 'utf8', env: { PATH: process.env['PATH'] ?? '/usr/bin:/bin', HOME: dir, [FULL_RUN_ROOT_ENV]: REAL_ROOT }, timeout: 240_000,
+  const result = await exited('strace', ['-f', '-qq', '-e', 'trace=%network,execve,clone,clone3,fork,vfork', '-e', 'signal=none', '-o', log, process.execPath, bundle, clone, commit, stateRoot, ...(canary ? ['canary'] : [])], {
+    env: { PATH: process.env['PATH'] ?? '/usr/bin:/bin', HOME: dir, [FULL_RUN_ROOT_ENV]: REAL_ROOT }, timeout: 240_000,
   });
   const lines = fs.existsSync(log) ? fs.readFileSync(log, 'utf8').split('\n').filter((line) => line !== '') : [];
   const call = (line: string): string => line.replace(/^\d+\s+/u, '');
@@ -60,8 +60,8 @@ function captured(name: string, canary: boolean): Capture {
 }
 
 describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an operating-system capture of a full fixture run', () => {
-  it('creates no Internet-family socket over the whole run, from preflight to close', () => {
-    const run = captured('run', false);
+  it('creates no Internet-family socket over the whole run, from preflight to close', async () => {
+    const run = await captured('run', false);
     expect(run.stderr).toBe('');
     expect(run.status).toBe(0);
     const summary = JSON.parse(run.stdout) as { run: string; steps: { command: string; exit: number }[] };
@@ -80,8 +80,8 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     console.log(`no-egress proof ran under strace: ${run.calls.length} network-class calls, traced calls from ${run.tasks} task(s), 0 Internet-family`);
   }, 240_000);
 
-  it('sees the canary: one loopback datagram sent before the same run is in the capture', () => {
-    const run = captured('canary', true);
+  it('sees the canary: one loopback datagram sent before the same run is in the capture', async () => {
+    const run = await captured('canary', true);
     expect(run.status).toBe(0);
     const internet = run.calls.filter((line) => INTERNET_FAMILY.test(line));
     expect(internet.some((line) => line.startsWith('socket(AF_INET'))).toBe(true);
