@@ -364,8 +364,11 @@ def historical_run(root: Path, mode: str) -> tuple[list[str], str]:
 def check_state(root: Path) -> tuple[list[str], str]:
     if transaction_present(root):
         findings, _output = historical_run(root, "--check")
-        return findings, "performed; current six rows verified; explicit historical builder replay"
-    return candidate_findings(root), "candidate; actual current subjects checked; not performed"
+        state = "performed; current six rows verified; explicit historical builder replay"
+    else:
+        findings = candidate_findings(root)
+        state = "candidate; actual current subjects checked; not performed"
+    return findings, "Unknown; P115 state unverified" if findings else state
 
 
 def preview(root: Path, review: str | None = None, disposition: str | None = None) -> dict:
@@ -1144,7 +1147,13 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
 
     for installed in (True, False):
         setup(installed)
-        control = (is_signed(tree) == installed and not check_state(tree)[0] and bootstrap())
+        control_findings, control_state = check_state(tree)
+        control_preview = preview(tree)
+        control_label = ("performed; current six rows verified; explicit historical builder replay" if installed
+                         else "candidate; actual current subjects checked; not performed")
+        control = (is_signed(tree) == installed and not control_findings and bootstrap()
+                   and control_state == control_label and control_preview["state"] == control_label
+                   and not control_preview["candidateFindings"])
         for label, mutation, path in vectors:
             setup(installed)
             start = {p: (tree / p).read_bytes() if (tree / p).exists() else None
@@ -1189,10 +1198,14 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                 recorder.ROOT = tree
                 with mock.patch.object(Path, "read_bytes", read_bytes):
                     state, findings = family_state(tree)
+                    check_findings, check_label = check_state(tree)
+                    preview_result = preview(tree)
                     frontiers.update(control=control, family=state == "PRESENT_INVALID" and bool(findings),
                         presence=transaction_present(tree), candidate=bool(candidate_findings(tree)),
-                        recording=bool(recording_findings(tree)), checkState=bool(check_state(tree)[0]),
-                        preview=bool(preview(tree)["candidateFindings"]) and not preview(tree)["recordingReady"],
+                        recording=bool(recording_findings(tree)), checkState=bool(check_findings),
+                        checkStateLabel=check_label == "Unknown; P115 state unverified",
+                        preview=bool(preview_result["candidateFindings"]) and not preview_result["recordingReady"],
+                        previewLabel=preview_result["state"] == "Unknown; P115 state unverified",
                         signed=bool(signed_findings(tree)) and not is_signed(tree),
                         chain=bool(chain_findings(tree)), historical=bool(historical_run(tree, "--check")[0]))
                     try:
@@ -1263,7 +1276,8 @@ def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlie
                           (Path(__file__).name, "record_versioned_signoff.py")},
                 "old": "valid signed v1.0" if installed else "pristine unsigned BASE subjects",
                 "new": mutation, "entry": None if path is None else str(path), "familyState": state,
-                "findings": findings, "frontiers": frontiers, "codes": codes, "consumerErrors": consumer_errors, "governanceReports": governance_reports, "output": outputs}, sort_keys=True))
+                "findings": findings, "checkState": {"state": check_label, "findings": check_findings},
+                "preview": preview_result, "frontiers": frontiers, "codes": codes, "consumerErrors": consumer_errors, "governanceReports": governance_reports, "output": outputs}, sort_keys=True))
     setup(False)
     unrelated = f"<!-- versioned-signoff:{KEY}-different:v2.0 -->"
     saved = (tree / AGGREGATE).read_bytes()
