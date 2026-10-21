@@ -23,6 +23,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as fsp from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -36,6 +37,8 @@ const git = (tree, ...args) => execFileSync('git', ['-C', tree, ...args], { enco
 const label = value => JSON.stringify(value).replace(/\b[0-9a-f]{40,64}\b/g, '<hex>').slice(0, 200);
 const timed = async read => { const started = performance.now(); let said; try { said = label(await read()); } catch (error) { said = `throws ${error?.name}: ${error?.message}`; } return { ms: Math.round((performance.now() - started) * 100) / 100, said }; };
 const median = values => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
+/** When a measurement started, and the host's 1, 5 and 15 minute load averages then (what `uptime` prints). */
+const host = () => ({ at: new Date().toISOString(), loadAverage: os.loadavg().map(n => Math.round(n * 100) / 100) });
 
 const argv = process.argv.slice(2);
 const arg = flag => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
@@ -56,10 +59,10 @@ const { recorderTemplate, templateFields, SLOT } = subject.consent;
 const SLOTS = ['a', 'b', 'c', 'd'];
 const testTemplate = pattern => recorderTemplate('a: {a}\nb: {b}\nc: {c}\nd: {d}\nEND\n', Object.fromEntries(SLOTS.map(s => [s, pattern])));
 const testRecord = `${SLOTS.map(s => `${s}: ${'x'.repeat(160)}\n`).join('')}END!\n`;
-const fresh = testTemplate(SLOT.line), freshMs = [];
+const fresh = testTemplate(SLOT.line), freshMs = [], freshHost = host();
 for (let i = 0; i < 20; i += 1) { const t = await timed(() => templateFields(fresh, testRecord)); if (t.said !== 'null') throw new Error(`the test record read ${t.said}`); freshMs.push(t.ms); }
 process.stderr.write(`test record, ${SLOT.line}: max ${Math.max(...freshMs)} ms; now the ambiguous pattern, once\n`);
-const ambiguous = await timed(() => templateFields(testTemplate(AMBIGUOUS), testRecord));
+const ambiguousHost = host(), ambiguous = await timed(() => templateFields(testTemplate(AMBIGUOUS), testRecord));
 process.stderr.write(`test record, ${AMBIGUOUS}: ${ambiguous.ms} ms\n`);
 
 // The failing provider statement version 2 reads.
@@ -78,13 +81,13 @@ const reads = (mod, root, altered) => {
 };
 const templateRuns = [];
 for (const [name, altered] of cases) {
-  const times = [];
+  const times = [], newHost = host();
   let said;
   for (let i = 0; i < 5; i += 1) { const t = await timed(() => templateFields(subject.gate.PROVIDER_V2_FORM.template, altered)); times.push(t.ms); said = t.said; }
-  const row = { case: name, changed: altered !== text, newMs: { median: median(times), max: Math.max(...times) }, newRead: said !== 'null' };
+  const row = { case: name, changed: altered !== text, newHost, newMs: { median: median(times), max: Math.max(...times) }, newRead: said !== 'null' };
   if (before !== null) {
-    const t = await timed(() => before.consent.templateFields(before.gate.PROVIDER_V2_FORM.template, altered));
-    Object.assign(row, { oldMs: t.ms, sameAnswer: t.said === said });
+    const oldHost = host(), t = await timed(() => before.consent.templateFields(before.gate.PROVIDER_V2_FORM.template, altered));
+    Object.assign(row, { oldHost, oldMs: t.ms, sameAnswer: t.said === said });
   }
   templateRuns.push(row);
   process.stderr.write(`${name} template: ${row.newMs.max} ms${row.oldMs === undefined ? '' : `, old ${row.oldMs} ms`}\n`);
@@ -92,14 +95,14 @@ for (const [name, altered] of cases) {
 const runs = [];
 for (const [name, altered] of cases) {
   for (const [reader, read] of reads(subject, tree, altered)) {
-    const times = [];
+    const times = [], newHost = host();
     let said;
     for (let i = 0; i < 3; i += 1) { const t = await timed(read); times.push(t.ms); said = t.said; }
-    const row = { case: name, changed: altered !== text, reader, newMs: { median: median(times), max: Math.max(...times) }, newAnswer: said };
+    const row = { case: name, changed: altered !== text, reader, newHost, newMs: { median: median(times), max: Math.max(...times) }, newAnswer: said };
     if (before !== null) {
       const [, oldRead] = reads(before, oldTree, altered).find(([r]) => r === reader);
-      const t = await timed(oldRead);
-      Object.assign(row, { oldMs: t.ms, sameAnswer: t.said === said });
+      const oldHost = host(), t = await timed(oldRead);
+      Object.assign(row, { oldHost, oldMs: t.ms, sameAnswer: t.said === said });
     }
     runs.push(row);
     process.stderr.write(`${name} ${reader}: ${row.newMs.max} ms${row.oldMs === undefined ? '' : `, old ${row.oldMs} ms`}\n`);
@@ -114,13 +117,13 @@ const document = {
   bead: 'syzygy-bpyt.8.17',
   text: 'Evidence record, not authority: the recorder line slot\'s failing reads timed, the timing-bounded test\'s record and the provider statement version 2 record through the production path. Generated by the script named here; do not edit.',
   script: { path: SCRIPT_REL, sha256: sha256(fs.readFileSync(SCRIPT, 'utf8')) },
-  measuredOn: { tree: { ...binding(tree), linePattern: SLOT.line }, ...(before === null ? {} : { old: { ...binding(oldTree), linePattern: before.consent.SLOT.line } }), node: process.version },
-  timing: 'wall time on the main thread, nothing else running in the process; the host carried other lanes\' work, so times are upper bounds of an unloaded run, not measurements of one',
+  measuredOn: { tree: { ...binding(tree), linePattern: SLOT.line }, ...(before === null ? {} : { old: { ...binding(oldTree), linePattern: before.consent.SLOT.line } }), node: process.version, cores: os.availableParallelism() },
+  timing: 'wall time on the main thread, nothing else running in the process; the host carried other lanes\' work (each measurement names its start and the load averages then), so times are upper bounds of an unloaded run, not measurements of one',
   testRecord: {
     test: 'the line slot (syzygy-bpyt.8.17) refuses a record that fails after four long line slots within a second',
     slots: SLOTS.length, slotLength: 160, sha256: sha256(testRecord), boundMs: BOUND_MS,
-    linePatternMs: { first: freshMs[0], median: median(freshMs), max: Math.max(...freshMs), runs: freshMs.length },
-    ambiguousMs: ambiguous.ms, ambiguousAnswer: ambiguous.said,
+    linePatternHost: freshHost, linePatternMs: { first: freshMs[0], median: median(freshMs), max: Math.max(...freshMs), runs: freshMs.length },
+    ambiguousHost, ambiguousMs: ambiguous.ms, ambiguousAnswer: ambiguous.said,
     passMargin: Math.round(BOUND_MS / Math.max(...freshMs)), killMargin: Math.round(ambiguous.ms / BOUND_MS),
   },
   providerV2: {
