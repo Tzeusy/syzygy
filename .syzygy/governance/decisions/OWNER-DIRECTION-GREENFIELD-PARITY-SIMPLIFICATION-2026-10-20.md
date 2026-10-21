@@ -27,6 +27,13 @@ message, verbatim:
 [Inferred: the reading below is the session's, not the owner's words. The
 owner is asked to confirm it, as question Q0 of the packet in item 4.]
 
+[Added 2026-10-21: the owner confirmed this reading (GP-Q0, option "Confirm
+all three"), added a CC-REV-1 review rule, kept six of item 4's seven topics
+at the status quo and approved seven output-changing beads. Item 4 is narrowed
+accordingly. The answers are recorded in
+`OWNER-DIRECTION-GREENFIELD-PARITY-ANSWERS-2026-10-21.md`; the text below is
+unchanged.]
+
 1. **The audit is a recorded review.** Its report is
    `docs/plans/2026-10-21-greenfield-parity-audit.md`. Each finding there
    carries an identifier and evidence, and the beads under epic

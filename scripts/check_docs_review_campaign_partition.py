@@ -434,6 +434,11 @@ CAMPAIGNS = (
         r"R-PWB-REGISTRY-MACHINE-CEILING-.*\.md",
         r"R-P114-.*-RAW\.md",
     ),
+    campaign(
+        "greenfield-parity-packet",
+        "Greenfield-parity owner packet",
+        r"R-GREENFIELD-PARITY-PACKET-\d+-RAW\.md",
+    ),
 )
 
 
