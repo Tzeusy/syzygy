@@ -4,26 +4,32 @@
 // `syzygy dossier review-packet` uses (`buildFidelityPacket`), once under the version-3 policy bytes the run was screened under and
 // once under the policy in force now. Not authority.
 //
-//   node scripts/redis_screening_remeasure.mjs <run directory> [--headline-revision N] > docs/evidence/redis-screening-v4-remeasure-<date>.json
+//   node scripts/redis_screening_remeasure.mjs <run directory> --out <file> [--headline-revision N] [--supersedes <commit>:<path>]...
 //   node scripts/redis_screening_remeasure.mjs --selftest     pure predicates over synthetic fixtures
 //   node scripts/redis_screening_remeasure.mjs --mutants      one source mutant per predicate; each must fail --selftest (rule 6)
 //
-// What it does, in order:
-// 1. Calls the installed read gate, `reverifyPinnedRevision`, with the gate sources the CLI builds (`createPackageGateSources` over
-//    this checkout). A refusal is written out verbatim and nothing is read. It also records `openRun`'s outcome verbatim: the run's
-//    declared deadline has passed, so a dossier step would refuse; this script is no dossier step and builds no packet of record.
-// 2. For each draft revision with a retained fidelity packet, builds a read-only view of the run directory (symbolic links only, no
-//    byte copied) that ends at that revision, and calls `buildFidelityPacket` twice: with the version-3 screen built from the policy
-//    bytes whose digest the retained packet names (found in this checkout's Git history by digest), and with the default screen
-//    (`loadDossierScreen`, the act chain's policy in force now). Nothing is written to the run directory.
-// 3. Checks the version-3 rebuild against the retained packet span by span (a second method for the baseline, rule 2).
-// 4. For each body version 4 retains as redacted-span, reads it again through the same pinned reader and screen to name its withheld
-//    line numbers, and splits each withheld span into touching a withheld line or its own text matching a detector.
-// 5. Reads the retained, validated verdict bound to each retained packet (structured fields only) and sorts its non-passing rows by
-//    whether the spans their subject cites are withheld under version 3 and under version 4.
+// Fail closed at the run's own step gate. The measurement is a step of the run: it opens the run with `openRun`, which re-runs the
+// installed read gate (`reverifyPinnedRevision`, with the gate sources the CLI builds over this checkout) and then refuses any step after
+// the run's declared deadline (REQ in openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23). On any
+// refusal it writes the refusal verbatim and reads no body. An earlier version of this script recorded that refusal and read past it;
+// those measurements are withdrawn (`--supersedes` names them by commit, path and digest, and their figures are not copied).
+//
+// Only when the run opens, in order:
+// 1. For each draft revision with a retained fidelity packet, builds a read-only view of the run directory (symbolic links only, no
+//    byte copied) that ends at that revision, opens the view with `openRun` again, and calls `buildFidelityPacket` on that opened run
+//    twice: with the version-3 screen built from the policy bytes whose digest the retained packet names (found in this checkout's Git
+//    history by digest), and with the default screen (`loadDossierScreen`, the act chain's policy in force now). Nothing is written to
+//    the run directory. The rebuilt packets' digests are not recorded: `fidelityCriteria` embeds the view's temporary path.
+// 2. Checks the version-3 rebuild against the retained packet span by span (a second method for the baseline, rule 2).
+// 3. For each body version 4 retains as redacted-span, reads it again through the same pinned reader and screen to name its withheld
+//    line numbers, and splits each withheld span with `spanTouchesWithheld` (imported from @syzygy/polaris-generation-core).
+// 4. Reads the retained, validated verdict bound to each retained packet (structured fields only) and sorts its non-passing rows by
+//    whether the spans their subject cites are withheld under version 3 and under version 4; a citation no packet span matches is Unknown.
 // The output carries counts, paths, line numbers, identifiers and digests only: never a body, a span's text, a quotation or a reason.
 // Before writing, every admitted span text of every build is searched for in the output, and any hit refuses (`bodyLeak`).
-// No model, agent session or provider is called; the only Git reads are the pinned reader's, after the gate.
+// No model, agent session or provider is called. Git reads: this checkout's own `git rev-parse`, `git status`, `git log` and `git show`
+// (of the screening policy path and of each `--supersedes` blob); the Redis clone only through `openPinnedObjectReader`, inside the gate
+// (`openRun` lists the pinned tree) and, once the run opens, for the cited blobs.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
@@ -31,16 +37,17 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const FORMAT = 'redis-screening-v4-remeasure/1';
+const FORMAT = 'redis-screening-v4-remeasure/2';
 const SCRIPT = fileURLToPath(import.meta.url);
-const ROOT = process.env.SYZYGY_REMEASURE_ROOT ?? path.resolve(path.dirname(SCRIPT), '..');
+const ROOT_OVERRIDE = process.env.SYZYGY_REMEASURE_ROOT ?? null;
+const ROOT = ROOT_OVERRIDE ?? path.resolve(path.dirname(SCRIPT), '..');
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 /** The files the version-4 packet's section "What stays withheld" keeps withheld by design (syzygy-skpn); counted apart, never relaxed. */
 export const BY_DESIGN = Object.freeze(['SECURITY.md', 'MANIFESTO', 'TLS.md', 'redis.conf', 'modules/MODULES.md', '00-RELEASENOTES', 'LICENSE.txt']);
-const WITHHELD = 'withheld';
+const UNKNOWN = 'unknown';
 
-// ---- pure predicates (each has a mutant in MUTANTS and a case in selftest) ----
+// ---- pure predicates (each has a mutant in MUTANTS and cases in selftest) ----
 
 /** P1. The cause bucket of one packet span. `redactionCause` is 'touches-withheld-line' or 'own-text-matches' for a redacted-span. */
 export function causeOf(span, redactionCause) {
@@ -54,9 +61,10 @@ export function causeOf(span, redactionCause) {
   }
 }
 
-/** P2. Why a redacted-span span is withheld: it includes a withheld line, or (only otherwise) its own text matched a detector. */
-export function redactedCause(withheldLines, startLine, endLine) {
-  return withheldLines.some((line) => line >= startLine && line <= endLine) ? 'touches-withheld-line' : 'own-text-matches';
+/** P2. Why a redacted-span span is withheld, decided by `touches` (the measurement passes the imported `spanTouchesWithheld`): it
+ * includes a withheld line, or (only otherwise) its own text matched a detector. */
+export function redactedCauseWith(touches, withheldLines, startLine, endLine) {
+  return touches(withheldLines, startLine, endLine) ? 'touches-withheld-line' : 'own-text-matches';
 }
 
 /** P3. Counts by cause, split into the by-design files and the rest. */
@@ -86,8 +94,10 @@ export function compareSpans(a, b) {
   return { equal: true, firstDifference: null };
 }
 
-/** P5. A non-passing verdict row's relation to screening, from the outcomes (v3, v4) of the spans its subject cites. */
+/** P5. A non-passing verdict row's relation to screening, from the spans its subject cites. A citation no packet span matched is
+ * Unknown and makes the row Unknown: never read as admitted. */
 export function rowClass(cited) {
+  if (cited.some((span) => !span.matched)) return 'unknown-a-citation-matches-no-packet-span';
   const v3Withheld = cited.filter((span) => span.v3 !== 'admitted');
   if (v3Withheld.length === 0) return 'cites-no-span-withheld-under-v3';
   if (cited.some((span) => span.v4 !== 'admitted')) return 'still-cites-a-span-withheld-under-v4';
@@ -109,6 +119,48 @@ export function findByDigest(candidates, digest) {
   return candidates.find((candidate) => sha256(candidate.bytes) === digest);
 }
 
+/** P8. Each citation's outcomes under v3 and v4, by its [path, startLine, endLine] key; a citation with no matching packet span, or
+ * without a path and two line numbers, is kept as unmatched with Unknown outcomes. */
+export function citedOutcomes(citations, v3ByKey, v4ByKey) {
+  return citations.map((value) => {
+    const key = JSON.stringify([value.path, value.startLine, value.endLine]);
+    const v3 = v3ByKey.get(key), v4 = v4ByKey.get(key);
+    if (typeof value.path !== 'string' || v3 === undefined || v4 === undefined) return { matched: false, path: typeof value.path === 'string' ? value.path : null, v3: UNKNOWN, v4: UNKNOWN, v4Cause: UNKNOWN };
+    return { matched: true, path: value.path, v3: v3.outcome, v4: v4.outcome, v4Cause: v4.cause };
+  });
+}
+
+/** P9. The non-passing rows of a verdict, as review.ts `derivedBlocking` reads them. */
+export function nonPassingRows(verdict) {
+  const rows = [];
+  const list = (value) => (Array.isArray(value) ? value : []);
+  for (const row of list(verdict.blockSupport)) if (row.verdict !== 'supported') rows.push({ kind: 'blockSupport', value: row.verdict, target: row.blockId });
+  for (const row of list(verdict.inventoryCoverage)) if (row.disposition !== 'represented' && row.disposition !== 'justified-omission') rows.push({ kind: 'inventoryCoverage', value: row.disposition, target: row.entryId });
+  for (const row of list(verdict.inventoryAccuracy)) if (row.accuracy !== 'accurate') rows.push({ kind: 'inventoryAccuracy', value: row.accuracy, target: row.entryId });
+  for (const row of list(verdict.findings)) if (row.severity === 'blocking') rows.push({ kind: 'finding', value: row.subject, target: row.target });
+  return rows;
+}
+
+/** P10. The cited spans of a row's subject: a block for support, an entry for coverage and accuracy, either for a finding; null when
+ * the target names neither. */
+export function rowSubject(row, blockCites, entryCites) {
+  const found = row.kind === 'blockSupport' ? blockCites.get(row.target)
+    : row.kind === 'finding' ? blockCites.get(row.target) ?? entryCites.get(row.target)
+      : entryCites.get(row.target);
+  return found ?? null;
+}
+
+/** P11. For a row that still cites a span v4 withholds: whether every such span lies outside the by-design files, whether the row also
+ * cites a span v4 admits (mixed), and whether it also cites a span v3 withheld and v4 admits (mixed with a recovered span). */
+export function stillDetail(cited) {
+  const still = cited.filter((span) => span.v4 !== 'admitted');
+  return {
+    onlyOutsideByDesign: still.every((span) => !BY_DESIGN.includes(span.path)),
+    mixedWithAdmitted: cited.some((span) => span.v4 === 'admitted'),
+    mixedWithRecovered: cited.some((span) => span.v3 !== 'admitted' && span.v4 === 'admitted'),
+  };
+}
+
 // ---- selftest and mutants ----
 
 function selftest() {
@@ -123,9 +175,9 @@ function selftest() {
   check('P1 unclassified', causeOf({ outcome: 'unknown-extraction-class' }), 'unclassified');
   check('P1 active', causeOf({ outcome: 'active-content' }), 'active-content');
   check('P1 other', causeOf({ outcome: 'class-not-consented' }), 'other:class-not-consented');
-  check('P2 touches start', redactedCause([1, 2], 2, 5), 'touches-withheld-line');
-  check('P2 touches end', redactedCause([9], 3, 9), 'touches-withheld-line');
-  check('P2 misses', redactedCause([1, 2], 3, 5), 'own-text-matches');
+  const touches = (withheld, s, e) => withheld.some((line) => line >= s && line <= e);
+  check('P2 touches', redactedCauseWith(touches, [1, 2], 2, 5), 'touches-withheld-line');
+  check('P2 misses', redactedCauseWith(touches, [1, 2], 3, 5), 'own-text-matches');
   const spans = [
     { path: 'README.md', outcome: 'admitted' }, { path: 'README.md', outcome: 'redacted-span' }, { path: 'SECURITY.md', outcome: 'unknown-extraction-class' },
     { path: 'src/x.def', outcome: 'unknown-extraction-class' }, { path: null, outcome: 'secret-detector-match' },
@@ -139,28 +191,57 @@ function selftest() {
   check('P4 equal', compareSpans(a, a).equal, true);
   check('P4 text differs', compareSpans(a, b).equal, false);
   check('P4 length differs', compareSpans(a, []).equal, false);
-  check('P5 none withheld', rowClass([{ v3: 'admitted', v4: 'admitted' }]), 'cites-no-span-withheld-under-v3');
-  check('P5 recovered', rowClass([{ v3: 'admitted', v4: 'admitted' }, { v3: 'secret-detector-match', v4: 'admitted' }]), 'every-cited-span-admitted-under-v4');
-  check('P5 still withheld', rowClass([{ v3: 'secret-detector-match', v4: 'admitted' }, { v3: 'unknown-extraction-class', v4: 'unknown-extraction-class' }]), 'still-cites-a-span-withheld-under-v4');
+  const m = (v3, v4, p = 'x') => ({ matched: true, path: p, v3, v4 });
+  check('P5 none withheld', rowClass([m('admitted', 'admitted')]), 'cites-no-span-withheld-under-v3');
+  check('P5 recovered', rowClass([m('admitted', 'admitted'), m('secret-detector-match', 'admitted')]), 'every-cited-span-admitted-under-v4');
+  check('P5 still withheld', rowClass([m('secret-detector-match', 'admitted'), m('unknown-extraction-class', 'unknown-extraction-class')]), 'still-cites-a-span-withheld-under-v4');
   check('P5 no citation', rowClass([]), 'cites-no-span-withheld-under-v3');
+  check('P5 unmatched is Unknown', rowClass([m('admitted', 'admitted'), { matched: false, path: 'y', v3: UNKNOWN, v4: UNKNOWN }]), 'unknown-a-citation-matches-no-packet-span');
   check('P6 leak found', bodyLeak('{"a":"the quick brown fox jumps"}', ['  the quick brown fox\n']).length, 1);
   check('P6 short text ignored', bodyLeak('{"a":"short"}', ['short']).length, 0);
   check('P6 clean', bodyLeak('{"a":1}', ['the quick brown fox']).length, 0);
   const bytes = Buffer.from('policy');
   check('P7 found', findByDigest([{ id: 'x', bytes: Buffer.from('other') }, { id: 'y', bytes }], sha256(bytes))?.id, 'y');
   check('P7 absent', findByDigest([{ id: 'x', bytes: Buffer.from('other') }], sha256(bytes)), undefined);
+  const k = (p, s, e) => JSON.stringify([p, s, e]);
+  const v3k = new Map([[k('a', 1, 2), { outcome: 'secret-detector-match' }]]), v4k = new Map([[k('a', 1, 2), { outcome: 'admitted', cause: 'admitted' }]]);
+  check('P8 matched', citedOutcomes([{ path: 'a', startLine: 1, endLine: 2 }], v3k, v4k), [{ matched: true, path: 'a', v3: 'secret-detector-match', v4: 'admitted', v4Cause: 'admitted' }]);
+  check('P8 unmatched kept', citedOutcomes([{ path: 'a', startLine: 1, endLine: 3 }], v3k, v4k), [{ matched: false, path: 'a', v3: UNKNOWN, v4: UNKNOWN, v4Cause: UNKNOWN }]);
+  check('P8 no path', citedOutcomes([{ startLine: 1, endLine: 2 }], v3k, v4k).map((c) => c.matched), [false]);
+  const verdict = {
+    blockSupport: [{ blockId: 'b1', verdict: 'supported' }, { blockId: 'b2', verdict: 'unresolved' }],
+    inventoryCoverage: [{ entryId: 'e1', disposition: 'represented' }, { entryId: 'e2', disposition: 'justified-omission' }, { entryId: 'e3', disposition: 'unsupported' }],
+    inventoryAccuracy: [{ entryId: 'e1', accuracy: 'accurate' }, { entryId: 'e2', accuracy: 'unresolved' }],
+    findings: [{ severity: 'advisory', subject: 'x', target: 'b1' }, { severity: 'blocking', subject: 'argument', target: 'e1' }],
+  };
+  check('P9 rows', nonPassingRows(verdict).map((r) => `${r.kind}:${r.target}`), ['blockSupport:b2', 'inventoryCoverage:e3', 'inventoryAccuracy:e2', 'finding:e1']);
+  const blocks = new Map([['b2', ['B']]]), entries = new Map([['e1', ['E1']], ['e3', ['E3']]]);
+  check('P10 block', rowSubject({ kind: 'blockSupport', target: 'b2' }, blocks, entries), ['B']);
+  check('P10 entry', rowSubject({ kind: 'inventoryCoverage', target: 'e3' }, blocks, entries), ['E3']);
+  check('P10 finding on entry', rowSubject({ kind: 'finding', target: 'e1' }, blocks, entries), ['E1']);
+  check('P10 not found', rowSubject({ kind: 'inventoryAccuracy', target: 'e9' }, blocks, entries), null);
+  check('P11 by design and outside', stillDetail([m('unknown-extraction-class', 'unknown-extraction-class', 'MANIFESTO'), m('unknown-extraction-class', 'unknown-extraction-class', 'src/x.def')]).onlyOutsideByDesign, false);
+  check('P11 only outside', stillDetail([m('unknown-extraction-class', 'unknown-extraction-class', 'src/x.def')]).onlyOutsideByDesign, true);
+  check('P11 mixed', stillDetail([m('secret-detector-match', 'admitted', 'README.md'), m('active-content', 'active-content', 'LICENSE.txt')]), { onlyOutsideByDesign: false, mixedWithAdmitted: true, mixedWithRecovered: true });
+  check('P11 mixed without recovery', stillDetail([m('admitted', 'admitted'), m('active-content', 'active-content', 'LICENSE.txt')]), { onlyOutsideByDesign: false, mixedWithAdmitted: true, mixedWithRecovered: false });
   return failures;
 }
 
-/** One source mutant per predicate: each replaces one fragment of this file; `--selftest` of the mutated copy must fail. */
+/** One source mutant per predicate: each replaces the first occurrence of one fragment of this file; `--selftest` of the mutated copy
+ * must fail. Each fragment must occur exactly twice in the file: once in the code, once in this table. */
 export const MUTANTS = Object.freeze([
   { id: 'P1-redacted-bucket', old: "redactionCause === 'touches-withheld-line' ? 'secret-redacted-span-touching-withheld-line'", new: "redactionCause !== 'touches-withheld-line' ? 'secret-redacted-span-touching-withheld-line'" },
-  { id: 'P2-range-end', old: 'line >= startLine && line <= endLine', new: 'line >= startLine && line < endLine' },
+  { id: 'P2-polarity', old: "touches(withheldLines, startLine, endLine) ? 'touches-withheld-line' : 'own-text-matches'", new: "touches(withheldLines, startLine, endLine) ? 'own-text-matches' : 'touches-withheld-line'" },
   { id: 'P3-by-design', old: 'BY_DESIGN.includes(span.path) ? byDesign : other', new: 'BY_DESIGN.includes(span.path) ? other : byDesign' },
   { id: 'P4-compare', old: 'if (JSON.stringify(a[i]) !== JSON.stringify(b[i]))', new: 'if (a[i].id !== b[i].id)' },
   { id: 'P5-every', old: "if (cited.some((span) => span.v4 !== 'admitted'))", new: "if (cited.every((span) => span.v4 !== 'admitted'))" },
+  { id: 'P5-unmatched', old: "if (cited.some((span) => !span.matched)) return 'unknown-a-citation-matches-no-packet-span';", new: '' },
   { id: 'P6-trim', old: 'const probe = text.trim();', new: 'const probe = text;' },
   { id: 'P7-digest', old: 'candidates.find((candidate) => sha256(candidate.bytes) === digest)', new: 'candidates.find((candidate) => sha256(candidate.bytes) !== digest)' },
+  { id: 'P8-unmatched-as-admitted', old: 'v3: UNKNOWN, v4: UNKNOWN, v4Cause: UNKNOWN };', new: "v3: 'admitted', v4: 'admitted', v4Cause: 'admitted' };" },
+  { id: 'P9-omission-blocks', old: "row.disposition !== 'represented' && row.disposition !== 'justified-omission'", new: "row.disposition !== 'represented'" },
+  { id: 'P10-finding-blocks-only', old: 'blockCites.get(row.target) ?? entryCites.get(row.target)', new: 'blockCites.get(row.target)' },
+  { id: 'P11-only-outside', old: 'still.every((span) => !BY_DESIGN.includes(span.path))', new: 'still.some((span) => !BY_DESIGN.includes(span.path))' },
 ]);
 
 function runMutants() {
@@ -169,7 +250,6 @@ function runMutants() {
   const results = [];
   try {
     for (const mutant of MUTANTS) {
-      // The fragment must occur exactly once outside this table: the table itself quotes it once.
       const occurrences = source.split(mutant.old).length - 1;
       if (occurrences !== 2) { results.push({ ...mutant, outcome: `fragment occurs ${occurrences} times, expected 2` }); continue; }
       const at = source.indexOf(mutant.old);
@@ -192,6 +272,7 @@ const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const isObj = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value) => (Array.isArray(value) ? value : []);
 const spanKey = (file, start, end) => JSON.stringify([file, start, end]);
+const refusalOf = (opened) => ({ ok: false, stage: opened.stage, reason: opened.reason, ...(opened.reasons ? { reasons: opened.reasons } : {}), ...(opened.refusals ? { refusals: opened.refusals } : {}) });
 
 /** A read-only view of `run` that ends at draft revision `revision`: symbolic links to the run's own files, no byte copied. */
 function runView(run, revision, base) {
@@ -206,13 +287,25 @@ function runView(run, revision, base) {
   return view;
 }
 
+/** A withdrawn earlier record, named by commit, path and the digest of its bytes at that commit; none of its figures is copied. */
+function supersededRecord(spec) {
+  const at = spec.indexOf(':');
+  const commit = git('rev-parse', '--verify', `${spec.slice(0, at)}^{commit}`).trim(), file = spec.slice(at + 1);
+  const bytes = gitBytes('show', `${commit}:${file}`);
+  let measuredAtCommit = null;
+  try { measuredAtCommit = JSON.parse(bytes.toString('utf8')).syzygy?.commit ?? null; } catch { /* not JSON: the digest still names it */ }
+  return {
+    commit, recordFile: file, recordSha256: sha256(bytes), measuredAtCommit, status: 'withdrawn',
+    why: 'that measurement read cited Redis bodies after openRun refused the run at stage deadline: it recorded the refusal and built the packets on a hand-made opened-run object. No act or direction covers a step after the run\'s deadline, so its figures are not evidence and are not copied here',
+  };
+}
+
 /** The headline of one revision's measurement, every figure read from it; the readiness sentence is Inferred. */
 function headlineOf(r, latest) {
   const v3 = r.rebuiltV3.spans, v4 = r.rebuiltV4.spans, verdict = r.retainedVerdict;
-  const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0);
-  const still = verdict?.nonPassingRowsByClass['still-cites-a-span-withheld-under-v4'] ?? 0;
-  const freed = verdict?.nonPassingRowsByClass['every-cited-span-admitted-under-v4'] ?? 0;
-  const unrelated = verdict?.nonPassingRowsByClass['cites-no-span-withheld-under-v3'] ?? 0;
+  const sum = (o) => Object.values(o).reduce((x, y) => x + y, 0);
+  const cls = (name) => verdict?.nonPassingRowsByClass[name] ?? 0;
+  const still = cls('still-cites-a-span-withheld-under-v4');
   return {
     draftRevision: r.draftRevision, latestDraftRevision: latest, label: 'Observed',
     citedSpans: v3.total,
@@ -224,28 +317,27 @@ function headlineOf(r, latest) {
       secretRedactedSpanOwnTextMatches: v4.byCause['secret-redacted-span-own-text-matches'] ?? 0,
       unclassified: v4.byCause['unclassified'] ?? 0,
       activeContent: v4.byCause['active-content'] ?? 0,
-      other: sum(Object.fromEntries(Object.entries(v4.byCause).filter(([k]) => k.startsWith('other:')))),
+      other: sum(Object.fromEntries(Object.entries(v4.byCause).filter(([key]) => key.startsWith('other:')))),
     },
     withheldV4InByDesignFiles: sum(v4.byDesignFiles), withheldV4OutsideByDesignFiles: sum(v4.notByDesign),
     readmeSpans: r.readme.v3.total, readmeAdmittedV3: r.readme.v3.admitted, readmeAdmittedV4: r.readme.admittedUnderV4,
     readiness: {
       label: 'Inferred',
-      retainedVerdictNonPassingRows: verdict?.nonPassingRows ?? null,
-      rowsStillCitingASpanWithheldUnderV4: still, rowsWhoseCitedSpansAreAllAdmittedUnderV4: freed, rowsCitingNoSpanWithheldUnderV3: unrelated,
       statement: verdict === null ? 'Unknown: no validated verdict is bound to this revision\'s retained packet'
-        : `[Inferred] Readiness is not reached by the screening change alone. Of the ${verdict.nonPassingRows} non-passing rows of the retained verdict, ${still} still cite at least one span version 4 withholds (${verdict.stillWithheldRowsCitingNoByDesignFile} of them only outside the by-design files), so a fresh review over this draft would still lack bytes for them; ${freed} cite only spans version 4 now admits and could pass on a fresh review, which only a new review session can say; ${unrelated} cite no span version 3 withheld. A ready verdict needs every row passing, so it needs the draft to re-cite those claims to admitted spans, or a reviewer to judge them from admitted spans alone. The by-design files stay withheld; this record proposes no relaxation.`,
+        : `[Inferred] Readiness cannot be shown reached by the screening change alone. Of the ${verdict.nonPassingRows} non-passing rows of the retained verdict, ${still} still cite at least one span version 4 withholds (${verdict.stillWithheld.mixedWithAdmitted} of them mixed, also citing a span version 4 admits; ${verdict.stillWithheld.onlyOutsideByDesign} only outside the by-design files); ${cls('every-cited-span-admitted-under-v4')} cite only spans version 4 admits, which only a new review session can judge; ${cls('cites-no-span-withheld-under-v3')} cite no span version 3 withheld; ${cls('unknown-a-citation-matches-no-packet-span')} are Unknown (a citation matches no packet span); ${cls('target-not-found')} name a target that is neither a block nor an entry. The by-design files stay withheld; this record proposes no relaxation.`,
     },
   };
 }
 
-async function measure(runArg, headlineRevision) {
-  const run = path.resolve(runArg);
+async function measure(options) {
+  const run = path.resolve(options.run);
   const runId = path.basename(run);
   const now = Date.now();
-  const { createPackageGateSources, reverifyPinnedRevision, buildFidelityPacket, buildDossierScreen, loadDossierScreen, openPinnedObjectReader } = await dist('packages/polaris-dossier/dist/index.js');
+  const { createPackageGateSources, buildFidelityPacket, buildDossierScreen, loadDossierScreen, openPinnedObjectReader } = await dist('packages/polaris-dossier/dist/index.js');
   const { collectBlocks, collectCitations } = await dist('packages/polaris-dossier/dist/check.js');
   const { openRun } = await dist('packages/polaris-dossier/dist/inventory.js');
   const { POLICY_PATH, readClassActState } = await dist('packages/polaris-generation-consent/dist/index.js');
+  const { spanTouchesWithheld } = await dist('packages/polaris-generation-core/dist/index.js');
   const sources = createPackageGateSources({ root: ROOT, now: () => now });
 
   // `path` beside `scriptSha256` lets the evidence-currency sweep re-check the script's bytes in this checkout (rule 11).
@@ -257,21 +349,32 @@ async function measure(runArg, headlineRevision) {
     label: 'Observed',
     measuredAt: new Date(now).toISOString(),
     syzygy,
+    invocation: {
+      script: 'scripts/redis_screening_remeasure.mjs', runDirectory: options.run, out: options.out,
+      headlineRevision: options.headlineRevision ?? null, supersedes: options.supersedes, syzygyRemeasureRootOverride: ROOT_OVERRIDE,
+    },
     measuredOn: {
       runId, runRecordSha256: sha256(runRecordBytes),
       repository: runRecord.subject?.repository?.url ?? null, pinnedCommit: runRecord.subject?.pinnedRevision?.commit ?? null,
       pinnedLabel: runRecord.subject?.pinnedRevision?.label ?? null, consentRecordAtPin: runRecord.subject?.pinnedRevision?.consentRecord ?? null,
       screeningPolicyAtStart: runRecord.subject?.startGates?.screeningPolicy ?? null,
     },
+    withdrawnMeasurements: options.supersedes.map(supersededRecord),
+    scriptChecks: { atCommit: syzygy.commit, selftestFailures: selftest(), rule6: runMutants() },
   };
 
-  // 1. The read gate.
-  const gate = await reverifyPinnedRevision(run, sources, now);
-  const opened = await openRun(run, sources, now, 'no step runs');
-  const openRunOutcome = opened.ok ? { ok: true } : { ok: false, stage: opened.stage, reason: opened.reason, ...(opened.reasons ? { reasons: opened.reasons } : {}) };
-  if (!gate.ok) return { exit: 3, record: { ...header, gate: { call: 'reverifyPinnedRevision', ok: false, reasons: gate.reasons, refusals: gate.refusals }, openRun: openRunOutcome, measured: false } };
-  const subject = gate.record.subject;
-  const gateRecord = { call: 'reverifyPinnedRevision', ok: true, consentRecord: gate.consentRecord, revision: gate.revision, governed: gate.governed.kind, providerStatement: gate.providerStatement, contentClasses: gate.contentClasses };
+  // The run's own step gate: the installed read gate, then the deadline. Any refusal stops before any body is read.
+  const opened = await openRun(run, sources, now, 'no re-measure read runs');
+  if (!opened.ok) {
+    return { exit: 3, texts: [], record: {
+      ...header,
+      gate: { call: 'openRun', ...refusalOf(opened) },
+      measured: false,
+      bodiesRead: 0,
+      result: '[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful re-measure needs the cited spans read inside an unexpired run\'s limits, which no act or direction in force provides for this run.',
+    } };
+  }
+  const subject = opened.subject;
 
   // The screens: version 3 from the bytes the retained packets name, and the one in force now.
   const packets = fs.readdirSync(path.join(run, 'reviews')).filter((name) => /^fidelity-packet-[0-9a-f]{64}$/.test(name)).map((name) => {
@@ -289,11 +392,11 @@ async function measure(runArg, headlineRevision) {
   const v3Load = buildDossierScreen(new Uint8Array(v3Found.bytes), classAct.state === 'ok');
   if (!v3Load.ok) throw new Error(`the version-3 screen does not build: ${v3Load.why}`);
   const v4Load = await loadDossierScreen(ROOT, now);
-  if (!v4Load.ok) return { exit: 3, record: { ...header, gate: gateRecord, openRun: openRunOutcome, screenInForce: { ok: false, why: v4Load.why }, measured: false } };
+  if (!v4Load.ok) return { exit: 3, texts: [], record: { ...header, gate: { call: 'openRun', ok: true }, screenInForce: { ok: false, why: v4Load.why }, measured: false, bodiesRead: 0 } };
   const v4 = v4Load.screen;
   const screens = {
-    v3: { policyId: v3Load.screen.policyId, policyVersion: v3Load.screen.policyVersion, sha256: v3Load.screen.policySha256, foundAtCommit: v3Found.commit, projectDocumentationClassified: v3Load.screen.projectDocumentation, secretRedaction: v3Load.screen.secretRedaction, built: 'buildDossierScreen over those bytes, the class act state read now' },
-    v4: { policyId: v4.policyId, policyVersion: v4.policyVersion, sha256: v4.policySha256, projectDocumentationClassified: v4.projectDocumentation, secretRedaction: v4.secretRedaction, built: 'loadDossierScreen: the act chain\'s policy in force now (the default review-packet path)' },
+    v3: { policyId: v3Load.screen.policyId, policyVersion: v3Load.screen.policyVersion, sha256: v3Load.screen.policySha256, foundAtCommit: v3Found.commit, projectDocumentationClassified: v3Load.screen.projectDocumentation, secretRedaction: v3Load.screen.secretRedaction },
+    v4: { policyId: v4.policyId, policyVersion: v4.policyVersion, sha256: v4.policySha256, projectDocumentationClassified: v4.projectDocumentation, secretRedaction: v4.secretRedaction },
   };
 
   const reader = openPinnedObjectReader({ gitDir: path.join(subject.clone.path, '.git'), revision: subject.pinnedRevision.commit });
@@ -305,14 +408,13 @@ async function measure(runArg, headlineRevision) {
   try {
     for (const retained of packets) {
       const revision = retained.doc.draft.revision;
-      const view = runView(run, revision, base);
-      const openedView = { run: view, runId, subject, contentClasses: gate.contentClasses };
-      const builtV3 = await buildFidelityPacket(openedView, { sources, now: () => now, loadScreen: async () => v3Load });
-      const builtV4 = await buildFidelityPacket(openedView, { sources, now: () => now });
+      const viewOpened = await openRun(runView(run, revision, base), sources, now, 'no re-measure read runs');
+      if (!viewOpened.ok) throw new Error(`the view of draft revision ${revision} does not open: ${viewOpened.reason}`);
+      const builtV3 = await buildFidelityPacket(viewOpened, { sources, now: () => now, loadScreen: async () => v3Load });
+      const builtV4 = await buildFidelityPacket(viewOpened, { sources, now: () => now });
       if (!builtV3.ok || !builtV4.ok) throw new Error(`draft revision ${revision}: the packet does not build (${builtV3.ok ? builtV4.reason : builtV3.reason})`);
       for (const span of [...builtV3.spans, ...builtV4.spans, ...retained.doc.spans]) if (typeof span.text === 'string') texts.push(span.text);
 
-      // The withheld lines of each body version 4 retains as redacted-span, read again through the same reader and screen.
       const redactedPaths = [...new Set(builtV4.spans.filter((span) => span.redaction !== undefined).map((span) => span.path))];
       const withheldOf = new Map();
       if (redactedPaths.length > 0) {
@@ -320,73 +422,61 @@ async function measure(runArg, headlineRevision) {
           const screened = v4.screenTargetBody(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(blob.bytes), blob.path);
           if (screened.kind !== 'redacted') throw new Error(`${blob.path} screened ${screened.kind} on the second read`);
           withheldOf.set(blob.path, screened.withheld);
-          // Keyed by `redisPath`, never `path` or a path-named key: the evidence-currency sweep would resolve a Redis path against this checkout.
+          // Keyed by `redisPath`, never `path` or a path-named key: the evidence-currency sweep would resolve a Redis path here.
           redactedBodies[blob.path] = { redisPath: blob.path, objectId: tree.get(blob.path).id, contentSha256: screened.contentSha256, lines: screened.retainedLines.length, withheldLines: screened.withheld, detectorIds: screened.detectorIds };
         }
       }
-      const v4Cause = (span) => causeOf(span, span.outcome === 'redacted-span' ? redactedCause(withheldOf.get(span.path), span.startLine, span.endLine) : undefined);
+      const v4Cause = (span) => causeOf(span, span.outcome === 'redacted-span' ? redactedCauseWith(spanTouchesWithheld, withheldOf.get(span.path), span.startLine, span.endLine) : undefined);
       const v3Cause = (span) => causeOf(span);
       const oracle = compareSpans(builtV3.spans, retained.doc.spans);
-      const v3 = tally(builtV3.spans, v3Cause), v4t = tally(builtV4.spans, v4Cause), retainedTally = tally(retained.doc.spans, v3Cause);
       const readme = (spans, causeFor) => tally(spans.filter((span) => span.path === 'README.md'), causeFor);
 
-      // 5. The retained verdict bound to this packet, structured fields only.
-      const v3ByKey = new Map(builtV3.spans.map((span) => [spanKey(span.path, span.startLine, span.endLine), span.outcome]));
-      const v4ByKey = new Map(builtV4.spans.map((span) => [spanKey(span.path, span.startLine, span.endLine), span]));
-      const cited = (doc) => collectCitations(doc).flatMap(({ value }) => {
-        const key = spanKey(value.path, value.startLine, value.endLine);
-        return v3ByKey.has(key) ? [{ v3: v3ByKey.get(key), v4: v4ByKey.get(key).outcome, v4Cause: v4Cause(v4ByKey.get(key)), path: value.path }] : [];
-      });
+      const v3ByKey = new Map(builtV3.spans.map((span) => [spanKey(span.path, span.startLine, span.endLine), { outcome: span.outcome }]));
+      const v4ByKey = new Map(builtV4.spans.map((span) => [spanKey(span.path, span.startLine, span.endLine), { outcome: span.outcome, cause: v4Cause(span) }]));
+      const cited = (doc) => citedOutcomes(collectCitations(doc).map(({ value }) => value), v3ByKey, v4ByKey);
       const blockCites = new Map(collectBlocks(builtV4.draft.doc).map((block) => [block.value.id, cited({ citations: list(block.value.citations), evidence: list(block.value.evidence) })]));
       const entryCites = new Map(list(builtV4.inventory.doc.entries).filter(isObj).map((entry) => [entry.id, cited(entry)]));
       const verdicts = fs.readdirSync(path.join(run, 'reviews', 'checks')).filter((name) => /^fidelity-verdict-\d+\.json$/.test(name)).map((name) => ({ name, check: readJson(path.join(run, 'reviews', 'checks', name)) }))
         .filter(({ check }) => check.outcome === 'validated' && check.packet?.sha256 === retained.namedSha256).sort((x, y) => x.check.number - y.check.number);
       let verdictRecord = null;
       if (verdicts.length > 0) {
-        const { check } = verdicts[verdicts.length - 1];
+        const { name, check } = verdicts[verdicts.length - 1];
         const verdictBytes = fs.readFileSync(path.join(run, check.verdict.file));
         const verdict = JSON.parse(verdictBytes.toString('utf8'));
-        const rows = [];
-        for (const row of list(verdict.blockSupport)) if (row.verdict !== 'supported') rows.push({ kind: 'blockSupport', value: row.verdict, cites: blockCites.get(row.blockId) });
-        for (const row of list(verdict.inventoryCoverage)) if (row.disposition !== 'represented' && row.disposition !== 'justified-omission') rows.push({ kind: 'inventoryCoverage', value: row.disposition, cites: entryCites.get(row.entryId) });
-        for (const row of list(verdict.inventoryAccuracy)) if (row.accuracy !== 'accurate') rows.push({ kind: 'inventoryAccuracy', value: row.accuracy, cites: entryCites.get(row.entryId) });
-        for (const row of list(verdict.findings)) if (row.severity === 'blocking') rows.push({ kind: 'finding', value: row.subject, cites: blockCites.get(row.target) ?? entryCites.get(row.target) });
-        const sorted = {};
-        const stillBy = {};
-        const byClass = {};
-        let stillOnlyOutsideByDesign = 0;
+        const rows = nonPassingRows(verdict);
+        const sorted = {}, byClass = {}, stillBy = {};
+        const stillWithheld = { rows: 0, onlyOutsideByDesign: 0, mixedWithAdmitted: 0, mixedWithRecovered: 0 };
         for (const row of rows) {
-          const cls = row.cites === undefined ? 'target-not-found' : rowClass(row.cites);
+          const cites = rowSubject(row, blockCites, entryCites);
+          const cls = cites === null ? 'target-not-found' : rowClass(cites);
           const key = `${row.kind}:${row.value}`;
           sorted[key] ??= {};
           sorted[key][cls] = (sorted[key][cls] ?? 0) + 1;
           byClass[cls] = (byClass[cls] ?? 0) + 1;
-          if (cls === 'still-cites-a-span-withheld-under-v4') {
-            const still = row.cites.filter((span) => span.v4 !== 'admitted');
-            const causes = new Set(still.map((span) => (BY_DESIGN.includes(span.path) ? `by-design:${span.v4Cause}` : `${span.path === 'README.md' ? 'README.md' : 'not-by-design'}:${span.v4Cause}`)));
-            for (const cause of causes) stillBy[cause] = (stillBy[cause] ?? 0) + 1;
-            if (still.every((span) => !BY_DESIGN.includes(span.path))) stillOnlyOutsideByDesign++;
-          }
+          if (cls !== 'still-cites-a-span-withheld-under-v4') continue;
+          const detail = stillDetail(cites);
+          stillWithheld.rows++;
+          if (detail.onlyOutsideByDesign) stillWithheld.onlyOutsideByDesign++;
+          if (detail.mixedWithAdmitted) stillWithheld.mixedWithAdmitted++;
+          if (detail.mixedWithRecovered) stillWithheld.mixedWithRecovered++;
+          for (const cause of new Set(cites.filter((span) => span.v4 !== 'admitted').map((span) => `${BY_DESIGN.includes(span.path) ? 'by-design' : span.path === 'README.md' ? 'README.md' : 'not-by-design'}:${span.v4Cause}`))) stillBy[cause] = (stillBy[cause] ?? 0) + 1;
         }
         const counts = (key, field) => list(verdict[key]).reduce((acc, row) => ({ ...acc, [row[field]]: (acc[row[field]] ?? 0) + 1 }), {});
         verdictRecord = {
-          verdictFile: check.verdict.file, verdictSha256: sha256(verdictBytes), recordedSha256: check.verdict.sha256, checkFile: `reviews/checks/${verdicts[verdicts.length - 1].name}`,
+          verdictFile: check.verdict.file, verdictSha256: sha256(verdictBytes), recordedSha256: check.verdict.sha256, checkFile: `reviews/checks/${name}`,
           readinessDeclared: verdict.readiness, label: 'Inferred', declaredBy: 'the review session',
           rows: { blockSupport: counts('blockSupport', 'verdict'), inventoryCoverage: counts('inventoryCoverage', 'disposition'), inventoryAccuracy: counts('inventoryAccuracy', 'accuracy'), findings: counts('findings', 'severity') },
-          nonPassingRows: rows.length,
-          nonPassingRowsByClass: byClass,
-          nonPassingRowsByScreening: sorted,
-          stillWithheldRowsByCause: stillBy,
-          stillWithheldRowsCitingNoByDesignFile: stillOnlyOutsideByDesign,
-          rowRule: 'a row is non-passing as review.ts derivedBlocking reads it (support not supported; coverage neither represented nor justified-omission; accuracy not accurate; a blocking finding, its target resolved as a block or entry id); its cited spans are its subject\'s own citations in the draft or inventory; a row counts once per cause it cites in stillWithheldRowsByCause',
+          nonPassingRows: rows.length, nonPassingRowsByClass: byClass, nonPassingRowsByScreening: sorted,
+          stillWithheld, stillWithheldRowsByCause: stillBy,
+          rowRule: 'nonPassingRows (P9) as review.ts derivedBlocking reads it; a row\'s cited spans are its subject\'s own citations in the draft or inventory (P10); an unmatched citation is Unknown (P8, P5); a row counts once per cause it cites in stillWithheldRowsByCause',
         };
       }
       revisions.push({
         draftRevision: revision, inventoryRevision: builtV4.inventory.revision,
         draftSha256: builtV4.draft.sha256, inventorySha256: builtV4.inventory.sha256,
-        retainedPacket: { dir: `reviews/${retained.dir}`, sha256: retained.sha256, digestMatchesName: retained.sha256 === retained.namedSha256, spans: retainedTally },
-        rebuiltV3: { packetSha256: builtV3.sha256, spans: v3, spansEqualRetainedPacket: oracle },
-        rebuiltV4: { packetSha256: builtV4.sha256, spans: v4t },
+        retainedPacket: { dir: `reviews/${retained.dir}`, sha256: retained.sha256, digestMatchesName: retained.sha256 === retained.namedSha256, spans: tally(retained.doc.spans, v3Cause) },
+        rebuiltV3: { spans: tally(builtV3.spans, v3Cause), spansEqualRetainedPacket: oracle },
+        rebuiltV4: { spans: tally(builtV4.spans, v4Cause) },
         readme: {
           v3: readme(builtV3.spans, v3Cause), v4: readme(builtV4.spans, v4Cause),
           admittedUnderV4: builtV4.spans.filter((span) => span.path === 'README.md' && span.outcome === 'admitted').length,
@@ -397,35 +487,33 @@ async function measure(runArg, headlineRevision) {
     }
   } finally { fs.rmSync(base, { recursive: true, force: true }); }
 
-  const record = {
+  const chosen = revisions.find((r) => r.draftRevision === (options.headlineRevision ?? revisions[revisions.length - 1].draftRevision));
+  if (chosen === undefined) throw new Error(`no retained packet for draft revision ${options.headlineRevision}`);
+  return { exit: 0, texts, record: {
     ...header,
-    subject: {
-      what: 'the cited spans of each draft revision of this run that has a retained fidelity packet, with the inventory of record, at the pinned commit',
-      runRecordSha256: header.measuredOn.runRecordSha256, pinnedCommit: subject.pinnedRevision.commit,
-      revisions: revisions.map((r) => ({ draftRevision: r.draftRevision, draftSha256: r.draftSha256, inventoryRevision: r.inventoryRevision, inventorySha256: r.inventorySha256, retainedPacketSha256: r.retainedPacket.sha256, citedSpans: r.rebuiltV4.spans.total })),
-      policies: { v3Sha256: screens.v3.sha256, v4Sha256: screens.v4.sha256 },
-    },
-    method: [
-      'screening only: no model, agent session or provider egress; no packet written, no verdict checked, nothing written to the run directory',
-      'the read gate is reverifyPinnedRevision with the CLI\'s gate sources over this checkout, called before any object read; openRun\'s own outcome is recorded beside it',
-      'each packet is built by buildFidelityPacket (the review-packet code path) over a symbolic-link view of the run that ends at that draft revision; v3 with loadScreen injected as buildDossierScreen over the v3 policy bytes found by digest in this checkout\'s history, v4 with the default loadDossierScreen',
-      'the v3 rebuild is compared field by field with the retained packet of the same revision (spansEqualRetainedPacket), a second method for the baseline',
-      'redacted-span spans are split by spanTouchesWithheld\'s reading over the withheld lines of a second read of the same blob through the same reader and screen',
-      'readiness rows are the retained validated verdict bound to the retained packet, read for structured fields only',
-    ],
-    gate: gateRecord, openRun: openRunOutcome, screens, byDesignFiles: BY_DESIGN, redactedBodiesUnderV4: Object.values(redactedBodies), revisions, measured: true,
-    scriptChecks: { atCommit: syzygy.commit, selftestFailures: selftest(), rule6: runMutants() },
-  };
-  const chosen = revisions.find((r) => r.draftRevision === (headlineRevision ?? revisions[revisions.length - 1].draftRevision));
-  if (chosen === undefined) throw new Error(`no retained packet for draft revision ${headlineRevision}`);
-  record.headline = headlineOf(chosen, revisions[revisions.length - 1].draftRevision);
-  const output = `${JSON.stringify(record, null, 2)}\n`;
-  const leaks = bodyLeak(output, texts);
-  if (leaks.length > 0) throw new Error(`the record would carry ${leaks.length} span text(s); nothing is written`);
-  return { exit: 0, record };
+    gate: { call: 'openRun', ok: true, revision: opened.revision, contentClasses: opened.contentClasses },
+    screens, byDesignFiles: BY_DESIGN, redactedBodiesUnderV4: Object.values(redactedBodies), revisions, measured: true,
+    headline: headlineOf(chosen, revisions[revisions.length - 1].draftRevision),
+  } };
+}
+
+/** Parse `<run> --out <file> [--headline-revision N] [--supersedes <commit>:<path>]...`, or undefined. */
+function parseMeasureArgs(args) {
+  if (args.length === 0 || args[0].startsWith('--')) return undefined;
+  const options = { run: args[0], out: undefined, headlineRevision: undefined, supersedes: [] };
+  for (let i = 1; i < args.length; i += 2) {
+    const value = args[i + 1];
+    if (value === undefined) return undefined;
+    if (args[i] === '--out') options.out = value;
+    else if (args[i] === '--headline-revision' && /^(0|[1-9][0-9]*)$/.test(value)) options.headlineRevision = Number(value);
+    else if (args[i] === '--supersedes' && /^[0-9a-f]{7,40}:[^:]+$/.test(value)) options.supersedes.push(value);
+    else return undefined;
+  }
+  return options.out === undefined ? undefined : options;
 }
 
 const args = process.argv.slice(2);
+const measureOptions = parseMeasureArgs(args);
 if (args[0] === '--selftest' && args.length === 1) {
   const failures = selftest();
   for (const failure of failures) process.stderr.write(`FAIL ${failure}\n`);
@@ -435,11 +523,19 @@ if (args[0] === '--selftest' && args.length === 1) {
   const result = runMutants();
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   process.exit(result.mutants.every((mutant) => mutant.outcome === 'killed') ? 0 : 1);
-} else if ((args.length === 1 || (args.length === 3 && args[1] === '--headline-revision' && /^(0|[1-9][0-9]*)$/.test(args[2]))) && !args[0].startsWith('--')) {
-  const { exit, record } = await measure(args[0], args.length === 3 ? Number(args[2]) : undefined);
-  process.stdout.write(`${JSON.stringify(record, null, 2)}\n`);
+} else if (measureOptions !== undefined) {
+  const { exit, texts, record } = await measure(measureOptions);
+  const output = `${JSON.stringify(record, null, 2)}\n`;
+  const leaks = bodyLeak(output, texts);
+  if (leaks.length > 0) { process.stderr.write(`the record would carry ${leaks.length} span text(s); nothing is written\n`); process.exit(4); }
+  // Written beside the target and renamed over it, so a tracked target is never truncated while the tree is measured (and the
+  // tree-clean reading above was taken before any write).
+  const out = path.resolve(measureOptions.out), temporary = `${out}.tmp-${process.pid}`;
+  fs.writeFileSync(temporary, output);
+  fs.renameSync(temporary, out);
+  process.stdout.write(`${record.measured ? 'measured' : 'refused, nothing measured'}: ${out}\n`);
   process.exit(exit);
 } else {
-  process.stderr.write('usage: node scripts/redis_screening_remeasure.mjs <run directory> [--headline-revision N] | --selftest | --mutants\n');
+  process.stderr.write('usage: node scripts/redis_screening_remeasure.mjs <run directory> --out <file> [--headline-revision N] [--supersedes <commit>:<path>]... | --selftest | --mutants\n');
   process.exit(2);
 }
