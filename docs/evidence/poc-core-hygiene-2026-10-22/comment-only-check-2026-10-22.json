@@ -1,20 +1,43 @@
 {
  "tool": "comment_only_check.py",
+ "toolSha256": "553f08bb420bf0906c6357ff78b564143afcb00a4d83d83cacbd520f2d0a43d3",
  "oldCommit": "e81883f3d44d033425280e8b57f338b6acf29bc2",
- "treeCommit": "951937471cb28bf550c46ea4489e755240ffe40d",
- "filesChanged": 2,
+ "mergedWith": {
+  "ref": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+  "commit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+  "baselineTree": "6a08cd6f1b851730da8534c23a71d7b3e855d30b"
+ },
+ "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "trackedChangesUnderPackagesAndApps": [],
+ "filesChanged": 4,
  "allIdenticalAfterCommentStrip": true,
  "files": [
   {
+   "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+   "status": "M",
+   "sha256Before": "aeca97688df274fbf162c1c222c7192c8619f0d60941730285306f02c6134dcd",
+   "sha256After": "f612651d13421c0ffcba0d8db9f5240dcb521aa2c0315b5316b92c52a7cb7b77",
+   "identicalAfterCommentStrip": true
+  },
+  {
    "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+   "status": "M",
    "sha256Before": "494d34a7b0237202a3b66debf764488601ccfe0bcaa941104183054ebf23bb8e",
-   "sha256After": "e9e1b7be488db87f91622f0f6ab0c124a524b18164a9f43a78ef3167ac562ecb",
+   "sha256After": "3b16e65f147ea1f164c7f1cb9f3d5bcf49e23c15dd3cf59c0473ecb4d2a00f8a",
    "identicalAfterCommentStrip": true
   },
   {
    "file": "packages/three-surface-poc-core/src/index.ts",
+   "status": "M",
    "sha256Before": "92c5769517513686c752b8ae454564c2dbd9633f305fe77e1d559908a7750dcf",
-   "sha256After": "f3983aa71b11410786acadaed0381521954ecd4ce2c017d9e2e7e2c19e25fd9c",
+   "sha256After": "4825b9b9bd68599f873166d22a0ed95dd73c7e88debfc6a2a4fa24b94fd5e03b",
+   "identicalAfterCommentStrip": true
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/test-cleanup.ts",
+   "status": "M",
+   "sha256Before": "9ee0582bb184c2946a7910ecb16024ba95a5eec6cc7dc7b750062f66f9de8787",
+   "sha256After": "81e09bd89fe0080fb95d77ff3c4562b64b22101b16bcb38c2e5e022065328d63",
    "identicalAfterCommentStrip": true
   }
  ],

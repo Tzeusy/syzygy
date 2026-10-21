@@ -1,11 +1,16 @@
 {
  "tool": "assemble_census.py (export_census.census)",
+ "exportCensusSha256": "c04bece04f32d143f47260123dfc5555729ff05fec6be48a7a46e8d771cf2122",
+ "trackedFilesModified": {
+  "base": false,
+  "after": false
+ },
  "prefix": "packages/three-surface-poc-core/src/",
  "barrels": [
   "packages/three-surface-poc-core/src/index.ts"
  ],
- "baseCommit": "26ff52ce260e925b191d03ee78b052383328b65c",
- "afterCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c",
+ "baseCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+ "afterCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
  "totals": {
   "base-lexer": {
    "exports": 589,
@@ -67,6 +72,21 @@
   "classChanged": [
    "body-read-authority.ts:COMMON_INVALID_CASES internal -> self-only",
    "project-shape-coverage.ts:FACT_FAMILIES self-only -> dead"
+  ]
+ },
+ "testOnlyAtBase": {
+  "predicate": "census rows of the base tree in lexer mode with class == 'test-only'; the selfZero subset also has self == 0 (no use inside the declaring file)",
+  "total": 88,
+  "selfZero": [
+   "body-read-authority.ts:appendEvaluation",
+   "evidence-population.ts:derivePopulationBlock",
+   "materialization.ts:rollbackMaterializedWorkItem",
+   "owner-act-drafter.ts:draftOwnerAct",
+   "project-shape-model.ts:ownerActProvenance",
+   "test-artifact-verification.ts:clearTestArtifactRecordFile",
+   "test-artifact-verification.ts:liveTestOperatorInstructions",
+   "test-cleanup.ts:removeFixtureDirectory",
+   "walkthrough-judgment.ts:appendJudgmentEvaluation"
   ]
  },
  "subjectRows": {
@@ -249,7 +269,7 @@
    {
     "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
     "name": "appendEvaluation",
-    "line": 738,
+    "line": 735,
     "class": "test-only",
     "self": 0,
     "prodInside": [],
@@ -261,7 +281,7 @@
    {
     "file": "packages/three-surface-poc-core/src/evidence-population.ts",
     "name": "derivePopulationBlock",
-    "line": 80,
+    "line": 84,
     "class": "test-only",
     "self": 0,
     "prodInside": [],

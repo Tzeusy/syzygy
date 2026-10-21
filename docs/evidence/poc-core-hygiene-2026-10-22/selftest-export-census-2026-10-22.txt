@@ -1,3 +1,6 @@
+# tool sha256: c04bece04f32d143f47260123dfc5555729ff05fec6be48a7a46e8d771cf2122
+# tree commit: 47935fec12c629ab1dd82c85f2d60081ca757e65
+# command: python3 export_census.py --selftest (exit 0)
 ok  glob then block comment later: X expected 1 got 1
 ok  name only in comments: X expected 0 got 0
 ok  name in string kept: X expected 1 got 1
@@ -9,6 +12,11 @@ ok  division is not a regex: X expected 1 got 1
 ok  regex after return: X expected 1 got 1
 ok  url in string is not a comment: X expected 1 got 1
 ok  escaped quote does not end the string: X expected 1 got 1
+ok  comment inside a template expression is a comment: X expected 1 got 1
+ok  comment after a nested template in a template expression is a comment: X expected 1 got 1
+ok  comment after braces inside a template expression is a comment: X expected 1 got 1
+ok  slash inside a regex character class does not end the regex: X expected 1 got 1
+ok  division after a parenthesis is not a regex: X expected 1 got 1
 ok  class of deadThing: expected dead got dead
 ok  class of selfOnlyThing: expected self-only got self-only
 ok  class of testOnlyThing: expected test-only got test-only
@@ -21,4 +29,4 @@ ok  class of listedThing: expected self-only got self-only
 ok  class of useSelf: expected dead got dead
 ok  class of useInternal: expected dead got dead
 ok  raw class of commentOnlyThing: expected self-only got self-only
-selftest: 23 of 23 cases hold
+selftest: 28 of 28 cases hold

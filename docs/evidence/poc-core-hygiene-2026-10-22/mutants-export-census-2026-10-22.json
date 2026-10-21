@@ -1,12 +1,12 @@
 {
  "subject": "export_census.py --selftest",
- "subjectSha256": "992d190297cada10a9552ac72471fe925c45dd748f16ce91e6da012f9556e5b9",
- "ranAtCommit": "19eed39bd6db34c67b1bee4c08553c10946c40b9",
+ "subjectSha256": "c04bece04f32d143f47260123dfc5555729ff05fec6be48a7a46e8d771cf2122",
+ "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
  "unmutatedExit": 0,
- "unmutatedLast": "selftest: 23 of 23 cases hold",
- "mutants": 20,
- "killed": 20,
- "killedByAFailedCase": 20,
+ "unmutatedLast": "selftest: 28 of 28 cases hold",
+ "mutants": 24,
+ "killed": 24,
+ "killedByAFailedCase": 24,
  "killedByCrashOnly": 0,
  "survivors": [],
  "records": [
@@ -20,6 +20,18 @@
     {
      "case": "name only in comments",
      "firstErrorLine": "FAIL  name only in comments: X expected 0 got 1"
+    },
+    {
+     "case": "comment inside a template expression is a comment",
+     "firstErrorLine": "FAIL  comment inside a template expression is a comment: X expected 1 got 2"
+    },
+    {
+     "case": "comment after a nested template in a template expression is a comment",
+     "firstErrorLine": "FAIL  comment after a nested template in a template expression is a comment: X expected 1 got 2"
+    },
+    {
+     "case": "comment after braces inside a template expression is a comment",
+     "firstErrorLine": "FAIL  comment after braces inside a template expression is a comment: X expected 1 got 2"
     }
    ],
    "crash": null
@@ -42,6 +54,10 @@
     {
      "case": "division is not a regex",
      "firstErrorLine": "FAIL  division is not a regex: X expected 1 got 2"
+    },
+    {
+     "case": "division after a parenthesis is not a regex",
+     "firstErrorLine": "FAIL  division after a parenthesis is not a regex: X expected 1 got 2"
     },
     {
      "case": "class of commentOnlyThing",
@@ -74,6 +90,10 @@
     {
      "case": "regex after return",
      "firstErrorLine": "FAIL  regex after return: X expected 1 got 0"
+    },
+    {
+     "case": "slash inside a regex character class does not end the regex",
+     "firstErrorLine": "FAIL  slash inside a regex character class does not end the regex: X expected 1 got 0"
     }
    ],
    "crash": null
@@ -116,6 +136,70 @@
     {
      "case": "escaped quote does not end the string",
      "firstErrorLine": "FAIL  escaped quote does not end the string: X expected 1 got 0"
+    }
+   ],
+   "crash": null
+  },
+  {
+   "id": "lexer-template-expression-never-entered",
+   "old": "if c == '$' and i + 1 < n and src[i + 1] == '{':",
+   "new": "if False:",
+   "exitCode": 1,
+   "killed": true,
+   "failedCases": [
+    {
+     "case": "comment inside a template expression is a comment",
+     "firstErrorLine": "FAIL  comment inside a template expression is a comment: X expected 1 got 2"
+    },
+    {
+     "case": "comment after a nested template in a template expression is a comment",
+     "firstErrorLine": "FAIL  comment after a nested template in a template expression is a comment: X expected 1 got 2"
+    },
+    {
+     "case": "comment after braces inside a template expression is a comment",
+     "firstErrorLine": "FAIL  comment after braces inside a template expression is a comment: X expected 1 got 2"
+    }
+   ],
+   "crash": null
+  },
+  {
+   "id": "lexer-regex-class-ignored",
+   "old": "in_class = True",
+   "new": "in_class = False",
+   "exitCode": 1,
+   "killed": true,
+   "failedCases": [
+    {
+     "case": "slash inside a regex character class does not end the regex",
+     "firstErrorLine": "FAIL  slash inside a regex character class does not end the regex: X expected 1 got 0"
+    }
+   ],
+   "crash": null
+  },
+  {
+   "id": "lexer-template-brace-depth-ignored",
+   "old": "        if c == '{' and tpl:\n            tpl[-1] += 1",
+   "new": "        if c == '{' and tpl:\n            pass",
+   "exitCode": 1,
+   "killed": true,
+   "failedCases": [
+    {
+     "case": "comment after braces inside a template expression is a comment",
+     "firstErrorLine": "FAIL  comment after braces inside a template expression is a comment: X expected 1 got 2"
+    }
+   ],
+   "crash": null
+  },
+  {
+   "id": "lexer-division-after-paren-read-as-regex",
+   "old": "REGEX_PRECEDERS = set('(,=:[!&|?{};+-*%<>~^')",
+   "new": "REGEX_PRECEDERS = set('(,=:[!&|?{};+-*%<>~^)')",
+   "exitCode": 1,
+   "killed": true,
+   "failedCases": [
+    {
+     "case": "division after a parenthesis is not a regex",
+     "firstErrorLine": "FAIL  division after a parenthesis is not a regex: X expected 1 got 2"
     }
    ],
    "crash": null

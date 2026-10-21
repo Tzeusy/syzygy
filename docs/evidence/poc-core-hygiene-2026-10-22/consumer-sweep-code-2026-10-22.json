@@ -1,8 +1,11 @@
 {
  "tool": "consumer_sweep.py",
- "treeCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c",
- "trackedFiles": 3024,
- "textFilesRead": 3024,
+ "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "trackedChangesInTree": false,
+ "excludedPrefix": "docs/evidence/poc-core-hygiene-2026-10-22/",
+ "trackedFilesExcluded": 28,
+ "trackedFiles": 3039,
+ "textFilesRead": 3039,
  "subjects": [
   {
    "kind": "orphan-path",
@@ -32,10 +35,10 @@
     },
     {
      "token": "evidence-population",
-     "gitGrepFiles": 9,
-     "gitGrepLines": 23,
-     "pyRegexFiles": 9,
-     "pyRegexHits": 24,
+     "gitGrepFiles": 10,
+     "gitGrepLines": 24,
+     "pyRegexFiles": 10,
+     "pyRegexHits": 25,
      "methodsAgreeOnFiles": true,
      "wrappedCitationOnlyFiles": [],
      "filesByCategory": {
@@ -56,6 +59,7 @@
        "packages/three-surface-poc-core/src/evidence-population.test.ts"
       ],
       "core-src": [
+       "packages/three-surface-poc-core/src/evidence-population.ts",
        "packages/three-surface-poc-core/src/index.ts"
       ]
      }
@@ -176,10 +180,10 @@
     },
     {
      "token": "test-cleanup",
-     "gitGrepFiles": 3,
-     "gitGrepLines": 3,
-     "pyRegexFiles": 3,
-     "pyRegexHits": 3,
+     "gitGrepFiles": 4,
+     "gitGrepLines": 4,
+     "pyRegexFiles": 4,
+     "pyRegexHits": 4,
      "methodsAgreeOnFiles": true,
      "wrappedCitationOnlyFiles": [],
      "filesByCategory": {
@@ -189,6 +193,9 @@
       "core-test": [
        "packages/three-surface-poc-core/src/model.test.ts",
        "packages/three-surface-poc-core/src/test-cleanup.test.ts"
+      ],
+      "core-src": [
+       "packages/three-surface-poc-core/src/test-cleanup.ts"
       ]
      }
     }

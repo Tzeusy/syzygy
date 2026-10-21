@@ -1,0 +1,26 @@
+{
+ "tool": "route_capture_leak_check.py",
+ "toolSha256": "402d25bb2e70fba3b9201d7600067d09c4b535242448a0fd36bdc57e4d7166e8",
+ "subject": "route-capture.mjs",
+ "subjectSha256": "42f35b84dad943f5ffe269805ec924b152709267664fe75cfc221854accf4168",
+ "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+ "mutantOld": "  rmSync(made.repoRoot, { recursive: true, force: true });\n",
+ "mutantNew": "",
+ "cases": [
+  {
+   "case": "script as committed",
+   "exit": 0,
+   "lastStdoutLine": "variants=5 routesPerVariant=19,19,19,19,19 responses=230 out=/tmp/zz-leak-check-9fldvz8n/capture.json",
+   "entriesLeftInTheTemporaryDirectory": []
+  },
+  {
+   "case": "mutant: cleanup line removed",
+   "exit": 0,
+   "lastStdoutLine": "variants=5 routesPerVariant=19,19,19,19,19 responses=230 out=/tmp/zz-leak-check-1d26hfpa/capture.json",
+   "entriesLeftInTheTemporaryDirectory": [
+    "syzygy-poc-surface-fixture-<random>"
+   ]
+  }
+ ],
+ "holds": true
+}

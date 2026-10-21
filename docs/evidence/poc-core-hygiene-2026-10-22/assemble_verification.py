@@ -26,7 +26,13 @@ def main() -> int:
     census, capture, lists = load('export-census-core-2026-10-22.json'), load('route-capture-comparison-2026-10-22.json'), load('test-lists-2026-10-22.json')
     emitted, mutants, sweep_b, sweep_c = load('emitted-code-diff-2026-10-22.json'), load('mutants-export-census-2026-10-22.json'), load('consumer-sweep-base-2026-10-22.json'), load('consumer-sweep-code-2026-10-22.json')
     comment_only, comment_mutants = load('comment-only-check-2026-10-22.json'), load('mutants-comment-only-check-2026-10-22.json')
-    vitest_lines = [l.strip() for l in (logs / 'vitest-full.log').read_text(encoding='utf-8').splitlines() if l.strip().startswith(('Test Files', 'Tests '))]
+    compare_mutants, leak = load('mutants-compare-captures-2026-10-22.json'), load('route-capture-leak-check-2026-10-22.json')
+    dispositions = load('dispositions-2026-10-22.json')
+    base_capture, recreated_capture = load('route-capture-base-2026-10-22.json'), load('route-capture-base-recreated-fixture-2026-10-22.json')
+    summary_lines = lambda name: [l.strip() for l in (logs / name).read_text(encoding='utf-8').splitlines() if l.strip().startswith(('Test Files', 'Tests ', 'exit='))]
+    vitest_lines, first_run_lines = summary_lines('vitest-full.log'), summary_lines('vitest-full-first-run.log')
+    first_run_failures = [l.strip() for l in (logs / 'vitest-full-first-run.log').read_text(encoding='utf-8').splitlines() if l.strip().startswith('FAIL ')]
+    typecheck_exit, authority_lines = summary_lines('typecheck.log'), summary_lines('authority-sweep.log')
     gov_b, gov_a = last_lines(logs / 'governance-base.txt')[0], last_lines(logs / 'governance-after.txt')[0]
     quot_same = (logs / 'quotations-base.txt').read_bytes() == (logs / 'quotations-after.txt').read_bytes()
     packages_apps_diff = git('diff', '--stat', code_commit, 'HEAD', '--', 'packages', 'apps')
@@ -50,16 +56,28 @@ def main() -> int:
         'routeCapture': {k: capture[k] for k in ('responses', 'fixtures', 'fixturesWithDistinctOutput', 'requestKeysPerFixture', 'requestKeysWhoseBodyDiffersAcrossFixtures', 'distinctBodyDigests', 'statuses')}
                         | {'claim': capture['claim'], 'fixtureRepository': {k: capture['fixtureRepository'][k] for k in ('path', 'revision')},
                            'reference': {k: capture['reference'][k] for k in ('treeCommit', 'variantsSha256')},
-                           'comparisons': [{k: c[k] for k in ('file', 'treeCommit', 'variantsSha256', 'variantsBytesEqualReference', 'responsesDifferingFromReference')} for c in capture['comparisons']]},
+                           'comparisons': [{k: c[k] for k in ('file', 'treeCommit', 'variantsSha256', 'variantsBytesEqualReference', 'responsesDifferingFromReference')} for c in capture['comparisons']],
+                           'fixtureRevisionRecreated': {'firstPath': base_capture['fixtureRepository']['path'], 'firstRevision': base_capture['fixtureRepository']['revision'],
+                                                        'secondPath': recreated_capture['fixtureRepository']['path'], 'secondRevision': recreated_capture['fixtureRepository']['revision'],
+                                                        'equal': base_capture['fixtureRepository']['revision'] == recreated_capture['fixtureRepository']['revision']},
+                           'comparisonMutants': {'control': compare_mutants['control']['holds'], 'ran': compare_mutants['mutants'], 'killed': compare_mutants['killed'], 'survivors': compare_mutants['survivors'], 'ranAtCommit': compare_mutants['ranAtCommit']},
+                           'leakCheck': {'holds': leak['holds'], 'cases': [{k: c[k] for k in ('case', 'entriesLeftInTheTemporaryDirectory')} for c in leak['cases']], 'treeCommit': leak['treeCommit']}},
+        'dispositions': {'selection': {k: dispositions['selection'][k] for k in ('testOnlyAtBase', 'equalToTheDispositionTestOnlySubjects')}
+                         | {'testOnlyAndSelfZero': dispositions['selection']['testOnlyAndSelfZeroAtBase']['count'], 'remaining': dispositions['selection']['remaining']['count']},
+                         'gateByteIdenticalToBase': dispositions['bpyt62MutationRecords']['gate']['byteIdenticalToBase'],
+                         'gateRetainedRecords': dispositions['bpyt62MutationRecords']['gate']['retainedRecordsNamingTheBaseDigest'],
+                         'evaluatorRetainedRecords': dispositions['bpyt62MutationRecords']['evaluator']['retainedRecordsNamingTheBaseDigest']},
         'commentOnlyCheck': {k: comment_only[k] for k in ('oldCommit', 'mergedWith', 'treeCommit', 'trackedChangesUnderPackagesAndApps', 'filesChanged', 'allIdenticalAfterCommentStrip', 'retainedExport')}
                             | {'files': [f['file'] for f in comment_only['files']],
                                'mutants': {'controls': [c['holds'] for c in comment_mutants['controls']], 'ran': comment_mutants['mutants'], 'killed': comment_mutants['killed'], 'survivors': comment_mutants['survivors'], 'ranAtCommit': comment_mutants['ranAtCommit']}},
         'testNames': {k: lists[k] for k in ('baseTree', 'headTree', 'baseLines', 'headLines', 'baseDistinctNames', 'headDistinctNames', 'added', 'removed', 'testsLine')},
-        'fullVitestRun': {'command': 'npx vitest run', 'lines': vitest_lines, 'ranAt': 'the code commit tree (packages/ and apps/ identical to the recording head)'},
+        'fullVitestRun': {'command': 'npx vitest run', 'lines': vitest_lines, 'ranAt': 'the code commit tree (packages/ and apps/ identical to the recording head)',
+                          'firstRun': {'lines': first_run_lines, 'failures': first_run_failures,
+                                       'note': 'a 5000 ms timeout in an unrelated package test while other lanes loaded the host; the file passes alone (293 of 293, the failing case in 3.6 s) and the whole suite passed on the re-run above, which is the one recorded'}},
         'checkGovernance': {'base': gov_b, 'after': gov_a, 'differenceFromBase': 'file counts only (the new evidence directory)'},
         'checkQuotations': {'baseVsAfterOutputIdentical': quot_same},
-        'typecheck': {'command': 'npm run typecheck', 'exit': 0},
-        'authoritySweep': {'command': 'npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts', 'result': '5 passed'},
+        'typecheck': {'command': 'npm run typecheck', 'lines': typecheck_exit},
+        'authoritySweep': {'command': 'npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts', 'lines': authority_lines},
     }
     out.write_text(json.dumps(record, indent=1) + '\n', encoding='utf-8')
     print(json.dumps({k: record[k] for k in ('packagesAndAppsDiffSinceCodeCommit', 'emittedCode', 'testNames', 'fullVitestRun')}, indent=1)[:1500])
