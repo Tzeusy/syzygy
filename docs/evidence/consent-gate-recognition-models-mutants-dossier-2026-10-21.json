@@ -1,0 +1,258 @@
+{
+  "subject": {
+    "commit": "78cd0511d89c60b55e9d7285b904af4ca481eb7a",
+    "branch": "agent/syzygy-bpyt.8.10",
+    "fileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "ade93ec661de771cdaa432f66fe30eab0ed9eec194dff4067462c32d2c39a91e",
+      "packages/polaris-dossier/src/gate-sources.ts": "95a8ffcede9266f6531b0b2f2a5e10c25a0f5135b3114249090cce3ac78850d6",
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "846f1195c1bec90197ba0a3dd58fa9a99edbcb94c7a4b82ccffb19189c2d925b",
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "ea6aa505e8bd77004c4a5910dbe27a58588c668d370f7978660ba1d738b8b3c8",
+      "packages/polaris-generation-consent/src/package-reader.ts": "ebf5cbf468fd442289e11e390c9a7e3b20c39bdcd02e1a6214d096a52d0e3dc3",
+      "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts": "3576a99df9c6da7cec515632b362f237d59028069d5f239e983bc337b31e6fc3"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "ade93ec661de771cdaa432f66fe30eab0ed9eec194dff4067462c32d2c39a91e"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-dossier",
+  "ranAt": "2026-10-21T17:35:24+00:00",
+  "mutants": [
+    {
+      "id": "template-sitting-effect-slot",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "## Effect\n\n${a.effect}\n\n## What this act does not authorize\n\nThis act satisfies only its own authority; the sitting's other acts each take\ntheir own act and none implies another (REQ-polaris-generation-025). It gives\nno observation consent, adopts no registry entry or screening policy, amends\nno doctrine, contract or specification, and grants no read, egress, write,\nexecution, deployment, release, autonomous or multi-user authority beyond\nwhat its Effect states. It proves no read, screening, generation or answer\nresult.\n`, {\n    date: SLOT.date, instant: SLOT.instant,",
+      "new": "## Effect\n\n{effect}\n\n## What this act does not authorize\n\nThis act satisfies only its own authority; the sitting's other acts each take\ntheir own act and none implies another (REQ-polaris-generation-025). It gives\nno observation consent, adopts no registry entry or screening policy, amends\nno doctrine, contract or specification, and grants no read, egress, write,\nexecution, deployment, release, autonomous or multi-user authority beyond\nwhat its Effect states. It proves no read, screening, generation or answer\nresult.\n`, {\n    effect: '[\\\\s\\\\S]+?', date: SLOT.date, instant: SLOT.instant,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "sittingTemplate Effect paragraph made a free slot; the D9 effect-widened case should fail"
+    },
+    {
+      "id": "template-sitting-limits-slot",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "\n## What this act does not authorize\n\nThis act satisfies only its own authority; the sitting's other acts each take\ntheir own act and none implies another (REQ-polaris-generation-025). It gives\nno observation consent, adopts no registry entry or screening policy, amends\nno doctrine, contract or specification, and grants no read, egress, write,\nexecution, deployment, release, autonomous or multi-user authority beyond\nwhat its Effect states. It proves no read, screening, generation or answer\nresult.\n`, {\n    date: SLOT.date, instant: SLOT.instant,",
+      "new": "{limits}`, {\n    limits: '[\\\\s\\\\S]*', date: SLOT.date, instant: SLOT.instant,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 133,
+      "note": "sittingTemplate limits section made a free slot; the D9 limits-removed case should fail"
+    },
+    {
+      "id": "template-sitting-label-narrowed",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "opening: SLOT.line, label: SLOT.line, description: SLOT.line,\n    frozen",
+      "new": "opening: SLOT.line, label: `(?!Decline\\\\b)${SLOT.line}`, description: SLOT.line,\n    frozen",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 133,
+      "note": "sittingTemplate label slot refuses a Decline label; the D9 selection-replaced case (still counts) should fail"
+    },
+    {
+      "id": "template-provider-v2-effect-slot",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "## Effect\n\nThe record is the owner's explicit, recorded, per-project consent (SEC-2)\nthat the operator's Claude Code sessions, with Anthropic, may receive the\ncontent classes it lists from (\\`project:syzygy\\`, \\`repository:redis-redis\\`) in\nan operator-agent run, so a brief may issue for that repository even when it\ncounts as governed. Version 2 lists \\`project-documentation\\` beside version\n1's five classes and differs from version 1 in nothing else but its draft\ndate, version and supersession line. From this act's instant the gate reads\nversion 2 and not version 1; before it, version 1 alone.\n\n## What this act does not authorize\n\nThis act satisfies only its own authority (REQ-polaris-generation-025). It\ngives no observation consent, adopts no registry entry or screening policy,\namends no doctrine, contract or specification, and grants no read, egress,\nwrite, execution, deployment, release, autonomous or multi-user authority\nbeyond what its Effect states. It is not an egress record and widens no\nconsent to another tool, provider or repository. It proves no read,\nscreening, generation or answer result.\n`, {\n  date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line, quote: SLOT.line,",
+      "new": "## Effect\n\n{effect}\n\n## What this act does not authorize\n\nThis act satisfies only its own authority (REQ-polaris-generation-025). It\ngives no observation consent, adopts no registry entry or screening policy,\namends no doctrine, contract or specification, and grants no read, egress,\nwrite, execution, deployment, release, autonomous or multi-user authority\nbeyond what its Effect states. It is not an egress record and widens no\nconsent to another tool, provider or repository. It proves no read,\nscreening, generation or answer result.\n`, {\n  effect: '[\\\\s\\\\S]+?', date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line, quote: SLOT.line,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "PROVIDER_V2_TEMPLATE Effect paragraph made a free slot; the provider-v2 effect-widened case should fail"
+    },
+    {
+      "id": "template-provider-v2-limits-slot",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "\n## What this act does not authorize\n\nThis act satisfies only its own authority (REQ-polaris-generation-025). It\ngives no observation consent, adopts no registry entry or screening policy,\namends no doctrine, contract or specification, and grants no read, egress,\nwrite, execution, deployment, release, autonomous or multi-user authority\nbeyond what its Effect states. It is not an egress record and widens no\nconsent to another tool, provider or repository. It proves no read,\nscreening, generation or answer result.\n`, {\n  date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line, quote: SLOT.line,",
+      "new": "{limits}`, {\n  limits: '[\\\\s\\\\S]*', date: SLOT.date, instant: SLOT.instant, argument: SLOT.sha256, opening: SLOT.line, label: SLOT.line, description: SLOT.line, quote: SLOT.line,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "PROVIDER_V2_TEMPLATE limits section made a free slot; the provider-v2 limits-removed case should fail"
+    },
+    {
+      "id": "template-provider-v2-label-narrowed",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "label: SLOT.line, description: SLOT.line, quote: SLOT.line,",
+      "new": "label: `(?!Decline\\\\b)${SLOT.line}`, description: SLOT.line, quote: SLOT.line,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 133,
+      "note": "PROVIDER_V2_TEMPLATE label slot refuses a Decline label; the provider-v2 selection-replaced case (still counts) should fail"
+    },
+    {
+      "id": "template-signoff-records-slot",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "## What this records\n\nThe owner signed off version ${o.version} of \\`${o.candidate}\\` by the\nselection quoted above. The review named above read the package bytes this\nsign-off applies; the recorder confirmed that the package directory still\nequals the package at the reviewed commit (disposition records excepted) and\nthat the package's own builder check passed before its patches were applied\nthrough the builder.\n\nThe binding is the annotated tag \\`${tag}\\` on the commit that\ncarries this record and the applied result. A later edit to the package is a\nnew version signed separately; it does not retire this one.\n\n## What this does not do\n\nIt approves the registry entry named above at exactly the SHA-256 above and\nno other byte: a later edit at that path is unsigned. It is one of the\nseparate acts a read needs; it gives no observation consent, adopts no\nclassification or screening policy, widens no egress, write or execution,\nand authorizes no implementation. Every exclusion of the acts in force\nstands.\n`, { date: SLOT.date, quote: SLOT.line,",
+      "new": "## What this records\n\n{records}\n\nThe binding is the annotated tag \\`${tag}\\` on the commit that\ncarries this record and the applied result. A later edit to the package is a\nnew version signed separately; it does not retire this one.\n\n## What this does not do\n\nIt approves the registry entry named above at exactly the SHA-256 above and\nno other byte: a later edit at that path is unsigned. It is one of the\nseparate acts a read needs; it gives no observation consent, adopts no\nclassification or screening policy, widens no egress, write or execution,\nand authorizes no implementation. Every exclusion of the acts in force\nstands.\n`, { records: '[\\\\s\\\\S]+?', date: SLOT.date, quote: SLOT.line,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "registrySignoffTemplate What-this-records paragraph made a free slot; the sign-off effect-widened case should fail"
+    },
+    {
+      "id": "template-signoff-limits-slot",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "\n## What this does not do\n\nIt approves the registry entry named above at exactly the SHA-256 above and\nno other byte: a later edit at that path is unsigned. It is one of the\nseparate acts a read needs; it gives no observation consent, adopts no\nclassification or screening policy, widens no egress, write or execution,\nand authorizes no implementation. Every exclusion of the acts in force\nstands.\n`, { date: SLOT.date, quote: SLOT.line,",
+      "new": "{limits}`, { limits: '[\\\\s\\\\S]*', date: SLOT.date, quote: SLOT.line,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 133,
+      "note": "registrySignoffTemplate limits section made a free slot; the sign-off limits-removed case should fail"
+    },
+    {
+      "id": "signoff-scope-words-dropped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict']",
+      "new": "if ((slots['verdict']",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "readVersionedSignoffState no longer requires the Scope A words; the sign-off selection-replaced case (refused) should fail"
+    },
+    {
+      "id": "signoff-quote-names-version",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (!slots['quote']!.includes('Extend Scope A') || (slots['verdict']",
+      "new": "if (!slots['quote']!.includes('Extend Scope A') || !slots['quote']!.includes(`v${form.version}`) || (slots['verdict']",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 133,
+      "note": "readVersionedSignoffState also requires the selection to name the version; the other-words-that-keep-Scope-A case (still counts) should fail"
+    },
+    {
+      "id": "template-sitting-tail-free",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "\nresult.\n`, {\n    date: SLOT.date, instant: SLOT.instant,",
+      "new": "\nresult.\n{tail}`, {\n    tail: '[\\\\s\\\\S]*', date: SLOT.date, instant: SLOT.instant,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "sittingTemplate takes any text after its last line; the D9 withdrawal-appended case should fail"
+    },
+    {
+      "id": "template-provider-v2-tail-free",
+      "file": "packages/polaris-dossier/src/gate-sources.ts",
+      "old": "screening, generation or answer result.\n`, {\n  date: SLOT.date,",
+      "new": "screening, generation or answer result.\n{tail}`, {\n  tail: '[\\\\s\\\\S]*', date: SLOT.date,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "PROVIDER_V2_TEMPLATE takes any text after its last line; the provider-v2 withdrawal-appended case should fail"
+    },
+    {
+      "id": "template-signoff-tail-free",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "stands.\n`, { date: SLOT.date,",
+      "new": "stands.\n{tail}`, { tail: '[\\\\s\\\\S]*', date: SLOT.date,",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "registrySignoffTemplate takes any text after its last line; the sign-off withdrawal-appended case should fail"
+    },
+    {
+      "id": "input-effect-widened-matches-nothing-dossier",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "(\\n## (?:Effect|What this records)\\n\\n)",
+      "new": "(\\n## (?:Effects|What this records)\\n\\n)",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "the effect-widened alteration made a no-op; its applies guard (or the control verdict) should fail in gate-acts.test.ts"
+    },
+    {
+      "id": "input-limits-removed-matches-nothing-dossier",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "\\n## What this (?:act does not authorize|does not do)\\n",
+      "new": "\\n## What this (?:act does not authorise|does not do)\\n",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "the limits-removed alteration made a no-op; its applies guard (or the control verdict) should fail in gate-acts.test.ts"
+    },
+    {
+      "id": "input-selection-replaced-matches-nothing-dossier",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "[/^\\| \"[^\"\\n]*\" \\| \"/m, ",
+      "new": "[/^\\| \"[^\"\\n]*\" \\|\\| \"/m, ",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 133,
+      "note": "the selection-replaced alteration made a no-op; its applies guard (or the control verdict) should fail in gate-acts.test.ts"
+    },
+    {
+      "id": "input-withdrawal-appended-matches-nothing-dossier",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "(text: string) => `${text}\\n## Withdrawal\\n\\nThe owner withdraws this act; it no longer counts.\\n`]",
+      "new": "(text: string) => text]",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 133,
+      "note": "the withdrawal-appended alteration made a no-op; its applies guard (or the control verdict) should fail in gate-acts.test.ts"
+    },
+    {
+      "id": "input-date-field-altered-matches-nothing-dossier",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "'$1 [altered]'",
+      "new": "'$1'",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 133,
+      "note": "the date-field-altered alteration made a no-op; its applies guard (or the control verdict) should fail in gate-acts.test.ts"
+    }
+  ]
+}
