@@ -412,6 +412,7 @@ async function measure(runArg, headlineRevision) {
       'readiness rows are the retained validated verdict bound to the retained packet, read for structured fields only',
     ],
     gate: gateRecord, openRun: openRunOutcome, screens, byDesignFiles: BY_DESIGN, redactedBodiesUnderV4: redactedBodies, revisions, measured: true,
+    scriptChecks: { atCommit: syzygy.commit, selftestFailures: selftest(), rule6: runMutants() },
   };
   const chosen = revisions.find((r) => r.draftRevision === (headlineRevision ?? revisions[revisions.length - 1].draftRevision));
   if (chosen === undefined) throw new Error(`no retained packet for draft revision ${headlineRevision}`);
