@@ -15,7 +15,7 @@ import {
 } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
-import { isLaunchedRun, launchFormRefusal } from './launched.js';
+import { expectedLaunch, launchFormRefusal, launchedMarkerState } from './launched.js';
 import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
 import { reverifyPinnedRevision, type ReverifiedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
@@ -232,7 +232,7 @@ export async function buildInventoryBrief(opened: Extract<OpenedRun, { ok: true 
   if (!doctrine.ok) return { ok: false, stage: 'doctrine', reason: `SEC-3 cannot be quoted as adopted: ${doctrine.reason}` };
   const executionRule = await decideExecutionRule({
     role: 'inventory', runDir: opened.run, runId: opened.runId, pinnedRevision: opened.subject.pinnedRevision.commit,
-    operatorIsOwner: opened.declared.operatorIsOwner, sec3: doctrine.sec3, now, d9: sources.d9, permitting: { enabled: PERMITTING_ARM_ENABLED },
+    operatorIsOwner: opened.declared.operatorIsOwner, sec3: doctrine.sec3, now, d9: sources.d9, launched: () => launchedMarkerState(opened.run), permitting: { enabled: PERMITTING_ARM_ENABLED },
   });
   const text = renderInventoryBrief({
     runDir: opened.run, runId: opened.runId, subject: opened.subject, declared: opened.declared, deadlineEnds: opened.deadlineEnds, session, executionRule,
@@ -433,7 +433,7 @@ export async function inventoryOfRecord(runDir: string, recheck: { readonly sour
   const form = isObj(launch['form']) ? launch['form'] : {};
   const formRefusal = launchFormRefusal(run, form);
   if (formRefusal !== null || launch['role'] !== 'inventory' || launch['session'] !== number || launch['promptSha256'] !== promptSha) {
-    return no(`the launch-form record of inventory session ${number} is not ${isLaunchedRun(run) ? 'a syzygy-launched' : 'a terminal or bang'} launch of that session's prompt`);
+    return no(`the launch-form record of inventory session ${number} is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt`);
   }
   const statement = await recheckSessionStatement(run, `inventory session ${number}`, prompt!, recheck.sources, recheck.now);
   if (!statement.ok) return no(statement.why);

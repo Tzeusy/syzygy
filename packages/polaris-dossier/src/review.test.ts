@@ -477,6 +477,17 @@ describe('review-check', () => {
     }
   });
 
+  it('stops counting a declared launch once the run\'s launched marker is present but unreadable (syzygy-bpyt.8.8)', async () => {
+    const run = await prepared();
+    const dir = await reviewSessionOf(run);
+    writeVerdict(dir, verdict(sha256(expectedPacket(run))));
+    await reviewCheck(run, {}, deps());
+    await launchForm(run, { role: 'review', form: 'terminal' }, { sources: sources(), now: () => LATER });
+    fs.writeFileSync(path.join(run, 'launched.json'), '');
+    // The inventory of record is read first and stops counting too, so the packet the verdict names cannot be rebuilt.
+    expect(await reviewOfRecord(await opened(run), deps())).toEqual({ counts: false, why: 'the packet cannot be rebuilt now: no inventory counts, so no fidelity packet is built: the launch-form record of inventory session 1 is not a countable launch (the run\'s launched marker is present but unreadable, so none counts) of that session\'s prompt' });
+  });
+
   it('refuses before any review session is handed over, and after the deadline', async () => {
     const run = await prepared();
     expect(await reviewCheck(run, {}, deps())).toMatchObject({ ok: false, refusal: { stage: 'session' } });

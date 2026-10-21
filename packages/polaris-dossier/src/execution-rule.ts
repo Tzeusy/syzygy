@@ -1,5 +1,6 @@
 import type { DoctrineSpan, Sec3Text } from './doctrine-quote.js';
 import type { GateState } from './gate-sources.js';
+import type { LaunchedMarkerState } from './launched.js';
 
 /** Which execution rule a brief carries (REQ-polaris-generation-033; design decision 8).
  *
@@ -59,6 +60,9 @@ export interface ExecutionInputs {
   readonly sec3: Sec3Text;
   readonly now: number;
   readonly d9: () => Promise<GateState>;
+  /** Reads the run's launched marker, fail-closed; only `absent`, a run the operator started, can carry the permission. Called only once
+   * the permitting arm is consulted, so a brief the arm cannot reach never opens the marker. */
+  readonly launched: () => LaunchedMarkerState;
   readonly permitting: PermittingArm;
 }
 
@@ -94,6 +98,9 @@ export async function decideExecutionRule(inputs: ExecutionInputs): Promise<Exec
   if (choices === undefined || probe === undefined) return sec3(['the permitting arm is enabled without its choice source or credential probe']);
 
   const reasons: string[] = [];
+  const launched = inputs.launched();
+  if (launched === 'launched') reasons.push('this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started');
+  if (launched === 'unreadable') reasons.push('the run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched');
   const d9 = await inputs.d9();
   if (d9.state !== 'ok') reasons.push(`D9 is not established in force: ${d9.why}`);
   if (inputs.sec3.cost === null) reasons.push(`SEC-3 in ${inputs.sec3.path} carries no cost bullet for the permitted case, so the cost cannot be quoted`);

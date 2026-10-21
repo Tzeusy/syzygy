@@ -1,0 +1,226 @@
+{
+ "subject": [
+  "packages/polaris-dossier/src/brief.ts",
+  "packages/polaris-dossier/src/cli.ts",
+  "packages/polaris-dossier/src/execution-rule.ts",
+  "packages/polaris-dossier/src/inventory.ts",
+  "packages/polaris-dossier/src/launched.ts",
+  "packages/polaris-dossier/src/session-handover.ts"
+ ],
+ "subjectSha256": {
+  "packages/polaris-dossier/src/brief.ts": "2f8207d4ee4bfa7beda4f4c45541fe96b73eb1c7b27fa33c11d80c2294be3b2f",
+  "packages/polaris-dossier/src/cli.ts": "a55dca5f7b4f8fac6a9d274889426e13953ad7e4723f117395a4b8aa77f76a4f",
+  "packages/polaris-dossier/src/execution-rule.ts": "f5881d519c2c3d26199cd86c43e18aa080d0e47a74d4cd8ad9120bd843c8591a",
+  "packages/polaris-dossier/src/inventory.ts": "41f97490f1d405d0afd4df06c052a88a43bb9766fef26e3487348cd197df7f14",
+  "packages/polaris-dossier/src/launched.ts": "4acfbd6fd31a5d1406eb307b74373ba376abd69cb3fe436a1ea46398f3ad6e43",
+  "packages/polaris-dossier/src/session-handover.ts": "b4e7ffd33180f50e29284e24448b09cc6e63dda5b6d0179c87dba25ce10ba1a9"
+ },
+ "bead": "syzygy-bpyt.8.8",
+ "commit": "c03d3e632c5f1d666acda30bb001518f57e8af9c",
+ "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/launched.test.ts packages/polaris-dossier/src/execution-choice.test.ts packages/polaris-dossier/src/brief.test.ts packages/polaris-dossier/src/inventory.test.ts packages/polaris-dossier/src/review.test.ts packages/polaris-dossier/src/session-view.test.ts packages/polaris-dossier/src/execution-rule.test.ts",
+ "mutants": [
+  {
+   "id": "lstat-error-absent",
+   "file": "packages/polaris-dossier/src/launched.ts",
+   "old": "    return (error as NodeJS.ErrnoException).code === 'ENOENT' ? 'absent' : 'unreadable';",
+   "new": "    return 'absent';",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 216 passed (217)",
+   "failedTests": [
+    "launchedMarkerState > is unreadable when the run directory is a file 13ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "parse-failure-absent",
+   "file": "packages/polaris-dossier/src/launched.ts",
+   "old": "  } catch {\n    return 'unreadable';\n  }",
+   "new": "  } catch {\n    return 'absent';\n  }",
+   "exitCode": 1,
+   "testsLine": "Tests  20 failed | 197 passed (217)",
+   "failedTests": [
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 3ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 21ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a directory 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 2ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 4ms",
+    "launch-form > refuses a declared form in a run with a marker that is a directory and writes no record 66ms",
+    "launch-form > refuses a declared form in a run with an empty marker and writes no record 71ms",
+    "launchedMarkerState > is unreadable for a byte-order mark before the marker 1ms",
+    "launchedMarkerState > is unreadable for a dangling symbolic link 1ms",
+    "launchedMarkerState > is unreadable for a directory 1ms",
+    "launchedMarkerState > is unreadable for a file its reader may not read 1ms",
+    "launchedMarkerState > is unreadable for an empty file 9ms",
+    "launchedMarkerState > is unreadable for invalid JSON 1ms",
+    "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 116ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is a directory, as a launched run, and records nothing 3ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 14ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 5ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "foreign-shape-absent",
+   "file": "packages/polaris-dossier/src/launched.ts",
+   "old": "=== LAUNCHED_FORMAT ? 'launched' : 'unreadable';",
+   "new": "=== LAUNCHED_FORMAT ? 'launched' : 'absent';",
+   "exitCode": 1,
+   "testsLine": "Tests  15 failed | 202 passed (217)",
+   "failedTests": [
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 22ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 2ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 2ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 19ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 3ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 3ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 2ms",
+    "launchedMarkerState > is unreadable for JSON null 15ms",
+    "launchedMarkerState > is unreadable for a JSON array 4ms",
+    "launchedMarkerState > is unreadable for a JSON string 3ms",
+    "launchedMarkerState > is unreadable for a format that is not a string 1ms",
+    "launchedMarkerState > is unreadable for another format 2ms",
+    "launchedMarkerState > is unreadable for no format 1ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 13ms",
+    "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 66ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "form-refusal-unreadable-line-off",
+   "file": "packages/polaris-dossier/src/launched.ts",
+   "old": "  if (state === 'unreadable') return 'the run\\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';\n",
+   "new": "",
+   "exitCode": 1,
+   "testsLine": "Tests  14 failed | 203 passed (217)",
+   "failedTests": [
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a directory 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 7ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 1ms",
+    "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 1ms",
+    "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 136ms",
+    "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 63ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "expected-launch-unreadable-as-operator",
+   "file": "packages/polaris-dossier/src/launched.ts",
+   "old": "  return 'a countable launch (the run\\'s launched marker is present but unreadable, so none counts)';",
+   "new": "  return 'a terminal or bang launch';",
+   "exitCode": 1,
+   "testsLine": "Tests  3 failed | 214 passed (217)",
+   "failedTests": [
+    "launch forms in a run whose marker is unreadable > name what a counted record must carry, by marker state 15ms",
+    "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 73ms",
+    "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 41ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "allow-execution-unreadable-admitted",
+   "file": "packages/polaris-dossier/src/cli.ts",
+   "old": "    if (marker === 'unreadable') {",
+   "new": "    if (String(marker) === 'never') {",
+   "exitCode": 1,
+   "testsLine": "Tests  4 failed | 213 passed (217)",
+   "failedTests": [
+    "syzygy dossier allow-execution > refuses a run whose launched marker is a directory, as a launched run, and records nothing 1ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 11ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 1ms",
+    "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 4ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "allow-execution-launched-admitted",
+   "file": "packages/polaris-dossier/src/cli.ts",
+   "old": "    if (marker === 'launched') {",
+   "new": "    if (String(marker) === 'never') {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 216 passed (217)",
+   "failedTests": [
+    "syzygy dossier allow-execution > refuses a launched run and records nothing 10ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "launch-form-unreadable-admitted",
+   "file": "packages/polaris-dossier/src/session-handover.ts",
+   "old": "  if (marker === 'unreadable') return refuse('form',",
+   "new": "  if (String(marker) === 'never') return refuse('form',",
+   "exitCode": 1,
+   "testsLine": "Tests  2 failed | 215 passed (217)",
+   "failedTests": [
+    "launch-form > refuses a declared form in a run with a marker that is a directory and writes no record 22ms",
+    "launch-form > refuses a declared form in a run with an empty marker and writes no record 33ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "rule-launched-reason-off",
+   "file": "packages/polaris-dossier/src/execution-rule.ts",
+   "old": "  if (inputs.launched === 'launched') reasons.push(",
+   "new": "  if (String(inputs.launched) === 'never') reasons.push(",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 216 passed (217)",
+   "failedTests": [
+    "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 16ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "rule-unreadable-reason-off",
+   "file": "packages/polaris-dossier/src/execution-rule.ts",
+   "old": "  if (inputs.launched === 'unreadable') reasons.push(",
+   "new": "  if (String(inputs.launched) === 'never') reasons.push(",
+   "exitCode": 1,
+   "testsLine": "Tests  3 failed | 214 passed (217)",
+   "failedTests": [
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 5ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 5ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 18ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "brief-marker-not-read",
+   "file": "packages/polaris-dossier/src/brief.ts",
+   "old": "launched: launchedMarkerState(run), permitting:",
+   "new": "launched: 'absent', permitting:",
+   "exitCode": 1,
+   "testsLine": "Tests  4 failed | 213 passed (217)",
+   "failedTests": [
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 3ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 3ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 4ms",
+    "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 15ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "inventory-of-record-wording-reverted",
+   "file": "packages/polaris-dossier/src/inventory.ts",
+   "old": "is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt",
+   "new": "is not ${launchedMarkerState(run) === 'launched' ? 'a syzygy-launched launch' : 'a terminal or bang launch'} of that session's prompt",
+   "exitCode": 1,
+   "testsLine": "Tests  2 failed | 215 passed (217)",
+   "failedTests": [
+    "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 76ms",
+    "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 43ms"
+   ],
+   "outcome": "killed"
+  }
+ ],
+ "trackedTreeCleanAfter": true
+}

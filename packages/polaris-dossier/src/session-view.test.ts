@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { authorRule, awaitRule } from './broker.js';
 import { exited } from './child-process.testkit.js';
-import { isLaunchedRun, launchFormRefusal, writeLaunchedMarker } from './launched.js';
+import { launchFormRefusal, launchedMarkerState, writeLaunchedMarker } from './launched.js';
 import { blockingWhy, toolPathsFor } from './polaris.js';
 import { bwrapArgs, viewFor, viewSha256, type ViewRole } from './session-view.js';
 
@@ -100,14 +100,14 @@ describe('launch forms by kind of run', () => {
   afterAll(() => fs.rmSync(run, { recursive: true, force: true }));
 
   it('an operator-started run counts terminal and bang, never syzygy-launched', () => {
-    expect(isLaunchedRun(run)).toBe(false);
+    expect(launchedMarkerState(run)).toBe('absent');
     expect(launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBeNull();
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).not.toBeNull();
   });
 
   it('a launched run counts syzygy-launched, never a declared form', () => {
     writeLaunchedMarker(run, 'run-x', Date.now());
-    expect(isLaunchedRun(run)).toBe(true);
+    expect(launchedMarkerState(run)).toBe('launched');
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBeNull();
     expect(launchFormRefusal(run, { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();
     expect(launchFormRefusal(run, { value: 'syzygy-launched', declaredBy: 'operator', label: 'Inferred' })).not.toBeNull();

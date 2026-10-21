@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -10,6 +11,7 @@ import { readSec3 } from './doctrine-quote.js';
 import { decideExecutionRule, type ExecutionChoice } from './execution-rule.js';
 import { NO_PROVIDER_STATEMENTS, type GateSources, type GateState } from './gate-sources.js';
 import { GitObjectReadRefusal, type PinnedObjectReader } from './git-object-reader.js';
+import { writeLaunchedMarker } from './launched.js';
 import { parseRunConfig, type RunConfig } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 
@@ -161,7 +163,7 @@ describe('brief: issued', () => {
   it('is pure: the same run record, instant and rule render the same bytes', async () => {
     const sec3 = readSec3(REAL_ROOT);
     if (!sec3.ok) throw new Error(sec3.reason);
-    const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, permitting: { enabled: false } });
+    const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, launched: () => 'absent', permitting: { enabled: false } });
     const input = { runId: RUN_ID, subject: SUBJECT, declared: configOf(), issuedAt: NOW, schemaSha256: '0'.repeat(64), executionRule: rule, revisionLabel: '8.10.2' };
     expect(renderBrief(input)).toBe(renderBrief(structuredClone(input)));
   });
@@ -200,6 +202,36 @@ describe('brief: the permitting arm, switched on with fixture ports', () => {
     await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting({ ...CHOICE, runId: `run-${'9'.repeat(32)}` }) });
     expect(JSON.parse(read(run, 'brief.json')).executionRule).toMatchObject({ arm: 'sec-3', notPermittedBecause: [`the execution choice choice-1 names run run-${'9'.repeat(32)}, not ${RUN_ID}`] });
     expect(read(run, 'brief.md')).not.toContain('You may build and run');
+  });
+
+  // syzygy-bpyt.8.8: a choice never permits execution in a run Syzygy launched, nor in one whose marker is present but unreadable.
+  it.each([
+    ['launched', (run: string) => writeLaunchedMarker(run, RUN_ID, NOW), 'this run was launched by `syzygy polaris`, and Syzygy never gives the execution instruction to a session it started'],
+    ['an empty marker', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), ''), 'the run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched'],
+    ['a marker of another format', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), '{"format": "polaris-dossier-launched/2"}'), 'the run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched'],
+    ['a marker that is a directory', (run: string) => fs.mkdirSync(path.join(run, 'launched.json')), 'the run\'s launched marker is present but cannot be read as the one `syzygy polaris` writes, so the run is treated as launched'],
+  ])('a run with %s gives SEC-3\'s rule, whatever choice it holds', async (_name, plant, reason) => {
+    const run = runDirectory();
+    plant(run);
+    await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW, permitting: permitting(CHOICE) });
+    expect(JSON.parse(read(run, 'brief.json')).executionRule).toMatchObject({ arm: 'sec-3', notPermittedBecause: [reason] });
+    expect(read(run, 'brief.md')).not.toContain('You may build and run');
+  });
+});
+
+describe('brief: the permitting arm off, whatever the launched marker', () => {
+  it.each([
+    ['no marker', (_run: string) => undefined],
+    ['the launched marker', (run: string) => writeLaunchedMarker(run, RUN_ID, NOW)],
+    ['an unreadable marker', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), 'null')],
+    // Neither may hang or exhaust issuance: the arm-off brief never opens the marker (R-GP-IMPL-LAUNCHED-MARKER-1 F1).
+    ['a FIFO at the marker', (run: string) => execFileSync('mkfifo', [path.join(run, 'launched.json')])],
+    ['a link to a character device at the marker', (run: string) => fs.symlinkSync('/dev/zero', path.join(run, 'launched.json'))],
+  ])('with %s, carries only the arm-off reason', async (_name, plant) => {
+    const run = runDirectory();
+    plant(run);
+    await issueBrief(run, { sources: sources(), openReader: tree(), now: () => NOW });
+    expect(JSON.parse(read(run, 'brief.json')).executionRule.notPermittedBecause).toEqual(['the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution']);
   });
 });
 
