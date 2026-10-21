@@ -43,7 +43,7 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
   registry: '.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json',
 };
 
-// Test seam: exported for the tests; production code reaches it only inside this file.
+// Parse anchor: scripts/{build_pwb_registry_machine_ceiling_amendment,record_pwb_registry_machine_ceiling_act,install_redis_sitting}.py find PWB_ACT_RECORDS by its `export const` text; keep the keyword.
 // The current act for each authority. Consent is the 2026-09-02 act; the
 // policy and registry acts are the 2026-10-02 behaviour-contract re-pin
 // acts, each superseding its own predecessor (the 2026-09-05 policy
@@ -66,7 +66,7 @@ export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md',
 };
 
-// Test seam: exported for the tests; production code reaches it only inside this file.
+// Parse anchor: scripts/{build_pwb_registry_machine_ceiling_amendment,record_pwb_registry_machine_ceiling_act}.py find PWB_SUPERSEDED_ACT_RECORDS by its `export const` text; keep the keyword.
 export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md',
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md',

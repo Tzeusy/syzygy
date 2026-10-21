@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Rule-6 run for apps/three-surface-poc/src/main.test.ts (and, when present,
-the throwaway old-vs-new differential): each mutant edits main.ts, the named
-test file must FAIL, and main.ts is restored byte-for-byte afterwards.
+the old-vs-new differential): each mutant edits poc-main.ts, the named test
+file must FAIL, and poc-main.ts is restored byte-for-byte afterwards.
 
 Usage: mutate_main.py <worktree> <test-file-relative-to-worktree> <out.json>
 Records, per mutant, the exact old/new fragment, the command, the commit the
-run was made at, and the names of the failing tests.
+run was made at, and every failing test with its first error line (read from
+vitest's JSON reporter, not scraped from text).
 """
 import hashlib
 import json
@@ -16,12 +17,13 @@ import sys
 WT = pathlib.Path(sys.argv[1])
 TEST = sys.argv[2]
 OUT = pathlib.Path(sys.argv[3])
-MAIN = WT / 'apps/three-surface-poc/src/main.ts'
+MUTATED = 'apps/three-surface-poc/src/poc-main.ts'
+MAIN = WT / MUTATED
 original = MAIN.read_text()
 digest = hashlib.sha256(original.encode()).hexdigest()
 commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
-dirty = subprocess.run(['git', 'status', '--porcelain', '--', 'apps/three-surface-poc/src/main.ts'], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
-assert dirty == '', f'main.ts must be committed before a rule-6 run: {dirty}'
+dirty = subprocess.run(['git', 'status', '--porcelain', '--', MUTATED, TEST], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
+assert dirty == '', f'{MUTATED} and {TEST} must be committed before a rule-6 run: {dirty}'
 
 MUTANTS = [
     ('launcher-gate-bypassed',
@@ -52,9 +54,18 @@ MUTANTS = [
     ('sigterm-not-handled', "      io.onSignal('SIGTERM', () => shutdown('SIGTERM'));\n", ""),
     ('model-failure-exit-code', "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 1;", "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 2;"),
     ('observation-error-path-dropped', ".filter((part): part is string => part !== undefined)", ".filter((part): part is string => part !== undefined && part !== cause.artifactPath)"),
+    # Added for the round-1 repair (F2, N2, N5).
+    ('suffix-filter-dropped', ".filter((part): part is string => part !== undefined)", ".filter((part): part is string => true)"),
+    ('console-attached-without-watch', "void session.startConsole(config.watch,", "void session.startConsole(true,"),
+    ('pre-gate-state-directory-write',
+     "  const launch = await launchAfterPwbRepositoryBinding(",
+     "  if (parsed.config.stateDir !== undefined) (await import('node:fs')).mkdirSync(parsed.config.stateDir, { recursive: true });\n  const launch = await launchAfterPwbRepositoryBinding("),
 ]
 
-command = ['npx', 'vitest', 'run', TEST]
+import tempfile
+
+REPORT = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-main-')) / 'report.json'
+command = ['npx', 'vitest', 'run', TEST, '--reporter=json', f'--outputFile={REPORT}']
 results = []
 try:
     for name, old, new in MUTANTS:
@@ -63,20 +74,26 @@ try:
             print(name, results[-1]['outcome'], flush=True)
             continue
         MAIN.write_text(original.replace(old, new, 1))
+        REPORT.unlink(missing_ok=True)
         proc = subprocess.run(command, cwd=WT, capture_output=True, text=True)
-        out = proc.stdout + proc.stderr
-        failed = sorted({line.split(' > ', 1)[-1].strip() for line in out.splitlines() if line.lstrip().startswith(('×', 'FAIL ')) and ' > ' in line})
-        results.append({'id': name, 'old': old, 'new': new, 'exit': proc.returncode, 'outcome': 'killed' if proc.returncode != 0 else 'SURVIVED', 'failingTests': failed})
-        print(name, results[-1]['outcome'], len(failed), flush=True)
+        report = json.loads(REPORT.read_text()) if REPORT.exists() else {'testResults': []}
+        failing = [
+            {'test': a['fullName'], 'firstErrorLine': (a['failureMessages'][0].splitlines() or [''])[0] if a['failureMessages'] else ''}
+            for suite in report['testResults'] for a in suite['assertionResults'] if a['status'] == 'failed'
+        ]
+        total = sum(len(suite['assertionResults']) for suite in report['testResults'])
+        results.append({'id': name, 'old': old, 'new': new, 'exit': proc.returncode, 'outcome': 'killed' if proc.returncode != 0 else 'SURVIVED', 'testsRun': total, 'failing': failing})
+        print(name, results[-1]['outcome'], len(failing), flush=True)
 finally:
     MAIN.write_text(original)
 assert hashlib.sha256(MAIN.read_text().encode()).hexdigest() == digest
 OUT.write_text(json.dumps({
-    'mutatedFile': 'apps/three-surface-poc/src/main.ts',
+    'mutatedFile': MUTATED,
     'testFile': TEST,
     'command': ' '.join(command),
     'ranAtCommit': commit,
-    'mainTsSha256AtCommit': digest,
+    'mutatedFileSha256AtCommit': digest,
+    'testFileSha256AtCommit': hashlib.sha256((WT / TEST).read_bytes()).hexdigest(),
     'mutants': len(MUTANTS),
     'killed': sum(1 for r in results if r['outcome'] == 'killed'),
     'results': results,

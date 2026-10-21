@@ -1,20 +1,20 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, realpathSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import type { DaemonOptions, DaemonStart } from '@syzygy/cap1-daemon';
 import { PocObservationError, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import type { GitObservation } from './git-observation.js';
 import { pocObserverInputsAreClean } from './git-observation.js';
-import { main, type PocIo, type PocMainDeps } from './main.js';
+import { main, type PocIo, type PocMainDeps } from './poc-main.js';
 
-// syzygy-bpyt.5.5: `main(argv, io)` is the entry point; the script that
-// `npm run poc` starts only supplies the real process as `io`. This is the
+// syzygy-bpyt.5.5: `main(argv, io)` is the entry point; `main.ts`, which
+// `npm run poc` starts, only supplies the real process as `io`. This is the
 // one behavior gate: it drives main with fake io and fake collaborators
 // (no repository is read, no socket is opened) and pins what the operator
 // sees, the exit code, and the order in which the gate, the observation and
@@ -90,7 +90,8 @@ interface Harness {
   readonly setObserver: (next: GitObservation) => void;
 }
 
-function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: GitObservation; readiness?: unknown; start?: DaemonStart } = {}): Harness {
+/** `daemonMakesStateDir` has the fake daemon create its state directory the way the real one does, so a test can tell whether the daemon was reached. */
+function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: GitObservation; readiness?: unknown; start?: DaemonStart; daemonMakesStateDir?: boolean } = {}): Harness {
   const calls: string[] = [];
   let daemonOptions: DaemonOptions | undefined;
   let closes = 0;
@@ -120,6 +121,7 @@ function harness(overrides: Partial<PocMainDeps> = {}, options: { observer?: Git
     createDaemon: async (daemonStartOptions) => {
       daemonOptions = daemonStartOptions;
       calls.push('daemon');
+      if (options.daemonMakesStateDir === true) mkdirSync(daemonStartOptions.stateDir, { recursive: true });
       return options.start ?? {
         started: true,
         daemon: {
@@ -174,7 +176,13 @@ describe('main(argv, io): the P1 authority gate', () => {
   it('a rejected binding exits 1 and reaches no observation, model, daemon or state directory', async () => {
     const fake = fakeIo();
     const stateDir = join(scratch, 'never-created-state');
-    const h = harness({ resolveBinding: (locator) => { h.calls.push(`bind ${locator}`); return { kind: 'rejected', reason: 'locator-mismatched' }; } });
+    // The fake daemon refuses to start after creating its state directory, so a
+    // bypassed gate ends the run at once instead of serving, and the directory
+    // shows the daemon was reached.
+    const h = harness(
+      { resolveBinding: (locator) => { h.calls.push(`bind ${locator}`); return { kind: 'rejected', reason: 'locator-mismatched' }; } },
+      { daemonMakesStateDir: true, start: { started: false, failure: { kind: 'duplicate-route', detail: 'unused' } } },
+    );
     expect(await main(['--repo', repoRoot, '--state-dir', stateDir], fake.io, h.deps)).toBe(1);
     expect(fake.err()).toBe('syzygy POC: configured repository authority rejected (locator-mismatched)\n');
     expect(fake.out()).toBe('');
@@ -218,6 +226,20 @@ describe('main(argv, io): startup refusals after the gate', () => {
     const h = harness({ buildProductionPocModel: () => { throw new PocObservationError('required-artifact-missing', 'a/b.md', 'gone'); } });
     expect(await main(['--repo', repoRoot], fake.io, h.deps)).toBe(1);
     expect(fake.err()).toBe('syzygy POC: observation failed (required-artifact-missing): a/b.md: gone\n');
+  });
+
+  it('reports a bare observation error by its kind alone', async () => {
+    const fake = fakeIo();
+    const h = harness({ buildProductionPocModel: () => { throw new PocObservationError('required-artifact-unreadable'); } });
+    expect(await main(['--repo', repoRoot], fake.io, h.deps)).toBe(1);
+    expect(fake.err()).toBe('syzygy POC: observation failed (required-artifact-unreadable)\n');
+  });
+
+  it('reports an observation error with a detail and no artifact path without a placeholder', async () => {
+    const fake = fakeIo();
+    const h = harness({ buildProductionPocModel: () => { throw new PocObservationError('invalid-seed-graph', undefined, 'two roots'); } });
+    expect(await main(['--repo', repoRoot], fake.io, h.deps)).toBe(1);
+    expect(fake.err()).toBe('syzygy POC: observation failed (invalid-seed-graph): two roots\n');
   });
 
   it('reports an unexpected failure by its class only', async () => {
@@ -313,10 +335,9 @@ describe('main(argv, io): serving', () => {
     // The next observer read reports a runtime input changed.
     h.setObserver(observation('observer-rev', ['packages/cap1-daemon/src/server.ts']));
     fake.stdin.write('\n');
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    const added = fake.out().slice(before);
-    expect(added).toContain('Re-observing…\n');
-    expect(added).toContain('Re-observation unavailable: Unknown — POC runtime inputs are dirty; re-observation was refused. The prior complete evaluation remains served.\n');
+    const refusal = 'Re-observation unavailable: Unknown — POC runtime inputs are dirty; re-observation was refused. The prior complete evaluation remains served.\n';
+    await vi.waitFor(() => expect(fake.out().slice(before)).toContain(refusal), { timeout: 5000 });
+    expect(fake.out().slice(before)).toContain('Re-observing…\n');
     fake.signal('SIGINT');
     expect(await run).toBe(0);
   });
@@ -329,8 +350,12 @@ describe('main(argv, io): serving', () => {
     const before = fake.out();
     expect(before).not.toContain('Press Enter');
     fake.stdin.write('\n');
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Nothing is listening to the console, and every fake resolves in the same
+    // turn: a console that acted on Enter would have written by now.
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
     expect(fake.out()).toBe(before);
+    expect(h.calls).toHaveLength(7);
     fake.signal('SIGINT');
     await run;
   });
