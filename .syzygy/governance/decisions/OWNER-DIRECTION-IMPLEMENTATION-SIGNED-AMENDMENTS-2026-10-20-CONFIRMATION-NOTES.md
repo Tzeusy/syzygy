@@ -38,12 +38,42 @@ only, and are never authority.]
   `rev-p108-k7q2m9`, round 2, "Scope verdict: Pass" and "Recommendation
   verdict: Pass".
 
+The item's authorization boundary, as the owner answered over it, copied
+verbatim:
+
+> The owner selected this decision scope: confirmation of the PR #489
+> record's mapping, bounds, readings and chain order as the selected
+> option states. This packet releases no artifact mutation or
+> live/external action; the canonical destination workflow must obtain and
+> enforce every separate authorization it requires. For B or C, the lead
+> first applies the change to the record's body at a new commit and has PR
+> reviewer `rev-pr489-q8m3vt` verify it. The lead then adds the
+> confirmation line naming that commit and the record's SHA-256. In the
+> same commit, the lead moves the `PROJECT-STATUS.md` gate row ("Pending
+> owner confirmation", under "Gates still open") to the closed gates, and
+> merges only after CI is green at that exact head.
+>
+> Explicit exclusions:
+> - M2 slice 5 / `dov.2.2` and item depth `dov.14.4` (both wait for the `dov.19` act);
+> - exact-source render-mode;
+> - any dismissal record home, write or retention change;
+> - the registry-entry-gated `dov.8.4` and `dov.8.5`.
+
+[Observed, marked 2026-10-21 after the owner's answer: the first exclusion's
+parenthesis, "both wait for the `dov.19` act", was true when the owner
+answered. The act was given at 2026-10-21T12:00:00Z, and its B11 in
+`PWB-M2-SLICE-5-IMPLEMENTATION-CONTINUATION-DIRECTION.md` covers item depth's
+relation claims and the opening band's count, with slice 5 landing first. The
+quoted exclusion stays as the owner saw it.]
+
 [Observed, provenance only: after the owner's answer the branch was rebased
-onto a later `main`. The commit that carries the same record bytes on the
-rebased branch is `4d3188e8583664217806cce9dace09ce1f16cbc3`, and the record
-there has the same SHA-256. The commit `8c334f67` is therefore no longer
-reachable from the branch, and a rebase-merge leaves both commits unreachable
-from `main`. The SHA-256 is the stable anchor, as the reviewer's note 4 says
+onto a later `main`, more than once. At the time of writing, the ancestor of this
+branch's head that carries the same record bytes (git blob
+`1f15c0689491ffb9382efdb8309486d0ce6b7ba1`, the record without its
+confirmation line) is `d19af2f813c4ed8400268f3c894df2f430602179`, and the record
+there has the same SHA-256. The commit `8c334f67` is no longer reachable from
+the branch, and a rebase-merge leaves every commit named here unreachable from
+`main`. The SHA-256 is the stable anchor, as the reviewer's note 4 says
 below.]
 
 ## The PR reviewer's round 3
@@ -140,6 +170,30 @@ file named in it.]
   record's own rule still holds: no lane starts until its file is on `main`,
   and item depth starts only if the behaviour the continuation names covers
   its relation claims.
+- **Lines of the confirmed record that are now stale, and what is now
+  true of each.** The record's body is frozen at its confirmed bytes, so the
+  marks live here. Line numbers are those of the record at the head of this
+  pull request; the quoted words find each line.
+  - Lines 206-208, link 3: "its lane is stopped for the owner on two
+    retention questions". The layout question is answered by
+    `POLARIS-RETAINED-EVALUATIONS-CLAIM-STATES-RULING-2026-10-21.md`, so
+    `syzygy-dov.12.1` no longer waits on that owner question. [Inferred] The
+    naming question was the lead's reading, which the ruling discloses and the
+    owner did not rule on. The slot rule is unchanged: link 3 is placed in
+    the chain and starts only when it can.
+  - Line 234, "The other two are open": the plain continuation direction at
+    `.19` was given at 2026-10-21T12:00:00Z and is recorded in
+    `PWB-M2-SLICE-5-IMPLEMENTATION-CONTINUATION-DIRECTION.md`. Whether the
+    third gate, the authorization resolving the five contract-coverage gaps,
+    is also met is that record's to say, not this one's.
+  - Line 270, "which an owner act has not performed": the act has been
+    performed, as just stated.
+  - Line 295, "draft PR #492 at `268f1773`, names neither item depth nor the
+    opening band": true of that draft head when written. The merged record's
+    B11 names item depth's relation claims and the opening band's count.
+  - The sentences that make item depth wait for the act, and keep the band's
+    count arm out until it, are met in their wait on the act. What remains is
+    the wait on slice 5, per B11.
 - **Three further answers were recorded the same day**, in
   `OWNER-DIRECTION-P108-IMPLEMENTATION-2026-10-21.md`,
   `POLARIS-RETAINED-EVALUATIONS-CLAIM-STATES-RULING-2026-10-21.md` and

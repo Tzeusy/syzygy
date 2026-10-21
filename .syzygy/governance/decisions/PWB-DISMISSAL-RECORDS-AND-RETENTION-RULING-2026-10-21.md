@@ -50,6 +50,10 @@ Its "Decision needed":
 > - **Q2:** where dismissal records live and who writes them;
 > - **Q7:** whether keeping a dismissal readable from a retained evaluation is
 >   a retention change.
+>
+> The PR #489 record answers neither question. It builds only the signed
+> no-home arm, and it keeps the retained re-read limb unbuilt until you
+> answer Q7.
 
 The owner selected **A**, whose full option text was:
 
@@ -76,6 +80,15 @@ The item's explicit exclusions, copied verbatim:
 > - records in Syzygy's own tree;
 > - any Butlers read outside `declared-project-shape-text`;
 > - any write without its own act.
+
+The packet's two further labelled statements on this item, copied:
+
+> - **[Inferred]** While no home exists, there are no records, so the retained
+>   re-read limb has nothing to act on live. Q7 matters only once B or C is
+>   chosen, or for building that limb on fixtures.
+> - **[Unknown]** Whether Butlers has a governed-plane directory now. There was
+>   none at the M12 capture: 0 of 278 source paths began `.syzygy`
+>   (`docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md:96`).
 
 ## The ruling
 
