@@ -1,0 +1,245 @@
+{
+ "tool": "sweep_waits.py",
+ "file": "main.test.ts",
+ "treeCommit": "5837512f5be2cba4fa5caa7fd493b457ded744c8",
+ "fileSha256": "55bc26ce4643d35ed8c1f7f5c378f1ca4054953f6a93d726df0ce313c0472e8b",
+ "constants": {},
+ "startedDefaultBoundMs": null,
+ "itBlocks": 18,
+ "viWaitForCalls": 1,
+ "blocksWithAWait": 5,
+ "blocksWithAnExplicitTestTimeout": 0,
+ "blocksWithAWaitAndAnExplicitTestTimeout": 0,
+ "boundedBlocks": 0,
+ "waitingBlocksNotBounded": [
+  {
+   "line": 262,
+   "name": "prints the banner, registers the three route groups, and closes once on the first signal",
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000
+  },
+  {
+   "line": 305,
+   "name": "prints no walkthrough binding while readiness is not evaluated",
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000
+  },
+  {
+   "line": 317,
+   "name": "defaults the state directory to a per-repository directory under the OS temp directory",
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000
+  },
+  {
+   "line": 328,
+   "name": "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000
+  },
+  {
+   "line": 345,
+   "name": "prints no console prompt and ignores Enter without --watch",
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000
+  }
+ ],
+ "blocks": [
+  {
+   "line": 147,
+   "name": "prints the usage on --help and exits 0 without touching a collaborator",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 157,
+   "name": "refuses an unknown argument with the usage on stderr and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 166,
+   "name": "refuses a repository path that cannot be resolved before the gate is consulted",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 176,
+   "name": "a rejected binding exits 1 and reaches no observation, model, daemon or state directory",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 193,
+   "name": "the shipped collaborators reject a directory that is not the registered repository",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 202,
+   "name": "names a dirty observer checkout and starts no daemon",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 210,
+   "name": "names a git failure with its exit status, never its message",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 217,
+   "name": "lets a horizon failure at startup reject, as the script it replaced did",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 224,
+   "name": "reports a model failure by its observation kind and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 231,
+   "name": "reports a bare observation error by its kind alone",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 238,
+   "name": "reports an observation error with a detail and no artifact path without a placeholder",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 245,
+   "name": "reports an unexpected failure by its class only",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 252,
+   "name": "reports a daemon that did not start with its named kind and exits 1",
+   "waits": [],
+   "sumOfWaitBoundsMs": 0,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 262,
+   "name": "prints the banner, registers the three route groups, and closes once on the first signal",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": null,
+     "explicit": false
+    }
+   ],
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 305,
+   "name": "prints no walkthrough binding while readiness is not evaluated",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": null,
+     "explicit": false
+    }
+   ],
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 317,
+   "name": "defaults the state directory to a per-repository directory under the OS temp directory",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": null,
+     "explicit": false
+    }
+   ],
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 328,
+   "name": "attaches the Enter console to io only with --watch, and a dirty re-observation keeps the prior evaluation",
+   "waits": [
+    {
+     "kind": "vi.waitFor",
+     "boundMs": 5000,
+     "explicit": true
+    },
+    {
+     "kind": "started",
+     "boundMs": null,
+     "explicit": false
+    }
+   ],
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  },
+  {
+   "line": 345,
+   "name": "prints no console prompt and ignores Enter without --watch",
+   "waits": [
+    {
+     "kind": "started",
+     "boundMs": null,
+     "explicit": false
+    }
+   ],
+   "sumOfWaitBoundsMs": null,
+   "testTimeoutMs": 5000,
+   "testTimeoutExplicit": false,
+   "bounded": false
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "tool": "mutate_comparators.py",
+ "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+ "controls": {
+  "compare_differentials": {
+   "exit": 0,
+   "firstOutputLine": "{\"scenarios\": 42, \"scenariosWithEqualTranscriptsBaseVersusHead\": 42, \"rawFilesByteEqual\": true, \"nonVacuity\": {\"scenariosByStage\": {\"help\": 2, \"refused\": 23, \"rejected-with-throw\": 1, \"served\": 16}, \"distinctScenarioTranscripts\": 42, \"scenariosWithPostStartActions\": 8, \"oldEqualsNewInEveryScenarioAtHead\": true}}",
+   "holds": true
+  },
+  "compare_route_captures": {
+   "exit": 0,
+   "firstOutputLine": "{\"requestKeys\": 230, \"requestKeysEqualBaseVersusHead\": 230, \"statuses\": {\"200\": 150, \"401\": 40, \"403\": 20, \"502\": 20}, \"nonVacuity\": {\"distinctBodyDigests\": 73, \"requestPathsWhoseBodyDiffersAcrossVariants\": 30, \"requestPathsInAllVariants\": 46}}",
+   "holds": true
+  }
+ },
+ "perturbations": 9,
+ "killed": 9,
+ "results": [
+  {
+   "tool": "compare_differentials",
+   "perturbation": "head transcript of one scenario differs from base",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"scenarios\": 42, \"scenariosWithEqualTranscriptsBaseVersusHead\": 41, \"rawFilesByteEqual\": true, \"nonVacuity\": {\"scenariosByStage\": {\"help\": 2, \"refused\": 23, \"rejected-with-throw\": 1, \"served\": 16}, \"distinctScenarioTranscripts\": 42, \"scenariosWithPostStartActions\": 8, \"oldEqualsNewInEveryScenarioAtHead\": true}}"
+  },
+  {
+   "tool": "compare_differentials",
+   "perturbation": "new main differs from the old script in one scenario (base and head agree)",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"scenarios\": 42, \"scenariosWithEqualTranscriptsBaseVersusHead\": 42, \"rawFilesByteEqual\": true, \"nonVacuity\": {\"scenariosByStage\": {\"help\": 2, \"refused\": 23, \"rejected-with-throw\": 1, \"served\": 16}, \"distinctScenarioTranscripts\": 42, \"scenariosWithPostStartActions\": 8, \"oldEqualsNewInEveryScenarioAtHead\": false}}"
+  },
+  {
+   "tool": "compare_differentials",
+   "perturbation": "one vitest test failed in the head run",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"scenarios\": 42, \"scenariosWithEqualTranscriptsBaseVersusHead\": 42, \"rawFilesByteEqual\": true, \"nonVacuity\": {\"scenariosByStage\": {\"help\": 2, \"refused\": 23, \"rejected-with-throw\": 1, \"served\": 16}, \"distinctScenarioTranscripts\": 42, \"scenariosWithPostStartActions\": 8, \"oldEqualsNewInEveryScenarioAtHead\": true}}"
+  },
+  {
+   "tool": "compare_differentials",
+   "perturbation": "scenario order differs",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "AssertionError: the scenario lists differ"
+  },
+  {
+   "tool": "compare_differentials",
+   "perturbation": "the two runs used different old scripts",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "AssertionError: the two runs used different old scripts"
+  },
+  {
+   "tool": "compare_route_captures",
+   "perturbation": "one head body digest differs",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"requestKeys\": 230, \"requestKeysEqualBaseVersusHead\": 229, \"statuses\": {\"200\": 150, \"401\": 40, \"403\": 20, \"502\": 20}, \"nonVacuity\": {\"distinctBodyDigests\": 73, \"requestPathsWhoseBodyDiffersAcrossVariants\": 30, \"requestPathsInAllVariants\": 46}}"
+  },
+  {
+   "tool": "compare_route_captures",
+   "perturbation": "one head status differs",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"requestKeys\": 230, \"requestKeysEqualBaseVersusHead\": 229, \"statuses\": {\"200\": 150, \"401\": 40, \"403\": 20, \"502\": 20}, \"nonVacuity\": {\"distinctBodyDigests\": 73, \"requestPathsWhoseBodyDiffersAcrossVariants\": 30, \"requestPathsInAllVariants\": 46}}"
+  },
+  {
+   "tool": "compare_route_captures",
+   "perturbation": "one head request key is missing",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"requestKeys\": 230, \"requestKeysEqualBaseVersusHead\": 229, \"statuses\": {\"200\": 150, \"401\": 40, \"403\": 20, \"502\": 20}, \"nonVacuity\": {\"distinctBodyDigests\": 73, \"requestPathsWhoseBodyDiffersAcrossVariants\": 30, \"requestPathsInAllVariants\": 46}}"
+  },
+  {
+   "tool": "compare_route_captures",
+   "perturbation": "the second base run differs from the first",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"requestKeys\": 230, \"requestKeysEqualBaseVersusHead\": 230, \"statuses\": {\"200\": 150, \"401\": 40, \"403\": 20, \"502\": 20}, \"nonVacuity\": {\"distinctBodyDigests\": 73, \"requestPathsWhoseBodyDiffersAcrossVariants\": 30, \"requestPathsInAllVariants\": 46}}"
+  }
+ ]
+}
