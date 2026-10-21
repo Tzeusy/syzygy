@@ -84,6 +84,8 @@ i_last = next(i for i, l in enumerate(view_of) if l.startswith('  return { draft
 view_of[i_last] = replace_once(view_of[i_last], 'notGenerated };', 'notGenerated, quoteFindings: [] };')
 render = ["import { PAGE_SINK_CONTRACT, validateDraftRecord, validateRequestedAssets, type DossierDraft, type GenerationSource, type LocalRenderInput, type OwnerTopic, type PipelineResult, type RequestedAsset } from '@syzygy/polaris-generation-core';",
   "import { DossierRenderError, localView, renderDossierSite, type DossierStop, type DossierView, type RenderedDossier } from './dossier-site.js';", '',
+  '// The `./dossier-render` subpath keeps every name it exported before the renderer moved to `dossier-site.ts`.',
+  "export { DossierRenderError, sourceRoute } from './dossier-site.js';", '',
   '/**', ' * The multi-page dossier (`dossier-site.ts`) from the generation pipeline\'s final output, complete or stopped.', ' *',
   *L(56, 65), ' *',
   ' * An operator-agent run\'s inputs (`local`, syzygy-qkea.10) render here exactly as `renderLocalDossier` renders them. The `syzygy`',
