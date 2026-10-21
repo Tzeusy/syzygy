@@ -1,8 +1,8 @@
 {
  "subject": {
-  "baseCommit": "26ff52ce260e925b191d03ee78b052383328b65c",
-  "codeCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c",
-  "recordedAtHead": "d862fd7efba3601865afda13f15b9330e407364e",
+  "baseCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+  "codeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+  "recordedAtHead": "659522bbd831c765760ead12ca0cc2f1b1ba470f",
   "note": "packages/ and apps/ at the recording head are byte-identical to the code commit when packagesAndAppsDiffSinceCodeCommit is empty"
  },
  "packagesAndAppsDiffSinceCodeCommit": "",
@@ -16,17 +16,17 @@
    "project-shape-extraction.ts:extractRosterIdentity lexer=self-only raw=internal",
    "project-shape-extraction.ts:extractSuccessCriteria lexer=self-only raw=internal"
   ],
-  "selftest": "selftest: 23 of 23 cases hold",
+  "selftest": "selftest: 28 of 28 cases hold",
   "mutants": {
-   "ran": 20,
-   "killed": 20,
+   "ran": 24,
+   "killed": 24,
    "survivors": [],
-   "ranAtCommit": "19eed39bd6db34c67b1bee4c08553c10946c40b9"
+   "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65"
   }
  },
  "consumerSweeps": {
-  "trackedFilesBase": 3024,
-  "trackedFilesCode": 3024,
+  "trackedFilesBase": 3039,
+  "trackedFilesCode": 3039,
   "subjects": 15,
   "methodsAgreeOnEverySubjectToken": true
  },
@@ -108,24 +108,131 @@
    "403": 20,
    "502": 20
   },
+  "claim": "equality between the compared trees only; the digests depend on the fixture repository path and are not a reference for any other run",
+  "fixtureRepository": {
+   "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p503/fixture-repo",
+   "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df"
+  },
+  "reference": {
+   "treeCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+   "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2"
+  },
   "comparisons": [
    {
-    "file": "cap-base-2.json",
-    "fileBytesEqualReference": true,
+    "file": "route-capture-base-run2-2026-10-22.json",
+    "treeCommit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+    "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2",
+    "variantsBytesEqualReference": true,
     "responsesDifferingFromReference": 0
    },
    {
-    "file": "cap-head-final.json",
-    "fileBytesEqualReference": true,
+    "file": "route-capture-head-2026-10-22.json",
+    "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+    "variantsSha256": "e331c79fabc3933cf034e5b2e371842c68f4bd72c29feecec6702b2884a694d2",
+    "variantsBytesEqualReference": true,
     "responsesDifferingFromReference": 0
    }
+  ],
+  "fixtureRevisionRecreated": {
+   "firstPath": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p503/fixture-repo",
+   "firstRevision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+   "secondPath": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-c/p503/fixture-repo-recreated",
+   "secondRevision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+   "equal": true
+  },
+  "comparisonMutants": {
+   "control": true,
+   "ran": 5,
+   "killed": 5,
+   "survivors": [],
+   "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65"
+  },
+  "leakCheck": {
+   "holds": true,
+   "cases": [
+    {
+     "case": "script as committed",
+     "entriesLeftInTheTemporaryDirectory": []
+    },
+    {
+     "case": "mutant: cleanup line removed",
+     "entriesLeftInTheTemporaryDirectory": [
+      "syzygy-poc-surface-fixture-<random>"
+     ]
+    }
+   ],
+   "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65"
+  }
+ },
+ "dispositions": {
+  "selection": {
+   "testOnlyAtBase": 88,
+   "equalToTheDispositionTestOnlySubjects": true,
+   "testOnlyAndSelfZero": 9,
+   "remaining": 6
+  },
+  "gateByteIdenticalToBase": true,
+  "gateRetainedRecords": [
+   "docs/evidence/owner-act-live-records-before-after-2026-10-21.json",
+   "docs/evidence/owner-act-non-human-rule-mutants-2026-10-21.json",
+   "docs/evidence/pwb-mutation-run-2026-10-21-bpyt-6-2-r2.json",
+   "docs/evidence/pwb-mutation-run-2026-10-21-bpyt-6-2.json"
+  ],
+  "evaluatorRetainedRecords": [
+   "docs/evidence/owner-act-live-records-before-after-2026-10-21.json",
+   "docs/evidence/owner-act-non-human-rule-mutants-2026-10-21.json",
+   "docs/evidence/pwb-p4-2-mutation-sweep-2026-10-21-bpyt-6-2-judgment-invalid-cases.json"
   ]
  },
+ "commentOnlyCheck": {
+  "oldCommit": "e81883f3d44d033425280e8b57f338b6acf29bc2",
+  "mergedWith": {
+   "ref": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+   "commit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+   "baselineTree": "6a08cd6f1b851730da8534c23a71d7b3e855d30b"
+  },
+  "treeCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+  "trackedChangesUnderPackagesAndApps": [],
+  "filesChanged": 4,
+  "allIdenticalAfterCommentStrip": true,
+  "retainedExport": {
+   "distPath": "packages/three-surface-poc-core/dist/evidence-population.js",
+   "name": "derivePopulationBlock",
+   "moduleExportsFunction": true,
+   "barrelReexportsSameFunction": true
+  },
+  "files": [
+   "packages/three-surface-poc-core/src/body-read-authority.ts",
+   "packages/three-surface-poc-core/src/evidence-population.ts",
+   "packages/three-surface-poc-core/src/index.ts",
+   "packages/three-surface-poc-core/src/test-cleanup.ts"
+  ],
+  "mutants": {
+   "controls": [
+    true,
+    true
+   ],
+   "ran": 6,
+   "killed": 6,
+   "survivors": [],
+   "ranAtCommit": "47935fec12c629ab1dd82c85f2d60081ca757e65"
+  }
+ },
  "testNames": {
-  "baseLines": 4911,
-  "headLines": 4911,
-  "baseDistinctNames": 4902,
-  "headDistinctNames": 4902,
+  "baseTree": {
+   "commit": "1d6731bb073cb235aa47fa9043c3ce956b9b7ea6",
+   "trackedFilesModified": false,
+   "listSha256": "dd1fd96f7d1c206710297e001081a408a2589711b28b232e67a0af60d5bedbed"
+  },
+  "headTree": {
+   "commit": "47935fec12c629ab1dd82c85f2d60081ca757e65",
+   "trackedFilesModified": false,
+   "listSha256": "9d495eebd5df258f457eacec3a918dbc03a4de4d50ccbb91e2d7ee6873fb85c7"
+  },
+  "baseLines": 4989,
+  "headLines": 4989,
+  "baseDistinctNames": 4980,
+  "headDistinctNames": 4980,
   "added": 0,
   "removed": 0,
   "testsLine": "Tests: +0 ~0 -0"
@@ -134,9 +241,21 @@
   "command": "npx vitest run",
   "lines": [
    "Test Files  229 passed | 3 skipped (232)",
-   "Tests  4904 passed | 5 skipped (4909)"
+   "Tests  4982 passed | 5 skipped (4987)",
+   "exit=0"
   ],
-  "ranAt": "the code commit tree (packages/ and apps/ identical to the recording head)"
+  "ranAt": "the code commit tree (packages/ and apps/ identical to the recording head)",
+  "firstRun": {
+   "lines": [
+    "Test Files  1 failed | 228 passed | 3 skipped (232)",
+    "Tests  1 failed | 4981 passed | 5 skipped (4987)",
+    "exit=1"
+   ],
+   "failures": [
+    "FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant"
+   ],
+   "note": "a 5000 ms timeout in an unrelated package test while other lanes loaded the host; the file passes alone (293 of 293, the failing case in 3.6 s) and the whole suite passed on the re-run above, which is the one recorded"
+  }
  },
  "checkGovernance": {
   "base": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
@@ -148,10 +267,16 @@
  },
  "typecheck": {
   "command": "npm run typecheck",
-  "exit": 0
+  "lines": [
+   "exit=0"
+  ]
  },
  "authoritySweep": {
   "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-  "result": "5 passed"
+  "lines": [
+   "Test Files  1 passed (1)",
+   "Tests  5 passed (5)",
+   "exit=0"
+  ]
  }
 }
