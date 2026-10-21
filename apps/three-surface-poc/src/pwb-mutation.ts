@@ -69,6 +69,7 @@ export function expectedFailuresForPredicate(mutation: PredicateMutation, specif
   return AUTHORITIES.map((authority) => `${authority}:${mutation.caseName} →`);
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 // Wrap the condition of the `if (` on `mutation.line` as `false && (…)`.
 export function applyPredicateMutation(source: string, mutation: PredicateMutation): string {
   const lines = source.split('\n');

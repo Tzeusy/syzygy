@@ -4,6 +4,7 @@ import { closeSync, constants, openSync, readFileSync, readlinkSync, realpathSyn
 import { tmpdir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface PocListener {
   readonly pid: number;
   readonly started: string;
@@ -15,7 +16,7 @@ export class RestartRefusal extends Error {
   constructor(readonly code: string) { super(`POC restart refused: ${code}`); }
 }
 
-export interface RestartOptions {
+interface RestartOptions {
   readonly port: number;
   readonly timeoutMs?: number;
   /** Production requires the built POC main; fixture system tests pass their
@@ -35,10 +36,11 @@ function fingerprint(listener: PocListener): string {
   return JSON.stringify([listener.pid, listener.started, listener.cwd, listener.argv]);
 }
 
-export function sameListener(first: PocListener, second: PocListener): boolean {
+function sameListener(first: PocListener, second: PocListener): boolean {
   return fingerprint(first) === fingerprint(second);
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function listenerPidFromSs(output: string, port: number): number | null {
   const rows = output.split('\n').filter(line => line.includes(`127.0.0.1:${port}`));
   if (rows.length === 0) return null;
@@ -48,6 +50,7 @@ export function listenerPidFromSs(output: string, port: number): number | null {
   return pids[0] as number;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** `ss` supplies the socket's process owner; /proc binds it to a process
  * generation and command. A missing owner or multiple owners fails closed. */
 export function inspectPocPort(port: number): PocListener | null {

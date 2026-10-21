@@ -31,32 +31,32 @@ import {
   type ProposedWorkCurrentAuthority,
 } from '@syzygy/three-surface-poc-core';
 
-export const DEEP_DIVE_BANDS = ['argument', 'contract', 'reality'] as const;
+const DEEP_DIVE_BANDS = ['argument', 'contract', 'reality'] as const;
 export type DeepDiveBand = (typeof DEEP_DIVE_BANDS)[number];
 
 /** The three authority classes, one per band, closed (RFC7-17). */
-export const BAND_AUTHORITY_CLASS = {
+const BAND_AUTHORITY_CLASS = {
   argument: 'authored-non-normative',
   contract: 'referenced-verbatim',
   reality: 'kernel-computed',
 } as const;
-export type BandAuthorityClass = (typeof BAND_AUTHORITY_CLASS)[DeepDiveBand];
+type BandAuthorityClass = (typeof BAND_AUTHORITY_CLASS)[DeepDiveBand];
 
 /** The one mode this change renders. The proposed-scenario mode (RFC7-26,
  * RFC6-24) needs a selection context and is outside PWB; its absence is
  * disclosed on the page, not defaulted into. */
-export const READING_MODES = ['Base'] as const;
-export type ReadingMode = (typeof READING_MODES)[number];
+const READING_MODES = ['Base'] as const;
+type ReadingMode = (typeof READING_MODES)[number];
 export const DEFAULT_READING_MODE: ReadingMode = 'Base';
 
 type UnknownReason = keyof typeof UNKNOWN_REASON_ROUTES;
 
-export type CapabilityAdoption =
+type CapabilityAdoption =
   | { readonly kind: 'adopted'; readonly basis: string }
   | { readonly kind: 'draft'; readonly basis: string }
   | { readonly kind: 'unknown'; readonly reason: UnknownReason; readonly route: string; readonly detail: string };
 
-export interface ExclusivityGroup {
+interface ExclusivityGroup {
   readonly group: string;
   readonly changeIds: readonly string[];
 }
@@ -80,7 +80,7 @@ export interface CapabilityDeepDive {
 /** Whether a capability is adopted is read from the observed tree: an
  * adopted capability has its baseline spec among the shape's baseline-spec
  * population; a draft has none and is declared only by proposals. */
-export function deriveAdoption(currentIntent: ProposedWorkCurrentAuthority): CapabilityAdoption {
+function deriveAdoption(currentIntent: ProposedWorkCurrentAuthority): CapabilityAdoption {
   if (currentIntent.kind === 'baseline-spec') {
     return { kind: 'adopted', basis: currentIntent.path };
   }
@@ -133,6 +133,7 @@ export function exclusiveWith(dive: Pick<CapabilityDeepDive, 'exclusivity'>, cha
 // Verbatim resolution: bytes reach the page only from a render-time reader,
 // only when they hash to the leaf's captured identity, and are never stored.
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface VerbatimLeaf {
   readonly path: string;
   readonly revision: string;
@@ -152,7 +153,7 @@ export interface VerbatimRefusal {
 export type VerbatimLeafReader = (leaf: VerbatimLeaf) => Uint8Array | VerbatimRefusal | undefined;
 
 /** One `### Requirement:` block of a baseline spec, with its scenarios. */
-export interface VerbatimRequirement {
+interface VerbatimRequirement {
   readonly title: string;
   readonly text: string;
 }
@@ -171,6 +172,7 @@ function isRefusal(value: Uint8Array | VerbatimRefusal | undefined): value is Ve
   return value !== undefined && !(value instanceof Uint8Array) && typeof (value as VerbatimRefusal).refused === 'string';
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /**
  * PWB-REQ-011 (as amended 2026-09-05): Polaris may transiently encode only the
  * selected requirement and its scenarios, verbatim — never the rest of the
@@ -272,7 +274,7 @@ export function currentIntentLeaf(currentIntent: ProposedWorkCurrentAuthority, r
 // ---------------------------------------------------------------------------
 // Block ledger and machine form.
 
-export interface DeepDiveBlock {
+interface DeepDiveBlock {
   readonly band: DeepDiveBand;
   readonly blockId: string;
 }

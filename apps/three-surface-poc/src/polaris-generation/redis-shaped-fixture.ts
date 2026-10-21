@@ -137,10 +137,10 @@ function designProse(path: string, chars: number): string {
 }
 
 /** The core files whose overview comment is long when the fixture is asked for design prose. */
-export const OVERVIEW_FILES: readonly string[] = ['src/ae.c', 'src/server.c', 'src/rdb.c', 'src/aof.c', 'src/replication.c', 'src/networking.c', 'src/t_zset.c'];
+const OVERVIEW_FILES: readonly string[] = ['src/ae.c', 'src/server.c', 'src/rdb.c', 'src/aof.c', 'src/replication.c', 'src/networking.c', 'src/t_zset.c'];
 export const DESIGN_DOCS: readonly string[] = ['ARCHITECTURE.md', 'docs/DESIGN.md', 'docs/internals/replication.md', 'docs/internals/persistence.md', 'docs/internals/event-loop.md'];
 
-export interface RedisShapedOptions {
+interface RedisShapedOptions {
   /** Adds design documents and gives the core files a long overview comment, the shape of a project that explains itself. Absent or false: the fixture the earlier measurements pin. */
   readonly designProse?: boolean;
 }

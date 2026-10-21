@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 import type { AdmissionDecision, AttemptInput, AttemptOutcome, DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 /** A private durable lifecycle adapter. Files are outside a governed tree; this
  * module installs no network client or provider: the caller injects `generate`,
  * and the claim, reservation, reuse and uncertainty rules around it are the
@@ -30,7 +31,7 @@ export interface DurableLifecycleOptions {
 }
 
 /** The synthetic-only configuration of the lifecycle: a scripted generate port. */
-export interface ScriptedLifecycleOptions extends Omit<DurableLifecycleOptions, 'generate' | 'permitted' | 'maxAttemptUsageUnits' | 'maxAttemptOutputBytes'> {
+interface ScriptedLifecycleOptions extends Omit<DurableLifecycleOptions, 'generate' | 'permitted' | 'maxAttemptUsageUnits' | 'maxAttemptOutputBytes'> {
   readonly maxAttemptUsageUnits?: number;
   readonly maxAttemptOutputBytes?: number;
   readonly permitted: () => Promise<boolean>;
@@ -63,6 +64,7 @@ function replaceAtomic(path: string, value: unknown): void {
   finally { if (existsSync(temporary)) unlinkSync(temporary); }
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The persistent file is the dispatch claim. A crash after claim leaves a
  * reserved record, which refuses replay even if a lease or receipt is lost. */
 export function createDurableLifecycle(options: DurableLifecycleOptions): PipelinePorts {

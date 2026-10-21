@@ -9,6 +9,7 @@
 
 import { isolatedGit } from './polaris-generation/isolated-git.js';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export type GitBlobBatch = ReadonlyMap<string, Uint8Array | Error>;
 export type ReadGitBlobs = (repoRoot: string, objects: readonly string[]) => GitBlobBatch;
 
@@ -26,6 +27,7 @@ export function readGitBlobsBatch(repoRoot: string, objects: readonly string[]):
   return parseGitCatFileBatch(unique, new Uint8Array(output.buffer, output.byteOffset, output.byteLength));
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Parses `git cat-file --batch` output for `objects`, requested in this order. */
 export function parseGitCatFileBatch(objects: readonly string[], output: Uint8Array): GitBlobBatch {
   const decoder = new TextDecoder('utf-8', { fatal: true });

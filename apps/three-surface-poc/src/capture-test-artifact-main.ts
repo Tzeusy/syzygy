@@ -32,6 +32,7 @@ the printed test command unless the owner has recorded a SEC-3 choice for
 that run.
 `;
 
+// Test seam: the entry script is the only production caller; exported so a test can drive it.
 export interface CaptureCliIo {
   readonly stdout: (text: string) => void;
   readonly stderr: (text: string) => void;
@@ -49,6 +50,7 @@ function resolveCommitWithGit(repoRoot: string): string {
   return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' }).trim();
 }
 
+// Test seam: the entry script is the only production caller; exported so a test can drive it.
 export const REAL_IO: CaptureCliIo = {
   stdout: (text) => process.stdout.write(text),
   stderr: (text) => process.stderr.write(text),
@@ -81,6 +83,7 @@ const REQUIRED: ReadonlyMap<string, readonly string[]> = new Map<string, readonl
   ['ingest', [...COMMON, '--commit', '--exit-code']],
 ]);
 
+// Test seam: the entry script is the only production caller; exported so a test can drive it.
 /** Returns the process exit code. */
 export function runCaptureTestArtifactCli(argv: readonly string[], io: CaptureCliIo): number {
   if (argv.includes('--help') || argv.includes('-h')) {

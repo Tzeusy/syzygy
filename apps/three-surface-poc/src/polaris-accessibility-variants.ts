@@ -12,6 +12,7 @@ import { buildFixtureModel } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface AccessibilityVariant {
   readonly id: string;
   readonly shape: 'not-evaluated' | 'not-admitted' | 'observation-failed' | 'observed' | 'observed-degraded';
@@ -34,6 +35,7 @@ function blobObjectId(text: string): string {
   return createHash('sha1').update(`blob ${body.byteLength}\0`).update(body).digest('hex');
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The model one variant renders (also served whole by the PWB-REQ-016
  * names-and-headings sweep). */
 export function variantModel(variant: AccessibilityVariant, cleanups: string[]): PocModel {
@@ -67,7 +69,7 @@ export function variantModel(variant: AccessibilityVariant, cleanups: string[]):
   }
 }
 
-export interface RenderedVariant {
+interface RenderedVariant {
   readonly html: string;
   /** In-page ids a keyboard reader must be able to reach through a link. */
   readonly expectedTargets: readonly string[];

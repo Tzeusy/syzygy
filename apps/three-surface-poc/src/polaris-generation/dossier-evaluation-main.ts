@@ -12,7 +12,7 @@ const MAX_PAGE_BYTES = 8_000_000;
 const SOURCES_LIMITS = { maxBytes: 64_000_000, maxNodes: 2_000_000, maxDepth: 16 } as const;
 const ANSWERS_LIMITS = { maxBytes: 4_000_000, maxNodes: 200_000, maxDepth: 16 } as const;
 
-export interface DossierEvaluationArgs {
+interface DossierEvaluationArgs {
   readonly dossier: string;
   readonly sources: string;
   readonly questions: string;
@@ -35,6 +35,7 @@ async function readContained(root: string, relative: string): Promise<Uint8Array
   return bytes;
 }
 
+// Test seam: the entry script is the only production caller; exported so a test can drive it.
 export async function evaluateDossierDirectory(args: DossierEvaluationArgs, signal: AbortSignal) {
   const root = await realpath(resolve(args.dossier));
   const manifestText = new TextDecoder('utf-8', { fatal: true }).decode(await readContained(root, 'dossier.json'));

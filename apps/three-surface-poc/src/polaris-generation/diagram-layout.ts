@@ -16,25 +16,26 @@ import type { EpistemicMarking } from '@syzygy/polaris-generation-core';
  *   than the last.
  */
 
-export const NODE_WIDTH = 200;
-export const NODE_HEIGHT = 56;
+const NODE_WIDTH = 200;
+const NODE_HEIGHT = 56;
 const GAP_X = 120;
 const GAP_Y = 40;
 const MARGIN = 24;
 const BACK_EDGE_DROP = 40;
 const BACK_EDGE_STEP = 30;
 
-export interface LayoutNodeInput { readonly id: string }
-export interface LayoutEdgeInput { readonly id: string; readonly from: string; readonly to: string }
-export interface LaidOutNode { readonly id: string; readonly layer: number; readonly row: number; readonly x: number; readonly y: number }
-export interface LaidOutEdge {
+interface LayoutNodeInput { readonly id: string }
+interface LayoutEdgeInput { readonly id: string; readonly from: string; readonly to: string }
+interface LaidOutNode { readonly id: string; readonly layer: number; readonly row: number; readonly x: number; readonly y: number }
+interface LaidOutEdge {
   readonly id: string; readonly from: string; readonly to: string; readonly back: boolean;
   readonly d: string; readonly labelX: number; readonly labelY: number;
 }
-export interface DiagramLayout { readonly width: number; readonly height: number; readonly nodes: readonly LaidOutNode[]; readonly edges: readonly LaidOutEdge[] }
+interface DiagramLayout { readonly width: number; readonly height: number; readonly nodes: readonly LaidOutNode[]; readonly edges: readonly LaidOutEdge[] }
 
 const num = (value: number): string => String(Math.round(value * 10) / 10);
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function layoutDiagram(nodes: readonly LayoutNodeInput[], edges: readonly LayoutEdgeInput[]): DiagramLayout {
   if (nodes.length === 0) throw new Error('empty-diagram');
   const index = new Map<string, number>();
@@ -131,6 +132,7 @@ export function layoutDiagram(nodes: readonly LayoutNodeInput[], edges: readonly
   };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Greedy word wrap; words longer than a line are split; overflow ends in `…`. */
 export function wrapLabel(text: string, maxChars: number, maxLines: number): string[] {
   const words = text.replace(/\s+/gu, ' ').trim().split(' ').flatMap(word => {
@@ -152,8 +154,8 @@ export function wrapLabel(text: string, maxChars: number, maxLines: number): str
   return kept;
 }
 
-export interface RenderableNode extends LayoutNodeInput { readonly label: string; readonly epistemic: EpistemicMarking }
-export interface RenderableEdge extends LayoutEdgeInput { readonly label: string; readonly epistemic: EpistemicMarking }
+interface RenderableNode extends LayoutNodeInput { readonly label: string; readonly epistemic: EpistemicMarking }
+interface RenderableEdge extends LayoutEdgeInput { readonly label: string; readonly epistemic: EpistemicMarking }
 
 /**
  * Renders a laid-out diagram as static SVG. Every piece of text passes through

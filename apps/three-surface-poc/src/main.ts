@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import type { Readable, Writable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
@@ -9,7 +11,7 @@ import {
   type PocModel,
 } from '@syzygy/three-surface-poc-core';
 
-import { parsePocCli } from './cli.js';
+import { parsePocCli, type PocCliConfig } from './cli.js';
 import {
   observeGitHorizon,
   observeGitRepository,
@@ -53,169 +55,218 @@ Options:
   --help              print this usage and exit
 `;
 
-const parsed = parsePocCli(process.argv.slice(2));
-if (parsed.kind === 'help') {
-  process.stdout.write(USAGE);
-} else if (parsed.kind === 'invalid') {
-  process.stderr.write(`syzygy POC: ${parsed.detail}\n\n${USAGE}`);
-  process.exitCode = 1;
-} else {
+// Test seam: exported type the tests name; production code uses it only inside this file.
+/** The process surface `main` touches, so a test can drive it with fakes.
+ * The composition root below is the one place that reads the real process
+ * and the real clock. Exported as a test seam: the tests build fakes of it. */
+export interface PocIo {
+  readonly stdout: Writable;
+  readonly stderr: Writable;
+  readonly stdin: Readable;
+  readonly cwd: () => string;
+  /** The observation instant, ISO 8601. */
+  readonly now: () => string;
+  readonly onSignal: (signal: 'SIGINT' | 'SIGTERM', listener: () => void) => void;
+}
+
+// Test seam: exported type the tests name; production code uses it only inside this file.
+/** The effectful collaborators `main` composes; defaults are the real ones.
+ * Exported as a test seam: the tests inject fakes so no repository is read
+ * and no socket is opened. */
+export interface PocMainDeps {
+  readonly resolveBinding: typeof resolvePwbRepositoryBinding;
+  readonly observeGitRepository: typeof observeGitRepository;
+  readonly observeGitHorizon: typeof observeGitHorizon;
+  readonly observeRevisionChange: typeof observeRevisionChange;
+  readonly observeObservatoryDrift: typeof observeObservatoryDrift;
+  readonly pocObserverInputsAreClean: typeof pocObserverInputsAreClean;
+  readonly buildProductionPocModel: typeof buildProductionPocModel;
+  readonly createDaemon: typeof createDaemon;
+}
+
+const REAL_DEPS: PocMainDeps = {
+  resolveBinding: resolvePwbRepositoryBinding,
+  observeGitRepository,
+  observeGitHorizon,
+  observeRevisionChange,
+  observeObservatoryDrift,
+  pocObserverInputsAreClean,
+  buildProductionPocModel,
+  createDaemon,
+};
+
+/** Runs the POC and resolves to the process exit code. A binding the P1
+ * authority gate rejects never reaches repository observation: the serving
+ * continuation is only ever called by `launchAfterPwbRepositoryBinding`.
+ * Exported as a test seam: the entry guard below is the one production
+ * caller, and the tests drive it with a fake `PocIo`. */
+export async function main(argv: readonly string[], io: PocIo, deps: PocMainDeps = REAL_DEPS): Promise<number> {
+  const parsed = parsePocCli(argv);
+  if (parsed.kind === 'help') {
+    io.stdout.write(USAGE);
+    return 0;
+  }
+  if (parsed.kind === 'invalid') {
+    io.stderr.write(`syzygy POC: ${parsed.detail}\n\n${USAGE}`);
+    return 1;
+  }
   let repoRoot: string;
   try {
     repoRoot = realpathSync(resolve(parsed.config.repoRoot));
   } catch {
-    process.stderr.write('syzygy POC: configured repository is not readable\n');
-    process.exitCode = 1;
-    repoRoot = '';
+    io.stderr.write('syzygy POC: configured repository is not readable\n');
+    return 1;
   }
+  const launch = await launchAfterPwbRepositoryBinding(
+    repoRoot,
+    deps.resolveBinding,
+    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),
+  );
+  if (launch.kind === 'rejected') {
+    io.stderr.write(`syzygy POC: configured repository authority rejected (${launch.reason})\n`);
+    return 1;
+  }
+  return launch.result;
+}
 
-  if (repoRoot !== '') {
-    const launch = await launchAfterPwbRepositoryBinding(
-      repoRoot,
-      resolvePwbRepositoryBinding,
-      async (boundRepoRoot) => {
-        repoRoot = boundRepoRoot;
-        let repositoryRevision: string;
-        let observerRevision: string;
-        let workingTreeDigest: string;
-        let repositoryCommitterInstant: string;
-        try {
-          const repository = observeGitRepository(repoRoot);
-          const observer = observeGitRepository(process.cwd());
-          if (!pocObserverInputsAreClean(observer)) {
-            throw new Error('observer-checkout-dirty');
-          }
-          repositoryRevision = repository.revision;
-          repositoryCommitterInstant = repository.committerInstant;
-          observerRevision = observer.revision;
-          workingTreeDigest = repository.worktreeMetadataDigest;
-        } catch (cause) {
-          process.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\n`);
-          process.exitCode = 1;
-          repositoryRevision = '';
-          observerRevision = '';
-          workingTreeDigest = '';
-          repositoryCommitterInstant = '';
-        }
+async function serveBoundRepository(repoRoot: string, config: PocCliConfig, io: PocIo, deps: PocMainDeps): Promise<number> {
+  const observeCheckouts = (dirtyRefusal: string) => {
+    const repository = deps.observeGitRepository(repoRoot);
+    const observer = deps.observeGitRepository(io.cwd());
+    if (!deps.pocObserverInputsAreClean(observer)) throw new Error(dirtyRefusal);
+    return { repository, observer };
+  };
+  // The horizon read and the clock read sit outside the checkout try below,
+  // as they did when this was written twice: only a checkout failure is
+  // reported as a named startup refusal.
+  const observeCapture = ({ repository, observer }: ReturnType<typeof observeCheckouts>): PocRuntimeCapture => {
+    const horizon = deps.observeGitHorizon(repoRoot, repository.revision);
+    return {
+      repositoryRevision: repository.revision,
+      observerRevision: observer.revision,
+      workingTreeDigest: repository.worktreeMetadataDigest,
+      evidence: buildPocEvaluationEvidence(io.now(), repository.revision, repository.committerInstant, horizon),
+    };
+  };
 
-        if (repositoryRevision !== '' && observerRevision !== '') {
-          const horizon = observeGitHorizon(repoRoot, repositoryRevision);
-          const capture: PocRuntimeCapture = {
-            repositoryRevision,
-            observerRevision,
-            workingTreeDigest,
-            evidence: buildPocEvaluationEvidence(new Date().toISOString(), repositoryRevision, repositoryCommitterInstant, horizon),
-          };
-          const defaultStateDir = join(
-            tmpdir(),
-            'syzygy-three-surface-poc',
-            createHash('sha256').update(repoRoot).digest('hex').slice(0, 16),
-          );
-          const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
+  let observed: ReturnType<typeof observeCheckouts>;
+  try {
+    observed = observeCheckouts('observer-checkout-dirty');
+  } catch (cause) {
+    io.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\n`);
+    return 1;
+  }
+  const capture = observeCapture(observed);
+  const stateDir = resolve(config.stateDir ?? join(
+    tmpdir(),
+    'syzygy-three-surface-poc',
+    createHash('sha256').update(repoRoot).digest('hex').slice(0, 16),
+  ));
+  const buildModel = (currentCapture: PocRuntimeCapture): PocModel => deps.buildProductionPocModel({
+    capture: currentCapture,
+    repoRoot,
+    stateDir,
+    observerRoot: io.cwd(),
+  });
 
-          const buildModel = (currentCapture: PocRuntimeCapture): PocModel => buildProductionPocModel({
-            capture: currentCapture,
-            repoRoot,
-            stateDir,
-            observerRoot: process.cwd(),
-          });
-
-          try {
-            const servedResponses = new ServedResponseRecorder();
-            let credentialProvision: 'minted' | 'reused' | undefined;
-            // syzygy-u05.2: every evaluation is a named re-evaluation result
-            // carrying the identity it supersedes, the three clocks and the
-            // two staleness limbs. The observatory limb counts Syzygy commits
-            // since the revision this daemon was started from.
-            const buildRevision = observerRevision;
-            const session = createReobserveSession({
-              capture,
-              build: buildModel,
-              observe: async () => {
-                const nextRepository = observeGitRepository(repoRoot);
-                const nextObserver = observeGitRepository(process.cwd());
-                if (!pocObserverInputsAreClean(nextObserver)) throw new Error('POC runtime inputs are dirty; re-observation was refused');
-                const nextHorizon = observeGitHorizon(repoRoot, nextRepository.revision);
-                const asOf = new Date().toISOString();
-                return {
-                  repositoryRevision: nextRepository.revision,
-                  observerRevision: nextObserver.revision,
-                  workingTreeDigest: nextRepository.worktreeMetadataDigest,
-                  evidence: buildPocEvaluationEvidence(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
-                };
-              },
-              observeHorizon: (pinned) => observeGitHorizon(repoRoot, pinned),
-              observeRevisionChange: (from, to) => observeRevisionChange(repoRoot, from, to),
-              observeObservatory: () => observeObservatoryDrift(process.cwd(), buildRevision),
-              now: () => new Date().toISOString(),
-            });
-            const start = await createDaemon({
-              stateDir,
-              port: parsed.config.port,
-              routes: [
-                // PWB-REQ-011 (amended): Polaris's transient exact-requirement
-                // route — the observed shape's own admitted baseline-spec object,
-                // read at render and never stored.
-                ...pocRoutes(session.model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, session.latest),
-                ...materializeRoutes({
-                  getModel: session.model,
-                  targetRepoRoot: repoRoot,
-                  stateDir: () => stateDir,
-                  onMaterialized: session.afterMaterialized,
-                }),
-                ...reobserveRoutes({ reobserve: session.reobserve }),
-              ],
-            });
-            if (!start.started) {
-              process.stderr.write(`syzygy POC: daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})\n`);
-              process.exitCode = 1;
-            } else {
-              const daemon = start.daemon;
-              credentialProvision = daemon.credentialProvision;
-              process.stdout.write(
-                [
-                  `Syzygy Three-Surface POC: http://${daemon.host}:${daemon.port}/`,
-                  `Observed repository: ${repoRoot}`,
-                  `Observed revision: ${repositoryRevision}`,
-                  ...walkthroughBindingLines(session.model()),
-                  `Machine endpoint: http://${daemon.host}:${daemon.port}/api/poc`,
-                  `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,
-                  'Credential value is never printed. POC is local, experimental, and non-release.',
-                  '',
-                ].join('\n'),
-              );
-              void session.startConsole(parsed.config.watch, { input: process.stdin, output: process.stdout });
-
-              await new Promise<void>((resolveShutdown) => {
-                let closing = false;
-                const shutdown = (signal: string): void => {
-                  if (closing) return;
-                  closing = true;
-                  process.stdout.write(`syzygy POC: ${signal} received, shutting down\n`);
-                  void daemon.close().then(resolveShutdown, () => resolveShutdown());
-                };
-                process.on('SIGINT', () => shutdown('SIGINT'));
-                process.on('SIGTERM', () => shutdown('SIGTERM'));
-              });
-            }
-          } catch (cause) {
-            if (cause instanceof PocObservationError) {
-              const suffix = [cause.artifactPath, cause.detail]
-                .filter((part): part is string => part !== undefined)
-                .map((part) => `: ${part}`)
-                .join('');
-              process.stderr.write(`syzygy POC: observation failed (${cause.kind})${suffix}\n`);
-            } else {
-              process.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\n`);
-            }
-            process.exitCode = 1;
-          }
-        }
-      },
-    );
-    if (launch.kind === 'rejected') {
-      process.stderr.write(`syzygy POC: configured repository authority rejected (${launch.reason})\n`);
-      process.exitCode = 1;
+  try {
+    const servedResponses = new ServedResponseRecorder();
+    let credentialProvision: 'minted' | 'reused' | undefined;
+    // syzygy-u05.2: every evaluation is a named re-evaluation result
+    // carrying the identity it supersedes, the three clocks and the
+    // two staleness limbs. The observatory limb counts Syzygy commits
+    // since the revision this daemon was started from.
+    const buildRevision = capture.observerRevision;
+    const session = createReobserveSession({
+      capture,
+      build: buildModel,
+      observe: async () => observeCapture(observeCheckouts('POC runtime inputs are dirty; re-observation was refused')),
+      observeHorizon: (pinned) => deps.observeGitHorizon(repoRoot, pinned),
+      observeRevisionChange: (from, to) => deps.observeRevisionChange(repoRoot, from, to),
+      observeObservatory: () => deps.observeObservatoryDrift(io.cwd(), buildRevision),
+      now: io.now,
+    });
+    const start = await deps.createDaemon({
+      stateDir,
+      port: config.port,
+      routes: [
+        // PWB-REQ-011 (amended): Polaris's transient exact-requirement
+        // route — the observed shape's own admitted baseline-spec object,
+        // read at render and never stored.
+        ...pocRoutes(session.model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, session.latest),
+        ...materializeRoutes({
+          getModel: session.model,
+          targetRepoRoot: repoRoot,
+          stateDir: () => stateDir,
+          onMaterialized: session.afterMaterialized,
+        }),
+        ...reobserveRoutes({ reobserve: session.reobserve }),
+      ],
+    });
+    if (!start.started) {
+      io.stderr.write(`syzygy POC: daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})\n`);
+      return 1;
     }
+    const daemon = start.daemon;
+    credentialProvision = daemon.credentialProvision;
+    io.stdout.write(
+      [
+        `Syzygy Three-Surface POC: http://${daemon.host}:${daemon.port}/`,
+        `Observed repository: ${repoRoot}`,
+        `Observed revision: ${capture.repositoryRevision}`,
+        ...walkthroughBindingLines(session.model()),
+        `Machine endpoint: http://${daemon.host}:${daemon.port}/api/poc`,
+        `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,
+        'Credential value is never printed. POC is local, experimental, and non-release.',
+        '',
+      ].join('\n'),
+    );
+    void session.startConsole(config.watch, { input: io.stdin, output: io.stdout });
+
+    await new Promise<void>((resolveShutdown) => {
+      let closing = false;
+      const shutdown = (signal: 'SIGINT' | 'SIGTERM'): void => {
+        if (closing) return;
+        closing = true;
+        io.stdout.write(`syzygy POC: ${signal} received, shutting down\n`);
+        void daemon.close().then(resolveShutdown, () => resolveShutdown());
+      };
+      io.onSignal('SIGINT', () => shutdown('SIGINT'));
+      io.onSignal('SIGTERM', () => shutdown('SIGTERM'));
+    });
+    return 0;
+  } catch (cause) {
+    if (cause instanceof PocObservationError) {
+      const suffix = [cause.artifactPath, cause.detail]
+        .filter((part): part is string => part !== undefined)
+        .map((part) => `: ${part}`)
+        .join('');
+      io.stderr.write(`syzygy POC: observation failed (${cause.kind})${suffix}\n`);
+    } else {
+      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\n`);
+    }
+    return 1;
   }
+}
+
+/** True when this module is the process's entry script rather than imported. */
+function isEntryScript(): boolean {
+  const script = process.argv[1];
+  if (script === undefined) return false;
+  try {
+    return realpathSync(script) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isEntryScript()) {
+  process.exitCode = await main(process.argv.slice(2), {
+    stdout: process.stdout,
+    stderr: process.stderr,
+    stdin: process.stdin,
+    cwd: () => process.cwd(),
+    now: () => new Date().toISOString(),
+    onSignal: (signal, listener) => { process.on(signal, listener); },
+  });
 }
