@@ -39,24 +39,35 @@ interface FixtureRepo {
  * in nearly every test: 30 in polaris-reachability alone. The commit
  * instants are pinned, so every copy carries the revision a fresh commit
  * would, and a test that writes to its copy cannot reach another's.
+ *
+ * A copy is also registered for removal when the test file ends, so a caller
+ * that drains `cleanups` late or never cannot leak it (syzygy-bpyt.4.10).
+ * `cleanups` still lists it, and removing it earlier stays harmless.
  */
 export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
   template ??= committedFixtureRepo();
   const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-'));
   cleanups.push(root);
+  removeAtEndOfFile(root);
   cpSync(template.repoRoot, root, { recursive: true });
   return { repoRoot: root, revision: template.revision };
 }
 
 let template: FixtureRepo | undefined;
+const removeWhenFileEnds = new Set<string>();
 
-/** Removes the template when the test file ends, through the hook
- * `vitest.setup.ts` installs; outside Vitest (the accessibility CLI imports
- * this module) the process's own exit does. */
+/** Removes the template and every copy when the test file ends, through the
+ * hook `vitest.setup.ts` installs; outside Vitest (the accessibility CLI
+ * imports this module) the process's own exit does. One teardown covers the
+ * whole set, so a long run adds no exit listener per copy. */
 function removeAtEndOfFile(root: string): void {
+  const first = removeWhenFileEnds.size === 0;
+  removeWhenFileEnds.add(root);
+  if (!first) return;
   const remove = (): void => {
-    rmSync(root, { recursive: true, force: true });
-    if (template?.repoRoot === root) template = undefined;
+    for (const owned of removeWhenFileEnds) rmSync(owned, { recursive: true, force: true });
+    removeWhenFileEnds.clear();
+    template = undefined;
   };
   const afterTestFile = (globalThis as { syzygyAfterTestFile?: (teardown: () => void) => void }).syzygyAfterTestFile;
   if (afterTestFile === undefined) process.once('exit', remove);

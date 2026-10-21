@@ -1,8 +1,8 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { fixtureRepoWithGit, frozenFixture, sharedFixtureModels } from './test-model-fixture.js';
@@ -78,4 +78,72 @@ describe('shared fixture models (syzygy-k66p)', () => {
     expect(existsSync(directory)).toBe(false);
     expect(() => shared.get('only')).toThrow('shared fixture models used before prepare');
   });
+});
+
+describe('fixture repositories a caller never drains (syzygy-bpyt.4.10)', () => {
+  const FIXTURE_PREFIX = 'syzygy-poc-surface-fixture-';
+  const privateTmp: string[] = [];
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.resetModules();
+    for (const directory of privateTmp.splice(0)) rmSync(directory, { recursive: true, force: true });
+  });
+
+  /** A fresh copy of the helper module that sees only this test's own TMPDIR, so the
+   * directories it makes can be counted without another test file's. */
+  async function freshHelper(): Promise<{ readonly helper: typeof import('./test-model-fixture.js'); readonly tmp: string }> {
+    const tmp = mkdtempSync(join(tmpdir(), 'syzygy-fixture-leak-'));
+    privateTmp.push(tmp);
+    vi.stubEnv('TMPDIR', tmp);
+    vi.resetModules();
+    return { helper: await import('./test-model-fixture.js'), tmp };
+  }
+  const fixtureEntries = (tmp: string): string[] => readdirSync(tmp).filter((name) => name.startsWith(FIXTURE_PREFIX)).sort();
+
+  it('removes the template and every copy through one end-of-file teardown, drained or not', async () => {
+    const teardowns: (() => void)[] = [];
+    vi.stubGlobal('syzygyAfterTestFile', (teardown: () => void) => { teardowns.push(teardown); });
+    const { helper, tmp } = await freshHelper();
+    const neverDrained: string[] = [];
+    const drainedEarly: string[] = [];
+    const kept = helper.fixtureRepoWithGit(neverDrained);
+    const early = helper.fixtureRepoWithGit(drainedEarly);
+    const alsoKept = helper.fixtureRepoWithGit(neverDrained);
+    for (const directory of drainedEarly.splice(0)) rmSync(directory, { recursive: true, force: true });
+    // Before the file ends: the template and the two copies the caller never drained.
+    expect(fixtureEntries(tmp)).toHaveLength(3);
+    expect(fixtureEntries(tmp).filter((name) => name.startsWith(`${FIXTURE_PREFIX}template-`))).toHaveLength(1);
+    expect(existsSync(kept.repoRoot) && existsSync(alsoKept.repoRoot)).toBe(true);
+    expect(existsSync(early.repoRoot)).toBe(false);
+    expect(teardowns).toHaveLength(1);
+    teardowns.splice(0).forEach((teardown) => teardown());
+    expect(fixtureEntries(tmp)).toEqual([]);
+    expect(neverDrained).toEqual([kept.repoRoot, alsoKept.repoRoot]);
+
+    // The teardown leaves the helper ready for the next file: a new template, and a new teardown.
+    const next = helper.fixtureRepoWithGit([]);
+    expect(existsSync(next.repoRoot)).toBe(true);
+    expect(fixtureEntries(tmp)).toHaveLength(2);
+    expect(teardowns).toHaveLength(1);
+    teardowns.splice(0).forEach((teardown) => teardown());
+    expect(fixtureEntries(tmp)).toEqual([]);
+  }, 30_000);
+
+  it('outside Vitest registers one exit listener for the template and all copies', async () => {
+    vi.stubGlobal('syzygyAfterTestFile', undefined);
+    const exitListeners: (() => void)[] = [];
+    vi.spyOn(process, 'once').mockImplementation(((event: string, listener: () => void) => {
+      if (event === 'exit') exitListeners.push(listener);
+      return process;
+    }) as typeof process.once);
+    const { helper, tmp } = await freshHelper();
+    const copies = [helper.fixtureRepoWithGit([]), helper.fixtureRepoWithGit([]), helper.fixtureRepoWithGit([])];
+    expect(fixtureEntries(tmp)).toHaveLength(4);
+    expect(exitListeners).toHaveLength(1);
+    exitListeners[0]?.();
+    expect(copies.some((copy) => existsSync(copy.repoRoot))).toBe(false);
+    expect(fixtureEntries(tmp)).toEqual([]);
+  }, 30_000);
 });
