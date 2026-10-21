@@ -635,6 +635,29 @@ const NON_HUMAN_OWNERS: readonly [string, string][] = [
   ['renovate[bot]', 'suffix [bot] (flipped)'],
   ['deploy-bot', 'suffix -bot (flipped)'],
   ['review-agent', 'suffix -agent (flipped)'],
+  // syzygy-bpyt.6.8: one owner per remaining alternative of NON_HUMAN_PRINCIPAL,
+  // each matched by no other alternative, so deleting that alternative (or a
+  // separator it alone relies on) changes a verdict here. Section 3H of
+  // R-GP-IMPL-OWNER-ACT-FIELDS-1 lists the first seven; the rest pin the
+  // slash and whitespace forms of the second line-start arm and the first
+  // arm's machine separators.
+  ['bot', 'role prefix bot, bare'],
+  ['service: deploy', 'role prefix service, colon'],
+  ['system', 'role prefix system, bare'],
+  ['pipeline-7', 'role prefix pipeline, hyphen'],
+  ['model: x', 'role prefix model, colon'],
+  ['agent: nightly', 'role prefix agent with no model name'],
+  ['machine: build-42', 'role prefix machine, colon (only the first arm lists machine)'],
+  ['machine runner', 'role prefix machine, whitespace'],
+  ['machine-7', 'role prefix machine, hyphen'],
+  ['agent/triage', 'role prefix agent with a slash'],
+  ['bot/deploy', 'role prefix bot with a slash'],
+  ['system/cron', 'role prefix system with a slash'],
+  ['service/gateway', 'role prefix service with a slash'],
+  ['pipeline/build', 'role prefix pipeline with a slash'],
+  ['model/v2', 'role prefix model with a slash'],
+  ['daemon nightly', 'role prefix daemon, whitespace'],
+  ['daemon-7', 'role prefix daemon, hyphen'],
 ];
 
 describe('PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator', () => {
@@ -648,7 +671,7 @@ describe('PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluat
 
   // Each human name sits one anchor away from an arm: a word boundary, a
   // separator after a role prefix, a line start, a line end.
-  it.each(['Somebody Else', 'Claudette', 'Botha', 'Agentha Smith', 'Anna Model', 'Anna Daemon', 'Jean-Botha'])('a human name %j stays owner-another-human', (owner) => {
+  it.each(['Somebody Else', 'Claudette', 'Botha', 'Agentha Smith', 'Anna Model', 'Anna Daemon', 'Jean-Botha', 'Annagpt Lee'])('a human name %j stays owner-another-human', (owner) => {
     const state = evaluateBodyReadAuthority(inputs({ consent: { record: { set: { 'Owner:': owner } } } })).consent;
     expect(state.kind).toBe('invalid');
     if (state.kind === 'invalid') expect(state.caseId).toBe('consent:owner-another-human');
