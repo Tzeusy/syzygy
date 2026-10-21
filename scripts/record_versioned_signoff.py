@@ -107,6 +107,7 @@ import sys
 import tempfile
 import traceback
 import shutil
+import stat
 from dataclasses import dataclass, replace as dataclasses_replace
 from typing import Callable
 
@@ -333,14 +334,8 @@ def patch_package_apply(root: pathlib.Path, proposed: pathlib.Path, findings) ->
 
 
 def p115_package_apply(root: pathlib.Path) -> int:
-    """P115's guarded batch; the recording entrypoint adds scoped recovery."""
-    try:
-        p115_apply_batch(root)
-    except (OSError, ValueError) as exc:
-        print(str(exc))
-        return 1
-    print("applied the exact five P115 patches as one preflighted batch")
-    return 0
+    """Existing internal subject-only operation, with its own single ledger."""
+    return p115_attempt(root, operation="apply")
 
 
 def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
@@ -356,26 +351,76 @@ def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
                            capture_output=True, check=True).stdout)
 
 
-def p115_apply_batch(root: pathlib.Path, before_apply=lambda: None) -> None:
-    """No write until both the exact batch preflight and final input gate pass."""
-    p115_clean(root)
+def p115_apply_batch(root: pathlib.Path, journal: pathlib.Path, before: dict,
+                       proposed: dict, patches: tuple, evidence: dict) -> None:
+    """The identical captured batch runs only in an owned private projection."""
     reference = _module("prepare_three_surface_poc_governedby_reference_recording")
-    problems = reference.recording_findings(root)
-    if problems:
-        raise ValueError("refusing P115 apply: " + " | ".join(problems))
-    patches = _patches(root, reference.CANDIDATE / "proposed")
-    if len(patches) != 5:
-        raise ValueError("refusing P115 apply: exact five-patch population changed")
+    projection, copies, metadata = (journal / name for name in ("projection", "patches", "git"))
+    projection.mkdir()
+    copies.mkdir()
+    for rel in reference.SUBJECTS:
+        path = projection / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(before[rel])
+    names = []
+    rows = []
+    for number, (rel, body) in enumerate(patches):
+        path = copies / f"{number}.patch"
+        path.write_bytes(body)
+        names.append(str(path))
+        rows.append({"source": rel.as_posix(), "copy": str(path), "bytes": len(body),
+                     "sha256": hashlib.sha256(body).hexdigest()})
+    # Child repository location is closed; credentials/config/PATH and the
+    # process environment are unchanged. No parent Git metadata is discovered.
+    env = os.environ.copy()
+    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_QUARANTINE_PATH",
+                 "GIT_GRAFT_FILE", "GIT_SHALLOW_FILE", "GIT_PREFIX", "GIT_NAMESPACE",
+                 "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM"):
+        env.pop(name, None)
+    env.update(GIT_DIR=str(metadata), GIT_WORK_TREE=str(projection), GIT_INDEX_FILE=str(metadata / "index"))
     batch = ["git", "apply", "--whitespace=nowarn", "--unidiff-zero"]
-    names = [str(patch) for patch in patches]
-    done = subprocess.run([*batch, "--check", *names], cwd=root, capture_output=True, text=True)
-    if done.returncode != 0:
+    evidence.update(orderedPatches=rows, batchSha256=hashlib.sha256(json.dumps(
+        [(r["source"], r["sha256"]) for r in rows], separators=(",", ":")).encode()).hexdigest(),
+        cwd=str(projection), gitDir=str(metadata), gitWorkTree=str(projection),
+        gitIndexFile=str(metadata / "index"), commands=[])
+
+    def run(argv):
+        row = {"argv": argv, "cwd": str(projection), "returncode": None}
+        evidence["commands"].append(row)
+        done = subprocess.run(argv, cwd=projection, env=env, capture_output=True, text=True)
+        row.update(returncode=done.returncode, stdout=done.stdout, stderr=done.stderr)
+        return done
+
+    done = run(["git", "init", "--quiet", "--template="])
+    if done.returncode:
+        raise ValueError("P115 private Git initialization failed: " + done.stderr.strip())
+    done = run([*batch, "--check", *names])
+    if done.returncode:
         raise ValueError("P115 preflight refused: " + done.stderr.strip())
-    p115_clean(root)
-    before_apply()
-    done = subprocess.run([*batch, *names], cwd=root, capture_output=True, text=True)
-    if done.returncode != 0:
-        raise ValueError("P115 batch apply failed: " + done.stderr.strip())
+    if any(p115_read(pathlib.Path(row["copy"])) != body for row, (_rel, body) in zip(rows, patches)):
+        raise ValueError("P115 captured private patch copies changed after preflight")
+    done = run([*batch, *names])
+    if done.returncode:
+        raise ValueError(f"P115 batch apply failed ({done.returncode}): " + done.stderr.strip())
+    files = set()
+    directories = {parent for rel in reference.SUBJECTS for parent in rel.parents if parent != pathlib.Path(".")}
+    for path in projection.rglob("*"):
+        kind = path.lstat().st_mode
+        rel = path.relative_to(projection)
+        if stat.S_ISREG(kind):
+            files.add(rel)
+        elif not stat.S_ISDIR(kind) or rel not in directories:
+            raise ValueError("P115 private projection has unexpected/nonregular output: " + str(rel))
+    if (files != set(reference.SUBJECTS)
+            or any(p115_read(projection / rel) != proposed[rel] for rel in reference.SUBJECTS)
+            or p115_read(projection / reference.SUBJECTS[0]) != before[reference.SUBJECTS[0]]
+            or sum(p115_read(projection / rel) != before[rel] for rel in reference.SUBJECTS) != 5
+            or any(hashlib.sha256(p115_read(projection / rel)).hexdigest() != sha
+                   for sha, rel in reference.manifest_rows(root))):
+        raise ValueError("P115 private batch outputs differ from exact six subjects/five changes/manifest")
+    evidence["validatedOutputs"] = {str(rel): hashlib.sha256(proposed[rel]).hexdigest()
+                                    for rel in reference.SUBJECTS}
 
 
 def p115_read(path: pathlib.Path) -> bytes | None:
@@ -485,21 +530,36 @@ def p115_write(path: pathlib.Path, body: bytes, **publication) -> None:
     p115_publish(path, body, **publication)
 
 
-def p115_recover(root: pathlib.Path, before: dict, outputs: dict,
+@dataclass(frozen=True)
+class P115Publication:
+    attempt: str
+    path: pathlib.Path
+    identity: tuple[int, int]
+    kind: int
+    body: bytes
+    sha256: str
+
+
+def p115_publications(publications: dict) -> dict:
+    return {str(rel): {"attempt": token.attempt, "path": str(token.path), "kind": "regular",
+                      "device": token.identity[0], "inode": token.identity[1], "sha256": token.sha256}
+            for rel, token in publications.items()}
+
+
+def p115_recover(root: pathlib.Path, before: dict, outputs: dict, before_identity: dict,
                   owned_order: list[pathlib.Path], publications: dict) -> tuple[list[str], list[dict]]:
-    """Only confirmed record publications or bounded Git-phase outputs are owned."""
+    """Every governed output needs the same successful-native-publication token."""
     conflicts, errors = [], []
     for rel in reversed(owned_order):
         staged = None
         try:
-            path = root / rel
+            path, token = root / rel, publications[rel]
             def owned():
-                return (p115_read(path) == outputs[rel]
-                        and (rel not in publications or p115_identity(path) == publications[rel]))
-            if p115_read(path) == before[rel]:
-                continue
+                return (token.path == rel and token.kind == stat.S_IFREG
+                        and token.body == outputs[rel] and p115_read(path) == token.body
+                        and p115_identity(path) == token.identity)
             if not owned():
-                conflicts.append(f"{rel}: independently changed or deleted")
+                conflicts.append(f"{rel}: independently changed or deleted; publication ownership unproven")
                 continue
             if before[rel] is None:
                 if not owned():
@@ -524,7 +584,7 @@ def p115_recover(root: pathlib.Path, before: dict, outputs: dict,
                     errors.append(p115_exception(error))
     for rel in before.keys() - set(owned_order):
         try:
-            if p115_read(root / rel) != before[rel]:
+            if p115_read(root / rel) != before[rel] or p115_identity(root / rel) != before_identity[rel]:
                 conflicts.append(f"{rel}: independent change retained; no owned write")
         except BaseException as error:
             conflicts.append(f"{rel}: recovery inspection failed: {error}")
@@ -536,6 +596,23 @@ def p115_payload_inventory(journal: pathlib.Path) -> list[dict]:
     return [{"path": p.name, "bytes": p.stat().st_size,
              "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
             for p in sorted(journal.iterdir()) if p.is_file()] if journal.exists() else []
+
+
+def p115_private_inventory(journal: pathlib.Path) -> list[dict]:
+    """Recursive private payload is separate from the unchanged preimage list."""
+    rows = []
+    if journal.exists():
+        for path in sorted(journal.rglob("*")):
+            rel, kind = path.relative_to(journal).as_posix(), path.lstat().st_mode
+            if path.parent == journal and path.name.endswith(".before"):
+                continue
+            if stat.S_ISREG(kind):
+                body = path.read_bytes()
+                rows.append({"path": rel, "kind": "regular", "bytes": len(body),
+                             "sha256": hashlib.sha256(body).hexdigest()})
+            else:
+                rows.append({"path": rel, "kind": "directory" if stat.S_ISDIR(kind) else "nonregular"})
+    return rows
 
 
 def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool) -> None:
@@ -567,40 +644,63 @@ def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool)
 def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
                  review_rel: str, disposition_rel: str | None,
                  options: frozenset[str]) -> int:
+    return p115_attempt(root, operation="record", pkg=pkg, version=version, date=date,
+                        quote=quote, review_rel=review_rel, disposition_rel=disposition_rel, options=options)
+
+
+def p115_attempt(root: pathlib.Path, *, operation: str, pkg: Package | None = None,
+                  version: str = "1.0", date: str | None = None, quote: str = "",
+                  review_rel: str | None = None, disposition_rel: str | None = None,
+                  options: frozenset[str] = frozenset()) -> int:
     """P115-only provisional publication, receipt commit, then private cleanup.
 
     Assumes the admitted checkout is exclusively operated. Immediate drift
     checks and no-clobber creation are not a universal CAS or crash guarantee.
     """
     reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+    if operation not in {"record", "apply"}:
+        raise ValueError("P115 supports only the existing record and internal apply operations")
+    pkg = pkg or real_packages()[reference.KEY]
     owned_order, publications = [], {}
     journal = outcome = None
-    before, outputs, receipt = {}, {}, {}
+    before, before_identity, outputs, receipt, batch_evidence = {}, {}, {}, {}, {}
     receipt_state = {"body": None, "identity": None}
     committed = False
     try:
         head, index = p115_clean(root)
         paths = (*reference.SUBJECTS, reference.RECORD, reference.AGGREGATE)
         before = {rel: p115_read(root / rel) for rel in paths}
-        target_identity = {rel: p115_identity(root / rel) for rel in paths}
+        before_identity = {rel: p115_identity(root / rel) for rel in paths}
+        target_identity = dict(before_identity)
+        family = reference.family_snapshot(root)
         inputs = {pathlib.Path(p) for p in reference.validation_inputs(root)}
-        inputs.add(pathlib.Path(review_rel))
+        if review_rel is not None:
+            inputs.add(pathlib.Path(review_rel))
         if disposition_rel:
             inputs.add(pathlib.Path(disposition_rel))
         if any(p.is_absolute() or ".." in p.parts for p in inputs):
             raise ValueError("P115 validation inputs must stay inside the repository")
         captured = {rel: p115_read(root / rel) for rel in inputs}
-        validate_inputs(version, date, quote, pkg)
         if version != reference.VERSION or options:
             raise ValueError("P115 recording covers exactly v1.0 with no options")
         if reference.transaction_present(root):
             raise ValueError("P115 transaction is already present or partial")
         if before[reference.AGGREGATE] is None or any(before[p] is None for p in reference.SUBJECTS):
             raise ValueError("P115 transaction requires all six subjects and the aggregate")
-        commit, verdict = verify_reviewed(root, pkg, review_rel, disposition_rel)
-        findings = pkg.check(root) + reference.chain_findings(root, date)
+        if operation == "record":
+            validate_inputs(version, date, quote, pkg)
+            commit, verdict = verify_reviewed(root, pkg, review_rel, disposition_rel)
+            findings = pkg.check(root) + reference.chain_findings(root, date)
+        else:
+            findings = reference.recording_findings(root) + reference.chain_findings(root, predecessors_only=True)
         if findings:
             raise ValueError("package does not verify: " + " | ".join(findings))
+        patch_paths = _patches(root, reference.CANDIDATE / "proposed")
+        if len(patch_paths) != 5 or len(set(patch_paths)) != 5:
+            raise ValueError("refusing P115 apply: exact five-patch population changed")
+        patches = tuple((path.relative_to(root), p115_read(path)) for path in patch_paths)
+        if any(body is None for _rel, body in patches):
+            raise ValueError("P115 captured patch is absent")
         current, proposed = reference.load_frozen(root).collect()
         current = {pathlib.Path(p): body for p, body in current.items()}
         proposed = {pathlib.Path(p): body for p, body in proposed.items()}
@@ -610,19 +710,25 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
                 hashlib.sha256(proposed[pathlib.Path(p)]).hexdigest() != sha
                 for sha, p in reference.manifest_rows(root))):
             raise ValueError("P115 proposed outputs differ from the exact six-row manifest")
-        disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
-        outputs = dict(proposed)
-        outputs[reference.RECORD] = render_record(
-            pkg, version, date, quote, review_rel, commit, verdict, disposition,
-            root=root, rows=tuple(reference.manifest_rows(root))).encode()
-        outputs[reference.AGGREGATE] = (before[reference.AGGREGATE].decode().rstrip("\n")
-            + "\n\n" + render_aggregate(pkg, version, date, review_rel, verdict, disposition)).encode()
+        outputs = {**before, **proposed}
+        if operation == "record":
+            disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
+            outputs[reference.RECORD] = render_record(
+                pkg, version, date, quote, review_rel, commit, verdict, disposition,
+                root=root, rows=tuple(reference.manifest_rows(root))).encode()
+            outputs[reference.AGGREGATE] = (before[reference.AGGREGATE].decode().rstrip("\n")
+                + "\n\n" + render_aggregate(pkg, version, date, review_rel, verdict, disposition)).encode()
         expected = dict(before)
 
         def unchanged(staged=None, identity=None, body=None):
             for rel, value in {**captured, **expected}.items():
                 if p115_read(root / rel) != value:
                     raise ValueError(f"P115 transaction input changed: {rel}")
+            expected_family = {"files": dict(family["files"]), "aggregate": expected[reference.AGGREGATE]}
+            if expected[reference.RECORD] is not None:
+                expected_family["files"][reference.RECORD.name] = {"kind": "regular", "body": expected[reference.RECORD]}
+            if reference.family_snapshot(root) != expected_family:
+                raise ValueError("P115 transaction reserved family changed")
             if any(p115_identity(root / rel) != target_identity[rel] for rel in paths):
                 raise ValueError("P115 transaction target identity changed")
             if (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
@@ -662,7 +768,8 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
         recovery.mkdir(exist_ok=True)
         journal = pathlib.Path(tempfile.mkdtemp(prefix="attempt-", dir=recovery))
         outcome = journal.with_name(journal.name + ".ATTEMPT.json")
-        receipt = {"scope": "P115 recording attempt; selftest calls are synthetic/no owner action",
+        receipt = {"scope": "P115 " + operation + " attempt; selftest calls are synthetic/no owner action",
+                   "operation": operation, "batch": batch_evidence,
                    "ranAt": head.decode().strip(), "indexSha256": hashlib.sha256(index).hexdigest(),
                    "attemptId": journal.name,
                    "capturedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -676,35 +783,36 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
                 (outcome.parent / name).write_bytes(body)
             receipt["paths"].append({"path": rel.as_posix(),
                 "before": None if body is None else hashlib.sha256(body).hexdigest(),
-                "after": hashlib.sha256(outputs[rel]).hexdigest(),
+                "after": None if outputs[rel] is None else hashlib.sha256(outputs[rel]).hexdigest(),
                 "preimage": None if body is None else name})
         persist(unchanged)
         unchanged()
-        def enter_apply():
-            unchanged()
-            owned_order.extend(p for p in reference.SUBJECTS if before[p] != outputs[p])
-        p115_apply_batch(root, enter_apply)
-        if not pkg.applied(root):
-            raise ValueError("P115 applied postcondition failed")
-        expected.update({p: outputs[p] for p in reference.SUBJECTS})
-        target_identity.update({p: p115_identity(root / p) for p in reference.SUBJECTS})
+        p115_apply_batch(root, journal, before, proposed, patches, batch_evidence)
         unchanged()
-        for rel in (reference.RECORD, reference.AGGREGATE):
+        changed_subjects = tuple(p for p in reference.SUBJECTS if before[p] != outputs[p])
+        publish_paths = (*changed_subjects, *((reference.RECORD, reference.AGGREGATE)
+                                             if operation == "record" else ()))
+        for rel in publish_paths:
             unchanged()
             def published(identity, rel=rel):
-                publications[rel] = identity
+                publications[rel] = P115Publication(journal.name, rel, identity, stat.S_IFREG,
+                    outputs[rel], hashlib.sha256(outputs[rel]).hexdigest())
                 owned_order.append(rel)
                 expected[rel], target_identity[rel] = outputs[rel], identity
             p115_write(root / rel, outputs[rel], expected=expected[rel],
                         expected_identity=target_identity[rel], guard=unchanged, published=published)
         unchanged()
-        findings = reference.signed_findings(root)
-        if findings:
-            raise ValueError("P115 recorded postcondition failed: " + " | ".join(findings))
-        receipt.update(state="completed", postconditions={"sixSubjects": True, "exactRecords": True,
-            "signedChain": True, "capturedInputsAndIndex": True},
-            publications={str(p): list(t) for p,t in publications.items()},
-            payloadCapturedAtCompletion=p115_payload_inventory(journal))
+        if not pkg.applied(root):
+            raise ValueError("P115 applied postcondition failed")
+        if operation == "record":
+            findings = reference.signed_findings(root)
+            if findings:
+                raise ValueError("P115 recorded postcondition failed: " + " | ".join(findings))
+        receipt.update(state="completed", postconditions={"sixSubjects": True, "exactRecords": operation == "record",
+            "signedChain": operation == "record", "capturedInputsAndIndex": True},
+            publications=p115_publications(publications),
+            payloadCapturedAtCompletion=p115_payload_inventory(journal),
+            privatePayloadCapturedAtCompletion=p115_private_inventory(journal))
         persist(unchanged)
         # Receipt I/O is precommit too: it must not conceal intervening drift.
         unchanged()
@@ -713,11 +821,16 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
         original = p115_exception(failure)  # Freeze BEFORE any recovery operation.
         message = f"{type(failure).__name__}: {failure}"
         print("P115 original exception: " + json.dumps(original))
-        conflicts, recovery_errors = p115_recover(root, before, outputs, owned_order, publications)
+        conflicts, recovery_errors = p115_recover(root, before, outputs, before_identity, owned_order, publications)
         if outcome is not None:
             receipt.update(state="failed", originalError=message, originalException=original,
                            recoveryConflicts=conflicts, recoveryExceptions=recovery_errors,
-                           publications={str(p): list(t) for p,t in publications.items()})
+                           publications=p115_publications(publications))
+            try:
+                receipt["privatePayloadOnFailure"] = p115_private_inventory(journal)
+            except BaseException as inventory_error:
+                receipt["privatePayloadOnFailure"] = None
+                receipt["privatePayloadInventoryException"] = p115_exception(inventory_error)
             try:
                 persist()
             except BaseException as evidence_error:
@@ -744,7 +857,7 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
         print("P115 WARNING: recording completed; private cleanup failed: " + json.dumps(cleanup))
         try:
             survivors = p115_payload_inventory(journal)
-            receipt.update(payloadSurvivors=survivors)
+            receipt.update(payloadSurvivors=survivors, privatePayloadSurvivors=p115_private_inventory(journal))
         except BaseException as inventory_error:
             receipt.update(payloadSurvivors=None, payloadInventoryException=p115_exception(inventory_error))
             print("P115 WARNING: surviving payload inventory unavailable: " + json.dumps(p115_exception(inventory_error)))
@@ -754,6 +867,9 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
         except BaseException as evidence_error:
             print("P115 WARNING: cleanup diagnostic persistence failed: " + json.dumps(p115_exception(evidence_error)))
         p115_report_receipt(outcome, receipt_state, completed=True)
+    if operation == "apply":
+        print("applied the exact five P115 patches as one preflighted batch")
+        return 0
     print(f"wrote {reference.RECORD.as_posix()}; appended exact P115 aggregate block")
     print(f"next: review the logical Git transaction, commit, then `git tag -a {tag_for(pkg, version)}` on that commit")
     return 0
@@ -1854,11 +1970,14 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
         return 1
     if pkg.key == "three-surface-poc-governedby-reference-amendment":
         reference = _module("prepare_three_surface_poc_governedby_reference_recording")
-        if reference.transaction_present(root):
+        state, findings = reference.family_state(root)
+        if version != reference.VERSION:
+            findings.append("P115 checker supports only exact canonical v1.0")
+        if not findings and state != "ABSENT":
             findings = reference.chain_findings(root)
-            if findings:
-                print("FAILED: " + " | ".join(findings))
-                return 1
+        if findings:
+            print("FAILED: " + " | ".join(findings))
+            return 1
     rec = root / record_rel(pkg, version)
     copies = aggregate_copies(root, pkg, version)
     if not rec.exists() and not copies:

@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -97,19 +98,72 @@ def applied_rows_match(root: Path) -> bool:
         return False
 
 
+def family_snapshot(root: Path) -> dict:
+    """Closed leaf observation; never follow nonregular reserved entries.
+
+    File grammar is every immediate name starting with the exact reserved
+    stem, before extension/version normalization. Delimiter grammar is the
+    case-sensitive exact package token with a colon/space/>/end boundary.
+    Missing or unreadable evidence raises; it never establishes absence.
+    """
+    files = {}
+    for path in sorted((root / RECORD.parent).iterdir()):
+        if path.name.startswith("THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF"):
+            kind = path.lstat().st_mode
+            files[path.name] = {"kind": "regular" if stat.S_ISREG(kind) else "nonregular",
+                                "body": path.read_bytes() if stat.S_ISREG(kind) else None}
+    path = root / AGGREGATE
+    if not stat.S_ISREG(path.lstat().st_mode):
+        raise ValueError("P115 aggregate is not a regular nonsymlink file")
+    return {"files": files, "aggregate": path.read_bytes()}
+
+
+def family_state(root: Path) -> tuple[str, list[str]]:
+    """ABSENT, PRESENT_INVALID/Unknown, or canonical population; no authority."""
+    try:
+        population = family_snapshot(root)
+        files, body = population["files"], population["aggregate"].decode("utf-8")
+        occurrences = list(re.finditer(
+            r"versioned-signoff\s*:\s*" + re.escape(KEY) + r"(?=[:\s>]|$)", body))
+        if not files and not occurrences:
+            return "ABSENT", []
+        findings = []
+        if set(files) != {RECORD.name} or any(row["kind"] != "regular" for row in files.values()):
+            findings.append("P115 family supports only one regular canonical v1.0 dedicated filename")
+        comments = list(re.finditer(r"<!--.*?-->", body, re.S))
+        delimiters = []
+        for occurrence in occurrences:
+            enclosing = [comment for comment in comments
+                         if comment.start() <= occurrence.start() < occurrence.end() <= comment.end()]
+            if len(enclosing) != 1 or enclosing[0].group() not in (MARKER, END_MARKER):
+                findings.append("P115 family contains an unsupported, alias, naked or malformed delimiter")
+            else:
+                delimiters.append(enclosing[0].group())
+        if delimiters != [MARKER, END_MARKER] or len(occurrences) != 2:
+            findings.append("P115 family requires exactly one ordered balanced canonical v1.0 block")
+        return ("PRESENT_INVALID", findings) if findings else ("CANONICAL_POPULATION", [])
+    except (OSError, ValueError, UnicodeError) as exc:
+        return "PRESENT_INVALID", ["P115 family population is Unknown: " + str(exc)]
+
+
 def transaction_present(root: Path) -> bool:
-    """A partial transaction is present too, so it cannot disappear as absent."""
-    body = (root / AGGREGATE).read_text() if (root / AGGREGATE).is_file() else ""
-    return (root / RECORD).exists() or MARKER in body or END_MARKER in body
+    """Malformed/indeterminate family presence cannot disappear as absent."""
+    return family_state(root)[0] != "ABSENT"
 
 
-def chain_findings(root: Path, prospective_date: str | None = None) -> list[str]:
+def chain_findings(root: Path, prospective_date: str | None = None, *,
+                   predecessors_only: bool = False) -> list[str]:
     """Leaf validation of this exact frozen POC chain, never later-row readers.
 
     Complete predecessor records are immutable C4 inputs. Their regenerated
     blocks must be unique, balanced and wholly before the next complete block.
     The prospective arm checks the append position before any recording write.
     """
+    state, findings = family_state(root)
+    if findings:
+        return findings
+    if (prospective_date is not None or predecessors_only) and state != "ABSENT":
+        return ["P115 prospective chain requires an absent transaction family"]
     import record_versioned_signoff as recorder
     aggregate = (root / AGGREGATE).read_text()
     objects = root if (root / ".git").exists() else ROOT
@@ -147,7 +201,7 @@ def chain_findings(root: Path, prospective_date: str | None = None) -> list[str]
         start = "<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:BEGIN -->"
         end = "<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:END -->"
         _begin, previous_end = block_position(start, end, start + "\n" + baseline + end)
-        for key in (*PREDECESSORS, *((KEY,) if prospective_date is None else ())):
+        for key in (*PREDECESSORS, *((KEY,) if prospective_date is None and not predecessors_only else ())):
             pkg = packages[key]
             path = recorder.record_rel(pkg, VERSION)
             body = (root / path).read_text() if key == KEY else frozen_record(path)
@@ -179,6 +233,9 @@ def builder_run(root: Path, mode: str) -> tuple[list[str], str]:
 
 
 def candidate_findings(root: Path) -> list[str]:
+    state, findings = family_state(root)
+    if state != "ABSENT":
+        return findings or ["P115 candidate requires an absent transaction family"]
     findings = core_findings(root)
     manifest_rows(root)
     if not findings:
@@ -207,6 +264,9 @@ def signed_findings(root: Path) -> list[str]:
     This is a leaf with respect to later-row readers: P115's Package.applied
     uses only applied_rows_match, never _later_rows or this function.
     """
+    state, findings = family_state(root)
+    if state != "CANONICAL_POPULATION":
+        return findings or ["P115 dedicated sign-off record is absent"]
     findings = core_findings(root)
     count = consumption_unknowns(root)
     if count:
@@ -256,7 +316,11 @@ def is_signed(root: Path) -> bool:
 
 def validation_inputs(root: Path) -> set[str]:
     """Exact additional inputs needed by reconciliation's read-only snapshots."""
-    paths = set(core_paths(root)) | {RECORD.as_posix(), AGGREGATE.as_posix(),
+    population = family_snapshot(root)
+    if any(row["kind"] != "regular" for row in population["files"].values()):
+        raise ValueError("P115 validation snapshot refuses a nonregular reserved-family entry")
+    paths = {(RECORD.parent / name).as_posix() for name in population["files"]}
+    paths |= set(core_paths(root)) | {RECORD.as_posix(), AGGREGATE.as_posix(),
         BASE_RECORD.as_posix(),
         ".syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md",
         ".syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md"}
@@ -376,6 +440,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
         "foreign-aggregate-edit", "foreign-aggregate-delete", "restore-failure", "restore-stage-drift",
         "linked-worktree-control", "linked-worktree-aggregate-failure",
         *(f"T{n:02}" for n in (*range(1, 16), 19, 20, 21, 22)),
+        "OWN-1", "OWN-2", "OWN-3", "OWN-4", "BATCH-2", "BATCH-3", "BATCH-4", "DIRECT-1", "POP-6",
     )
     with tempfile.TemporaryDirectory(prefix="p115-entrypoint-fixtures-") as temp:
         template = Path(temp) / "template"
@@ -422,9 +487,23 @@ def recording_failure_selftest(root: Path, expect) -> None:
             original_stage, original_replace = recorder.p115_stage, recorder.os.replace
             original_link, original_unlink = recorder.os.link, Path.unlink
             original_rmtree, original_read = recorder.shutil.rmtree, recorder.p115_read
-            original_read_bytes = Path.read_bytes
+            original_read_bytes, original_lstat = Path.read_bytes, Path.lstat
             original_render = recorder.render_record
             failed_once = set()
+            native_batches = []
+            family_drift = RECORD.with_name(RECORD.name.replace("v1.0", "v02.0"))
+            if name == "POP-6":
+                exclude = Path(git(tree, "rev-parse", "--git-path", "info/exclude").decode().strip())
+                exclude = exclude if exclude.is_absolute() else tree / exclude
+                exclude.write_bytes(exclude.read_bytes() + b"\n" + family_drift.as_posix().encode() + b"\n")
+
+            def replace_same_bytes(target):
+                path = tree / target
+                replacement = path.with_name(".foreign-p115-replacement")
+                replacement.write_bytes(proposed[target])
+                original_replace(replacement, path)
+                foreign[target], foreign_identities[target] = path.read_bytes(), recorder.p115_identity(path)
+
 
             def inject(label):
                 events.append(label)
@@ -432,13 +511,31 @@ def recording_failure_selftest(root: Path, expect) -> None:
 
             def run(argv, *args, **kwargs):
                 apply = len(argv) > 1 and argv[:2] == ["git", "apply"]
+                private = apply and Path(kwargs.get("cwd", tree)) != tree
                 if apply and "--check" in argv and name == "preflight-bad-patch":
                     patch = tree / CANDIDATE / "proposed/spec.md.patch"
                     patch.write_text("--- a/p115-no-such-subject\n+++ b/p115-no-such-subject\n"
                                      "@@ -1 +1 @@\n-missing\n+bad\n")
                     foreign[patch.relative_to(tree)] = patch.read_bytes()
+                    # Same actual bad-batch preflight, now in the private copy.
+                    Path(argv[-1]).write_bytes(patch.read_bytes())
                     events.append("real bad-patch preflight")
+                if private and "--check" not in argv and name == "BATCH-2":
+                    import resource
+                    def native_limit():
+                        resource.setrlimit(resource.RLIMIT_FSIZE, (18000, 18000))
+                    kwargs["preexec_fn"] = native_limit
                 result = original_run(argv, *args, **kwargs)
+                if private:
+                    native_batches.append({"argv": list(argv), "cwd": str(kwargs["cwd"]),
+                        "returncode": result.returncode,
+                        "gitDir": kwargs["env"]["GIT_DIR"], "gitWorkTree": kwargs["env"]["GIT_WORK_TREE"],
+                        "gitIndexFile": kwargs["env"]["GIT_INDEX_FILE"]})
+                if apply and "--check" in argv and name == "BATCH-4":
+                    patch = CANDIDATE / "proposed/spec.md.patch"
+                    foreign[patch] = (tree / patch).read_bytes() + b"\nForeign root patch after private preflight.\n"
+                    (tree / patch).write_bytes(foreign[patch])
+                    events.append("native private preflight then foreign root patch drift")
                 if apply and "--check" not in argv:
                     events.append("real five-patch apply")
                     if name == "apply-after-write-failure":
@@ -447,6 +544,15 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         target = SUBJECTS[-1]
                         foreign[target] = proposed[target] + b"\nSynthetic foreign post-apply edit.\n"
                         (tree / target).write_bytes(foreign[target])
+                    if name == "BATCH-2":
+                        projection = Path(kwargs["cwd"])
+                        partial = (projection / SUBJECTS[1]).read_bytes()
+                        if result.returncode == -25 and len(partial) == 18000 and partial != proposed[SUBJECTS[1]]:
+                            events.append("native private batch SIGXFSZ with real 18000-byte partial output")
+                    if name == "BATCH-3":
+                        path = Path(kwargs["cwd"]) / SUBJECTS[-1]
+                        path.write_bytes(path.read_bytes() + b"\nForeign private output drift.\n")
+                        events.append("real private batch then physical output mutation")
                 return result
 
             def render(*args, **kwargs):
@@ -460,7 +566,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
 
             def write(path, body, **publication):
                 rel = path.relative_to(tree)
-                label = "dedicated" if rel == RECORD else "aggregate"
+                label = "dedicated" if rel == RECORD else "aggregate" if rel == AGGREGATE else "subject"
                 if rel == RECORD and name in {"T12", "T13", "T14", "T15"}:
                     events.append("real write barrier with " + name + " exception chain")
                     try:
@@ -475,8 +581,13 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         raise OSError(5, "P115 record wrapper", str(path)) from None
                 if name == label + "-before-write":
                     inject(label + " before staging")
+                if name == "DIRECT-1" and rel == SUBJECTS[2]:
+                    inject("direct apply mid-subject before staging")
                 original_write(path, body, **publication)
                 events.append(label + " real staged replace")
+                if name == "OWN-1" and rel == RECORD:
+                    replace_same_bytes(SUBJECTS[-1])
+                    events.append("real dedicated publication then foreign same-byte subject inode")
                 if name == label + "-after-write":
                     inject(label + " after completed replacement")
                 foreign_barrier = AGGREGATE if name.startswith("foreign-aggregate-") else RECORD
@@ -491,7 +602,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         (tree / target).write_bytes(foreign[target])
                     inject("after real " + label + " write and foreign " + family + " " + operation)
                 if rel == AGGREGATE and name in {"restore-failure", "restore-stage-drift",
-                                                "linked-worktree-aggregate-failure"}:
+                                                "linked-worktree-aggregate-failure", "OWN-2"}:
                     inject("after real aggregate write before recovery fault")
 
             def stage(path, body, **ownership):
@@ -535,6 +646,16 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     foreign[rel] = proposed[rel] + b"\nSynthetic restoration-window edit.\n"
                     path.write_bytes(foreign[rel])
                     events.append("real restoration-stage ownership drift")
+                if (name == "OWN-2" and rel == SUBJECTS[-1] and body == before[rel]
+                        and name not in failed_once):
+                    failed_once.add(name)
+                    replace_same_bytes(rel)
+                    events.append("real restoration stage then foreign same-byte subject inode")
+                if name == "POP-6" and rel == SUBJECTS[2] and name not in failed_once:
+                    failed_once.add(name)
+                    foreign[family_drift] = b"Ignored unsupported P115 family drift.\n"
+                    (tree / family_drift).write_bytes(foreign[family_drift])
+                    events.append("real mid-subject stage then ignored unsupported family drift")
                 return result
 
             def replace(source, destination):
@@ -550,6 +671,9 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         events.append("real failed receipt publication barrier")
                         raise OSError(30, "P115 failure receipt storage refused", str(destination))
                 result = original_replace(source, destination)
+                if name == "OWN-4" and destination == tree / SUBJECTS[1]:
+                    failed_once.add("identity-denied")
+                    events.append("real native subject publication before identity denial")
                 if (name == "T22" and Path(destination).name.endswith(".ATTEMPT.json")
                         and "cleanup-failed" in failed_once):
                     failed_once.add("cleanup-receipt-published")
@@ -575,6 +699,11 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return original_link(source, destination)
 
             def unlink(path, *args, **kwargs):
+                if (name == "OWN-3" and name not in failed_once and path.name.startswith(".p115-")
+                        and path.parent == (tree / SUBJECTS[1]).parent
+                        and (tree / SUBJECTS[1]).read_bytes() == proposed[SUBJECTS[1]]):
+                    failed_once.add(name)
+                    inject("native subject staged unlink after confirmed publication")
                 if (name == "T06" and name not in failed_once and path.name.startswith(".p115-")
                         and path.parent == (tree / RECORD).parent and (tree / RECORD).exists()):
                     failed_once.add(name)
@@ -595,6 +724,12 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     failed_once.add("cleanup-failed")
                     inject("postcommit journal cleanup failure")
                 return original_rmtree(path, *args, **kwargs)
+
+            def lstat(path, *args, **kwargs):
+                if name == "OWN-4" and "identity-denied" in failed_once and path == tree / SUBJECTS[1]:
+                    events.append("native published subject identity inspection denied")
+                    raise PermissionError(13, "P115 native subject identity inspection refused", str(path))
+                return original_lstat(path, *args, **kwargs)
 
             def read_bytes(path):
                 diagnostic = (name == "T22" and path.name.endswith(".ATTEMPT.json")
@@ -630,11 +765,15 @@ def recording_failure_selftest(root: Path, expect) -> None:
                      mock.patch.object(recorder.os, "link", link), \
                      mock.patch.object(Path, "unlink", unlink), \
                      mock.patch.object(Path, "read_bytes", read_bytes), \
+                     mock.patch.object(Path, "lstat", lstat), \
                      mock.patch.object(recorder.shutil, "rmtree", rmtree), \
                      mock.patch.object(recorder, "p115_read", read), \
                      contextlib.redirect_stdout(output):
-                    code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
-                        "--review", raw, "--owner-selection-quote", "Synthetic fixture only; no owner action"])
+                    if name == "DIRECT-1":
+                        code = recorder.real_packages()[KEY].apply(tree)
+                    else:
+                        code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
+                            "--review", raw, "--owner-selection-quote", "Synthetic fixture only; no owner action"])
             finally:
                 recorder.ROOT = saved_root
             actual = {p: recorder.p115_read(tree / p) for p in paths}
@@ -648,6 +787,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 expected[AGGREGATE] = (before[AGGREGATE].decode().rstrip("\n") + "\n\n"
                     + recorder.render_aggregate(pkg, VERSION, "2026-10-21", raw, "CONFIRM", None)).encode()
             expected.update({p: body for p, body in foreign.items() if p in before})
+            if name == "OWN-4":
+                expected[SUBJECTS[1]] = proposed[SUBJECTS[1]]
             git_dir = Path(git(tree, "rev-parse", "--absolute-git-dir").decode().strip())
             retained = list((git_dir / "p115-recording-recovery").glob("attempt-*.ATTEMPT.json"))
             journals = [json.loads(p.read_text()) for p in retained]
@@ -657,7 +798,8 @@ def recording_failure_selftest(root: Path, expect) -> None:
             index_ok = (git(tree, "ls-files", "--stage", "-z") == initial_index
                         and git(tree, "rev-parse", "HEAD") == initial_head
                         and git(tree, "tag", "--list") == initial_tags)
-            dirt_ok = dirty_body is None or dirty.read_bytes() == dirty_body
+            dirt_ok = (dirty_body is None or dirty.read_bytes() == dirty_body) and all(
+                recorder.p115_read(tree / rel) == body for rel, body in foreign.items())
             reached = ("real five-patch apply" in events) == (name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch",
                 "T20", "T21"})
@@ -729,6 +871,13 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 ("P115 recovery complete;" in lines))
             if name == "T20":
                 recovery_ok = "P115 recovery incomplete: failure receipt persistence failed;" in lines
+            if name == "foreign-record-delete":
+                # Absence equals this preimage but does not prove ownership of
+                # an independently deleted, previously published record.
+                conflict = (str(RECORD) + ": independently changed or deleted; publication ownership unproven")
+                recovery_ok = ("P115 recovery incomplete: " + conflict + "\n" in lines
+                    and "P115 recovery complete;" not in lines
+                    and len(journals) == 1 and journals[0]["recoveryConflicts"] == [conflict])
             if name.startswith("linked-worktree-"):
                 preimages_ok = preimages_ok and (tree / ".git").is_file() and git_dir != template / ".git"
             required = {
@@ -775,17 +924,33 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "T22": ["postcommit journal cleanup failure", "real cleanup receipt native publication",
                         "real cleanup receipt readback", "diagnostic receipt native read denied"],
             }.get(name, [])
+            required += {
+                "OWN-1": ["real dedicated publication then foreign same-byte subject inode"],
+                "OWN-2": ["after real aggregate write before recovery fault",
+                          "real restoration stage then foreign same-byte subject inode"],
+                "OWN-3": ["native subject staged unlink after confirmed publication"],
+                "OWN-4": ["real native subject publication before identity denial",
+                          "native published subject identity inspection denied"],
+                "BATCH-2": ["native private batch SIGXFSZ with real 18000-byte partial output"],
+                "BATCH-3": ["real private batch then physical output mutation"],
+                "BATCH-4": ["native private preflight then foreign root patch drift"],
+                "DIRECT-1": ["subject real staged replace", "direct apply mid-subject before staging"],
+                "POP-6": ["subject real staged replace", "real mid-subject stage then ignored unsupported family drift"],
+            }.get(name, [])
             reached = reached and all(event in events for event in required)
             injected = not positive and not name.startswith("T") and name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked",
-                "construction-drift", "preflight-bad-patch", "postcondition-drift"}
+                "construction-drift", "preflight-bad-patch", "postcondition-drift",
+                "OWN-1", "OWN-2", "OWN-3", "OWN-4", "BATCH-2", "BATCH-3", "BATCH-4", "DIRECT-1", "POP-6"}
             cause_ok = not injected or fingerprint in lines
             if injected:
                 original_error = f"OSError: [Errno 5] {fingerprint}: {required[0]}"
                 cause_ok = cause_ok and bool(journals) and all(
                     journal["originalError"] == original_error for journal in journals)
             if name == "postcondition-drift":
-                cause_ok = "P115 applied postcondition failed" in lines
+                # Original literal "P115 applied postcondition failed" was the
+                # governed-batch phase; root drift now fails before publication.
+                cause_ok = "P115 transaction input changed:" in lines
             if name == "preflight-bad-patch":
                 cause_ok = "P115 preflight refused:" in lines
             if name in {"T06", "T07", "T08"}:
@@ -834,16 +999,57 @@ def recording_failure_selftest(root: Path, expect) -> None:
                              if line.startswith("P115 secondary receipt verification error: ")]
                 cause_ok = (len(secondary) == 1 and secondary[0]["nodes"][0]["errno"] == 13
                             and not originals and len(journals) == 1 and journals[0]["state"] == "completed")
+            if name in {"OWN-1", "OWN-2"}:
+                cause_ok = bool(originals) and "P115 recovery incomplete:" in lines
+            if name in {"OWN-3", "DIRECT-1"}:
+                cause_ok = bool(originals) and originals[0]["nodes"][0]["errno"] == 5
+            if name == "OWN-4":
+                cause_ok = bool(originals) and originals[0]["nodes"][0]["errno"] == 13
+            if name == "BATCH-2":
+                cause_ok = "P115 batch apply failed (-25):" in lines
+            if name == "BATCH-3":
+                cause_ok = "P115 private batch outputs differ" in lines
+            if name == "BATCH-4":
+                cause_ok = "P115 transaction input changed:" in lines
+            if name == "POP-6":
+                cause_ok = "P115 transaction reserved family changed" in lines
             ownership_ok = all(recorder.p115_identity(tree / rel) == identity
                                for rel, identity in foreign_identities.items())
             if name in {"T03", "T04", "T05", "T12", "T13", "T14"}:
                 ownership_ok = ownership_ok and all(str(RECORD) not in j["publications"] for j in journals)
             if name in {"T06", "T07", "T08", "T19"}:
                 ownership_ok = ownership_ok and all(str(RECORD) in j["publications"] for j in journals)
+            if name in {"apply-after-write-failure", "postcondition-drift", "BATCH-2", "BATCH-3", "BATCH-4"}:
+                ownership_ok = ownership_ok and all(not j["publications"] for j in journals)
+            if name == "OWN-4":
+                ownership_ok = ownership_ok and all(str(SUBJECTS[1]) in j["publications"] for j in journals)
+            if name == "DIRECT-1":
+                ownership_ok = ownership_ok and all(j["operation"] == "apply" and set(j["publications"]) == {str(SUBJECTS[1])}
+                    and j["paths"][-2]["after"] is None for j in journals)
+            private_ok = all(
+                len(j["batch"]["orderedPatches"]) == 5 and
+                j["batch"]["commands"][0]["argv"] == ["git", "init", "--quiet", "--template="]
+                and len(j["privatePayloadOnFailure"] or []) > 0
+                for j in journals if j["state"] == "failed" and j.get("batch", {}).get("commands"))
+            if cleanup_case and journals:
+                private_ok = (journals[0]["privatePayloadCapturedAtCompletion"]
+                    and journals[0]["privatePayloadSurvivors"] == recorder.p115_private_inventory(payload)
+                    and (not journals[0]["privatePayloadSurvivors"] if name == "T11" else
+                         journals[0]["privatePayloadSurvivors"] == journals[0]["privatePayloadCapturedAtCompletion"]))
+            if name == "BATCH-2":
+                private_ok = (private_ok and len(journals) == 1
+                    and journals[0]["batch"]["commands"][-1]["returncode"] == -25
+                    and any(row["path"] == "projection/" + str(SUBJECTS[1]) and row.get("bytes") == 18000
+                            for row in journals[0]["privatePayloadOnFailure"]))
+            if native_batches:
+                private_ok = private_ok and all(Path(row["cwd"]) != tree
+                    and Path(row["gitWorkTree"]) == Path(row["cwd"])
+                    and Path(row["gitDir"]).parent == Path(row["cwd"]).parent
+                    and Path(row["gitIndexFile"]) == Path(row["gitDir"]) / "index" for row in native_batches)
             stages_clean = not any(any(parent.glob(".p115-*")) for parent in
                                    {(tree / rel).parent for rel in paths})
             expect("entrypoint " + name, state_ok and gate_ok and index_ok and dirt_ok and reached
-                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok)
+                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok and private_ok)
             mutation_receipt(tree, "entrypoint " + name, before, actual,
                              "exact scoped preimages/foreign states; no failed transaction signed")
             print("P115-TRANSACTION-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
@@ -855,15 +1061,218 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "exit": code, "events": events, "expectedStates": {str(p): None if b is None else digest(b) for p,b in expected.items()},
                 "actualStates": {str(p): None if b is None else digest(b) for p,b in actual.items()},
                 "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
-                               "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok,
+                               "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok, "privateBatch": bool(private_ok),
                                "ownership": ownership_ok, "retentionVerified": retention_ok},
                 "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
                 "receiptIdentityAndCaptureTime": receipt_identity_ok,
                 "requiredEvents": required, "stageFilesRemoved": stages_clean,
                 "originalException": originals, "foreignIdentities": {str(p): t for p,t in foreign_identities.items()},
                 "journals": journals, "receiptLinkAttempts": receipt_link_attempts,
-                "verifiedReceiptPhases": phases, "retentionClaims": claims, "output": lines}, sort_keys=True))
+                "verifiedReceiptPhases": phases, "retentionClaims": claims, "nativeBatches": native_batches,
+                "entryOperation": "direct Package.apply" if name == "DIRECT-1" else "main --record", "output": lines}, sort_keys=True))
             shutil.rmtree(tree)
+
+
+def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlier: dict) -> None:
+    """Finite family vectors exercise real readers and both existing operations.
+
+    Every fixture commit/record is synthetic. Native metadata/read faults are
+    confined to the exact own fixture path; no gate/recognition result is stubbed.
+    """
+    import record_versioned_signoff as recorder
+    import record_pwb_behavior_amendment_acts as behavior
+    import build_three_surface_poc_readability_successor as readability
+    import check_spec_reconciliation as reconciliation
+    import check_governance as governance
+    from unittest import mock
+    pkg = recorder.real_packages()[KEY]
+    signed = {p: (tree / p).read_bytes() for p in (*SUBJECTS, RECORD, AGGREGATE)}
+    fields = recorder.parse_record(signed[RECORD].decode())
+    block = recorder.render_aggregate(pkg, VERSION, fields["Date"], fields["Review"],
+                                      fields["Review verdict"], None)
+    aggregate = signed[AGGREGATE].decode().replace(block, "").rstrip("\n") + "\n"
+    census_path = Path(reconciliation.CENSUS)
+    census_signed = (tree / census_path).read_bytes()
+    census_base = git(tree, "show", f"{CORE_COMMIT}:{census_path}")
+    unsupported = RECORD.with_name(RECORD.name.replace("v1.0", "v2.0"))
+    alias = RECORD.with_name(RECORD.name.replace("v1.0", "v01.0"))
+    extra = RECORD.with_name("THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF.backup")
+    vectors = (
+        ("POP-1 malformed v2 file", "file", unsupported),
+        ("POP-2 orphan v2 end", "orphan", None),
+        ("POP-3 v01 alias file", "file", alias),
+        ("POP-4 canonical begin-only", "begin", None),
+        ("POP-4 canonical end-only", "end", None),
+        ("POP-4 mismatched versions", "mismatch", None),
+        ("POP-4 duplicate canonical block", "duplicate", None),
+        ("POP-5 nonregular family directory", "directory", unsupported),
+        ("POP-5 symlink family entry", "symlink", unsupported),
+        ("POP companion naked delimiter", "naked", None),
+        ("POP companion unclosed delimiter", "unclosed", None),
+        ("POP companion whitespace alias", "whitespace", None),
+        ("POP companion reserved stem extension", "file", extra),
+        ("POP companion missing aggregate", "missing", None),
+        ("POP companion unreadable aggregate", "unreadable", None),
+    )
+    def setup(installed):
+        for path in (unsupported, alias, extra):
+            target = tree / path
+            if target.is_dir() and not target.is_symlink():
+                target.rmdir()
+            else:
+                target.unlink(missing_ok=True)
+        for path in SUBJECTS:
+            (tree / path).write_bytes(signed[path] if installed else before[path])
+        if installed:
+            (tree / RECORD).write_bytes(signed[RECORD])
+        else:
+            (tree / RECORD).unlink(missing_ok=True)
+        (tree / AGGREGATE).write_bytes(signed[AGGREGATE] if installed else aggregate.encode())
+        (tree / census_path).write_bytes(census_signed if installed else census_base)
+
+    governance_reports = []
+    def bootstrap():
+        saved = governance.ROOT
+        try:
+            governance.ROOT = str(tree)
+            report = governance.Results()
+            governance.cg7h_general_bootstrap_act(report)
+            governance_reports.append({"failed": report.failed(), "summaries": report.summaries})
+            return not report.failed()
+        finally:
+            governance.ROOT = saved
+
+    for installed in (True, False):
+        setup(installed)
+        control = (is_signed(tree) == installed and not check_state(tree)[0] and bootstrap())
+        for label, mutation, path in vectors:
+            setup(installed)
+            start = {p: (tree / p).read_bytes() if (tree / p).exists() else None
+                     for p in (AGGREGATE, RECORD, *((path,) if path else ()))}
+            if mutation == "file":
+                (tree / path).write_bytes(b"Malformed synthetic P115 reserved-family record.\n")
+            elif mutation == "directory":
+                (tree / path).mkdir()
+            elif mutation == "symlink":
+                (tree / path).symlink_to("README.md")  # Census observes metadata; target is Syzygy documentation.
+            elif mutation == "missing":
+                (tree / AGGREGATE).unlink()
+            elif mutation != "unreadable":
+                prefixes = {
+                    "orphan": (tree / AGGREGATE).read_text() + END_MARKER.replace("v1.0", "v2.0"),
+                    "begin": aggregate + MARKER,
+                    "end": aggregate + END_MARKER,
+                    "mismatch": aggregate + MARKER + "\n" + END_MARKER.replace("v1.0", "v2.0"),
+                    "duplicate": aggregate + block + block,
+                    "naked": (tree / AGGREGATE).read_text() + f"versioned-signoff:{KEY}:v1.0",
+                    "unclosed": (tree / AGGREGATE).read_text() + f"<!-- versioned-signoff:{KEY}:v1.0",
+                    "whitespace": (tree / AGGREGATE).read_text() + f"<!-- versioned-signoff : {KEY}:v1.0 -->",
+                }
+                (tree / AGGREGATE).write_text(prefixes[mutation])
+            # Whole-clean admission is real, so malformed family must be its
+            # actual blocker rather than unrelated dirty-fixture refusal.
+            git(tree, "add", "--all")
+            git(tree, "-c", "user.name=P115 synthetic family", "-c", "user.email=fixture@invalid",
+                "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "--allow-empty", "-m",
+                "Synthetic malformed P115 family; no owner action")
+            physical = {p: (tree / p).read_bytes() if (tree / p).exists() else None
+                        for p in (*SUBJECTS, RECORD, AGGREGATE)}
+            raw_read = Path.read_bytes
+            def read_bytes(target):
+                if mutation == "unreadable" and target == tree / AGGREGATE:
+                    raise PermissionError(13, "P115 synthetic family aggregate read refused", str(target))
+                return raw_read(target)
+            outputs, codes, frontiers = {}, {}, {}
+            governance_reports.clear()
+            saved_root = recorder.ROOT
+            try:
+                recorder.ROOT = tree
+                with mock.patch.object(Path, "read_bytes", read_bytes):
+                    state, findings = family_state(tree)
+                    frontiers.update(control=control, family=state == "PRESENT_INVALID" and bool(findings),
+                        presence=transaction_present(tree), candidate=bool(candidate_findings(tree)),
+                        recording=bool(recording_findings(tree)), checkState=bool(check_state(tree)[0]),
+                        preview=bool(preview(tree)["candidateFindings"]) and not preview(tree)["recordingReady"],
+                        signed=bool(signed_findings(tree)) and not is_signed(tree),
+                        chain=bool(chain_findings(tree)), historical=bool(historical_run(tree, "--check")[0]))
+                    try:
+                        inputs = validation_inputs(tree)
+                        frontiers["snapshotClosure"] = path is None or path.as_posix() in inputs
+                    except (OSError, ValueError):
+                        frontiers["snapshotClosure"] = True  # Explicit refusal, never lossy snapshot success.
+                    for operation in ("check", "record", "apply", "unsupported-check"):
+                        out = io.StringIO()
+                        with contextlib.redirect_stdout(out):
+                            if operation == "apply":
+                                code = pkg.apply(tree)
+                            elif operation == "record":
+                                code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
+                                    "--review", fields["Review"], "--owner-selection-quote", "Synthetic family fixture only"])
+                            else:
+                                code = recorder.main(["--check", KEY, "--version",
+                                                      "2.0" if operation == "unsupported-check" else VERSION])
+                        codes[operation], outputs[operation] = code, out.getvalue()
+                    frontiers["CLIAndOperations"] = (all(code == 1 for code in codes.values())
+                        and all("not performed" not in text and "superseded" not in text for text in outputs.values())
+                        and "must be clean" not in outputs["record"] and "must be clean" not in outputs["apply"])
+                    sha = dict((p, sha) for sha, p in manifest_rows(tree))[str(SUBJECTS[-1])]
+                    frontiers["behaviorRows"] = sha not in behavior._later_rows(tree, None, str(SUBJECTS[-1]))
+                    reconstructed = readability.installed_bytes_at(tree)
+                    frontiers["readability"] = reconstructed != earlier if installed else reconstructed == earlier
+                    child = next(c for c in reconciliation.CHILDREN if c["key"] == "poc")
+                    successors = reconciliation.successors_for(tree, child)
+                    later = next(row for row in successors if row.get("package") == KEY)
+                    frontiers["reversal"] = reconciliation.bytes_at(tree, str(SUBJECTS[-1]), (later,)) is None
+                    report = reconciliation.Report()
+                    consumer_errors = {}
+                    try:
+                        reconciliation.check_outcomes(tree, report)
+                        frontiers["reconciliation"] = "R1" in report.failed
+                    except OSError as reader_error:
+                        # Its immutable generic addition scan may refuse a
+                        # nonregular reserved entry before returning a report.
+                        # Only this exact fixture input is an admitted refusal.
+                        consumer_errors["reconciliation"] = recorder.p115_exception(reader_error)
+                        frontiers["reconciliation"] = (reader_error.filename is not None
+                            and Path(reader_error.filename) in {tree / AGGREGATE, tree / path if path else tree / AGGREGATE})
+                    census = reconciliation.Report()
+                    try:
+                        reconciliation.check_census(tree, census)
+                        frontiers["census"] = (not installed or "R3" in census.failed)
+                    except OSError as reader_error:
+                        consumer_errors["census"] = recorder.p115_exception(reader_error)
+                        frontiers["census"] = (reader_error.filename is not None
+                            and Path(reader_error.filename) in {tree / AGGREGATE, tree / path if path else tree / AGGREGATE})
+                    try:
+                        frontiers["governance"] = not bootstrap() if installed or mutation == "missing" else bootstrap()
+                    except OSError as reader_error:
+                        consumer_errors["governance"] = recorder.p115_exception(reader_error)
+                        frontiers["governance"] = (reader_error.filename is not None
+                            and Path(reader_error.filename) in {tree / AGGREGATE, tree / path if path else tree / AGGREGATE})
+            finally:
+                recorder.ROOT = saved_root
+            after = {p: (tree / p).read_bytes() if (tree / p).exists() else None for p in physical}
+            frontiers["noWrites"] = after == physical
+            name = label + (" on signed" if installed else " on unsigned")
+            expect(name, all(frontiers.values()))
+            changed = {p: (tree / p).read_bytes() if (tree / p).is_file() and not (tree / p).is_symlink() else None for p in start}
+            mutation_receipt(tree, name, start, changed, "complete reserved-family invalidity at every P115 frontier")
+            print("P115-FAMILY-EVIDENCE " + json.dumps({"case": name, "ranAt": git(tree, "rev-parse", "HEAD").decode().strip(),
+                "sourceHead": git(root, "rev-parse", "HEAD").decode().strip(), "syntheticOnly": True,
+                "tools": {n: digest((root / "scripts" / n).read_bytes()) for n in
+                          (Path(__file__).name, "record_versioned_signoff.py")},
+                "old": "valid signed v1.0" if installed else "pristine unsigned BASE subjects",
+                "new": mutation, "entry": None if path is None else str(path), "familyState": state,
+                "findings": findings, "frontiers": frontiers, "codes": codes, "consumerErrors": consumer_errors, "governanceReports": governance_reports, "output": outputs}, sort_keys=True))
+    setup(False)
+    unrelated = f"<!-- versioned-signoff:{KEY}-different:v2.0 -->"
+    saved = (tree / AGGREGATE).read_bytes()
+    (tree / AGGREGATE).write_bytes(saved + unrelated.encode())
+    expect("POP companion extended different package token stays outside family",
+           family_state(tree) == ("ABSENT", []) and not transaction_present(tree))
+    mutation_receipt(tree, "POP companion extended different package token stays outside family",
+                     {AGGREGATE: saved}, {AGGREGATE: saved + unrelated.encode()}, "exact package token boundary")
+    setup(True)
 
 
 def recording_render_selftest(root: Path, expect) -> None:
@@ -1087,25 +1496,20 @@ def selftest(root: Path) -> int:
             "Synthetic P115 preparation fixture; no owner action")
         _current, proposed = load_frozen(tree).collect()
         reference = recorder._module(Path(__file__).stem)
-        original_gate = reference.recording_findings
         bad_patch = tree / CANDIDATE / "proposed/spec.md.patch"
         saved_patch = bad_patch.read_bytes()
-        def corrupt_after_gate(location):
-            findings = original_gate(location)
-            if not findings:
-                bad_patch.write_text("--- a/p115-no-such-subject\n+++ b/p115-no-such-subject\n"
-                                     "@@ -1 +1 @@\n-missing\n+bad\n")
-            return findings
+        from unittest import mock
+        native_run = recorder.subprocess.run
+        def corrupt_at_preflight(argv, *args, **kwargs):
+            if argv[:2] == ["git", "apply"] and "--check" in argv:
+                # The real strict gate already passed; only own captured
+                # private bytes mutate at this native preflight boundary.
+                Path(argv[-1]).write_text("--- a/p115-no-such-subject\n+++ b/p115-no-such-subject\n"
+                                         "@@ -1 +1 @@\n-missing\n+bad\n")
+            return native_run(argv, *args, **kwargs)
         capture = io.StringIO()
-        try:
-            # Only this scratch fixture changes between the real gate and
-            # preflight. One bad patch must prevent the whole batch writing.
-            reference.recording_findings = corrupt_after_gate
-            with contextlib.redirect_stdout(capture):
-                bad_code = pkg.apply(tree)
-        finally:
-            reference.recording_findings = original_gate
-            bad_patch.write_bytes(saved_patch)
+        with mock.patch.object(recorder.subprocess, "run", corrupt_at_preflight), contextlib.redirect_stdout(capture):
+            bad_code = pkg.apply(tree)
         expect("one bad-patch preflight leaves all six subjects unchanged",
                bad_code != 0 and "P115 preflight refused:" in capture.getvalue()
                and {rel: (tree / rel).read_bytes() for rel in SUBJECTS} == before)
@@ -1217,6 +1621,7 @@ def selftest(root: Path) -> int:
             for path, body in saved.items():
                 (tree / path).write_bytes(body)
         expect("mutations restore the signed fixture", is_signed(tree))
+        family_failure_selftest(root, tree, expect, before, earlier)
         findings, output = historical_run(tree, "--selftest")
         expect("signed replay runs frozen selftest, not current subjects", not findings and "Preparation selftest:" in output)
         # Probe the actual signed/replay path with unavailable frozen objects.
