@@ -3,19 +3,34 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { patchFs } from './fs-patch.testkit.js';
 import { expectedLaunch, launchFormRefusal, launchedMarkerState, writeLaunchedMarker } from './launched.js';
 
 // syzygy-bpyt.8.8: the launched marker is read fail-closed. Only a missing file means a run the operator started; anything present that is
 // not the marker Syzygy writes is `unreadable`, and no caller treats that more leniently than a launched run. Expected values are literals.
 
-const cleanups: string[] = [];
-afterEach(() => { for (const dir of cleanups.splice(0)) fs.rmSync(dir, { recursive: true, force: true }); });
+const cleanups: (() => void)[] = [];
+afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });
 const runDir = (): string => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'polaris-marker-'));
-  cleanups.push(dir);
+  cleanups.push(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 };
 const marker = (dir: string): string => path.join(dir, 'launched.json');
+/** The marker's bytes typed by hand, so the reader and the writer cannot drift together. */
+const TYPED = '{\n  "format": "polaris-dossier-launched/1",\n  "runId": "run-x",\n  "startedAt": "2026-10-21T00:00:00.000Z",\n  "command": "syzygy polaris",\n  "executionPermitted": false,\n  "direction": "POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14"\n}\n';
+const PREFIX = '{"format": "polaris-dossier-launched/1", "pad": "';
+/** A marker of the right format, exactly `bytes` long; its last byte is a newline, so the bytes before it are the marker too. */
+const padded = (bytes: number): string => `${PREFIX}${'x'.repeat(bytes - PREFIX.length - 3)}"}\n`;
+/** A FIFO holding the marker's bytes, kept open by a reader of the test's own so the bytes stay in the pipe. */
+const fifoHoldingTheMarker = (dir: string): void => {
+  execFileSync('mkfifo', [marker(dir)]);
+  const keep = fs.openSync(marker(dir), fs.constants.O_RDONLY | fs.constants.O_NONBLOCK);
+  cleanups.push(() => fs.closeSync(keep));
+  const writer = fs.openSync(marker(dir), fs.constants.O_WRONLY | fs.constants.O_NONBLOCK);
+  fs.writeSync(writer, TYPED);
+  fs.closeSync(writer);
+};
 
 const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
   ['an empty file', (dir) => fs.writeFileSync(marker(dir), '')],
@@ -32,7 +47,8 @@ const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
   ['a symbolic link to the marker Syzygy writes', (dir) => { fs.mkdirSync(path.join(dir, 'elsewhere')); writeLaunchedMarker(path.join(dir, 'elsewhere'), 'run-x', Date.UTC(2026, 9, 21)); fs.symlinkSync(path.join(dir, 'elsewhere', 'launched.json'), marker(dir)); }],
   ['a symbolic link to a character device', (dir) => fs.symlinkSync('/dev/zero', marker(dir))],
   ['a FIFO', (dir) => execFileSync('mkfifo', [marker(dir)])],
-  ['a marker padded past 4096 bytes', (dir) => fs.writeFileSync(marker(dir), `{"format": "polaris-dossier-launched/1", "pad": "${'x'.repeat(4096)}"}`)],
+  ['a FIFO holding the marker\'s bytes', fifoHoldingTheMarker],
+  ['a marker of 4097 bytes, one past the bound', (dir) => fs.writeFileSync(marker(dir), padded(4097))],
   ['a file its reader may not read', (dir) => { fs.writeFileSync(marker(dir), '{"format": "polaris-dossier-launched/1"}'); fs.chmodSync(marker(dir), 0o000); }],
 ];
 
@@ -51,7 +67,14 @@ describe('launchedMarkerState', () => {
 
   it('is launched for the marker\'s bytes typed by hand, so the reader and the writer cannot drift together', () => {
     const dir = runDir();
-    fs.writeFileSync(marker(dir), '{\n  "format": "polaris-dossier-launched/1",\n  "runId": "run-x",\n  "startedAt": "2026-10-21T00:00:00.000Z",\n  "command": "syzygy polaris",\n  "executionPermitted": false,\n  "direction": "POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14"\n}\n');
+    fs.writeFileSync(marker(dir), TYPED);
+    expect(launchedMarkerState(dir)).toBe('launched');
+  });
+
+  it('is launched for a marker of exactly 4096 bytes, the bound', () => {
+    const dir = runDir();
+    fs.writeFileSync(marker(dir), padded(4096));
+    expect(fs.statSync(marker(dir)).size).toBe(4096);
     expect(launchedMarkerState(dir)).toBe('launched');
   });
 
@@ -65,6 +88,26 @@ describe('launchedMarkerState', () => {
     const dir = runDir();
     fs.writeFileSync(path.join(dir, 'not-a-run'), '');
     expect(launchedMarkerState(path.join(dir, 'not-a-run'))).toBe('unreadable');
+  });
+
+  // syzygy-bpyt.8.12 (R-GP-IMPL-LAUNCHED-MARKER-2 R2-N1): the bound holds on the bytes read as well as on the size the descriptor reports.
+  // Each case rewrites the file in place right after the reader's first call of one fs function returns, as a writer racing it could.
+  it.each<[string, 'fstatSync' | 'readSync', string, string]>([
+    ['grows after it is measured into a marker of exactly 4097 bytes, which only the bound on the read refuses', 'fstatSync', PREFIX, padded(4097)],
+    ['shrinks after it is measured from 4097 bytes into the marker, which only the bound on the measured size refuses', 'fstatSync', padded(4097), TYPED],
+    ['grows past 4096 bytes between two reads, the first of which held the whole marker', 'readSync', TYPED, `${TYPED}${' '.repeat(4096)}`],
+  ])('is unreadable for a marker that %s', (_name, call, before, after) => {
+    const dir = runDir();
+    fs.writeFileSync(marker(dir), before);
+    let rewritten = false;
+    cleanups.push(patchFs(call, (original) => ((...args: unknown[]) => {
+      const result = (original as (...a: unknown[]) => unknown)(...args);
+      if (!rewritten) { rewritten = true; fs.writeFileSync(marker(dir), after); }
+      return result;
+    }) as never));
+    expect(launchedMarkerState(dir)).toBe('unreadable');
+    expect(rewritten).toBe(true);
+    expect(fs.statSync(marker(dir)).size).toBe(Buffer.byteLength(after));
   });
 });
 
