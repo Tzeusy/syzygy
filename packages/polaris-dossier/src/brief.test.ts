@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -162,7 +163,7 @@ describe('brief: issued', () => {
   it('is pure: the same run record, instant and rule render the same bytes', async () => {
     const sec3 = readSec3(REAL_ROOT);
     if (!sec3.ok) throw new Error(sec3.reason);
-    const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, launched: 'absent', permitting: { enabled: false } });
+    const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, launched: () => 'absent', permitting: { enabled: false } });
     const input = { runId: RUN_ID, subject: SUBJECT, declared: configOf(), issuedAt: NOW, schemaSha256: '0'.repeat(64), executionRule: rule, revisionLabel: '8.10.2' };
     expect(renderBrief(input)).toBe(renderBrief(structuredClone(input)));
   });
@@ -223,6 +224,9 @@ describe('brief: the permitting arm off, whatever the launched marker', () => {
     ['no marker', (_run: string) => undefined],
     ['the launched marker', (run: string) => writeLaunchedMarker(run, RUN_ID, NOW)],
     ['an unreadable marker', (run: string) => fs.writeFileSync(path.join(run, 'launched.json'), 'null')],
+    // Neither may hang or exhaust issuance: the arm-off brief never opens the marker (R-GP-IMPL-LAUNCHED-MARKER-1 F1).
+    ['a FIFO at the marker', (run: string) => execFileSync('mkfifo', [path.join(run, 'launched.json')])],
+    ['a link to a character device at the marker', (run: string) => fs.symlinkSync('/dev/zero', path.join(run, 'launched.json'))],
   ])('with %s, carries only the arm-off reason', async (_name, plant) => {
     const run = runDirectory();
     plant(run);

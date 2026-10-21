@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -25,9 +26,13 @@ const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
   ['another format', (dir) => fs.writeFileSync(marker(dir), '{"format": "polaris-dossier-launched/2"}')],
   ['no format', (dir) => fs.writeFileSync(marker(dir), '{"runId": "run-x"}')],
   ['a format that is not a string', (dir) => fs.writeFileSync(marker(dir), '{"format": 1}')],
-  ['a byte-order mark before the marker', (dir) => fs.writeFileSync(marker(dir), '﻿{"format": "polaris-dossier-launched/1"}')],
+  ['a byte-order mark before the marker', (dir) => fs.writeFileSync(marker(dir), '\uFEFF{"format": "polaris-dossier-launched/1"}')],
   ['a directory', (dir) => fs.mkdirSync(marker(dir))],
   ['a dangling symbolic link', (dir) => fs.symlinkSync(path.join(dir, 'nowhere.json'), marker(dir))],
+  ['a symbolic link to the marker Syzygy writes', (dir) => { fs.mkdirSync(path.join(dir, 'elsewhere')); writeLaunchedMarker(path.join(dir, 'elsewhere'), 'run-x', Date.UTC(2026, 9, 21)); fs.symlinkSync(path.join(dir, 'elsewhere', 'launched.json'), marker(dir)); }],
+  ['a symbolic link to a character device', (dir) => fs.symlinkSync('/dev/zero', marker(dir))],
+  ['a FIFO', (dir) => execFileSync('mkfifo', [marker(dir)])],
+  ['a marker padded past 4096 bytes', (dir) => fs.writeFileSync(marker(dir), `{"format": "polaris-dossier-launched/1", "pad": "${'x'.repeat(4096)}"}`)],
   ['a file its reader may not read', (dir) => { fs.writeFileSync(marker(dir), '{"format": "polaris-dossier-launched/1"}'); fs.chmodSync(marker(dir), 0o000); }],
 ];
 
@@ -41,6 +46,12 @@ describe('launchedMarkerState', () => {
   it('is launched for the marker Syzygy writes', () => {
     const dir = runDir();
     writeLaunchedMarker(dir, 'run-x', Date.UTC(2026, 9, 21));
+    expect(launchedMarkerState(dir)).toBe('launched');
+  });
+
+  it('is launched for the marker\'s bytes typed by hand, so the reader and the writer cannot drift together', () => {
+    const dir = runDir();
+    fs.writeFileSync(marker(dir), '{\n  "format": "polaris-dossier-launched/1",\n  "runId": "run-x",\n  "startedAt": "2026-10-21T00:00:00.000Z",\n  "command": "syzygy polaris",\n  "executionPermitted": false,\n  "direction": "POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14"\n}\n');
     expect(launchedMarkerState(dir)).toBe('launched');
   });
 

@@ -232,7 +232,7 @@ export async function buildInventoryBrief(opened: Extract<OpenedRun, { ok: true 
   if (!doctrine.ok) return { ok: false, stage: 'doctrine', reason: `SEC-3 cannot be quoted as adopted: ${doctrine.reason}` };
   const executionRule = await decideExecutionRule({
     role: 'inventory', runDir: opened.run, runId: opened.runId, pinnedRevision: opened.subject.pinnedRevision.commit,
-    operatorIsOwner: opened.declared.operatorIsOwner, sec3: doctrine.sec3, now, d9: sources.d9, launched: launchedMarkerState(opened.run), permitting: { enabled: PERMITTING_ARM_ENABLED },
+    operatorIsOwner: opened.declared.operatorIsOwner, sec3: doctrine.sec3, now, d9: sources.d9, launched: () => launchedMarkerState(opened.run), permitting: { enabled: PERMITTING_ARM_ENABLED },
   });
   const text = renderInventoryBrief({
     runDir: opened.run, runId: opened.runId, subject: opened.subject, declared: opened.declared, deadlineEnds: opened.deadlineEnds, session, executionRule,

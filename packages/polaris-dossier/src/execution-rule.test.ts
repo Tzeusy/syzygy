@@ -37,7 +37,7 @@ const probe = (passed: boolean): CredentialProbe & { calls: number } => {
 const inputs = (over: Partial<ExecutionInputs> = {}): ExecutionInputs => ({
   role: 'authoring', runDir: `/state/${RUN}`, runId: RUN, pinnedRevision: REV, operatorIsOwner: true, sec3: SEC3, now: NOW,
   d9: async () => ({ state: 'ok', record: 'D9-ACT' }),
-  launched: 'absent',
+  launched: () => 'absent',
   permitting: { enabled: true, choices: choices(CHOICE), probe: probe(true) },
   ...over,
 });
@@ -61,6 +61,16 @@ describe('the permitting arm is off in this build', () => {
     const rule = await decideExecutionRule(inputs({ permitting: { enabled: false, choices: source, probe: port } }));
     expect(rule).toMatchObject({ arm: 'sec-3', notPermittedBecause: ['the permitting arm is not enabled in this build: it stays off until the execution choice (`syzygy dossier allow-execution`) and the adapter-credential probe (syzygy-qkea.5) are merged and the arm is switched on, so no brief may permit execution'] });
     expect([source.calls, port.calls]).toEqual([0, 0]);
+  });
+
+  it('never reads the launched marker when the arm is off or the brief is not the authoring brief', async () => {
+    let reads = 0;
+    const launched = (): 'absent' => { reads += 1; return 'absent'; };
+    await decideExecutionRule(inputs({ launched, permitting: { enabled: false, choices: choices(CHOICE), probe: probe(true) } }));
+    await decideExecutionRule(inputs({ launched, role: 'inventory' }));
+    expect(reads).toBe(0);
+    await decideExecutionRule(inputs({ launched }));
+    expect(reads).toBe(1);
   });
 
   it('refuses an enabled arm with no ports', async () => {

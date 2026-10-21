@@ -223,7 +223,7 @@ export async function issueBrief(runDir: string, deps: BriefDeps): Promise<Brief
   const issuedAt = deps.now();
   const executionRule = await decideExecutionRule({
     role: 'authoring', runDir: run, runId, pinnedRevision: subject.pinnedRevision.commit, operatorIsOwner: declared.operatorIsOwner,
-    sec3: doctrine.sec3, now: issuedAt, d9: deps.sources.d9, launched: launchedMarkerState(run), permitting: deps.permitting ?? { enabled: PERMITTING_ARM_ENABLED },
+    sec3: doctrine.sec3, now: issuedAt, d9: deps.sources.d9, launched: () => launchedMarkerState(run), permitting: deps.permitting ?? { enabled: PERMITTING_ARM_ENABLED },
   });
   const schemaText = `${JSON.stringify(draftSchemaDocument({ pinnedRevision: subject.pinnedRevision.commit, maxQuestions: declared.maxQuestions }), null, 2)}\n`;
   const schemaSha256 = sha256(schemaText);
