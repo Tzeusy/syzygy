@@ -1,0 +1,52 @@
+{
+ "tool": "dist_compare.py",
+ "base": {
+  "treeCommit": "5837512f5be2cba4fa5caa7fd493b457ded744c8"
+ },
+ "head": {
+  "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21"
+ },
+ "projects": [
+  "packages/cap1-core",
+  "packages/cap1-daemon",
+  "packages/three-surface-poc-core",
+  "packages/polaris-generation-core",
+  "apps/three-surface-poc"
+ ],
+ "shippedFilesBase": 360,
+ "shippedFilesHead": 360,
+ "shippedFilesCompared": 360,
+ "shippedFilesInOnlyOneTree": [],
+ "shippedFilesDiffering": 2,
+ "differing": [
+  {
+   "file": "apps/three-surface-poc/dist/poc-main.d.ts",
+   "changedLines": 2,
+   "lines": [
+    "+import { materializeRoutes } from './materialize-action.js';",
+    "+    readonly materializeRoutes: typeof materializeRoutes;"
+   ]
+  },
+  {
+   "file": "apps/three-surface-poc/dist/poc-main.js",
+   "changedLines": 3,
+   "lines": [
+    "+    materializeRoutes,",
+    "-                ...materializeRoutes({",
+    "+                ...deps.materializeRoutes({"
+   ]
+  }
+ ],
+ "expected": {
+  "apps/three-surface-poc/dist/poc-main.js": 3,
+  "apps/three-surface-poc/dist/poc-main.d.ts": 2
+ },
+ "unexpectedDifferences": [],
+ "differencesWithAnotherChangedLineCount": [],
+ "expectedButIdentical": [],
+ "testFilesCompared": 306,
+ "testFilesDiffering": [
+  "apps/three-surface-poc/dist/main.test.js"
+ ],
+ "testFilesInOnlyOneTree": []
+}
