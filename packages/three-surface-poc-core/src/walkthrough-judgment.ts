@@ -13,12 +13,14 @@
 //
 // The closed invalid population is 84 present-invalid cases plus 2 absent
 // cases. The 55 common act cases are PWB-REQ-005's exact common
-// population applied to the judgment act; they are re-stated here, in the
-// same predicate order, rather than shared with `body-read-authority.ts`,
-// so that the body-read risk floor keeps its act-bound mutation evidence
-// byte-for-byte. Predicate ORDER is load-bearing: the first failing
-// predicate names the case, and each `// mutation-point:` site is one
-// rule-6 mutation target.
+// population applied to the judgment act; their predicates are re-stated
+// here, in the same order, so that each gate's `// mutation-point:` sites
+// stay its own rule-6 mutation targets. The field rules those predicates
+// apply — identity and digest shapes, the human-name and non-human
+// principal rules — are shared with `body-read-authority.ts` through
+// `act-fields.ts`, so one owner name is classified the same way by both.
+// Predicate ORDER is load-bearing: the first failing predicate names the
+// case.
 //
 // Nothing here is evidence that comprehension succeeded. A lawful outcome
 // carries the owner's recorded verdict as recorded human judgment — never
@@ -30,18 +32,33 @@
 // append-only: later correlation never rewrites the provenance under
 // which an earlier judgment took effect.
 
-import { createHash } from 'node:crypto';
 import {
-  COMMON_INVALID_CASES,
+  ACT_IDENTITY,
+  ISO_DATE,
+  NON_HUMAN_PRINCIPAL,
+  PHRASE,
+  PROJECT_IDENTITY,
+  SHA256,
+  SLUG,
   STATE_1_LABEL,
   STATE_2_LABEL,
+  TAG,
+  deepFreeze,
+  isGovernancePath,
+  isHumanName,
+  isIsoDate,
+  provenanceFromLabel,
+  sha256,
+  type ProvenanceLabel,
+} from './act-fields.js';
+import {
+  COMMON_INVALID_CASES,
   type A1Expectation,
   type ActRecordInput,
   type ArtifactInput,
   type CommonInvalidCase,
   type CorrelationOutcome,
   type LifecycleInput,
-  type ProvenanceLabel,
   type RecordingTagResolution,
 } from './body-read-authority.js';
 import { STATE_1_DISCLOSURE, STATE_2_DISCLOSURE } from './authority-disclosure.js';
@@ -414,51 +431,13 @@ const SURFACE_VERSION = /^[a-z][a-z0-9-]*@[0-9A-Za-z][0-9A-Za-z.+-]*$/;
 const EVALUATION_IDENTITY = /^[a-z0-9][a-z0-9-]*$/;
 const VERDICT = /^([a-z][a-z0-9-]*)=(met|not-met)$/;
 const RUN_RECORD_REFERENCE = /^(PWB-WALKTHROUGH-[A-Z0-9][A-Z0-9-]*)@([0-9a-f]{64})$/;
-const PROJECT_IDENTITY = /^project:[a-z0-9][a-z0-9-]*$/;
-const SHA256 = /^[0-9a-f]{64}$/;
-const SLUG = /^[a-z][a-z0-9-]*$/;
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const ACT_IDENTITY = /^[A-Z0-9][A-Z0-9-]*$/;
-const PHRASE = /^([A-Z][A-Z -]*[A-Z]): ([0-9a-f]{64})$/;
-const TAG = /^[a-z0-9][a-z0-9.-]*$/;
-const NON_HUMAN_PRINCIPAL =
-  /^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\s:/-]|$)|(?:\[bot\]|-bot|-agent)$/i;
 
 function isSurfacePath(value: string): boolean {
   if (!value.startsWith('/') || /\s/.test(value)) return false;
   return value.split('/').slice(1).every((segment) => segment !== '.' && segment !== '..');
 }
-function isGovernancePath(value: string): boolean {
-  if (!value.startsWith('.syzygy/governance/')) return false;
-  if (value.includes('\0') || value.includes('\\')) return false;
-  return value.split('/').every((segment) => segment !== '' && segment !== '.' && segment !== '..');
-}
-function isIsoDate(value: string): boolean {
-  return ISO_DATE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
-}
-function isHumanName(value: string): boolean {
-  return value.length > 0 && value.length <= 200 && !/[`*\n]/.test(value);
-}
-function sha256(bytes: Uint8Array): string {
-  return createHash('sha256').update(bytes).digest('hex');
-}
-function provenanceFromLabel(label: string): ProvenanceLabel | undefined {
-  if (label === STATE_1_LABEL) return 'state-1';
-  if (label === STATE_2_LABEL) return 'state-2';
-  return undefined;
-}
 function under(path: string, home: string): boolean {
   return path.startsWith(home) && path.length > home.length && isGovernancePath(path);
-}
-
-function deepFreeze<T>(value: T): T {
-  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    for (const key of Object.keys(value as object)) {
-      deepFreeze((value as Record<string, unknown>)[key]);
-    }
-  }
-  return value;
 }
 
 function contradictionFor(caseId: JudgmentInvalidCase, detail: string): RfcJudgmentContradiction {

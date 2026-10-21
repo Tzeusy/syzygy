@@ -1,0 +1,404 @@
+{
+  "subject": "syzygy-bpyt.6.2 shared non-human-principal rule and its two importing gates",
+  "commit": "88c79070db6ed64bd820e47f1c41fb10b6376f1b",
+  "trackedTreeDirtyBefore": [],
+  "trackedTreeDirtyAfter": [],
+  "subjectDigests": {
+    "packages/three-surface-poc-core/src/act-fields.ts": "09a7c2e5c0514349e10b2b82a0aaf55aee9f3fac261385716ec3f70672552986",
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "f612651d13421c0ffcba0d8db9f5240dcb521aa2c0315b5316b92c52a7cb7b77",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "c33d0140539525175a267382d2f61f9ca891abbf4abed91bafa0ad33e1a716e6"
+  },
+  "testFiles": [
+    "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+  ],
+  "baseline": {
+    "total": 393,
+    "passed": 393,
+    "failed": 0,
+    "failing": []
+  },
+  "mutants": [
+    {
+      "id": "drop-arm-1-role-prefix",
+      "description": "the former body-read role-prefix arm is removed",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 389,
+        "failed": 4
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"machine\" (role prefix machine) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"machine\" (role prefix machine) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"machine\" (role prefix machine) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"machine\" (role prefix machine (flipped)) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "drop-arm-2-model-name",
+      "description": "the former body-read model-name arm is removed",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 373,
+        "failed": 20
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"codex\" (model name codex) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"gpt-5\" (model name gpt) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"an llm\" (model name llm) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"codex\" (model name codex) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"gpt-5\" (model name gpt) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"an llm\" (model name llm) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"codex\" (model name codex) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"gpt-5\" (model name gpt) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"an llm\" (model name llm) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"Anthropic Claude\" (model name claude as a word (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"codex\" (model name codex (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"gpt-5\" (model name gpt (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"GitHub Copilot\" (model name copilot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"an llm\" (model name llm (flipped)) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "drop-arm-3-role-prefix",
+      "description": "the former judgment role-prefix arm is removed",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 377,
+        "failed": 16
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"daemon\" (role prefix daemon) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"automation: nightly\" (role prefix automation) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"syzygy\" (role prefix syzygy) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"ci/release\" (role prefix ci with a slash) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "drop-arm-4-suffix",
+      "description": "the former judgment bot/agent suffix arm is removed",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 381,
+        "failed": 12
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"renovate[bot]\" (suffix [bot]) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"deploy-bot\" (suffix -bot) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"review-agent\" (suffix -agent) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-1-unanchored",
+      "description": "the arm-1 role prefix matches anywhere, not at the start",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 391,
+        "failed": 2
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Anna Model\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Anna Model\" stays owner-another-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-1-no-separator",
+      "description": "the arm-1 role prefix needs no separator after it",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 389,
+        "failed": 4
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Botha\" stays owner-another-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Agentha Smith\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Botha\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Agentha Smith\" stays owner-another-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-2-no-word-boundary",
+      "description": "the model-name arm matches inside a word",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|(claude|codex|gpt|copilot|llm)|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 391,
+        "failed": 2
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Claudette\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Claudette\" stays owner-another-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-3-unanchored",
+      "description": "the arm-3 role prefix matches anywhere, not at the start",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 389,
+        "failed": 4
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Anna Model\" stays owner-another-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Anna Daemon\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Anna Model\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Anna Daemon\" stays owner-another-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-3-no-slash",
+      "description": "the arm-3 separator class loses the slash",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 389,
+        "failed": 4
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"ci/release\" (role prefix ci with a slash) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "arm-4-unanchored",
+      "description": "the suffix arm matches anywhere, not at the end",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)/i;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 391,
+        "failed": 2
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator a human name \"Jean-Botha\" stays owner-another-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate a human name \"Jean-Botha\" stays owner-another-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "case-sensitive",
+      "description": "the rule loses its case-insensitive flag",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/act-fields.ts",
+          "old": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;",
+          "new": "/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/;"
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 385,
+        "failed": 8
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"Anthropic Claude\" (model name claude as a word) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"GitHub Copilot\" (model name copilot) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"Anthropic Claude\" (model name claude as a word (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"GitHub Copilot\" (model name copilot (flipped)) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "body-gate-private-former-rule",
+      "description": "the body-read gate tests owners against its former private rule again",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+          "old": "const REPOSITORY_IDENTITY = ",
+          "new": "const FORMER_NON_HUMAN = /^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b/i;\nconst REPOSITORY_IDENTITY = "
+        },
+        {
+          "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+          "old": "NON_HUMAN_PRINCIPAL.test(",
+          "new": "FORMER_NON_HUMAN.test("
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 372,
+        "failed": 21
+      },
+      "failing": [
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator consent: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator policy: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"daemon\" (role prefix daemon (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"automation: nightly\" (role prefix automation (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"syzygy\" (role prefix syzygy (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"ci/release\" (role prefix ci with a slash (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"renovate[bot]\" (suffix [bot] (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"deploy-bot\" (suffix -bot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-005 owner-non-human: one rule shared with the judgment evaluator registry: owner \"review-agent\" (suffix -agent (flipped)) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "judgment-gate-private-former-rule",
+      "description": "the judgment evaluator tests owners against its former private rule again",
+      "fragments": [
+        {
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "old": "const RUN_RECORD_IDENTITY = ",
+          "new": "const FORMER_NON_HUMAN = /^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;\nconst RUN_RECORD_IDENTITY = "
+        },
+        {
+          "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+          "old": "NON_HUMAN_PRINCIPAL.test(",
+          "new": "FORMER_NON_HUMAN.test("
+        }
+      ],
+      "observed": {
+        "total": 393,
+        "passed": 387,
+        "failed": 6
+      },
+      "failing": [
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"machine\" (role prefix machine (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"Anthropic Claude\" (model name claude as a word (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"codex\" (model name codex (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"gpt-5\" (model name gpt (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"GitHub Copilot\" (model name copilot (flipped)) \u2192 owner-non-human",
+        "PWB-REQ-022 owner-non-human: one rule shared with the body-read gate owner \"an llm\" (model name llm (flipped)) \u2192 owner-non-human"
+      ],
+      "killed": true,
+      "restored": true
+    }
+  ],
+  "summary": {
+    "planned": 13,
+    "killed": 13,
+    "restored": 13
+  },
+  "harnessSource": "\"\"\"Rule-6 mutants for syzygy-bpyt.6.2's shared non-human-principal rule.\n\nEach mutant rewrites exact fragments of the subject files, runs both gates'\nsuites, restores the bytes and verifies their digest. A mutant is killed\nwhen at least one test fails. Usage: python3 act_fields_mutants.py <worktree> <out.json>\n\"\"\"\nimport hashlib\nimport json\nimport subprocess\nimport sys\nimport tempfile\nfrom pathlib import Path\n\nROOT = Path(sys.argv[1])\nOUT = Path(sys.argv[2])\nFIELDS = 'packages/three-surface-poc-core/src/act-fields.ts'\nBODY = 'packages/three-surface-poc-core/src/body-read-authority.ts'\nJUDGMENT = 'packages/three-surface-poc-core/src/walkthrough-judgment.ts'\nTESTS = [\n    'packages/three-surface-poc-core/src/body-read-authority.test.ts',\n    'packages/three-surface-poc-core/src/walkthrough-judgment.test.ts',\n]\nRULE = (\n    r\"/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b|\"\n    r\"^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i;\"\n)\nARM1 = r\"^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\"\nARM2 = r\"\\b(claude|codex|gpt|copilot|llm)\\b|\"\nARM3 = r\"^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|\"\nARM4 = r\"|(?:\\[bot\\]|-bot|-agent)$/i;\"\nOLD_BODY_RULE = r\"/^(agent|bot|machine|service|system|ci|pipeline|model)([:\\s-]|$)|\\b(claude|codex|gpt|copilot|llm)\\b/i\"\nOLD_JUDGMENT_RULE = r\"/^(?:agent|bot|ci|system|daemon|service|pipeline|automation|model|claude|syzygy)(?:[\\s:/-]|$)|(?:\\[bot\\]|-bot|-agent)$/i\"\n\n\ndef rule_with(old, new):\n    assert RULE.count(old) == 1, old\n    return [(FIELDS, RULE, RULE.replace(old, new))]\n\n\nMUTANTS = [\n    ('drop-arm-1-role-prefix', 'the former body-read role-prefix arm is removed', rule_with(ARM1, '')),\n    ('drop-arm-2-model-name', 'the former body-read model-name arm is removed', rule_with(ARM2, '')),\n    ('drop-arm-3-role-prefix', 'the former judgment role-prefix arm is removed', rule_with(ARM3, '')),\n    ('drop-arm-4-suffix', 'the former judgment bot/agent suffix arm is removed', rule_with(ARM4, '/i;')),\n    ('arm-1-unanchored', 'the arm-1 role prefix matches anywhere, not at the start', rule_with(r\"/^(agent|bot|machine\", r\"/(agent|bot|machine\")),\n    ('arm-1-no-separator', 'the arm-1 role prefix needs no separator after it', rule_with(r\"model)([:\\s-]|$)|\", r\"model)|\")),\n    ('arm-2-no-word-boundary', 'the model-name arm matches inside a word', rule_with(r\"\\b(claude|codex|gpt|copilot|llm)\\b\", r\"(claude|codex|gpt|copilot|llm)\")),\n    ('arm-3-unanchored', 'the arm-3 role prefix matches anywhere, not at the start', rule_with(r\"|^(?:agent|bot|ci|system|daemon\", r\"|(?:agent|bot|ci|system|daemon\")),\n    ('arm-3-no-slash', 'the arm-3 separator class loses the slash', rule_with(r\"(?:[\\s:/-]|$)\", r\"(?:[\\s:-]|$)\")),\n    ('arm-4-unanchored', 'the suffix arm matches anywhere, not at the end', rule_with(r\"(?:\\[bot\\]|-bot|-agent)$/i\", r\"(?:\\[bot\\]|-bot|-agent)/i\")),\n    ('case-sensitive', 'the rule loses its case-insensitive flag', rule_with(r\"-agent)$/i;\", r\"-agent)$/;\")),\n    (\n        'body-gate-private-former-rule',\n        'the body-read gate tests owners against its former private rule again',\n        [\n            (BODY, 'const REPOSITORY_IDENTITY = ', f'const FORMER_NON_HUMAN = {OLD_BODY_RULE};\\nconst REPOSITORY_IDENTITY = '),\n            (BODY, 'NON_HUMAN_PRINCIPAL.test(', 'FORMER_NON_HUMAN.test('),\n        ],\n    ),\n    (\n        'judgment-gate-private-former-rule',\n        'the judgment evaluator tests owners against its former private rule again',\n        [\n            (JUDGMENT, 'const RUN_RECORD_IDENTITY = ', f'const FORMER_NON_HUMAN = {OLD_JUDGMENT_RULE};\\nconst RUN_RECORD_IDENTITY = '),\n            (JUDGMENT, 'NON_HUMAN_PRINCIPAL.test(', 'FORMER_NON_HUMAN.test('),\n        ],\n    ),\n]\n\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\n\ndef run_tests(scratch, label):\n    out = Path(scratch) / f'{label}.json'\n    subprocess.run(\n        ['npx', 'vitest', 'run', '--project', '@syzygy/three-surface-poc-core', *TESTS, '--reporter=json', f'--outputFile={out}'],\n        cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env={**__import__('os').environ, 'CI': '1'},\n    )\n    report = json.loads(out.read_text())\n    failing = [t['fullName'] for f in report['testResults'] for t in f['assertionResults'] if t['status'] == 'failed']\n    return {'total': report['numTotalTests'], 'passed': report['numPassedTests'], 'failed': report['numFailedTests']}, failing\n\n\ndef main():\n    subjects = [FIELDS, BODY, JUDGMENT]\n    dirty_before = git('status', '--porcelain', '--untracked-files=no')\n    originals = {f: (ROOT / f).read_bytes() for f in subjects}\n    results = []\n    with tempfile.TemporaryDirectory() as scratch:\n        baseline, baseline_failing = run_tests(scratch, 'baseline')\n        try:\n            for mutant_id, description, edits in MUTANTS:\n                texts = {f: originals[f].decode('utf-8') for f in subjects}\n                fragments = []\n                for path, old, new in edits:\n                    assert texts[path].count(old) == 1, (mutant_id, path, old)\n                    texts[path] = texts[path].replace(old, new)\n                    fragments.append({'file': path, 'old': old, 'new': new})\n                for path in {e[0] for e in edits}:\n                    (ROOT / path).write_bytes(texts[path].encode('utf-8'))\n                try:\n                    observed, failing = run_tests(scratch, mutant_id)\n                finally:\n                    for path in subjects:\n                        (ROOT / path).write_bytes(originals[path])\n                restored = all(sha((ROOT / f).read_bytes()) == sha(originals[f]) for f in subjects)\n                results.append({\n                    'id': mutant_id, 'description': description, 'fragments': fragments,\n                    'observed': observed, 'failing': failing, 'killed': len(failing) > 0, 'restored': restored,\n                })\n                print(mutant_id, 'killed' if failing else 'SURVIVED', len(failing), flush=True)\n        finally:\n            for path in subjects:\n                (ROOT / path).write_bytes(originals[path])\n    record = {\n        'subject': 'syzygy-bpyt.6.2 shared non-human-principal rule and its two importing gates',\n        'commit': git('rev-parse', 'HEAD').strip(),\n        'trackedTreeDirtyBefore': dirty_before.splitlines(),\n        'trackedTreeDirtyAfter': git('status', '--porcelain', '--untracked-files=no').splitlines(),\n        'subjectDigests': {f: sha(originals[f]) for f in subjects},\n        'testFiles': TESTS,\n        'baseline': {**baseline, 'failing': baseline_failing},\n        'mutants': results,\n        'summary': {'planned': len(MUTANTS), 'killed': sum(r['killed'] for r in results), 'restored': sum(r['restored'] for r in results)},\n        'harnessSource': Path(__file__).read_text(),\n    }\n    OUT.write_text(json.dumps(record, indent=2) + '\\n')\n    print('summary', record['summary'])\n\n\nmain()\n"
+}
