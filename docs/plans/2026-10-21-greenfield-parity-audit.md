@@ -17,6 +17,8 @@ The beads it names are the work; `bd show <id>` owns their state.
   - Remove the 9.2k lines of developer tooling compiled into the POC app and
     the 4.8k-line parked provider island, and the product runtime is about
     38k lines, inside the estimate.
+    [Corrected 2026-10-21: by bead `syzygy-bpyt.8.1`'s module list the island
+    is 3,803 source lines; see the note under the delta table.]
   - The excess is shape, not bulk:
     - duplicated concepts: two owner-act validators whose non-human-principal
       rules have drifted; two bounded blob readers; 26 sha256 helpers; six
@@ -32,6 +34,10 @@ The beads it names are the work; `bd show <id>` owns their state.
     cloned once per act: 120 exact-duplicate function groups, 331 copies.
 - **The artifact estates have no retention rule.**
   - docs/evidence holds 388 files (20.45 MB); 141 are cited by nothing.
+    [Corrected 2026-10-21: "141" had no stated predicate and cannot be
+    re-derived. At `eba011df`, 150 of 403 files have a basename that no other
+    tracked file contains, and 227 are cited by nothing outside
+    `docs/evidence/`.]
   - About 56% of governed lines are spent rounds and history, performed
     packages, or a byte-identical RFC mirror.
   - AGENTS.md has grown back to 738 lines, 74% notes-to-self, and loads
@@ -310,6 +316,31 @@ Residue by class: duplicated concept 16, layer inflation 5, tooling sprawl 5, hi
 
 These are row counts, not lines. Several residue rows are structural traits
 inside components whose volume is at parity, which is the verdict's point.
+
+[Added 2026-10-21, after the owner packet
+(`.syzygy/governance/decisions/OWNER-DIRECTION-GREENFIELD-PARITY-ANSWERS-2026-10-21.md`,
+GP-Q0 part 2). The rows above are unchanged. Rows 50, 51, 57, 58 and 59 now
+read **justified**: the owner kept each at the status quo, and review found
+the constraint this audit failed to write down (greenfield rule 2).]
+
+- **Row 50:** `contracts/candidates/scripts/` is a self-rooted, portable
+  bundle (candidates `README.md:101`), and the bound `IMPACT-LEDGER.md:190-192`
+  cites three of the scripts by path.
+- **Row 51:** the two template copies are held by an independent oracle
+  test (`gate-acts.test.ts:602-606` spawns the real recorders), and the
+  performed recorder stays frozen.
+- **Row 57:** performed candidate packages are runtime consent inputs, and
+  checkers, CI, the acceptance record and in-force policies read round files.
+- **Row 58:** P-33 shape (M) makes installed modules resolve through the
+  candidate twins; CG-1i and CG-7h depend on both copies.
+- **Row 59:** both reports are generator inputs.
+- **Row 21:** the island is 3,803 source lines by bead `syzygy-bpyt.8.1`'s
+  module list. "Parked, not deleted" was owner-selected draft text on
+  2026-10-05 and drafter text on 2026-10-15; the signed v1.2 delta says the
+  provider mode is "parked … not withdrawn".
+
+With the reclassification the shares become 13.6% parity (8), 23.7%
+justified (14), 61.0% residue (36) and 1.7% gap (1), over the same 59 rows.
 
 ## 6. Findings and beads
 
