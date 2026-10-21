@@ -538,6 +538,32 @@ def p115_payload_inventory(journal: pathlib.Path) -> list[dict]:
             for p in sorted(journal.iterdir()) if p.is_file()] if journal.exists() else []
 
 
+def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool) -> None:
+    """A pathname is not retention evidence; observe a confirmed publication."""
+    try:
+        body = p115_read(path)
+        if body is None:
+            state = "absent"
+        elif (published["body"] is None or published["identity"] is None
+              or body != published["body"] or p115_identity(path) != published["identity"]):
+            state = "unverified"
+        else:
+            phase = json.loads(body)["state"]
+            labels = {"failed": "updated failed", "prepared": "older prepared", "completed": "completed"}
+            if phase not in labels or completed and phase != "completed":
+                state = "unverified"
+            else:
+                print("P115 verified retained receipt phase: " + labels[phase])
+                prefix = ("P115 completed outcome receipt retained: " if completed else
+                          "P115 failed-attempt evidence retained: ")
+                print(prefix + str(path))
+                return
+    except BaseException as verification_error:
+        print("P115 secondary receipt verification error: " + json.dumps(p115_exception(verification_error)))
+        state = "unverified/read-error"
+    print(f"P115 receipt verification: {state}; no retained receipt claimed: {path}")
+
+
 def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
                  review_rel: str, disposition_rel: str | None,
                  options: frozenset[str]) -> int:
@@ -705,7 +731,7 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
         print("FAILED P115: " + message)
         print("P115 recovery " + ("incomplete: " + " | ".join(conflicts) if conflicts else "complete; captured preimages preserved"))
         if outcome is not None:
-            print(f"P115 failed-attempt evidence retained: {outcome}")
+            p115_report_receipt(outcome, receipt_state, completed=False)
         if not isinstance(failure, Exception):
             raise
         return 1
@@ -727,7 +753,7 @@ def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote
             persist()
         except BaseException as evidence_error:
             print("P115 WARNING: cleanup diagnostic persistence failed: " + json.dumps(p115_exception(evidence_error)))
-        print(f"P115 completed outcome receipt retained: {outcome}")
+        p115_report_receipt(outcome, receipt_state, completed=True)
     print(f"wrote {reference.RECORD.as_posix()}; appended exact P115 aggregate block")
     print(f"next: review the logical Git transaction, commit, then `git tag -a {tag_for(pkg, version)}` on that commit")
     return 0

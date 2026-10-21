@@ -375,7 +375,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
         "foreign-subject-edit", "foreign-subject-delete", "foreign-record-edit", "foreign-record-delete",
         "foreign-aggregate-edit", "foreign-aggregate-delete", "restore-failure", "restore-stage-drift",
         "linked-worktree-control", "linked-worktree-aggregate-failure",
-        *(f"T{n:02}" for n in (*range(1, 16), 19)),
+        *(f"T{n:02}" for n in (*range(1, 16), 19, 20, 21, 22)),
     )
     with tempfile.TemporaryDirectory(prefix="p115-entrypoint-fixtures-") as temp:
         template = Path(temp) / "template"
@@ -400,12 +400,14 @@ def recording_failure_selftest(root: Path, expect) -> None:
             else:
                 subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", str(template), str(tree)],
                                check=True, capture_output=True)
-            cleanup_case = name in {"T09", "T10", "T11"}
+            cleanup_case = name in {"T09", "T10", "T11", "T22"}
             positive = name in {"control", "linked-worktree-control"} or cleanup_case
             before = {p: recorder.p115_read(tree / p) for p in paths}
             expected = dict(before)
             events, foreign, foreign_identities = [], {}, {}
             initial_head = git(tree, "rev-parse", "HEAD")
+            initial_tags = git(tree, "tag", "--list")
+            receipt_link_attempts = []
             dirty = tree / "README.md"
             if name in {"dirty-staged", "dirty-unstaged"}:
                 dirty.write_bytes(dirty.read_bytes() + b"\nSynthetic unrelated dirt.\n")
@@ -420,6 +422,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
             original_stage, original_replace = recorder.p115_stage, recorder.os.replace
             original_link, original_unlink = recorder.os.link, Path.unlink
             original_rmtree, original_read = recorder.shutil.rmtree, recorder.p115_read
+            original_read_bytes = Path.read_bytes
             original_render = recorder.render_record
             failed_once = set()
 
@@ -546,9 +549,24 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     if name == "T15" and b'"state": "failed"' in body:
                         events.append("real failed receipt publication barrier")
                         raise OSError(30, "P115 failure receipt storage refused", str(destination))
-                return original_replace(source, destination)
+                result = original_replace(source, destination)
+                if (name == "T22" and Path(destination).name.endswith(".ATTEMPT.json")
+                        and "cleanup-failed" in failed_once):
+                    failed_once.add("cleanup-receipt-published")
+                    events.append("real cleanup receipt native publication")
+                return result
 
             def link(source, destination):
+                if name in {"T20", "T21"} and Path(destination).name.endswith(".ATTEMPT.json"):
+                    phase = json.loads(Path(source).read_bytes())["state"]
+                    fault = name == "T20" or not receipt_link_attempts
+                    receipt_link_attempts.append({"phase": phase, "fault": fault})
+                    if fault:
+                        events.append("native " + phase + " receipt publication refused")
+                        raise OSError(28, "P115 native receipt publication refused: " + phase, str(destination))
+                    result = original_link(source, destination)
+                    events.append("real failed receipt exclusive publication")
+                    return result
                 if name == "T05" and destination == tree / RECORD:
                     foreign[RECORD] = Path(source).read_bytes()
                     Path(destination).write_bytes(foreign[RECORD])
@@ -569,13 +587,26 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return original_unlink(path, *args, **kwargs)
 
             def rmtree(path, *args, **kwargs):
-                if (name in {"T09", "T10"} and Path(path).name.startswith("attempt-")
+                if (name in {"T09", "T10", "T22"} and Path(path).name.startswith("attempt-")
                         and Path(path).parent.name == "p115-recording-recovery"):
                     if name == "T10":
                         original_unlink(Path(path) / "0.before")
                         events.append("real cleanup removed one captured preimage")
+                    failed_once.add("cleanup-failed")
                     inject("postcommit journal cleanup failure")
                 return original_rmtree(path, *args, **kwargs)
+
+            def read_bytes(path):
+                diagnostic = (name == "T22" and path.name.endswith(".ATTEMPT.json")
+                              and "cleanup-receipt-published" in failed_once)
+                if diagnostic and "cleanup-receipt-readback" in failed_once:
+                    events.append("diagnostic receipt native read denied")
+                    raise PermissionError(13, "P115 diagnostic receipt read refused", str(path))
+                body = original_read_bytes(path)
+                if diagnostic:
+                    failed_once.add("cleanup-receipt-readback")
+                    events.append("real cleanup receipt readback")
+                return body
 
             def read(path):
                 result = original_read(path)
@@ -598,6 +629,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
                      mock.patch.object(recorder.os, "replace", replace), \
                      mock.patch.object(recorder.os, "link", link), \
                      mock.patch.object(Path, "unlink", unlink), \
+                     mock.patch.object(Path, "read_bytes", read_bytes), \
                      mock.patch.object(recorder.shutil, "rmtree", rmtree), \
                      mock.patch.object(recorder, "p115_read", read), \
                      contextlib.redirect_stdout(output):
@@ -623,10 +655,12 @@ def recording_failure_selftest(root: Path, expect) -> None:
             state_ok = actual == expected
             gate_ok = code == (0 if positive else 1) and is_signed(tree) == positive
             index_ok = (git(tree, "ls-files", "--stage", "-z") == initial_index
-                        and git(tree, "rev-parse", "HEAD") == initial_head)
+                        and git(tree, "rev-parse", "HEAD") == initial_head
+                        and git(tree, "tag", "--list") == initial_tags)
             dirt_ok = dirty_body is None or dirty.read_bytes() == dirty_body
             reached = ("real five-patch apply" in events) == (name not in {
-                "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch"})
+                "dirty-staged", "dirty-unstaged", "dirty-untracked", "construction-drift", "preflight-bad-patch",
+                "T20", "T21"})
             originals = [json.loads(line.removeprefix("P115 original exception: "))
                          for line in lines.splitlines() if line.startswith("P115 original exception: ")]
             failure_evidence = (positive and not retained or
@@ -639,13 +673,16 @@ def recording_failure_selftest(root: Path, expect) -> None:
                         "signedChain": True, "capturedInputsAndIndex": True}
                     and journals[0]["cleanupException"]["nodes"][0]["errno"] == 5
                     and "P115 WARNING: recording completed; private cleanup failed:" in lines
-                    and "P115 completed outcome receipt retained:" in lines and not originals)
+                    and not originals)
             if name == "T15":
                 # The explicitly faulted failure-receipt update leaves prepared
                 # evidence. Its original diagnostic still precedes secondaries.
                 failure_evidence = (len(journals) == 1 and journals[0]["state"] == "prepared"
                     and len(originals) == 1 and "P115 diagnostic fallback:" in lines
                     and "durable failure update unavailable" in lines)
+            if name == "T20":
+                failure_evidence = (not retained and len(originals) == 1
+                    and "P115 diagnostic fallback:" in lines and "durable failure update unavailable" in lines)
             captured_payload = [{"path": f"{n}.before", "bytes": len(body), "sha256": digest(body)}
                                 for n, body in enumerate(before.values()) if body is not None]
             preimages_ok = all(
@@ -660,6 +697,10 @@ def recording_failure_selftest(root: Path, expect) -> None:
                           captured_payload[1:] if name == "T10" else captured_payload)
                 preimages_ok = (journals[0]["payloadCapturedAtCompletion"] == captured_payload
                                 and journals[0]["payloadSurvivors"] == wanted == survivors)
+            if name == "T20":
+                payloads = [p for p in (git_dir / "p115-recording-recovery").glob("attempt-*") if p.is_dir()]
+                preimages_ok = (len(payloads) == 1
+                    and recorder.p115_payload_inventory(payloads[0]) == captured_payload)
             receipt_identity_ok = all(j["attemptId"] + ".ATTEMPT.json" == p.name
                 and j["ranAt"] == initial_head.decode().strip()
                 and j["indexSha256"] == digest(initial_index)
@@ -667,10 +708,27 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 and datetime.datetime.fromisoformat(j["capturedAt"][:-1] + "+00:00")
                     <= datetime.datetime.fromisoformat(j["updatedAt"][:-1] + "+00:00")
                 for p, j in zip(retained, journals))
-            failure_evidence = failure_evidence and receipt_identity_ok
+            claims = [line for line in lines.splitlines() if line.startswith((
+                "P115 failed-attempt evidence retained: ", "P115 completed outcome receipt retained: "))]
+            phases = [line for line in lines.splitlines() if line.startswith("P115 verified retained receipt phase: ")]
+            if name == "T22":
+                retention_ok = (not claims and not phases
+                    and "P115 receipt verification: unverified/read-error; no retained receipt claimed:" in lines)
+            elif journals:
+                label = {"failed": "updated failed", "prepared": "older prepared", "completed": "completed"}
+                prefix = "P115 completed outcome receipt retained: " if positive else "P115 failed-attempt evidence retained: "
+                retention_ok = (len(journals) == 1 and claims == [prefix + str(retained[0])]
+                    and phases == ["P115 verified retained receipt phase: " + label[journals[0]["state"]]])
+            else:
+                retention_ok = not claims and not phases
+                if name == "T20":
+                    retention_ok = retention_ok and "P115 receipt verification: absent; no retained receipt claimed:" in lines
+            failure_evidence = failure_evidence and receipt_identity_ok and retention_ok
             recovery_ok = positive or (
                 ("P115 recovery incomplete:" in lines) if actual != before else
                 ("P115 recovery complete;" in lines))
+            if name == "T20":
+                recovery_ok = "P115 recovery incomplete: failure receipt persistence failed;" in lines
             if name.startswith("linked-worktree-"):
                 preimages_ok = preimages_ok and (tree / ".git").is_file() and git_dir != template / ".git"
             required = {
@@ -712,6 +770,10 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "T15": ["real write barrier with T15 exception chain", "real restoration replacement failure",
                         "real failed receipt publication barrier"],
                 "T19": ["real completion receipt readback then foreign subject edit"],
+                "T20": ["native prepared receipt publication refused", "native failed receipt publication refused"],
+                "T21": ["native prepared receipt publication refused", "real failed receipt exclusive publication"],
+                "T22": ["postcommit journal cleanup failure", "real cleanup receipt native publication",
+                        "real cleanup receipt readback", "diagnostic receipt native read denied"],
             }.get(name, [])
             reached = reached and all(event in events for event in required)
             injected = not positive and not name.startswith("T") and name not in {
@@ -757,6 +819,21 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 cause_ok = len(originals) == 1 and "P115 transaction input changed:" in originals[0]["nodes"][0]["message"]
             if name == "T05":
                 cause_ok = len(originals) == 1 and originals[0]["nodes"][0]["errno"] == 17
+            if name in {"T20", "T21"}:
+                secondary = [json.loads(line.split(": ", 1)[1]) for line in lines.splitlines()
+                             if line.startswith("P115 secondary evidence error: ")]
+                cause_ok = (len(originals) == 1 and originals[0]["nodes"][0]["errno"] == 28
+                    and receipt_link_attempts == [{"phase": "prepared", "fault": True},
+                        {"phase": "failed", "fault": name == "T20"}]
+                    and len(secondary) == (1 if name == "T20" else 0))
+                if name == "T20":
+                    cause_ok = (cause_ok and secondary[0]["nodes"][0]["errno"] == 28
+                        and lines.index("P115 original exception: ") < lines.index("P115 secondary evidence error: "))
+            if name == "T22":
+                secondary = [json.loads(line.split(": ", 1)[1]) for line in lines.splitlines()
+                             if line.startswith("P115 secondary receipt verification error: ")]
+                cause_ok = (len(secondary) == 1 and secondary[0]["nodes"][0]["errno"] == 13
+                            and not originals and len(journals) == 1 and journals[0]["state"] == "completed")
             ownership_ok = all(recorder.p115_identity(tree / rel) == identity
                                for rel, identity in foreign_identities.items())
             if name in {"T03", "T04", "T05", "T12", "T13", "T14"}:
@@ -779,12 +856,13 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "actualStates": {str(p): None if b is None else digest(b) for p,b in actual.items()},
                 "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
                                "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok,
-                               "ownership": ownership_ok},
+                               "ownership": ownership_ok, "retentionVerified": retention_ok},
                 "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
                 "receiptIdentityAndCaptureTime": receipt_identity_ok,
                 "requiredEvents": required, "stageFilesRemoved": stages_clean,
                 "originalException": originals, "foreignIdentities": {str(p): t for p,t in foreign_identities.items()},
-                "journals": journals, "output": lines}, sort_keys=True))
+                "journals": journals, "receiptLinkAttempts": receipt_link_attempts,
+                "verifiedReceiptPhases": phases, "retentionClaims": claims, "output": lines}, sort_keys=True))
             shutil.rmtree(tree)
 
 
