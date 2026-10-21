@@ -424,9 +424,11 @@ def sweep() -> dict:
         archived = sorted(m.name for m in archive.getmembers() if m.isfile() or m.issym() or m.islnk())
     if files != archived:
         raise ValueError("independent ls-tree/archive tracked denominators disagree")
-    # New untracked candidate files do not change the baseline denominator.
-    if not set(files).issubset(listed):
-        raise ValueError("baseline tracked population missing from worktree index")
+    # The historical sweep stays at BASE; checkout preservation follows current HEAD.
+    # New staged or untracked files do not change either committed denominator.
+    head_files = (p for p in git("ls-tree", "-r", "-z", "--name-only", "HEAD").decode().split("\0") if p)
+    if not set(head_files).issubset(listed):
+        raise ValueError("current HEAD tracked population missing from worktree index")
     # One object batch keeps the complete tracked sweep cheap and read-only.
     result = subprocess.run(["git", "cat-file", "--batch"], cwd=ROOT,
                             input="".join(f"{BASE}:{p}\n" for p in files).encode(),
@@ -537,6 +539,136 @@ def check(write: bool = False) -> list[str]:
             errors.extend(verify_manifest(target.read_text() if target.exists() else "", text))
         elif not target.exists() or target.read_text() != text:
             errors.append(f"generated candidate artifact drift: {path}")
+    return errors
+
+
+
+def index_population_selftest(evidence_root: Path | None = None) -> list[str]:
+    """Five native checkout fixtures; only the child builder's --check is run.
+
+    The optional directory is for an author harness to retain the same fixtures;
+    it is not a CLI selection or a way to shorten the default selftest.
+    """
+    cases = (
+        ("committed-unrelated-base-deletion", 0),
+        ("head-base-path-index-removal", 1),
+        ("head-post-base-path-index-removal", 1),
+        ("staged-addition", 0),
+        ("untracked-addition", 0),
+    )
+    builder = "scripts/build_three_surface_poc_governedby_reference_amendment.py"
+    source = (ROOT / builder).read_bytes()
+    head = git("rev-parse", "HEAD").decode().strip()
+    protected = sorted(p.relative_to(ROOT).as_posix() for p in CANDIDATE.rglob("*") if p.is_file())
+    protected.append("scripts/check_p115_compatibility_examples.py")
+    observed_files = ("README.md", builder, "p115-index-population-fixture.txt",
+                      MANIFEST_OUT.as_posix(), PACKAGE + "IMPACT-SWEEP.json")
+    success = ("P115 candidate preparation matches: six proposed subjects, five patches, only 014 changed, "
+               "26 requirements, eight 014 scenarios; no adoption or runtime claim.\n")
+    refusal = "P115 PREPARATION FAIL: current HEAD tracked population missing from worktree index\n"
+    errors = []
+    with tempfile.TemporaryDirectory(prefix="p115-index-population-") as temporary:
+        evidence = Path(temporary) if evidence_root is None else evidence_root
+        if evidence_root is not None:
+            evidence.mkdir(parents=True, exist_ok=False)
+        for name, expected_code in cases:
+            case = evidence / name
+            case.mkdir()
+            commands = case / "commands"
+            commands.mkdir()
+            tree = case / "tree"
+            events = []
+
+            def run(argv: list[str], cwd: Path) -> tuple[int, bytes, bytes]:
+                start = datetime.datetime.now(datetime.timezone.utc)
+                child = subprocess.Popen(argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = child.communicate()
+                end = datetime.datetime.now(datetime.timezone.utc)
+                stem = f"{len(events):03d}"
+                (commands / (stem + ".stdout")).write_bytes(stdout)
+                (commands / (stem + ".stderr")).write_bytes(stderr)
+                event = {"argv": argv, "cwd": str(cwd), "pid": child.pid,
+                         "startedAt": start.isoformat(), "completedAt": end.isoformat(),
+                         "elapsedSeconds": (end - start).total_seconds(), "returncode": child.returncode,
+                         "stdout": stem + ".stdout", "stderr": stem + ".stderr",
+                         "stdoutSha256": sha256(stdout), "stderrSha256": sha256(stderr)}
+                events.append(event)
+                (commands / (stem + ".json")).write_text(json.dumps(event, indent=2) + "\n")
+                return child.returncode, stdout, stderr
+
+            def fixture_git(*args: str) -> bytes:
+                code, stdout, stderr = run(["git", "--no-optional-locks", *args], tree)
+                if code:
+                    raise ValueError(f"native index fixture setup failed: {name}: {args}: {stderr!r}")
+                return stdout
+
+            code, _stdout, stderr = run(["git", "--no-optional-locks", "clone", "--quiet",
+                                        "--no-hardlinks", "--no-checkout", str(ROOT), str(tree)], ROOT)
+            if code:
+                raise ValueError(f"native index fixture clone failed: {name}: {stderr!r}")
+            fixture_git("checkout", "--quiet", "--detach", head)
+            (tree / builder).write_bytes(source)
+            if name == "committed-unrelated-base-deletion":
+                fixture_git("rm", "--quiet", "--", "README.md")
+                fixture_git("-c", "user.name=P115 synthetic fixture", "-c", "user.email=p115-fixture@example.invalid",
+                            "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null",
+                            "commit", "--quiet", "-m", "Synthetic index-membership fixture; no owner action")
+            elif name == "head-base-path-index-removal":
+                fixture_git("rm", "--quiet", "--cached", "--", "README.md")
+            elif name == "head-post-base-path-index-removal":
+                fixture_git("rm", "--quiet", "--cached", "--", builder)
+            else:
+                (tree / "p115-index-population-fixture.txt").write_bytes(b"Synthetic checkout membership input; no owner action.\n")
+                if name == "staged-addition":
+                    fixture_git("add", "--", "p115-index-population-fixture.txt")
+
+            def snapshot(label: str) -> dict:
+                destination = case / label
+                destination.mkdir()
+                index = Path(fixture_git("rev-parse", "--git-path", "index").decode().strip())
+                index = index if index.is_absolute() else tree / index
+                body = index.read_bytes()
+                (destination / "index.bin").write_bytes(body)
+                state = {"head": fixture_git("rev-parse", "HEAD").decode().strip(),
+                         "indexSha256": sha256(body), "files": {}, "protected": {}}
+                (destination / "index-stage.bin").write_bytes(fixture_git("ls-files", "--stage", "-z"))
+                for relative in observed_files:
+                    target = tree / relative
+                    if not target.exists():
+                        state["files"][relative] = {"kind": "absent"}
+                        continue
+                    content = target.read_bytes()
+                    copy_path = destination / "files" / relative
+                    copy_path.parent.mkdir(parents=True, exist_ok=True)
+                    copy_path.write_bytes(content)
+                    state["files"][relative] = {"kind": "regular", "sha256": sha256(content), "bytes": len(content)}
+                state["protected"] = {p: sha256((tree / p).read_bytes()) for p in protected}
+                (destination / "STATE.json").write_text(json.dumps(state, indent=2) + "\n")
+                return state
+
+            before = snapshot("before")
+            code, stdout, stderr = run([sys.executable, str(tree / builder), "--check"], tree)
+            checked = events[-1]
+            after = snapshot("after")
+            admission_matches = code == expected_code
+            output_matches = stdout.endswith((success if expected_code == 0 else refusal).encode()) and not stderr
+            unchanged = before == after
+            passed = admission_matches and output_matches and unchanged
+            receipt = {"case": name, "fixture": "native owned Git fixture; synthetic only; no owner act",
+                       "sourceSha256": sha256(source), "sourceHead": head, "ranAt": before["head"],
+                       "expectedReturncode": expected_code, "returncode": code,
+                       "expectedFinalLine": success if expected_code == 0 else refusal,
+                       "actualFinalLine": stdout.decode(errors="replace").splitlines()[-1:] or [],
+                       "admissionMatches": admission_matches, "outputMatches": output_matches,
+                       "unchanged": unchanged, "protectedPaths": len(protected),
+                       "check": checked, "nativeCommands": len(events), "passed": passed}
+            (case / "RESULT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+            print("INDEX-POPULATION-EVIDENCE " + json.dumps(receipt, sort_keys=True), flush=True)
+            if not passed:
+                errors.append(f"native checkout membership fixture failed: {name}: code={code}; "
+                              f"admission={admission_matches}; output={output_matches}; unchanged={unchanged}")
+    print("Index population selftest: five native Git fixtures; committed deletion, two index removals, "
+          "staged addition and untracked addition; checks write nothing.", flush=True)
     return errors
 
 
@@ -701,6 +833,7 @@ def selftest() -> list[str]:
     if hash_findings != ["manifest differs from proposed subject bytes"]:
         errors.append("manifest row-hash mutant survived")
     print(f"Preparation selftest: {len(mutants)} semantic/structure, {len(data_mutants)} inert-evidence and two validity-axis mutants, foreign patch path, literal-expectation poison, subject-byte drift and two manifest mutants; {len(cases)} independent wire cases (7 valid, 39 refused); {len(regressions['wireCounterexamples'])} retained wire counterexamples plus two classifier regressions. Exact old/new scratch fragments are emitted as MUTATION-EVIDENCE lines for outside-Git retention.")
+    errors.extend(index_population_selftest())
     return errors
 
 
