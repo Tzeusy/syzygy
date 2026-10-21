@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDeclaration, registerProject } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-002 — An invalid declaration is a named failure, never a
 // partial registration.
@@ -10,23 +11,14 @@ import { readDeclaration, registerProject } from '@syzygy/cap1-core';
 // fact sourced from the invalid declaration. The checker knows which
 // element it corrupted — expectations are derived from that act.
 
-const VALID_SOURCE = `
-schema_version: "1"
-project:
-  id: prj-opaque-7f3a
-  name: Orbital Mechanics
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-opaque-01
-    role: governance-root
-    consent: consent-record-01
-consents:
-  - consent-record-01
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const VALID_SOURCE = projectYaml({
+  id: 'prj-opaque-7f3a',
+  name: 'Orbital Mechanics',
+  repositories: [
+    { id: 'repo-opaque-01', role: 'governance-root', consent: 'consent-record-01' },
+  ],
+  consents: ['consent-record-01'],
+});
 
 describe('CAP1-REQ-002 — invalid declaration is a named failure, never a partial registration', () => {
   it('scenario: one invalid field yields a failure naming that field, and no registered project', () => {

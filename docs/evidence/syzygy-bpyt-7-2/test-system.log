@@ -1,0 +1,39 @@
+
+> test:system
+> npm run build && vitest run --config packages/cap1-system/vitest.config.ts
+
+
+> build
+> tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier
+
+
+ RUN  v3.2.7 /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.7.2/packages/cap1-system
+
+ ✓ src/effect-observer.system.test.ts (8 tests) 25ms
+ ✓ src/write-boundary.system.test.ts (1 test) 565ms
+   ✓ RT6 — write boundary by harness-external filesystem observation > after requests to all routes, the only filesystem additions live under the state dir and the governed tree is untouched  557ms
+ ✓ src/process.system.test.ts (1 test) 677ms
+   ✓ RT6 — process reality > SIGINT exits 0 and the port then refuses connections  675ms
+ ✓ src/full-facts.system.test.ts (3 tests) 1079ms
+   ✓ RT6 — full-facts demonstration over the spawned daemon > serves the human page with verbatim facts, labels, and the Why-this-answer drawer  495ms
+   ✓ RT6 — full-facts demonstration over the spawned daemon > serves the fixture overview at /entry  360ms
+ ✓ src/degradation.system.test.ts (2 tests) 1386ms
+   ✓ RT6 — honest degradation over real disk state > an empty fixture root serves the named missing-declaration arm on both channels  586ms
+   ✓ RT6 — honest degradation over real disk state > breaking the declaration between runs changes the served facts to the named invalid arms  797ms
+ ✓ src/state-dir.system.test.ts (6 tests) 2241ms
+   ✓ RTF-1 — state-dir governed-plane check resolves symlink reality > refuses (nonzero exit, named refusal) a --state-dir symlink whose REAL target lies inside .syzygy/, and writes nothing there  599ms
+   ✓ RTF-1 — state-dir governed-plane check resolves symlink reality > refuses a dangling --state-dir symlink whose intended target lies inside .syzygy/, before writes or a listener  492ms
+   ✓ RTF-1 — state-dir governed-plane check resolves symlink reality > still starts and serves through a --state-dir symlink whose real target is OUTSIDE the governed plane  320ms
+ ✓ src/credentials.system.test.ts (11 tests) 2567ms
+   ✓ RT6 — credential enforcement from outside the process > refuses missing credentials with no facts served  599ms
+ ✓ src/daemon-entry-unchanged.system.test.ts (15 tests) 3109ms
+   ✓ daemon entry: every invocation but `dossier` is unchanged > ["-h"] prints the usage and exits 0  438ms
+   ✓ daemon entry: every invocation but `dossier` is unchanged > ["--help","dossier"] prints the usage and exits 0  340ms
+ ✓ src/fresh-clone.system.test.ts (1 test) 24036ms
+   ✓ RT6 — fresh-clone demonstration > a fresh clone installs, builds, starts the daemon, and serves the same facts on both channels  24035ms
+
+ Test Files  9 passed (9)
+      Tests  48 passed (48)
+   Start at  00:22:56
+   Duration  25.09s (transform 981ms, setup 0ms, collect 2.49s, tests 35.69s, environment 3ms, prepare 1.54s)
+

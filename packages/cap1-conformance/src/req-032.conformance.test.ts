@@ -5,12 +5,12 @@ import {
   readDeclaration,
   registerProject,
   type ConsentRecord,
-  type EvaluationIdentity,
   type ObservationOutcome,
   type ProjectId,
   type RepositoryId,
   type ShapeAnswerInputs,
 } from '@syzygy/cap1-core';
+import { consent, evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-032 — Registration is never certification (invariant).
 //
@@ -34,25 +34,16 @@ import {
 // declared constituent set does not contain.
 
 const PROJECT = 'prj-shape-032' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-032', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-032');
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-shape-032
-  name: Flip Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-main
-    role: governance-root
-    consent: consent-1
-consents:
-  - consent-1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Flip Fixture',
+  repositories: [
+    { id: 'repo-main', role: 'governance-root', consent: 'consent-1' },
+  ],
+  consents: ['consent-1'],
+});
 
 // An invalid declaration source: unparseable-free but missing required
 // fields, so validation fails with named failures.
@@ -64,14 +55,11 @@ project:
 `;
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-1',
     projectId: PROJECT,
     repositoryId: 'repo-main' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [
