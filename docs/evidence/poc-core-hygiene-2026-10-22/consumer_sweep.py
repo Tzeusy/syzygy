@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Consumer sweep for the syzygy-bpyt.7.6 subjects, over one tree.
 
-Usage: consumer_sweep.py <tree> <out.json>
+Usage: consumer_sweep.py <tree> <out.json> [--exclude <path-prefix>]
+
+--exclude drops every tracked path under the prefix from both methods and from
+the denominator; the record names the prefix and how many tracked files it
+removed. Use it on the head tree for this bead's own evidence directory, which
+names every subject by design and would otherwise count as a consumer.
 
 Two independent methods per subject, each over every tracked file of <tree>:
   git-grep   `git grep -I -n -w -F <token>` (names) or `-F <path>` (paths)
@@ -66,8 +71,11 @@ def git(tree: Path, *args: str) -> bytes:
 def main() -> int:
     tree = Path(sys.argv[1])
     out = Path(sys.argv[2])
+    exclude = sys.argv[sys.argv.index('--exclude') + 1] if '--exclude' in sys.argv else None
     commit = git(tree, 'rev-parse', 'HEAD').decode().strip()
-    tracked = [p for p in git(tree, 'ls-files', '-z').decode().split('\0') if p]
+    all_tracked = [p for p in git(tree, 'ls-files', '-z').decode().split('\0') if p]
+    tracked = [p for p in all_tracked if exclude is None or not p.startswith(exclude)]
+    pathspec = ['--', '.'] + ([f':(exclude){exclude}'] if exclude else [])
     text = {p: (tree / p).read_text(encoding='utf-8', errors='replace') for p in tracked if (tree / p).is_file()}
     squashed = {p: re.sub(r'\s+', '', t) for p, t in text.items()}
     records = []
@@ -75,7 +83,7 @@ def main() -> int:
         per_token = []
         for token in tokens:
             is_path = '/' in token or '-' in token
-            args = ['grep', '-I', '-n', '-F'] + ([] if is_path else ['-w']) + ['-e', token]
+            args = ['grep', '-I', '-n', '-F'] + ([] if is_path else ['-w']) + ['-e', token] + pathspec
             grep_out = git(tree, *args).decode(errors='replace')
             grep_hits: dict[str, int] = {}
             for line in grep_out.splitlines():
@@ -103,6 +111,9 @@ def main() -> int:
     result = {
         'tool': 'consumer_sweep.py',
         'treeCommit': commit,
+        'trackedChangesInTree': bool(git(tree, 'status', '--porcelain', '--untracked-files=no').strip()),
+        'excludedPrefix': exclude,
+        'trackedFilesExcluded': len(all_tracked) - len(tracked),
         'trackedFiles': len(tracked),
         'textFilesRead': len(text),
         'subjects': records,
