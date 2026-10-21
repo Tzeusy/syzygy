@@ -1,0 +1,27 @@
+{
+ "tool": "comment_only_check.py",
+ "oldCommit": "e81883f3d44d033425280e8b57f338b6acf29bc2",
+ "treeCommit": "951937471cb28bf550c46ea4489e755240ffe40d",
+ "filesChanged": 2,
+ "allIdenticalAfterCommentStrip": true,
+ "files": [
+  {
+   "file": "packages/three-surface-poc-core/src/evidence-population.ts",
+   "sha256Before": "494d34a7b0237202a3b66debf764488601ccfe0bcaa941104183054ebf23bb8e",
+   "sha256After": "e9e1b7be488db87f91622f0f6ab0c124a524b18164a9f43a78ef3167ac562ecb",
+   "identicalAfterCommentStrip": true
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/index.ts",
+   "sha256Before": "92c5769517513686c752b8ae454564c2dbd9633f305fe77e1d559908a7750dcf",
+   "sha256After": "f3983aa71b11410786acadaed0381521954ecd4ce2c017d9e2e7e2c19e25fd9c",
+   "identicalAfterCommentStrip": true
+  }
+ ],
+ "retainedExport": {
+  "distPath": "packages/three-surface-poc-core/dist/evidence-population.js",
+  "name": "derivePopulationBlock",
+  "moduleExportsFunction": true,
+  "barrelReexportsSameFunction": true
+ }
+}
