@@ -1,0 +1,330 @@
+{
+ "format": "differential-evidence/1",
+ "bead": "syzygy-bpyt.6.1",
+ "round": 2,
+ "supersedes": "docs/evidence/code-structure-ls-tree-z-differential-2026-10-21.json (round 1; retained unchanged because docs/reviews/R-GP-IMPL-CODE-STRUCTURE-1-RAW.md cites it by line)",
+ "answers": "R-GP-IMPL-CODE-STRUCTURE-1 F1 (strict UTF-8), F3 (NUL format), F4 (identity harness stored here), F5 (real missing-object and non-UTF-8 cases added)",
+ "subject": "packages/three-surface-poc-core/src/code-structure.ts",
+ "old": {
+  "commit": "fdc866afc4430a63074d52e13418ae319c9aa0a6",
+  "sha256": "126a454de2d8645cb91cdf643ef5a9de5ae1c32714cbaaf18e0e0a7eed6eb1be"
+ },
+ "new": {
+  "commit": "45360ea032064a9396d99532277cb0c99a9578ef",
+  "sha256": "bd7a8142b7594e1590d2ad380d56e0b7b1e6045318edbb69f8fe099e31eafb57"
+ },
+ "differential": {
+  "method": "Part A injects each listing in the format each version asks for (old: no -z; new: -z) through runGit. Part B runs both versions with their own default git runner over real fixture repositories built with mktree -z (raw path bytes) and commit-tree, so defaultRunGit's decoder is exercised. The old module is the base file copied beside the new one as zz-code-structure-old.ts.",
+  "command": "B61_BASE=<scratch> B61_OUT=<file> npx vitest run packages/three-surface-poc-core/src/zz-b61r2-differential.test.ts",
+  "harness": {
+   "sha256": "dcde328dc9581a1b8a23fefab0d06d1f94a974d2fbd0a4c4c554403ec9f98a9f",
+   "text": "import { execFileSync } from 'node:child_process';\nimport { mkdirSync, rmSync, writeFileSync } from 'node:fs';\nimport { dirname, join } from 'node:path';\nimport { it } from 'vitest';\nimport { observeCodeStructure as observeNew } from './code-structure.js';\nimport { observeCodeStructure as observeOld } from './zz-code-structure-old.js';\n\n// syzygy-bpyt.6.1, round 2 differential (not committed as a test). Part A injects each listing in the format each version asks for\n// (old: no -z, new: -z). Part B runs both versions with their own default git runner over real fixture repositories, so the decoder\n// in defaultRunGit is exercised. zz-code-structure-old.ts is the base module copied beside the new one.\n\nconst BASE = process.env['B61_BASE']!;\ntype Result = ReturnType<typeof observeNew>;\nconst outcome = (r: Result): string => r.kind === 'unknown' ? `Unknown (${r.reason})` : `Observed ${r.files.length}: ${JSON.stringify(r.files.map((f) => [f.path, f.sizeBytes, f.digest.slice(0, 18), f.language]))}`;\n\ninterface Case { readonly id: string; readonly plain: string; readonly z: string }\nconst id40 = 'a'.repeat(40);\nconst rec = (path: string, id = id40, size = '12', type = 'blob', mode = '100644'): string => `${mode} ${type} ${id} ${size.padStart(7)}\\t${path}`;\nconst both = (id: string, records: readonly string[]): Case => ({ id, plain: records.join('\\n') + '\\n', z: records.join('\\0') + '\\0' });\n\nconst GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null', GIT_AUTHOR_DATE: '2026-10-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-10-01T00:00:00Z' };\nconst repo = (name: string): { root: string; g: (args: readonly string[], input?: Buffer) => string } => {\n  const root = join(BASE, 'repos', name);\n  rmSync(root, { recursive: true, force: true });\n  mkdirSync(root, { recursive: true });\n  const g = (args: readonly string[], input?: Buffer): string => execFileSync('git', ['-C', root, '-c', 'user.email=t@e.invalid', '-c', 'user.name=t', ...args], { env: GIT_ENV, ...(input === undefined ? {} : { input }) }).toString('utf8').trim();\n  g(['init', '-q']);\n  return { root, g };\n};\n/** A commit whose tree is built by `mktree -z` from raw entries, so path bytes need not be UTF-8. */\ntype Entry = readonly [Buffer, 'blob' | 'commit' | 'tree', string?];\nconst MODES = { blob: '100644', commit: '160000', tree: '040000' } as const;\nconst treeCommit = (name: string, entries: readonly Entry[], missing = false): { root: string; revision: string } => {\n  const { root, g } = repo(name);\n  const blob = g(['hash-object', '-w', '--stdin'], Buffer.from('x\\n'));\n  const mktree = (list: readonly Entry[]): string => g(['mktree', '-z', ...(missing ? ['--missing'] : [])],\n    Buffer.concat(list.map(([path, type, id]) => Buffer.concat([Buffer.from(`${MODES[type]} ${type} ${id ?? blob}\\t`), path, Buffer.from('\\0')]))));\n  // A `tree` entry without an id is a directory holding one blob, a.ts.\n  const resolved = entries.map(([path, type, id]): Entry => (type === 'tree' && id === undefined ? [path, type, mktree([[Buffer.from('a.ts'), 'blob']])] : [path, type, id]));\n  return { root, revision: g(['commit-tree', mktree(resolved), '-m', name]) };\n};\n\nit('round-2 differential', () => {\n  rmSync(join(BASE, 'repos'), { recursive: true, force: true });\n\n  // Part A: injected listings.\n  const awkward = repo('awkward');\n  const names = ['plain.ts', 'with space.md', 'tab\\there.md', 'a \"b\".txt', '\u00f1.md', 'line\\nbreak.md', '\"lead-quote.md', 'back\\\\slash.ts'];\n  for (const name of names) { mkdirSync(dirname(join(awkward.root, name)), { recursive: true }); writeFileSync(join(awkward.root, name), 'x\\n'); }\n  awkward.g(['add', '-A']); awkward.g(['commit', '-qm', 'awkward']);\n  const realPlain = execFileSync('git', ['-C', awkward.root, 'ls-tree', '-r', '-l', 'HEAD'], { encoding: 'utf8' });\n  const realZ = execFileSync('git', ['-C', awkward.root, 'ls-tree', '-r', '-z', '-l', 'HEAD'], { encoding: 'utf8' });\n  const plainLines = realPlain.split('\\n').filter(Boolean), zRecords = realZ.split('\\0').filter(Boolean);\n  const cases: Case[] = [\n    { id: 'real repo: all eight awkward names', plain: realPlain, z: realZ },\n    ...zRecords.map((record, i) => ({ id: `real repo: only ${JSON.stringify(record.slice(record.indexOf('\\t') + 1))}`, plain: plainLines[i]! + '\\n', z: record + '\\0' })),\n    both('one plain blob', [rec('a.ts')]),\n    both('submodule gitlink beside a blob', [rec('a.ts'), rec('vendor/sub', 'b'.repeat(40), '-', 'commit', '160000')]),\n    both('blob without a size', [rec('a.ts', id40, '-')]),\n    both('blob whose size git prints as BAD', [rec('a.ts', id40, 'BAD')]),\n    both('SHA-256 object id', [rec('a.ts', 'c'.repeat(64))]),\n    both('39-hex object id', [rec('a.ts', 'c'.repeat(39))]),\n    both('garbage record after a blob', [rec('a.ts'), 'not a tree record']),\n    both('mode corrupted', [rec('a.ts', id40, '12', 'blob', '10064x')]),\n    both('type corrupted', [rec('a.ts', id40, '12', 'blbo')]),\n    both('tab separator missing', [rec('a.ts').replace('\\t', ' ')]),\n    both('empty path', [rec('')]),\n    both('size non-numeric', [rec('a.ts', id40, '1e3')]),\n    both('uppercase hex id', [rec('a.ts', 'A'.repeat(40))]),\n    both('symlink blob', [rec('link', id40, '4', 'blob', '120000')]),\n    both('executable blob', [rec('run.sh', id40, '4', 'blob', '100755')]),\n    { id: 'empty tree', plain: '', z: '' },\n    { id: 'the -z request answered in the newline format', plain: rec('a.ts') + '\\n', z: rec('a.ts') + '\\n' },\n    { id: 'the last -z record without its NUL', plain: [rec('a.ts'), rec('b.md')].join('\\n') + '\\n', z: `${rec('a.ts')}\\0${rec('b.md')}` },\n  ];\n  const injected = (observe: typeof observeNew, listing: string, wantZ: boolean): Result => observe({\n    repoRoot: '/unused', revision: 'r', capturedAt: 't',\n    runGit: (_root, args) => { if (args.includes('-z') !== wantZ) throw new Error(`asked ${args.join(' ')}`); return listing; },\n  });\n  const partA = cases.map((c) => { const o = outcome(injected(observeOld, c.plain, false)); const n = outcome(injected(observeNew, c.z, true)); return { case: c.id, old: o, new: n, changed: o !== n }; });\n\n  // Part B: real git, each version's own default runner.\n  const emptyRepo = repo('empty');\n  const emptyTree = emptyRepo.g(['mktree'], Buffer.from(''));\n  const real: [string, { root: string; revision: string }][] = [\n    ['awkward names (as Part A)', { root: awkward.root, revision: awkward.g(['rev-parse', 'HEAD']) }],\n    ['two non-UTF-8 file names (0xf1.md, 0xf2.md)', treeCommit('non-utf8-files', [[Buffer.from([0xf1, 0x2e, 0x6d, 0x64]), 'blob'], [Buffer.from([0xf2, 0x2e, 0x6d, 0x64]), 'blob']])],\n    ['two non-UTF-8 top-level directories (0xe8 te/, 0xe9 te/)', treeCommit('non-utf8-dirs', [[Buffer.from([0xe8, 0x74, 0x65]), 'tree'], [Buffer.from([0xe9, 0x74, 0x65]), 'tree']])],\n    ['one non-UTF-8 name beside a UTF-8 one', treeCommit('non-utf8-one', [[Buffer.from('ok.ts'), 'blob'], [Buffer.from([0xff, 0x2e, 0x74, 0x73]), 'blob']])],\n    ['a literal U+FFFD name (valid UTF-8)', treeCommit('literal-fffd', [[Buffer.from('\ufffd.md', 'utf8'), 'blob']])],\n    ['a tree naming a missing blob', treeCommit('missing-blob', [[Buffer.from('present.ts'), 'blob'], [Buffer.from('missing.ts'), 'blob', 'd'.repeat(40)]], true)],\n    ['a gitlink beside a blob', treeCommit('gitlink', [[Buffer.from('a.ts'), 'blob'], [Buffer.from('sub'), 'commit', 'b'.repeat(40)]], true)],\n    ['the empty tree', { root: emptyRepo.root, revision: emptyRepo.g(['commit-tree', emptyTree, '-m', 'empty']) }],\n  ];\n  const partB = real.map(([id, { root, revision }]) => {\n    const o = outcome(observeOld({ repoRoot: root, revision, capturedAt: 't' }));\n    const n = outcome(observeNew({ repoRoot: root, revision, capturedAt: 't' }));\n    return { case: id, old: o, new: n, changed: o !== n };\n  });\n  rmSync(join(BASE, 'repos'), { recursive: true, force: true });\n  writeFileSync(process.env['B61_OUT']!, `${JSON.stringify({ partA, partB }, null, 1)}\\n`);\n});\n"
+  },
+  "partA": {
+   "total": 27,
+   "changed": 19,
+   "rows": [
+    {
+     "case": "real repo: all eight awkward names",
+     "old": "Observed 8: [[\"\\\"\\\\\\\"lead-quote.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"\\\\303\\\\261.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"a \\\\\\\"b\\\\\\\".txt\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"back\\\\\\\\slash.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"line\\\\nbreak.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"tab\\\\there.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"],[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"\\\"lead-quote.md\"",
+     "old": "Observed 1: [[\"\\\"\\\\\\\"lead-quote.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"a \\\"b\\\".txt\"",
+     "old": "Observed 1: [[\"\\\"a \\\\\\\"b\\\\\\\".txt\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Observed 1: [[\"a \\\"b\\\".txt\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"back\\\\slash.ts\"",
+     "old": "Observed 1: [[\"\\\"back\\\\\\\\slash.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Observed 1: [[\"back\\\\slash.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"line\\nbreak.md\"",
+     "old": "Observed 1: [[\"\\\"line\\\\nbreak.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"plain.ts\"",
+     "old": "Observed 1: [[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "new": "Observed 1: [[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "changed": false
+    },
+    {
+     "case": "real repo: only \"tab\\there.md\"",
+     "old": "Observed 1: [[\"\\\"tab\\\\there.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Observed 1: [[\"tab\\there.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "changed": true
+    },
+    {
+     "case": "real repo: only \"with space.md\"",
+     "old": "Observed 1: [[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "new": "Observed 1: [[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "changed": false
+    },
+    {
+     "case": "real repo: only \"\u00f1.md\"",
+     "old": "Observed 1: [[\"\\\"\\\\303\\\\261.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Observed 1: [[\"\u00f1.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "changed": true
+    },
+    {
+     "case": "one plain blob",
+     "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "new": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "changed": false
+    },
+    {
+     "case": "submodule gitlink beside a blob",
+     "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "new": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "changed": false
+    },
+    {
+     "case": "blob without a size",
+     "old": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": false
+    },
+    {
+     "case": "blob whose size git prints as BAD",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "SHA-256 object id",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "39-hex object id",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "garbage record after a blob",
+     "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "mode corrupted",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "type corrupted",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "tab separator missing",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "empty path",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "size non-numeric",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "uppercase hex id",
+     "old": "Observed 0: []",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "symlink blob",
+     "old": "Observed 1: [[\"link\",4,\"git-blob-sha1:aaaa\",\"other\"]]",
+     "new": "Observed 1: [[\"link\",4,\"git-blob-sha1:aaaa\",\"other\"]]",
+     "changed": false
+    },
+    {
+     "case": "executable blob",
+     "old": "Observed 1: [[\"run.sh\",4,\"git-blob-sha1:aaaa\",\"shell\"]]",
+     "new": "Observed 1: [[\"run.sh\",4,\"git-blob-sha1:aaaa\",\"shell\"]]",
+     "changed": false
+    },
+    {
+     "case": "empty tree",
+     "old": "Observed 0: []",
+     "new": "Observed 0: []",
+     "changed": false
+    },
+    {
+     "case": "the -z request answered in the newline format",
+     "old": "Observed 1: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "the last -z record without its NUL",
+     "old": "Observed 2: [[\"a.ts\",12,\"git-blob-sha1:aaaa\",\"typescript\"],[\"b.md\",12,\"git-blob-sha1:aaaa\",\"markdown\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    }
+   ]
+  },
+  "partB": {
+   "total": 8,
+   "changed": 6,
+   "rows": [
+    {
+     "case": "awkward names (as Part A)",
+     "old": "Observed 8: [[\"\\\"\\\\\\\"lead-quote.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"\\\\303\\\\261.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"a \\\\\\\"b\\\\\\\".txt\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"back\\\\\\\\slash.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"line\\\\nbreak.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"tab\\\\there.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"plain.ts\",2,\"git-blob-sha1:587b\",\"typescript\"],[\"with space.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "two non-UTF-8 file names (0xf1.md, 0xf2.md)",
+     "old": "Observed 2: [[\"\\\"\\\\361.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"\\\\362.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Unknown (code-structure observation produced a path that is not valid UTF-8)",
+     "changed": true
+    },
+    {
+     "case": "two non-UTF-8 top-level directories (0xe8 te/, 0xe9 te/)",
+     "old": "Observed 2: [[\"\\\"\\\\350te/a.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"\\\"\\\\351te/a.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Unknown (code-structure observation produced a path that is not valid UTF-8)",
+     "changed": true
+    },
+    {
+     "case": "one non-UTF-8 name beside a UTF-8 one",
+     "old": "Observed 2: [[\"\\\"\\\\377.ts\\\"\",2,\"git-blob-sha1:587b\",\"other\"],[\"ok.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "new": "Unknown (code-structure observation produced a path that is not valid UTF-8)",
+     "changed": true
+    },
+    {
+     "case": "a literal U+FFFD name (valid UTF-8)",
+     "old": "Observed 1: [[\"\\\"\\\\357\\\\277\\\\275.md\\\"\",2,\"git-blob-sha1:587b\",\"other\"]]",
+     "new": "Observed 1: [[\"\ufffd.md\",2,\"git-blob-sha1:587b\",\"markdown\"]]",
+     "changed": true
+    },
+    {
+     "case": "a tree naming a missing blob",
+     "old": "Observed 1: [[\"present.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "new": "Unknown (code-structure observation produced a malformed inventory entry)",
+     "changed": true
+    },
+    {
+     "case": "a gitlink beside a blob",
+     "old": "Observed 1: [[\"a.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "new": "Observed 1: [[\"a.ts\",2,\"git-blob-sha1:587b\",\"typescript\"]]",
+     "changed": false
+    },
+    {
+     "case": "the empty tree",
+     "old": "Observed 0: []",
+     "new": "Observed 0: []",
+     "changed": false
+    }
+   ]
+  }
+ },
+ "fixtureByteIdentity": {
+  "method": "The app's committed fixture repository (test-model-fixture.ts fixtureRepoWithGit) is copied once to one fixed path so the repoRoot hashed into inputsDigest is equal across runs; buildFixtureModel, renderOrreryPage, renderPolarisPage, renderTrajectoryPage, renderPocPage and observeCodeStructure are serialized and hashed per part. Run once with the new module, then with the base module restored over it, then the new module restored.",
+  "command": "B61_FIXED=<fixed path> B61_OUT=<file> npx vitest run apps/three-surface-poc/src/zz-b61r2-identity.test.ts",
+  "harness": {
+   "sha256": "682145a61475e8d5dd1821d9eebd4e3542d5f2491c2896978e77679474e3eaf5",
+   "text": "import { createHash } from 'node:crypto';\nimport { cpSync, existsSync, writeFileSync } from 'node:fs';\nimport { it } from 'vitest';\nimport { observeCodeStructure } from '@syzygy/three-surface-poc-core';\n\nimport { renderOrreryPage } from './orrery.js';\nimport { renderPolarisPage } from './polaris.js';\nimport { renderPocPage } from './routes.js';\nimport { renderTrajectoryPage } from './trajectory.js';\nimport { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';\n\n// syzygy-bpyt.6.1, round 2 fixture byte identity (not committed as a test). The app's committed fixture repository is copied once to\n// the fixed path B61_FIXED, so the repoRoot hashed into inputsDigest is equal across the two runs (new module, then the base module\n// restored over it). Each surface is serialized and hashed separately; `all` hashes the JSON of every part.\n\nit('fixture byte identity capture', () => {\n  const cleanups: string[] = [];\n  const fixed = process.env['B61_FIXED']!;\n  const fresh = fixtureRepoWithGit(cleanups);\n  if (!existsSync(fixed)) cpSync(fresh.repoRoot, fixed, { recursive: true });\n  const repo = { repoRoot: fixed, revision: fresh.revision };\n  const model = buildFixtureModel(cleanups, { fixtureRepo: repo });\n  const parts: Record<string, string> = {\n    model: JSON.stringify(model),\n    orrery: renderOrreryPage(model),\n    polaris: renderPolarisPage(model),\n    trajectory: renderTrajectoryPage(model),\n    poc: renderPocPage(model),\n    codeStructure: JSON.stringify(observeCodeStructure({ repoRoot: fixed, revision: repo.revision, capturedAt: '2026-08-30T12:00:00Z' })),\n  };\n  const digests = Object.fromEntries(Object.entries(parts).map(([k, v]) => [k, { sha256: createHash('sha256').update(v).digest('hex'), bytes: Buffer.byteLength(v) }]));\n  const all = createHash('sha256').update(JSON.stringify(parts)).digest('hex');\n  const files = model.codeStructure.kind === 'observed' ? model.codeStructure.files.length : -1;\n  writeFileSync(process.env['B61_OUT']!, `${JSON.stringify({ revision: repo.revision, files, all, digests }, null, 1)}\\n`);\n});\n"
+  },
+  "new": {
+   "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+   "files": 8,
+   "all": "83c58590d3d4e8ff65e127d8fc82b3066f3479516108f65e50f4e93daeb98ad8",
+   "digests": {
+    "model": {
+     "sha256": "2fba8755ca1817fcbacdbf849d8bbd29a77c74af1d212b5daa96cb72dfa709dc",
+     "bytes": 32103
+    },
+    "orrery": {
+     "sha256": "78b6f408a19fde002f614f524148ca2afcf74a9020e24269ebbbc4585f9f506b",
+     "bytes": 45137
+    },
+    "polaris": {
+     "sha256": "95357d8b6bdadc02329d98c0d8d04f7bb61a6b8ddec698b97b8fe19c07aeb753",
+     "bytes": 106540
+    },
+    "trajectory": {
+     "sha256": "dbfcadf3f0c6fc456658899c786417ef8f2a427eae7788386c7bd17328fa272d",
+     "bytes": 28783
+    },
+    "poc": {
+     "sha256": "be73f36d1c19e097439bf87c3964f2ea06982125f0bc2c70e27961b3d8967bf5",
+     "bytes": 46633
+    },
+    "codeStructure": {
+     "sha256": "346af3cb0ff68e8789b3533b9045e99e83f4b8ae4125343efba70b3d6406afb5",
+     "bytes": 1435
+    }
+   }
+  },
+  "old": {
+   "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+   "files": 8,
+   "all": "83c58590d3d4e8ff65e127d8fc82b3066f3479516108f65e50f4e93daeb98ad8",
+   "digests": {
+    "model": {
+     "sha256": "2fba8755ca1817fcbacdbf849d8bbd29a77c74af1d212b5daa96cb72dfa709dc",
+     "bytes": 32103
+    },
+    "orrery": {
+     "sha256": "78b6f408a19fde002f614f524148ca2afcf74a9020e24269ebbbc4585f9f506b",
+     "bytes": 45137
+    },
+    "polaris": {
+     "sha256": "95357d8b6bdadc02329d98c0d8d04f7bb61a6b8ddec698b97b8fe19c07aeb753",
+     "bytes": 106540
+    },
+    "trajectory": {
+     "sha256": "dbfcadf3f0c6fc456658899c786417ef8f2a427eae7788386c7bd17328fa272d",
+     "bytes": 28783
+    },
+    "poc": {
+     "sha256": "be73f36d1c19e097439bf87c3964f2ea06982125f0bc2c70e27961b3d8967bf5",
+     "bytes": 46633
+    },
+    "codeStructure": {
+     "sha256": "346af3cb0ff68e8789b3533b9045e99e83f4b8ae4125343efba70b3d6406afb5",
+     "bytes": 1435
+    }
+   }
+  },
+  "identical": true
+ },
+ "newTestsOnPreRepairCode": {
+  "preRepairCommit": "98be568af054562117458d50468cbd261b916387",
+  "preRepairSha256": "d006cfd87a73f053959919eec2ab8f9a3ad396eec6dc18347ce0ef222588fab9",
+  "command": "npx vitest run packages/three-surface-poc-core/src/code-structure.test.ts",
+  "output": [
+   "   \u00d7 code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 11ms",
+   "   \u00d7 code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 59ms",
+   "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+   "AssertionError: expected { kind: 'observed', \u2026(3) } to deeply equal { kind: 'unknown', \u2026(1) }",
+   "AssertionError: expected { kind: 'observed', \u2026(3) } to deeply equal { kind: 'unknown', \u2026(1) }",
+   "      Tests  2 failed | 6 passed (8)"
+  ]
+ }
+}

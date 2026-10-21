@@ -1,0 +1,167 @@
+{
+ "subject": [
+  "packages/three-surface-poc-core/src/code-structure.ts",
+  "packages/three-surface-poc-core/src/model.test.ts"
+ ],
+ "subjectSha256": {
+  "packages/three-surface-poc-core/src/code-structure.ts": "bd7a8142b7594e1590d2ad380d56e0b7b1e6045318edbb69f8fe099e31eafb57",
+  "packages/three-surface-poc-core/src/model.test.ts": "b9a5d094a19d2a947675f232d0a41e3f25f83837e90db0953e23d7b8811d56d7"
+ },
+ "bead": "syzygy-bpyt.6.1",
+ "round": 2,
+ "commit": "45360ea032064a9396d99532277cb0c99a9578ef",
+ "command": "npx vitest run packages/three-surface-poc-core/src/code-structure.test.ts packages/three-surface-poc-core/src/model.test.ts",
+ "mutants": [
+  {
+   "id": "drop-z",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);",
+   "new": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-l', input.revision]);",
+   "exitCode": 1,
+   "testsLine": "Tests  7 failed | 18 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 13ms",
+    "code-structure observer > binds every inventory entry to the exact revision observed (POC-REQ-001) 69ms",
+    "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 105ms",
+    "code-structure observer > produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004) 74ms",
+    "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1) 116ms",
+    "three-surface Butlers POC model > builds an explicit Unknown model with no seeds and performs no seeded reads 10ms",
+    "three-surface Butlers POC model > rejects a seeded Orrery mapping that is absent from the observed inventory 14ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "malformed-listing-observed-empty",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  if (parsed.kind === 'malformed') {\n    return malformed;\n  }",
+   "new": "  if (parsed.kind === 'malformed') {\n    return { kind: 'observed', provenance: { kind: 'git-revision', source: input.provenanceSource ?? 'Observed repository', revision: input.revision }, capturedAt: input.capturedAt, files: [] };\n  }",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 11ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "bad-entry-skipped",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      return malformed;\n    }",
+   "new": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      continue;\n    }",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 10ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "sha1-check-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "new": "    if (entry.sizeBytes === undefined) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 12ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "size-check-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "new": "    if (!SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 11ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "gitlinks-admitted",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {",
+   "new": "  for (const entry of parsed.entries) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 20ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "path-unescaped-lost",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "      path: entry.path,\n",
+   "new": "      path: JSON.stringify(entry.path).slice(1, -1),\n",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1) 78ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "strict-decoder-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });",
+   "new": "const STRICT_UTF8 = new TextDecoder('utf-8');",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 124ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "non-utf8-reason-merged",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (error instanceof NonUtf8GitOutput) {",
+   "new": "    if (String(error) === 'never') {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path 64ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "nul-format-check-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  if (raw !== '' && !raw.endsWith('\\0')) {",
+   "new": "  if (String(raw) === 'never') {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 11ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "empty-listing-malformed",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  if (raw !== '' && !raw.endsWith('\\0')) {",
+   "new": "  if (!raw.endsWith('\\0')) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 11ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "model-stub-newline-format",
+   "file": "packages/three-surface-poc-core/src/model.test.ts",
+   "old": "        return `100644 blob ${'1'.repeat(40)} 1\\tREADME.md\\0`;",
+   "new": "        return `100644 blob ${'1'.repeat(40)} 1\\tREADME.md\\n`;",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 24 passed (25)",
+   "failedTests": [
+    "three-surface Butlers POC model > builds an explicit Unknown model with no seeds and performs no seeded reads 14ms"
+   ],
+   "outcome": "killed"
+  }
+ ],
+ "trackedTreeCleanAfter": true
+}

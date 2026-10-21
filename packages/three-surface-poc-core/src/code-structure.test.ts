@@ -83,15 +83,118 @@ describe('code-structure observer', () => {
       revision: 'deadbeef',
       capturedAt: '2026-08-30T00:00:00Z',
     });
-    expect(result.kind).toBe('unknown');
-    if (result.kind !== 'unknown') throw new Error('unreachable');
-    expect(result.reason.length).toBeGreaterThan(0);
+    // The exact reason names the failure class, apart from the not-UTF-8 reason (R-GP-IMPL-CODE-STRUCTURE-2 N4).
+    expect(result).toEqual({ kind: 'unknown', reason: 'repository or revision was unreadable during code-structure observation' });
   });
 
   it('mutation check: a falsifier (empty reason) would fail this assertion', () => {
     const result = { kind: 'unknown', reason: '' } as const;
     expect(result.reason.length).toBeGreaterThan(0 - 1);
     expect(() => expect(result.reason.length).toBeGreaterThan(0)).toThrow();
+  });
+
+  it('records a path with a space, a tab, a double quote or a non-ASCII UTF-8 name exactly as committed (syzygy-bpyt.6.1)', () => {
+    const { root } = fixtureRepo('sentinel-paths');
+    // Unicode escapes keep the fixture bytes exact (AGENTS.md: the Write tool has emitted mixed NFC/NFD).
+    const names = ['with space.md', 'tab\there.md', 'a "b".txt', '\u00f1.md', 'dir \u00e9/x.ts'];
+    for (const name of names) {
+      mkdirSync(dirname(join(root, name)), { recursive: true });
+      writeFileSync(join(root, name), 'x\n', 'utf8');
+    }
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-qm', 'awkward paths']);
+    const revision = git(root, ['rev-parse', 'HEAD']);
+    const result = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' });
+    if (result.kind !== 'observed') throw new Error(`expected observed, got ${JSON.stringify(result)}`);
+    expect(result.files.map((file) => file.path)).toEqual(
+      ['README.md', 'a "b".txt', 'data.json', 'dir \u00e9/x.ts', 'src/app.ts', 'src/nested/lib.py', 'tab\there.md', 'with space.md', '\u00f1.md'],
+    );
+    expect(result.files.find((file) => file.path === '\u00f1.md')?.language).toBe('markdown');
+    expect(result.files.find((file) => file.path === 'dir \u00e9/x.ts')?.digest).toBe(`git-blob-sha1:${git(root, ['rev-parse', `${revision}:dir \u00e9/x.ts`])}`);
+  });
+
+  it('asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip', () => {
+    const blob = (path: string, id = '1'.repeat(40), size = '12'): string => `100644 blob ${id} ${size}\t${path}\0`;
+    const observe = (listing: string, calls: string[][] = []) => observeCodeStructure({
+      repoRoot: '/unused', revision: 'r', capturedAt: '2026-10-21T00:00:00Z',
+      runGit: (_root, args) => { calls.push([...args]); return listing; },
+    });
+    const calls: string[][] = [];
+    const observed = observe(`${blob('a.ts')}160000 commit ${'2'.repeat(40)}       -\tvendor/sub\0${blob('b.md', '3'.repeat(40), '7')}`, calls);
+    expect(calls).toEqual([['ls-tree', '-r', '-z', '-l', 'r']]);
+    expect(observed).toMatchObject({ kind: 'observed', files: [
+      { path: 'a.ts', sizeBytes: 12, digest: `git-blob-sha1:${'1'.repeat(40)}`, language: 'typescript' },
+      { path: 'b.md', sizeBytes: 7, digest: `git-blob-sha1:${'3'.repeat(40)}`, language: 'markdown' },
+    ] });
+    // A gitlink at a path the parser cannot read is skipped from an injected runner too.
+    expect(observe(`${blob('a.ts')}160000 commit ${'2'.repeat(40)}       -\t"sub\x00160000 commit ${'2'.repeat(40)}       -\tsu\nb\0`))
+      .toMatchObject({ kind: 'observed', files: [{ path: 'a.ts' }] });
+    // Only blobs are files: a tree record, which `ls-tree -r -t` would emit, is skipped, not refused for its missing size.
+    expect(observe(`${blob('a.ts')}040000 tree ${'5'.repeat(40)}       -\tdir\0`)).toMatchObject({ kind: 'observed', files: [{ path: 'a.ts' }] });
+    const unknown ={ kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' };
+    expect(observe(`${blob('a.ts')}not a tree record\0`)).toEqual(unknown);
+    expect(observe(`${blob('a.ts')}100644 blob ${'1'.repeat(40)} 12\t"\\303\\261.md"\0`)).toEqual(unknown);
+    expect(observe(blob('a.ts', '4'.repeat(64)))).toEqual(unknown);
+    expect(observe(blob('a.ts', '1'.repeat(40), '-'))).toEqual(unknown);
+    // A listing in the newline format, or one whose last record lacks its NUL, is not what `-z` returns.
+    expect(observe(`100644 blob ${'1'.repeat(40)} 12\ta.ts\n`)).toEqual(unknown);
+    expect(observe(`${blob('a.ts')}100644 blob ${'3'.repeat(40)} 7\tb.md`)).toEqual(unknown);
+    expect(observe('')).toMatchObject({ kind: 'observed', files: [] });
+  });
+
+  it('makes the inventory Unknown for a committed path that is not valid UTF-8, never a lossy or colliding path', () => {
+    const { root } = fixtureRepo('sentinel-non-utf8');
+    writeFileSync(join(root, 'blob.txt'), 'x\n', 'utf8');
+    const blob = git(root, ['hash-object', '-w', 'blob.txt']);
+    // Two Latin-1 names that a replacing decoder would turn into one path; mktree takes the raw bytes.
+    const tree = execFileSync('git', ['-C', root, 'mktree', '-z'], {
+      input: Buffer.concat([0xf1, 0xf2].map((byte) => Buffer.concat([Buffer.from(`100644 blob ${blob}\t`), Buffer.from([byte]), Buffer.from('.md\0')]))),
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).toString('utf8').trim();
+    const revision = git(root, ['commit-tree', tree, '-m', 'non-UTF-8 names']);
+    expect(observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' }))
+      .toEqual({ kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' });
+  });
+
+  it('keeps an unterminated tail from git for the NUL check to refuse, never dropping it as a record', () => {
+    // A `git` on PATH that answers with one record and no final NUL, which real git never emits.
+    const bin = mkdtempSync(join(tmpdir(), 'syzygy-poc-fake-git-'));
+    cleanups.push(bin);
+    writeFileSync(join(bin, 'git'), `#!/bin/sh\nprintf '100644 blob ${'1'.repeat(40)}      12\\tok.ts'\n`, { mode: 0o755 });
+    const path = process.env['PATH'];
+    process.env['PATH'] = `${bin}:${path ?? ''}`;
+    try {
+      expect(observeCodeStructure({ repoRoot: '/unused', revision: 'r', capturedAt: '2026-10-21T00:00:00Z' }))
+        .toEqual({ kind: 'unknown', reason: 'code-structure observation produced a malformed inventory entry' });
+    } finally {
+      process.env['PATH'] = path;
+    }
+  });
+
+  it('skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2)', () => {
+    const { root } = fixtureRepo('sentinel-gitlinks');
+    writeFileSync(join(root, 'blob.txt'), 'x\n', 'utf8');
+    const blob = git(root, ['hash-object', '-w', 'blob.txt']);
+    const commit = '1'.repeat(40);
+    const mktree = (records: readonly Buffer[]): string => execFileSync('git', ['-C', root, 'mktree', '-z', '--missing'], {
+      input: Buffer.concat(records),
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).toString('utf8').trim();
+    const record = (head: string, name: Buffer): Buffer => Buffer.concat([Buffer.from(`${head}\t`), name, Buffer.from('\0')]);
+    // Gitlinks at a Latin-1 name, a name git would quote and a name holding LF, beside files, at the top and one level down.
+    const vendor = mktree([record(`100644 blob ${blob}`, Buffer.from('ok.ts')), record(`160000 commit ${commit}`, Buffer.from([0xe9]))]);
+    const tree = mktree([
+      record(`100644 blob ${blob}`, Buffer.from('ok.ts')),
+      record(`040000 tree ${vendor}`, Buffer.from('vendor')),
+      record(`160000 commit ${commit}`, Buffer.concat([Buffer.from([0xe9]), Buffer.from('sub')])),
+      record(`160000 commit ${commit}`, Buffer.from('"sub')),
+      record(`160000 commit ${commit}`, Buffer.from('su\nb')),
+    ]);
+    const revision = git(root, ['commit-tree', tree, '-m', 'gitlinks']);
+    const result = observeCodeStructure({ repoRoot: root, revision, capturedAt: '2026-10-21T00:00:00Z' });
+    expect(result.kind).toBe('observed');
+    if (result.kind !== 'observed') throw new Error('unreachable');
+    expect(result.files.map((file) => file.path)).toEqual(['ok.ts', 'vendor/ok.ts']);
   });
 
   it('produces identical facts across two observations of one revision, excluding capture instant (POC-REQ-004)', () => {

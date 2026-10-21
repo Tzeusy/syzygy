@@ -1,0 +1,96 @@
+{
+ "subject": "packages/three-surface-poc-core/src/code-structure.ts",
+ "subjectSha256": "d006cfd87a73f053959919eec2ab8f9a3ad396eec6dc18347ce0ef222588fab9",
+ "bead": "syzygy-bpyt.6.1",
+ "commit": "2dfa12b7b84a963bae1f54eccb5cce4a05362878",
+ "command": "npx vitest run packages/three-surface-poc-core/src/code-structure.test.ts packages/three-surface-poc-core/src/model.test.ts",
+ "mutants": [
+  {
+   "id": "drop-z",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-z', '-l', input.revision]);",
+   "new": "    raw = runGit(input.repoRoot, ['ls-tree', '-r', '-l', input.revision]);",
+   "exitCode": 1,
+   "testsLine": "Tests  3 failed | 21 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 8ms",
+    "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII byte exactly as committed (syzygy-bpyt.6.1) 616ms",
+    "three-surface Butlers POC model > builds an explicit Unknown model with no seeds and performs no seeded reads 30ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "malformed-listing-observed-empty",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  if (parsed.kind === 'malformed') {\n    return malformed;\n  }",
+   "new": "  if (parsed.kind === 'malformed') {\n    return { kind: 'observed', provenance: { kind: 'git-revision', source: input.provenanceSource ?? 'Observed repository', revision: input.revision }, capturedAt: input.capturedAt, files: [] };\n  }",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 14ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "bad-entry-skipped",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      return malformed;\n    }",
+   "new": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {\n      continue;\n    }",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 15ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "sha1-check-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "new": "    if (entry.sizeBytes === undefined) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 25ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "size-check-off",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "    if (entry.sizeBytes === undefined || !SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "new": "    if (!SHA1_OBJECT_ID.test(entry.objectId)) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 13ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "gitlinks-admitted",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "  for (const entry of parsed.entries.filter((candidate) => candidate.type === 'blob')) {",
+   "new": "  for (const entry of parsed.entries) {",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > asks git for NUL-terminated records and turns any record it cannot read into Unknown, never a skip 16ms"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "path-unescaped-lost",
+   "file": "packages/three-surface-poc-core/src/code-structure.ts",
+   "old": "      path: entry.path,\n",
+   "new": "      path: JSON.stringify(entry.path).slice(1, -1),\n",
+   "exitCode": 1,
+   "testsLine": "Tests  1 failed | 23 passed (24)",
+   "failedTests": [
+    "code-structure observer > records a path with a space, a tab, a double quote or a non-ASCII byte exactly as committed (syzygy-bpyt.6.1) 135ms"
+   ],
+   "outcome": "killed"
+  }
+ ],
+ "trackedTreeCleanAfter": true
+}
