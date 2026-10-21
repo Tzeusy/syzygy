@@ -62,6 +62,7 @@
   "records": {
     "differential.json": "93f46599a2822857093d93d1b303a49ca7a255ecff13e5b80d604617061eef01",
     "digest-citers.json": "850326df75b9ea860c6dc1d511f17149af1c98da9a7660269c5ea28c252532f5",
+    "export-surface.json": "ae489e68734e26320d180f5b826d064568258b2f958519f6831d142875565a63",
     "mutants-spec.json": "2f5069597c89c4dc9eef8b8b7acf2d5b345d8e27e78b9a568f5d9c96e646fb66",
     "mutants.json": "f753a2f8493826a5f42afb33e33be8350325a15124414fa3a69c19bc65bc0ffa",
     "reach-after.json": "9d38b9ff79abd989391d0ce695ce0c72d6682008ed10221094511fd939142a7b",
@@ -70,9 +71,10 @@
     "tests-delta.json": "dc80996165059cf83a4b4a5c9f601a73a326f506996c56b505d9a83eb78d8d3d"
   },
   "scripts": {
-    "assemble.py": "fc2423bfce493f5b8ad69618aba27c78ed598936d27222b2fa39b11b8d65fd6c",
+    "assemble.py": "80d6b7f24e339f514838dbe239d1a469aa4b75804f976a3cd465abdc2f220521",
     "differential.mjs": "0c7bb409220a0167ca33ab666e40a8dd7b155932aec3b42972d5b1efa61576ae",
     "digest_citers.py": "9d189268a5a0111115852691fc64417144ea1418d299bdea8ed48a38840f826a",
+    "export_surface.mjs": "d966ef07af6379f09b95b9a635be784558585979e0ec715295415b14c3058ba1",
     "gen/guidance.mjs": "805808833949ce61baeb44e970f135d1c9e0fc77c4b821ede05cf9d7ae6d398f",
     "gen/split_dossier_render.py": "d744ed73085246b239f0fac53a604ba8f14fb10fd1ad38e4c89c7a3cb1520e66",
     "gen/split_provider_draft.py": "bd675bd169b5bb48d4459d4372deeda1446a090a59b030ec2a063950f8e65798",
@@ -209,6 +211,60 @@
       "evidence record"
     ],
     "governedPlaneCiters": []
+  },
+  "exportSurface": {
+    "ranAt": "be5850ed81e829411583870276054a9c50d18ef1",
+    "differsFromSubjectOnlyIn": "docs/evidence/syzygy-bpyt-8-1/",
+    "delta": {
+      "packages/polaris-generation-core/src/index.ts": {
+        "before": 239,
+        "after": 245,
+        "added": 6,
+        "removed": 0
+      },
+      "packages/polaris-generation-core/src/live.ts": {
+        "before": null,
+        "after": 165,
+        "added": 165,
+        "removed": 0
+      },
+      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": {
+        "before": 4,
+        "after": 2,
+        "added": 0,
+        "removed": 2
+      },
+      "apps/three-surface-poc/src/polaris-generation/dossier-site.ts": {
+        "before": null,
+        "after": 8,
+        "added": 8,
+        "removed": 0
+      }
+    },
+    "removed": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": [
+        "DossierRenderError",
+        "sourceRoute"
+      ]
+    },
+    "packageExports": {
+      "packages/polaris-generation-core/package.json": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
+        },
+        "./live": {
+          "types": "./dist/live.d.ts",
+          "import": "./dist/live.js",
+          "default": "./dist/live.js"
+        }
+      },
+      "apps/three-surface-poc/package.json": {
+        ".": "./dist/main.js",
+        "./dossier-site": "./dist/polaris-generation/dossier-site.js"
+      }
+    }
   },
   "tests": "Tests: +7 ~9 -0"
 }

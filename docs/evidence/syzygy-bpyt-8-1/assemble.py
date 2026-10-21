@@ -11,11 +11,15 @@ git = lambda *args: subprocess.run(['git', '-C', str(tree), *args], capture_outp
 
 reach_before, reach_after = load('reach-before.json'), load('reach-after.json')
 diff, mutants, regen, citers, tests = load('differential.json'), load('mutants.json'), load('regen-check.json'), load('digest-citers.json'), load('tests-delta.json')
+surface = load('export-surface.json')
 subject = mutants['commit']
 for name, commit in [('reach-after.json', reach_after['commit']), ('differential.json', diff['new']['commit']), ('regen-check.json', regen['commit']),
                      ('digest-citers.json', citers['new']), ('tests-delta.json', tests['new'])]:
     assert commit == subject, f'{name} ran at {commit}, not the subject {subject}'
-assert reach_before['commit'] == diff['old']['commit'] == citers['old'] == tests['old'], 'the records disagree on the commit before'
+assert reach_before['commit'] == diff['old']['commit'] == citers['old'] == tests['old'] == surface['before']['commit'], 'the records disagree on the commit before'
+# export-surface.json ran at the commit that added this directory; it differs from the subject only inside this directory.
+moved = [f for f in git('diff', '--name-only', subject, surface['after']['commit']).decode().split('\n') if f]
+assert all(f.startswith('docs/evidence/syzygy-bpyt-8-1/') for f in moved), moved
 
 def reach(record):
     return {k: {'reachableModules': record[k]['reachableCount'], 'reachableIslandModules': len(record[k]['reachableIsland']),
@@ -39,5 +43,8 @@ print(json.dumps({
     'mutants': {'total': len(mutants['mutants']), **{k: len(v) for k, v in outcomes.items()}, 'survivors': outcomes.get('survived', [])},
     'regeneratedSplitIdentical': regen['allIdentical'],
     'digestCiters': {'changedFiles': citers['changedFiles'], 'citedFiles': citers['citedFiles'], 'citerClasses': citers['citerClasses'], 'governedPlaneCiters': citers['governedPlaneCiters']},
+    'exportSurface': {'ranAt': surface['after']['commit'], 'differsFromSubjectOnlyIn': 'docs/evidence/syzygy-bpyt-8-1/',
+                      'delta': {f: {k: (v[k] if k in ('before', 'after') else len(v[k])) for k in ('before', 'after', 'added', 'removed')} for f, v in surface['delta'].items()},
+                      'removed': {f: v['removed'] for f, v in surface['delta'].items() if v['removed']}, 'packageExports': surface['after']['packageExports']},
     'tests': tests['summary'],
 }, indent=2))
