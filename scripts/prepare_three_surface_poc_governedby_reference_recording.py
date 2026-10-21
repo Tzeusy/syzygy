@@ -507,6 +507,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
         "linked-worktree-control", "linked-worktree-aggregate-failure",
         *(f"T{n:02}" for n in (*range(1, 16), 19, 20, 21, 22)),
         "OWN-1", "OWN-2", "OWN-3", "OWN-4", "BATCH-2", "BATCH-3", "BATCH-4", "DIRECT-1", "POP-6",
+        "R6-02", "R6-11", "R6-13", "R6-14", "R6-15", "R6-18",
     )
     with tempfile.TemporaryDirectory(prefix="p115-entrypoint-fixtures-") as temp:
         template = Path(temp) / "template"
@@ -583,9 +584,10 @@ def recording_failure_selftest(root: Path, expect) -> None:
             original_link, original_unlink = recorder.os.link, Path.unlink
             original_rmtree, original_read = recorder.shutil.rmtree, recorder.p115_read
             original_read_bytes, original_lstat = Path.read_bytes, Path.lstat
+            original_fsync = recorder.os.fsync
             original_render = recorder.render_record
             failed_once = set()
-            native_batches = []
+            native_batches, native_operations = [], []
             family_drift = RECORD.with_name(RECORD.name.replace("v1.0", "v02.0"))
             if name == "POP-6":
                 exclude = Path(git(tree, "rev-parse", "--git-path", "info/exclude").decode().strip())
@@ -688,6 +690,9 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     inject(label + " before staging")
                 if name == "DIRECT-1" and rel == SUBJECTS[2]:
                     inject("direct apply mid-subject before staging")
+                if name == "R6-18" and rel == SUBJECTS[2]:
+                    failed_once.add("R6-primary")
+                    inject("R6 direct apply mid-subject before staging")
                 original_write(path, body, **publication)
                 events.append(label + " real staged replace")
                 if name == "OWN-1" and rel == RECORD:
@@ -764,6 +769,11 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return result
 
             def replace(source, destination):
+                if name == "R6-11" and destination == tree / AGGREGATE and "R6-primary" not in failed_once:
+                    failed_once.add("R6-primary")
+                    native_operations.append({"actualOperation": "os.replace", "phase": "forward aggregate",
+                                              "nativeReturned": False})
+                    inject("R6 primary aggregate native publication failure")
                 if (name in {"restore-failure", "T15"} and destination == tree / SUBJECTS[-1]
                         and Path(source).read_bytes() == before[SUBJECTS[-1]]):
                     foreign[SUBJECTS[-1]] = proposed[SUBJECTS[-1]]
@@ -786,6 +796,11 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return result
 
             def link(source, destination):
+                if name in {"R6-02", "R6-13", "R6-14", "R6-15"} and destination == tree / RECORD:
+                    failed_once.add("R6-primary")
+                    native_operations.append({"actualOperation": "os.link", "phase": "forward dedicated",
+                                              "nativeReturned": False})
+                    inject("R6 primary dedicated native publication failure")
                 if name in {"T20", "T21"} and Path(destination).name.endswith(".ATTEMPT.json"):
                     phase = json.loads(Path(source).read_bytes())["state"]
                     fault = name == "T20" or not receipt_link_attempts
@@ -804,11 +819,6 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return original_link(source, destination)
 
             def unlink(path, *args, **kwargs):
-                if (name == "OWN-3" and name not in failed_once and path.name.startswith(".p115-")
-                        and path.parent == (tree / SUBJECTS[1]).parent
-                        and (tree / SUBJECTS[1]).read_bytes() == proposed[SUBJECTS[1]]):
-                    failed_once.add(name)
-                    inject("native subject staged unlink after confirmed publication")
                 if (name == "T06" and name not in failed_once and path.name.startswith(".p115-")
                         and path.parent == (tree / RECORD).parent and (tree / RECORD).exists()):
                     failed_once.add(name)
@@ -818,7 +828,15 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     if not journal.exists():
                         failed_once.add(name)
                         inject("native completed receipt unlink after payload deletion")
-                return original_unlink(path, *args, **kwargs)
+                result = original_unlink(path, *args, **kwargs)
+                if name == "R6-11" and path == tree / RECORD and "R6-primary" in failed_once:
+                    foreign[RECORD] = b"R6 independently recreated record after recovery unlink.\n"
+                    path.write_bytes(foreign[RECORD])
+                    foreign_identities[RECORD] = recorder.p115_identity(path)
+                    native_operations.append({"actualOperation": "Path.unlink", "phase": "recovery absence",
+                                              "nativeReturned": True, "foreignRecreated": True})
+                    events.append("R6 actual recovery unlink then foreign record recreation")
+                return result
 
             def rmtree(path, *args, **kwargs):
                 if (name in {"T09", "T10", "T22"} and Path(path).name.startswith("attempt-")
@@ -831,6 +849,14 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return original_rmtree(path, *args, **kwargs)
 
             def lstat(path, *args, **kwargs):
+                if (name == "OWN-3" and name not in failed_once and path.name.startswith(".p115-")
+                        and path.parent == (tree / SUBJECTS[1]).parent
+                        and (tree / SUBJECTS[1]).read_bytes() == proposed[SUBJECTS[1]]):
+                    failed_once.add(name)
+                    native_operations.append({"actualOperation": "Path.lstat", "phase": "post-forward-publication cleanup",
+                        "nativeReturned": False, "historicalEventLabelOnly": "native subject staged unlink after confirmed publication"})
+                    # Retained historical label; no unlink of a consumed stage ran.
+                    inject("native subject staged unlink after confirmed publication")
                 if name == "OWN-4" and "identity-denied" in failed_once and path == tree / SUBJECTS[1]:
                     events.append("native published subject identity inspection denied")
                     raise PermissionError(13, "P115 native subject identity inspection refused", str(path))
@@ -843,10 +869,42 @@ def recording_failure_selftest(root: Path, expect) -> None:
                     events.append("diagnostic receipt native read denied")
                     raise PermissionError(13, "P115 diagnostic receipt read refused", str(path))
                 body = original_read_bytes(path)
+                if (name == "R6-14" and path.name.endswith(".ATTEMPT.json")
+                        and b'"state": "failed"' in body and name not in failed_once):
+                    failed_once.add(name)
+                    foreign[SUBJECTS[-1]] = before[SUBJECTS[-1]] + b"\nR6 independent receipt-readback edit.\n"
+                    (tree / SUBJECTS[-1]).write_bytes(foreign[SUBJECTS[-1]])
+                    native_operations.append({"actualOperation": "Path.read_bytes", "phase": "failed receipt readback",
+                                              "nativeReturned": True})
+                    events.append("R6 actual failed receipt readback then independent subject edit")
                 if diagnostic:
                     failed_once.add("cleanup-receipt-readback")
                     events.append("real cleanup receipt readback")
                 return body
+
+            def fsync(fd):
+                result = original_fsync(fd)
+                path = Path(recorder.os.readlink(f"/proc/self/fd/{fd}"))
+                if "R6-primary" not in failed_once or name in failed_once:
+                    return result
+                if name in {"R6-02", "R6-18"} and path.name.startswith(".p115-"):
+                    target = SUBJECTS[-1] if name == "R6-02" else SUBJECTS[1]
+                    if path.parent == (tree / target).parent and path.read_bytes() == before[target]:
+                        failed_once.add(name)
+                        old = path.read_bytes()
+                        path.write_bytes(bytes([old[0] ^ 1]) + old[1:])
+                        native_operations.append({"actualOperation": "os.fsync", "phase": "recovery stage",
+                            "nativeReturned": True, "oldSha256": digest(old), "newSha256": digest(path.read_bytes())})
+                        events.append("R6 actual recovery stage fsync then first-byte alteration")
+                if (name == "R6-13" and path.name.startswith(".p115-")
+                        and path.parent.name == "p115-recording-recovery" and b'"state": "failed"' in path.read_bytes()):
+                    failed_once.add(name)
+                    foreign[SUBJECTS[-1]] = before[SUBJECTS[-1]] + b"\nR6 independent failed-receipt-stage edit.\n"
+                    (tree / SUBJECTS[-1]).write_bytes(foreign[SUBJECTS[-1]])
+                    native_operations.append({"actualOperation": "os.fsync", "phase": "failed receipt stage",
+                                              "nativeReturned": True})
+                    events.append("R6 actual failed receipt stage fsync then independent subject edit")
+                return result
 
             def read(path):
                 result = original_read(path)
@@ -859,6 +917,33 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 return result
 
             output = io.StringIO()
+            if name == "R6-15":
+                class NativeOutput:
+                    def __init__(self):
+                        self.stream = (Path(temp) / "R6-15.native-output").open("w+")
+                    def write(self, text):
+                        count = self.stream.write(text)
+                        self.stream.flush()
+                        if text.startswith("P115 failed-attempt evidence retained: ") and name not in failed_once:
+                            failed_once.add(name)
+                            rel = SUBJECTS[-1]
+                            replacement = (tree / rel).with_name(".R6-15-foreign")
+                            replacement.write_bytes(before[rel])
+                            original_replace(replacement, tree / rel)
+                            foreign[rel], foreign_identities[rel] = before[rel], recorder.p115_identity(tree / rel)
+                            native_operations.append({"actualOperation": "TextIOWrapper.write/flush",
+                                "phase": "failed receipt retention diagnostic", "nativeReturned": True})
+                            events.append("R6 actual retention diagnostic write then foreign same-byte subject inode")
+                        return count
+                    def flush(self):
+                        self.stream.flush()
+                    def getvalue(self):
+                        self.stream.flush()
+                        self.stream.seek(0)
+                        return self.stream.read()
+                    def close(self):
+                        self.stream.close()
+                output = NativeOutput()
             saved_root = recorder.ROOT
             try:
                 recorder.ROOT = tree
@@ -868,13 +953,14 @@ def recording_failure_selftest(root: Path, expect) -> None:
                      mock.patch.object(recorder, "render_record", render), \
                      mock.patch.object(recorder.os, "replace", replace), \
                      mock.patch.object(recorder.os, "link", link), \
+                     mock.patch.object(recorder.os, "fsync", fsync), \
                      mock.patch.object(Path, "unlink", unlink), \
                      mock.patch.object(Path, "read_bytes", read_bytes), \
                      mock.patch.object(Path, "lstat", lstat), \
                      mock.patch.object(recorder.shutil, "rmtree", rmtree), \
                      mock.patch.object(recorder, "p115_read", read), \
                      contextlib.redirect_stdout(output):
-                    if name == "DIRECT-1":
+                    if name in {"DIRECT-1", "R6-18"}:
                         code = recorder.real_packages()[KEY].apply(tree)
                     else:
                         code = recorder.main(["--record", KEY, "--version", VERSION, "--date", "2026-10-21",
@@ -882,6 +968,9 @@ def recording_failure_selftest(root: Path, expect) -> None:
             finally:
                 recorder.ROOT = saved_root
             actual = {p: recorder.p115_read(tree / p) for p in paths}
+            if name in {"R6-02", "R6-18"}:
+                expected[SUBJECTS[-1] if name == "R6-02" else SUBJECTS[1]] = proposed[
+                    SUBJECTS[-1] if name == "R6-02" else SUBJECTS[1]]
             if positive:
                 expected.update(proposed)
                 # Literal protocol outputs, independent of any transaction snapshots.
@@ -967,6 +1056,9 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 prefix = "P115 completed outcome receipt retained: " if positive else "P115 failed-attempt evidence retained: "
                 retention_ok = (len(journals) == 1 and claims == [prefix + str(retained[0])]
                     and phases == ["P115 verified retained receipt phase: " + label[journals[0]["state"]]])
+                if name in {"R6-13", "R6-14", "R6-15"}:
+                    retention_ok = (len(journals) == 1 and claims == [prefix + str(retained[0])] * 2
+                        and phases == ["P115 verified retained receipt phase: updated failed"] * 2)
             else:
                 retention_ok = not claims and not phases
                 if name == "T20":
@@ -1048,9 +1140,21 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "BATCH-4": ["native private preflight then foreign root patch drift"],
                 "DIRECT-1": ["subject real staged replace", "direct apply mid-subject before staging"],
                 "POP-6": ["subject real staged replace", "real mid-subject stage then ignored unsupported family drift"],
+                "R6-02": ["R6 primary dedicated native publication failure",
+                          "R6 actual recovery stage fsync then first-byte alteration"],
+                "R6-11": ["R6 primary aggregate native publication failure",
+                          "R6 actual recovery unlink then foreign record recreation"],
+                "R6-13": ["R6 primary dedicated native publication failure",
+                          "R6 actual failed receipt stage fsync then independent subject edit"],
+                "R6-14": ["R6 primary dedicated native publication failure",
+                          "R6 actual failed receipt readback then independent subject edit"],
+                "R6-15": ["R6 primary dedicated native publication failure",
+                          "R6 actual retention diagnostic write then foreign same-byte subject inode"],
+                "R6-18": ["R6 direct apply mid-subject before staging",
+                          "R6 actual recovery stage fsync then first-byte alteration"],
             }.get(name, [])
             reached = reached and all(event in events for event in required)
-            injected = not positive and not name.startswith("T") and name not in {
+            injected = not positive and not name.startswith(("T", "R6-")) and name not in {
                 "dirty-staged", "dirty-unstaged", "dirty-untracked",
                 "dirty-assume-unchanged", "dirty-skip-worktree", "dirty-stat-cache", "dirty-mode-hidden",
                 "guard-assume-unchanged", "guard-stat-cache",
@@ -1127,6 +1231,37 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 cause_ok = "P115 transaction input changed:" in lines
             if name == "POP-6":
                 cause_ok = "P115 transaction reserved family changed" in lines
+            literal_r6_ok = True
+            if name.startswith("R6-"):
+                # Fixed external Return3 fixture identities, not SUT results.
+                literal_before = (
+                    "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976",
+                    "f6ecbc2040779f6d12de74b2fb6ce8b83d9b66a28aa5e3f72a8f22add4067ffc",
+                    "2badee3cd053074182d3de24777a75991d2265b609c580094e2b87e49e91aac5",
+                    "6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295",
+                    "fe3fc6d6ee5461794c6b0fa7297bba52cb7695f5abbf384312bf111748ea8282",
+                    "3a2e5a2be8fc69f0fb70f32b0fce1b2b6ca9589db16224090a0351112385b691",
+                    None, "bbded40712eba4bdf24493b0d9b4d3fa86fe275b8de7e5350adf34313d094ccc")
+                literal_r6_ok = tuple(None if b is None else digest(b) for b in before.values()) == literal_before
+                if name == "R6-02":
+                    literal_r6_ok = literal_r6_ok and digest(actual[SUBJECTS[-1]]) == (
+                        "01209cce451cbab62a9f39fce1e6a78d9dcd6b56f3e32e0dc9bf0d5534534c37")
+                if name == "R6-18":
+                    literal_r6_ok = literal_r6_ok and digest(actual[SUBJECTS[1]]) == (
+                        "0fd62d8004107715af992aa259394bd9cfaaa09cfaa19b7776f8864b08d5deed")
+                cause_ok = (len(originals) == 1 and originals[0]["nodes"][0]["errno"] == 5
+                    and fingerprint in originals[0]["nodes"][0]["message"]
+                    and bool(journals) and journals[0]["originalException"] == originals[0])
+                observations = [json.loads(line.removeprefix("P115 final recovery observation: "))
+                    for line in lines.splitlines() if line.startswith("P115 final recovery observation: ")]
+                recovery_ok = ("P115 recovery incomplete:" in lines and "P115 recovery complete;" not in lines
+                    and len(journals) == 1 and bool(journals[0]["recoveryConflicts"])
+                    and len(observations) == 1 and observations[0]["targetCount"] == 8
+                    and not observations[0]["complete"]
+                    and observations[0]["observationId"].startswith(journals[0]["attemptId"] + ":")
+                    and observations[0]["scope"] == "exclusive-checkout sequential read-only observation; no atomic/CAS/beyond-window guarantee"
+                    and observations[0]["startedAt"] <= observations[0]["endedAt"]
+                    and observations[0]["startedAt"].endswith("Z") and observations[0]["endedAt"].endswith("Z"))
             tracked_ok = True
             tracked_after = {"flags": git(tree, "ls-files", "-v", "-z", "--", "README.md").decode(),
                 "workingBlob": git(tree, "hash-object", "--no-filters", "--", "README.md").decode().strip(),
@@ -1170,6 +1305,9 @@ def recording_failure_selftest(root: Path, expect) -> None:
             if name == "DIRECT-1":
                 ownership_ok = ownership_ok and all(j["operation"] == "apply" and set(j["publications"]) == {str(SUBJECTS[1])}
                     and j["paths"][-2]["after"] is None for j in journals)
+            if name == "R6-18":
+                ownership_ok = ownership_ok and all(j["operation"] == "apply"
+                    and set(j["publications"]) == {str(SUBJECTS[1])} and j["paths"][-2]["after"] is None for j in journals)
             private_ok = all(
                 len(j["batch"]["orderedPatches"]) == 5 and
                 j["batch"]["commands"][0]["argv"] == ["git", "init", "--quiet", "--template="]
@@ -1193,7 +1331,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
             stages_clean = not any(any(parent.glob(".p115-*")) for parent in
                                    {(tree / rel).parent for rel in paths})
             expect("entrypoint " + name, state_ok and gate_ok and index_ok and dirt_ok and reached
-                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok and private_ok and tracked_ok)
+                   and failure_evidence and cause_ok and preimages_ok and recovery_ok and stages_clean and ownership_ok and private_ok and tracked_ok and literal_r6_ok)
             mutation_receipt(tree, "entrypoint " + name, before, actual,
                              "exact scoped preimages/foreign states; no failed transaction signed")
             print("P115-TRANSACTION-EVIDENCE " + json.dumps({"case": name, "syntheticOnly": True,
@@ -1207,6 +1345,7 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "assertions": {"states": state_ok, "authority": gate_ok, "index": index_ok, "dirt": dirt_ok,
                                "barrierReached": reached, "failureEvidence": failure_evidence, "cause": cause_ok, "privateBatch": bool(private_ok),
                                "ownership": ownership_ok, "retentionVerified": retention_ok, "trackedCheckout": tracked_ok},
+                "literalR6FixtureIdentity": literal_r6_ok, "nativeOperations": native_operations,
                 "trackedBefore": tracked_before, "trackedAfter": tracked_after,
                 "recoveryPreimagesExact": preimages_ok, "recoveryDiagnosticExact": recovery_ok,
                 "receiptIdentityAndCaptureTime": receipt_identity_ok,
@@ -1214,8 +1353,221 @@ def recording_failure_selftest(root: Path, expect) -> None:
                 "originalException": originals, "foreignIdentities": {str(p): t for p,t in foreign_identities.items()},
                 "journals": journals, "receiptLinkAttempts": receipt_link_attempts,
                 "verifiedReceiptPhases": phases, "retentionClaims": claims, "nativeBatches": native_batches,
-                "entryOperation": "direct Package.apply" if name == "DIRECT-1" else "main --record", "output": lines}, sort_keys=True))
+                "entryOperation": "direct Package.apply" if name in {"DIRECT-1", "R6-18"} else "main --record", "output": lines}, sort_keys=True))
+            if name == "R6-15":
+                output.close()
             shutil.rmtree(tree)
+
+
+def recovery_native_selftest(root: Path, expect) -> None:
+    """Eleven fast native filesystem cases; no MAIN, owner or signed result is inferred."""
+    import record_versioned_signoff as recorder
+    import stat
+    import traceback
+    from unittest import mock
+    cases = (
+        ("R6-03", "same-byte foreign stage pathname substitution"),
+        ("R6-04", "recovery-stage native partial write failure"),
+        ("R6-05", "recovery-stage native fsync failure"),
+        ("R6-06", "recovery-stage native creation failure"),
+        ("R6-07", "native recovery replace succeeded then wrapper raised"),
+        ("R6-08", "restored target altered after native replacement"),
+        ("R6-09", "earlier restored target drifts during later recovery"),
+        ("R6-10", "native absence unlink succeeded then wrapper raised"),
+        ("R6-12", "final target inspection denied"),
+        ("R6-16", "late same-byte foreign target inode"),
+        ("R6-17", "recovery stage cleanup failure after install"),
+    )
+    preimage, installed, independent = b"r6 preimage\n", b"r6 installed\n", b"r6 independent alteration\n"
+    source = {p: digest((root / "scripts" / p).read_bytes()) for p in
+              (Path(__file__).name, "record_versioned_signoff.py")}
+    ran_at = git(root, "rev-parse", "HEAD").decode().strip()
+    with tempfile.TemporaryDirectory(prefix="p115-recovery-native-") as temp:
+        for name, title in cases:
+            tree = Path(temp) / name
+            tree.mkdir()
+            paths = (Path("first"), Path("second")) if name in {"R6-08", "R6-09", "R6-16"} else (Path("first"),)
+            before = {p: None if name == "R6-10" else preimage for p in paths}
+            for rel, body in before.items():
+                if body is not None:
+                    (tree / rel).write_bytes(body)
+            before_identity = {p: recorder.p115_identity(tree / p) for p in paths}
+            outputs = {p: installed for p in paths}
+            publications, order, restored, blocked = {}, [], {}, set()
+            operations, events, foreign = [], [], {}
+            for rel in reversed(paths):
+                def published(identity, rel=rel):
+                    publications[rel] = recorder.P115Publication(name, rel, identity, stat.S_IFREG,
+                                                                 installed, digest(installed))
+                    order.append(rel)
+                    fd = recorder.os.open(tree / rel, recorder.os.O_RDONLY | recorder.os.O_NOFOLLOW)
+                    with recorder.os.fdopen(fd, "rb") as stream:
+                        info = recorder.os.fstat(stream.fileno())
+                        body = stream.read()
+                        after = recorder.os.fstat(stream.fileno())
+                    confirmed = (stat.S_ISREG(info.st_mode) and stat.S_ISREG(after.st_mode)
+                        and (info.st_dev, info.st_ino) == (after.st_dev, after.st_ino) == identity
+                        and body == installed)
+                    operations.append({"actualOperation": "native forward publication callback",
+                        "path": str(rel), "identity": identity, "fstatConfirmed": confirmed,
+                        "independentDescriptor": {"openFlags": ["O_RDONLY", "O_NOFOLLOW"],
+                            "device": info.st_dev, "inode": info.st_ino,
+                            "kind": "regular" if stat.S_ISREG(info.st_mode) else "nonregular",
+                            "literalInstalledBody": body == installed, "bodyHex": body.hex(),
+                            "afterIdentity": [after.st_dev, after.st_ino], "closed": stream.closed}})
+                recorder.p115_publish(tree / rel, installed, expected=before[rel],
+                    expected_identity=before_identity[rel], published=published)
+            original_fsync, original_fdopen = recorder.os.fsync, recorder.os.fdopen
+            original_replace, original_unlink = recorder.os.replace, Path.unlink
+            original_lstat, original_mkstemp = Path.lstat, recorder.tempfile.mkstemp
+            fired, stage_count = set(), []
+
+            def fault(operation, number):
+                operations.append({"actualOperation": operation, "phase": "recovery", "nativeReturned": False})
+                events.append(name + " actual native " + operation + " fault")
+                raise OSError(number, "P115 " + name + " helper-local native fault")
+
+            def mkstemp(*args, **kwargs):
+                if name == "R6-06":
+                    fault("tempfile.mkstemp", 28)
+                return original_mkstemp(*args, **kwargs)
+
+            class PrefixStream:
+                def __init__(self, fd, mode):
+                    self.stream = original_fdopen(fd, mode)
+                def __enter__(self):
+                    self.stream.__enter__()
+                    return self
+                def write(self, value):
+                    self.stream.write(value[:4])
+                    self.stream.flush()
+                    operations.append({"actualOperation": "file.write/flush", "nativeReturned": True,
+                                       "literalWrittenHex": b"r6 p".hex()})
+                    fault("recovery partial write", 28)
+                def __exit__(self, *exc):
+                    return self.stream.__exit__(*exc)
+
+            def fsync(fd):
+                if name == "R6-05":
+                    fault("os.fsync", 28)
+                result = original_fsync(fd)
+                staged = Path(recorder.os.readlink(f"/proc/self/fd/{fd}"))
+                stage_count.append(str(staged))
+                operations.append({"actualOperation": "os.fsync", "phase": "recovery stage", "nativeReturned": True})
+                if name == "R6-03":
+                    replacement = tree / "foreign-stage"
+                    replacement.write_bytes(preimage)
+                    original_replace(replacement, staged)
+                    foreign[staged] = (preimage, recorder.p115_identity(staged))
+                    events.append("same-byte independently identified recovery stage substitution")
+                if name in {"R6-09", "R6-16"} and len(stage_count) == 2:
+                    target = tree / paths[0]
+                    if name == "R6-09":
+                        target.write_bytes(independent)
+                    else:
+                        replacement = tree / "foreign-target"
+                        replacement.write_bytes(preimage)
+                        original_replace(replacement, target)
+                    foreign[target] = (target.read_bytes(), recorder.p115_identity(target))
+                    events.append("independent earlier-target change during second recovery stage")
+                return result
+
+            def replace(source_path, destination):
+                result = original_replace(source_path, destination)
+                operations.append({"actualOperation": "os.replace", "phase": "recovery", "nativeReturned": True,
+                                   "path": str(Path(destination).relative_to(tree))})
+                if destination == tree / paths[0] and name in {"R6-07", "R6-08"} and name not in fired:
+                    fired.add(name)
+                    if name == "R6-07":
+                        fault("post-return os.replace wrapper", 5)
+                    if name == "R6-08":
+                        Path(destination).write_bytes(independent)
+                        foreign[Path(destination)] = (independent, recorder.p115_identity(Path(destination)))
+                        events.append("independent target alteration after real recovery replace")
+                return result
+
+            def unlink(path, *args, **kwargs):
+                result = original_unlink(path, *args, **kwargs)
+                operations.append({"actualOperation": "Path.unlink", "path": str(path), "nativeReturned": True})
+                if name == "R6-10" and path == tree / paths[0]:
+                    fault("post-return Path.unlink wrapper", 5)
+                return result
+
+            def lstat(path, *args, **kwargs):
+                if (name == "R6-12" and path == tree / paths[0]
+                        and any(frame.name == "p115_recovery_observation" for frame in traceback.extract_stack())):
+                    fault("final target Path.lstat", 13)
+                if (name == "R6-17" and path.name.startswith(".p115-")
+                        and paths[0] in restored and name not in fired):
+                    fired.add(name)
+                    # Native cleanup inspection after the recovery callback;
+                    # no unlink is invented for a stage consumed by replace.
+                    fault("post-recovery-publication cleanup Path.lstat", 5)
+                return original_lstat(path, *args, **kwargs)
+
+            with mock.patch.object(recorder.tempfile, "mkstemp", mkstemp), \
+                 mock.patch.object(recorder.os, "fdopen", PrefixStream if name == "R6-04" else original_fdopen), \
+                 mock.patch.object(recorder.os, "fsync", fsync), \
+                 mock.patch.object(recorder.os, "replace", replace), \
+                 mock.patch.object(Path, "unlink", unlink), \
+                 mock.patch.object(Path, "lstat", lstat):
+                conflicts, errors = recorder.p115_recover(tree, before, outputs, before_identity,
+                    order, publications, restored=restored, blocked=blocked)
+            actual = {p: recorder.p115_read(tree / p) for p in paths}
+            expected = dict(before)
+            if name in {"R6-03", "R6-04", "R6-05", "R6-06"}:
+                expected[paths[0]] = installed
+            if name in {"R6-08", "R6-09"}:
+                expected[paths[0]] = independent
+            state_ok = actual == expected
+            foreign_ok = all(recorder.p115_read(p) == body and recorder.p115_identity(p) == identity
+                             for p, (body, identity) in foreign.items())
+            expected_events = {
+                "R6-03": "same-byte independently identified recovery stage substitution",
+                "R6-04": "R6-04 actual native recovery partial write fault",
+                "R6-05": "R6-05 actual native os.fsync fault",
+                "R6-06": "R6-06 actual native tempfile.mkstemp fault",
+                "R6-07": "R6-07 actual native post-return os.replace wrapper fault",
+                "R6-08": "independent target alteration after real recovery replace",
+                "R6-09": "independent earlier-target change during second recovery stage",
+                "R6-10": "R6-10 actual native post-return Path.unlink wrapper fault",
+                "R6-12": "R6-12 actual native final target Path.lstat fault",
+                "R6-16": "independent earlier-target change during second recovery stage",
+                "R6-17": "R6-17 actual native post-recovery-publication cleanup Path.lstat fault",
+            }
+            reached = expected_events[name] in events
+            expected_errno = {"R6-04": 28, "R6-05": 28, "R6-06": 28,
+                              "R6-07": 5, "R6-10": 5, "R6-12": 13, "R6-17": 5}.get(name)
+            errors_ok = bool(conflicts)
+            if expected_errno is not None:
+                errors_ok = errors_ok and any(e["nodes"][0].get("errno") == expected_errno for e in errors)
+            stages = list(tree.glob(".p115-*"))
+            cleanup_ok = stages == list(foreign) if name == "R6-03" else not stages
+            witnesses_ok = len(order) == len(paths) and all(
+                op["fstatConfirmed"] for op in operations if op["actualOperation"] == "native forward publication callback")
+            if name == "R6-07":
+                witnesses_ok = witnesses_ok and paths[0] not in restored and sum(
+                    op["actualOperation"] == "os.replace" for op in operations) == 1
+            if name == "R6-10":
+                witnesses_ok = witnesses_ok and paths[0] not in restored and sum(
+                    op["actualOperation"] == "Path.unlink" for op in operations) == 1
+            if name == "R6-17":
+                witnesses_ok = witnesses_ok and paths[0] in restored and not any(
+                    op["actualOperation"] == "Path.unlink" for op in operations)
+            passed = state_ok and foreign_ok and reached and errors_ok and cleanup_ok and witnesses_ok
+            expect(name + " " + title, passed)
+            print("P115-RECOVERY-HELPER-EVIDENCE " + json.dumps({"case": name, "title": title,
+                "scope": "synthetic fast filesystem helper only; no MAIN/owner/signed result", "ranAt": ran_at,
+                "tools": source, "targetDenominator": len(paths), "nativeOperations": operations, "events": events,
+                "old": {str(p): None if b is None else b.hex() for p, b in before.items()},
+                "installed": installed.hex(), "expected": {str(p): None if b is None else b.hex() for p, b in expected.items()},
+                "actual": {str(p): None if b is None else b.hex() for p, b in actual.items()},
+                "assertions": {"literalStates": state_ok, "foreignPreserved": foreign_ok, "barrierReached": reached,
+                    "helperErrorsRetained": errors_ok, "ownedCleanup": cleanup_ok, "nativeWitnesses": witnesses_ok},
+                "foreign": {str(p.relative_to(tree)): {"bodyHex": body.hex(), "identity": identity}
+                            for p, (body, identity) in foreign.items()},
+                "recoveryWitnesses": {str(p): identity for p, identity in restored.items()},
+                "conflicts": conflicts, "helperExceptions": errors}, sort_keys=True))
 
 
 def family_failure_selftest(root: Path, tree: Path, expect, before: dict, earlier: dict) -> None:
@@ -1881,6 +2233,7 @@ def selftest(root: Path) -> int:
             CORE_COMMIT = saved_commit
     recording_failure_selftest(root, expect)
     recording_render_selftest(root, expect)
+    recovery_native_selftest(root, expect)
     for name, passed in cases:
         print(f"P115 selftest: {name}: {'ok' if passed else 'FAILED'}")
     failed = sum(not passed for _name, passed in cases)
