@@ -191,6 +191,16 @@ file named in it.]
   - Line 295, "draft PR #492 at `268f1773`, names neither item depth nor the
     opening band": true of that draft head when written. The merged record's
     B11 names item depth's relation claims and the opening band's count.
+  - Line 328, "slice 5's deliverable (`syzygy-dov.2.2`), behind
+    `syzygy-dov.19`": the `syzygy-dov.19` act was given at
+    2026-10-21T12:00:00Z and is recorded in
+    `PWB-M2-SLICE-5-IMPLEMENTATION-CONTINUATION-DIRECTION.md`, so slice 5 no
+    longer waits on that act. Slice 5 is still unbuilt and is still the
+    repair of the constant `fresh`.
+  - Line 352, "the 2026-09-30 registry fields stay unread until
+    `syzygy-dov.19`": since 2026-10-21 the authority for reading the registry
+    fields is the M2 slice 5 continuation record above. The fields are read
+    only once `syzygy-dov.2.2` lands.
   - The sentences that make item depth wait for the act, and keep the band's
     count arm out until it, are met in their wait on the act. What remains is
     the wait on slice 5, per B11.
