@@ -185,6 +185,15 @@ jobs:
       - name: record_versioned_signoff --selftest
         run: python3 scripts/record_versioned_signoff.py --selftest
 
+      - name: prepare_three_surface_poc_governedby_reference_recording --check
+        run: python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --check
+
+      - name: prepare_three_surface_poc_governedby_reference_recording --selftest
+        run: python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --selftest
+
+      - name: build_three_surface_poc_vocabulary_epistemic_amendment --selftest
+        run: python3 scripts/build_three_surface_poc_vocabulary_epistemic_amendment.py --selftest
+
       # The six version-signed PWB builders' fixtures and the helper that
       # reruns them (syzygy-tmkb, syzygy-6scq). After sign-off each builder's
       # --selftest runs its current bytes against the pre-adoption tree from
