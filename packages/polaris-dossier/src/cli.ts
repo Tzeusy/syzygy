@@ -79,8 +79,7 @@ Commands:
                       with its digest, into the review session's directory there;
                       when a session of the kind is waiting (started by all), it delivers the
                       packet to that session as its next round instead, unless
-                      --fresh is given. all, at the start of a run (v1.2, refused
-                      until it is signed off):
+                      --fresh is given. all, at the start of a run (v1.2):
                       make the inventory, fidelity-review and design-review
                       session directories, write the inventory brief, and print a
                       command per session that pre-approves only reading its
