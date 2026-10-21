@@ -248,7 +248,8 @@ async function measure(runArg, headlineRevision) {
   const { POLICY_PATH, readClassActState } = await dist('packages/polaris-generation-consent/dist/index.js');
   const sources = createPackageGateSources({ root: ROOT, now: () => now });
 
-  const syzygy = { commit: git('rev-parse', 'HEAD').trim(), treeClean: git('status', '--porcelain', '--untracked-files=no').trim() === '', scriptPath: 'scripts/redis_screening_remeasure.mjs', scriptSha256: sha256(fs.readFileSync(SCRIPT)) };
+  // `path` beside `scriptSha256` lets the evidence-currency sweep re-check the script's bytes in this checkout (rule 11).
+  const syzygy = { commit: git('rev-parse', 'HEAD').trim(), treeClean: git('status', '--porcelain', '--untracked-files=no').trim() === '', path: 'scripts/redis_screening_remeasure.mjs', scriptSha256: sha256(fs.readFileSync(SCRIPT)) };
   const runRecordBytes = fs.readFileSync(path.join(run, 'run.json'));
   const runRecord = JSON.parse(runRecordBytes.toString('utf8'));
   const header = {
@@ -319,7 +320,8 @@ async function measure(runArg, headlineRevision) {
           const screened = v4.screenTargetBody(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(blob.bytes), blob.path);
           if (screened.kind !== 'redacted') throw new Error(`${blob.path} screened ${screened.kind} on the second read`);
           withheldOf.set(blob.path, screened.withheld);
-          redactedBodies[blob.path] = { objectId: tree.get(blob.path).id, contentSha256: screened.contentSha256, lines: screened.retainedLines.length, withheldLines: screened.withheld, detectorIds: screened.detectorIds };
+          // Keyed by `redisPath`, never `path` or a path-named key: the evidence-currency sweep would resolve a Redis path against this checkout.
+          redactedBodies[blob.path] = { redisPath: blob.path, objectId: tree.get(blob.path).id, contentSha256: screened.contentSha256, lines: screened.retainedLines.length, withheldLines: screened.withheld, detectorIds: screened.detectorIds };
         }
       }
       const v4Cause = (span) => causeOf(span, span.outcome === 'redacted-span' ? redactedCause(withheldOf.get(span.path), span.startLine, span.endLine) : undefined);
@@ -411,7 +413,7 @@ async function measure(runArg, headlineRevision) {
       'redacted-span spans are split by spanTouchesWithheld\'s reading over the withheld lines of a second read of the same blob through the same reader and screen',
       'readiness rows are the retained validated verdict bound to the retained packet, read for structured fields only',
     ],
-    gate: gateRecord, openRun: openRunOutcome, screens, byDesignFiles: BY_DESIGN, redactedBodiesUnderV4: redactedBodies, revisions, measured: true,
+    gate: gateRecord, openRun: openRunOutcome, screens, byDesignFiles: BY_DESIGN, redactedBodiesUnderV4: Object.values(redactedBodies), revisions, measured: true,
     scriptChecks: { atCommit: syzygy.commit, selftestFailures: selftest(), rule6: runMutants() },
   };
   const chosen = revisions.find((r) => r.draftRevision === (headlineRevision ?? revisions[revisions.length - 1].draftRevision));
