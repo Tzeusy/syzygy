@@ -64,8 +64,8 @@ The item's authorization boundary, as the owner answered over it:
 > `syzygy-dov.12.3` builds the signed no-home arm under the PR #489 record
 > once it lands, after `dov.12.1`, and the retained re-read limb stays
 > unbuilt. The lead records the answer as a dated owner ruling under
-> `decisions/` (with the P-79 row and `DECISION-HISTORY.md`), and notes it on
-> `dov.12.3`. This packet releases no artifact mutation or live/external
+> `.syzygy/governance/decisions/` (with the P-79 row and
+> `DECISION-HISTORY.md`), and notes it on `dov.12.3`. This packet releases no artifact mutation or live/external
 > action; the canonical destination workflow must obtain and enforce every
 > separate authorization it requires.
 
@@ -108,6 +108,17 @@ claim (`POLARIS-RETAINED-EVALUATIONS-RETENTION-POSTURE-DIRECTION.md`, clause
   (Syzygy writes the records into Butlers). Neither is chosen and neither is
   authorized here. [Inferred, the packet's reading: because the record set is
   injected, B can later be added as a new source rather than a rewrite.]
+
+## Where the P-79 row is recorded
+
+[Observed: the P-79 row lives in `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`
+(this directory); `PENDING-OWNER-DECISIONS.md` holds no live P-79 row. The
+rulings file's SHA-256 is cited in a package manifest and a semantic delta
+under `.syzygy/governance/contracts/candidates/`, so it is treated as bound
+and is not edited.] This ruling is therefore entered in `DECISION-HISTORY.md`
+and cited from `README.md` in this directory, and the rulings file's row
+stands as written. Where that row and this ruling differ, this ruling is the
+later owner answer.
 
 ## Relation to the 2026-10-20 direction
 
