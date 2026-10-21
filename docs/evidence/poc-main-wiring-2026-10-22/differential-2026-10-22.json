@@ -1,0 +1,42 @@
+{
+ "tool": "compare_differentials.py",
+ "runner": "docs/evidence/poc-main-wiring-2026-10-22/run_differential_fixed_roots.py",
+ "harness": "docs/evidence/poc-hygiene-2026-10-22/main-old-vs-new-differential.test.ts.txt",
+ "harnessSha256": "a93c6443d1463c729b9e8ffd62a062d8309cf03af368fb5a8c30fa7d6d14767a",
+ "oldScript": {
+  "commit": "1d6731bb",
+  "sha256": "470ff646cec7a94d3f9bcb0029e082549a7c5769577e4a549d225f6de09e6da2"
+ },
+ "base": {
+  "treeCommit": "5837512f5be2cba4fa5caa7fd493b457ded744c8",
+  "vitestTests": 44,
+  "passed": 44,
+  "failed": 0,
+  "rawSha256": "a1a04753ac594a9eda6fc679013737b8c8bc4923fc206bea6ffd6f5f951a3654",
+  "canonicalSha256": "b0c6823fa922042fa0d737c86761fd878627260a80d45fcebdfe0c65b5659d7c"
+ },
+ "head": {
+  "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+  "vitestTests": 44,
+  "passed": 44,
+  "failed": 0,
+  "rawSha256": "a1a04753ac594a9eda6fc679013737b8c8bc4923fc206bea6ffd6f5f951a3654",
+  "canonicalSha256": "b0c6823fa922042fa0d737c86761fd878627260a80d45fcebdfe0c65b5659d7c"
+ },
+ "scenarios": 42,
+ "scenariosWithEqualTranscriptsBaseVersusHead": 42,
+ "scenariosWithUnequalTranscripts": [],
+ "rawFilesByteEqual": true,
+ "nonVacuity": {
+  "scenariosByStage": {
+   "help": 2,
+   "refused": 23,
+   "rejected-with-throw": 1,
+   "served": 16
+  },
+  "distinctScenarioTranscripts": 42,
+  "scenariosWithPostStartActions": 8,
+  "oldEqualsNewInEveryScenarioAtHead": true
+ },
+ "claim": "the new main(), the entry main.ts and the pre-extraction script give equal transcripts in 42 scenarios, and the base and head trees give the same transcripts; repository roots are fixed so the five scenarios that embed one are comparable"
+}
