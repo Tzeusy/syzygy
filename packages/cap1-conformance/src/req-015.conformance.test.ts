@@ -11,6 +11,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-015 — One coverage boundary, retrievable identically by human
 // and machine.
@@ -37,30 +38,16 @@ import {
 
 const PROJECT = 'prj-boundary-f6' as ProjectId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-boundary-f6
-  name: Boundary Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-full
-    role: governance-root
-    consent: consent-f
-  - id: repo-partial
-    role: observed-source
-    consent: consent-p
-  - id: repo-unconsented
-    role: observed-source
-    consent: consent-x
-consents:
-  - consent-f
-  - consent-p
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Boundary Fixture',
+  repositories: [
+    { id: 'repo-full', role: 'governance-root', consent: 'consent-f' },
+    { id: 'repo-partial', role: 'observed-source', consent: 'consent-p' },
+    { id: 'repo-unconsented', role: 'observed-source', consent: 'consent-x' },
+  ],
+  consents: ['consent-f', 'consent-p'],
+});
 
 function declaration(): ProjectDeclaration {
   const read = readDeclaration(SOURCE);
@@ -69,22 +56,16 @@ function declaration(): ProjectDeclaration {
 }
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-f',
     projectId: PROJECT,
     repositoryId: 'repo-full' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
-  {
+  }),
+  consent({
     id: 'consent-p',
     projectId: PROJECT,
     repositoryId: 'repo-partial' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [

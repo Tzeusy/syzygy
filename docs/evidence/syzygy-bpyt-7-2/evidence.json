@@ -1,0 +1,2411 @@
+{
+ "bead": "syzygy-bpyt.7.2",
+ "text": "Greenfield-parity DC-7: Capability 1 test-only code moved to a testing entry, unwired write guard deleted, conformance fixtures built through one builder.",
+ "measuredOn": {
+  "date": "2026-10-22",
+  "codeCommit": "b17e94ba1e1d1c9721532d17ee0c00af3969a200",
+  "codeTree": "16a48639f6dfec7f58ca1780c445cfe6a05fa4b1",
+  "baseCommit": "e26a615d95524c1d14d1f35aa05547920c895fd3",
+  "baseTree": "3223b38434932e4a821ec189bca795037581d2fd",
+  "validFor": "the code commit and tree named here; any later edit to the files under packages/, apps/ or vitest.config.ts retires it (rule 10)"
+ },
+ "reachability": {
+  "script": "reach_sweep.py",
+  "scriptSha256": "4c163866319e89955495cbdb67614474a51fa68fac3d3884912750371e467c45",
+  "rule": "name-based closure from apps/syzygy/src/main.ts over every non-test .ts under src/ in packages/cap1-core, packages/cap1-daemon, apps/syzygy; a module is reached when a reached module mentions, in comment-stripped code, a name it exports; index.ts barrels are definers only",
+  "head": {
+   "scopeFiles": 32,
+   "reached": 27,
+   "notReached": [
+    "packages/cap1-core/src/parity-oracle.ts",
+    "packages/cap1-core/src/testing.ts",
+    "packages/cap1-core/src/write-boundary.ts"
+   ],
+   "rawFile": "reach-head.txt",
+   "rawSha256": "1b3b121b1f40a9e8b9524a1c4b1ec441c0be87149f436fabd83c2dbd2e1d789c"
+  },
+  "base": {
+   "scopeFiles": 31,
+   "reached": 27,
+   "notReached": [
+    "packages/cap1-core/src/write-boundary.ts",
+    "packages/cap1-daemon/src/write-guard.ts"
+   ],
+   "rawFile": "reach-base.txt",
+   "rawSha256": "e74ecf634737fab0066582814d32bb69268be52fe8d00126d680d424479d6cd7"
+  },
+  "text": "The three unreached modules at head are exactly the deliberate test-support entry (testing.ts) and the two modules it exports; nothing else in the denominator is unreached."
+ },
+ "exportCensus": {
+  "script": "export_sweep.py",
+  "scriptSha256": "8f6322455546d51c077c0c777fe924454482afbd322dee26db0830f93414ee11",
+  "scope": "packages/cap1-core, packages/cap1-daemon, packages/cap1-system, apps/syzygy (non-test src, index.ts barrels excluded)",
+  "base": {
+   "exportsScanned": 301,
+   "testOnly": 28
+  },
+  "head": {
+   "exportsScanned": 296,
+   "testOnly": 27
+  },
+  "rawFiles": {
+   "head": "export-head.tsv",
+   "base": "export-base.tsv"
+  },
+  "text": "Test-only exports that remain are conformance-pinned domain functions, the test-support entry, cap1-system harness helpers, two discoverability-plane observers (syzygy-u2a.7) and minimalRootRoute (syzygy-bpyt.7.3)."
+ },
+ "testNameSets": {
+  "command": "npx vitest list (repository root config) at the base and at the code commit",
+  "baseLines": 4919,
+  "headLines": 4897,
+  "added": 0,
+  "removed": 22,
+  "editedFilesSameTitle": 219,
+  "removedByFile": {
+   "packages/cap1-daemon/src/write-guard.test.ts": 22
+  },
+  "conformance": {
+   "baseTests": 312,
+   "headTests": 312,
+   "baseNameSetSha256": "3d8a68103c582ffe5ae202ac1a017cbf95fc6e41d9c0d09cb19215a998bb9188",
+   "headNameSetSha256": "3d8a68103c582ffe5ae202ac1a017cbf95fc6e41d9c0d09cb19215a998bb9188",
+   "identical": true
+  },
+  "listSha256": {
+   "base": "31ca14eeecbc9194245cc9366fc6bd5e15295893e3cdc1e39d82d24e793458c8",
+   "head": "de46f019598b07fb02ecc9341df751e0ca94ddc4230083bdd0b8e46095de5c87"
+  }
+ },
+ "callTrace": {
+  "method": "vi.mock wrapper over every lowercase function exported by @syzygy/cap1-core (and, at head, @syzygy/cap1-core/testing); each conformance-to-core call logs name and sha256 of its JSON-serialised arguments; class and constant exports are not recorded",
+  "recorderFiles": [
+   "recorder/zz-diff.vitest.config.ts",
+   "recorder/zz-diff.setup-core.ts",
+   "recorder/zz-diff.setup-testing.ts"
+  ],
+  "command": "DIFF_OUT=<file> [DIFF_TESTING=1] npx vitest run --config zz-diff.vitest.config.ts --project @syzygy/cap1-conformance",
+  "baseCalls": 852,
+  "headCalls": 852,
+  "distinctFunctions": 59,
+  "sortedBaseSha256": "6ae85ec57514c0eb98008c07afa3ee5e60a16e53f4366532a58b6bf09e0a051b",
+  "sortedHeadSha256": "6ae85ec57514c0eb98008c07afa3ee5e60a16e53f4366532a58b6bf09e0a051b",
+  "sortedFile": "calls.sorted (the head file; the base file hashes identically)",
+  "identical": true
+ },
+ "builderByteEquality": {
+  "script": "yaml-byte-equality.mjs",
+  "cases": "yaml-cases.json",
+  "casesSha256": "7008e2c1751a09ca9906da430f7bc0f2b0f8c71f994c5697550c3098567e2ad3",
+  "result": "cases=25 byte-equal=25 unequal=0",
+  "mutantCheck": "a copy of the built builder with spec_root: openspec/ changed to spec_root: openspec gave cases=25 byte-equal=0 unequal=25",
+  "sweep": "git grep -l -F \"spec_root: openspec/\" at the code commit over packages/cap1-conformance: fixtures/index.ts and req-003.conformance.test.ts (per-field fragment blocks, a deliberately different shape); git grep -l -F 'schema_version: \"1\"': those two plus req-032 and req-034 (deliberately invalid declarations)",
+  "importers": "fixtures/index.js is imported by 28 of the 45 conformance test files"
+ },
+ "routeDifferential": {
+  "script": "route-diff.mjs",
+  "scriptSha256": "50bfe5d1c4cc7d11dd5a1471a2add43a0774bfc1b59e54721e597e1fc08d2cdc",
+  "method": "spawn the REAL built daemon (apps/syzygy/dist/main.js) of each tree against each fixture; record status, content type and body for every route anonymous and with the machine bearer credential; mask ISO timestamps, ports, fixture and state paths only",
+  "fixtures": [
+   "complete",
+   "empty-root",
+   "invalid-declaration",
+   "unparseable-declaration",
+   "widening-field-write-roots",
+   "widening-field-top-level",
+   "missing-consent",
+   "withdrawn-consent",
+   "altered-prose-consent-state",
+   "altered-prose-consent-extra-line",
+   "altered-prose-consent-scope",
+   "consent-wrong-project",
+   "entry-special-chars",
+   "entry-missing",
+   "entry-empty",
+   "two-repos-one-unconsented",
+   "no-governed-content"
+  ],
+  "fixtureCount": 17,
+  "routesPerCredential": 8,
+  "responses": 272,
+  "identicalResponses": 272,
+  "stdoutStderrIdentical": true,
+  "statusCounts": {
+   "anon 200": 34,
+   "anon 401": 34,
+   "anon 404": 68,
+   "auth 200": 68,
+   "auth 404": 68
+  },
+  "distinctBodies": 25,
+  "baseJsonSha256": "bebd97b7fdc2aaf906f6327f4e94de90a3fc8622def752d3be8263136006b960",
+  "headJsonSha256": "bebd97b7fdc2aaf906f6327f4e94de90a3fc8622def752d3be8263136006b960",
+  "mutantCheck": "a one-character change to the built routes-human.js (the absent-state authority sentence) changed 26 of 272 responses",
+  "perResponse": {
+   "complete | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "complete | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "complete | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "complete | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "complete | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "complete | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "complete | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "complete | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "complete | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "complete | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "complete | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "complete | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "complete | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "complete | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "complete | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "complete | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "empty-root | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 949,
+    "bodySha256": "6035f9109daf1a62dc94b8aa448be364e27834c49e379a3a9a371776a8875896",
+    "headEqual": true
+   },
+   "empty-root | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1288,
+    "bodySha256": "fe38116ca4f60bd040ed1df034e25b19b63720dda0ecc6ff8759ce985f04ec9d",
+    "headEqual": true
+   },
+   "empty-root | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "empty-root | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "empty-root | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "empty-root | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "empty-root | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "empty-root | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "empty-root | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 949,
+    "bodySha256": "6035f9109daf1a62dc94b8aa448be364e27834c49e379a3a9a371776a8875896",
+    "headEqual": true
+   },
+   "empty-root | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1288,
+    "bodySha256": "fe38116ca4f60bd040ed1df034e25b19b63720dda0ecc6ff8759ce985f04ec9d",
+    "headEqual": true
+   },
+   "empty-root | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 177,
+    "bodySha256": "b1257ae173764c3bacb19cbc7f37643c45511024df6e0a59254fbdd53b051138",
+    "headEqual": true
+   },
+   "empty-root | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "empty-root | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "empty-root | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "empty-root | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 177,
+    "bodySha256": "b1257ae173764c3bacb19cbc7f37643c45511024df6e0a59254fbdd53b051138",
+    "headEqual": true
+   },
+   "empty-root | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1553,
+    "bodySha256": "1c17a6caef23a9da40fbb7f947a0b9d5f3efef53b6e8c96cae76322935815e8e",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "invalid-declaration | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "invalid-declaration | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "invalid-declaration | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1553,
+    "bodySha256": "1c17a6caef23a9da40fbb7f947a0b9d5f3efef53b6e8c96cae76322935815e8e",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 697,
+    "bodySha256": "ecfa7d35ced8d5b74318954205294ad509f6d3f783b45789424789f19fbdd040",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "invalid-declaration | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "invalid-declaration | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 697,
+    "bodySha256": "ecfa7d35ced8d5b74318954205294ad509f6d3f783b45789424789f19fbdd040",
+    "headEqual": true
+   },
+   "invalid-declaration | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 987,
+    "bodySha256": "d2ed30ceadbc62a06ae35cb733cf6f85062f00fc47a2f813e4b75dc1b93d7158",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "unparseable-declaration | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 987,
+    "bodySha256": "d2ed30ceadbc62a06ae35cb733cf6f85062f00fc47a2f813e4b75dc1b93d7158",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 208,
+    "bodySha256": "2e52fc7c74f40051a9d022a047073f272cbf1983ff100a4c2e16d82f8f9ea5a2",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 208,
+    "bodySha256": "2e52fc7c74f40051a9d022a047073f272cbf1983ff100a4c2e16d82f8f9ea5a2",
+    "headEqual": true
+   },
+   "unparseable-declaration | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "widening-field-write-roots | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "widening-field-write-roots | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 942,
+    "bodySha256": "b7ce9bcb28485129b1aed3fc98741cf92ddcbacc0df10f60d15b81dbdb6f88ad",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "widening-field-top-level | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 942,
+    "bodySha256": "b7ce9bcb28485129b1aed3fc98741cf92ddcbacc0df10f60d15b81dbdb6f88ad",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 164,
+    "bodySha256": "d5042cbf9a1f8ca6bb8bda75fad10bb8b3645b3ab8c2f607662853ef25cbde5c",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 164,
+    "bodySha256": "d5042cbf9a1f8ca6bb8bda75fad10bb8b3645b3ab8c2f607662853ef25cbde5c",
+    "headEqual": true
+   },
+   "widening-field-top-level | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "missing-consent | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "missing-consent | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "missing-consent | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "missing-consent | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "missing-consent | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "missing-consent | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 21284,
+    "bodySha256": "53e1139a1c17aeaaec406ac64c25d1053279a394e1030405dcc6c1339f45c9dd",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "withdrawn-consent | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 21284,
+    "bodySha256": "53e1139a1c17aeaaec406ac64c25d1053279a394e1030405dcc6c1339f45c9dd",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3257,
+    "bodySha256": "5f1c892a0d981af53df31ba4c12920f2c5ea49f9dfcfae822e3453764afcc78b",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3257,
+    "bodySha256": "5f1c892a0d981af53df31ba4c12920f2c5ea49f9dfcfae822e3453764afcc78b",
+    "headEqual": true
+   },
+   "withdrawn-consent | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "altered-prose-consent-state | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "altered-prose-consent-extra-line | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "altered-prose-consent-scope | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "consent-wrong-project | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 20568,
+    "bodySha256": "41c7e8872c93eae955c6051ac2032c4980f730f4a17d97b8e7f7fecd58bd956b",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3120,
+    "bodySha256": "794cc87c7b17be2bf161806c949c57b3feb2282d3304c7864e2b951db7fe4fed",
+    "headEqual": true
+   },
+   "consent-wrong-project | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1299,
+    "bodySha256": "f0d22258fcece29711fad5471c84e42d9360925662aa1c529df1ec0738522213",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-special-chars | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-special-chars | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-special-chars | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1299,
+    "bodySha256": "f0d22258fcece29711fad5471c84e42d9360925662aa1c529df1ec0738522213",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-special-chars | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-special-chars | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-special-chars | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1288,
+    "bodySha256": "fe38116ca4f60bd040ed1df034e25b19b63720dda0ecc6ff8759ce985f04ec9d",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-missing | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-missing | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-missing | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1288,
+    "bodySha256": "fe38116ca4f60bd040ed1df034e25b19b63720dda0ecc6ff8759ce985f04ec9d",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-missing | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-missing | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-missing | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1177,
+    "bodySha256": "e532d45369fab821652f081a470339761f4b27fa3b8247dbe32406a7454d5dcf",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-empty | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-empty | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "entry-empty | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1177,
+    "bodySha256": "e532d45369fab821652f081a470339761f4b27fa3b8247dbe32406a7454d5dcf",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "entry-empty | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "entry-empty | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "entry-empty | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 22521,
+    "bodySha256": "22767ac1fe79c06cf3a4f687104cb529a3d20cb1100d54b601c8ec24344f8984",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 22521,
+    "bodySha256": "22767ac1fe79c06cf3a4f687104cb529a3d20cb1100d54b601c8ec24344f8984",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3312,
+    "bodySha256": "9f21cb81c04eadc9ba40c7b631631f4521edba72dfbfe52f9477c0a5179027ef",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 3312,
+    "bodySha256": "9f21cb81c04eadc9ba40c7b631631f4521edba72dfbfe52f9477c0a5179027ef",
+    "headEqual": true
+   },
+   "two-repos-one-unconsented | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /api/project": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "no-governed-content | anon POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "no-governed-content | anon POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /api/project?extra=1": {
+    "status": 401,
+    "contentType": "application/json",
+    "bodyLength": 37,
+    "bodySha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7",
+    "headEqual": true
+   },
+   "no-governed-content | anon GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 18843,
+    "bodySha256": "78f9bb81fa8d41fc738afb82b3696b254d770e06d49395bfff82631d826c52f4",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /entry": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "bodyLength": 1247,
+    "bodySha256": "d5d263839f657065b504fa434d98545b1a7f095e1355bac2fd3eadb47ddfceb8",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /api/project": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /no-such-route": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 84,
+    "bodySha256": "5dfbeed2d8710271ad4fa55e0e1962232f26ac25b07f688d6f403b3cee1a7e6d",
+    "headEqual": true
+   },
+   "no-governed-content | auth POST /": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 72,
+    "bodySha256": "ff5c736aaf5ac2a38a10f745f2d449823028bb47b549dc986c1903ec13b6715b",
+    "headEqual": true
+   },
+   "no-governed-content | auth POST /api/project": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 83,
+    "bodySha256": "93a801ad585f91df331f322a0468a161d34bc9474f027e45a58ed159432875d3",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /api/project?extra=1": {
+    "status": 200,
+    "contentType": "application/json",
+    "bodyLength": 2951,
+    "bodySha256": "cd25ddc5d7c98c8a076aaf6d0388561eb176cdf4c67fc2690827afe17d01ee0b",
+    "headEqual": true
+   },
+   "no-governed-content | auth GET /entry/": {
+    "status": 404,
+    "contentType": "application/json",
+    "bodyLength": 77,
+    "bodySha256": "ed629bea9508f80f9c3856ea2c615e46da62245466c45d88a326a4375498ef30",
+    "headEqual": true
+   }
+  }
+ },
+ "mutants": {
+  "text": "rule 6: each mutant rewrites one fragment (asserted to occur exactly once), runs the stated command at the code commit, and restores the file byte for byte. Pass 1 (mutate-pass1.log) ran M01-M13 and E01-E05 from an earlier revision of mutate.py; pass 2 (mutate-pass2.log) ran M14-M17, S00-S02 and E04 again with tsc -b --force, because pass 1 reported E04 as survived only since tsc -b did not see the package.json change. The final mutate.py is the file stored here.",
+  "script": "mutate.py",
+  "scriptSha256": "7b1cc65f55d63f2ecea82eb90966405d29105b4a560111d681f45c49b3a1377c",
+  "commitRunAt": "b17e94ba1e1d1c9721532d17ee0c00af3969a200",
+  "killed": 17,
+  "survived": 7,
+  "survivors": [
+   "M01-schema-version",
+   "M02-spec-root",
+   "M05-consents-dropped",
+   "M06-relations-dropped",
+   "M07-profiles-dropped",
+   "E05-barrel-readds-boundary",
+   "M15-declarations-emptied"
+  ],
+  "survivorNotes": {
+   "M01-schema-version": "[Observed] packages/cap1-core/src/declaration.ts:147-150 checks only that schema_version is a non-empty string, so no test can see its value; the old inline literal survives the same change",
+   "M02-spec-root": "[Observed] spec_root is read nowhere in packages/cap1-core/src (grep over non-test files returns no match); declaration.ts:234-237 accepts any mapping under declarations",
+   "M05-consents-dropped": "[Inferred] no test asserts the declared consent-id list; coverage takes consent records as a separate input",
+   "M06-relations-dropped": "[Observed] req-004 builds relations (req-004.conformance.test.ts:21) but asserts only project id, display name, revision, fact keys and field closure",
+   "M07-profiles-dropped": "[Observed] req-004 builds profiles (req-004.conformance.test.ts:22) but does not assert them",
+   "M15-declarations-emptied": "[Observed] declaration.ts:234-237 accepts any mapping, so an empty one is valid",
+   "E05-barrel-readds-boundary": "no standing check keeps test-only code out of the cap1-core barrel; the reachability sweep above is a one-time measurement"
+  },
+  "results": [
+   {
+    "id": "M01-schema-version",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "schema_version: \"1\"",
+    "new": "schema_version: \"2\"",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M02-spec-root",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "spec_root: openspec/",
+    "new": "spec_root: specs/",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M03-owner-default",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "fields.owner ?? FIXTURE_OWNER",
+    "new": "fields.owner ?? 'nobody@example.com'",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  3 failed | 50 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "M04-repository-role",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "role: ${repository.role}",
+    "new": "role: observed-source",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  2 failed | 51 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "M05-consents-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "sequence('consents', consents)",
+    "new": "sequence('consents', [])",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M06-relations-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "sequence('relations', relations)",
+    "new": "sequence('relations', [])",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M07-profiles-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "sequence('profiles', profiles)",
+    "new": "sequence('profiles', [])",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M08-as-of",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "FIXTURE_AS_OF = '2026-08-21T00:00:00Z'",
+    "new": "FIXTURE_AS_OF = '2026-08-22T00:00:00Z'",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  2 failed | 51 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "M09-evaluation-swap",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "return { snapshot, asOf };",
+    "new": "return { snapshot: asOf, asOf };",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  2 failed | 51 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "M10-consent-grant-state",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "fields.grantState ?? 'in-force'",
+    "new": "fields.grantState ?? 'withdrawn'",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  11 failed | 42 passed (53)",
+     "      Tests  23 failed | 402 passed (425)"
+    ]
+   },
+   {
+    "id": "M11-consent-attribution",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "attribution: 'owner',",
+    "new": "attribution: 'agent',",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed | 52 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "M12-consent-project",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "projectId: fields.projectId,",
+    "new": "projectId: fields.repositoryId as unknown as ProjectId,",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  11 failed | 42 passed (53)",
+     "      Tests  25 failed | 400 passed (425)"
+    ]
+   },
+   {
+    "id": "M13-consent-scope",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "scope: 'observe',",
+    "new": "scope: 'full',",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed | 52 passed (53)",
+     "      Tests  3 failed | 422 passed (425)"
+    ]
+   },
+   {
+    "id": "E01-testing-drops-boundary",
+    "file": "packages/cap1-core/src/testing.ts",
+    "old": "export * from './write-boundary.js';",
+    "new": "",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  2 failed | 51 passed (53)",
+     "      Tests  14 failed | 411 passed (425)"
+    ]
+   },
+   {
+    "id": "E02-testing-drops-oracle",
+    "file": "packages/cap1-core/src/testing.ts",
+    "old": "export * from './parity-oracle.js';",
+    "new": "",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  6 failed | 47 passed (53)",
+     "      Tests  23 failed | 402 passed (425)"
+    ]
+   },
+   {
+    "id": "E03-alias-dropped",
+    "file": "vitest.config.ts",
+    "old": "'@syzygy/cap1-core/testing'",
+    "new": "'@syzygy/cap1-core/testing-gone'",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  7 failed | 46 passed (53)",
+     "      Tests  342 passed (342)"
+    ]
+   },
+   {
+    "id": "E04-package-export-dropped",
+    "file": "packages/cap1-core/package.json",
+    "old": "\"./testing\"",
+    "new": "\"./testing-gone\"",
+    "command": "npx tsc -b --force packages/cap1-conformance",
+    "exit": 2,
+    "outcome": "killed",
+    "summary": []
+   },
+   {
+    "id": "E05-barrel-readds-boundary",
+    "file": "packages/cap1-core/src/index.ts",
+    "old": "export * from './parity.js';",
+    "new": "export * from './parity.js';\nexport * from './write-boundary.js';",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M14-schema-version-line-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "'\\nschema_version: \"1\"\\n',",
+    "new": "'\\n',",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  22 failed | 31 passed (53)",
+     "      Tests  90 failed | 335 passed (425)"
+    ]
+   },
+   {
+    "id": "M15-declarations-emptied",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "'declarations:\\n  spec_root: openspec/\\n',",
+    "new": "'declarations: {}\\n',",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 0,
+    "outcome": "survived",
+    "summary": [
+     " Test Files  53 passed (53)",
+     "      Tests  425 passed (425)"
+    ]
+   },
+   {
+    "id": "M16-project-id-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "project:\\n  id: ${fields.id}\\n  name:",
+    "new": "project:\\n  name:",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  22 failed | 31 passed (53)",
+     "      Tests  90 failed | 335 passed (425)"
+    ]
+   },
+   {
+    "id": "M17-repositories-dropped",
+    "file": "packages/cap1-conformance/src/fixtures/index.ts",
+    "old": "sequence('repositories', repositories)",
+    "new": "sequence('repositories', [])",
+    "command": "npx vitest run --project @syzygy/cap1-conformance --project @syzygy/cap1-daemon",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  17 failed | 36 passed (53)",
+     "      Tests  39 failed | 386 passed (425)"
+    ]
+   },
+   {
+    "id": "S00-system-control-unmutated",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "const { root, stateDir, port } = parsed.config;",
+    "new": "const { root, stateDir, port } = parsed.config;",
+    "command": "bash -c npm run build >/dev/null 2>&1; npx vitest run --config packages/cap1-system/vitest.config.ts packages/cap1-system/src/write-boundary.system.test.ts",
+    "exit": 0,
+    "outcome": "control-passed",
+    "summary": [
+     " Test Files  1 passed (1)",
+     "      Tests  1 passed (1)"
+    ]
+   },
+   {
+    "id": "S01-daemon-writes-syzygy-plane",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "const { root, stateDir, port } = parsed.config;",
+    "new": "const { root, stateDir, port } = parsed.config;\n  fs.writeFileSync(path.join(root, '.syzygy', 'zz-intruder.txt'), 'x');",
+    "command": "bash -c npm run build >/dev/null 2>&1; npx vitest run --config packages/cap1-system/vitest.config.ts packages/cap1-system/src/write-boundary.system.test.ts",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed (1)",
+     "      Tests  1 failed (1)"
+    ]
+   },
+   {
+    "id": "S02-daemon-writes-openspec-plane",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "const { root, stateDir, port } = parsed.config;",
+    "new": "const { root, stateDir, port } = parsed.config;\n  fs.writeFileSync(path.join(root, 'openspec', 'zz-intruder.txt'), 'x');",
+    "command": "bash -c npm run build >/dev/null 2>&1; npx vitest run --config packages/cap1-system/vitest.config.ts packages/cap1-system/src/write-boundary.system.test.ts",
+    "exit": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed (1)",
+     "      Tests  1 failed (1)"
+    ]
+   }
+  ]
+ },
+ "gates": {
+  "typecheck": "npm run typecheck exit 0 (tsc -b over the ten projects)",
+  "quotations": "python3 scripts/check_quotations.py exit 0; output byte-identical to the base tree",
+  "governance": "python3 scripts/check_governance.py: 32 OK, 21 WARN, 0 FAIL (53 checks) at the code commit, same at the base; the one differing WARN line is CG-1f reference count 405 -> 401, 0 findings",
+  "vitestFull": [
+   "Test Files  229 passed | 3 skipped (232)",
+   "Tests  4890 passed | 5 skipped (4895)"
+  ],
+  "vitestFullFiles": "vitest-full.files.txt",
+  "systemTests": "SYZYGY_FRESH_CLONE=1 npm run test:system: 9 files, 48 tests passed, including the fresh-clone demonstration and the wire-parity sweep (test-system.log)"
+ }
+}

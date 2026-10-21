@@ -13,12 +13,12 @@ import {
   resolveExplanationReferences,
   serveMachine,
   type ConsentRecord,
-  type EvaluationIdentity,
   type ExplanationFactSet,
   type FactModel,
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-040 — Every answer is explainable: "Why this answer?"
 // (state projection/query).
@@ -35,23 +35,14 @@ import {
 const PROJECT = 'prj-drawer-40' as ProjectId;
 const REPO = 'repo-drawer-01' as RepositoryId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-drawer-40
-  name: Drawer Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-drawer-01
-    role: governance-root
-    consent: consent-d1
-consents:
-  - consent-d1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Drawer Fixture',
+  repositories: [
+    { id: 'repo-drawer-01', role: 'governance-root', consent: 'consent-d1' },
+  ],
+  consents: ['consent-d1'],
+});
 
 const CONSENTS: readonly ConsentRecord[] = [
   {
@@ -64,10 +55,7 @@ const CONSENTS: readonly ConsentRecord[] = [
   },
 ];
 
-const EVALUATION: EvaluationIdentity = {
-  snapshot: 'snap-2026-08-21-d',
-  asOf: '2026-08-21T00:00:00Z',
-};
+const EVALUATION = evaluation('snap-2026-08-21-d');
 
 function fixtureBoundary() {
   const read = readDeclaration(SOURCE);

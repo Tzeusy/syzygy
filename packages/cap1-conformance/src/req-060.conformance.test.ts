@@ -12,6 +12,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-060 — Identities are the accepted, stable, literal ones
 // (invariant).
@@ -26,23 +27,14 @@ import {
 const PROJECT = 'prj-stable-9c' as ProjectId;
 const REPO = 'repo-stable-01' as RepositoryId;
 
-const SOURCE_BEFORE = `
-schema_version: "1"
-project:
-  id: prj-stable-9c
-  name: Original Name
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-stable-01
-    role: governance-root
-    consent: consent-s1
-consents:
-  - consent-s1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE_BEFORE = projectYaml({
+  id: PROJECT,
+  name: 'Original Name',
+  repositories: [
+    { id: 'repo-stable-01', role: 'governance-root', consent: 'consent-s1' },
+  ],
+  consents: ['consent-s1'],
+});
 
 // The rename fixture: display name changes, identifier does not.
 const SOURCE_AFTER = SOURCE_BEFORE.replace('Original Name', 'Renamed Project');

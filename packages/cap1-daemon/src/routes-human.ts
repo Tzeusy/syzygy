@@ -3,7 +3,6 @@ import {
   coverageBoundary,
   explainAnswer,
   extractDistinctions,
-  fullDisclosure,
   presentClasses,
   renderEntry,
   renderHuman,

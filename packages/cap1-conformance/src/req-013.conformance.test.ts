@@ -8,6 +8,7 @@ import {
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-013 — Coverage failure states are distinguishable.
 //
@@ -29,34 +30,17 @@ import {
 
 const PROJECT = 'prj-distinct-d4' as ProjectId;
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-distinct-d4
-  name: Distinguishability Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-no-consent
-    role: observed-source
-    consent: consent-absent
-  - id: repo-unreachable
-    role: observed-source
-    consent: consent-u
-  - id: repo-stale
-    role: observed-source
-    consent: consent-s
-  - id: repo-degraded
-    role: governance-root
-    consent: consent-d
-consents:
-  - consent-u
-  - consent-s
-  - consent-d
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Distinguishability Fixture',
+  repositories: [
+    { id: 'repo-no-consent', role: 'observed-source', consent: 'consent-absent' },
+    { id: 'repo-unreachable', role: 'observed-source', consent: 'consent-u' },
+    { id: 'repo-stale', role: 'observed-source', consent: 'consent-s' },
+    { id: 'repo-degraded', role: 'governance-root', consent: 'consent-d' },
+  ],
+  consents: ['consent-u', 'consent-s', 'consent-d'],
+});
 
 function declaration(): ProjectDeclaration {
   const read = readDeclaration(SOURCE);
@@ -65,14 +49,7 @@ function declaration(): ProjectDeclaration {
 }
 
 function inForce(id: string, repositoryId: string): ConsentRecord {
-  return {
-    id,
-    projectId: PROJECT,
-    repositoryId: repositoryId as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  };
+  return consent({ id, projectId: PROJECT, repositoryId: repositoryId as RepositoryId });
 }
 
 const CONSENTS: ConsentRecord[] = [
