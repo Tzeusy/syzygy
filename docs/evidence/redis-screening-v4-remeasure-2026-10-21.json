@@ -1,0 +1,167 @@
+{
+  "format": "redis-screening-v4-remeasure/2",
+  "label": "Observed",
+  "measuredAt": "2026-10-21T11:47:06.633Z",
+  "syzygy": {
+    "commit": "8ea94e13eadb0726ef7b4e9cd0f4e76e5e09dfe9",
+    "treeClean": true,
+    "path": "scripts/redis_screening_remeasure.mjs",
+    "scriptSha256": "03ba1a9c83eed6cf05f3ba49ac5e569fb44cdd6cf6f078b66963625e2f1f45ac"
+  },
+  "invocation": {
+    "script": "scripts/redis_screening_remeasure.mjs",
+    "runDirectory": "/home/tze/.local/state/syzygy-dossier/run-6648312f61b5e536315215e0c22422cf",
+    "out": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-skpn/docs/evidence/redis-screening-v4-remeasure-2026-10-21.json",
+    "headlineRevision": 2,
+    "supersedes": [
+      "26ae697d:docs/evidence/redis-screening-v4-remeasure-2026-10-21.json",
+      "8f0a558d:docs/evidence/redis-screening-v4-remeasure-2026-10-21.json"
+    ],
+    "syzygyRemeasureRootOverride": null
+  },
+  "measuredOn": {
+    "runId": "run-6648312f61b5e536315215e0c22422cf",
+    "runRecordSha256": "bae8b6e4a8ccf96cefe2c0a72dd1049de1853374fdaac3564441a91a9d73cd44",
+    "repository": "https://github.com/redis/redis",
+    "pinnedCommit": "498ecd0d6d007db11ddb3aea9428552598a78622",
+    "pinnedLabel": "8.10.2",
+    "consentRecordAtPin": "PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7",
+    "screeningPolicyAtStart": "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-08"
+  },
+  "withdrawnMeasurements": [
+    {
+      "commit": "26ae697d9d6d85a331107bca88881c04571e5ab4",
+      "recordFile": "docs/evidence/redis-screening-v4-remeasure-2026-10-21.json",
+      "recordSha256": "512f9f0009f9a96f4bf6ce0f7fbd93fb4ecb9a0269afe7288b5dd9927ac03566",
+      "measuredAtCommit": "fde436049a99a61475a2214d1563050f74d84a81",
+      "status": "withdrawn",
+      "why": "that measurement read cited Redis bodies after openRun refused the run at stage deadline: it recorded the refusal and built the packets on a hand-made opened-run object. No act or direction covers a step after the run's deadline, so its figures are not evidence and are not copied here"
+    },
+    {
+      "commit": "8f0a558d7e632fed4a15b1b1e5f69b1949b48b1f",
+      "recordFile": "docs/evidence/redis-screening-v4-remeasure-2026-10-21.json",
+      "recordSha256": "9064cacacf92a57d0bd78e884401c3ef3d4b672ff3d60b902fba4cde595a2870",
+      "measuredAtCommit": "1bb9b24e33e30ad6d247314a4b31e9ed9fb35146",
+      "status": "withdrawn",
+      "why": "that measurement read cited Redis bodies after openRun refused the run at stage deadline: it recorded the refusal and built the packets on a hand-made opened-run object. No act or direction covers a step after the run's deadline, so its figures are not evidence and are not copied here"
+    }
+  ],
+  "scriptChecks": {
+    "atCommit": "8ea94e13eadb0726ef7b4e9cd0f4e76e5e09dfe9",
+    "selftestFailures": [],
+    "rule6": {
+      "scriptSha256": "03ba1a9c83eed6cf05f3ba49ac5e569fb44cdd6cf6f078b66963625e2f1f45ac",
+      "mutants": [
+        {
+          "id": "P1-redacted-bucket",
+          "old": "redactionCause === 'touches-withheld-line' ? 'secret-redacted-span-touching-withheld-line'",
+          "new": "redactionCause !== 'touches-withheld-line' ? 'secret-redacted-span-touching-withheld-line'",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P2-polarity",
+          "old": "touches(withheldLines, startLine, endLine) ? 'touches-withheld-line' : 'own-text-matches'",
+          "new": "touches(withheldLines, startLine, endLine) ? 'own-text-matches' : 'touches-withheld-line'",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P3-by-design",
+          "old": "BY_DESIGN.includes(span.path) ? byDesign : other",
+          "new": "BY_DESIGN.includes(span.path) ? other : byDesign",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P4-compare",
+          "old": "if (JSON.stringify(a[i]) !== JSON.stringify(b[i]))",
+          "new": "if (a[i].id !== b[i].id)",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P5-every",
+          "old": "if (cited.some((span) => span.v4 !== 'admitted'))",
+          "new": "if (cited.every((span) => span.v4 !== 'admitted'))",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P5-unmatched",
+          "old": "if (cited.some((span) => !span.matched)) return 'unknown-a-citation-matches-no-packet-span';",
+          "new": "",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P6-trim",
+          "old": "const probe = text.trim();",
+          "new": "const probe = text;",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P7-digest",
+          "old": "candidates.find((candidate) => sha256(candidate.bytes) === digest)",
+          "new": "candidates.find((candidate) => sha256(candidate.bytes) !== digest)",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P8-unmatched-as-admitted",
+          "old": "v3: UNKNOWN, v4: UNKNOWN, v4Cause: UNKNOWN };",
+          "new": "v3: 'admitted', v4: 'admitted', v4Cause: 'admitted' };",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P9-omission-blocks",
+          "old": "row.disposition !== 'represented' && row.disposition !== 'justified-omission'",
+          "new": "row.disposition !== 'represented'",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P10-finding-blocks-only",
+          "old": "blockCites.get(row.target) ?? entryCites.get(row.target)",
+          "new": "blockCites.get(row.target)",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P11-only-outside",
+          "old": "still.every((span) => !BY_DESIGN.includes(span.path))",
+          "new": "still.some((span) => !BY_DESIGN.includes(span.path))",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P12-gate-refusal",
+          "old": "if (!opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };",
+          "new": "if (opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P13-root-compare",
+          "old": "return fs.realpathSync(override) === fs.realpathSync(own);",
+          "new": "return fs.realpathSync(override) !== fs.realpathSync(own);",
+          "outcome": "killed",
+          "exitStatus": 1
+        }
+      ]
+    }
+  },
+  "gate": {
+    "call": "openRun",
+    "ok": false,
+    "stage": "deadline",
+    "reason": "the deadline PT24H from the brief ended at 2026-10-15T09:15:29.329Z on Syzygy's clock; no step runs after it"
+  },
+  "measured": false,
+  "bodiesRead": 0,
+  "result": "[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful measurement needs the cited spans read inside an unexpired run's limits: the next Redis run under screening version 4 provides that, and no act or direction in force provides for a step on this run.",
+  "freshRunRoute": "[Inferred] Not available without the owner: buildFidelityPacket needs an inventory of record, which needs an inventory session's prompt record and an operator-recorded launch form (packages/polaris-dossier/src/inventory.ts:428-437), so a fresh run of the pinned revision needs a model session or a launch-form declaration no session backs; and a fresh run's configuration is the operator's own declaration (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23)",
+  "authorizationNeeded": "No act or direction provides for a step on run-6648312f61b5e536315215e0c22422cf after its deadline, and the lead ruled no exception on 2026-10-21: the signed deadline refusal (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23) stands. The measurement stays Unknown until the next Redis run under screening version 4 produces it inside its own limits; a general post-deadline re-measurement route would need a CC-REV-2 amendment of that spec line and owner sign-off."
+}
