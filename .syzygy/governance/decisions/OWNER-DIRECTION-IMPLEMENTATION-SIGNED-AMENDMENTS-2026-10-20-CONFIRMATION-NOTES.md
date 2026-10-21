@@ -54,10 +54,10 @@ from the raw: `Verdict: CONFIRM WITH EXCEPTIONS`. Its closing sentence, also
 copied: "Nothing new of material weight was introduced. Under the declared
 stopping rule, a notes-only round clears these bytes."
 
-[Observed: the raw is `R-PR489-SIGNED-AMENDMENTS-DIRECTION-3-RAW.md`, held in
-the lead session's scratch directory. It is not retained in this repository
-by this commit; the five notes below are copied from it verbatim, labels
-included, and the line citations in them refer to the record at `8c334f67`.]
+[Observed: the raw is `docs/reviews/R-PR489-SIGNED-AMENDMENTS-DIRECTION-3-RAW.md`,
+retained byte-exact beside the round 1 and round 2 raws of the same
+campaign. The five notes below are copied from it verbatim, labels included,
+and the line citations in them refer to the record at `8c334f67`.]
 
 Under the stopping rule of 2026-09-26, a notes-only round clears its bytes. The
 notes are recorded here and the record is not repaired for them. Each
