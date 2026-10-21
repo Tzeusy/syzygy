@@ -1,12 +1,12 @@
 {
   "format": "redis-screening-v4-remeasure/2",
   "label": "Observed",
-  "measuredAt": "2026-10-21T09:43:43.771Z",
+  "measuredAt": "2026-10-21T11:47:06.633Z",
   "syzygy": {
-    "commit": "f17990b775f86571b538c98f8b2863b5c1c0a292",
+    "commit": "8ea94e13eadb0726ef7b4e9cd0f4e76e5e09dfe9",
     "treeClean": true,
     "path": "scripts/redis_screening_remeasure.mjs",
-    "scriptSha256": "109d5664bac4abd343012ed53628390f32c440b44531978f0cdd89051c2dc0a7"
+    "scriptSha256": "03ba1a9c83eed6cf05f3ba49ac5e569fb44cdd6cf6f078b66963625e2f1f45ac"
   },
   "invocation": {
     "script": "scripts/redis_screening_remeasure.mjs",
@@ -47,10 +47,10 @@
     }
   ],
   "scriptChecks": {
-    "atCommit": "f17990b775f86571b538c98f8b2863b5c1c0a292",
+    "atCommit": "8ea94e13eadb0726ef7b4e9cd0f4e76e5e09dfe9",
     "selftestFailures": [],
     "rule6": {
-      "scriptSha256": "109d5664bac4abd343012ed53628390f32c440b44531978f0cdd89051c2dc0a7",
+      "scriptSha256": "03ba1a9c83eed6cf05f3ba49ac5e569fb44cdd6cf6f078b66963625e2f1f45ac",
       "mutants": [
         {
           "id": "P1-redacted-bucket",
@@ -133,6 +133,20 @@
           "id": "P11-only-outside",
           "old": "still.every((span) => !BY_DESIGN.includes(span.path))",
           "new": "still.some((span) => !BY_DESIGN.includes(span.path))",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P12-gate-refusal",
+          "old": "if (!opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };",
+          "new": "if (opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };",
+          "outcome": "killed",
+          "exitStatus": 1
+        },
+        {
+          "id": "P13-root-compare",
+          "old": "return fs.realpathSync(override) === fs.realpathSync(own);",
+          "new": "return fs.realpathSync(override) !== fs.realpathSync(own);",
           "outcome": "killed",
           "exitStatus": 1
         }
