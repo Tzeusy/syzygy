@@ -1,5 +1,10 @@
 // Surface-route capture over fixtures. Usage:
-//   node route-capture.mjs <tree> <out.json>
+//   node route-capture.mjs <tree> <out.json> <fixture-repo-path>
+// <fixture-repo-path> is created on the first run (fixtureRepoWithGit([]) from
+// the tree's built test-model-fixture, copied there; its revision is written to
+// <fixture-repo-path>.json) and reused afterwards, so two captures are
+// comparable only when they name the same path: the evaluation inputs digest in
+// the page bodies includes the repository root.
 // For one built tree, serve the app's route set (pocRoutes, materializeRoutes,
 // reobserveRoutes: the three groups apps/three-surface-poc/src/main.ts
 // registers) on a private daemon (--port 0, scratch state dir) over several
@@ -39,6 +44,7 @@ if (existsSync(fixedRepo)) {
 } else {
   const made = fixtureRepoWithGit([]);
   cpSync(made.repoRoot, fixedRepo, { recursive: true });
+  rmSync(made.repoRoot, { recursive: true, force: true });
   fixtureRepo = { repoRoot: fixedRepo, revision: made.revision };
   writeFileSync(fixedRepo + '.json', JSON.stringify(fixtureRepo));
 }

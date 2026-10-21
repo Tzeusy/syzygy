@@ -55,5 +55,6 @@ record = {
     'harnessSha256': hashlib.sha256(HARNESS.read_bytes()).hexdigest(),
     'run': summary,
 }
+TRANSCRIPTS.with_suffix('.run.json').write_text(json.dumps(record, indent=1) + '\n')
 print(json.dumps(record))
 sys.exit(summary.get('exit', 1))
