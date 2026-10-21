@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   computeReconciled,
   computeShapeAnswers,
-  type EvaluationIdentity,
   type ProjectId,
   type ReconciliationFacts,
 } from '@syzygy/cap1-core';
+import { evaluation } from './fixtures/index.js';
 
 // CAP1-REQ-037 — Uncomputed reconciliation is Unknown (event-response).
 //
@@ -37,7 +37,7 @@ const TWELVE_REASONS = [
 ] as const;
 
 const PROJECT = 'prj-shape-037' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-037', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-037');
 
 // Merged work exists; reconciliation has NOT been computed.
 const UNCOMPUTED: ReconciliationFacts = {

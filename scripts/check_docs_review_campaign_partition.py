@@ -460,6 +460,11 @@ CAMPAIGNS = (
         r"R-PR489-SIGNED-AMENDMENTS-DIRECTION-\d+-RAW\.md",
         r"R-PR489-OWNER-ANSWERS-RECORDING-\d+-RAW\.md",
     ),
+    campaign(
+        "pr493-bead-title-withholding",
+        "Bead-title withholding",
+        r"R-PR493-BEAD-TITLE-WITHHOLDING-.*\.md",
+    ),
 )
 
 

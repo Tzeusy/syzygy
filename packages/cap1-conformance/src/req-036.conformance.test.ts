@@ -6,12 +6,12 @@ import {
   readDeclaration,
   registerProject,
   type ConsentRecord,
-  type EvaluationIdentity,
   type ObservationOutcome,
   type ProjectId,
   type RepositoryId,
   type ShapeAnswerInputs,
 } from '@syzygy/cap1-core';
+import { consent, evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-036 — Mission-ready renders only its deferred posture (state
 // projection/query).
@@ -30,35 +30,23 @@ import {
 // with a different spelling.
 
 const PROJECT = 'prj-shape-036' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-036', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-036');
 
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-shape-036
-  name: Posture Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-main
-    role: governance-root
-    consent: consent-1
-consents:
-  - consent-1
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Posture Fixture',
+  repositories: [
+    { id: 'repo-main', role: 'governance-root', consent: 'consent-1' },
+  ],
+  consents: ['consent-1'],
+});
 
 const CONSENTS: ConsentRecord[] = [
-  {
+  consent({
     id: 'consent-1',
     projectId: PROJECT,
     repositoryId: 'repo-main' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [

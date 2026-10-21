@@ -1,0 +1,8 @@
+M14-schema-version-line-dropped exit 1 [' Test Files  22 failed | 31 passed (53)', '      Tests  90 failed | 335 passed (425)']
+M15-declarations-emptied exit 0 [' Test Files  53 passed (53)', '      Tests  425 passed (425)']
+M16-project-id-dropped exit 1 [' Test Files  22 failed | 31 passed (53)', '      Tests  90 failed | 335 passed (425)']
+M17-repositories-dropped exit 1 [' Test Files  17 failed | 36 passed (53)', '      Tests  39 failed | 386 passed (425)']
+S00-system-control-unmutated exit 0 [' Test Files  1 passed (1)', '      Tests  1 passed (1)']
+S01-daemon-writes-syzygy-plane exit 1 [' Test Files  1 failed (1)', '      Tests  1 failed (1)']
+S02-daemon-writes-openspec-plane exit 1 [' Test Files  1 failed (1)', '      Tests  1 failed (1)']
+E04-package-export-dropped exit 2 []

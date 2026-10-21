@@ -5,11 +5,11 @@ import {
   computeShapeAnswers,
   readDeclaration,
   type ConsentRecord,
-  type EvaluationIdentity,
   type ObservationOutcome,
   type ProjectId,
   type RepositoryId,
 } from '@syzygy/cap1-core';
+import { consent, evaluation, projectYaml } from './fixtures/index.js';
 
 // CAP1-REQ-035 — Several reasons may be visible at once; one never
 // hides the others (event-response).
@@ -43,42 +43,28 @@ const TWELVE_REASONS = [
 ] as const;
 
 const PROJECT = 'prj-shape-035' as ProjectId;
-const EVALUATION: EvaluationIdentity = { snapshot: 'snap-035', asOf: '2026-08-21T00:00:00Z' };
+const EVALUATION = evaluation('snap-035');
 
 // Two repositories: repo-a has no consent record (condition 1:
 // unconsented), repo-b is consented but unreachable (condition 2:
 // uncaptured). Both conditions are constituent to `Observable`.
-const SOURCE = `
-schema_version: "1"
-project:
-  id: prj-shape-035
-  name: Two Conditions Fixture
-owner: uniquosity@gmail.com
-repositories:
-  - id: repo-a
-    role: governance-root
-    consent: consent-a
-  - id: repo-b
-    role: observed-source
-    consent: consent-b
-consents:
-  - consent-b
-declarations:
-  spec_root: openspec/
-relations: []
-profiles: []
-`;
+const SOURCE = projectYaml({
+  id: PROJECT,
+  name: 'Two Conditions Fixture',
+  repositories: [
+    { id: 'repo-a', role: 'governance-root', consent: 'consent-a' },
+    { id: 'repo-b', role: 'observed-source', consent: 'consent-b' },
+  ],
+  consents: ['consent-b'],
+});
 
 const CONSENTS: ConsentRecord[] = [
   // repo-a deliberately has NO record.
-  {
+  consent({
     id: 'consent-b',
     projectId: PROJECT,
     repositoryId: 'repo-b' as RepositoryId,
-    scope: 'observe',
-    attribution: 'owner',
-    grantState: 'in-force',
-  },
+  }),
 ];
 
 const OBSERVATIONS: ObservationOutcome[] = [
