@@ -112,7 +112,12 @@ This is the text that would be put to you, unchanged:
 > stays `unknown-uncovered`); and the scenario's disclosure used by item
 > depth's relation claims (`syzygy-dov.14.4`) and by the opening band's
 > count (`syzygy-dov.4.2`) only as B11 states, authorizing no other part of
-> those lanes. All of it for the one configured Butlers repository and
+> those lanes. Once you confirm the 2026-10-20 direction drafted in PR
+> #489, this reply is what releases those two uses, and it is one reply:
+> slice 5 cannot be given without them. It authorizes no briefing route
+> (`syzygy-dov.5.2`) and leaves `maxBriefingResponseBytes` unread, although
+> `syzygy-dov.19` is that bead's last open blocker too. All of it for the
+> one configured Butlers repository and
 > content class `declared-project-shape-text`, with every original
 > exclusion retained: no release, deployment, Butlers write, second
 > repository, wider content class, consent amendment, egress,
@@ -244,7 +249,13 @@ effective owner-act provenance at the evaluation's as-of instant.
     carries no evidence instant, the judge's `unreadable-instant` basis
     applies: the claim keeps its primary reason, gains
     `stale-beyond-currency-bound` as a secondary and carries freshness
-    `stale`.
+    `stale`. `[Inferred]` So an evaluation refused for consent or policy,
+    with the registry act still effective, renders its whole-shape claim
+    `stale` about evidence that was never read. The gate's reason stays
+    primary, and the stale basis says only that no evidence instant could
+    be read; the drafter accepts this result of B3 and the judge rather
+    than exempting the claim, which would need a freshness value from
+    somewhere other than the judge.
   - **No evaluation.** The not-evaluated shape (evaluation id
     `evaluation:not-evaluated`) has no identified evaluation and no as-of
     instant. `[Inferred]` The scenario's WHEN has nothing to be read at,
@@ -257,10 +268,10 @@ effective owner-act provenance at the evaluation's as-of instant.
   aggregate's members by freshness: one count for each of `fresh`,
   `stale`, `broken` and `superseded` and, apart from them, the count of
   members in the arm, so that these counts together equal the membership.
-  Slice 5 builds it and uses it on every aggregate that renders reason
-  counts today, each over the member population its reason counts already
-  use [Observed: the only two, `apps/three-surface-poc/src/polaris.ts`
-  lines 762 and 1214]:
+  Slice 5 builds it and uses it on the two aggregate claims that render
+  reason counts today, each over the member population its reason counts
+  already use [Observed: `apps/three-surface-poc/src/polaris.ts` lines 762
+  and 1214]:
   - each class aggregate `claim:class:<class>`, over its members, its
     declaring sources and the undiscovered-member entries that its reason
     count already takes from the aggregate's own claim
@@ -268,6 +279,20 @@ effective owner-act provenance at the evaluation's as-of instant.
     456–460);
   - the whole-shape claim `claim:project-shape`, over the population its
     reason-count block is taken over.
+
+  `[Observed]` A third site renders reason counts: the gap list
+  (`gapReasonCounts` and `gapsList`, `polaris.ts` lines 1070–1105, rendered
+  at 1192 and 1239). It is a list over every shape claim, not an aggregate
+  claim, so it gains no freshness counts. A claim in the arm reaches it
+  as a primary-reason count of `no-currency-bound-declared` with its route,
+  as the scenario's "omits its primary reason count or hides its route"
+  limb requires.
+
+  `[Inferred]` The judge never returns `broken` or `superseded`, so their
+  counts can only be zero. Each of them renders with the same unreachable
+  marker and reason that B7 keeps on the legend, never as a bare `0`, so
+  that no reader takes an unreachable value for a checked zero. A zero
+  count of `fresh` or `stale`, which the judge can return, renders as `0`.
 
   Members in the arm are presented only through the same outside-slot
   named disclosure, carrying their count and the reason
@@ -303,7 +328,8 @@ effective owner-act provenance at the evaluation's as-of instant.
 - **B7 — The legend stays true.** The slice-1 copy oracle keeps every
   freshness legend sentence either reachable or marked unreachable with its
   reason; a value that slice 5 makes reachable (such as `stale`) loses its
-  marker without a separate copy edit.
+  marker without a separate copy edit. The aggregate counts of a value
+  that is still unreachable carry the same marker (B5).
 - **B8 — Determinism.** One identified evaluation served twice is
   byte-identical. No timer, poller or watcher is added; a new judgment
   happens only through a new identified evaluation, which stays
@@ -323,7 +349,12 @@ effective owner-act provenance at the evaluation's as-of instant.
   - an ineffective registry act, on which the refused whole-shape claim
     carries `no-currency-bound-declared` as primary and the gate's reason
     as a secondary;
+  - an evaluation refused for consent with the registry act effective, on
+    which the whole-shape claim keeps the gate's reason as primary and
+    carries `stale` on the `unreadable-instant` basis;
   - the not-evaluated shape, with no judge call and no arm disclosure;
+  - `broken` and `superseded` counts rendering with the unreachable
+    marker, never as `0`;
   - a class aggregate and the whole-shape claim with members in the arm,
     whose freshness counts and arm count sum to the membership while the
     aggregate keeps its own judged freshness;
@@ -408,11 +439,11 @@ definition site.
 
 | Gap | What the build does (resolution: built behavior) | What stays Unknown (resolution: Unknown row) | Excluded |
 |---|---|---|---|
-| RFC6-14.r1 | Every claim carries label, tier where it has one, and primary and secondary reasons; every claim judged under an effective row carries one of the four freshness values from the judge (B4) | Freshness on the arm, which carries the outside-slot disclosure instead | Nothing |
+| RFC6-14.r1 | Every claim carries label, tier where it has one, and primary and secondary reasons; every claim judged under an effective row carries one of the four freshness values from the judge (B4) | Freshness on the arm, which carries the outside-slot disclosure instead; freshness on the not-evaluated shape's one claim, which carries neither a value nor the arm disclosure, only the not-evaluated statement (B4) | Nothing |
 | RFC6-14.r3 | The machine tuple equals the human tuple; the arm marker and disclosure are carried in the machine answer; no Unknown folds into a total (B4–B6) | Whether an absent freshness value plus the disclosure is "the complete epistemic tuple" | Nothing |
 | RFC6-17.r1 | Each class aggregate and the whole-shape claim gain per-freshness-state counts plus the arm count, which together equal the membership; reason counts are unchanged (B5) | Whether the separate arm count meets "per-freshness-state counts" | Per-label and per-tier aggregate counts: none exists today and slice 5 builds none |
-| RFC7-16.r1 | Each rendered status is kernel-judged at an identified evaluation; staleness (`stale`) is visible on the narrative page itself (B4, B8) | Freshness on the arm | Nothing |
-| RFC7-33.r1 | The same attributes, disclosure and counts travel in both views, under the parity sweep (B6) | Freshness on the arm | Nothing |
+| RFC7-16.r1 | Each rendered status is kernel-judged at an identified evaluation; staleness (`stale`) is visible on the narrative page itself (B4, B8) | Freshness on the arm and on the not-evaluated shape's claim | Nothing |
+| RFC7-33.r1 | The same attributes, disclosure and counts travel in both views, under the parity sweep (B6) | Freshness on the arm and on the not-evaluated shape's claim | Nothing |
 
 `[Inferred]` RFC2-10 itself says "A condition genuinely outside the four is
 disclosed as a fact of the render, never dressed as a freshness state",
@@ -422,7 +453,8 @@ accepted contracts. Verification rule 8 does not let an implementation
 adopt it, so **the build claims no conformance on the arm**, and all five
 rows stay `unknown-uncovered` in the signed matrix.
 
-Three further rows that slice 5 newly reaches, none of them a gap:
+Five further rows that slice 5 newly reaches, none of them one of the
+five gaps:
 
 - **RFC2-25.r1** (`covered:PWB-REQ-007`): B4's tier result keeps
   `report-fact` off every Unknown, so the closed tier meanings hold.
@@ -432,6 +464,15 @@ Three further rows that slice 5 newly reaches, none of them a gap:
 - **RFC2-10.r1** (already `unknown-uncovered` before v1.0): slice 5 makes
   `fresh` and `stale` judged and deterministic (B4, B8). The arm, which
   carries no value, is still why the row is not claimed.
+- **RFC1-18.r2** (already `unknown-uncovered`; "the complete accepted
+  tuple"): RFC1-18 lists the freshness state among a claim instance's
+  fields, and neither the arm nor the not-evaluated shape's claim carries
+  one. Slice 5 claims nothing on it.
+- **RFC6-14.r2** (`covered:PWB-REQ-007`; "Project aggregates carry no
+  headline epistemic status of their own"): `[Inferred]` B5 gives the two
+  aggregate claims their own judged freshness, which the drafter reads as
+  the tuple each already carries as a claim, not a headline status; the
+  aggregates gain no headline, maturity or success.
 
 **Live members of the arm.** `[Inferred]` When slice 5 lands, with all
 thirteen classes declared, every minted claim-id family assigned and the
@@ -519,8 +560,12 @@ continuation holds, and these with them:
   policy change, and no re-pin of the stale `governingBehaviorContract`
   pins (row P-95's own acts). In particular, no bound for
   `governing-intent-relation`.
-- No briefing route and no reading of `maxBriefingResponseBytes`, which
-  wait for the machine-view package (`syzygy-dov.22`) and M5 slice 3.
+- No briefing route (M5 slice 3, `syzygy-dov.5.2`) and no reading of
+  `maxBriefingResponseBytes`. `[Observed]` The machine-view package
+  (`syzygy-dov.22`) is signed and its gate closed, and its act says "the
+  briefing member stays unservable until its ceiling is declared and the
+  route is separately authorized". So the route waits for its own
+  separate authorization, and this direction is not it.
 - No part of item depth or the opening band beyond B11.
 - No write, egress, observed-code execution, deployment, release,
   recovery or mission effect on Butlers or any repository; no second
@@ -614,14 +659,29 @@ row and no entry in `scripts/check_governance.py`; afterwards,
 documentation cites the record and restates none of it. Once the record
 exists, the coordinator may close the gate bead `syzygy-dov.19`, and that
 lets `syzygy-dov.2.2` start. The bead closing is bookkeeping: it is your
-reply, recorded, that continues anything. Nothing else is unblocked,
+reply, recorded, that continues anything. Nothing else is authorized,
 except the B11 uses, which also need the 2026-10-20 direction confirmed.
+
+**The briefing-route bead.** `[Observed]` `syzygy-dov.19` is also the
+last open blocker of `syzygy-dov.5.2` (M5 slice 3, the briefing route):
+its other dependencies, `syzygy-dov.18`, `syzygy-dov.22` and
+`syzygy-dov.5.1`, are closed. Closing `syzygy-dov.19` would therefore
+make that bead show as ready although nothing authorizes it: B9 and the
+exclusions above keep it unbuilt, and so do the machine-view act's
+separate-authorization sentence and the Bounds of the 2026-10-20 direction
+drafted in PR #489. So the coordinator holds `syzygy-dov.5.2`, by a
+dependency or a gating note on the bead, before closing `syzygy-dov.19`.
+The record would also say that it does not lift the 2026-09-30 read-gate
+direction's bar on `maxBriefingResponseBytes`: that sentence says the bar
+"remains gated on `syzygy-dov.19` and the further gates the 2026-09-21
+rulings name", and for that field those further gates stay open after this
+record.
 
 ## Review
 
-Round 1 (fresh context, over `268f1773`) returned `REVISE`; its raw is
-`docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md`. Its findings are
-dispositioned in the sibling `ROUND-1-DISPOSITIONS.md`, and these bytes
-are the repair. No review has run on these bytes; `REVIEW-BRIEF.md`
-commissions the next round. Later raws and their dispositions go to
-sibling records, never into this file.
+Review rounds over this package, their raws and their dispositions live in
+sibling records and never in this file. The first round's raw is
+`docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md`, dispositioned
+in `ROUND-1-DISPOSITIONS.md`; `REVIEW-BRIEF.md` names the round that
+reviews these bytes. The reply is offered only once a round has cleared
+them.

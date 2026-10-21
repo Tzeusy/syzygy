@@ -138,6 +138,7 @@ direction's amendments; it is disclosed, not repaired.
 | `packages/three-surface-poc-core/src/model.ts` lines 152–160 and 1235 | machine evidence block with `currencyBounds: readonly []`, commented "stays empty until the separately gated owner-act slice 5" | carry the effective rows (B6) |
 | `apps/three-surface-poc/src/polaris.ts` lines 328–352 | `claimTuple` already renders a `freshness-absence` disclosure, which says the currency bound is not declared, whenever an Unknown has no freshness; no claim reaches it today | the scenario's human disclosure, reached for the first time and keyed to the arm marker rather than to an absent freshness value, so the not-evaluated claim does not reach it (B4) |
 | `apps/three-surface-poc/src/polaris.ts` lines 371–386, 762 and 1107–1214 | `reasonCountsBlock`, rendered for each class aggregate and for the whole-shape claim over `countReasonsOf` | the freshness and arm counts rendered beside the reason counts (B5, B6) |
+| `apps/three-surface-poc/src/polaris.ts` lines 1070–1105, 1192, 1239 and 1815 | `gapReasonCounts` and `gapsList`, a per-reason gap list over every shape claim, not an aggregate claim | unchanged; a claim in the arm reaches it as a `no-currency-bound-declared` primary-reason count with its route (B5) |
 | `apps/three-surface-poc/src/polaris.ts` lines 400–432 | slice-1 legend markers drop when a value is used | unchanged mechanism; `stale` becomes reachable (B7) |
 | `apps/three-surface-poc/src/governance-inputs.ts` lines 44–59 | the comment recording the field bar | the reader of the two fields, behind the existing gate (B1) |
 | `apps/three-surface-poc/src/production-reobserve.ts` line 53; `production-reobserve.test.ts` line 43, `reobserve-session.test.ts` line 32 and the fixture module `test-model-fixture.ts` line 218 (all in that directory) | `currencyBounds: []` literals | the effective rows |
@@ -182,6 +183,13 @@ minted yet: item depth would mint them, in the class
   `governing-intent-relation` is declared, so its byte cost lands with that
   lane. An ineffective registry act puts every claim of that evaluation in
   the arm.
+- [Inferred] An evaluation refused for consent or policy, with the
+  registry act still effective, renders its whole-shape claim `stale` on
+  the `unreadable-instant` basis, with the gate's reason still primary
+  (packet B4).
+- [Inferred] Every class aggregate and the whole-shape claim gain four
+  freshness counts and an arm count; `broken` and `superseded` render with
+  the unreachable marker, never `0` (packet B5).
 
 ## Interactions
 
@@ -198,8 +206,15 @@ minted yet: item depth would mint them, in the class
   the two compose.
 - **Lane B.** Declined 2026-10-02. Its freshness-hoist estimate assumed
   uniform freshness, which slice 5 ends; nothing depends on it now.
-- **Machine-view package (`syzygy-dov.22`).** The briefing route and its
-  ceiling stay behind it; B9.
+- **The briefing route (`syzygy-dov.5.2`).** [Observed] The machine-view
+  package (`syzygy-dov.22`) is signed and closed; its act keeps the
+  briefing member unservable "until its ceiling is declared and the route
+  is separately authorized". `syzygy-dov.19` is the bead's last open
+  blocker, so closing it would show the bead as ready. The route still
+  waits for its own separate authorization, B9 keeps
+  `maxBriefingResponseBytes` unread, and the coordinator holds the bead
+  before closing `syzygy-dov.19` (packet §"The record a recorder would
+  write").
 
 ## Governance registration
 
@@ -215,11 +230,12 @@ the CG-26 lists and count are untouched.
 ## Files changed by this preparation branch
 
 - this package: `OWNER-DECISION-PACKET.md`, this ledger and
-  `REVIEW-BRIEF.md`, and after review round 1 the sibling
-  `ROUND-1-DISPOSITIONS.md`;
-- after review round 1, the retained raw
-  `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md`, its campaign
-  row in `docs/README.md` and its campaign pattern in
+  `REVIEW-BRIEF.md`, and after review rounds 1 and 2 the siblings
+  `ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md`;
+- after review rounds 1 and 2, the retained raws
+  `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md` and
+  `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-2-RAW.md`, their
+  campaign row in `docs/README.md` and its campaign pattern in
   `scripts/check_docs_review_campaign_partition.py`.
 
 No `.beads/` file, signed byte, act or sign-off record, recorder,

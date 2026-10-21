@@ -8,13 +8,16 @@
 
 Round 1 is retained as
 `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md` (`REVISE`, over
-`268f1773`). This brief commissions round 2, whose raw is retained
+`268f1773`) and round 2 as
+`docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-2-RAW.md` (`REVISE`,
+over `04e86895`, a commit since rebased onto `main` and kept as
+provenance only). This brief commissions round 3, whose raw is retained
 verbatim under `docs/reviews/` as
-R-PWB-M2-SLICE5-CONTINUATION-PACKET-2-RAW.md, a file that does not exist
+R-PWB-M2-SLICE5-CONTINUATION-PACKET-3-RAW.md, a file that does not exist
 yet (a further run is a further `-RAW.md` under a distinct name, never an
 overwrite). Its first
 four non-blank lines are, in this order and with no other line between
-them:
+them (the title may end ", round 3", as round 2's did):
 
 ```text
 # Review — PWB M2 slice 5 implementation-continuation packet
@@ -28,11 +31,11 @@ Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
 owner answers. It is **not** a manifest digest (the package has none), not
 an act argument and not a digest of this brief or the ledger. The reviewer
 computes it by script at the checked-out commit (`sha256sum` of that one
-file) and does not copy it from anywhere. The review covers all four
-package files at that commit (the three below and
-`ROUND-1-DISPOSITIONS.md`); an edit to any of them after it retires the
-review (rule 10). The commit that retains the raw also adds its campaign row
-to `docs/README.md`, so `scripts/check_docs_review_campaign_partition.py`
+file) and does not copy it from anywhere. The review covers all five
+package files at that commit (the three below,
+`ROUND-1-DISPOSITIONS.md` and `ROUND-2-DISPOSITIONS.md`); an edit to any
+of them after it retires the review (rule 10). The commit that retains
+the raw also updates its campaign row in `docs/README.md`, so `scripts/check_docs_review_campaign_partition.py`
 keeps passing.
 
 ## Exact review inputs
@@ -40,8 +43,15 @@ keeps passing.
 Give the fresh reviewer only:
 
 - this package in full, at one commit: `OWNER-DECISION-PACKET.md`,
-  `IMPACT-LEDGER.md`, this brief and `ROUND-1-DISPOSITIONS.md`;
-- the round-1 raw `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md`;
+  `IMPACT-LEDGER.md`, this brief, `ROUND-1-DISPOSITIONS.md` and
+  `ROUND-2-DISPOSITIONS.md`;
+- the round-1 raw `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-RAW.md`
+  and the round-2 raw
+  `docs/reviews/R-PWB-M2-SLICE5-CONTINUATION-PACKET-2-RAW.md`;
+- read-only `bd show` of `syzygy-dov.19`, `syzygy-dov.2.2` and
+  `syzygy-dov.5.2`, and
+  `.syzygy/governance/decisions/PWB-MACHINE-VIEW-AMENDMENT-ACT.md`
+  ("What this act does not authorize");
 - the 2026-10-20 direction drafted in PR #489, read at its head
   `8c334f67` with
   `git show 8c334f67:.syzygy/governance/decisions/OWNER-DIRECTION-IMPLEMENTATION-SIGNED-AMENDMENTS-2026-10-20.md`
@@ -151,10 +161,16 @@ Give the fresh reviewer only:
     files.
 13. **Authority boundary.** Nothing here signs, adopts, records, unblocks or
     authorizes; nothing says slice 5 may be built now.
-14. **Round-1 dispositions.** For each of R1–R6 and N1–N9, check that the
-    disposition in `ROUND-1-DISPOSITIONS.md` matches what the packet,
-    ledger and brief now say, and that every figure, commit and population
-    in it was re-derived rather than copied from the round-1 raw.
+14. **Earlier dispositions.** For each of round 1's R1–R6 and N1–N9 and
+    round 2's findings 1–8, check that the disposition in
+    `ROUND-1-DISPOSITIONS.md` or `ROUND-2-DISPOSITIONS.md` matches what the
+    packet, ledger and brief now say, and that every figure, commit and
+    population in it was re-derived rather than copied from a raw.
+15. **The briefing-route bead.** The packet states that `syzygy-dov.19` is
+    the last open blocker of `syzygy-dov.5.2`, that nothing here authorizes
+    that route, that the coordinator holds the bead before closing
+    `syzygy-dov.19`, and that the 2026-09-30 bar on
+    `maxBriefingResponseBytes` is not lifted.
 
 ## Required report
 
@@ -167,6 +183,6 @@ Start with the four-line head above. Then provide:
 - any owner-only decision still preventing these bytes from being offered.
 
 Findings are dispositioned in a sibling dispositions record
-(ROUND-2-DISPOSITIONS.md for this round), never in
+(ROUND-3-DISPOSITIONS.md for this round), never in
 `OWNER-DECISION-PACKET.md`; verdict words are copied exactly, never
 softened.
