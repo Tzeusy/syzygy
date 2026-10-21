@@ -1,0 +1,88 @@
+{
+ "subject": "verification of the NON_HUMAN_PRINCIPAL pin change (test-only)",
+ "tree": {
+  "head": "017e2afbfe4dcea66a82b8eff1e10981a7965c40",
+  "base": "b7697f6a"
+ },
+ "ruleFile": {
+  "path": "packages/three-surface-poc-core/src/act-fields.ts",
+  "digestInTree": "09a7c2e5c0514349e10b2b82a0aaf55aee9f3fac261385716ec3f70672552986",
+  "digestInBeforeRecord": "09a7c2e5c0514349e10b2b82a0aaf55aee9f3fac261385716ec3f70672552986",
+  "digestInAfterRecord": "09a7c2e5c0514349e10b2b82a0aaf55aee9f3fac261385716ec3f70672552986",
+  "equalAcrossAll": true,
+  "gitDiffStatBaseToHead": ""
+ },
+ "filesChangedBaseToHead": [
+  "docs/evidence/non-human-principal-pins-2026-10-22/compare_test_lists.py",
+  "docs/evidence/non-human-principal-pins-2026-10-22/mutants-after-2026-10-22.json",
+  "docs/evidence/non-human-principal-pins-2026-10-22/mutants-before-2026-10-22.json",
+  "docs/evidence/non-human-principal-pins-2026-10-22/mutate_non_human_principal.py",
+  "docs/evidence/non-human-principal-pins-2026-10-22/regex-differential.mjs",
+  "docs/evidence/non-human-principal-pins-2026-10-22/test-lists-2026-10-22.json",
+  "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+  "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+ ],
+ "implementationFilesChanged": [],
+ "fullSuite": {
+  "command": "npx vitest run",
+  "ranAt": "017e2afbfe4dcea66a82b8eff1e10981a7965c40",
+  "testFilesLine": "Test Files  229 passed | 3 skipped (232)",
+  "testsLine": "Tests  4982 passed | 5 skipped (4987)",
+  "exitLine": "exit=0"
+ },
+ "targetedTests": {
+  "baseTotal": 393,
+  "headTotal": 463,
+  "headFailed": 0,
+  "testsLine": "Tests: +70 ~0 -0"
+ },
+ "gates": {
+  "typecheck": {
+   "command": "npm run typecheck",
+   "exitLine": "exit=0"
+  },
+  "governance": {
+   "command": "python3 scripts/check_governance.py",
+   "baseLastLine": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+   "headLastLine": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+   "note": "the two outputs differ only in the examined-file counts (3029 to 3035 and 1926 to 1928) when run at the same depth beside each other; a base run in a scratch directory also differs in the CG-1f reference listing, which depends on where the root sits"
+  },
+  "quotations": {
+   "command": "python3 scripts/check_quotations.py",
+   "outputsByteIdentical": true
+  },
+  "authoritySweep": {
+   "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+   "testsLine": "Tests  5 passed (5)"
+  }
+ },
+ "mutants": {
+  "planned": 53,
+  "beforeKilled": 27,
+  "afterKilled": 45,
+  "afterSurvivors": 8,
+  "afterSurvivorsEquivalentWithArgument": [
+   "arm1-drop-agent",
+   "arm1-drop-bot",
+   "arm1-drop-service",
+   "arm1-drop-system",
+   "arm1-drop-ci",
+   "arm1-drop-pipeline",
+   "arm1-drop-model",
+   "arm3-drop-claude"
+  ],
+  "afterSurvivorsWithCorpusWitness": [],
+  "section3HBefore": "1 of 8",
+  "section3HAfter": "8 of 8",
+  "allRestoredBothRuns": true
+ },
+ "logDigests": {
+  "vitest-full.log": "cb1dea102d94e203777291a4c546eba3f7f5658ad9608da8f8c38960ca5c322e",
+  "typecheck.log": "7a00f4891e5172b0dfc67cdc0aef3320ead51c5bd3ee673e5819fb7dde442366",
+  "governance-base.txt": "b5402af370388cf5a7bfeeb0341041f10b724f646d57b9571c5e1215ed5a8355",
+  "governance-head.txt": "918b4436f41e6fc2e7d0a2631539674325870acbc88d38c63ef03d5d8d688ac0",
+  "authority-sweep.log": "97ba3df2d60826c6cbca72505783bb3ce1562485e0e16a3be34c685ad56e3df1",
+  "quotations-base.txt": "ee0324224cb7c33dd4f407f04a8c26677c658d198178c506180d336354bd1726",
+  "quotations-head.txt": "ee0324224cb7c33dd4f407f04a8c26677c658d198178c506180d336354bd1726"
+ }
+}
