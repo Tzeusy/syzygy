@@ -1,12 +1,12 @@
 {
   "format": "redis-screening-v4-remeasure/1",
   "label": "Observed",
-  "measuredAt": "2026-10-21T08:41:58.785Z",
+  "measuredAt": "2026-10-21T08:44:40.415Z",
   "syzygy": {
-    "commit": "fde436049a99a61475a2214d1563050f74d84a81",
-    "treeClean": true,
-    "scriptPath": "scripts/redis_screening_remeasure.mjs",
-    "scriptSha256": "ce2f47f1d939a53ef5b4f59979dbdc52c7890dfdd9435089f993dd8c4fa8c246"
+    "commit": "1bb9b24e33e30ad6d247314a4b31e9ed9fb35146",
+    "treeClean": false,
+    "path": "scripts/redis_screening_remeasure.mjs",
+    "scriptSha256": "6a52c982702ff4bb252ec762907fd2ffb902d387ae1830ebcb58e21ad4a807d7"
   },
   "measuredOn": {
     "runId": "run-6648312f61b5e536315215e0c22422cf",
@@ -113,8 +113,9 @@
     "00-RELEASENOTES",
     "LICENSE.txt"
   ],
-  "redactedBodiesUnderV4": {
-    "README.md": {
+  "redactedBodiesUnderV4": [
+    {
+      "redisPath": "README.md",
       "objectId": "0bc4d0bb9d0cc8677c4dd6228cf3d8365e2d6e27",
       "contentSha256": "0395cc5eea326a5e51ee144fdc754a538d082918877804b10653a08c0d458b49",
       "lines": 471,
@@ -126,7 +127,7 @@
         "credential-assignment"
       ]
     }
-  },
+  ],
   "revisions": [
     {
       "draftRevision": 1,
@@ -193,7 +194,7 @@
         }
       },
       "rebuiltV3": {
-        "packetSha256": "028d5191f271cf64123bd7a655be3874e12c96906f2bdca5a288af749c780000",
+        "packetSha256": "276d56ef01903e770fc68555cf39d295e2bc449f35fc314de3c7b04764d21141",
         "spans": {
           "total": 209,
           "admitted": 86,
@@ -254,7 +255,7 @@
         }
       },
       "rebuiltV4": {
-        "packetSha256": "3c2fc82bd963c61a4c7697a5f9238b2d30511310b182a14583b2cd1434a926aa",
+        "packetSha256": "24aec21a4c1335f69f7e9e921ebe3decb6bacbb62e66dcb109d4a34fda2eadcd",
         "spans": {
           "total": 209,
           "admitted": 122,
@@ -487,7 +488,7 @@
         }
       },
       "rebuiltV3": {
-        "packetSha256": "18973dec2879298a83a868a2d493d9a99f1db417b12d77e59f16d3a72b7d9393",
+        "packetSha256": "3cfb0bb2f813fc3eea1a4c24e8ba659257032b90c9af2de7b258d5093109307e",
         "spans": {
           "total": 233,
           "admitted": 93,
@@ -548,7 +549,7 @@
         }
       },
       "rebuiltV4": {
-        "packetSha256": "ce3f4ba0ae5d5238bc7b312aa8cef44a78244a416b705b0b0fd4e8a0b45a25aa",
+        "packetSha256": "95625b0c0851e6a64b9670d15849b8f00f736c389b0c6ba87fb67bfa971c0552",
         "spans": {
           "total": 233,
           "admitted": 133,
@@ -772,7 +773,7 @@
         }
       },
       "rebuiltV3": {
-        "packetSha256": "9fcbf1617a16c51ae8f9cfefae3c7f030fe59cfb2223d053bc2bc4d20fd73bc8",
+        "packetSha256": "fd50bd67555f17f0857a81382e1eec8eaaffc9473ee96507e7ab8d572bc59f08",
         "spans": {
           "total": 244,
           "admitted": 99,
@@ -836,7 +837,7 @@
         }
       },
       "rebuiltV4": {
-        "packetSha256": "921acc2839eccdac183ea6d83dc26f303d1f9bb56581d9f97a258708fdc9c98c",
+        "packetSha256": "91c5cf729c02fe83963d33e1bfb8f2a9b982a29f96ea557c8d8235986a69ef06",
         "spans": {
           "total": 244,
           "admitted": 139,
@@ -993,10 +994,10 @@
   ],
   "measured": true,
   "scriptChecks": {
-    "atCommit": "fde436049a99a61475a2214d1563050f74d84a81",
+    "atCommit": "1bb9b24e33e30ad6d247314a4b31e9ed9fb35146",
     "selftestFailures": [],
     "rule6": {
-      "scriptSha256": "ce2f47f1d939a53ef5b4f59979dbdc52c7890dfdd9435089f993dd8c4fa8c246",
+      "scriptSha256": "6a52c982702ff4bb252ec762907fd2ffb902d387ae1830ebcb58e21ad4a807d7",
       "mutants": [
         {
           "id": "P1-redacted-bucket",
