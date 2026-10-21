@@ -54,7 +54,7 @@ export {
 export {
   CREDENTIAL_CHECK_DISCLOSURE, CREDENTIAL_LIST_ENV, CREDENTIAL_LIST_FORMAT, classifyRead, createCredentialProbe, credentialListFromEnv,
   credentialListFromFile, credentialStepCheck, openForRead,
-  type CredentialBreachFinding, type CredentialList, type CredentialListSource, type CredentialProbeResult, type CredentialReadOutcome,
+  type AdapterCredentialDeclaration, type CredentialBreachFinding, type CredentialList, type CredentialListSource, type CredentialProbeResult, type CredentialReadOutcome,
   type CredentialStep, type CredentialStepResult, type OpenForRead,
 } from './credential-probe.js';
 export { SECURITY_DOCTRINE_PATH, cutSec3, readSec3, type DoctrineSpan, type Sec3Read, type Sec3Text } from './doctrine-quote.js';
