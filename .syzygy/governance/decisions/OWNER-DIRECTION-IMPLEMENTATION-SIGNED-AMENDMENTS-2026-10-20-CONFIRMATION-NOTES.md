@@ -119,20 +119,27 @@ PR was marked ready. The record was correct and is unchanged.
 
 ## Events after the confirmation
 
-[Observed: the lead session relayed these; the record of the first is on a
-draft pull request not yet merged when this was written.]
+[Observed: the lead session relayed these; the first is also recorded in the
+file named in it.]
 
 - **The `syzygy-dov.19` continuation was given.** The owner gave it on
   2026-10-21T12:00:00Z in the words "Continue PWB implementation authorization
-  for M2 slice 5 as drafted". Its record is on draft PR #492. It is dated
-  after the confirmation instant above. The confirmed record's sentences that
-  treat the `syzygy-dov.19` act as not yet performed were true when it was
-  confirmed. Once the continuation's record is on `main` they are out of date,
-  and that is marked here and not edited there. [Inferred] What the continuation
-  covers is read from that record once it is on `main`: whether it releases
-  item depth (`syzygy-dov.14.4`) and the opening band's count arm is that
-  record's to say, and the confirmed record's rule is that item depth starts
-  only if the behaviour that act names covers its relation claims.
+  for M2 slice 5 as drafted". Its record is
+  `PWB-M2-SLICE-5-IMPLEMENTATION-CONTINUATION-DIRECTION.md` (this directory).
+  It is dated after the confirmation instant above. The confirmed record's
+  sentences that treat the `syzygy-dov.19` act as not yet performed were true
+  when it was confirmed and are out of date now that the continuation's
+  record is on `main`; that is marked here and not edited there.
+- **What the continuation says about the two uses the confirmed record
+  held.** [Observed: its B11 text.] It covers the relation claims of item
+  depth (`syzygy-dov.14.4`) and the count of the opening band
+  (`syzygy-dov.4.2`), through slice 5's one mechanism, with slice 5 landing
+  ahead of both uses. It states that if the 2026-10-20 direction is not
+  confirmed, B11 authorizes neither lane. The owner confirmed that direction
+  at 2026-10-21T11:59:04+00:00, so that condition is met. The confirmed
+  record's own rule still holds: no lane starts until its file is on `main`,
+  and item depth starts only if the behaviour the continuation names covers
+  its relation claims.
 - **Three further answers were recorded the same day**, in
   `OWNER-DIRECTION-P108-IMPLEMENTATION-2026-10-21.md`,
   `POLARIS-RETAINED-EVALUATIONS-CLAIM-STATES-RULING-2026-10-21.md` and
