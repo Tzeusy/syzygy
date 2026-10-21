@@ -39,8 +39,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const FORMAT = 'redis-screening-v4-remeasure/2';
 const SCRIPT = fileURLToPath(import.meta.url);
+const ROOT = path.resolve(path.dirname(SCRIPT), '..');
+// The gate code (`openRun`, the read gate, the screens) is loaded from this checkout's `dist` only. A root override that names another
+// tree could swap the deadline check for one that has none, so the script refuses it (P13) and only an own-checkout path is recorded.
 const ROOT_OVERRIDE = process.env.SYZYGY_REMEASURE_ROOT ?? null;
-const ROOT = ROOT_OVERRIDE ?? path.resolve(path.dirname(SCRIPT), '..');
+if (!rootAllowed(ROOT_OVERRIDE, ROOT)) {
+  process.stderr.write(`SYZYGY_REMEASURE_ROOT names a tree other than this script's own checkout (${ROOT}); refusing to load gate code from it\n`);
+  process.exit(2);
+}
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 /** The files the version-4 packet's section "What stays withheld" keeps withheld by design (syzygy-skpn); counted apart, never relaxed. */
@@ -161,9 +167,39 @@ export function stillDetail(cited) {
   };
 }
 
+const refusalOf = (opened) => ({ ok: false, stage: opened.stage, reason: opened.reason, ...(opened.reasons ? { reasons: opened.reasons } : {}), ...(opened.refusals ? { refusals: opened.refusals } : {}) });
+
+/** The whole result of a step the run refuses: nothing measured, no body read, the refusal verbatim, exit 3. */
+function refusedResult(header, opened, runId) {
+  return { exit: 3, texts: [], record: {
+    ...header,
+    gate: { call: 'openRun', ...refusalOf(opened) },
+    measured: false,
+    bodiesRead: 0,
+    result: '[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful measurement needs the cited spans read inside an unexpired run\'s limits: the next Redis run under screening version 4 provides that, and no act or direction in force provides for a step on this run.',
+    freshRunRoute: '[Inferred] Not available without the owner: buildFidelityPacket needs an inventory of record, which needs an inventory session\'s prompt record and an operator-recorded launch form (packages/polaris-dossier/src/inventory.ts:428-437), so a fresh run of the pinned revision needs a model session or a launch-form declaration no session backs; and a fresh run\'s configuration is the operator\'s own declaration (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23)',
+    authorizationNeeded: `No act or direction provides for a step on ${runId} after its deadline, and the lead ruled no exception on 2026-10-21: the signed deadline refusal (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23) stands. The measurement stays Unknown until the next Redis run under screening version 4 produces it inside its own limits; a general post-deadline re-measurement route would need a CC-REV-2 amendment of that spec line and owner sign-off.`,
+  } };
+}
+
+/** P12. The run's own step gate. `open` is `openRun` over the run; a refusal ends the step with the refusal record (`stop`), and only
+ * `opened` lets a caller read a body. */
+export async function gateStep(open, header, runId) {
+  const opened = await open();
+  if (!opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };
+  return { stop: null, opened };
+}
+
+/** P13. Whether the gate-code root named by `SYZYGY_REMEASURE_ROOT` (null when unset) is this script's own checkout. A root that cannot be
+ * resolved is refused. */
+export function rootAllowed(override, own) {
+  if (override === null) return true;
+  try { return fs.realpathSync(override) === fs.realpathSync(own); } catch { return false; }
+}
+
 // ---- selftest and mutants ----
 
-function selftest() {
+async function selftest() {
   const failures = [];
   const check = (name, actual, expected) => {
     if (JSON.stringify(actual) !== JSON.stringify(expected)) failures.push(`${name}: got ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
@@ -224,6 +260,20 @@ function selftest() {
   check('P11 only outside', stillDetail([m('unknown-extraction-class', 'unknown-extraction-class', 'src/x.def')]).onlyOutsideByDesign, true);
   check('P11 mixed', stillDetail([m('secret-detector-match', 'admitted', 'README.md'), m('active-content', 'active-content', 'LICENSE.txt')]), { onlyOutsideByDesign: false, mixedWithAdmitted: true, mixedWithRecovered: true });
   check('P11 mixed without recovery', stillDetail([m('admitted', 'admitted'), m('active-content', 'active-content', 'LICENSE.txt')]), { onlyOutsideByDesign: false, mixedWithAdmitted: true, mixedWithRecovered: false });
+  // The refusal the expired trial run gives (stage and reason as the record carries them), driven through the gate with an injected `open`.
+  const expired = { ok: false, stage: 'deadline', reason: 'ended at 2026-10-15T09:15:29.329Z' };
+  let opens = 0;
+  const refusedStep = await gateStep(async () => { opens++; return expired; }, { format: 'header' }, 'run-x');
+  check('P12 refusal stops the step', [opens, refusedStep.stop?.exit, refusedStep.stop?.texts, refusedStep.opened], [1, 3, [], null]);
+  check('P12 refusal measures nothing and reads no body', [refusedStep.stop?.record.measured, refusedStep.stop?.record.bodiesRead, refusedStep.stop?.record.gate], [false, 0, { call: 'openRun', ok: false, stage: 'deadline', reason: expired.reason }]);
+  const openStep = await gateStep(async () => ({ ok: true, subject: { id: 's' } }), { format: 'header' }, 'run-x');
+  check('P12 an open run proceeds', [openStep.stop, openStep.opened?.ok], [null, true]);
+  const own = path.resolve(path.dirname(SCRIPT), '..');
+  check('P13 unset', rootAllowed(null, own), true);
+  check('P13 own checkout', rootAllowed(own, own), true);
+  const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), 'redis-remeasure-root-'));
+  try { check('P13 another tree', rootAllowed(elsewhere, own), false); } finally { fs.rmSync(elsewhere, { recursive: true, force: true }); }
+  check('P13 unresolvable', rootAllowed(path.join(os.tmpdir(), 'redis-remeasure-no-such-root'), own), false);
   return failures;
 }
 
@@ -242,6 +292,8 @@ export const MUTANTS = Object.freeze([
   { id: 'P9-omission-blocks', old: "row.disposition !== 'represented' && row.disposition !== 'justified-omission'", new: "row.disposition !== 'represented'" },
   { id: 'P10-finding-blocks-only', old: 'blockCites.get(row.target) ?? entryCites.get(row.target)', new: 'blockCites.get(row.target)' },
   { id: 'P11-only-outside', old: 'still.every((span) => !BY_DESIGN.includes(span.path))', new: 'still.some((span) => !BY_DESIGN.includes(span.path))' },
+  { id: 'P12-gate-refusal', old: 'if (!opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };', new: 'if (opened.ok) return { stop: refusedResult(header, opened, runId), opened: null };' },
+  { id: 'P13-root-compare', old: 'return fs.realpathSync(override) === fs.realpathSync(own);', new: 'return fs.realpathSync(override) !== fs.realpathSync(own);' },
 ]);
 
 function runMutants() {
@@ -257,7 +309,9 @@ function runMutants() {
       const file = path.join(dir, `${mutant.id}.mjs`);
       fs.writeFileSync(file, mutated);
       const run = spawnSync(process.execPath, [file, '--selftest'], { encoding: 'utf8' });
-      results.push({ ...mutant, outcome: run.status === 0 ? 'survived' : 'killed', exitStatus: run.status });
+      // Killed only by a named selftest assertion (exit 1 with a FAIL line): a crash or a refused start is not a kill.
+      const outcome = run.status === 0 ? 'survived' : run.status === 1 && /^FAIL /m.test(run.stderr) ? 'killed' : 'crashed';
+      results.push({ ...mutant, outcome, exitStatus: run.status });
     }
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
   return { scriptSha256: sha256(source), mutants: results };
@@ -273,7 +327,6 @@ const isObj = (value) => value !== null && typeof value === 'object' && !Array.i
 const list = (value) => (Array.isArray(value) ? value : []);
 const spanKey = (file, start, end) => JSON.stringify([file, start, end]);
 const subjectCommit = (runRecord) => runRecord.subject?.pinnedRevision?.commit ?? 'the pinned commit';
-const refusalOf = (opened) => ({ ok: false, stage: opened.stage, reason: opened.reason, ...(opened.reasons ? { reasons: opened.reasons } : {}), ...(opened.refusals ? { refusals: opened.refusals } : {}) });
 
 /** A read-only view of `run` that ends at draft revision `revision`: symbolic links to the run's own files, no byte copied. */
 function runView(run, revision, base) {
@@ -361,22 +414,13 @@ async function measure(options) {
       screeningPolicyAtStart: runRecord.subject?.startGates?.screeningPolicy ?? null,
     },
     withdrawnMeasurements: options.supersedes.map(supersededRecord),
-    scriptChecks: { atCommit: syzygy.commit, selftestFailures: selftest(), rule6: runMutants() },
+    scriptChecks: { atCommit: syzygy.commit, selftestFailures: await selftest(), rule6: runMutants() },
   };
 
-  // The run's own step gate: the installed read gate, then the deadline. Any refusal stops before any body is read.
-  const opened = await openRun(run, sources, now, 'no re-measure read runs');
-  if (!opened.ok) {
-    return { exit: 3, texts: [], record: {
-      ...header,
-      gate: { call: 'openRun', ...refusalOf(opened) },
-      measured: false,
-      bodiesRead: 0,
-      result: '[Observed] The run refuses this step, so nothing is measured and no Redis body is read. Unknown: what version 4 changes for these cited spans. A lawful measurement needs the cited spans read inside an unexpired run\'s limits: the next Redis run under screening version 4 provides that, and no act or direction in force provides for a step on this run.',
-      freshRunRoute: '[Inferred] Not available without the owner: buildFidelityPacket needs an inventory of record, which needs an inventory session\'s prompt record and an operator-recorded launch form (packages/polaris-dossier/src/inventory.ts:428-437), so a fresh run of the pinned revision needs a model session or a launch-form declaration no session backs; and a fresh run\'s configuration is the operator\'s own declaration (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23)',
-      authorizationNeeded: `No act or direction provides for a step on ${runId} after its deadline, and the lead ruled no exception on 2026-10-21: the signed deadline refusal (openspec/changes/polaris-dossier-local-agent-mode/specs/polaris-generation/spec.md:23) stands. The measurement stays Unknown until the next Redis run under screening version 4 produces it inside its own limits; a general post-deadline re-measurement route would need a CC-REV-2 amendment of that spec line and owner sign-off.`,
-    } };
-  }
+  // The run's own step gate (P12): the installed read gate, then the deadline. Any refusal stops before any body is read.
+  const step = await gateStep(() => openRun(run, sources, now, 'no re-measure read runs'), header, runId);
+  if (step.stop !== null) return step.stop;
+  const opened = step.opened;
   const subject = opened.subject;
 
   // The screens: version 3 from the bytes the retained packets name, and the one in force now.
@@ -518,7 +562,7 @@ function parseMeasureArgs(args) {
 const args = process.argv.slice(2);
 const measureOptions = parseMeasureArgs(args);
 if (args[0] === '--selftest' && args.length === 1) {
-  const failures = selftest();
+  const failures = await selftest();
   for (const failure of failures) process.stderr.write(`FAIL ${failure}\n`);
   process.stdout.write(failures.length === 0 ? 'selftest: all cases pass\n' : `selftest: ${failures.length} failure(s)\n`);
   process.exit(failures.length === 0 ? 0 : 1);
