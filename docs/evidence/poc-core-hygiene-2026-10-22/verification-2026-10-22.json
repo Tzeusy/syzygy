@@ -1,0 +1,157 @@
+{
+ "subject": {
+  "baseCommit": "26ff52ce260e925b191d03ee78b052383328b65c",
+  "codeCommit": "01b0fb79604b715394b79c8d992c37494cd8e97c",
+  "recordedAtHead": "d862fd7efba3601865afda13f15b9330e407364e",
+  "note": "packages/ and apps/ at the recording head are byte-identical to the code commit when packagesAndAppsDiffSinceCodeCommit is empty"
+ },
+ "packagesAndAppsDiffSinceCodeCommit": "",
+ "censusTool": {
+  "fix": "export_census.py strips comments with a small lexer (strings, templates and regex literals kept), replacing the earlier regex stripper that a glob string such as '**/*.ts' could turn into an unclosed block comment",
+  "crossCheckedWithRaw": true,
+  "lexerVersusRawOnBase": [
+   "act-fields.ts:SHA256 lexer=internal raw=public",
+   "project-shape-extraction.ts:extractCraftPolicies lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractPrinciples lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractRosterIdentity lexer=self-only raw=internal",
+   "project-shape-extraction.ts:extractSuccessCriteria lexer=self-only raw=internal"
+  ],
+  "selftest": "selftest: 23 of 23 cases hold",
+  "mutants": {
+   "ran": 20,
+   "killed": 20,
+   "survivors": [],
+   "ranAtCommit": "19eed39bd6db34c67b1bee4c08553c10946c40b9"
+  }
+ },
+ "consumerSweeps": {
+  "trackedFilesBase": 3024,
+  "trackedFilesCode": 3024,
+  "subjects": 15,
+  "methodsAgreeOnEverySubjectToken": true
+ },
+ "censusTotals": {
+  "base-lexer": {
+   "exports": 589,
+   "classes": {
+    "dead": 3,
+    "internal": 134,
+    "public": 131,
+    "self-only": 233,
+    "test-only": 88
+   }
+  },
+  "base-raw": {
+   "exports": 589,
+   "classes": {
+    "dead": 3,
+    "internal": 137,
+    "public": 132,
+    "self-only": 229,
+    "test-only": 88
+   }
+  },
+  "after-lexer": {
+   "exports": 586,
+   "classes": {
+    "dead": 1,
+    "internal": 133,
+    "public": 131,
+    "self-only": 233,
+    "test-only": 88
+   }
+  },
+  "after-raw": {
+   "exports": 586,
+   "classes": {
+    "dead": 1,
+    "internal": 136,
+    "public": 132,
+    "self-only": 229,
+    "test-only": 88
+   }
+  }
+ },
+ "baseToAfterLexer": {
+  "removed": [
+   "content-classification.ts:ClassificationOutcome",
+   "project-shape-coverage.ts:FactFamilyKind",
+   "walkthrough-judgment.ts:JUDGMENT_INVALID_CASE_IDS"
+  ],
+  "added": [],
+  "classChanged": [
+   "body-read-authority.ts:COMMON_INVALID_CASES internal -> self-only",
+   "project-shape-coverage.ts:FACT_FAMILIES self-only -> dead"
+  ]
+ },
+ "emittedCode": {
+  "filesCompared": 948,
+  "filesDiffering": 4,
+  "filesInOnlyOneTree": 0,
+  "differing": [
+   "packages/three-surface-poc-core/dist/content-classification.d.ts",
+   "packages/three-surface-poc-core/dist/project-shape-coverage.d.ts",
+   "packages/three-surface-poc-core/dist/walkthrough-judgment.d.ts",
+   "packages/three-surface-poc-core/dist/walkthrough-judgment.js"
+  ]
+ },
+ "routeCapture": {
+  "responses": 230,
+  "fixtures": 5,
+  "fixturesWithDistinctOutput": 5,
+  "requestKeysPerFixture": 46,
+  "requestKeysWhoseBodyDiffersAcrossFixtures": 30,
+  "distinctBodyDigests": 73,
+  "statuses": {
+   "200": 150,
+   "401": 40,
+   "403": 20,
+   "502": 20
+  },
+  "comparisons": [
+   {
+    "file": "cap-base-2.json",
+    "fileBytesEqualReference": true,
+    "responsesDifferingFromReference": 0
+   },
+   {
+    "file": "cap-head-final.json",
+    "fileBytesEqualReference": true,
+    "responsesDifferingFromReference": 0
+   }
+  ]
+ },
+ "testNames": {
+  "baseLines": 4911,
+  "headLines": 4911,
+  "baseDistinctNames": 4902,
+  "headDistinctNames": 4902,
+  "added": 0,
+  "removed": 0,
+  "testsLine": "Tests: +0 ~0 -0"
+ },
+ "fullVitestRun": {
+  "command": "npx vitest run",
+  "lines": [
+   "Test Files  229 passed | 3 skipped (232)",
+   "Tests  4904 passed | 5 skipped (4909)"
+  ],
+  "ranAt": "the code commit tree (packages/ and apps/ identical to the recording head)"
+ },
+ "checkGovernance": {
+  "base": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+  "after": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted",
+  "differenceFromBase": "file counts only (the new evidence directory)"
+ },
+ "checkQuotations": {
+  "baseVsAfterOutputIdentical": true
+ },
+ "typecheck": {
+  "command": "npm run typecheck",
+  "exit": 0
+ },
+ "authoritySweep": {
+  "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+  "result": "5 passed"
+ }
+}
