@@ -132,7 +132,7 @@ export const LITERAL_MUTATIONS: readonly LiteralMutation[] = [
     description: 'a valid state-(1) act is recorded as state (2): state (1) claims independent verification',
     from: 'const provenance: ProvenanceLabel = claimed;',
     to: "const provenance: ProvenanceLabel = 'state-2';",
-    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real 2026-09-02 PWB acts'],
+    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real current PWB acts'],
   },
   {
     kind: 'literal',
@@ -186,7 +186,7 @@ export const LITERAL_MUTATIONS: readonly LiteralMutation[] = [
     description: 'every valid act is disclosed as independently verified',
     from: "independentlyVerified: state.provenance === 'state-2',",
     to: 'independentlyVerified: true,',
-    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real 2026-09-02 PWB acts'],
+    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real current PWB acts'],
   },
   {
     kind: 'literal',
@@ -195,7 +195,7 @@ export const LITERAL_MUTATIONS: readonly LiteralMutation[] = [
     description: 'a state-(1) act is labelled with the state-(2) label',
     from: "state: state.provenance === 'state-2' ? STATE_2_LABEL : STATE_1_LABEL,",
     to: 'state: STATE_2_LABEL,',
-    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real 2026-09-02 PWB acts'],
+    mustFail: ['valid triple state-1/state-1/state-1', 'evaluates the three real current PWB acts'],
   },
   {
     kind: 'literal',

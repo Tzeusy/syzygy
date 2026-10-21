@@ -545,6 +545,44 @@ describe('PWB-REQ-022 — each present-invalid case records verdict-unlawful and
   });
 });
 
+// One non-human-principal rule (syzygy-bpyt.6.2): this evaluator and the
+// PWB-REQ-005 body-read gate classify an owner name the same way. Each
+// principal names one arm of the two former rules; the "flipped" ones
+// were human to this evaluator before, and refused only as
+// owner-another-human.
+const NON_HUMAN_OWNERS: readonly [string, string][] = [
+  ['agent: Claude Code', 'role prefix agent'],
+  ['daemon', 'role prefix daemon'],
+  ['automation: nightly', 'role prefix automation'],
+  ['syzygy', 'role prefix syzygy'],
+  ['ci/release', 'role prefix ci with a slash'],
+  ['renovate[bot]', 'suffix [bot]'],
+  ['deploy-bot', 'suffix -bot'],
+  ['review-agent', 'suffix -agent'],
+  ['machine', 'role prefix machine (flipped)'],
+  ['Anthropic Claude', 'model name claude as a word (flipped)'],
+  ['codex', 'model name codex (flipped)'],
+  ['gpt-5', 'model name gpt (flipped)'],
+  ['GitHub Copilot', 'model name copilot (flipped)'],
+  ['an llm', 'model name llm (flipped)'],
+];
+
+describe('PWB-REQ-022 owner-non-human: one rule shared with the body-read gate', () => {
+  it.each(NON_HUMAN_OWNERS)('owner %j (%s) → owner-non-human', (owner) => {
+    const outcome = evaluateWalkthroughJudgment(inputs({ record: { set: { 'Owner:': owner } } })).outcome;
+    expect(outcome.kind).toBe('unlawful');
+    if (outcome.kind === 'unlawful') expect(outcome.caseId).toBe('owner-non-human');
+  });
+
+  // Each human name sits one anchor away from an arm: a word boundary, a
+  // separator after a role prefix, a line start, a line end.
+  it.each(['Somebody Else', 'Claudette', 'Botha', 'Agentha Smith', 'Anna Model', 'Anna Daemon', 'Jean-Botha'])('a human name %j stays owner-another-human', (owner) => {
+    const outcome = evaluateWalkthroughJudgment(inputs({ record: { set: { 'Owner:': owner } } })).outcome;
+    expect(outcome.kind).toBe('unlawful');
+    if (outcome.kind === 'unlawful') expect(outcome.caseId).toBe('owner-another-human');
+  });
+});
+
 // ---------------------------------------------------------------------
 // State-(2) no-fallback and history.
 // ---------------------------------------------------------------------
