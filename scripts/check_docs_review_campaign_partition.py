@@ -444,6 +444,11 @@ CAMPAIGNS = (
         "Greenfield-parity implementation",
         r"R-GP-IMPL-.*-RAW\.md",
     ),
+    campaign(
+        "pr491-redis-remeasure",
+        "Redis v4 re-measure refusal record",
+        r"R-PR491-REDIS-REMEASURE-\d+-RAW\.md",
+    ),
 )
 
 
