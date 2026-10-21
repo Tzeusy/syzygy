@@ -38,7 +38,7 @@ function measureExcerpts(selected: readonly GenerationSource[], budget: Discover
   };
 }
 
-export interface RedisShapedMeasurement {
+interface RedisShapedMeasurement {
   /** `sha256` is over every path and body in sorted order (path, NUL, body, NUL), so a changed fixture is a changed subject. */
   readonly fixture: { readonly files: number; readonly oversizeFiles: readonly string[]; readonly sha256: string };
   readonly corpus: { readonly sourceRows: number; readonly quotableRows: number; readonly oversizeFiles: number; readonly oversizePieces: Readonly<Record<string, number>> };
@@ -100,6 +100,7 @@ export async function measureRedisShapedDiscovery(dir: string, budget: Discovery
   } };
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface DossierCapMeasurement {
   readonly selectedBytes: number;
   readonly selectedBlobs: number;
@@ -123,6 +124,7 @@ const classOf = (path: string): string => {
   return 'source';
 };
 
+// Test seam: exported for the tests; no production code uses it.
 /** Heuristic-only discovery (no model) on the design-prose variant of the fixture under the dossier budget, and what it read, by class. */
 export async function measureDossierCapSelection(dir: string): Promise<DossierCapMeasurement> {
   const fixture = buildRedisShapedFixture(dir, { designProse: true });

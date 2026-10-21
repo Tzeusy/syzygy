@@ -33,6 +33,7 @@ export const FRESH_CHECKOUT_INVARIANTS = [
   'daemon-exit-clean',
   'evidence-written',
 ] as const;
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export type FreshCheckoutInvariant = (typeof FRESH_CHECKOUT_INVARIANTS)[number];
 
 /** PWB-REQ-020 parity as the sweep oracle states it: every rendered claim
@@ -50,6 +51,7 @@ export interface FreshCheckoutParity {
   readonly humanIdsAbsentFromMachine: number;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface FreshCheckoutInvariants {
   readonly cloneHeadMatchesSource: boolean;
   readonly installExitCode: number;
@@ -103,7 +105,7 @@ export interface ExpectedDaemonDiagnostic {
 
 /** One stderr line as the verdict read it: the parsed object, or `null`
  * when the line is not a JSON object. */
-export type DaemonStderrLine = Readonly<Record<string, unknown>> | null;
+type DaemonStderrLine = Readonly<Record<string, unknown>> | null;
 
 /** Every stderr line, parsed one per line. Only the final newline is
  * dropped, so a blank line inside the stream is a non-JSON line. */
@@ -127,7 +129,7 @@ const FAILURE_REASONS: ReadonlySet<unknown> = new Set(['handler-failure', 'respo
  * a `daemon-http-outcome` for one expected (method, route, status), none a
  * failure reason, none left over, none missing. A missing line fails too:
  * the probe's diagnostic is itself the evidence that refusals are logged. */
-export function daemonStderrIsExactlyProbes(stderr: string, expected: readonly ExpectedDaemonDiagnostic[]): boolean {
+function daemonStderrIsExactlyProbes(stderr: string, expected: readonly ExpectedDaemonDiagnostic[]): boolean {
   const unmatched = [...expected];
   for (const line of parseDaemonStderr(stderr)) {
     if (line === null || line['kind'] !== 'daemon-http-outcome' || FAILURE_REASONS.has(line['reason'])) return false;
@@ -138,7 +140,7 @@ export function daemonStderrIsExactlyProbes(stderr: string, expected: readonly E
   return unmatched.length === 0;
 }
 
-export interface FreshCheckoutVerdict {
+interface FreshCheckoutVerdict {
   readonly healthy: boolean;
   readonly failed: readonly FreshCheckoutInvariant[];
 }

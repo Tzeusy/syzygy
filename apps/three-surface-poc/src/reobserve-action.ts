@@ -5,14 +5,15 @@ import { browserRequestAllowed } from './browser-origin.js';
 import { reevaluationLines } from './reevaluation-copy.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const REOBSERVE_HUMAN_PATH = '/polaris/reobserve' as const;
-export const REOBSERVE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}${REOBSERVE_HUMAN_PATH}` as const;
+const REOBSERVE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}${REOBSERVE_HUMAN_PATH}` as const;
 
 export type ReobserveResult =
   | { readonly kind: 'reobserved'; readonly reevaluation: Reevaluation }
   | { readonly kind: 'failed'; readonly reason: string };
 
-export interface ReobserveRoutesOptions {
+interface ReobserveRoutesOptions {
   readonly reobserve: () => Promise<ReobserveResult>;
 }
 

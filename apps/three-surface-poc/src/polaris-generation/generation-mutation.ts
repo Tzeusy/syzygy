@@ -24,10 +24,10 @@ export interface LiteralMutation {
   readonly mustFail: readonly string[];
 }
 
-export const CANONICAL_JSON_SOURCE = 'packages/polaris-generation-core/src/canonical-json.ts';
-export const PARSE_JSON_SOURCE = 'packages/polaris-generation-core/src/parse-json.ts';
-export const PIPELINE_SOURCE = 'packages/polaris-generation-core/src/pipeline.ts';
-export const PROVIDER_DRAFT_SOURCE = 'packages/polaris-generation-core/src/provider-draft.ts';
+const CANONICAL_JSON_SOURCE = 'packages/polaris-generation-core/src/canonical-json.ts';
+const PARSE_JSON_SOURCE = 'packages/polaris-generation-core/src/parse-json.ts';
+const PIPELINE_SOURCE = 'packages/polaris-generation-core/src/pipeline.ts';
+const PROVIDER_DRAFT_SOURCE = 'packages/polaris-generation-core/src/provider-draft.ts';
 
 export function applyLiteralMutation(source: string, mutation: LiteralMutation): string {
   const occurrences = source.split(mutation.from).length - 1;

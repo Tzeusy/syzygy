@@ -8,7 +8,7 @@ import { syntheticGenerationSource } from './synthetic-source.js';
 /** Explicit synthetic provider fixture. This demonstrates orchestration and
  * rendering, never LLM quality, real source admission or production durability.
  */
-export interface SyntheticProject {
+interface SyntheticProject {
   readonly id: string;
   readonly title: string;
   readonly purpose: string;

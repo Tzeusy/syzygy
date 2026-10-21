@@ -29,16 +29,16 @@ import {
   type PredicateMutation,
 } from './pwb-mutation.js';
 
-export const JUDGMENT_SOURCE = 'packages/three-surface-poc-core/src/walkthrough-judgment.ts';
-export const MANIFEST_SOURCE = 'packages/three-surface-poc-core/src/project-shape-manifest.ts';
-export const OBSERVATION_SOURCE = 'packages/three-surface-poc-core/src/project-shape-observation.ts';
-export const COVERAGE_SOURCE = 'packages/three-surface-poc-core/src/project-shape-coverage.ts';
-export const CLASSIFICATION_SOURCE = 'packages/three-surface-poc-core/src/content-classification.ts';
-export const POLARIS_SOURCE = 'apps/three-surface-poc/src/polaris.ts';
-export const POLARIS_COPY_SOURCE = 'apps/three-surface-poc/src/polaris-copy.ts';
-export const TRAJECTORY_SOURCE = 'apps/three-surface-poc/src/trajectory.ts';
-export const ORRERY_SOURCE = 'apps/three-surface-poc/src/orrery.ts';
-export const EXACT_TABLES_SOURCE = 'apps/three-surface-poc/src/exact-tables.ts';
+const JUDGMENT_SOURCE = 'packages/three-surface-poc-core/src/walkthrough-judgment.ts';
+const MANIFEST_SOURCE = 'packages/three-surface-poc-core/src/project-shape-manifest.ts';
+const OBSERVATION_SOURCE = 'packages/three-surface-poc-core/src/project-shape-observation.ts';
+const COVERAGE_SOURCE = 'packages/three-surface-poc-core/src/project-shape-coverage.ts';
+const CLASSIFICATION_SOURCE = 'packages/three-surface-poc-core/src/content-classification.ts';
+const POLARIS_SOURCE = 'apps/three-surface-poc/src/polaris.ts';
+const POLARIS_COPY_SOURCE = 'apps/three-surface-poc/src/polaris-copy.ts';
+const TRAJECTORY_SOURCE = 'apps/three-surface-poc/src/trajectory.ts';
+const ORRERY_SOURCE = 'apps/three-surface-poc/src/orrery.ts';
+const EXACT_TABLES_SOURCE = 'apps/three-surface-poc/src/exact-tables.ts';
 
 // The closed set of mutation classes task 4.2 names. Every group belongs
 // to exactly one; the sweep's summary reports each class's denominator.
@@ -53,13 +53,13 @@ export const SWEEP_CLASSES = [
   'judgment-invalid-cases',
   'parity-markers',
 ] as const;
-export type SweepClass = (typeof SWEEP_CLASSES)[number];
+type SweepClass = (typeof SWEEP_CLASSES)[number];
 
 // How a disabled predicate's expected failures are named: task 2.5's
 // authority-instance naming, or the judgment table's plain case id.
-export type PredicateNaming = 'authority-instances' | 'judgment-case';
+type PredicateNaming = 'authority-instances' | 'judgment-case';
 
-export interface PredicateSubject {
+interface PredicateSubject {
   readonly file: string;
   readonly naming: PredicateNaming;
 }
