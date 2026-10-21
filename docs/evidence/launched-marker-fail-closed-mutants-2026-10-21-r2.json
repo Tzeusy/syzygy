@@ -16,7 +16,7 @@
     "packages/polaris-dossier/src/session-handover.ts": "b4e7ffd33180f50e29284e24448b09cc6e63dda5b6d0179c87dba25ce10ba1a9"
   },
   "bead": "syzygy-bpyt.8.8",
-  "commit": "1f3da8ccf98d68a453097b50bccc7f5b454b14c5",
+  "commit": "cc0aba21ce5393dba6021b3e3737d50c063d2ed9",
   "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/launched.test.ts packages/polaris-dossier/src/execution-choice.test.ts packages/polaris-dossier/src/brief.test.ts packages/polaris-dossier/src/inventory.test.ts packages/polaris-dossier/src/review.test.ts packages/polaris-dossier/src/session-view.test.ts packages/polaris-dossier/src/execution-rule.test.ts",
   "timeoutSeconds": 240,
   "trackedTreeCleanBefore": true,
@@ -35,14 +35,14 @@
       "testsLine": "Tests  9 failed | 220 passed (229)",
       "failedTests": [
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 2ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 10ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to a character device 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 1ms",
-        "launchedMarkerState > is unreadable for a dangling symbolic link 15ms",
+        "launchedMarkerState > is unreadable for a dangling symbolic link 9ms",
         "launchedMarkerState > is unreadable for a file its reader may not read 1ms",
-        "launchedMarkerState > is unreadable for a symbolic link to a character device 2ms",
-        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 4ms",
-        "launchedMarkerState > is unreadable when the run directory is a file 2ms"
+        "launchedMarkerState > is unreadable for a symbolic link to a character device 1ms",
+        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 8ms",
+        "launchedMarkerState > is unreadable when the run directory is a file 1ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -56,17 +56,17 @@
       "exitCode": 1,
       "testsLine": "Tests  11 failed | 218 passed (229)",
       "failedTests": [
-        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 31ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 1ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 44ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 2ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 2ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 1ms",
-        "launch-form > refuses a declared form in a run with an empty marker and writes no record 180ms",
+        "launch-form > refuses a declared form in a run with an empty marker and writes no record 90ms",
         "launchedMarkerState > is unreadable for a byte-order mark before the marker 1ms",
-        "launchedMarkerState > is unreadable for an empty file 18ms",
-        "launchedMarkerState > is unreadable for invalid JSON 6ms",
-        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 221ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 22ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 10ms"
+        "launchedMarkerState > is unreadable for an empty file 10ms",
+        "launchedMarkerState > is unreadable for invalid JSON 2ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 121ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 14ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 8ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -80,21 +80,21 @@
       "exitCode": 1,
       "testsLine": "Tests  15 failed | 214 passed (229)",
       "failedTests": [
-        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 19ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 26ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 2ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 1ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 9ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 2ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 1ms",
-        "launchedMarkerState > is unreadable for JSON null 25ms",
-        "launchedMarkerState > is unreadable for a JSON array 21ms",
-        "launchedMarkerState > is unreadable for a JSON string 14ms",
-        "launchedMarkerState > is unreadable for a format that is not a string 6ms",
-        "launchedMarkerState > is unreadable for another format 15ms",
-        "launchedMarkerState > is unreadable for no format 6ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 10ms",
-        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 187ms"
+        "launchedMarkerState > is unreadable for JSON null 10ms",
+        "launchedMarkerState > is unreadable for a JSON array 6ms",
+        "launchedMarkerState > is unreadable for a JSON string 10ms",
+        "launchedMarkerState > is unreadable for a format that is not a string 1ms",
+        "launchedMarkerState > is unreadable for another format 1ms",
+        "launchedMarkerState > is unreadable for no format 1ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 22ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 92ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -109,9 +109,9 @@
       "testsLine": "Tests  4 failed | 225 passed (229)",
       "failedTests": [
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 2ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 9ms",
-        "launchedMarkerState > is unreadable for a dangling symbolic link 33ms",
-        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 3ms"
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 3ms",
+        "launchedMarkerState > is unreadable for a dangling symbolic link 27ms",
+        "launchedMarkerState > is unreadable for a symbolic link to the marker Syzygy writes 11ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -149,7 +149,7 @@
       "exitCode": 1,
       "testsLine": "Tests  2 failed | 227 passed (229)",
       "failedTests": [
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a marker padded past 4096 bytes 2ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a marker padded past 4096 bytes 3ms",
         "launchedMarkerState > is unreadable for a marker padded past 4096 bytes 9ms"
       ],
       "blocked": false,
@@ -165,23 +165,23 @@
       "testsLine": "Tests  18 failed | 211 passed (229)",
       "failedTests": [
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: JSON null 1ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a FIFO 7ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 0ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 0ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a FIFO 9ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON array 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a JSON string 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a byte-order mark before the marker 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a dangling symbolic link 0ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a directory 0ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a directory 1ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a file its reader may not read 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a format that is not a string 0ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a marker padded past 4096 bytes 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to a character device 0ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: a symbolic link to the marker Syzygy writes 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: an empty file 7ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 0ms",
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: another format 1ms",
         "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: invalid JSON 1ms",
-        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 0ms",
-        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 61ms",
-        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 79ms"
+        "launch forms in a run whose marker is unreadable > count neither a declared form nor a syzygy-launched one: no format 1ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 65ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 49ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -195,9 +195,9 @@
       "exitCode": 1,
       "testsLine": "Tests  3 failed | 226 passed (229)",
       "failedTests": [
-        "launch forms in a run whose marker is unreadable > name what a counted record must carry, by marker state 8ms",
-        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 63ms",
-        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 38ms"
+        "launch forms in a run whose marker is unreadable > name what a counted record must carry, by marker state 29ms",
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 62ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 78ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -212,9 +212,9 @@
       "testsLine": "Tests  4 failed | 225 passed (229)",
       "failedTests": [
         "syzygy dossier allow-execution > refuses a run whose launched marker is a directory, as a launched run, and records nothing 1ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 9ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 2ms",
-        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 7ms"
+        "syzygy dossier allow-execution > refuses a run whose launched marker is an empty file, as a launched run, and records nothing 12ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is another format, as a launched run, and records nothing 1ms",
+        "syzygy dossier allow-execution > refuses a run whose launched marker is invalid JSON, as a launched run, and records nothing 1ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -228,7 +228,7 @@
       "exitCode": 1,
       "testsLine": "Tests  1 failed | 228 passed (229)",
       "failedTests": [
-        "syzygy dossier allow-execution > refuses a launched run and records nothing 13ms"
+        "syzygy dossier allow-execution > refuses a launched run and records nothing 11ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -242,8 +242,8 @@
       "exitCode": 1,
       "testsLine": "Tests  2 failed | 227 passed (229)",
       "failedTests": [
-        "launch-form > refuses a declared form in a run with a marker that is a directory and writes no record 21ms",
-        "launch-form > refuses a declared form in a run with an empty marker and writes no record 31ms"
+        "launch-form > refuses a declared form in a run with a marker that is a directory and writes no record 25ms",
+        "launch-form > refuses a declared form in a run with an empty marker and writes no record 35ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -257,7 +257,7 @@
       "exitCode": 1,
       "testsLine": "Tests  1 failed | 228 passed (229)",
       "failedTests": [
-        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 13ms"
+        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 17ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -272,8 +272,8 @@
       "testsLine": "Tests  3 failed | 226 passed (229)",
       "failedTests": [
         "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 4ms",
-        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 4ms",
-        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 15ms"
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 3ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 14ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -301,10 +301,10 @@
       "exitCode": 1,
       "testsLine": "Tests  4 failed | 225 passed (229)",
       "failedTests": [
-        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 3ms",
-        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 7ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker of another format gives SEC-3's rule, whatever choice it holds 4ms",
+        "brief: the permitting arm, switched on with fixture ports > a run with a marker that is a directory gives SEC-3's rule, whatever choice it holds 4ms",
         "brief: the permitting arm, switched on with fixture ports > a run with an empty marker gives SEC-3's rule, whatever choice it holds 4ms",
-        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 16ms"
+        "brief: the permitting arm, switched on with fixture ports > a run with launched gives SEC-3's rule, whatever choice it holds 18ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -330,8 +330,8 @@
       "exitCode": 1,
       "testsLine": "Tests  2 failed | 227 passed (229)",
       "failedTests": [
-        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 59ms",
-        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 49ms"
+        "review-check > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 71ms",
+        "the inventory of record > stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8) 64ms"
       ],
       "blocked": false,
       "outcome": "killed",
@@ -349,5 +349,6 @@
   "equivalentSurvivors": {
     "any-file-type": "Equivalent at every fixture an unprivileged test can build: with O_NOFOLLOW a link never opens, with O_NONBLOCK a FIFO opens and reads end-of-file (invalid JSON, unreadable), a directory read fails with EISDIR (unreadable), and a socket fails to open (unreadable). Only a character or block device at the name itself, which needs mknod, would reach the read; the isFile check is kept for that case.",
     "inventory-brief-marker-not-read": "Equivalent by design (R-GP-IMPL-LAUNCHED-MARKER-1 N4): the inventory brief is not the authoring brief, so the execution rule returns before it calls the launched reader. The thunk exists only because ExecutionInputs requires one."
-  }
+  },
+  "rerun": "Re-run at cc0aba21 after the branch was rebased onto main fdc866af. A first run at 1f3da8cc (before the rebase; no longer on any branch) gave the same outcome for every row and every mutant, with equal failing-test sets once durations are removed."
 }

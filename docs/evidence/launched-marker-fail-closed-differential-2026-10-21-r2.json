@@ -14,8 +14,8 @@
     "packages/polaris-dossier/src/review.ts",
     "packages/polaris-dossier/src/session-handover.ts"
   ],
-  "baseCommit": "29e036f4ee6a051cdafde98b8ec37185438c0f74",
-  "fixCommit": "1f3da8ccf98d68a453097b50bccc7f5b454b14c5",
+  "baseCommit": "fdc866afc4430a63074d52e13418ae319c9aa0a6",
+  "fixCommit": "cc0aba21ce5393dba6021b3e3737d50c063d2ed9",
   "subjectSha256": {
     "base": {
       "packages/polaris-dossier/src/brief.ts": "e8d8176ee9fd0656ab48434fb988ccdd96f20b211397062f0bc36b515d7ee3f6",
@@ -2146,5 +2146,6 @@
     "The base side of the /dev/zero link at allow-execution, launchFormRefusal and launch-form (not run; see method).",
     "A FIFO with a writer attached; a character device reached without a link (needs mknod, root).",
     "The library allowExecution called directly, and the check-then-act window at allow-execution (R-GP-IMPL-LAUNCHED-MARKER-1 N1, N2; unchanged by this round)."
-  ]
+  ],
+  "rerun": "Re-run at cc0aba21 after the branch was rebased onto main fdc866af. A first run at 1f3da8cc (before the rebase; no longer on any branch) gave the same outcome for every row and every mutant, with equal failing-test sets once durations are removed."
 }
