@@ -3,11 +3,12 @@
   "baseCommit": "9a30237ed700e6579f3fcc1c6292e6c759861c3f",
   "codeCommit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
   "firstApproachCommit": "0856f92213d04085088cfa199caa6a94af7569b4",
-  "headAtRecording": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad"
+  "headAtRecording": "ba857fd4d1f1697227398b210419b1bd507bf8eb",
+  "gatesRunAtCommit": "ba857fd4d1f1697227398b210419b1bd507bf8eb"
  },
  "appsAndConfigDiffSinceCodeCommit": "",
  "toolDigests": {
-  "assemble_verification.py": "c7ac2b62eb66315a45e6cf9e882fa26d18b13dd01518eee10c5c76695d89f4d1",
+  "assemble_verification.py": "2fea386ae84abb79f3f5e75685bb448517fde8e25d347f0dc6518ca7252871c4",
   "browser_files_run.py": "1adc34e0efa4ae867253d896371cc556f00706a9c0b0f7af7fe3fe653cc78262",
   "compare_test_lists.py": "7be5bec0072d13cd43e7ea3e87546f650547e6891d88e380c5c5ba8adef11da5",
   "launch_close.mjs": "f451d39beb215f60a295448b85a1dda2d0d91e72e507e8c7bc38a623c6cfc1ad",
@@ -249,5 +250,30 @@
    "why": "the first head listing omitted three session-view tests that are gated by a bwrap probe at import time (packages/polaris-dossier/src/session-view.test.ts: `hasBwrap`, which runs bwrap and so depends on host load); a relisting matched"
   }
  },
- "gates": {}
+ "gates": {
+  "typecheck": {
+   "log": "gate-typecheck.log",
+   "exit": 0,
+   "sha256": "6e9917c045c3a698cee6f074e21d7e7615b77283e0a86a575a145ac3cb673ce3",
+   "resultLine": "> tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier"
+  },
+  "checkGovernance": {
+   "log": "gate-governance.log",
+   "exit": 0,
+   "sha256": "580316e4bf1d9dd88e06720135e6316b0b951cbf7b0bb5cc2f8011d8201445c9",
+   "resultLine": "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted"
+  },
+  "checkQuotations": {
+   "log": "gate-quotations.log",
+   "exit": 0,
+   "sha256": "693a5d66abdd998dd4eb0a4dab219c8df6861514bfd84645bbea2e6c9737a15b",
+   "resultLine": "note  QC-1  excluded verbatim records, round directory: 139 .md files, 10 quotations, 4 not in their source now; history not searched"
+  },
+  "authoritySweep": {
+   "log": "gate-authority.log",
+   "exit": 0,
+   "sha256": "16f5a74248df21cabbee4ba314feb22418ff91262c6b34cdb4fe4a4b2f4db745",
+   "resultLine": "Tests  5 passed (5)"
+  }
+ }
 }

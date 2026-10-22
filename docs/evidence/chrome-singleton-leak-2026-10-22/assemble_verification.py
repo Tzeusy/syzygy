@@ -52,15 +52,16 @@ for f in changed_tests:
                   'removedLinesNamingAnAssertion': sum(1 for l in lines if not l.lstrip().startswith('import') and ASSERTION.search(l)), 'removed': lines}
 
 gates = {}
-for key, name, ok in (('typecheck', 'gate-typecheck.log', lambda t: 'exit 0' in t.splitlines()[-1]), ('checkGovernance', 'gate-governance.log', lambda t: ' 0 FAIL' in t),
-                      ('checkQuotations', 'gate-quotations.log', None), ('authoritySweep', 'gate-authority.log', lambda t: 'Tests  5 passed (5)' in t)):
+for key, name in (('typecheck', 'gate-typecheck.log'), ('checkGovernance', 'gate-governance.log'), ('checkQuotations', 'gate-quotations.log'), ('authoritySweep', 'gate-authority.log')):
     path = scratch / name
     if path.exists():
-        text = path.read_text()
-        gates[key] = {'log': name, 'lastLine': next((l for l in reversed(text.splitlines()) if l.strip()), ''), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+        lines = [l for l in path.read_text().splitlines() if l.strip()]
+        exit_line = next((l for l in reversed(lines) if re.fullmatch(r'exit \d+', l)), None)
+        gates[key] = {'log': name, 'exit': int(exit_line.split()[1]) if exit_line else None, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                      'resultLine': next((l.strip() for l in reversed(lines) if l != exit_line and (key != 'authoritySweep' or 'Tests' in l)), '')}
 
 verification = {
-    'subject': {'baseCommit': rev(base), 'codeCommit': rev(code), 'firstApproachCommit': rev(first), 'headAtRecording': rev('HEAD')},
+    'subject': {'baseCommit': rev(base), 'codeCommit': rev(code), 'firstApproachCommit': rev(first), 'headAtRecording': rev('HEAD'), 'gatesRunAtCommit': rev('HEAD')},
     'appsAndConfigDiffSinceCodeCommit': git('diff', '--stat', code, 'HEAD', '--', 'apps', 'vitest.config.ts', 'package.json').strip(),
     'toolDigests': digests,
     'diagnosis': {
