@@ -91,8 +91,8 @@
   },
   "conclusion": "no caller was found that drains nothing: 0 of 42, by the static scan plus the by-hand reading above, and 0 of 42 test files by the per-file run (perFileAtBase)",
   "atTheFinalCodeCommit": {
-   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
-   "filesNamingTheHelper": 45,
+   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "filesNamingTheHelper": 46,
    "callers": 43,
    "scanFlaggedNoDrain": [
     "apps/three-surface-poc/src/polaris-accessibility-main.ts",
@@ -105,29 +105,26 @@
     "apps/three-surface-poc/src/polaris-narrative.test.ts"
    ],
    "callersNotInTheScanAtTheFirstRevision": {
+    "apps/three-surface-poc/src/fixture-directories.test.ts": {},
     "apps/three-surface-poc/src/main.test.ts": {
      "fixtureDirectories": "afterAll"
     }
    },
    "perFileRun": {
-    "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
     "testFilesInDirectory": 90,
-    "fixtureUsingTestFiles": 43,
+    "fixtureUsingTestFiles": 44,
     "filesWithCopiesLeft": 0,
     "filesWithTemplatesLeft": 0,
     "copiesLeftTotal": 0,
     "templatesLeftTotal": 0,
-    "nonzeroExits": [
-     "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-     "apps/three-surface-poc/src/test-model-fixture.test.ts",
-     "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
-    ]
+    "nonzeroExits": []
    },
-   "note": "main moved from 0d4d5098 to 4b31531c0f7c687bac01d15d0d54eb8bfda80f00 with PR 507, whose main.test.ts now calls buildFixtureModel and drains in afterAll. The six files the scan flagged are the six read by hand above; the scan flags the same six."
+   "note": "main moved from 0d4d5098 to a04069678c02881cd41a25b850e14f79d581c083 with PR 507, whose main.test.ts now calls buildFixtureModel and drains in afterAll. The six files the scan flagged are the six read by hand above; the scan flags the same six. fixture-directories.test.ts is in the population of files naming the helper only because a comment in it names test-model-fixture.test.ts; it creates no repository (createsRepositories is false), which is why the files naming the helper rise from 44 at the base to 46 and the callers from 42 to 43 (main.test.ts alone); the per-file run counts it among its 44 files and it leaves 0."
   }
  },
  "interruptedRuns": {
-  "method": "interrupt_probe.py: the project run as the leader of a new process group, SIGKILL sent to that group once three fixture copies exist, then the TMPDIR sampled for 80 seconds",
+  "method": "interrupt_probe.py: the project run as the leader of a new process group, SIGKILL (`base`) or SIGTERM (`baseSigterm`) sent to that group once three fixture copies exist, then the TMPDIR sampled for 80 seconds",
   "base": {
    "treeCommit": "0d4d5098",
    "signal": "KILL",
@@ -146,7 +143,26 @@
     "liveProcessesNamingThisTmpdir": 8
    }
   },
-  "note": "the copies and templates are still there 80 seconds after the signal: no hook runs in a killed worker, so nothing a test file registers can remove them. The orphaned processes in the samples are Chrome crashpad handlers and `cat` pipes of killed browser launches; each probe run's own were stopped afterwards by PID, each re-checked against the probe's unique TMPDIR in its environment."
+  "note": "the copies and templates are still there 80 seconds after the signal: no hook runs in a killed worker, so nothing a test file registers can remove them. The orphaned processes in the samples are Chrome crashpad handlers and `cat` pipes of killed browser launches; each probe run's own were stopped afterwards by PID, each re-checked against the probe's unique TMPDIR in its environment.",
+  "baseSigterm": {
+   "treeCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+   "signal": "TERM",
+   "atSignal": {
+    "secondsIntoTheRun": 35.0,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 3,
+    "otherSyzygyEntries": 7,
+    "liveProcessesNamingThisTmpdir": 10
+   },
+   "lastSample": {
+    "secondsAfterSignal": 80,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 3,
+    "otherSyzygyEntries": 5,
+    "liveProcessesNamingThisTmpdir": 0
+   },
+   "record": "interrupt-term-base-2026-10-22.json"
+  }
  },
  "tmpCensus": {
   "afterCleanup": {
@@ -233,5 +249,5 @@
   },
   "readingOfTheCensus": "[Inferred] the six bursts of 25 to 49 copies over 3 to 7 minutes are interrupted runs, not a non-draining caller, which would leave a count tied to its file on every complete run"
  },
- "finding": "The leak in /tmp is not a caller that fails to drain: a clean project run leaves 0 fixture directories, all fixture-using test files leave 0 when run alone, and no caller was found that drains nothing. The directories come from runs that were killed or aborted (mtime bursts of 25 to 49 copies, and a SIGKILL probe that leaves them in place at base): no teardown hook runs there. [Inferred for the bursts, Observed for the probe]"
+ "finding": "The leak in /tmp is not a caller that fails to drain: a clean project run leaves 0 fixture directories, all fixture-using test files leave 0 when run alone, and no caller was found that drains nothing. The directories come from runs that were killed or aborted (mtime bursts of 25 to 49 copies, and SIGKILL and SIGTERM probes that leave them in place at base): no teardown hook runs there. [Inferred for the bursts, Observed for the probes]"
 }

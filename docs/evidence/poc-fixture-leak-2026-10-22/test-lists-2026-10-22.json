@@ -1,19 +1,19 @@
 {
  "tool": "compare_test_lists.py",
- "baseTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b with test-model-fixture.test.ts as at 4b31531c0f7c687bac01d15d0d54eb8bfda80f00 and fixture-directories.test.ts absent",
- "headTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+ "baseTree": "3f08143c5e0c78ca42288d16589f36673c9ba854 with test-model-fixture.test.ts as at a04069678c02881cd41a25b850e14f79d581c083 and fixture-directories.test.ts absent",
+ "headTree": "3f08143c5e0c78ca42288d16589f36673c9ba854",
  "command": "npx vitest list",
  "note": "the base list is the code commit with those two test files put back to origin/main (one reverted, one set aside) and restored afterwards: they are the only test files under apps/ and packages/ that differ",
  "baseLines": 5096,
- "headLines": 5107,
+ "headLines": 5112,
  "baseDistinctNames": 5087,
- "headDistinctNames": 5098,
- "added": 11,
+ "headDistinctNames": 5103,
+ "added": 16,
  "removed": 0,
  "addedByFile": {
-  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 9,
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 14,
   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
  },
  "removedByFile": {},
- "testsLine": "Tests: +11 ~0 -0"
+ "testsLine": "Tests: +16 ~0 -0"
 }

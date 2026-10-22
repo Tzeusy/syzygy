@@ -1,30 +1,36 @@
 {
  "subject": {
   "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
-  "mergedMainCommit": "4b31531c0f7c687bac01d15d0d54eb8bfda80f00",
-  "codeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
-  "treeAtRecording": "caef076acf9ea3b3d0130d81e7fb78e608617b6b"
+  "mergedMainCommit": "a04069678c02881cd41a25b850e14f79d581c083",
+  "codeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+  "treeAtRecording": "3f08143c5e0c78ca42288d16589f36673c9ba854"
  },
  "appsAndPackagesDiffSinceCodeCommit": "",
  "toolDigests": {
   "census_tmp.py": "436d1457ea9a455c51096e428b70e3693114bb1aab3c1a6ad007180ca1898e58",
+  "cli_sweep_probe.py": "b6555fc6d6c5187e59a81e78b82634820f323d90c245e1a5d4bdc1bf046404ac",
   "drain_scan.py": "32e801a77568f62efe01c69d89e15ab36daa8cda14752c4fa6c3199e19573741",
   "interrupt_probe.py": "d8f191cf60519c8718a3407c451b8f3334faeb2c01a8a4de821a8fd0ffc7e688",
-  "kill_then_fresh_run.py": "41dd8e1d77f2429dc440ec8edb884b23993cd4cedd987a0298197762491cd6d5",
+  "kill_then_fresh_run.py": "dffa512a328d54753ab856c561de5d37b551399dc249ba803d1cbbb4d2003541",
   "leak_by_file.py": "fc7e19608090dcbbab3aea5ba604b449b71a6ecce5bcad4e42929ade8e893554",
-  "mutate_sweep.py": "66da89f118bbd5604588435f41fc1709c8f27095095bf693edf721da0d1239b9",
+  "mutate_sweep.py": "59ead39374674f09a0a8a0746d7b2a3768840cad82870ca138de249884325246",
   "tmpdir_length_probe.py": "afdb831b9056487554aebcd90f20856d0257a2033f35552a02252fd276e34769"
  },
  "changedFilesMainToCode": [
   "apps/three-surface-poc/src/fixture-directories.test.ts",
   "apps/three-surface-poc/src/fixture-directories.ts",
+  "apps/three-surface-poc/src/polaris-accessibility-main.ts",
   "apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts",
   "apps/three-surface-poc/src/test-model-fixture.test.ts",
   "apps/three-surface-poc/src/test-model-fixture.ts",
   "docs/evidence/poc-fixture-leak-2026-10-22/assemble_records.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/census-tmp-after-cleanup-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/census_tmp.py",
-  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-d59d76c3-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-1-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-2-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-3-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/cli_sweep_probe.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/diagnosis-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/drain-scan-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/drain_scan.py",
@@ -44,118 +50,125 @@
   "docs/evidence/poc-fixture-leak-2026-10-22/verification-2026-10-22.json",
   "vitest.config.ts"
  ],
+ "ac1Sigterm": {
+  "claim": "a run killed with SIGTERM leaks its fixture directories too, as one killed with SIGKILL does",
+  "atBase": {
+   "record": "interrupt-term-base-2026-10-22.json",
+   "treeCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+   "atSignal": {
+    "secondsIntoTheRun": 35.0,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 3,
+    "otherSyzygyEntries": 7,
+    "liveProcessesNamingThisTmpdir": 10
+   },
+   "eightySecondsAfter": {
+    "secondsAfterSignal": 80,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 3,
+    "otherSyzygyEntries": 5,
+    "liveProcessesNamingThisTmpdir": 0
+   }
+  },
+  "atHead": {
+   "record": "interrupt-term-head-2026-10-22.json",
+   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "atSignal": {
+    "secondsIntoTheRun": 37.6,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 2,
+    "otherSyzygyEntries": 9,
+    "liveProcessesNamingThisTmpdir": 27
+   },
+   "eightySecondsAfter": {
+    "secondsAfterSignal": 80,
+    "fixtureCopies": 3,
+    "fixtureTemplates": 2,
+    "otherSyzygyEntries": 10,
+    "liveProcessesNamingThisTmpdir": 8
+   }
+  },
+  "note": "the run is stopped at once and no hook runs, so the directories stay until the next run sweeps them (ac3, termedRun)"
+ },
  "ac2": {
   "claim": "a clean three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
   "command": "npx vitest run --project @syzygy/three-surface-poc-app",
-  "run": {
-   "where": "the app project inside the full-suite run of gates.fullVitest at the merged head",
+  "cleanRunTool": {
+   "record": "clean-run-head-2026-10-22.json",
+   "exit": 1,
+   "seconds": 551.1,
+   "numTotalTests": 1113,
+   "numPassedTests": 1108,
+   "numFailedTests": 3,
+   "numPendingTests": 2,
+   "testFiles": 90,
+   "testFilesFailed": 3,
+   "failing": [
+    {
+     "file": "three-surface-poc/src/build-output.test.ts",
+     "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-copy.test.ts",
+     "test": "Polaris copy roles (PWB-REQ-012) keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-narrative.test.ts",
+     "test": "Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9) classifies every narrative unit with exactly one role and marks it a non-citable presentation artifact",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    }
+   ],
+   "fixtureDirectoriesLeft": 0,
+   "left": {
+    "fixtureDirectories": 0,
+    "ofDeadProcesses": {
+     "count": 0,
+     "copies": 0,
+     "templates": 0,
+     "ownerPids": []
+    },
+    "ofLiveProcesses": {
+     "count": 0,
+     "copies": 0,
+     "templates": 0
+    },
+    "withoutAnOwnerPid": {
+     "count": 0
+    },
+    "otherEntries": 6
+   }
+  },
+  "inTheFullSuiteRun": {
+   "where": "the app project inside gates.fullVitest",
    "filesPassed": 89,
    "filesSkipped": 1,
    "filesFailed": 0,
    "fixtureDirectoriesLeft": 0
   },
-  "cleanRunToolAtTheMergedHead": [
-   {
-    "record": "clean-run-head-attempt-1-2026-10-22.json",
-    "exit": 1,
-    "numPassedTests": 1103,
-    "numFailedTests": 3,
-    "failing": [
-     [
-      "three-surface-poc/src/surface-routes.test.ts",
-      "Error: private browser profile still held by 1 process(es)"
-     ],
-     [
-      "three-surface-poc/src/surface-routes.test.ts",
-      "Error: private browser profile still held by 1 process(es)"
-     ],
-     [
-      "three-surface-poc/src/tuple-encoding.test.ts",
-      "Error: private browser profile still held by 1 process(es)"
-     ]
-    ],
-    "fixtureDirectoriesLeft": 0
-   },
-   {
-    "record": "clean-run-head-attempt-2-2026-10-22.json",
-    "exit": 1,
-    "numPassedTests": 1105,
-    "numFailedTests": 1,
-    "failing": [
-     [
-      "three-surface-poc/src/build-output.test.ts",
-      "Error: STACK_TRACE_ERROR"
-     ]
-    ],
-    "fixtureDirectoriesLeft": 0
-   },
-   {
-    "record": "clean-run-head-attempt-3-2026-10-22.json",
-    "exit": 1,
-    "numPassedTests": 1104,
-    "numFailedTests": 2,
-    "failing": [
-     [
-      "three-surface-poc/src/build-output.test.ts",
-      "Error: STACK_TRACE_ERROR"
-     ],
-     [
-      "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
-      "Error: Command failed: npm ci"
-     ]
-    ],
-    "fixtureDirectoriesLeft": 0
-   }
-  ],
-  "cleanRunBeforeTheMerge": {
-   "record": "clean-run-d59d76c3-2026-10-22.json",
-   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
-   "exit": 0,
-   "seconds": 220.5,
-   "numTotalTests": 1106,
-   "numPassedTests": 1104,
-   "numFailedTests": 0,
-   "numPendingTests": 2,
-   "testFiles": 90,
-   "testFilesFailed": 0,
-   "failing": [],
-   "fixtureDirectoriesLeft": 0
-  },
   "perFile": {
-   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
    "testFilesInDirectory": 90,
-   "fixtureUsingTestFiles": 43,
+   "fixtureUsingTestFiles": 44,
    "filesWithCopiesLeft": 0,
    "filesWithTemplatesLeft": 0,
    "copiesLeftTotal": 0,
    "templatesLeftTotal": 0,
-   "nonzeroExits": [
-    "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-    "apps/three-surface-poc/src/test-model-fixture.test.ts",
-    "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
-   ]
+   "nonzeroExits": []
   },
-  "perFileNonzeroExitsRerunAlone": {
-   "files": {
-    "polaris-authority-sweep.test.ts": "passed",
-    "test-model-fixture.test.ts": "passed",
-    "trajectory-narrowing.browser.test.ts": "passed"
-   },
-   "passed": 12,
-   "failed": 0,
-   "note": "the per-file tool keeps no failure text; the three files that exited non-zero in it passed when run again straight after, at the same commit [Inferred: load timeouts]"
-  },
-  "note": "base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. The three dedicated clean-run attempts at the merged head each left 0 fixture directories but exited 1 on load-bound tests (build-output, pipeline-demo: npm ci past its 120 s install timeout, surface-routes and tuple-encoding: the browser profile drain) [Inferred from the error lines and the host load]; the full run with three workers is the run of the app project that passed. An earlier revision of this branch (baf06475) failed sync-child-process-guard.test.ts in this run because its test used spawnSync, which that guard forbids; the tests now await an async spawn. That attempt's report was not retained and no figure from it is used."
+  "note": "base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. Failures in the runs of this record are listed under run, not hidden; the host's load average was 45 to 95 from other lanes throughout [Observed: uptime between runs]."
  },
  "ac3": {
-  "claim": "a run killed with SIGKILL, followed by one fresh run, leaves 0 directories of dead processes; with the sweep disabled they stay",
-  "withTheSweep": {
+  "claim": "a run killed with SIGKILL or SIGTERM, followed by one fresh run, leaves 0 directories of dead processes; with the sweep disabled they stay",
+  "killedRun": {
+   "record": "kill-then-fresh-run-head-2026-10-22.json",
    "killedRun": {
     "signal": "SIGKILL",
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
-    "atKill": {
-     "secondsIntoTheRun": 31.6,
+    "atSignal": {
+     "secondsIntoTheRun": 25.6,
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 0,
@@ -171,17 +184,17 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 14
+     "otherEntries": 5
     },
-    "fiveSecondsAfterKill": {
+    "fiveSecondsAfterSignal": {
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 5,
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       340684,
-       340746
+       1854211,
+       1854215
       ]
      },
      "ofLiveProcesses": {
@@ -192,28 +205,23 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 14
+     "otherEntries": 6
     }
    },
    "freshRun": {
     "exit": 1,
-    "seconds": 293.6,
-    "numTotalTests": 1108,
-    "numPassedTests": 1104,
-    "numFailedTests": 2,
+    "seconds": 403.6,
+    "numTotalTests": 1113,
+    "numPassedTests": 1110,
+    "numFailedTests": 1,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 2,
+    "testFilesFailed": 1,
     "failing": [
      {
-      "file": "three-surface-poc/src/build-output.test.ts",
-      "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps a separate desktop section rail and an in-flow mobile drawer",
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
-     },
-     {
-      "file": "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
-      "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
-      "firstErrorLine": "Error: Command failed: npm ci"
      }
     ],
     "left": {
@@ -232,24 +240,26 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 19
+     "otherEntries": 7
     }
    },
-   "note": "the criterion is the count of directories of dead processes after the fresh run, read from freshRun.left. The fresh run exits non-zero only on the tests listed in freshRun.failing, which are the load-bound ones also seen failing in the clean runs of ac2 [Inferred: same files, same error lines, host load average 30 to 55]; neither is a test of the fixture directories or of the sweep."
+   "failingInTheFreshRun": [
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     " real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+     "Error: STACK_TRACE_ERROR"
+    ]
+   ],
+   "note": "the criterion is the count of directories of dead processes in freshRun.left. The fresh run also exits non-zero on the tests in failingInTheFreshRun, vitest's timeout placeholder under load; none is a test of the fixture directories or of the sweep."
   },
-  "sweepDisabled": {
-   "mutant": {
-    "id": "global-setup-not-registered",
-    "file": "vitest.config.ts",
-    "old": "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n",
-    "new": ""
-   },
+  "termedRun": {
+   "record": "term-then-fresh-run-head-2026-10-22.json",
    "killedRun": {
-    "signal": "SIGKILL",
+    "signal": "SIGTERM",
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
-    "atKill": {
-     "secondsIntoTheRun": 16.8,
+    "atSignal": {
+     "secondsIntoTheRun": 34.5,
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 0,
@@ -265,17 +275,17 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 14
+     "otherEntries": 13
     },
-    "fiveSecondsAfterKill": {
+    "fiveSecondsAfterSignal": {
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 5,
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       458382,
-       458394
+       1936315,
+       1936335
       ]
      },
      "ofLiveProcesses": {
@@ -286,23 +296,174 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 14
+     "otherEntries": 13
     }
    },
    "freshRun": {
     "exit": 1,
-    "seconds": 214.8,
-    "numTotalTests": 1108,
-    "numPassedTests": 1105,
-    "numFailedTests": 1,
+    "seconds": 489.1,
+    "numTotalTests": 1113,
+    "numPassedTests": 1108,
+    "numFailedTests": 3,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 1,
+    "testFilesFailed": 3,
     "failing": [
+     {
+      "file": "three-surface-poc/src/build-output.test.ts",
+      "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-capability-detail.test.ts",
+      "test": "Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-opening-index.browser.test.ts",
+      "test": "opening index (server side) lists the nine signed names, in order, on every variant, and routes nowhere for an unrendered target",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     }
+    ],
+    "left": {
+     "fixtureDirectories": 0,
+     "ofDeadProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0,
+      "ownerPids": []
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 17
+    }
+   },
+   "failingInTheFreshRun": [
+    [
+     "three-surface-poc/src/build-output.test.ts",
+     "ild output integrity re-emits ignored JavaScript before the launcher executes it",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-capability-detail.test.ts",
+     "y one band and class, in Base mode with observed reality, over every shape state",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-opening-index.browser.test.ts",
+     "d names, in order, on every variant, and routes nowhere for an unrendered target",
+     "Error: STACK_TRACE_ERROR"
+    ]
+   ]
+  },
+  "sweepDisabled": {
+   "record": "kill-then-fresh-run-sweep-disabled-2026-10-22.json",
+   "mutant": {
+    "id": "global-setup-not-registered",
+    "file": "vitest.config.ts",
+    "old": "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n",
+    "new": ""
+   },
+   "killedRun": {
+    "signal": "SIGKILL",
+    "sentToTheProcessGroupOfTheRunItStarted": true,
+    "runFinishedBeforeTheSignal": false,
+    "atSignal": {
+     "secondsIntoTheRun": 66.1,
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0,
+      "ownerPids": []
+     },
+     "ofLiveProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 13
+    },
+    "fiveSecondsAfterSignal": {
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2,
+      "ownerPids": [
+       2250420,
+       2250562
+      ]
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 13
+    }
+   },
+   "freshRun": {
+    "exit": 1,
+    "seconds": 463.7,
+    "numTotalTests": 1113,
+    "numPassedTests": 1103,
+    "numFailedTests": 8,
+    "numPendingTests": 2,
+    "testFiles": 90,
+    "testFilesFailed": 5,
+    "failing": [
+     {
+      "file": "three-surface-poc/src/build-output.test.ts",
+      "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
      {
       "file": "three-surface-poc/src/fixture-directories.test.ts",
       "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) is registered as a global setup of the app project and of no other project, so it runs once per run",
       "firstErrorLine": "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+      "test": "PWB-REQ-016 names and headings in a real browser fails each falsifier limb in the browser",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+      "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
      }
     ],
     "left": {
@@ -312,8 +473,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       458382,
-       458394
+       2250420,
+       2250562
       ]
      },
      "ofLiveProcesses": {
@@ -324,25 +485,61 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 18
+     "otherEntries": 23
     }
    },
-   "failingTestsListed": [
+   "failingInTheFreshRun": [
+    [
+     "three-surface-poc/src/build-output.test.ts",
+     "ild output integrity re-emits ignored JavaScript before the launcher executes it",
+     "Error: STACK_TRACE_ERROR"
+    ],
     [
      "three-surface-poc/src/fixture-directories.test.ts",
-     "ered as a global setup of the app project and of no other project, so it runs once per run"
+     "global setup of the app project and of no other project, so it runs once per run",
+     "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     " real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "al browser keeps diagram labels legible and flow order unambiguous across widths",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "l browser opens a linked component guide and can reveal the complete declaration",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "ive shortcuts and a complete no-script outline with a truthful live hidden count",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+     "16 names and headings in a real browser fails each falsifier limb in the browser",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+     "ads this checkout's chain: the latest recorded version loads the policy it names",
+     "Error: STACK_TRACE_ERROR"
     ]
    ],
    "note": "the directories of the killed run stay; the fresh run exits non-zero because the unit test that pins the global setup's registration fails on the mutated tree, as intended"
   },
   "unitMutants": {
-   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
    "command": "npx vitest run apps/three-surface-poc/src/fixture-directories.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
-   "mutants": 15,
-   "killed": 15,
+   "mutants": 22,
+   "killed": 22,
    "control": {
     "exit": 0,
-    "testsRun": 14,
+    "testsRun": 19,
     "failing": [],
     "fixtureDirectoriesLeftInPrivateTmpdir": 0,
     "holds": true
@@ -350,6 +547,10 @@
    "ids": [
     [
      "live-pid-removed",
+     "killed"
+    ],
+    [
+     "foreign-namespace-swept",
      "killed"
     ],
     [
@@ -361,7 +562,7 @@
      "killed"
     ],
     [
-     "hyphen-after-pid-dropped",
+     "hyphen-after-namespace-dropped",
      "killed"
     ],
     [
@@ -373,7 +574,15 @@
      "killed"
     ],
     [
-     "lstat-dropped",
+     "is-directory-guard-dropped",
+     "killed"
+    ],
+    [
+     "uid-guard-dropped",
+     "killed"
+    ],
+    [
+     "stat-follows-symlink",
      "killed"
     ],
     [
@@ -381,7 +590,15 @@
      "killed"
     ],
     [
+     "readdir-outside-try",
+     "killed"
+    ],
+    [
      "lists-the-parent",
+     "killed"
+    ],
+    [
+     "tmpdir-read-from-the-variable",
      "killed"
     ],
     [
@@ -389,7 +606,15 @@
      "killed"
     ],
     [
+     "copy-name-without-namespace",
+     "killed"
+    ],
+    [
      "template-name-without-pid",
+     "killed"
+    ],
+    [
+     "template-name-without-namespace",
      "killed"
     ],
     [
@@ -409,14 +634,37 @@
      "killed"
     ]
    ]
+  },
+  "accessibilityCli": {
+   "claim": "the accessibility CLI, which Vitest's global setup never reaches, sweeps the dead-process directories of its temp directory once, as the first statement of main (review round 1, F2)",
+   "head": {
+    "record": "cli-sweep-probe-head-2026-10-22.json",
+    "exit": 2,
+    "deadProcessDirectoriesLeft": [],
+    "liveAndLegacyKept": [
+     "syzygy-poc-surface-fixture-p1888204-n4026531836-CliLive1",
+     "syzygy-poc-surface-fixture-CliLegacy"
+    ],
+    "holds": true
+   },
+   "mutant": {
+    "record": "cli-sweep-probe-mutant-2026-10-22.json",
+    "id": "accessibility-cli-does-not-sweep",
+    "exit": 2,
+    "deadProcessDirectoriesLeft": [
+     "syzygy-poc-surface-fixture-p1893784-n4026531836-CliProbe",
+     "syzygy-poc-surface-fixture-template-p1893784-n4026531836-CliProbe"
+    ],
+    "holds": true
+   }
   }
  },
  "oncePerRun": {
   "claim": "the sweep runs once per run, from a global setup of the app project, and not once per test file",
   "unitTests": [
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run",
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run"
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run"
   ],
   "mutantsThatMustDie": {
    "global-setup-does-not-sweep": "killed",
@@ -426,58 +674,80 @@
   }
  },
  "ac4ac5": {
-  "claim": "a directory whose pid is alive survives the sweep (the current process's pid, in a unit test); a legacy name with no pid survives",
+  "claim": "a directory whose pid is alive survives the sweep (the current process's pid, in a unit test); a legacy name with no pid survives; so does a dead pid of another PID namespace; a file and a symlink survive",
   "unitTestsAdded": [
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > names the template and each copy with the pid and PID namespace of the process that made them",
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes the copy and the template of a process that is gone",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a live process, the current one included",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a name that carries no pid segment, whatever its suffix",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a name that carries no pid and namespace segment, whatever its suffix",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a directory whose pid fails with anything but ESRCH",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > follows no symlink and removes no file: only a directory with a dead pid in its name goes",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a dead pid that belong to another PID namespace",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a directory that belongs to another user, the sweep never descending into it",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > checks no user where the system has no user ids, and removes the dead process's directory",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > does not fail the run when the temp directory cannot be listed",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > lists only the directory it is given: nothing beside it, nothing below a non-fixture entry",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > does not fail the run when a dead process's directory cannot be removed",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run",
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > names the template and each copy with the pid of the process that made them",
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run"
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > asks the operating system for the temp directory, so it sweeps the same directory the copies are made in when TMPDIR is unset",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run"
   ],
-  "withNoPidSegmentKept": "eight name shapes in one test: legacy copy, legacy template, pid with no hyphen, pid not straight after the prefix (copy and template forms), another prefix, the prefix inside a longer name, the prefix without its last hyphen",
-  "noSymlinkFollowed": "one test: a symlink to a directory outside the swept one, and a file, both with dead-pid names, are kept; the outside directory is untouched"
+  "withNoPidSegmentKept": "thirteen name shapes in one test: legacy copy and template, pid without the namespace segment (both forms), pid with no hyphen after it, namespace with no hyphen after it, empty namespace, an m segment, pid not straight after the prefix, another prefix, the prefix inside a longer name, the prefix without its last hyphen",
+  "foreignNamespace": "one test: a copy and a template with a dead pid and another namespace are kept, the own-namespace one beside them is removed",
+  "noSymlinkFollowed": "one test: a symlink to a directory outside the swept one, and a file, both with dead-pid names, are kept; the outside directory is untouched",
+  "otherUser": "one test, with a spy on process.getuid returning another uid; no second uid was available to this lane, so a real foreign-owned directory was not made"
  },
  "ac6": {
-  "baseTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b with test-model-fixture.test.ts as at 4b31531c0f7c687bac01d15d0d54eb8bfda80f00 and fixture-directories.test.ts absent",
-  "headTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+  "baseTree": "3f08143c5e0c78ca42288d16589f36673c9ba854 with test-model-fixture.test.ts as at a04069678c02881cd41a25b850e14f79d581c083 and fixture-directories.test.ts absent",
+  "headTree": "3f08143c5e0c78ca42288d16589f36673c9ba854",
   "baseLines": 5096,
-  "headLines": 5107,
-  "added": 11,
+  "headLines": 5112,
+  "added": 16,
   "removed": 0,
   "addedByFile": {
-   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 9,
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 14,
    "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
   },
-  "testsLine": "Tests: +11 ~0 -0"
+  "testsLine": "Tests: +16 ~0 -0"
  },
  "gates": {
   "fullVitest": {
-   "command": "npx vitest run --maxWorkers=3 (TMPDIR=<emptied private directory>)",
-   "log": "vitest-full-head.log",
+   "command": "npx vitest run (TMPDIR=<emptied private directory>)",
+   "log": "vitest-full-3f08143c.log",
    "summary": [
-    "Test Files  3 failed | 229 passed | 3 skipped (235)",
-    "Tests  3 failed | 5097 passed | 5 skipped (5105)",
-    "Duration  695.77s (transform 41.17s, setup 8.89s, collect 186.45s, tests 1562.23s, environment 163ms, prepare 89.58s)"
+    "Test Files  8 failed | 224 passed | 3 skipped (235)",
+    "Tests  15 failed | 5025 passed | 70 skipped (5110)",
+    "Duration  1145.06s (transform 52.80s, setup 12.45s, collect 261.57s, tests 2540.33s, environment 284ms, prepare 124.37s)"
    ],
    "failed": [
-    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/digest-bound-act.test.ts > digest-bound act cross-check (RFC3-16(a)) > is absent on this checkout: no registry-entry act is recorded",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/act-families.test.ts [ packages/polaris-generation-consent/src/act-families.test.ts ]",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > is read from the recorder's act: version 2 supersedes version 1 once in force",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > refuses when version 2 did not take effect strictly after version 1: the same instant, or earlier",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > the RFC5-14 class amendment version 2 depends on > is required: no record, an edited module, a wrong form, or an amendment later than version 2 all refuse",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > strict act reads > policy chain: absent without acts; refused for a missing version 1, equal or earlier instants, equal arguments, a supersession that does not name version 1, or other policy bytes",
     "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant",
-    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/start-gates.test.ts > init: the clone holds the consented commit alone (syzygy-qkea.24) > refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)"
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > refuse an in-force record whose table binds other files than the form names, even when an act binds its bytes",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > refuse an act record, and the registry sign-off, with no owner",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the gate forms against the recorders > render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > render > renders an exempt body only through a renderer that declares the page-sink contract and pages that carry the CSP",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/screen.test.ts > the screen of the policy in force > builds the screen on this checkout exactly when a screening-scope act is recorded and the policy declares the scope",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/start-gates.test.ts > init: the clone holds the consented commit alone (syzygy-qkea.24) > refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/start-gates.test.ts > init: every refusal arm (REQ-polaris-generation-033 scenarios \"Clone at an unconsented revision\" and the governed arms) > refuses when the signed registry entry names another implementation or no implementation version",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/start-gates.test.ts > preflight > reports D9 and the RFC7-20 reading established once the sitting's acts bind their records, and only while the bound bytes hold",
+    "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts > the live verification test, and every module it imports, runs no observed code > the tree check refuses execFileSync('git', ['-c', 'alias.probe=!touch x', 'probe']);",
+    "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/test-artifact-verification.test.ts > parseJUnitRootTotals > scans one tag body that is a single word run at the ceiling in linear time"
    ],
    "errorLines": [
+    "AssertionError: expected 2070.909331 to be less than 2000",
+    "Error: Hook timed out in 10000ms.",
     "Error: Test timed out in 5000ms."
    ],
    "left": {
     "entries": 3,
     "fixtureDirectories": 0,
     "byKind": {
-     ".com.google.Chrome.HZviiw": 1,
+     ".com.google.Chrome.sdJScC": 1,
      "dossier-signoff-XXXXXX-outside-RAW.md": 1,
      "node-compile-cache": 1
     }
@@ -487,82 +757,78 @@
     "filesSkipped": 1,
     "filesFailed": 0
    },
-   "otherAttempts": [
-    {
-     "commit": "caef076a (the merged head), default worker count",
-     "log": "vitest-full-caef076a-attempt-1.log",
-     "summary": [
-      "Test Files  5 failed | 227 passed | 3 skipped (235)",
-      "Tests  13 failed | 5087 passed | 5 skipped (5105)",
-      "Duration  333.77s (transform 31.09s, setup 7.44s, collect 172.17s, tests 1560.04s, environment 146ms, prepare 70.24s)"
-     ],
-     "failed": [
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > is read from the recorder's act: version 2 supersedes version 1 once in force",
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > leaves version 1 standing before the version 2 act takes effect, and with no version 1 act at all",
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > refuses when version 2 did not take effect strictly after version 1: the same instant, or earlier",
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > the RFC5-14 class amendment version 2 depends on > is required: no record, an edited module, a wrong form, or an amendment later than version 2 all refuse",
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the drawer record's basename",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the drawer's Subject on a field line",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the installed entry's basename",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > carry no act for a statement whose record names another agent tool, even under an act",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > rendered-design review (S9b) > records and refuses a design verdict with the authoring session's identifier, which never counts",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > session-prompt --tool and the session pair's statement > refuses a fidelity, a design and an inventory session when the codex statement takes effect after now, and writes nothing",
-      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > session-prompt --tool and the session pair's statement > refuses a fidelity, a design and an inventory session when the codex statement lists only code-content, and writes nothing",
-      "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts > the live verification test, and every module it imports, runs no observed code > the tree check refuses execFileSync('git', ['probe'], { env: { GIT_CONFIG_GLOBAL: '/tmp/cfg' }, encoding: 'utf8' });"
-     ],
-     "errorLines": [
-      "Error: Test timed out in 5000ms."
-     ]
-    },
-    {
-     "commit": "d59d76c3 (before the merge of 4b31531c), default worker count",
-     "log": "vitest-full-d59d76c3-timeout.log",
-     "summary": [
-      "Test Files  1 failed | 229 passed | 3 skipped (233)",
-      "Tests  1 failed | 5022 passed | 5 skipped (5028)",
-      "Duration  263.70s (transform 29.66s, setup 7.32s, collect 154.11s, tests 1180.56s, environment 115ms, prepare 62.15s)"
-     ],
-     "failed": [
-      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant"
-     ],
-     "errorLines": [
-      "Error: Test timed out in 5000ms."
-     ]
-    },
-    {
-     "commit": "d59d76c3 (before that merge), default worker count",
-     "log": "vitest-full-d59d76c3-green.log",
-     "summary": [
-      "Test Files  230 passed | 3 skipped (233)",
-      "Tests  5023 passed | 5 skipped (5028)",
-      "Duration  311.79s (transform 28.65s, setup 7.50s, collect 151.46s, tests 1476.35s, environment 142ms, prepare 64.51s)"
-     ],
-     "failed": [],
-     "errorLines": []
-    }
-   ],
    "rerunAlone": {
-    "theFiveFilesOfTheFirstMergedHeadAttempt": {
-     "command": "npx vitest run <the five files> (default timeouts)",
-     "passed": 593,
-     "failed": 1,
+    "files": "packages/polaris-dossier/src/gate-acts.test.ts packages/polaris-dossier/src/render.test.ts packages/polaris-dossier/src/screen.test.ts packages/polaris-dossier/src/start-gates.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+    "defaultTimeouts": {
+     "command": "npx vitest run <the failed files together> (default timeouts)",
+     "passed": 734,
+     "failed": 49,
      "files": {
+      "act-families.test.ts": "failed",
       "package-reader.test.ts": "failed",
+      "gate-acts.test.ts": "failed",
+      "render.test.ts": "failed",
+      "screen.test.ts": "failed",
+      "start-gates.test.ts": "failed",
+      "test-artifact-verification-live-source.test.ts": "failed",
+      "test-artifact-verification.test.ts": "passed"
+     },
+     "failureErrorLines": [
+      "Error: STACK_TRACE_ERROR"
+     ]
+    },
+    "timeoutsLifted": {
+     "command": "npx vitest run <the failed files together> --testTimeout=120000 --hookTimeout=120000",
+     "passed": 783,
+     "failed": 0,
+     "files": {
+      "act-families.test.ts": "failed",
+      "package-reader.test.ts": "passed",
       "gate-acts.test.ts": "passed",
       "render.test.ts": "passed",
-      "review.test.ts": "passed",
-      "test-artifact-verification-live-source.test.ts": "passed"
-     }
+      "screen.test.ts": "passed",
+      "start-gates.test.ts": "passed",
+      "test-artifact-verification-live-source.test.ts": "passed",
+      "test-artifact-verification.test.ts": "passed"
+     },
+     "failureErrorLines": []
     },
-    "theFileThatStillFailed": {
-     "command": "npx vitest run packages/polaris-generation-consent/src/package-reader.test.ts --testTimeout=120000",
-     "passed": 299,
-     "failed": 0,
-     "durationMsOfTheTimedOutTest": 5314.106928000008
+    "actFamilies": {
+     "runs": {
+      "alternating-1-branch-3f08143c": "hook timed out (10 s), 65 skipped",
+      "alternating-1-main-a0406967": "hook timed out (10 s), 65 skipped",
+      "alternating-2-branch-3f08143c": "hook timed out (10 s), 65 skipped",
+      "alternating-2-main-a0406967": "hook timed out (10 s), 65 skipped",
+      "alternating-3-branch-3f08143c": "passed (65 tests)",
+      "alternating-3-main-a0406967": "passed (65 tests)",
+      "branch-3f08143c-main-config-run-1": "hook timed out (10 s), 65 skipped",
+      "branch-3f08143c-main-config-run-2": "hook timed out (10 s), 65 skipped",
+      "branch-3f08143c-run-1": "hook timed out (10 s), 65 skipped",
+      "branch-3f08143c-run-2": "hook timed out (10 s), 65 skipped",
+      "branch-3f08143c-run-3": "hook timed out (10 s), 65 skipped",
+      "branch-3f08143c-run-4": "hook timed out (10 s), 65 skipped",
+      "branch-aa9c7b54": "hook timed out (10 s), 65 skipped",
+      "branch-c42e659d": "hook timed out (10 s), 65 skipped",
+      "main-a0406967-run-1": "passed (65 tests)",
+      "main-a0406967-run-2": "passed (65 tests)",
+      "main-a0406967-run-3": "hook timed out (10 s), 65 skipped"
+     },
+     "alternating": {
+      "mainA0406967": [
+       "hook timed out (10 s), 65 skipped",
+       "hook timed out (10 s), 65 skipped",
+       "passed (65 tests)"
+      ],
+      "branch3f08143c": [
+       "hook timed out (10 s), 65 skipped",
+       "hook timed out (10 s), 65 skipped",
+       "passed (65 tests)"
+      ]
+     },
+     "file": "packages/polaris-generation-consent/src/act-families.test.ts",
+     "why": "its beforeAll renders each act record by spawning python3 (recorder-fixtures.testkit.ts, spawnSync) several times in a hook with a 10 s limit; one python3 import of the recorder took 1.9 s and 2.7 s wall in this session [Observed: time], so the hook passes or times out with the host load. It passes or fails alike on main a0406967 (alternating runs) and on this branch [Observed: runs]; the change adds a global setup to the app project only, which this file's project does not load [Inferred: from the config pin test and the diff]."
     }
-   },
-   "note": "every failure in these runs is vitest's 5 s default test timeout [Observed: the error lines] under machine load averaging about 30 to 55 on a shared host [Observed: uptime between runs], in packages that do not use the fixture helper. The merged head's app project has no failing file in this run. The commit before the merge was green on its full run (otherAttempts, third entry)."
+   }
   },
   "typecheck": {
    "command": "npm run typecheck",
@@ -582,9 +848,9 @@
  },
  "otherLeakSeen": {
   "where": "packages/polaris-dossier/src/waiting-sessions.test.ts:276",
-  "what": "writes <tmpdir>/dossier-signoff-XXXXXX-outside-RAW.md beside its temporary directory and never removes it; found in the full-run TMPDIR listing",
+  "what": "writes <tmpdir>/dossier-signoff-XXXXXX-outside-RAW.md beside its temporary directory and never removes it; found in the full-run TMPDIR listing. Filed by the coordinator as syzygy-bpyt.4.12",
   "left": {
-   ".com.google.Chrome.HZviiw": 1,
+   ".com.google.Chrome.sdJScC": 1,
    "dossier-signoff-XXXXXX-outside-RAW.md": 1,
    "node-compile-cache": 1
   }

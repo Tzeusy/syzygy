@@ -1,23 +1,24 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+ "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
  "mode": "clean",
+ "signal": null,
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
   "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
- "minCopiesBeforeKill": 3,
+ "minCopiesBeforeSignal": 3,
  "freshRun": {
   "exit": 1,
-  "seconds": 244.4,
+  "seconds": 551.1,
   "numTotalTestSuites": 263,
-  "numPassedTests": 1104,
-  "numFailedTests": 2,
+  "numPassedTests": 1108,
+  "numFailedTests": 3,
   "numPendingTests": 2,
-  "numTotalTests": 1108,
+  "numTotalTests": 1113,
   "success": false,
   "testFiles": 90,
-  "testFilesFailed": 2,
+  "testFilesFailed": 3,
   "failing": [
    {
     "file": "three-surface-poc/src/build-output.test.ts",
@@ -25,9 +26,14 @@
     "firstErrorLine": "Error: STACK_TRACE_ERROR"
    },
    {
-    "file": "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
-    "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
-    "firstErrorLine": "Error: Command failed: npm ci"
+    "file": "three-surface-poc/src/polaris-copy.test.ts",
+    "test": "Polaris copy roles (PWB-REQ-012) keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-narrative.test.ts",
+    "test": "Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9) classifies every narrative unit with exactly one role and marks it a non-citable presentation artifact",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
    }
   ],
   "left": {
@@ -46,10 +52,8 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 3
+   "otherEntries": 6
   }
  },
- "processesStillNamingThisTmpdir": [
-  247271
- ]
+ "processesStillNamingThisTmpdir": []
 }

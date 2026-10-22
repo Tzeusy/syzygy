@@ -1,18 +1,14 @@
 {
  "tool": "leak_by_file.py",
- "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+ "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
  "project": "@syzygy/three-surface-poc-app",
  "testFilesInDirectory": 90,
- "fixtureUsingTestFiles": 43,
+ "fixtureUsingTestFiles": 44,
  "filesWithCopiesLeft": 0,
  "filesWithTemplatesLeft": 0,
  "copiesLeftTotal": 0,
  "templatesLeftTotal": 0,
- "nonzeroExits": [
-  "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-  "apps/three-surface-poc/src/test-model-fixture.test.ts",
-  "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
- ],
+ "nonzeroExits": [],
  "results": [
   {
    "file": "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
@@ -42,6 +38,17 @@
    "summary": [
     "Test Files  1 passed (1)",
     "Tests  6 passed (6)"
+   ],
+   "templatesLeft": 0,
+   "copiesLeft": 0,
+   "otherEntriesLeft": 1
+  },
+  {
+   "file": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  14 passed (14)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -144,14 +151,14 @@
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
-   "otherEntriesLeft": 1
+   "otherEntriesLeft": 2
   },
   {
    "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-   "exit": 1,
+   "exit": 0,
    "summary": [
-    "Test Files  1 failed (1)",
-    "Tests  1 failed | 4 passed (5)"
+    "Test Files  1 passed (1)",
+    "Tests  5 passed (5)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -412,10 +419,10 @@
   },
   {
    "file": "apps/three-surface-poc/src/test-model-fixture.test.ts",
-   "exit": 1,
+   "exit": 0,
    "summary": [
-    "Test Files  1 failed (1)",
-    "Tests  1 failed | 4 passed (5)"
+    "Test Files  1 passed (1)",
+    "Tests  5 passed (5)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -423,14 +430,14 @@
   },
   {
    "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
-   "exit": 1,
+   "exit": 0,
    "summary": [
-    "Test Files  1 failed (1)",
-    "Tests  2 failed (2)"
+    "Test Files  1 passed (1)",
+    "Tests  2 passed (2)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
-   "otherEntriesLeft": 2
+   "otherEntriesLeft": 1
   },
   {
    "file": "apps/three-surface-poc/src/trajectory.test.ts",

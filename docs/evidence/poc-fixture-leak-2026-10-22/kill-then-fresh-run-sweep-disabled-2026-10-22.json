@@ -1,18 +1,19 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+ "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
  "mode": "mutant",
+ "signal": "SIGKILL",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
   "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
- "minCopiesBeforeKill": 3,
+ "minCopiesBeforeSignal": 3,
  "killedRun": {
   "signal": "SIGKILL",
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
-  "atKill": {
-   "secondsIntoTheRun": 16.8,
+  "atSignal": {
+   "secondsIntoTheRun": 66.1,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -28,17 +29,17 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 14
+   "otherEntries": 13
   },
-  "fiveSecondsAfterKill": {
+  "fiveSecondsAfterSignal": {
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 5,
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     458382,
-     458394
+     2250420,
+     2250562
     ]
    },
    "ofLiveProcesses": {
@@ -49,7 +50,7 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 14
+   "otherEntries": 13
   }
  },
  "mutant": {
@@ -60,20 +61,55 @@
  },
  "freshRun": {
   "exit": 1,
-  "seconds": 214.8,
+  "seconds": 463.7,
   "numTotalTestSuites": 263,
-  "numPassedTests": 1105,
-  "numFailedTests": 1,
+  "numPassedTests": 1103,
+  "numFailedTests": 8,
   "numPendingTests": 2,
-  "numTotalTests": 1108,
+  "numTotalTests": 1113,
   "success": false,
   "testFiles": 90,
-  "testFilesFailed": 1,
+  "testFilesFailed": 5,
   "failing": [
+   {
+    "file": "three-surface-poc/src/build-output.test.ts",
+    "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
    {
     "file": "three-surface-poc/src/fixture-directories.test.ts",
     "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) is registered as a global setup of the app project and of no other project, so it runs once per run",
     "firstErrorLine": "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+    "test": "PWB-REQ-016 names and headings in a real browser fails each falsifier limb in the browser",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+    "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
    }
   ],
   "left": {
@@ -83,8 +119,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     458382,
-     458394
+     2250420,
+     2250562
     ]
    },
    "ofLiveProcesses": {
@@ -95,17 +131,15 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 18
+   "otherEntries": 23
   }
  },
  "processesStillNamingThisTmpdir": [
-  459830,
-  459835,
-  459837,
-  459866,
-  459909,
-  459911,
-  3659543,
-  3659583
+  2254680,
+  2254703,
+  2254732,
+  2254762,
+  2254837,
+  2254869
  ]
 }
