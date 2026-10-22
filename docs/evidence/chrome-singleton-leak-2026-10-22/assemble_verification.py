@@ -48,7 +48,7 @@ digests = {name: hashlib.sha256((evidence / name).read_bytes()).hexdigest() for 
 
 probe_h, probe_b = load('launch-probe-head')['summary'], load('launch-probe-base')['summary']
 names, matrix_pre, matrix_head = load('chrome-names'), load('chrome-matrix-pre-fix'), load('chrome-matrix-head')
-clean_line = lambda line: re.sub(r'\x1b\[[0-9;]*m', '', line.split('Z ', 1)[-1]).strip()  # the log's timestamp and colour codes off
+clean_line = lambda line: re.sub(r'(?:\x1b|\^)\[\[?[0-9;]*m', '', line.split('Z ', 1)[-1]).strip()  # the log's timestamp and colour codes off
 hosted_log = (scratch / 'ci-failed.log').read_text().splitlines() if (scratch / 'ci-failed.log').exists() else []
 hosted_full = (scratch / 'ci-full.log').read_text().splitlines() if (scratch / 'ci-full.log').exists() else []
 hosted_after = (scratch / 'ci-after.log').read_text().splitlines() if (scratch / 'ci-after.log').exists() else []
