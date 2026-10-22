@@ -464,7 +464,16 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       '--window-size=1280,2000',
       'about:blank',
     ],
-    { stdio: ['ignore', 'ignore', 'pipe'], detached: true },
+    {
+      stdio: ['ignore', 'ignore', 'pipe'],
+      detached: true,
+      // Chrome makes the directory of its process singleton's socket in the temp
+      // directory (`.com.google.Chrome.<random>`, linked from the profile) and
+      // removes it only on a clean exit; the SIGKILL of closeDisposableBrowser
+      // leaves it. With the temp directory set to the profile, that directory is
+      // made inside the profile and goes with it (syzygy-bpyt.4.11).
+      env: { ...process.env, TMPDIR: profile },
+    },
   );
   let group: PrivateBrowserGroup;
   try { group = privateBrowserGroup(child); }

@@ -6,7 +6,13 @@
 // deterministic: it cannot exit on its own, so close() succeeds only if
 // teardown stops the whole private group. Without a browser the suite is
 // skipped, never passed.
-import { readdirSync, readFileSync } from 'node:fs';
+//
+// syzygy-bpyt.4.11: the same kill leaves Chrome's singleton directory behind. Chrome makes
+// `.com.google.Chrome.<random>` in its temp directory and removes it only on a clean exit,
+// so a killed leader left one in TMPDIR on every such run. The launch now gives Chrome its
+// profile as the temp directory, so that directory is made inside the profile.
+import { existsSync, readdirSync, readFileSync, readlinkSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -31,6 +37,21 @@ function ownNetworkHelpers(): number[] {
   });
 }
 
+/** The profile of the Chrome this process launched, read from its leader's command line:
+ * the one child of this process that carries `--user-data-dir`. */
+function ownProfile(): string {
+  const profiles = readdirSync('/proc').filter((name) => /^\d+$/.test(name)).map(Number).flatMap((pid) => {
+    try {
+      if (Number(stat(pid)[1]) !== process.pid) return [];
+      // Chrome rewrites its argv into one field, so the argument is matched in the whole line.
+      const argument = /--user-data-dir=(.*?)(?= --|\0|$)/.exec(readFileSync(`/proc/${pid}/cmdline`, 'utf8'));
+      return argument === null ? [] : [argument[1] as string];
+    } catch { return []; }
+  });
+  expect(profiles).toHaveLength(1);
+  return profiles[0] as string;
+}
+
 function alive(pid: number): boolean {
   try { return !/\) [ZX] /.test(readFileSync(`/proc/${pid}/stat`, 'utf8')); } catch { return false; }
 }
@@ -53,6 +74,34 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
     } finally {
       for (const pid of frozen.filter(alive)) process.kill(pid, 'SIGKILL');
       // A failure before close() would otherwise leak this browser.
+      if (!closeAttempted) await browser.close().catch(() => undefined);
+    }
+  }, 60_000);
+
+  it('leaves no Chrome singleton directory behind when the leader is killed, because it is made inside the profile', async () => {
+    const browser = await launchBrowser(executable as string);
+    let frozen: number[] = [];
+    let closeAttempted = false;
+    try {
+      const page = await browser.newPage();
+      await page.navigate('data:text/html,<p>singleton</p>');
+      const profile = ownProfile();
+      // Chrome links the profile to the directory of its singleton socket; that directory exists
+      // now and sits inside the profile, not beside it in the shared temp directory.
+      const singleton = dirname(readlinkSync(join(profile, 'SingletonSocket')));
+      expect(existsSync(singleton)).toBe(true);
+      expect(dirname(singleton)).toBe(profile);
+      // As in the case above, a helper that cannot exit makes the leader miss its close grace
+      // and be killed, which is the exit that skips Chrome's own cleanup.
+      frozen = ownNetworkHelpers();
+      expect(frozen).toHaveLength(1);
+      for (const pid of frozen) process.kill(pid, 'SIGSTOP');
+      closeAttempted = true;
+      await expect(browser.close()).resolves.toBeUndefined();
+      expect(existsSync(singleton)).toBe(false);
+      expect(existsSync(profile)).toBe(false);
+    } finally {
+      for (const pid of frozen.filter(alive)) process.kill(pid, 'SIGKILL');
       if (!closeAttempted) await browser.close().catch(() => undefined);
     }
   }, 60_000);
