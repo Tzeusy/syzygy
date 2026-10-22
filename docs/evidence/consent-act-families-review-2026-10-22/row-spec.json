@@ -1,0 +1,181 @@
+{
+ "project": "@syzygy/polaris-generation-consent",
+ "mutants": [
+  {
+   "id": "rv-pol-v1-spread",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-${date}`,\n  ...APPROVE_POLICY,\n",
+   "new": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-${date}`,\n",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v2-spread",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-${date}`,\n  ...APPROVE_POLICY,\n",
+   "new": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-${date}`,\n",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v4-spread",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-APPROVAL-${date}`,\n  ...APPROVE_POLICY,\n",
+   "new": "  identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-APPROVAL-${date}`,\n",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v1-identity",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "PUBLIC-SOURCE-SCOPE-APPROVAL-${date}`",
+   "new": "PUBLIC-SOURCE-SCOPE-APPROVED-${date}`",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v2-identity",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "PUBLIC-SOURCE-SCOPE-V2-APPROVAL-${date}`",
+   "new": "PUBLIC-SOURCE-SCOPE-V2-APPROVED-${date}`",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v3-identity",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "PUBLIC-SOURCE-SCOPE-V3-APPROVAL-${date}`",
+   "new": "PUBLIC-SOURCE-SCOPE-V3-APPROVED-${date}`",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-pol-v4-title",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "(public-source screening scope, version 4)'",
+   "new": "(public-source screening scope, version 4 )'",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-adm-requests-type",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "title: '# Owner act — psf/requests public-repository observation consent', type: 'consent-observation'",
+   "new": "title: '# Owner act — psf/requests public-repository observation consent', type: 'consent-egress'",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-adm-egress-v1-identity",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "identity: d => `PUBLIC-EGRESS-ANTHROPIC-${d}`",
+   "new": "identity: d => `PUBLIC-EGRESS-ANTHROPIC-X-${d}`",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-adm-egress-v2-version",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "artifact: EGRESS_V2_INSTANCE, version: 2 }",
+   "new": "artifact: EGRESS_V2_INSTANCE, version: 1 }",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-adm-egress-v2-title",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "'# Owner act — public-target egress consent to Anthropic, version 2'",
+   "new": "'# Owner act — public-target egress consent to Anthropic, v2'",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-family-policy-forms",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "forms: POLICY_ACT_FORMS,",
+   "new": "forms: POLICY_ACT_FORMS.slice(0, 3),",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-family-admission-forms",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "forms: ADMISSION_ACT_FORMS,",
+   "new": "forms: ADMISSION_ACT_FORMS.slice(1),",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-family-class-forms",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "forms: [CLASS_ACT_FORM],",
+   "new": "forms: [],",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-family-class-dialect",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const act = parseActRecord(record.text, record.form, CLASS_FAMILY.dialect);",
+   "new": "const act = parseActRecord(record.text, record.form, RECORDER_DIALECT);",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  },
+  {
+   "id": "rv-family-policy-dialect",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "parsed[POLICY_ACT_FORMS.indexOf(form)] = parseActRecord(text, form, POLICY_FAMILY.dialect);",
+   "new": "parsed[POLICY_ACT_FORMS.indexOf(form)] = parseActRecord(text, form, RECORDER_DIALECT);",
+   "tests": [
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+   ]
+  }
+ ]
+}
