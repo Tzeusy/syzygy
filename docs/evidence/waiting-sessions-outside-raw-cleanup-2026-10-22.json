@@ -1,0 +1,152 @@
+{
+  "title": "syzygy-bpyt.4.12: the review-path row of waiting-sessions.test.ts leaves no file in TMPDIR, and still kills its mutant",
+  "bead": "syzygy-bpyt.4.12",
+  "subject": [
+    "packages/polaris-dossier/src/waiting-sessions.test.ts"
+  ],
+  "testSha256": {
+    "base": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+    "fix": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853"
+  },
+  "readerSha256": "a72090179eb44ac5c6b349edcdbcf74dbc6be68173c54be57ba2d11e63833e9b",
+  "base": "4b31531c0f7c687bac01d15d0d54eb8bfda80f00",
+  "commit": "73772882d31c9be10c7dfb472092675f7fccc105",
+  "command": "TMPDIR=<fresh empty dir> CI=1 npx vitest run --project @syzygy/polaris-dossier --reporter=json --outputFile=<scratch>/vitest.json packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "namesCommand": "TMPDIR=<fresh empty dir> CI=1 npx vitest list --project @syzygy/polaris-dossier --json=<scratch>/list.json packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "timeoutSeconds": 600,
+  "strayPrefix": "dossier-signoff-",
+  "testNames": {
+    "base": 116,
+    "fix": 116,
+    "added": [],
+    "removed": []
+  },
+  "unmutated": {
+    "base": {
+      "testSha256": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "tmpdir": "t2",
+      "listingBefore": [],
+      "listingAfter": [
+        "dossier-signoff-NZ2hhQ-outside-RAW.md",
+        "node-compile-cache"
+      ],
+      "strayDossierSignoff": {
+        "before": [],
+        "after": [
+          "dossier-signoff-NZ2hhQ-outside-RAW.md"
+        ]
+      }
+    },
+    "fix": {
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "tmpdir": "t5",
+      "listingBefore": [],
+      "listingAfter": [
+        "node-compile-cache"
+      ],
+      "strayDossierSignoff": {
+        "before": [],
+        "after": []
+      }
+    }
+  },
+  "mutants": [
+    {
+      "id": "R1-drop-the-review-path-check",
+      "tests": "base",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true,
+      "tmpdir": "t3",
+      "listingBefore": [],
+      "listingAfter": [
+        "dossier-signoff-aBz07Z-outside-RAW.md",
+        "node-compile-cache"
+      ],
+      "strayDossierSignoff": {
+        "before": [],
+        "after": [
+          "dossier-signoff-aBz07Z-outside-RAW.md"
+        ]
+      }
+    },
+    {
+      "id": "R1-drop-the-review-path-check",
+      "tests": "fix",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true,
+      "tmpdir": "t6",
+      "listingBefore": [],
+      "listingAfter": [
+        "node-compile-cache"
+      ],
+      "strayDossierSignoff": {
+        "before": [],
+        "after": []
+      }
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "summary": {
+    "stray after unmutated / base tests": [
+      "dossier-signoff-NZ2hhQ-outside-RAW.md"
+    ],
+    "stray after unmutated / fix tests": [],
+    "R1-drop-the-review-path-check / base tests": "killed",
+    "R1-drop-the-review-path-check / fix tests": "killed"
+  },
+  "harnessSource": "\"\"\"Evidence for syzygy-bpyt.4.12, a test-only change to waiting-sessions.test.ts: the v1.2 gate's review-path row wrote\n`<root>-outside-RAW.md` beside its mkdtemp records root, straight into the temp directory, and nothing removed it. The fix registers\nthe file's removal before writing it.\n\nFor the base test file and the fix's, the file runs alone, each run in a fresh, empty TMPDIR whose full listing is taken before and\nafter (AC1). Then mutant R1, the reader's review-path check dropped (`waiting-sessions.ts`), runs against each side (AC2): the row must\nstill fail when the outside raw is honoured. Test names come from `npx vitest list --json` on each side (AC3).\n\nEach mutant replaces an exact fragment (it must occur exactly once), runs the test file alone in its own process group with vitest's\nJSON reporter, restores the bytes and verifies their digests. Killed: at least one test failed, or the run did not finish within the\ntimeout. Each failed test is stored with the first line of its first failure message.\nUsage: python3 evidence.py <worktree> <base commit> <tmp root> <out.json>\n\"\"\"\nimport hashlib, json, os, signal, subprocess, sys\nfrom pathlib import Path\n\nROOT, BASE, TMP, OUT = Path(sys.argv[1]).resolve(), sys.argv[2], Path(sys.argv[3]).resolve(), Path(sys.argv[4])\nTIMEOUT = 600\nREADER = 'packages/polaris-dossier/src/waiting-sessions.ts'\nTEST = 'packages/polaris-dossier/src/waiting-sessions.test.ts'\nPROJECT = '@syzygy/polaris-dossier'\nSTRAY = 'dossier-signoff-'\n\nMUTANTS = [\n    ('R1-drop-the-review-path-check', [\n        (READER, \"  if (review === undefined || review.split('/').includes('..')) return false;\",\n         \"  if (review === undefined) return false;\")]),\n]\ncounter = iter(range(1, 1000))\n\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\n\ndef fresh_tmpdir():\n    tmp = TMP / f't{next(counter)}'\n    tmp.mkdir(parents=True)\n    return tmp\n\n\ndef listing(tmp):\n    return sorted(os.listdir(tmp))\n\n\ndef run(command, tmp):\n    proc = subprocess.Popen(command, cwd=ROOT, env={**os.environ, 'CI': '1', 'TMPDIR': str(tmp)}, stdout=subprocess.PIPE,\n                            stderr=subprocess.STDOUT, start_new_session=True)\n    try:\n        proc.communicate(timeout=TIMEOUT)\n    except subprocess.TimeoutExpired:\n        os.killpg(proc.pid, signal.SIGKILL)\n        proc.communicate()\n        return None\n    return proc.returncode\n\n\ndef run_suite():\n    tmp = fresh_tmpdir()\n    report = TMP / 'vitest.json'\n    report.unlink(missing_ok=True)\n    before = listing(tmp)\n    code = run(['npx', 'vitest', 'run', '--project', PROJECT, '--reporter=json', f'--outputFile={report}', TEST], tmp)\n    after = listing(tmp)\n    stray = {'before': [n for n in before if n.startswith(STRAY)], 'after': [n for n in after if n.startswith(STRAY)]}\n    tmp_record = {'tmpdir': tmp.name, 'listingBefore': before, 'listingAfter': after, 'strayDossierSignoff': stray}\n    if code is None or not report.exists():\n        return code, None, [], tmp_record\n    data = json.loads(report.read_text())\n    failed = [{'test': test['fullName'],\n               'firstErrorLine': next((line for message in test['failureMessages'] for line in message.splitlines() if line.strip()), None)}\n              for file in data['testResults'] for test in file['assertionResults'] if test['status'] == 'failed']\n    return code, {k: data[k] for k in ('numTotalTests', 'numPassedTests', 'numFailedTests')}, failed, tmp_record\n\n\ndef test_names():\n    tmp = fresh_tmpdir()\n    out = TMP / 'list.json'\n    out.unlink(missing_ok=True)\n    code = run(['npx', 'vitest', 'list', '--project', PROJECT, f'--json={out}', TEST], tmp)\n    assert code == 0, code\n    return sorted(entry['name'] for entry in json.loads(out.read_text()))\n\n\ndef main():\n    assert git('status', '--porcelain', '--untracked-files=no') == ''\n    tests = {'base': git('show', f'{BASE}:{TEST}').encode('utf8'), 'fix': (ROOT / TEST).read_bytes()}\n    originals = {READER: (ROOT / READER).read_bytes(), TEST: tests['fix']}\n    assert git('show', f'{BASE}:{READER}').encode('utf8') == originals[READER], 'the reader differs between the base and the fix'\n    unmutated, names, results = {}, {}, []\n    try:\n        for side, test_bytes in tests.items():\n            (ROOT / TEST).write_bytes(test_bytes)\n            names[side] = test_names()\n            code, counts, failed, tmp_record = run_suite()\n            unmutated[side] = {'testSha256': sha(test_bytes), 'exitCode': code, 'counts': counts, 'failedTests': failed, **tmp_record}\n            print('unmutated', side, counts, tmp_record['strayDossierSignoff'], flush=True)\n            for mutant_id, edits in MUTANTS:\n                current = {READER: originals[READER].decode('utf8'), TEST: test_bytes.decode('utf8')}\n                for file, old, new in edits:\n                    assert current[file].count(old) == 1, (mutant_id, side, old)\n                    current[file] = current[file].replace(old, new)\n                for file in current:\n                    (ROOT / file).write_bytes(current[file].encode('utf8'))\n                try:\n                    code, counts, failed, tmp_record = run_suite()\n                finally:\n                    (ROOT / READER).write_bytes(originals[READER])\n                    (ROOT / TEST).write_bytes(test_bytes)\n                blocked = code is None\n                results.append({'id': mutant_id, 'tests': side, 'edits': [{'file': f, 'old': o, 'new': n} for f, o, n in edits],\n                                'exitCode': code, 'counts': counts, 'failedTests': failed, 'blocked': blocked,\n                                'outcome': 'killed' if blocked or (code != 0 and failed) else 'survived',\n                                'restored': sha((ROOT / READER).read_bytes()) == sha(originals[READER]), **tmp_record})\n                print(mutant_id, side, results[-1]['outcome'], counts, flush=True)\n    finally:\n        for file, data in originals.items():\n            (ROOT / file).write_bytes(data)\n    added = sorted(set(names['fix']) - set(names['base']))\n    removed = sorted(set(names['base']) - set(names['fix']))\n    record = {\n        'title': 'syzygy-bpyt.4.12: the review-path row of waiting-sessions.test.ts leaves no file in TMPDIR, and still kills its mutant',\n        'bead': 'syzygy-bpyt.4.12', 'subject': [TEST], 'testSha256': {side: sha(data) for side, data in tests.items()},\n        'readerSha256': sha(originals[READER]), 'base': git('rev-parse', BASE).strip(), 'commit': git('rev-parse', 'HEAD').strip(),\n        'command': f'TMPDIR=<fresh empty dir> CI=1 npx vitest run --project {PROJECT} --reporter=json --outputFile=<scratch>/vitest.json {TEST}',\n        'namesCommand': f'TMPDIR=<fresh empty dir> CI=1 npx vitest list --project {PROJECT} --json=<scratch>/list.json {TEST}',\n        'timeoutSeconds': TIMEOUT, 'strayPrefix': STRAY,\n        'testNames': {'base': len(names['base']), 'fix': len(names['fix']), 'added': added, 'removed': removed},\n        'unmutated': unmutated, 'mutants': results,\n        'trackedTreeCleanAfter': git('status', '--porcelain', '--untracked-files=no') == '',\n        'summary': {\n            **{f'stray after unmutated / {side} tests': unmutated[side]['strayDossierSignoff']['after'] for side in tests},\n            **{f'{m} / {side} tests': next(r['outcome'] for r in results if r['id'] == m and r['tests'] == side) for m, _ in MUTANTS for side in tests},\n        },\n        'harnessSource': Path(__file__).read_text(),\n    }\n    OUT.write_text(json.dumps(record, indent=2) + '\\n')\n    print('summary', json.dumps(record['summary'], indent=1))\n\n\nmain()\n"
+}
