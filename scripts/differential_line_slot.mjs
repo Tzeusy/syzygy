@@ -4,7 +4,7 @@
 //
 //   (in each tree) npm ci && npx tsc -b packages/polaris-generation-consent packages/polaris-dossier
 //   node scripts/differential_line_slot.mjs --old <tree> --new <tree> --out <file.json> [--change line-slot|label-row]
-//        [--mutant <file.json>] [--workers <n>] [--count]
+//        [--mutant <file.json>] [--templates-only] [--workers <n>] [--count]
 //
 // `--old` and `--new` are two Syzygy checkouts with those packages built. With `--change line-slot` (the default, syzygy-bpyt.8.17)
 // they are the base, whose `SLOT.line` is `[^\r\n]*\S[^\r\n]*`, and the change, whose `SLOT.line` is `[^\S\r\n]*\S[^\r\n]*`. With
@@ -12,7 +12,8 @@
 // two line slots as two plain groups, the change reads it once. The script refuses a pair whose loaded modules carry other patterns,
 // whose recorder-template.ts the change does not alter, or whose dossier package resolves the consent package outside its own tree.
 // `--mutant` names a JSON file ({ id, file, old, new, note }) describing a rule-6 mutant applied in `--new`, for a negative-control
-// run: the script checks that `--new`'s file holds the mutant's `new` fragment and copies the description into the record. Every template the consent and dossier packages export (found
+// run: the script checks that `--new`'s file holds the mutant's `new` fragment and copies the description into the record.
+// `--templates-only` drops the reader worlds (a negative control needs only to show that the template answers can differ). Every template the consent and dossier packages export (found
 // by walking their exports for a `fields` and `render` pair) and every reader that applies one run from both trees' compiled packages
 // over the same inputs, and the two answers are compared as text: the answer's JSON, or the error the read throws.
 //
@@ -31,8 +32,10 @@
 // - slots (`--change label-row` only): each subject record re-rendered by its own template (from `--old`) with one line slot (opening,
 //   label, description, quote, review or disposition, wherever the template has it) replaced by each of `SLOT_VARIANTS`: holding the
 //   label row's separator `" | "` once, three times, first or last, holding the closing mark `" |`, starting with a space, a tab or an
-//   ideographic space, blank, spaces only, ending with a space, or holding a CR. Each is read by every template and, as a world with that
-//   subject so altered, by every reader.
+//   ideographic space, blank, spaces only, ending with a space, or holding a CR. Each is read by every template. The label row's two
+//   slots altered by `WORLD_VARIANTS` (the separator once and three times, a leading space, blank) are also read by every reader, as a
+//   world with that subject so altered: a reader world costs about a minute per tree on a loaded host, against milliseconds for a
+//   template input.
 // The output names each tree's commit, the sha256 of its recorder-template.ts and compiled recorder-template.js, and the line pattern
 // its loaded module carries; counts the inputs and the distinct answers; counts the decisions files walked against those tracked at
 // `--old`'s commit, and the inputs and worlds per alteration kind; times each input in each tree; and lists every answer that differs
@@ -79,6 +82,9 @@ const SLOT_VARIANTS = [
   ['space-last', v => `${v} `],
   ['cr-inside', v => `${v}\r${v}`],
 ];
+/** The slot alterations read by every reader too, on the label row's slots only. */
+const WORLD_SLOTS = ['label', 'description'];
+const WORLD_VARIANTS = ['separator-inside', 'separators-inside', 'space-first', 'blank'];
 
 /** A reader file system over `root` whose files in `overlay` (repository-relative path to text) read as given; added files are listed. */
 function overlayFs(root, overlay) {
@@ -203,6 +209,7 @@ async function main(argv) {
   const arg = flag => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
   const oldTree = arg('--old'), newTree = arg('--new'), out = arg('--out'), change = arg('--change') ?? 'line-slot';
   const mutant = arg('--mutant') === undefined ? null : JSON.parse(fs.readFileSync(arg('--mutant'), 'utf8'));
+  const templatesOnly = argv.includes('--templates-only');
   if (oldTree === undefined || newTree === undefined || (out === undefined && !argv.includes('--count')) || !['line-slot', 'label-row'].includes(change)) {
     process.stderr.write('usage: node scripts/differential_line_slot.mjs --old <tree> --new <tree> --out <file.json> [--change line-slot|label-row] [--mutant <file.json>] [--workers <n>] [--count]\n');
     return 2;
@@ -279,7 +286,7 @@ async function main(argv) {
           const altered = template.render({ ...fields, [name]: alter(fields[name]) });
           if (seen.has(altered)) continue;
           seen.add(altered);
-          slotAltered.push([rel, `slot:${name}:${variant}`, altered]);
+          slotAltered.push([rel, `slot:${name}:${variant}`, altered, WORLD_SLOTS.includes(name) && WORLD_VARIANTS.includes(variant)]);
         }
       }
     }
@@ -306,20 +313,22 @@ async function main(argv) {
     }
   }
   for (const [rel, operator, text] of slotAltered) jobs.push({ kind: 'templates', input: 'slot', subject: rel, operator, text });
+  const readerJobs = [];
   // A rendered record is added only to its own worlds and to one base world of its own: added to every world, it could change what
   // the other forms' sweeps read.
-  jobs.push({ kind: 'readers', input: 'world', subject: null, operator: 'checkout', overlay: {} });
-  for (const rel of Object.keys(added)) jobs.push({ kind: 'readers', input: 'world', subject: rel, operator: 'rendered', overlay: { [rel]: added[rel] } });
+  readerJobs.push({ kind: 'readers', input: 'world', subject: null, operator: 'checkout', overlay: {} });
+  for (const rel of Object.keys(added)) readerJobs.push({ kind: 'readers', input: 'world', subject: rel, operator: 'rendered', overlay: { [rel]: added[rel] } });
   for (const rel of subjects) {
     const text = textOf(rel), seen = new Set([text]);
     for (const [name, alter] of NAMED) {
       const altered = alter(text);
       if (seen.has(altered)) continue;
       seen.add(altered);
-      jobs.push({ kind: 'readers', input: 'world', subject: rel, operator: name, overlay: { [rel]: altered } });
+      readerJobs.push({ kind: 'readers', input: 'world', subject: rel, operator: name, overlay: { [rel]: altered } });
     }
   }
-  for (const [rel, operator, text] of slotAltered) jobs.push({ kind: 'readers', input: 'world', subject: rel, operator, overlay: { [rel]: text } });
+  for (const [rel, operator, text, world] of slotAltered) if (world) readerJobs.push({ kind: 'readers', input: 'world', subject: rel, operator, overlay: { [rel]: text } });
+  if (!templatesOnly) jobs.push(...readerJobs);
   const counts = {};
   for (const job of jobs) counts[`${job.kind}:${job.input}`] = (counts[`${job.kind}:${job.input}`] ?? 0) + 1;
   if (argv.includes('--count')) {
@@ -374,7 +383,8 @@ async function main(argv) {
       renderedAdded: Object.keys(added).length,
     },
     inputsByKind: byKind(jobs),
-    ...(change === 'label-row' ? { slotVariants: SLOT_VARIANTS.map(([n]) => n), lineSlots: LINE_SLOTS, slotSubjects } : {}),
+    ...(change === 'label-row' ? { slotVariants: SLOT_VARIANTS.map(([n]) => n), lineSlots: LINE_SLOTS, slotSubjects, readerWorldSlots: WORLD_SLOTS, readerWorldVariants: WORLD_VARIANTS } : {}),
+    scope: templatesOnly ? 'templates only: no reader worlds' : 'templates and reader worlds',
     corpusRoot: 'old',
     alterations: { module: TESTING, tree: 'new', named: NAMED.map(([n]) => n), line: ['append', 'delete'], mark: MARK },
     instants: INSTANTS,
