@@ -16,16 +16,37 @@ whole series.
 import json
 import os
 import pathlib
-import shutil
 import signal
 import subprocess
 import sys
 import time
+import hashlib
+import tempfile
+
+
+def private_directory(path: pathlib.Path) -> pathlib.Path:
+    """This script empties the directory it is given, recursively. Refuse a directory that is, or contains, a shared one
+    (/, the temp directory, $TMPDIR, $HOME) and one that already holds anything this script did not make: whoever
+    re-runs it removes a leftover by hand, after reading it (syzygy-bpyt.4.10, review round 2, N10)."""
+    resolved = path.resolve()
+    shared = [pathlib.Path('/'), pathlib.Path(tempfile.gettempdir()), pathlib.Path(os.environ.get('TMPDIR') or '/tmp'), pathlib.Path.home()]
+    for directory in (d.resolve() for d in shared):
+        if resolved == directory or resolved in directory.parents:
+            raise SystemExit(f'refusing {resolved}: it is, or contains, the shared directory {directory}')
+    if resolved.exists() and (not resolved.is_dir() or any(resolved.iterdir())):
+        raise SystemExit(f'refusing {resolved}: it exists and is not an empty directory')
+    return resolved
+
 
 WT, COMMIT, OUT, TMP = pathlib.Path(sys.argv[1]).resolve(), sys.argv[2], pathlib.Path(sys.argv[3]).resolve(), pathlib.Path(sys.argv[4]).resolve()
 SIGNAL, MIN_COPIES = getattr(signal, 'SIG' + sys.argv[5]), int(sys.argv[6])
 OFFSETS = [0, 2, 5, 10, 20, 40, 80]
-shutil.rmtree(TMP, ignore_errors=True)
+run_git = lambda *a: subprocess.run(['git', *a], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
+assert run_git('rev-parse', 'HEAD') == run_git('rev-parse', COMMIT), 'the worktree must be at <tree-commit>'
+FULL_COMMIT = run_git('rev-parse', 'HEAD')
+CODE = ['apps/three-surface-poc/src/fixture-directories.ts', 'apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts',
+        'apps/three-surface-poc/src/test-model-fixture.ts', 'vitest.config.ts']  # absent in a tree from before the change: recorded as null
+TMP = private_directory(TMP)
 TMP.mkdir(parents=True)
 
 
@@ -73,4 +94,4 @@ for offset in OFFSETS:
     series.append({'secondsAfterSignal': offset, **sample()})
     print(series[-1], flush=True)
 run.wait()
-OUT.write_text(json.dumps({'tool': 'interrupt_probe.py', 'treeCommit': COMMIT, 'signal': sys.argv[5], 'minCopiesBeforeSignal': MIN_COPIES, 'atSignal': at_signal, 'runFinishedBeforeSignal': at_signal is None, 'series': series}, indent=1) + '\n')
+OUT.write_text(json.dumps({'tool': 'interrupt_probe.py', 'treeCommit': FULL_COMMIT, 'sha256AtCommit': {n: (hashlib.sha256((WT / n).read_bytes()).hexdigest() if (WT / n).exists() else None) for n in CODE}, 'signal': sys.argv[5], 'minCopiesBeforeSignal': MIN_COPIES, 'atSignal': at_signal, 'runFinishedBeforeSignal': at_signal is None, 'series': series}, indent=1) + '\n')

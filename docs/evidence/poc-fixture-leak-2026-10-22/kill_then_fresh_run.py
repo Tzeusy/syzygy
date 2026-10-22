@@ -31,6 +31,21 @@ import sys
 import tempfile
 import time
 
+
+def private_directory(path: pathlib.Path) -> pathlib.Path:
+    """This script empties the directory it is given, recursively. Refuse a directory that is, or contains, a shared one
+    (/, the temp directory, $TMPDIR, $HOME) and one that already holds anything this script did not make: whoever
+    re-runs it removes a leftover by hand, after reading it (syzygy-bpyt.4.10, review round 2, N10)."""
+    resolved = path.resolve()
+    shared = [pathlib.Path('/'), pathlib.Path(tempfile.gettempdir()), pathlib.Path(os.environ.get('TMPDIR') or '/tmp'), pathlib.Path.home()]
+    for directory in (d.resolve() for d in shared):
+        if resolved == directory or resolved in directory.parents:
+            raise SystemExit(f'refusing {resolved}: it is, or contains, the shared directory {directory}')
+    if resolved.exists() and (not resolved.is_dir() or any(resolved.iterdir())):
+        raise SystemExit(f'refusing {resolved}: it exists and is not an empty directory')
+    return resolved
+
+
 WT, COMMIT, OUT, TMP, MODE = pathlib.Path(sys.argv[1]).resolve(), sys.argv[2], pathlib.Path(sys.argv[3]).resolve(), pathlib.Path(sys.argv[4]).resolve(), sys.argv[5]
 SIGNAL_NAME = sys.argv[6] if len(sys.argv) > 6 else 'KILL'
 assert MODE in ('clean', 'sweep', 'mutant'), MODE
@@ -38,6 +53,8 @@ assert SIGNAL_NAME in ('KILL', 'TERM'), SIGNAL_NAME
 PROJECT = '@syzygy/three-surface-poc-app'
 SRC = 'vitest.config.ts'
 TREE = ['vitest.config.ts', 'apps/three-surface-poc/src']
+CODE = ['apps/three-surface-poc/src/fixture-directories.ts', 'apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts',
+        'apps/three-surface-poc/src/test-model-fixture.ts', 'vitest.config.ts']  # the files the sweep is made of, hashed into the record
 MIN_COPIES = 3
 PREFIX = 'syzygy-poc-surface-fixture-'
 NAME = re.compile(r'^syzygy-poc-surface-fixture-(template-)?p(\d+)-n(\d+)-')
@@ -47,7 +64,8 @@ MUTANT_NEW = ''
 run_git = lambda *a: subprocess.run(['git', *a], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
 assert run_git('rev-parse', 'HEAD') == COMMIT or run_git('rev-parse', COMMIT) == run_git('rev-parse', 'HEAD'), 'the worktree must be at <tree-commit>'
 assert run_git('status', '--porcelain', '--', *TREE) == '', f'{TREE} must be committed'
-shutil.rmtree(TMP, ignore_errors=True)
+FULL_COMMIT = run_git('rev-parse', 'HEAD')
+TMP = private_directory(TMP)
 TMP.mkdir(parents=True)
 
 
@@ -112,8 +130,8 @@ def summary(report: pathlib.Path) -> dict:
 
 
 scratch = pathlib.Path(tempfile.mkdtemp(prefix='zz-kill-fresh-'))
-record: dict = {'tool': 'kill_then_fresh_run.py', 'treeCommit': COMMIT, 'mode': MODE, 'signal': 'SIG' + SIGNAL_NAME if MODE != 'clean' else None, 'command': f'npx vitest run --project {PROJECT} (TMPDIR=<emptied private directory>)',
-                'sha256AtCommit': {n: hashlib.sha256((WT / n).read_bytes()).hexdigest() for n in (SRC,)}, 'minCopiesBeforeSignal': MIN_COPIES}
+record: dict = {'tool': 'kill_then_fresh_run.py', 'treeCommit': FULL_COMMIT, 'mode': MODE, 'signal': 'SIG' + SIGNAL_NAME if MODE != 'clean' else None, 'command': f'npx vitest run --project {PROJECT} (TMPDIR=<emptied private directory>)',
+                'sha256AtCommit': {n: hashlib.sha256((WT / n).read_bytes()).hexdigest() for n in CODE}, 'minCopiesBeforeSignal': MIN_COPIES}
 original = (WT / SRC).read_text()
 try:
     if MODE != 'clean':

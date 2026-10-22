@@ -7,9 +7,16 @@ Each mutant is a list of (file, old, new) edits to the sources below; the two te
 ALONE under a private TMPDIR (so a mutant that leaks, leaks there and not into a shared /tmp,
 and the app project's global setup sweeps that directory and nothing else), and every edited
 file is restored byte for byte afterwards. A control (the unmutated tree) runs first and must
-pass and leave no fixture directory. A mutant is `killed` when the run exits non-zero. A
-fragment that does not occur exactly once in its file is recorded as FRAGMENT-COUNT-n and never
-guessed.
+pass and leave no fixture directory. A fragment that does not occur exactly once in its file is
+recorded as FRAGMENT-COUNT-n and never guessed.
+
+Host load is not a kill. The host this runs on is loaded (average 60-100), and a test can fail for
+that alone: a time limit, or `closeDisposableBrowser`'s drain. A run is scored `killed` only when a
+failing test has a first error line that is not one of LOAD_SIGNATURES, `SURVIVED` only when it exits
+0, and a run whose every failure is a load failure is run again, up to ATTEMPTS times, then scored
+`INCONCLUSIVE-LOAD`. A run that fails with no failing test (a mutant that does not load) is
+`ERROR-NO-FAILING-TEST`. Every attempt is recorded. The directory argument is emptied recursively,
+so a shared or non-empty directory is refused (review round 2, N10).
 
 Records, per mutant: the edits (old and new fragments), the command, the commit the run was
 made at and every failing test with its first error line (from vitest's JSON reporter). The
@@ -24,7 +31,25 @@ import subprocess
 import sys
 import tempfile
 
-WT, OUT, PRIVATE_TMP = pathlib.Path(sys.argv[1]).resolve(), pathlib.Path(sys.argv[2]).resolve(), pathlib.Path(sys.argv[3]).resolve()
+
+
+def private_directory(path: pathlib.Path) -> pathlib.Path:
+    """This script empties the directory it is given, recursively. Refuse a directory that is, or contains, a shared one
+    (/, the temp directory, $TMPDIR, $HOME) and one that already holds anything this script did not make: whoever
+    re-runs it removes a leftover by hand, after reading it (syzygy-bpyt.4.10, review round 2, N10)."""
+    resolved = path.resolve()
+    shared = [pathlib.Path('/'), pathlib.Path(tempfile.gettempdir()), pathlib.Path(os.environ.get('TMPDIR') or '/tmp'), pathlib.Path.home()]
+    for directory in (d.resolve() for d in shared):
+        if resolved == directory or resolved in directory.parents:
+            raise SystemExit(f'refusing {resolved}: it is, or contains, the shared directory {directory}')
+    if resolved.exists() and (not resolved.is_dir() or any(resolved.iterdir())):
+        raise SystemExit(f'refusing {resolved}: it exists and is not an empty directory')
+    return resolved
+
+
+WT, OUT, PRIVATE_TMP = pathlib.Path(sys.argv[1]).resolve(), pathlib.Path(sys.argv[2]).resolve(), private_directory(pathlib.Path(sys.argv[3]))
+ATTEMPTS = 3
+LOAD_SIGNATURES = ('drain did not verify', 'still held by', 'timed out', 'STACK_TRACE_ERROR')
 FD = 'apps/three-surface-poc/src/fixture-directories.ts'
 GS = 'apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts'
 TM = 'apps/three-surface-poc/src/test-model-fixture.ts'
@@ -68,13 +93,23 @@ MUTANTS = [
     ('tmpdir-read-from-the-variable', 'the default directory is the TMPDIR variable itself, not what the operating system answers for the temp directory',
      [(FD, 'directory: string = tmpdir()', "directory: string = process.env['TMPDIR'] as string")]),
     ('copy-name-without-pid', 'a copy is named as before, with no pid',
-     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}`')]),
+     [(FD, "`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace() ?? '0'}-`", '`${FIXTURE_PREFIX}`')]),
     ('copy-name-without-namespace', 'a copy is named with its pid but not its PID namespace',
-     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}p${process.pid}-`')]),
+     [(FD, "`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace() ?? '0'}-`", '`${FIXTURE_PREFIX}p${process.pid}-`')]),
     ('template-name-without-pid', 'the template is named as before, with no pid',
-     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}template-`')]),
+     [(FD, "`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace() ?? '0'}-`", '`${FIXTURE_PREFIX}template-`')]),
     ('template-name-without-namespace', 'the template is named with its pid but not its PID namespace',
-     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}template-p${process.pid}-`')]),
+     [(FD, "`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace() ?? '0'}-`", '`${FIXTURE_PREFIX}template-p${process.pid}-`')]),
+    ('unreadable-namespace-reads-as-0', 'a namespace that cannot be read is namespace 0, as before review round 2 (F5): every sandbox without /proc reads as one namespace and sweeps the others',
+     [(FD, "  } catch {\n    return undefined;\n  }\n", "  } catch {\n    return '0';\n  }\n")]),
+    ('unparseable-namespace-reads-as-0', 'a link that names no inode is namespace 0 (F5)',
+     [(FD, "readlinkSync('/proc/self/ns/pid'))?.[1];", "readlinkSync('/proc/self/ns/pid'))?.[1] ?? '0';")]),
+    ('unreadable-namespace-still-lists', 'a process that cannot read its namespace lists the directory before it finds nothing to remove (F5: it must return first)',
+     [(FD, '  if (namespace === undefined) return;\n', '')]),
+    ('namespace-prefix-match', 'a name whose namespace is a proper prefix of this one is taken for this namespace\'s own (review round 2, N8)',
+     [(FD, 'owner[2] !== namespace', '!namespace.startsWith(owner[2] as string)')]),
+    ('namespace-extension-match', 'a name whose namespace extends this one is taken for this namespace\'s own (review round 2, N8)',
+     [(FD, 'owner[2] !== namespace', '!(owner[2] as string).startsWith(namespace)')]),
     ('global-setup-does-not-sweep', 'the global setup runs and sweeps nothing',
      [(GS, '  removeFixturesOfDeadProcesses();\n', '')]),
     ('global-setup-not-registered', 'the app project registers no global setup: no sweep at all',
@@ -110,11 +145,32 @@ def vitest() -> tuple[int, int, list[dict], int]:
     return proc.returncode, len(cases), failing, leaked
 
 
+def classify(exit_code: int, failing: list[dict]) -> str:
+    if exit_code == 0:
+        return 'passed'
+    if not failing:
+        return 'no-failing-test'
+    return 'failed' if any(not any(sig in f['firstErrorLine'] for sig in LOAD_SIGNATURES) for f in failing) else 'load'
+
+
+def decide() -> tuple[str, int, int, list[dict], int, list[dict]]:
+    """Runs until the status is not `load`, at most ATTEMPTS times; returns the last run and every attempt."""
+    attempts = []
+    for attempt in range(1, ATTEMPTS + 1):
+        exit_code, total, failing, leaked = vitest()
+        status = classify(exit_code, failing)
+        attempts.append({'attempt': attempt, 'exit': exit_code, 'status': status, 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked})
+        if status != 'load':
+            break
+    return status, exit_code, total, failing, leaked, attempts
+
+
 results = []
 control = {}
 try:
-    exit_code, total, failing, leaked = vitest()
-    control = {'exit': exit_code, 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked, 'holds': exit_code == 0 and total > 0 and leaked == 0}
+    status, exit_code, total, failing, leaked, attempts = decide()
+    control = {'exit': exit_code, 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked, 'attempts': attempts,
+               'holds': exit_code == 0 and total > 0 and leaked == 0}
     print('control', control['holds'], total, leaked, flush=True)
     assert control['holds'], 'the unmutated tree must pass both test files and leave no fixture directory'
     for name, meaning, edits in MUTANTS:
@@ -127,11 +183,12 @@ try:
         try:
             for f, old, new in edits:
                 (WT / f).write_text((WT / f).read_text().replace(old, new, 1))
-            exit_code, total, failing, leaked = vitest()
+            status, exit_code, total, failing, leaked, attempts = decide()
         finally:
             for f in {f for f, _, _ in edits}:
                 (WT / f).write_text(originals[f])
-        results.append(record | {'exit': exit_code, 'outcome': 'killed' if exit_code != 0 else 'SURVIVED', 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked})
+        outcome = {'failed': 'killed', 'passed': 'SURVIVED', 'load': 'INCONCLUSIVE-LOAD', 'no-failing-test': 'ERROR-NO-FAILING-TEST'}[status]
+        results.append(record | {'exit': exit_code, 'outcome': outcome, 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked, 'attempts': attempts})
         print(name, results[-1]['outcome'], len(failing), flush=True)
 finally:
     for name, text in originals.items():
