@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """Move the scratch outputs of the tools in this directory to dated records and write the verification record.
 
-Usage: assemble_verification.py <scratch-out> <evidence-dir> <repo-tree> <base> <code> <first-approach>
+Usage: assemble_verification.py <scratch-out> <evidence-dir> <repo-tree> <base> <code> <first-approach> <hosted-run-after-the-fix> <commit-it-ran-on>
 
 <scratch-out> holds the outputs of launch_probe.py, tmpdir_length_probe.py, launch_failure_probe.py, mutate_cdp.py,
 browser_files_run.py and compare_test_lists.py, and the gate logs (typecheck, governance, quotations, authority).
 <base> is main before this change, <code> the last commit that changes a file under apps/ or vitest.config.ts,
 <first-approach> the commit of the approach dropped for the TMPDIR constraint it added. Every figure in
 verification-2026-10-22.json is read from the copied records or computed from git here, never typed.
+
+The hosted node-ci run 39768592736 failed the real-Chrome case on the leading dot of the directory name (the runner's
+Chrome 155 names it without one). <scratch-out> also holds the records of the repair: chrome-names.json (name_probe.py),
+chrome-matrix-pre-fix.json and chrome-matrix-head.json (chrome_matrix.py), launch-probe-*-chrome154.json,
+browser-files-head-chrome154.json and ci-failed.log (the failing step of that run, as `gh run view --log-failed` gave it).
+The records of the first revision that the repair replaced are named under `repair.replacedRecords`.
 """
 import hashlib
 import json
@@ -20,11 +26,17 @@ import sys
 DATE = '2026-10-22'
 scratch, evidence, tree = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), pathlib.Path(sys.argv[3])
 base, code, first = sys.argv[4], sys.argv[5], sys.argv[6]
+after_run, after_head = sys.argv[7], sys.argv[8]  # the hosted run after the fix and the commit it ran on
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True, check=True).stdout
 rev = lambda ref: git('rev-parse', ref).strip()
 load = lambda name: json.loads((evidence / f'{name}-{DATE}.json').read_text())
 
-COPIES = (('launch-probe-head', 'launch-probe-head'), ('launch-probe-base', 'launch-probe-base'), ('tmpdir-length-head', 'tmpdir-length-head'), ('tmpdir-length-base', 'tmpdir-length-base'),
+REPLACED = ('launch-probe-head', 'launch-probe-base', 'tmpdir-length-head', 'launch-failure-head', 'launch-failure-base', 'mutants-cdp', 'browser-files-head', 'test-lists')
+replaced_from = {name: {'treeCommit': (lambda r: r.get('treeCommit') or r['headTree']['commit'])(json.loads(git('show', f'HEAD:docs/evidence/chrome-singleton-leak-2026-10-22/{name}-{DATE}.json'))),
+                        'lastCommitHoldingIt': git('rev-list', '-1', 'HEAD', '--', f'docs/evidence/chrome-singleton-leak-2026-10-22/{name}-{DATE}.json').strip()} for name in REPLACED}
+COPIES = (('launch-probe-head-chrome154', 'launch-probe-head-chrome154'), ('launch-probe-base-chrome154', 'launch-probe-base-chrome154'), ('browser-files-head-chrome154', 'browser-files-head-chrome154'),
+          ('chrome-names', 'chrome-names'), ('chrome-matrix-pre-fix', 'chrome-matrix-pre-fix'), ('chrome-matrix-head', 'chrome-matrix-head'),
+          ('launch-probe-head', 'launch-probe-head'), ('launch-probe-base', 'launch-probe-base'), ('tmpdir-length-head', 'tmpdir-length-head'), ('tmpdir-length-base', 'tmpdir-length-base'),
           ('tmpdir-length-rejected', 'tmpdir-length-rejected'), ('launch-failure-head', 'launch-failure-head'), ('launch-failure-base', 'launch-failure-base'),
           ('mutants-cdp', 'mutants-cdp'), ('browser-files-head', 'browser-files-head'), ('browser-files-base', 'browser-files-base'),
           ('test-lists', 'test-lists'), ('test-lists-attempt-1', 'test-lists-attempt-1'))
@@ -35,6 +47,11 @@ tools = sorted(p.name for p in evidence.iterdir() if p.suffix in ('.py', '.mjs')
 digests = {name: hashlib.sha256((evidence / name).read_bytes()).hexdigest() for name in tools}
 
 probe_h, probe_b = load('launch-probe-head')['summary'], load('launch-probe-base')['summary']
+names, matrix_pre, matrix_head = load('chrome-names'), load('chrome-matrix-pre-fix'), load('chrome-matrix-head')
+clean_line = lambda line: re.sub(r'\x1b\[[0-9;]*m', '', line.split('Z ', 1)[-1]).strip()  # the log's timestamp and colour codes off
+hosted_log = (scratch / 'ci-failed.log').read_text().splitlines() if (scratch / 'ci-failed.log').exists() else []
+hosted_full = (scratch / 'ci-full.log').read_text().splitlines() if (scratch / 'ci-full.log').exists() else []
+hosted_after = (scratch / 'ci-after.log').read_text().splitlines() if (scratch / 'ci-after.log').exists() else []
 fail_h, fail_b = load('launch-failure-head'), load('launch-failure-base')
 mut = load('mutants-cdp')
 files_h, files_b = load('browser-files-head'), load('browser-files-base')
@@ -65,7 +82,7 @@ verification = {
     'appsAndConfigDiffSinceCodeCommit': git('diff', '--stat', code, 'HEAD', '--', 'apps', 'vitest.config.ts', 'package.json').strip(),
     'toolDigests': digests,
     'diagnosis': {
-        'claim': 'Chrome leaves .com.google.Chrome.<random> in TMPDIR only when its leader is killed (closeDisposableBrowser, after the 1 s close grace); a clean exit removes it',
+        'claim': 'Chrome leaves its singleton directory (`.com.google.Chrome.<random>` in Chrome 120, `org.chromium.Chromium.<random>` in the builds from 145) in TMPDIR only when its leader is killed (closeDisposableBrowser, after the 1 s close grace); a clean exit removes it',
         'atBase': {'record': 'launch-probe-base-2026-10-22.json', 'launches': probe_b['launches'], 'launchesWhoseCloseThrew': probe_b['launchesWhoseCloseThrew'], 'killed': probe_b['killed'],
                    'exitedCleanly': probe_b['exitedCleanly'], 'killedAndLeftAChromeDirectory': probe_b['killedAndLeftAChromeDirectory'],
                    'exitedAndLeftAChromeDirectory': probe_b['exitedAndLeftAChromeDirectory'], 'holds': probe_b['holds']},
@@ -90,9 +107,32 @@ verification = {
         'attemptsOfTheBrowserFilesRunAtHead': [{'file': f['file'], 'attempt': a['attempt'], 'firstErrorLine': x['firstErrorLine'], 'chromeSingletonDirectoriesLeft': a['left']['chromeSingletonDirectories'],
                                                  'browserProfilesLeft': a['left']['browserProfiles']}
                                                 for f in files_h['perFile'] for a in f['attempts'] if a['exit'] != 0 for x in a['failing'] if 'profile drain did' in x['firstErrorLine']],
-        'attemptsOfTheMutantControl': [{'attempt': a['attempt'], 'status': a['status'], 'chromeSingletonDirectoriesLeft': sum(1 for n in a['left'] if n.startswith('.com.google.Chrome.')),
+        'attemptsOfTheMutantControl': [{'attempt': a['attempt'], 'status': a['status'], 'chromeSingletonDirectoriesLeft': sum(1 for n in a['left'] if re.match(r'^\.?(com\.google\.Chrome|org\.chromium\.Chromium)\.', n)),
                                         'drainErrors': sum(1 for x in a['failing'] if 'profile drain did' in x['firstErrorLine'])} for a in mut['control']['attempts']],
         'acceptedAs': 'a load failure, not a pass and not a kill: the criterion of AC1 is over passing attempts, and the mutant runs score only failures with another first error line',
+    },
+    'repair': {
+        'claim': 'the hosted node-ci failure (run 39768592736) was the leading dot: Chrome 155 names its singleton directory without the dot Chrome 120 gives it; the pattern and the case\'s assertion take the dot as optional, and the real-Chrome file passes under every Chrome installed here',
+        'hostedRun': {'run': 39768592736, 'failingTest': 'cdp-browser.browser.test.ts > disposable Chrome teardown in a real browser > leaves no Chrome singleton directory behind when the leader is killed',
+                      'firstErrorLine': next(clean_line(l) for l in hosted_log if 'AssertionError' in l and 'to match' in l), 'runnerChrome': next(clean_line(l) for l in hosted_full if 'Google Chrome 1' in l and 'browser-geometry' in l),
+                      'runnerImage': next(clean_line(l) for l in hosted_full if 'Image: ' in l)} if hosted_log and hosted_full else None,
+        'hostedRunAfterTheFix': {'run': int(after_run), 'headCommit': rev(after_head), 'runnerChrome': next(clean_line(l) for l in hosted_after if 'Google Chrome 1' in l and 'browser-geometry' in l),
+                                 'runnerImage': next(clean_line(l) for l in hosted_after if 'Image: ' in l),
+                                 'realChromeFile': next(clean_line(l) for l in hosted_after if 'cdp-browser.browser.test.ts' in l and '✓' in l),
+                                 'unitSuite': next(clean_line(l) for l in hosted_after if 'Test Files' in l and 'passed' in l and 'unit + conformance tests' in l),
+                                 'logSha256': hashlib.sha256((scratch / 'ci-after.log').read_bytes()).hexdigest(),
+                                 'note': 'lines read from `gh run view <run> --log` (the log is not stored here; its digest is, and the run stays readable on the hosted service); the later commits of this branch add only files in this directory'} if hosted_after else None,
+        'names': {'record': 'chrome-names-2026-10-22.json', 'chromes': [{'version': c['version'], 'singletonDirectoryName': c['shape'], 'leadingDot': c['leadingDot']} for c in names['chromes']],
+                  'dotBetween': 'the dot is present in 120 and absent in every build from 145 to 154 probed, and in 155 on the hosted runner; which release dropped it is not known'},
+        'matrixPreFix': {'record': 'chrome-matrix-pre-fix-2026-10-22.json', 'treeCommit': matrix_pre['treeCommit'], 'mutant': matrix_pre['mutant']['id'],
+                         'runs': [{'version': r['version'], 'status': r['status'], 'failingOnTheNameAssertion': r['failingOnTheNameAssertion'], 'firstErrorLine': r['failing'][0]['firstErrorLine'] if r['failing'] else None,
+                                   'singletonShapedLeft': len(r['singletonShapedLeft'])} for r in matrix_pre['rows']], 'holds': matrix_pre['holds']},
+        'matrixHead': {'record': 'chrome-matrix-head-2026-10-22.json', 'treeCommit': matrix_head['treeCommit'],
+                       'runs': [{'version': r['version'], 'status': r['status'], 'singletonShapedLeft': len(r['singletonShapedLeft'])} for r in matrix_head['rows']], 'holds': matrix_head['holds']},
+        'launchProbeChrome154': {'head': {'record': 'launch-probe-head-chrome154-2026-10-22.json', 'browserVersion': load('launch-probe-head-chrome154').get('browserVersion'), **{k: load('launch-probe-head-chrome154')['summary'][k] for k in ('launches', 'launchesThatClosed', 'launchesWhoseCloseThrew', 'killed', 'exitedCleanly', 'closedLaunchesThatLeftAnything', 'holds')}},
+                                 'base': {'record': 'launch-probe-base-chrome154-2026-10-22.json', 'browserVersion': load('launch-probe-base-chrome154').get('browserVersion'), **{k: load('launch-probe-base-chrome154')['summary'][k] for k in ('launches', 'launchesThatClosed', 'launchesWhoseCloseThrew', 'killed', 'exitedCleanly', 'killedAndLeftAChromeDirectory', 'exitedAndLeftAChromeDirectory', 'holds')}}},
+        'browserFilesChrome154': {'record': 'browser-files-head-chrome154-2026-10-22.json', 'browserVersion': load('browser-files-head-chrome154').get('browserVersion'), **{k: load('browser-files-head-chrome154')['summary'][k] for k in load('browser-files-head-chrome154')['summary'] if k.startswith(('files', 'chrome', 'draft', 'combined', 'every'))}},
+        'replacedRecords': {f'{name}-{DATE}.json': v for name, v in replaced_from.items()} | {'note': 'each was replaced in this commit by a record of the repaired head; the earlier one is in git history at lastCommitHoldingIt and named the commit shown. tmpdir-length-base, tmpdir-length-rejected and browser-files-base are not re-run: they describe the base and the dropped first approach, which this repair does not touch'},
     },
     'ac2': 'out of scope: a killed test runner (SIGKILL/SIGTERM of vitest or of an operator command) leaves whatever Chrome and the helper had made; syzygy-bpyt.4.10 sweeps only syzygy-poc-surface-fixture-* directories of dead processes and this change adds no sweep. '
            'What this change covers is a Chrome the helper itself kills in a run that otherwise ends normally.',
