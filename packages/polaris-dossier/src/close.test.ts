@@ -16,8 +16,8 @@ const execFileAsync = promisify(execFile);
 
 let renderer: DossierRenderer;
 beforeAll(async () => {
-  const module = pathToFileURL(path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/dossier-render.ts')).href;
-  renderer = ((await import(module)) as { renderDossier: DossierRenderer }).renderDossier;
+  const module = pathToFileURL(path.join(REAL_ROOT, 'apps/three-surface-poc/src/polaris-generation/dossier-site.ts')).href;
+  renderer = ((await import(module)) as { renderLocalDossier: DossierRenderer }).renderLocalDossier;
 });
 
 const cleanups: (() => void)[] = [];

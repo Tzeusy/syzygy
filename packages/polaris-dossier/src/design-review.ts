@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { REVIEW_STATUS_REGION, isDossierPagePath, leadInQuotations, withoutReviewStatusRegion } from '@syzygy/polaris-generation-core';
+import { REVIEW_STATUS_REGION, isDossierPagePath, leadInQuotations, withoutReviewStatusRegion } from '@syzygy/polaris-generation-core/live';
 import { declaredSessionId } from './check.js';
 import { DEFICIENT_SUBJECTS, checkDraftShape, designVerdictSchemaDocument, localDesignVerdictSchema } from './draft-schema.js';
 import { errno } from './inventory.js';

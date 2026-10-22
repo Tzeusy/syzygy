@@ -3,11 +3,11 @@
  * `readerQuestions` is typed `unknown` at the request boundary, so this is
  * the closed shape every request must satisfy before anything dispatches.
  * Topics name the owner-level subjects a question serves; the list and the
- * question type are the dossier evaluator's (`OWNER_TOPICS`, `ReaderQuestion`),
- * imported so there is one declaration.
+ * question type are declared once in topics.ts (`OWNER_TOPICS`,
+ * `ReaderQuestion`), which the dossier evaluator shares.
  */
 
-import { OWNER_TOPICS, type OwnerTopic, type ReaderQuestion } from './dossier-evaluation.js';
+import { OWNER_TOPICS, type OwnerTopic, type ReaderQuestion } from './topics.js';
 
 export const READER_QUESTION_TOPICS = OWNER_TOPICS;
 export type ReaderQuestionTopic = OwnerTopic;

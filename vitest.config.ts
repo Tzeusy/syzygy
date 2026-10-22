@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
+      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),
       '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent/testing': fileURLToPath(new URL('./packages/polaris-generation-consent/src/testing.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent': fileURLToPath(new URL('./packages/polaris-generation-consent/src/index.ts', import.meta.url)),

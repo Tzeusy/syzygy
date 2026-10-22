@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { dossierRepositoryUrl } from './github-url.js';
 import type { GovernedKind } from './governed.js';
 import { validateRunConfig, type RunConfig, type RunConfigRefusal } from './run-config.js';

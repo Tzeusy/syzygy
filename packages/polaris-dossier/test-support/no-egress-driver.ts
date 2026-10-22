@@ -1,5 +1,5 @@
 import * as dgram from 'node:dgram';
-import { renderDossier } from '../../../apps/three-surface-poc/src/polaris-generation/dossier-render.js';
+import { renderLocalDossier } from '../../../apps/three-surface-poc/src/polaris-generation/dossier-site.js';
 import { fullFixtureRun } from '../src/full-run.testkit.js';
 
 /** The process the no-egress proof captures: `node <bundle> <clone> <commit> <state root> [canary]`. It runs one full fixture run through
@@ -15,5 +15,5 @@ if (mode === 'canary') {
   const socket = dgram.createSocket('udp4');
   await new Promise<void>((resolve) => socket.send('canary', 9, '127.0.0.1', () => { socket.close(); resolve(); }));
 }
-const { run, steps } = await fullFixtureRun({ clone, commit, stateRoot, renderer: renderDossier, closeArgs: ['--usage-turns', '3'] });
+const { run, steps } = await fullFixtureRun({ clone, commit, stateRoot, renderer: renderLocalDossier, closeArgs: ['--usage-turns', '3'] });
 process.stdout.write(`${JSON.stringify({ run, steps: steps.map((step) => ({ command: step.argv[0], exit: step.exit })) })}\n`);

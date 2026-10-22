@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import type { CredentialProbe } from './execution-rule.js';
 import { RUN_LAYOUT } from './state-directory.js';
 

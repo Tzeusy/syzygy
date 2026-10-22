@@ -1,0 +1,85 @@
+{
+  "mutants": [
+    {
+      "id": "R1-non-literal-dynamic-import-of-core-root-in-render-step",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\n",
+      "new": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\nconst ISLAND_SPECIFIER = '@syzygy/polaris-generation-core';\nexport const loadIsland = (): Promise<unknown> => import(ISLAND_SPECIFIER);\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: a non-literal import() specifier; expected to survive (the test reads literal specifiers only)"
+    },
+    {
+      "id": "R2-template-literal-dynamic-import-of-core-root-in-render-step",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\n",
+      "new": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\nexport const loadIsland = (): Promise<unknown> => import(`@syzygy/polaris-generation-core`);\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: a no-substitution template literal specifier"
+    },
+    {
+      "id": "R3-export-star-of-core-root-in-class-gate",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core/live';\n",
+      "new": "import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core/live';\nexport * from '@syzygy/polaris-generation-core';\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: export * re-export of the core root"
+    },
+    {
+      "id": "R4-live-subpath-node-condition-resolves-to-core-root",
+      "file": "packages/polaris-generation-core/package.json",
+      "old": "    \"./live\": {\n      \"types\": \"./dist/live.d.ts\",\n      \"import\": \"./dist/live.js\",",
+      "new": "    \"./live\": {\n      \"types\": \"./dist/live.d.ts\",\n      \"node\": \"./dist/index.js\",\n      \"import\": \"./dist/live.js\",",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: Node picks the first matching condition in object order (node), the test picks import; expected to survive"
+    },
+    {
+      "id": "R5-broker-client-entry-imports-core-root",
+      "file": "packages/polaris-dossier/src/broker-client.ts",
+      "old": "import * as net from 'node:net';\n",
+      "new": "import * as net from 'node:net';\nimport '@syzygy/polaris-generation-core';\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: broker-client.js is a second node entry polaris.ts launches by path (shim), not by import; expected to survive"
+    },
+    {
+      "id": "R6-create-require-of-core-root-in-render-step",
+      "file": "packages/polaris-dossier/src/render.ts",
+      "old": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\n",
+      "new": "import { UNDERSTANDING_ITEMS } from './draft-schema.js';\nimport { createRequire } from 'node:module';\nconst load = createRequire(import.meta.url);\nexport const loadIsland = (): unknown => load('@syzygy/polaris-generation-core');\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: createRequire, not a literal require() call; expected to survive"
+    },
+    {
+      "id": "R7-import-type-node-of-core-root-in-class-gate",
+      "file": "packages/polaris-dossier/src/class-gate.ts",
+      "old": "import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core/live';\n",
+      "new": "import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core/live';\nexport type IslandResult = import('@syzygy/polaris-generation-core').PipelineResult;\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: an import type node (type position)"
+    },
+    {
+      "id": "R8-relative-cross-package-island-import-in-screen",
+      "file": "packages/polaris-dossier/src/screen.ts",
+      "old": "import { createHash } from 'node:crypto';\n",
+      "new": "import { createHash } from 'node:crypto';\nimport '../../polaris-generation-core/src/pipeline.js';\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: a relative path into another package's source"
+    },
+    {
+      "id": "R9-island-import-hidden-inside-the-exception",
+      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+      "old": "import { COMMIT_OBJECT_ID, parseAdmissionRecords, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';\n",
+      "new": "import { COMMIT_OBJECT_ID, parseAdmissionRecords, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';\nimport '../../polaris-generation-core/src/pipeline.js';\n",
+      "tests": ["packages/polaris-generation-core/src/island-boundary.test.ts"],
+      "project": "@syzygy/polaris-generation-core",
+      "note": "reviewer probe: anything consent-ports.ts imports is unexamined while it is the exception; expected to survive"
+    }
+  ]
+}

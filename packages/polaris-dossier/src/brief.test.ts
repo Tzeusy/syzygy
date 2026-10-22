@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
-import { issueBrief, renderBrief } from './brief.js';
+import { DOSSIER_GUIDANCE, DOSSIER_GUIDANCE_VERSION, issueBrief, renderBrief } from './brief.js';
 import { runDossierCli } from './cli.js';
 import { readSec3 } from './doctrine-quote.js';
 import { decideExecutionRule, type ExecutionChoice } from './execution-rule.js';
@@ -167,6 +167,13 @@ describe('brief: issued', () => {
     const rule = await decideExecutionRule({ role: 'authoring', runDir: '/r', runId: RUN_ID, pinnedRevision: REV, operatorIsOwner: true, sec3: sec3.sec3, now: NOW, d9: async () => OK, launched: () => 'absent', permitting: { enabled: false } });
     const input = { runId: RUN_ID, subject: SUBJECT, declared: configOf(), issuedAt: NOW, schemaSha256: '0'.repeat(64), executionRule: rule, revisionLabel: '8.10.2' };
     expect(renderBrief(input)).toBe(renderBrief(structuredClone(input)));
+  });
+
+  // syzygy-bpyt.8.1: the guidance is the brief's own text, no longer cut from the provider pipeline's author prompt at load. These are
+  // the bytes that cut gave at 3000698f (4469 bytes), so every brief carries the guidance it carried before.
+  it('carries its own writing guidance, byte-identical to the author-prompt cut it replaced', () => {
+    expect(DOSSIER_GUIDANCE_VERSION).toBe('polaris-author-dossier-v2');
+    expect(sha(DOSSIER_GUIDANCE)).toBe('17ea6ff5bc05f02b27343da8184033104295b1c02b82ca5e784d6316d1ecea69');
   });
 });
 
