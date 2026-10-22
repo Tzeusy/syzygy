@@ -122,6 +122,13 @@ verification = {
     },
     'oneOffCleanup': first_verification['oneOffCleanup'] | {'carriedFrom': f'verification-{DATE}.json at {rev(first)}; the directories no longer exist, so the counts cannot be re-derived'},
 }
+tidy_two = json.loads((scratch / 'tidy-2.json').read_text())
+removed_two = (scratch / 'tmp-cleanup-2-removed-list.txt').read_text().split()
+verification['oneOffCleanup']['secondPass'] = {
+    'rule': verification['oneOffCleanup']['rule'], 'before': tidy_two['before'], 'removed': len(removed_two), 'after': tidy_two['after'], 'remainingOlderThan360Minutes': tidy_two['olderThan360MinutesAfter'],
+    'removedNames': sorted(pathlib.PurePath(p).name for p in removed_two),
+    'note': 'before and after typed from `find ... | wc -l` at the time; removed is the scripted find output saved before removal. The total was 193 at the end of the first pass and 193 again about seven hours later: no directory was added in between.',
+}
 (evidence / f'verification-{DATE}.json').write_text(json.dumps(verification, indent=1) + '\n')
 print(json.dumps({'tests': verification['ac6']['testsLine'], 'ac2Left': clean['freshRun']['left']['fixtureDirectories'], 'ac3KilledDead': killed['killedRun']['fiveSecondsAfterKill']['ofDeadProcesses']['count'],
                   'ac3FreshLeft': killed['freshRun']['left']['fixtureDirectories'], 'ac3DisabledLeft': disabled['freshRun']['left']['ofDeadProcesses']['count'], 'mutants': verification['ac3']['unitMutants']['killed'],
